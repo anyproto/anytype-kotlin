@@ -41,14 +41,10 @@ object PersonalizationSettingsModule {
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
-        configStorage: ConfigStorage
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager,
-        configStorage = configStorage
+        dispatchers = dispatchers
     )
 
     @JvmStatic

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeysObjectType
@@ -61,6 +62,7 @@ fun createSubscriptionParams(
         activeMode = activeMode
     )
     return StoreSearchParams(
+        space = SpaceId(spaceId),
         filters = filters,
         sorts = sorts,
         keys = keys,

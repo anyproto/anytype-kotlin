@@ -777,7 +777,9 @@ open class EditorPresentationTestSetup {
         template: String? = null
     ) {
         getDefaultObjectType.stub {
-            onBlocking { async(Unit) } doReturn Resultat.success(
+            onBlocking { async(
+                params = SpaceId(defaultSpace)
+            ) } doReturn Resultat.success(
                 GetDefaultObjectType.Response(
                     id = TypeId(id),
                     type = TypeKey(type),

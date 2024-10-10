@@ -514,6 +514,7 @@ class VersionHistoryViewModelTest {
         val filters =
             ObjectSearchConstants.filterParticipants(spaces = listOf(vmParams.spaceId.id))
         val params = SearchObjects.Params(
+            space = vmParams.spaceId,
             filters = filters,
             keys = ObjectSearchConstants.spaceMemberKeys
         )

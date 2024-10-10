@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubObjectMinim
 import com.anytypeio.anytype.core_models.SubscriptionEvent
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
@@ -50,7 +51,12 @@ class StorelessSubscriptionContainerTest {
         computation = UnconfinedTestDispatcher()
     )
 
+    private val defaultSpaceId = SpaceId(
+        MockDataFactory.randomUuid()
+    )
+
     private val defaultSearchParams = StoreSearchParams(
+        space = defaultSpaceId,
         filters = emptyList(),
         sorts = emptyList(),
         subscription = MockDataFactory.randomUuid(),
@@ -342,6 +348,7 @@ class StorelessSubscriptionContainerTest {
         repo.stub {
             onBlocking {
                 searchObjectsWithSubscription(
+                    space = defaultSpaceId,
                     subscription = params.subscription,
                     sorts = params.sorts,
                     filters = params.filters,

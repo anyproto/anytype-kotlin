@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.misc
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -34,7 +35,13 @@ class GetObjectTypeTest {
 
     private lateinit var usecase: GetObjectTypes
 
+    private val defaultSpaceId = SpaceId(
+        id = MockDataFactory.randomUuid()
+    )
+
+
     private val defaultParams = GetObjectTypes.Params(
+        space = defaultSpaceId,
         filters = emptyList(),
         keys = listOf(Relations.ID),
         sorts = emptyList(),
@@ -85,6 +92,7 @@ class GetObjectTypeTest {
             assertEquals(firstTimeResult, secondTimeResult)
 
             verify(repo, times(2)).searchObjects(
+                space = defaultSpaceId,
                 filters = defaultParams.filters,
                 keys = defaultParams.keys,
                 sorts = defaultParams.sorts,
@@ -214,6 +222,7 @@ class GetObjectTypeTest {
         repo.stub {
             onBlocking {
                 searchObjects(
+                    space = defaultSpaceId,
                     filters = emptyList(),
                     keys = listOf(Relations.ID),
                     sorts = emptyList(),

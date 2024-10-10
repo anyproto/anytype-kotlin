@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
@@ -22,7 +23,8 @@ class SpacesStorageViewModelFactory @Inject constructor(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val getAccount: GetAccount,
     private val membershipProvider: MembershipProvider,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val configStorage: ConfigStorage
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -36,6 +38,7 @@ class SpacesStorageViewModelFactory @Inject constructor(
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         getAccount = getAccount,
         membershipProvider = membershipProvider,
-        userPermissionProvider = userPermissionProvider
+        userPermissionProvider = userPermissionProvider,
+        configStorage = configStorage
     ) as T
 }

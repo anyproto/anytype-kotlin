@@ -8,12 +8,14 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.SubscriptionEvent
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -46,6 +48,10 @@ class DataViewSubscriptionContainerTest {
         Relations.NAME,
         Relations.TYPE,
         Relations.LAYOUT
+    )
+
+    private val defaultSpaceId = SpaceId(
+        id = MockDataFactory.randomUuid()
     )
 
     @Mock
@@ -93,6 +99,7 @@ class DataViewSubscriptionContainerTest {
         repo.stub {
             onBlocking {
                 searchObjectsWithSubscription(
+                    space = defaultSpaceId,
                     subscription = subscription1,
                     limit = defaultLimit,
                     offset = defaultOffset,
@@ -146,6 +153,7 @@ class DataViewSubscriptionContainerTest {
         }
 
         val params = DataViewSubscriptionContainer.Params(
+            space = defaultSpaceId,
             subscription = subscription1,
             limit = defaultLimit,
             offset = defaultOffset,

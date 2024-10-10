@@ -376,9 +376,7 @@ open class EditorTestSetup {
         getDefaultObjectType = GetDefaultObjectType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = repo,
-            dispatchers = dispatchers,
-            spaceManager = spaceManager,
-            configStorage = configStorage
+            dispatchers = dispatchers
         )
         createObjectSet = CreateObjectSet(repo)
         findObjectSetForType = FindObjectSetForType(repo)
@@ -579,9 +577,8 @@ open class EditorTestSetup {
         repo.stub {
             onBlocking {
                 searchObjects(
-                    filters = ObjectSearchConstants.filterTypes(
-                        spaces = listOf(defaultSpace)
-                    ),
+                    space = SpaceId(defaultSpace),
+                    filters = ObjectSearchConstants.filterTypes(),
                     keys = ObjectSearchConstants.defaultKeysObjectType,
                     sorts = emptyList(),
                     limit = 0,

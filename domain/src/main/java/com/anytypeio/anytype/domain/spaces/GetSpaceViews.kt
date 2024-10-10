@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
@@ -17,9 +18,10 @@ import javax.inject.Inject
 class GetSpaceViews @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-): ResultInteractor<Unit, List<ObjectWrapper.SpaceView>>(dispatchers.io) {
-    override suspend fun doWork(params: Unit): List<ObjectWrapper.SpaceView> {
+): ResultInteractor<SpaceId, List<ObjectWrapper.SpaceView>>(dispatchers.io) {
+    override suspend fun doWork(params: SpaceId): List<ObjectWrapper.SpaceView> {
         val result = repo.searchObjects(
+            space = params,
             keys = listOf(
                 Relations.ID,
                 Relations.TARGET_SPACE_ID,

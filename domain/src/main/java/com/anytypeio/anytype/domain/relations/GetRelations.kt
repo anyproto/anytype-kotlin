@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
@@ -18,6 +19,7 @@ class GetRelations(
     }
 
     private suspend fun proceedWithUseCase(params: Params) = repo.searchObjects(
+        space = params.space,
         keys = params.keys,
         filters = params.filters,
         sorts = params.sorts,
@@ -29,6 +31,7 @@ class GetRelations(
     }
 
     data class Params(
+        val space: SpaceId,
         val sorts: List<DVSort> = emptyList(),
         val filters: List<DVFilter> = emptyList(),
         val keys: List<Key> = emptyList(),

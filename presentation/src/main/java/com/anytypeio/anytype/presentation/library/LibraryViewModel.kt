@@ -204,8 +204,11 @@ class LibraryViewModel(
         objType: ObjectWrapper.Type? = null
     ) {
         val startTime = System.currentTimeMillis()
-        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
         viewModelScope.launch {
+            val params = objType?.uniqueKey.getCreateObjectParams(
+                space = SpaceId(spaceManager.get()),
+                objType?.defaultTemplateId
+            )
             createObject.async(params).fold(
                 onSuccess = {
                     result -> proceedWithOpeningObject(result.obj)

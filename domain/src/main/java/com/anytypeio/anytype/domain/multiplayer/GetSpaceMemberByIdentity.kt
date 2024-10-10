@@ -19,6 +19,7 @@ class GetSpaceMemberByIdentity @Inject constructor(
 
     override suspend fun doWork(params: Params): ObjectWrapper.SpaceMember? {
         val results = repo.searchObjects(
+            space = params.space,
             limit = 0,
             filters = buildList {
                 add(
@@ -32,13 +33,6 @@ class GetSpaceMemberByIdentity @Inject constructor(
                     DVFilter(
                         relation = Relations.IDENTITY,
                         value = params.identity,
-                        condition = DVFilterCondition.EQUAL
-                    )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.SPACE_ID,
-                        value = params.space.id,
                         condition = DVFilterCondition.EQUAL
                     )
                 )

@@ -241,9 +241,7 @@ abstract class TestObjectSetSetup {
         getDefaultObjectType = GetDefaultObjectType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = repo,
-            spaceManager = spaceManager,
-            dispatchers = dispatchers,
-            configStorage = configStorage
+            dispatchers = dispatchers
         )
         createDataViewObject = CreateDataViewObject(
             repo = repo,
@@ -378,6 +376,7 @@ abstract class TestObjectSetSetup {
         repo.stub {
             onBlocking {
                 searchObjectsWithSubscription(
+                    space = any(),
                     subscription = any(),
                     filters = any(),
                     sorts = any(),

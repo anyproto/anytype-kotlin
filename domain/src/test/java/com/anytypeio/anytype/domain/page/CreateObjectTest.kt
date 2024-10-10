@@ -52,12 +52,13 @@ class CreateObjectTest {
 
     lateinit var createObject: CreateObject
 
+    private val defaultSpaceId = SpaceId(MockDataFactory.randomUuid())
+
     @Before
     fun setup() {
         createObject = CreateObject(
             repo = repo,
             getDefaultObjectType = getDefaultObjectType,
-            spaceManager = spaceManager,
             dispatchers = dispatchers
         )
         stubSpaceManager()
@@ -74,6 +75,7 @@ class CreateObjectTest {
 
         //TESTING
         val params = CreateObject.Param(
+            space = defaultSpaceId,
             type = type,
             internalFlags = listOf(
                 InternalFlags.ShouldSelectType,
@@ -93,7 +95,7 @@ class CreateObjectTest {
                 InternalFlags.ShouldSelectTemplate,
                 InternalFlags.ShouldEmptyDelete
             ),
-            space = SpaceId(""),
+            space = defaultSpaceId,
             typeKey = appDefaultTypeKey
         )
         verifyBlocking(repo, times(1)) { createObject(commands) }
@@ -114,6 +116,7 @@ class CreateObjectTest {
 
             //TESTING
             val params = CreateObject.Param(
+                space = defaultSpaceId,
                 type = type,
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
@@ -132,7 +135,7 @@ class CreateObjectTest {
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 ),
-                space = SpaceId(""),
+                space = defaultSpaceId,
                 typeKey = TypeKey(defaultType)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
@@ -154,6 +157,7 @@ class CreateObjectTest {
 
             //TESTING
             val params = CreateObject.Param(
+                space = defaultSpaceId,
                 type = type,
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
@@ -172,7 +176,7 @@ class CreateObjectTest {
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 ),
-                space = SpaceId(""),
+                space = defaultSpaceId,
                 typeKey = TypeKey(defaultType)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
@@ -189,6 +193,7 @@ class CreateObjectTest {
 
             //TESTING
             val params = CreateObject.Param(
+                space = defaultSpaceId,
                 type = TypeKey(type),
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
@@ -208,7 +213,7 @@ class CreateObjectTest {
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 ),
-                space = SpaceId(""),
+                space = defaultSpaceId,
                 typeKey = TypeKey(type)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
@@ -225,6 +230,7 @@ class CreateObjectTest {
 
             //TESTING
             val params = CreateObject.Param(
+                space = defaultSpaceId,
                 type = TypeKey(type),
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
@@ -244,7 +250,7 @@ class CreateObjectTest {
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 ),
-                space = SpaceId(""),
+                space = defaultSpaceId,
                 typeKey = TypeKey(type)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
@@ -262,6 +268,7 @@ class CreateObjectTest {
 
             //TESTING
             val params = CreateObject.Param(
+                space = defaultSpaceId,
                 type = TypeKey(type),
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
@@ -282,7 +289,7 @@ class CreateObjectTest {
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 ),
-                space = SpaceId(""),
+                space = defaultSpaceId,
                 typeKey = TypeKey(type)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
@@ -294,7 +301,7 @@ class CreateObjectTest {
         template: String? = null,
     ) {
         getDefaultObjectType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultObjectType.Response(
+            onBlocking { run(defaultSpaceId) } doReturn GetDefaultObjectType.Response(
                 type = type,
                 name = name,
                 id = TypeId(MockDataFactory.randomString()),
@@ -319,9 +326,9 @@ class CreateObjectTest {
         }
     }
 
-    fun stubSpaceManager() {
+    private fun stubSpaceManager() {
         spaceManager.stub {
-            onBlocking { get() } doReturn ""
+            onBlocking { get() } doReturn defaultSpaceId.id
         }
     }
 }

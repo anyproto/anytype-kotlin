@@ -5,11 +5,14 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SubscriptionEvent
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.`object`.move
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -20,12 +23,14 @@ class ObjectTypesSubscriptionContainer(
     private val repo: BlockRepository,
     private val channel: SubscriptionEventChannel,
     private val store: StoreOfObjectTypes,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val logger: Logger
 ) {
 
     fun observe(params: Params): Flow<Index> {
         return flow {
             val initial = repo.searchObjectsWithSubscription(
+                space = params.space,
                 subscription = params.subscription,
                 sorts = params.sorts,
                 filters = params.filters,
@@ -121,7 +126,11 @@ class ObjectTypesSubscriptionContainer(
                     )
                 }
             )
-        }.flowOn(dispatchers.io)
+        }.catch {
+            logger.logException(it, "Error in object types container")
+        }.flowOn(
+            context = dispatchers.io
+        )
     }
 
     /**
@@ -139,6 +148,7 @@ class ObjectTypesSubscriptionContainer(
     }
 
     data class Params(
+        val space: SpaceId,
         val subscription: Id,
         val sorts: List<DVSort>,
         val filters: List<DVFilter>,

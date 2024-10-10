@@ -21,7 +21,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
         ObjectSearchConstants.sortTabRecent,
         ObjectSearchConstants.limitTabRecent,
-        space = { space -> ObjectSearchConstants.filterTabRecent(space) }
+        space = { space -> ObjectSearchConstants.filterTabRecent() }
     )
 
     data object RecentLocal : Subscription(
@@ -29,7 +29,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS + Relations.LAST_OPENED_DATE,
         ObjectSearchConstants.sortTabRecentLocal,
         ObjectSearchConstants.limitTabRecent,
-        space = { space -> ObjectSearchConstants.filterTabRecentLocal(space) }
+        space = { space -> ObjectSearchConstants.filterTabRecentLocal() }
     )
 
     data object Bin : Subscription(
@@ -37,7 +37,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabArchive,
         0,
-        space = { space -> ObjectSearchConstants.filterTabArchive(space) }
+        space = { space -> ObjectSearchConstants.filterTabArchive() }
     )
 
     data object Sets : Subscription(
@@ -45,7 +45,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabSets,
         0,
-        space = { space -> ObjectSearchConstants.filterTabSets(space) }
+        space = { space -> ObjectSearchConstants.filterTabSets() }
     )
 
     data object Collections : Subscription(
@@ -53,7 +53,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabSets,
         0,
-        space = { space -> ObjectSearchConstants.collectionFilters(space) }
+        space = { space -> ObjectSearchConstants.collectionFilters() }
     )
 
     data object Favorites : Subscription(
@@ -61,7 +61,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         emptyList(),
         0,
-        space = { space -> ObjectSearchConstants.filterTabFavorites(space) }
+        space = { space -> ObjectSearchConstants.filterTabFavorites() }
     )
 
     data object Files : Subscription(

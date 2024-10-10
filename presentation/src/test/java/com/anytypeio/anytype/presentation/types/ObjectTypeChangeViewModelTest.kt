@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -81,9 +82,7 @@ class ObjectTypeChangeViewModelTest {
         getDefaultObjectType = GetDefaultObjectType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = blockRepository,
-            dispatchers = dispatchers,
-            spaceManager = spaceManager,
-            configStorage = configStorage
+            dispatchers = dispatchers
         )
     }
 
@@ -113,7 +112,6 @@ class ObjectTypeChangeViewModelTest {
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
-            spaces = listOf(spaceId),
             recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
         )
 
@@ -132,6 +130,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -156,7 +155,6 @@ class ObjectTypeChangeViewModelTest {
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
-            spaces = listOf(spaceId),
             recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
@@ -165,7 +163,6 @@ class ObjectTypeChangeViewModelTest {
         val expectedMarketplaceTypeFilters = buildList {
             addAll(
                 ObjectSearchConstants.filterTypes(
-                    spaces = listOf(MARKETPLACE_SPACE_ID),
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 )
             )
@@ -185,6 +182,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMyTypesFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -214,6 +212,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -227,6 +226,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(MARKETPLACE_SPACE_ID),
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -251,7 +251,6 @@ class ObjectTypeChangeViewModelTest {
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
-            spaces = listOf(spaceId),
             recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
@@ -260,7 +259,6 @@ class ObjectTypeChangeViewModelTest {
         val expectedMarketplaceTypeFilters = buildList {
             addAll(
                 ObjectSearchConstants.filterTypes(
-                    spaces = listOf(MARKETPLACE_SPACE_ID),
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 )
             )
@@ -282,6 +280,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMyTypesFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -297,6 +296,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(MARKETPLACE_SPACE_ID),
                     filters = expectedMarketplaceTypeFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -310,6 +310,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMyTypesFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -325,6 +326,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(MARKETPLACE_SPACE_ID),
                     filters = expectedMarketplaceTypeFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -352,6 +354,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -365,6 +368,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(MARKETPLACE_SPACE_ID),
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -384,6 +388,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -397,6 +402,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(MARKETPLACE_SPACE_ID),
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -412,8 +418,7 @@ class ObjectTypeChangeViewModelTest {
 
         // SETUP
 
-        val space = "space-id"
-        stubSpaceManager(space)
+        stubSpaceManager(spaceId)
         val marketplaceType1 = StubObjectType()
         val marketplaceType2 = StubObjectType()
         val marketplaceType3 = StubObjectType(id = MarketplaceObjectTypeIds.PAGE)
@@ -424,7 +429,6 @@ class ObjectTypeChangeViewModelTest {
         val expectedInstalledTypeUniqueKey = ObjectTypeIds.PAGE
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
-            spaces = listOf(space),
             recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
@@ -433,7 +437,6 @@ class ObjectTypeChangeViewModelTest {
         val expectedMarketplaceTypeFilters = buildList {
             addAll(
                 ObjectSearchConstants.filterTypes(
-                    spaces = listOf(MARKETPLACE_SPACE_ID),
                     recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
                 )
             )
@@ -453,6 +456,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMyTypesFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -468,6 +472,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMarketplaceTypeFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -487,7 +492,7 @@ class ObjectTypeChangeViewModelTest {
             onBlocking {
                 val command = Command.AddObjectToSpace(
                     objectId = marketplaceType3.id,
-                    space = space
+                    space = spaceId
                 )
                 addObjectToSpace(command)
             } doReturn Pair(
@@ -513,6 +518,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -547,7 +553,7 @@ class ObjectTypeChangeViewModelTest {
                 addObjectToSpace(
                     Command.AddObjectToSpace(
                         objectId = marketplaceType3.id,
-                        space = space
+                        space = spaceId
                     )
                 )
             }
@@ -563,7 +569,6 @@ class ObjectTypeChangeViewModelTest {
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
-            spaces = listOf(spaceId),
             recommendedLayouts = SupportedLayouts.editorLayouts
         )
 
@@ -582,6 +587,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,

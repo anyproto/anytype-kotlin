@@ -2,11 +2,13 @@ package com.anytypeio.anytype.domain.misc
 
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -32,6 +34,10 @@ class ObjectSearchSubscriptionContainerTest {
 
     private val defaultLimit = 0
     private val defaultOffset = 0L
+
+    private val defaultSpaceId = SpaceId(
+        MockDataFactory.randomUuid()
+    )
 
     private val defaultKeys = listOf(
         Relations.ID,
@@ -85,6 +91,7 @@ class ObjectSearchSubscriptionContainerTest {
         repo.stub {
             onBlocking {
                 searchObjectsWithSubscription(
+                    space = defaultSpaceId,
                     subscription = subscription1,
                     limit = defaultLimit,
                     offset = defaultOffset,
@@ -139,6 +146,7 @@ class ObjectSearchSubscriptionContainerTest {
 
         runTest {
             container.observe(
+                space = defaultSpaceId,
                 subscription1,
                 limit = defaultLimit,
                 offset = defaultOffset,

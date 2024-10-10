@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
@@ -53,6 +54,7 @@ class GetOptions(
             )
         }
         repo.searchObjects(
+            space = SpaceId(params.space),
             sorts = emptyList(),
             filters = filters,
             limit = 0,

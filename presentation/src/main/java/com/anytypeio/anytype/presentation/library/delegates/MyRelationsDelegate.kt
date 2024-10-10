@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -60,17 +61,11 @@ class MyRelationsDelegate @Inject constructor(
 
     private fun buildSearchParams(space: Id): StoreSearchParams {
         return StoreSearchParams(
+            space = SpaceId(space),
             subscription = SUB_LIBRARY_MY_RELATIONS,
             keys = ObjectSearchConstants.defaultRelationKeys,
             filters = buildList {
                 addAll(ObjectSearchConstants.filterMyRelations())
-                add(
-                    DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = space
-                    )
-                )
             }
         )
     }

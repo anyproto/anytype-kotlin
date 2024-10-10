@@ -165,8 +165,7 @@ object HomeScreenModule {
     ): CreateObject = CreateObject(
         repo = repo,
         dispatchers = dispatchers,
-        getDefaultObjectType = getDefaultEditorType,
-        spaceManager = spaceManager
+        getDefaultObjectType = getDefaultEditorType
     )
 
     @JvmStatic
@@ -175,15 +174,11 @@ object HomeScreenModule {
     fun getDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
-        configStorage: ConfigStorage
+        dispatchers: AppCoroutineDispatchers
     ) : GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager,
-        configStorage = configStorage
+        dispatchers = dispatchers
     )
 
     @JvmStatic

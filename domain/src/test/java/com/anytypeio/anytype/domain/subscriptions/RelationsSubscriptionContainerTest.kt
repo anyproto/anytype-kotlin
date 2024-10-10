@@ -172,7 +172,7 @@ class RelationsSubscriptionContainerTest {
         repo.stub {
             onBlocking {
                 searchObjectsWithSubscription(
-                    space = SpaceId(defaultSpaceConfig.space),
+                    space = SpaceId(alternativeSpaceConfig.space),
                     subscription = alternativeSpaceSearchParams.subscription,
                     sorts = alternativeSpaceSearchParams.sorts,
                     filters = alternativeSpaceSearchParams.filters,

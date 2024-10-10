@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ThemeMode
@@ -7,9 +8,16 @@ import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.settings.VaultSettings
 import kotlinx.coroutines.flow.Flow
 
 interface UserSettingsCache {
+
+    suspend fun getVaultSettings(account: Account): VaultSettings
+    suspend fun observeVaultSettings(account: Account): Flow<VaultSettings>
+    suspend fun setVaultSpaceOrder(account: Account, order: List<Id>)
+    suspend fun setVaultSettings(account: Account, settings: VaultSettings)
+
     suspend fun setCurrentSpace(space: SpaceId)
     suspend fun getCurrentSpace(): SpaceId?
     suspend fun clearCurrentSpace()
@@ -35,4 +43,7 @@ interface UserSettingsCache {
     suspend fun getWidgetSession() : WidgetSession
     suspend fun saveWidgetSession(session: WidgetSession)
     suspend fun clear()
+
+    suspend fun getAllContentSort(space: SpaceId): Pair<Id, Boolean>
+    suspend fun setAllContentSort(space: SpaceId, sort: Id, isAsc: Boolean)
 }

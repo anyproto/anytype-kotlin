@@ -17,7 +17,13 @@ object MimeTypes {
         "image/gif",
         "image/avif",
         "image/apng",
-        "image/bmp"
+        "image/bmp",
+        "image/vnd.dwg",
+        "image/x-dwg",
+        "image/tiff",
+        "image/vnd.adobe.photoshop",
+        "application/postscript",
+        "application/illustrator"
     )
 
     private val TEXTS = listOf(
@@ -32,7 +38,8 @@ object MimeTypes {
         "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
         "application/json",
         "application/ld+json",
-        "text/comma-separated-values"
+        "text/comma-separated-values",
+        "text/xml"
     )
 
     private val VIDEOS = listOf(
@@ -43,7 +50,10 @@ object MimeTypes {
         "video/H263",
         "video/mpv",
         "video/ogg",
-        "video/x-msvideo"
+        "video/x-msvideo",
+        "video/x-flv",
+        "video/x-ms-wmv",
+        "video/quicktime"
     )
 
     private val AUDIOS = listOf(
@@ -61,7 +71,8 @@ object MimeTypes {
         "audio/m4a",
         "audio/mp3",
         "audio/x-flac",
-        "audio/flac"
+        "audio/flac",
+        "audio/x-aiff"
     )
 
     private val ARCHIVE = listOf(
@@ -77,17 +88,23 @@ object MimeTypes {
         "application/vnd.rar",
         "application/java-archive",
         "application/x-tar",
-        "application/x-7z-compressed"
+        "application/x-7z-compressed",
+        "application/rar"
     )
 
     private val TABLE = listOf(
         "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/csv"
     )
 
     private val PRESENTATION = listOf(
         "application/vnd.ms-powerpoint",
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.openxmlformats-officedocument.presentationml.template",
+        "application/vnd.ms-powerpoint.template.macroEnabled.12",
+        "application/vnd.ms-powerpoint.addin.macroEnabled.12",
+        "application/pgp-keys"
     )
 
     enum class Category {

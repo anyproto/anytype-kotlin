@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -40,7 +41,6 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
@@ -206,10 +206,10 @@ class CollectionViewModel(
 
     private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
         val params = GetObjectTypes.Params(
+            // TODO DROID-2916 Provide space id to vm params
+            space = SpaceId(spaceManager.get()),
             sorts = emptyList(),
-            filters = ObjectSearchConstants.filterTypes(
-                spaces = listOf(spaceManager.get())
-            ),
+            filters = ObjectSearchConstants.filterTypes(),
             keys = ObjectSearchConstants.defaultKeysObjectType
         )
         return getObjectTypes.asFlow(params).stateIn(viewModelScope)
@@ -247,9 +247,11 @@ class CollectionViewModel(
 
     private suspend fun buildSearchParams(): StoreSearchParams {
         return StoreSearchParams(
+            // TODO DROID-2916 Provide space id to vm params
+            space = SpaceId(spaceManager.get()),
             subscription = subscription.id,
             keys = subscription.keys,
-            filters = subscription.filters(spaceManager.getSpaceWithTechSpace()),
+            filters = subscription.space(spaceManager.get()),
             sorts = subscription.sorts,
             limit = subscription.limit
         )
@@ -273,13 +275,10 @@ class CollectionViewModel(
                             ?.toLong()
                         subscriptionFlow(
                             StoreSearchParams(
+                                space = SpaceId(config.space),
                                 subscription = subscription.id,
                                 keys = subscription.keys,
                                 filters = ObjectSearchConstants.filterTabRecent(
-                                    spaces = buildList {
-                                        add(config.space)
-                                        add(config.techSpace)
-                                    },
                                     spaceCreationDateInSeconds = spaceCreationDateInSeconds
                                 ),
                                 sorts = subscription.sorts,
@@ -820,7 +819,7 @@ class CollectionViewModel(
     fun onHomeClicked() {
         launch {
             analytics.sendScreenHomeEvent()
-            commands.emit(Command.ToDesktop)
+            commands.emit(Command.Vault)
         }
     }
 
@@ -828,6 +827,12 @@ class CollectionViewModel(
         launch {
             analytics.sendScreenHomeEvent()
             commands.emit(Command.Exit)
+        }
+    }
+
+    fun onBackLongClicked() {
+        launch {
+            commands.emit(Command.OpenSpaceSwitcher)
         }
     }
 
@@ -846,7 +851,7 @@ class CollectionViewModel(
 
     fun onProfileClicked() {
         viewModelScope.launch {
-            commands.emit(Command.SelectSpace)
+            commands.emit(Command.Vault)
         }
     }
 
@@ -997,8 +1002,9 @@ class CollectionViewModel(
 
         data object ToDesktop : Command()
         data class ToSearch(val space: Id) : Command()
-        data object SelectSpace : Command()
+        data object Vault : Command()
         data object Exit : Command()
+        data object OpenSpaceSwitcher : Command()
     }
 }
 

@@ -338,12 +338,11 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             advanceUntilIdle()
             verifyBlocking(repo, times(1)) {
                 searchObjectsWithSubscription(
+                    eq(SpaceId(mockObjectSet.spaceId)),
                     eq(mockObjectSet.subscriptionId),
                     eq(listOf()),
                     eq(
-                        mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                            spaces = listOf(spaceConfig.space, spaceConfig.techSpace)
-                        )
+                        mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters()
                     ),
                     eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),
                     eq(listOf(type2.id)),

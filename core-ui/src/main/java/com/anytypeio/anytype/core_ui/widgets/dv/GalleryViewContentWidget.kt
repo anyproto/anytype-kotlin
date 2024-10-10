@@ -219,9 +219,6 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                 is ObjectIcon.None -> {
                                     // Do nothing
                                 }
-                                is ObjectIcon.Basic.Avatar -> {
-                                    // Do nothing
-                                }
                                 is ObjectIcon.Basic.Emoji -> {
                                     try {
                                         val image = ImageView(context)
@@ -341,8 +338,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                 else -> {}
                             }
 
-                            val noIcon =
-                                obj.icon == ObjectIcon.None || obj.icon is ObjectIcon.Basic.Avatar
+                            val noIcon = obj.icon == ObjectIcon.None
 
                             val view = TextView(themeWrapper).apply {
                                 id = generateViewId()

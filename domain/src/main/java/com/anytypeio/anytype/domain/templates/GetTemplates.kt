@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
@@ -29,6 +30,8 @@ class GetTemplates(
         return withContext(dispatchers.io) {
             try {
                 repo.searchObjects(
+                    // TODO provide space id to params
+                    space = SpaceId(spaceManager.get()),
                     filters = listOf(
                         DVFilter(
                             relation = Relations.IS_ARCHIVED,
@@ -49,11 +52,6 @@ class GetTemplates(
                             relation = Relations.TARGET_OBJECT_TYPE,
                             condition = DVFilterCondition.EQUAL,
                             value = params.type.id
-                        ),
-                        DVFilter(
-                            relation = Relations.SPACE_ID,
-                            condition = DVFilterCondition.EQUAL,
-                            value = spaceManager.get()
                         ),
                         DVFilter(
                             relation = Relations.TYPE_UNIQUE_KEY,

@@ -82,21 +82,24 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
 
     private fun observe(command: SplashViewModel.Command) {
         when (command) {
-            is SplashViewModel.Command.NavigateToDashboard -> {
-                try {
+            is SplashViewModel.Command.NavigateToWidgets -> {
+                runCatching {
                     findNavController().navigate(
-                        R.id.action_splashScreen_to_homeScreen,
+                        resId = R.id.actionOpenVaultFromSplash,
                         args = HomeScreenFragment.args(command.deeplink)
                     )
-                } catch (e: Exception) {
-                    Timber.e(e, "Error while opening dashboard from splash screen")
-                    toast("Error while navigating to desktop: ${e.message}")
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        args = HomeScreenFragment.args(command.deeplink)
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigating to widgets from splash")
                 }
             }
             is SplashViewModel.Command.NavigateToVault -> {
                 try {
                     findNavController().navigate(
-                        R.id.action_splashScreen_to_vaultScreen,
+                        resId = R.id.actionOpenVaultFromSplash,
                         args = HomeScreenFragment.args(command.deeplink)
                     )
                     findNavController().navigate(
@@ -112,24 +115,34 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 }
             }
             is SplashViewModel.Command.NavigateToObject -> {
-                findNavController().navigate(R.id.action_splashScreen_to_widgets)
-                findNavController().navigate(
-                    R.id.objectNavigation,
-                    EditorFragment.args(
-                        ctx = command.id,
-                        space = command.space
+                runCatching {
+                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
+                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                    findNavController().navigate(
+                        resId = R.id.objectNavigation,
+                        args = EditorFragment.args(
+                            ctx = command.id,
+                            space = command.space
+                        )
                     )
-                )
+                }.onFailure {
+                    Timber.e(it, "Error while navigating to object from splash")
+                }
             }
             is SplashViewModel.Command.NavigateToObjectSet -> {
-                findNavController().navigate(R.id.action_splashScreen_to_widgets)
-                findNavController().navigate(
-                    R.id.dataViewNavigation,
-                    ObjectSetFragment.args(
-                        ctx = command.id,
-                        space = command.space
+                runCatching {
+                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
+                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                    findNavController().navigate(
+                        resId = R.id.dataViewNavigation,
+                        args = ObjectSetFragment.args(
+                            ctx = command.id,
+                            space = command.space
+                        )
                     )
-                )
+                }.onFailure {
+                    Timber.e(it, "Error while navigating to set-or-collection from splash")
+                }
             }
             is SplashViewModel.Command.NavigateToAuthStart -> {
                 val intent = activity?.intent

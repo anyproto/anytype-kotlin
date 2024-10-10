@@ -12,7 +12,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -20,6 +19,7 @@ import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import javax.inject.Inject
@@ -45,11 +45,12 @@ class CreateObjectTypeViewModel(
 
     val uiState: StateFlow<TypeCreationIconState> = unicodeIconFlow.map { icon ->
         val objectIcon = icon.orNull()?.let {
-            ObjectIcon.from(
-                obj = ObjectWrapper.Basic(mapOf(Relations.ICON_EMOJI to icon)),
-                builder = urlBuilder,
-                layout = ObjectType.Layout.OBJECT_TYPE
-            )
+            ObjectWrapper.Basic(
+                mapOf(
+                    Relations.ICON_EMOJI to icon,
+                    Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble()
+                )
+            ).objectIcon(urlBuilder)
         }
         TypeCreationIconState(
             emojiUnicode = icon,

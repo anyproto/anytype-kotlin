@@ -53,6 +53,7 @@ enum SmartBlockType {
     DevicesObject = 0x218;
     ChatObject = 0x219; // Container for any-store based chats
     ChatDerivedObject = 0x220; // Any-store based object for chat
+    AccountObject = 0x221; // Container for account data in tech space
 }
 
 message Search {
@@ -552,6 +553,10 @@ message Block {
                 Codepen = 16;
                 Bilibili = 17;
                 Excalidraw = 18;
+                Kroki = 19;
+                Graphviz = 20;
+                Sketchfab = 21;
+                Image = 22;
             }
         }
 
@@ -759,6 +764,7 @@ message ObjectType {
         pdf = 20;
         chat = 21;
         chatDerived = 22;
+        tag = 23;
     }
 }
 

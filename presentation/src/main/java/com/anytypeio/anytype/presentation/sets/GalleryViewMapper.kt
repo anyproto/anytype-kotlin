@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.values
@@ -92,11 +93,7 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
         ),
         hideIcon = hideIcon,
         name = obj.getProperName(),
-        icon = ObjectIcon.getEditorLinkToObjectIcon(
-            obj = obj,
-            layout = obj.layout,
-            builder = urlBuilder
-        )
+        icon = obj.objectIcon(urlBuilder)
     )
 }
 
@@ -132,11 +129,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
         ),
         hideIcon = dvViewer.hideIcon,
         name = obj.getProperName(),
-        icon = ObjectIcon.getEditorLinkToObjectIcon(
-            obj = obj,
-            layout = obj.layout,
-            builder = urlBuilder
-        ),
+        icon = obj.objectIcon(urlBuilder),
         cover = cover,
         fitImage = dvViewer.coverFit,
         isLargeSize = isLargeSize

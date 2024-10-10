@@ -8,11 +8,13 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectTypeView
@@ -56,12 +58,9 @@ class LimitObjectTypeViewModel(
         viewModelScope.launch {
             searchObjects(
                 SearchObjects.Params(
+                    // TODO DROID-2916 Provide space id to vm params
+                    space = SpaceId(spaceManager.get()),
                     filters = listOf(
-                        DVFilter(
-                            relation = Relations.SPACE_ID,
-                            condition = DVFilterCondition.EQUAL,
-                            value = spaceManager.get()
-                        ),
                         DVFilter(
                             relation = Relations.LAYOUT,
                             condition = DVFilterCondition.EQUAL,
@@ -107,11 +106,7 @@ class LimitObjectTypeViewModel(
                                 id = t.id,
                                 title = t.name.orEmpty(),
                                 subtitle = t.description,
-                                icon = ObjectIcon.from(
-                                    obj = t,
-                                    layout = t.layout,
-                                    builder = urlBuilder
-                                )
+                                icon = t.objectIcon(urlBuilder)
                             ),
                             isSelected = limitObjectTypes.map { it.id }.contains(t.id)
                         )

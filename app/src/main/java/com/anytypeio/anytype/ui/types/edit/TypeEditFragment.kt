@@ -109,6 +109,11 @@ class TypeEditFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        vm.onStart(isReadOnly = readOnly)
+    }
+
     override fun injectDependencies() {
         componentManager().typeEditComponent.get(
             TypeEditParameters(

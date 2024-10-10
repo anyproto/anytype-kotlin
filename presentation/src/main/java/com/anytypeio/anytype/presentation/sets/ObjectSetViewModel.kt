@@ -62,7 +62,6 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -488,12 +487,12 @@ class ObjectSetViewModel(
                         Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
                         if (query.state.isInitialized) {
                             dataViewSubscription.startObjectCollectionSubscription(
+                                space = vmParams.space.id,
+                                context = vmParams.ctx,
                                 collection = vmParams.ctx,
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                context = vmParams.ctx,
-                                spaces = spaceManager.getSpaceWithTechSpace(space = vmParams.space.id),
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
@@ -505,11 +504,11 @@ class ObjectSetViewModel(
                         Timber.d("subscribeToObjectState, NEW SET STATE")
                         if (query.state.isInitialized) {
                             dataViewSubscription.startObjectSetSubscription(
+                                space = vmParams.space.id,
+                                context = vmParams.ctx,
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                context = context,
-                                spaces = spaceManager.getSpaceWithTechSpace(vmParams.space.id),
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
@@ -1606,10 +1605,10 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
             closeBlock.async(context).fold(
-                onSuccess = { dispatch(AppNavigation.Command.ExitToDesktop) },
+                onSuccess = { dispatch(AppNavigation.Command.ExitToVault) },
                 onFailure = {
                     Timber.e(it, "Error while closing object set: $context").also {
-                        dispatch(AppNavigation.Command.ExitToDesktop)
+                        dispatch(AppNavigation.Command.ExitToVault)
                     }
                 }
             )
@@ -2132,10 +2131,10 @@ class ObjectSetViewModel(
 
     private suspend fun fetchAndProcessObjectTypes(selectedType: Id, widgetState: TypeTemplatesWidgetUI.Data) {
         val filters = ObjectSearchConstants.filterTypes(
-            spaces = listOf(vmParams.space.id),
             recommendedLayouts = SupportedLayouts.createObjectLayouts
         )
         val params = GetObjectTypes.Params(
+            space = vmParams.space,
             filters = filters,
             keys = ObjectSearchConstants.defaultKeysObjectType
         )

@@ -94,6 +94,7 @@ interface ActiveSpaceMemberSubscriptionContainer {
                     .flatMapLatest { config ->
                         container.subscribe(
                             StoreSearchParams(
+                                space = SpaceId(config.space),
                                 subscription = GLOBAL_SUBSCRIPTION,
                                 filters = buildList {
                                     add(
@@ -101,13 +102,6 @@ interface ActiveSpaceMemberSubscriptionContainer {
                                             relation = Relations.LAYOUT,
                                             value = ObjectType.Layout.PARTICIPANT.code.toDouble(),
                                             condition = DVFilterCondition.EQUAL
-                                        )
-                                    )
-                                    add(
-                                        DVFilter(
-                                            relation = Relations.SPACE_ID,
-                                            condition = DVFilterCondition.EQUAL,
-                                            value = config.space
                                         )
                                     )
                                 },

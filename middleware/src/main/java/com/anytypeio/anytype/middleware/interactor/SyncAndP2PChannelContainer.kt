@@ -25,8 +25,8 @@ class SyncAndP2PStatusEventsStoreImpl(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : SyncAndP2PStatusEventsStore {
 
-    private val _p2pStatus = MutableStateFlow<MutableMap<Id, P2PStatusUpdate>>(mutableMapOf())
-    private val _syncStatus = MutableStateFlow<MutableMap<Id, SpaceSyncUpdate>>(mutableMapOf())
+    private val _p2pStatus = MutableStateFlow<Map<Id, P2PStatusUpdate>>(emptyMap())
+    private val _syncStatus = MutableStateFlow<Map<Id, SpaceSyncUpdate>>(emptyMap())
 
     override val p2pStatus: Flow<Map<Id, P2PStatusUpdate>> get() = _p2pStatus
     override val syncStatus: Flow<Map<Id, SpaceSyncUpdate>> get() = _syncStatus
@@ -62,8 +62,7 @@ class SyncAndP2PStatusEventsStoreImpl(
             devicesCounter = update.devicesCounter
         )
         _p2pStatus.update { currentMap ->
-            currentMap[update.spaceId] = p2pUpdate
-            currentMap
+            currentMap + (update.spaceId to p2pUpdate)
         }
     }
 
@@ -77,8 +76,7 @@ class SyncAndP2PStatusEventsStoreImpl(
         )
 
         _syncStatus.update { currentMap ->
-            currentMap[update.id] = syncUpdate
-            currentMap
+            currentMap + (update.id to syncUpdate)
         }
     }
 }

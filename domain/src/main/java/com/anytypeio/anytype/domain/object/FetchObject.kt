@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -28,7 +29,8 @@ class FetchObject @Inject constructor(
                 )
             },
             limit = 1,
-            keys = params.keys
+            keys = params.keys,
+            space = params.space
         )
         return if (result.isNotEmpty() && result.first().isNotEmpty()) {
             ObjectWrapper.Basic(result.first())
@@ -38,6 +40,7 @@ class FetchObject @Inject constructor(
     }
 
     data class Params(
+        val space: SpaceId,
         val obj: Id,
         val keys: List<Key> = listOf(
             Relations.ID,

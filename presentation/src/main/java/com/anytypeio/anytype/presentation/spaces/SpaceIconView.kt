@@ -1,12 +1,17 @@
 package com.anytypeio.anytype.presentation.spaces
 
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 
 sealed class SpaceIconView {
     data object Loading : SpaceIconView()
-    data object Placeholder : SpaceIconView()
+    data class Placeholder(
+        val color: SystemColor = SystemColor.YELLOW,
+        val name: String = ""
+    ): SpaceIconView()
+    @Deprecated("To be deleted")
     class Gradient(val from: String, val to: String) : SpaceIconView()
     data class Image(val url: Url) : SpaceIconView()
 }
@@ -20,12 +25,19 @@ fun ObjectWrapper.Basic.spaceIcon(
         SpaceIconView.Image(builder.thumbnail(hash))
     }
     iconOption != null -> {
-        iconOption?.let {
-            val gradient = spaceGradientProvider.get(it)
-            SpaceIconView.Gradient(gradient.from, gradient.to)
-        } ?: SpaceIconView.Placeholder
+        SpaceIconView.Placeholder(
+            name = name.orEmpty(),
+            color = iconOption?.let {
+                SystemColor.color(
+                    idx = it.toInt()
+                )
+            } ?: SystemColor.YELLOW
+        )
     }
-    else -> SpaceIconView.Placeholder
+    else -> SpaceIconView.Placeholder(
+        name = name.orEmpty(),
+        color = SystemColor.YELLOW
+    )
 }
 
 fun ObjectWrapper.SpaceView.spaceIcon(
@@ -37,10 +49,17 @@ fun ObjectWrapper.SpaceView.spaceIcon(
         SpaceIconView.Image(builder.medium(hash))
     }
     iconOption != null -> {
-        iconOption?.let {
-            val gradient = spaceGradientProvider.get(it)
-            SpaceIconView.Gradient(gradient.from, gradient.to)
-        } ?: SpaceIconView.Placeholder
+        SpaceIconView.Placeholder(
+            name = name.orEmpty(),
+            color = iconOption?.let {
+                SystemColor.color(
+                    idx = it.toInt()
+                )
+            } ?: SystemColor.YELLOW
+        )
     }
-    else -> SpaceIconView.Placeholder
+    else -> SpaceIconView.Placeholder(
+        name = name.orEmpty(),
+        color = SystemColor.YELLOW
+    )
 }

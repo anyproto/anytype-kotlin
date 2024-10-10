@@ -3,16 +3,14 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -20,6 +18,7 @@ import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -220,7 +219,7 @@ class DataViewListWidgetContainer(
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
                         objectIcon = if (withIcon) {
-                            obj.widgetElementIcon(
+                            obj.objectIcon(
                                 builder = urlBuilder
                             )
                         } else {
@@ -266,7 +265,7 @@ class DataViewListWidgetContainer(
                 elements = objects.map { obj ->
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
-                        objectIcon = obj.widgetElementIcon(builder = urlBuilder)
+                        objectIcon = obj.objectIcon(builder = urlBuilder)
                     )
                 },
                 isExpanded = true,
@@ -319,6 +318,7 @@ fun ObjectView.parseDataViewStoreSearchParams(
     val dataViewKeys = dv.relationLinks.map { it.key }
     val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
     return StoreSearchParams(
+        space = SpaceId(config.space),
         subscription =subscription,
         sorts = view.sorts,
         keys = buildList {
@@ -329,27 +329,7 @@ fun ObjectView.parseDataViewStoreSearchParams(
         filters = buildList {
             addAll(view.filters)
             addAll(
-                ObjectSearchConstants.defaultDataViewFilters(
-                    spaces = buildList {
-                        add(config.space)
-                        add(config.techSpace)
-                    }
-                )
-            )
-            add(
-                DVFilter(
-                    relation = Relations.TYPE_UNIQUE_KEY,
-                    condition = DVFilterCondition.NOT_IN,
-                    value = listOf(
-                        ObjectTypeIds.OBJECT_TYPE,
-                        ObjectTypeIds.RELATION,
-                        ObjectTypeIds.TEMPLATE,
-                        ObjectTypeIds.DASHBOARD,
-                        ObjectTypeIds.RELATION_OPTION,
-                        ObjectTypeIds.DASHBOARD,
-                        ObjectTypeIds.DATE
-                    )
-                ),
+                ObjectSearchConstants.defaultDataViewFilters()
             )
         },
         limit = limit,

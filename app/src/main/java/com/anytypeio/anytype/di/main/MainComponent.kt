@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.main
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.common.ComponentDependenciesKey
+import com.anytypeio.anytype.di.feature.AllContentDependencies
 import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
 import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
 import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
@@ -128,6 +129,7 @@ interface MainComponent :
     GlobalSearchDependencies,
     MembershipUpdateComponentDependencies,
     VaultComponentDependencies,
+    AllContentDependencies,
     DiscussionComponentDependencies
 {
 
@@ -359,4 +361,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(VaultComponentDependencies::class)
     abstract fun provideVaultComponentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(AllContentDependencies::class)
+    abstract fun provideAllContentDependencies(component: MainComponent): ComponentDependencies
 }

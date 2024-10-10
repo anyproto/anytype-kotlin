@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -46,7 +47,8 @@ interface SpaceViewSubscriptionContainer {
         private val scope: CoroutineScope,
         private val dispatchers: AppCoroutineDispatchers,
         private val awaitAccountStart: AwaitAccountStartManager,
-        private val logger: Logger
+        private val logger: Logger,
+        private val config: ConfigStorage
     ) : SpaceViewSubscriptionContainer {
 
         private val data = MutableStateFlow<List<ObjectWrapper.SpaceView>>(emptyList())
@@ -90,68 +92,77 @@ interface SpaceViewSubscriptionContainer {
 
         override fun start() {
             jobs += scope.launch(dispatchers.io) {
-                container.subscribe(
-                    StoreSearchParams(
-                        subscription = GLOBAL_SUBSCRIPTION,
-                        keys = listOf(
-                            Relations.ID,
-                            Relations.TARGET_SPACE_ID,
-                            Relations.SPACE_ACCOUNT_STATUS,
-                            Relations.SPACE_LOCAL_STATUS,
-                            Relations.SPACE_ACCESS_TYPE,
-                            Relations.SHARED_SPACES_LIMIT,
-                            Relations.READERS_LIMIT,
-                            Relations.WRITERS_LIMIT,
-                            Relations.NAME,
-                            Relations.CREATED_DATE,
-                            Relations.CREATOR,
-                            Relations.ICON_IMAGE,
-                            Relations.ICON_OPTION,
+                val techSpace = config.getOrNull()?.techSpace
+                if (techSpace != null) {
+                    proceedWithSubscription(techSpace)
+                } else {
+                    logger.logException(IllegalStateException("Tech space was missing"))
+                }
+            }
+        }
+
+        private suspend fun proceedWithSubscription(techSpace: Id) {
+            container.subscribe(
+                StoreSearchParams(
+                    space = SpaceId(techSpace),
+                    subscription = GLOBAL_SUBSCRIPTION,
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.TARGET_SPACE_ID,
+                        Relations.SPACE_ACCOUNT_STATUS,
+                        Relations.SPACE_LOCAL_STATUS,
+                        Relations.SPACE_ACCESS_TYPE,
+                        Relations.SHARED_SPACES_LIMIT,
+                        Relations.READERS_LIMIT,
+                        Relations.WRITERS_LIMIT,
+                        Relations.NAME,
+                        Relations.CREATED_DATE,
+                        Relations.CREATOR,
+                        Relations.ICON_IMAGE,
+                        Relations.ICON_OPTION,
+                    ),
+                    filters = listOf(
+                        DVFilter(
+                            relation = Relations.LAYOUT,
+                            value = ObjectType.Layout.SPACE_VIEW.code.toDouble(),
+                            condition = DVFilterCondition.EQUAL
                         ),
-                        filters = listOf(
-                            DVFilter(
-                                relation = Relations.LAYOUT,
-                                value = ObjectType.Layout.SPACE_VIEW.code.toDouble(),
-                                condition = DVFilterCondition.EQUAL
-                            ),
-                            DVFilter(
-                                relation = Relations.SPACE_ACCOUNT_STATUS,
-                                value = buildList {
-                                    add(SpaceStatus.SPACE_DELETED.code.toDouble())
-                                },
-                                condition = DVFilterCondition.NOT_IN
-                            ),
-                            DVFilter(
-                                relation = Relations.SPACE_LOCAL_STATUS,
-                                value = buildList {
-                                    add(SpaceStatus.OK.code.toDouble())
-                                    add(SpaceStatus.UNKNOWN.code.toDouble())
-                                },
-                                condition = DVFilterCondition.IN
-                            )
+                        DVFilter(
+                            relation = Relations.SPACE_ACCOUNT_STATUS,
+                            value = buildList {
+                                add(SpaceStatus.SPACE_DELETED.code.toDouble())
+                            },
+                            condition = DVFilterCondition.NOT_IN
                         ),
-                        sorts = listOf(
-                            DVSort(
-                                relationKey = Relations.LAST_OPENED_DATE,
-                                type = DVSortType.DESC,
-                                includeTime = true,
-                                relationFormat = RelationFormat.DATE
-                            )
+                        DVFilter(
+                            relation = Relations.SPACE_LOCAL_STATUS,
+                            value = buildList {
+                                add(SpaceStatus.OK.code.toDouble())
+                                add(SpaceStatus.UNKNOWN.code.toDouble())
+                            },
+                            condition = DVFilterCondition.IN
+                        )
+                    ),
+                    sorts = listOf(
+                        DVSort(
+                            relationKey = Relations.LAST_OPENED_DATE,
+                            type = DVSortType.DESC,
+                            includeTime = true,
+                            relationFormat = RelationFormat.DATE
                         )
                     )
-                ).map { objects ->
-                    objects.map { obj ->
-                        ObjectWrapper.SpaceView(obj.map)
-                    }
-                }.catch { error ->
-                    logger.logException(
-                        e = error,
-                        msg = "Failed to subscribe to space-views"
-                    )
+                )
+            ).map { objects ->
+                objects.map { obj ->
+                    ObjectWrapper.SpaceView(obj.map)
                 }
-                    .collect {
-                        data.value = it
-                    }
+            }.catch { error ->
+                logger.logException(
+                    e = error,
+                    msg = "Failed to subscribe to space-views"
+                )
+            }.collect {
+                data.value = it
             }
         }
 

@@ -41,6 +41,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
@@ -291,12 +292,7 @@ fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder): ObjectView.
     return ObjectView.Default(
         id = id,
         name = getProperName(),
-        icon = ObjectIcon.from(
-            obj = this,
-            layout = layout,
-            builder = urlBuilder,
-            objectTypeNoIcon = true
-        ),
+        icon = this.objectIcon(builder = urlBuilder),
         types = type,
         isRelation = layout == ObjectType.Layout.RELATION
     )

@@ -56,9 +56,12 @@ class GetDefaultObjectType @Inject constructor(
 
     private suspend fun fetchDefaultType(): Response {
         val structs = blockRepository.searchObjects(
+            // TODO DROID-2916 move space id to use case params
+            space = SpaceId(spaceManager.get()),
             limit = 1,
             fulltext = NO_VALUE,
             filters = buildList {
+                // TODO DROID-2916 might need to delete this filter
                 add(
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
@@ -66,19 +69,6 @@ class GetDefaultObjectType @Inject constructor(
                         value = ObjectTypeUniqueKeys.NOTE
                     )
                 )
-                val space = spaceManager.get().ifEmpty {
-                    // Fallback to default space.
-                    configStorage.getOrNull()?.space
-                }
-                if (!space.isNullOrEmpty()) {
-                    add(
-                        DVFilter(
-                            relation = Relations.SPACE_ID,
-                            condition = DVFilterCondition.EQUAL,
-                            value = space
-                        )
-                    )
-                }
             },
             offset = 0,
             sorts = emptyList(),
@@ -110,10 +100,11 @@ class GetDefaultObjectType @Inject constructor(
         space: SpaceId
     ): ObjectWrapper.Type? {
         val structs = blockRepository.searchObjects(
+            space = space,
             limit = 1,
             fulltext = NO_VALUE,
             filters = buildList {
-                addAll(filterObjectTypeLibrary(space))
+                addAll(filterObjectTypeLibrary())
                 add(
                     DVFilter(
                         relation = Relations.ID,
@@ -135,7 +126,7 @@ class GetDefaultObjectType @Inject constructor(
         return structs.firstOrNull()?.mapToObjectWrapperType()
     }
 
-    private fun filterObjectTypeLibrary(space: SpaceId) = listOf(
+    private fun filterObjectTypeLibrary() = listOf(
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
@@ -157,11 +148,6 @@ class GetDefaultObjectType @Inject constructor(
             value = true
         ),
         DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space.id
-        ),
-        DVFilter(
             relation = Relations.RESTRICTIONS,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE.code.toDouble())
@@ -169,7 +155,7 @@ class GetDefaultObjectType @Inject constructor(
     )
 
     /**
-     * TODO provide space to params
+     * TODO DROID-2916 provide space to params
      */
     data class Response(
         val id: TypeId,

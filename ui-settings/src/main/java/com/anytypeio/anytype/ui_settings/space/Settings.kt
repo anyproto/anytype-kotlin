@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -310,7 +309,7 @@ fun SpaceSettingsScreenPreview() {
                 createdBy = "1235",
                 network = "332311313131flsdklfksdlkfksdlkfksdlkflasd324213432432",
                 name = "Dream team",
-                icon = SpaceIconView.Placeholder,
+                icon = SpaceIconView.Placeholder(),
                 isDeletable = true,
                 spaceType = DEFAULT_SPACE_TYPE,
                 permissions = SpaceMemberPermissions.OWNER,

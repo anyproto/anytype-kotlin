@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -291,10 +290,7 @@ private fun GroupItem(
                     .size(24.dp)
                     .align(Alignment.CenterVertically),
                 icon = item.icon!!,
-                iconSize = 24.dp,
-                avatarFontSize = 16.sp,
-                avatarBackgroundColor = R.color.shape_tertiary,
-                avatarTextStyle = VersionHistoryAvatarTextStyle()
+                iconSize = 24.dp
             )
         }
     }
@@ -333,10 +329,7 @@ private fun RowScope.HeaderIcons(
                         ListWidgetObjectIcon(
                             modifier = Modifier.size(24.dp),
                             icon = icon,
-                            iconSize = 24.dp,
-                            avatarFontSize = 16.sp,
-                            avatarBackgroundColor = R.color.shape_tertiary,
-                            avatarTextStyle = VersionHistoryAvatarTextStyle()
+                            iconSize = 24.dp
                         )
                     }
                 }

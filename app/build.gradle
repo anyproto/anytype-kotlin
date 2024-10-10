@@ -162,6 +162,7 @@ dependencies {
     implementation project(':payments')
     implementation project(':feature-discussions')
     implementation project(':gallery-experience')
+    implementation project(':feature-all-content')
 
     //Compile time dependencies
     ksp libs.daggerCompiler
@@ -197,6 +198,7 @@ dependencies {
     implementation libs.lifecycleCompose
 
     implementation libs.compose
+    implementation libs.fragmentCompose
     implementation libs.composeFoundation
     implementation libs.composeMaterial
     implementation libs.composeMaterial3

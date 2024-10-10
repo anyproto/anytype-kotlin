@@ -338,6 +338,7 @@ class BlockMiddleware(
     )
 
     override suspend fun searchObjects(
+        space: SpaceId,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         fulltext: String,
@@ -345,6 +346,7 @@ class BlockMiddleware(
         limit: Int,
         keys: List<Id>
     ): List<Map<String, Any?>> = middleware.objectSearch(
+        space = space,
         sorts = sorts,
         filters = filters,
         fulltext = fulltext,
@@ -358,6 +360,7 @@ class BlockMiddleware(
     ): List<Command.SearchWithMeta.Result> = middleware.objectSearchWithMeta(command)
 
     override suspend fun searchObjectsWithSubscription(
+        space: SpaceId,
         subscription: Id,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
@@ -371,6 +374,7 @@ class BlockMiddleware(
         noDepSubscription: Boolean?,
         collection: Id?
     ): SearchResult = middleware.objectSearchSubscribe(
+        space = space,
         subscription = subscription,
         sorts = sorts,
         filters = filters,

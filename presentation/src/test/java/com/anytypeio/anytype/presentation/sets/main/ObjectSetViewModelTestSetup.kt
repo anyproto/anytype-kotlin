@@ -30,7 +30,6 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -106,7 +105,7 @@ import org.mockito.kotlin.stub
 open class ObjectSetViewModelTestSetup {
 
     val root: Id = "context-${RandomString.make()}"
-    val defaultSpace = MockDataFactory.randomUuid()
+    val defaultSpace = "DEFAULT_SPACE_ID"
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
@@ -248,7 +247,6 @@ open class ObjectSetViewModelTestSetup {
         spaceManager = SpaceManager.Impl(
             repo = repo,
             dispatchers = dispatchers,
-            configStorage = ConfigStorage.CacheStorage(),
             logger = mock()
         )
         dataViewSubscriptionContainer = DataViewSubscriptionContainer(
@@ -370,7 +368,9 @@ open class ObjectSetViewModelTestSetup {
 
     suspend fun stubSpaceManager(space: Id) {
         repo.stub {
-            onBlocking { getSpaceConfig(space) } doReturn spaceConfig
+            onBlocking { getSpaceConfig(space) } doReturn spaceConfig.copy(
+                space = space
+            )
             spaceManager.set(space)
         }
     }
@@ -413,11 +413,10 @@ open class ObjectSetViewModelTestSetup {
                 dependencies = dependencies
             )
         ).`when`(repo).searchObjectsWithSubscription(
+            space = SpaceId(spaceId),
             subscription = subscription,
             collection = collection,
-            filters = dvFilters.updateFormatForSubscription(dvRelationLinks) + ObjectSearchConstants.defaultDataViewFilters(
-                spaces = listOf(spaceConfig.space, spaceConfig.techSpace)
-            ),
+            filters = dvFilters.updateFormatForSubscription(dvRelationLinks) + ObjectSearchConstants.defaultDataViewFilters(),
             sorts = dvSorts,
             keys = dvKeys,
             source = sources,

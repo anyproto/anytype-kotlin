@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectOrigin
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -83,19 +85,11 @@ class SelectObjectTypeViewModel(
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 val types = getObjectTypes.stream(
                     GetObjectTypes.Params(
+                        // TODO DROID-2916 Merge with marketplace object types query results
+                        space = vmParams.space,
                         sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                         filters = ObjectSearchConstants.filterTypes(
-                            spaces = buildList {
-                                add(vmParams.space.id)
-                                if (query.isNotEmpty()) {
-                                    add(Marketplace.MARKETPLACE_SPACE_ID)
-                                }
-                            },
-                            recommendedLayouts = buildList {
-                                addAll(SupportedLayouts.createObjectLayouts)
-                                // TODO DROID-2635 Remove when not needed
-                                add(ObjectType.Layout.CHAT)
-                            },
+                            recommendedLayouts = SupportedLayouts.createObjectLayouts,
                             excludedTypeKeys = vmParams.excludedTypeKeys
                         ),
                         keys = ObjectSearchConstants.defaultKeysObjectType,
@@ -450,6 +444,19 @@ class SelectObjectTypeViewModel(
                     Timber.d(it, "Error while creating note")
                     sendToast("Error while creating note: ${it.msg()}")
                 }
+            )
+        }
+    }
+
+    fun onResume() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenVault,
+                props = Props(
+                    map = mapOf(
+                        EventsPropertiesKey.type to EventsDictionary.Type.menu
+                    )
+                )
             )
         }
     }

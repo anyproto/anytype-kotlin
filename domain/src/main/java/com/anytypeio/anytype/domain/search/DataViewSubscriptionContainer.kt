@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.SubscriptionEvent
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.`object`.move
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.runCatchingL
@@ -38,6 +39,7 @@ class DataViewSubscriptionContainer(
     fun observe(params: Params): Flow<DataViewState> {
         return flow {
             val initial = repo.searchObjectsWithSubscription(
+                space = params.space,
                 subscription = params.subscription,
                 sorts = params.sorts.distinct(),
                 filters = params.filters.distinct(),
@@ -183,6 +185,7 @@ class DataViewSubscriptionContainer(
     }
 
     data class Params(
+        val space: SpaceId,
         val subscription: Id,
         val sorts: List<DVSort>,
         val filters: List<DVFilter>,

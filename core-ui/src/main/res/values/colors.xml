@@ -122,6 +122,7 @@
     <color name="background_secondary">#FFFFFF</color>
     <color name="background_highlighted">#144F4F4F</color>
     <color name="background_highlighted_light">#0A4F4F4F</color>
+    <color name="background_highlighted_medium">#4F4F4F</color>
     <color name="background_multiplayer_request">#252525</color>
 
     <color name="shape_primary">#E3E3E3</color>
@@ -206,7 +207,8 @@
     <color name="object_loading_state_gradient_end_color">#F1F0ED</color>
 
     <color name="widget_button">#A6FFFFFF</color>
-    <color name="home_screen_button">#CC2C2B27</color>
+    <color name="widgets_edit_mode_button">#CC2C2B27</color>
+    <color name="home_screen_toolbar_button">#F2F0F0F0</color>
     <color name="set_new_btn_text">#FFFFFF</color>
 
     <color name="colorPrimary">#FF5722</color>

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.data.auth.event.EventProcessImportRemoteChannel
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.workspace.EventProcessImportChannel
@@ -85,4 +86,5 @@ interface GalleryInstallationComponentDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun userPermissionProvider(): UserPermissionProvider
     fun eventProxy(): EventProxy
+    fun configStorage(): ConfigStorage
 }

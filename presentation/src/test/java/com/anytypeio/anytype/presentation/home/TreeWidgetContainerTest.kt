@@ -304,21 +304,21 @@ class TreeWidgetContainerTest {
                                 obj = sourceLinks[0],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = false),
-                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[0].name.orEmpty())
+                                objectIcon = ObjectIcon.Empty.Page,
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
                                 obj = sourceLinks[1],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[1].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[1].name.orEmpty())
+                                objectIcon = ObjectIcon.Empty.Page,
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
                                 obj = sourceLinks[2],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[2].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[2].name.orEmpty())
+                                objectIcon = ObjectIcon.Empty.Page,
                             )
                         ),
                         isExpanded = true
@@ -338,42 +338,42 @@ class TreeWidgetContainerTest {
                                 obj = sourceLinks[0],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = true),
-                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[0].name.orEmpty())
+                                objectIcon = ObjectIcon.Empty.Page,
                             ),
                             WidgetView.Tree.Element(
                                 indent = 1,
                                 obj = linkA1,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA1.id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Basic.Avatar(linkA1.name.orEmpty())
+                                objectIcon = ObjectIcon.Empty.Page,
                             ),
                             WidgetView.Tree.Element(
                                 indent = 1,
                                 obj = linkA2,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA2.id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Basic.Avatar(linkA2.name.orEmpty())
+                                objectIcon = ObjectIcon.Empty.Page,
                             ),
                             WidgetView.Tree.Element(
                                 indent = 1,
                                 obj = linkA3,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA3.id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Basic.Avatar(linkA3.name.orEmpty())
+                                objectIcon = ObjectIcon.Empty.Page,
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
                                 obj = sourceLinks[1],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[1].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[1].name.orEmpty())
+                                objectIcon = ObjectIcon.Empty.Page,
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
                                 obj = sourceLinks[2],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[2].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Basic.Avatar(sourceLinks[2].name.orEmpty())
+                                objectIcon = ObjectIcon.Empty.Page,
                             )
                         ),
                         isExpanded = true

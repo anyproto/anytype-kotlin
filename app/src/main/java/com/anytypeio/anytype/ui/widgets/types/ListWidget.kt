@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.Widget
@@ -158,11 +159,10 @@ fun CompactListWidgetList(
                             Modifier
                     )
             ) {
-                TreeWidgetObjectIcon(
+                ListWidgetObjectIcon(
+                    iconSize = 18.dp,
                     icon = element.objectIcon,
-                    paddingStart = 8.dp,
-                    paddingEnd = 4.dp,
-                    modifier = Modifier.align(Alignment.CenterVertically),
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(start = 8.dp, end = 4.dp),
                     onTaskIconClicked = { isChecked ->
                         onObjectCheckboxClicked(element.obj.id, isChecked)
                     }

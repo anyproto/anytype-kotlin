@@ -137,7 +137,6 @@ class ObjectIconWidget @JvmOverloads constructor(
         when (icon) {
             is ObjectIcon.Basic.Emoji -> setEmoji(icon.unicode)
             is ObjectIcon.Basic.Image -> setRectangularImage(icon.hash)
-            is ObjectIcon.Basic.Avatar -> setBasicInitials(icon.name)
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
             is ObjectIcon.Task -> setTask(icon.isChecked)
@@ -145,10 +144,12 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.None -> removeIcon()
             is ObjectIcon.File -> setFileImage(
                 mime = icon.mime,
-                fileName = icon.fileName
+                fileName = icon.fileName,
+                extension = icon.extensions
             )
             ObjectIcon.Deleted -> setDeletedIcon()
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
+            is ObjectIcon.Empty -> icon.setEmptyIcon()
         }
     }
 
@@ -180,27 +181,9 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.setImageDrawable(null)
             ivBookmark.gone()
             initialContainer.visible()
-            composeView.gone()
             initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
             initial.setTextColor(context.color(R.color.text_white))
             initial.setHintTextColor(context.color(R.color.text_white))
-            initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
-        }
-    }
-
-    private fun setBasicInitials(name: String) {
-        val textColor = context.color(R.color.text_tertiary)
-        with(binding) {
-            ivImage.invisible()
-            emojiContainer.invisible()
-            ivCheckbox.invisible()
-            ivBookmark.setImageDrawable(null)
-            ivBookmark.gone()
-            initialContainer.visible()
-            composeView.gone()
-            initialContainer.setBackgroundResource(R.drawable.object_in_list_background_basic_initial)
-            initial.setTextColor(textColor)
-            initial.setHintTextColor(textColor)
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
         }
     }
@@ -214,7 +197,6 @@ class ObjectIconWidget @JvmOverloads constructor(
                 ivBookmark.setImageDrawable(null)
                 ivBookmark.gone()
                 emojiContainer.visible()
-                composeView.gone()
             }
             try {
                 val adapted = Emojifier.safeUri(emoji)
@@ -238,8 +220,8 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    private fun setFileImage(mime: String?, fileName: String?) {
-        val icon = mime.getMimeIcon(fileName)
+    private fun setFileImage(mime: String?, fileName: String?, extension: String?) {
+        val icon = mime.getMimeIcon(extension)
         with(binding) {
             ivImage.visible()
             ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
@@ -248,7 +230,6 @@ class ObjectIconWidget @JvmOverloads constructor(
             initialContainer.invisible()
             ivBookmark.invisible()
             emojiContainer.invisible()
-            composeView.gone()
         }
     }
 
@@ -262,7 +243,6 @@ class ObjectIconWidget @JvmOverloads constructor(
                 ivBookmark.setImageDrawable(null)
                 ivBookmark.gone()
                 ivImage.setCircularShape()
-                composeView.gone()
                 if (isImageWithCorners) {
                     ivImage.setStrokeWidthResource(R.dimen.dp_2)
                     ivImage.strokeColor =
@@ -289,7 +269,6 @@ class ObjectIconWidget @JvmOverloads constructor(
                 ivBookmark.setImageDrawable(null)
                 ivImage.visible()
                 ivImage.setCorneredShape(imageCornerRadius)
-                composeView.gone()
                 if (isImageWithCorners) {
                     ivImage.setStrokeWidthResource(R.dimen.dp_2)
                     ivImage.strokeColor =
@@ -308,7 +287,6 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     fun setImageDrawable(drawable: Drawable) {
         with(binding) {
-            composeView.gone()
             ivCheckbox.invisible()
             initialContainer.invisible()
             ivImage.invisible()
@@ -321,7 +299,6 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     fun setTask(isChecked: Boolean?) {
         with(binding) {
-            composeView.gone()
             ivCheckbox.visible()
             ivCheckbox.background = context.drawable(R.drawable.ic_data_view_grid_checkbox_selector)
             ivCheckbox.isActivated = isChecked ?: false
@@ -335,7 +312,6 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     private fun setCheckbox(isChecked: Boolean?) {
         with(binding) {
-            composeView.gone()
             ivCheckbox.background = context.drawable(R.drawable.ic_relation_checkbox_selector)
             ivCheckbox.scaleType = ImageView.ScaleType.CENTER_CROP
             ivCheckbox.visible()
@@ -350,7 +326,6 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     private fun setBookmark(image: Url) {
         with(binding) {
-            composeView.gone()
             ivCheckbox.invisible()
             initialContainer.invisible()
             emojiContainer.invisible()
@@ -366,12 +341,10 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     private fun removeIcon() {
         with(binding) {
-            composeView.gone()
             ivEmoji.setImageDrawable(null)
             ivImage.setImageDrawable(null)
             ivBookmark.setImageDrawable(null)
             ivCheckbox.invisible()
-            binding.composeView.gone()
         }
     }
 
@@ -385,7 +358,26 @@ class ObjectIconWidget @JvmOverloads constructor(
             initialContainer.invisible()
             ivBookmark.invisible()
             emojiContainer.invisible()
-            composeView.gone()
+        }
+    }
+
+    private fun ObjectIcon.Empty.setEmptyIcon() {
+        val drawable = when (this) {
+            ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link
+            ObjectIcon.Empty.Discussion -> R.drawable.ic_empty_state_chat
+            ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list
+            ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type
+            ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page
+        }
+        val icon = context.drawable(drawable)
+        with(binding) {
+            ivEmoji.setImageDrawable(icon)
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            ivImage.invisible()
+            ivBookmark.setImageDrawable(null)
+            ivBookmark.gone()
+            emojiContainer.visible()
         }
     }
 

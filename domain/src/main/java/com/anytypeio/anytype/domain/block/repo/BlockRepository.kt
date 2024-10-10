@@ -190,6 +190,7 @@ interface BlockRepository {
     ): Payload
 
     suspend fun searchObjects(
+        space: SpaceId,
         sorts: List<DVSort> = emptyList(),
         filters: List<DVFilter> = emptyList(),
         fulltext: String = "",
@@ -203,6 +204,7 @@ interface BlockRepository {
     ): List<Command.SearchWithMeta.Result>
 
     suspend fun searchObjectsWithSubscription(
+        space: SpaceId,
         subscription: Id,
         sorts: List<DVSort>,
         filters: List<DVFilter>,

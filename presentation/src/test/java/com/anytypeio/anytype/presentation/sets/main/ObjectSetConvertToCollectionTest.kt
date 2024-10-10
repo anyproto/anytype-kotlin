@@ -1,16 +1,15 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import app.cash.turbine.testIn
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.collections.MockSet
-import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -47,31 +46,49 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should start collection subscription after changing from set to collection`() = runTest {
         turbineScope {
-        // SETUP
-        stubSpaceManager(defaultSpace)
-        stubInterceptEvents()
-        stubNetworkMode()
-        stubObjectToCollection()
-        stubInterceptThreadStatus()
-        stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
-            details = mockObjectSet.details
-        )
-        stubSubscriptionResults(
-            subscription = mockObjectSet.subscriptionId,
-            spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
-            keys = mockObjectSet.dvKeys,
-            sources = listOf(mockObjectSet.setOf),
-            dvFilters = mockObjectSet.filters,
-            objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2)
-        )
+
+            // SETUP
+            stubSpaceManager(defaultSpace)
+            stubInterceptEvents()
+            stubNetworkMode()
+            stubObjectToCollection()
+            stubInterceptThreadStatus()
+            stubOpenObject(
+                doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+                details = mockObjectSet.details
+            )
+            stubSubscriptionResults(
+                subscription = mockObjectSet.subscriptionId,
+                spaceId = mockObjectSet.spaceId,
+                storeOfRelations = storeOfRelations,
+                keys = mockObjectSet.dvKeys,
+                sources = listOf(mockObjectSet.setOf),
+                dvFilters = mockObjectSet.filters,
+                objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2)
+            )
 
             val stateFlow = stateReducer.state.testIn(backgroundScope)
 
             // TESTING
 
-        proceedWithStartingViewModel()
+            // Making sure space ids are not mixed up:
+
+            assertEquals(
+                expected = defaultSpace,
+                actual = mockObjectSet.spaceId
+            )
+
+            assertEquals(
+                expected = mockObjectSet.space,
+                actual = mockObjectSet.spaceId
+            )
+
+            assertEquals(
+                expected = defaultSpace,
+                actual = spaceManager.getConfig()?.space
+            )
+
+            proceedWithStartingViewModel()
 
             val firstState = stateFlow.awaitItem()
             assertIs<ObjectState.Init>(firstState)
@@ -101,22 +118,19 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
 
             verifyBlocking(repo, times(1)) {
                 searchObjectsWithSubscription(
-                    eq(mockObjectSet.subscriptionId),
-                    eq(listOf()),
-                    eq(
-                        mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                            listOf(spaceConfig.space, spaceConfig.techSpace)
-                        )
-                    ),
-                    eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),
-                    eq(listOf()),
-                    eq(0L),
-                    eq(ObjectSetConfig.DEFAULT_LIMIT),
-                    eq(null),
-                    eq(null),
-                    eq(null),
-                    eq(null),
-                    eq(mockObjectSet.root)
+                    SpaceId(mockObjectSet.space),
+                    mockObjectSet.subscriptionId,
+                    listOf(),
+                    mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(),
+                    ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys,
+                    listOf(),
+                    0L,
+                    ObjectSetConfig.DEFAULT_LIMIT,
+                    null,
+                    null,
+                    null,
+                    null,
+                    collection = mockObjectSet.root
                 )
             }
         }

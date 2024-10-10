@@ -68,7 +68,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onShareQrCodeClicked = vm::onShareQrCodeClicked,
                         onDeleteLinkClicked = vm::onDeleteLinkClicked,
                         incentiveState = vm.showIncentive.collectAsStateWithLifecycle().value,
-                        onIncentiveClicked = vm::onIncentiveClicked
+                        onIncentiveClicked = vm::onIncentiveClicked,
+                        isLoadingInProgress = vm.isLoadingInProgress.collectAsStateWithLifecycle().value
                     )
                 }
                 LaunchedEffect(Unit) {

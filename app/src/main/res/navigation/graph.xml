@@ -74,6 +74,9 @@
             android:id="@+id/versionHistoryScreen"
             android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment"
             android:label="Object-Version_history-Screen"/>
+        <action
+            android:id="@+id/actionOpenSpaceSwitcher"
+            app:destination="@id/selectSpaceScreen" />
     </navigation>
 
     <include app:graph="@navigation/nav_editor_modal" />
@@ -141,6 +144,9 @@
             android:id="@+id/versionHistoryScreen"
             android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment"
             android:label="Set-Version_history-Screen"/>
+        <action
+            android:id="@+id/actionOpenSpaceSwitcher"
+            app:destination="@id/selectSpaceScreen"/>
     </navigation>
 
     <fragment
@@ -165,12 +171,24 @@
             app:popUpTo="@id/vaultScreen"
             app:popUpToInclusive="true"
             />
+        <action
+            android:id="@+id/action_open_all_content"
+            app:destination="@id/allContentScreen" />
     </fragment>
 
     <fragment
         android:id="@+id/homeScreenWidgets"
         android:name="com.anytypeio.anytype.ui.widgets.collection.CollectionFragment"
-        android:label="Home screen" />
+        android:label="Home screen">
+        <action
+            android:id="@+id/actionOpenVault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/actionOpenSpaceSwitcher"
+            app:destination="@id/selectSpaceScreen" />
+    </fragment>
 
     <dialog
         android:id="@+id/selectWidgetSourceScreen"
@@ -202,19 +220,29 @@
         android:id="@+id/vaultScreen"
         android:name="com.anytypeio.anytype.ui.vault.VaultFragment">
         <action
-            android:id="@+id/openSpace"
+            android:id="@+id/actionOpenSpaceFromVault"
             app:destination="@id/homeScreen" />
+        <action
+            android:id="@+id/actionCreateSpaceFromVault"
+            app:destination="@id/createSpaceScreen" />
+        <action
+            android:id="@+id/actionShowIntroduceVaultScreen"
+            app:destination="@id/introduceVaultScreen" />
     </fragment>
 
     <dialog
         android:id="@+id/createSpaceScreen"
         android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">
         <action
-            android:id="@+id/switchSpaceAction"
-            app:popUpTo="@+id/homeScreen"
-            app:popUpToInclusive="false"
-            app:enterAnim="@anim/anim_switch_space_enter" />
+            android:id="@+id/exitToVaultAction"
+            app:popUpTo="@+id/vaultScreen"
+            app:popUpToInclusive="false" />
     </dialog>
+
+    <dialog
+        android:id="@+id/introduceVaultScreen"
+        android:name="com.anytypeio.anytype.ui.vault.IntroduceVaultFragment"
+        android:label="IntroduceVaultScreen"/>
 
     <dialog
         android:id="@+id/spaceSettingsScreen"
@@ -287,7 +315,7 @@
             app:popUpTo="@+id/splashScreen"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_splashScreen_to_vaultScreen"
+            android:id="@+id/actionOpenVaultFromSplash"
             app:destination="@id/vaultScreen"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
@@ -383,6 +411,40 @@
         android:id="@+id/globalSearchScreen"
         android:name="com.anytypeio.anytype.ui.search.GlobalSearchFragment"
         android:label="GlobalSearchScreen" />
+
+    <fragment
+        android:id="@+id/allContentScreen"
+        android:name="com.anytypeio.anytype.ui.allcontent.AllContentFragment"
+        android:label="AllContentScreen">
+        <action
+            android:id="@+id/openTypeEditingScreen"
+            app:destination="@id/typeEditingFragment" />
+        <action
+            android:id="@+id/openTypeCreationScreen"
+            app:destination="@id/typeCreationFragment" />
+        <action
+            android:id="@+id/openRelationCreationScreen"
+            app:destination="@id/relationCreationFragment" />
+        <action
+            android:id="@+id/openRelationEditingScreen"
+            app:destination="@id/relationEditingFragment" />
+        <action
+            android:id="@+id/actionOpenVault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/actionOpenGlobalSearch"
+            app:destination="@id/globalSearchScreen" />
+        <action
+            android:id="@+id/actionOpenTypeCreationScreen"
+            app:destination="@id/typeCreationFragment" />
+
+        <action
+            android:id="@+id/actionOpenSpaceSwitcher"
+            app:destination="@id/selectSpaceScreen"/>
+    </fragment>
+
     <fragment
         android:id="@+id/libraryFragment"
         android:name="com.anytypeio.anytype.ui.library.LibraryFragment"
@@ -399,6 +461,11 @@
         <action
             android:id="@+id/openRelationEditingScreen"
             app:destination="@id/relationEditingFragment" />
+        <action
+            android:id="@+id/actionOpenVault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/typeCreationFragment"

@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearan
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.mapper.marks
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toFileView
 import com.anytypeio.anytype.presentation.mapper.toPictureView
 import com.anytypeio.anytype.presentation.mapper.toVideoView
@@ -1104,9 +1105,19 @@ class DefaultBlockViewRenderer @Inject constructor(
         val iconImage = content.iconImage
         val iconEmoji = content.iconEmoji
         val icon = when {
-            !iconImage.isNullOrBlank() -> ObjectIcon.Basic.Image(urlBuilder.thumbnail(iconImage))
-            !iconEmoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(iconEmoji)
-            else -> ObjectIcon.Basic.Emoji("💡")
+            !iconImage.isNullOrBlank() ->
+                ObjectIcon.Basic.Image(
+                    hash = urlBuilder.thumbnail(iconImage),
+                    emptyState = ObjectIcon.Empty.Page
+                )
+            !iconEmoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(
+                unicode = iconEmoji,
+                emptyState = ObjectIcon.Empty.Page
+            )
+            else -> ObjectIcon.Basic.Emoji(
+                unicode = "💡",
+                emptyState = ObjectIcon.Empty.Page
+            )
         }
         return BlockView.Text.Callout(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1658,11 +1669,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         val inEditorAppearance = factory.createInEditorLinkAppearance()
         val isCard = inEditorAppearance.isCard
         val objectIcon = if (inEditorAppearance.showIcon) {
-            ObjectIcon.getEditorLinkToObjectIcon(
-                obj = obj,
-                layout = obj.layout,
-                builder = urlBuilder
-            )
+            obj.objectIcon(urlBuilder)
         } else {
             ObjectIcon.None
         }
@@ -2259,11 +2266,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     isCollection = isCollection
                 )
             }
-            val icon = ObjectIcon.getEditorLinkToObjectIcon(
-                obj = targetSet,
-                layout = targetSet.layout,
-                builder = urlBuilder
-            )
+            val icon = targetSet.objectIcon(urlBuilder)
             val isSetNoQuery = targetSet.setOf.all { it.isNullOrBlank() }
             if (isSetNoQuery && !content.isCollection) {
                 return BlockView.DataView.EmptyData(

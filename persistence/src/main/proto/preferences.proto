@@ -8,14 +8,30 @@ message SpacePreferences {
   map <string, SpacePreference> preferences = 1;
 }
 
+message VaultPreferences {
+  // maps account id to vault preference
+  map <string, VaultPreference> preferences = 1;
+}
+
+message VaultPreference {
+  repeated string orderOfSpaces = 1;
+  bool showIntroduceVault = 2;
+}
+
 message SpacePreference {
   optional string defaultObjectTypeKey = 1;
   repeated string pinnedObjectTypeIds = 2;
   optional string lastOpenedObject = 3;
   optional GlobalSearchHistoryProto globalSearchHistory = 5;
+  optional AllContentSettings allContent = 6;
 }
 
 message GlobalSearchHistoryProto {
   optional string lastSearchQuery = 1;
   optional string lastSearchRelatedObjectId = 2;
+}
+
+message AllContentSettings {
+  optional string sortKey = 1;
+  optional bool isAscending = 2;
 }

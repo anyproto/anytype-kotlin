@@ -24,7 +24,6 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.presentation.profile.profileIcon
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -34,7 +33,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -104,18 +102,9 @@ class SelectSpaceViewModel(
         jobs += viewModelScope.launch {
             combine(
                 spaces,
-                profile.map<ObjectWrapper.Basic, SelectSpaceView.Profile> { profile ->
-                    SelectSpaceView.Profile.Default(
-                        name = profile.name.orEmpty(),
-                        icon = profile.profileIcon(builder = urlBuilder)
-                    )
-                }.onStart {
-                    emit(SelectSpaceView.Profile.Loading)
-                },
                 spaceManager.observe()
-            ) { spaces, profile: SelectSpaceView.Profile, config ->
+            ) { spaces, config ->
                 buildList {
-                    add(profile)
                     val spaceViews = spaces.mapNotNull { wrapper ->
                         val space = wrapper.targetSpaceId
                         if (space != null) {
@@ -201,16 +190,6 @@ class SelectSpaceViewModel(
         }
     }
 
-    fun onProfileSettingsClicked() {
-        viewModelScope.launch {
-            commands.emit(
-                Command.NavigateToProfileSettings(
-                    space = spaceManager.get()
-                )
-            )
-        }
-    }
-
     private fun proceedWithUnsubscribing() {
         viewModelScope.launch {
             container.unsubscribe(
@@ -277,8 +256,7 @@ sealed class SelectSpaceView {
 }
 
 sealed class Command {
-    object CreateSpace : Command()
-    object Dismiss : Command()
-    object SwitchToNewSpace: Command()
-    data class NavigateToProfileSettings(val space: Id) : Command()
+    data object CreateSpace : Command()
+    data object Dismiss : Command()
+    data object SwitchToNewSpace: Command()
 }

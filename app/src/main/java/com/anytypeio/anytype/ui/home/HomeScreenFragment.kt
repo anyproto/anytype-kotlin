@@ -34,6 +34,7 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
+import com.anytypeio.anytype.ui.library.LibraryFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
@@ -102,8 +103,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onCreateNewObjectLongClicked = throttledClick(
                         onClick = { vm.onCreateNewObjectLongClicked() }
                     ),
-                    onProfileClicked = throttledClick(
-                        onClick = vm::onVaultClicked
+                    onBackClicked = throttledClick(
+                        onClick = vm::onBackClicked
                     ),
                     onSpaceWidgetClicked = throttledClick(
                         onClick = vm::onSpaceSettingsClicked
@@ -355,7 +356,19 @@ class HomeScreenFragment : BaseComposeFragment() {
                 )
             }
             is Navigation.OpenLibrary -> runCatching {
-                navigation().openLibrary(destination.space)
+                findNavController().navigate(
+                    R.id.libraryFragment,
+                    args = LibraryFragment.args(destination.space)
+                )
+            }.onFailure { e ->
+                Timber.e(e, "Error while opening space library from widgets")
+            }
+            is Navigation.OpenAllContent -> {
+                runCatching {
+                    navigation().openAllContent(space = destination.space)
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening all content from widgets")
+                }
             }
         }
     }

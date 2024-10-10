@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.relationsFilteredByHiddenAndDescription
@@ -38,11 +39,7 @@ suspend fun DVViewer.buildListViews(
                             storeOfObjects = store
                         ),
                         name = obj.getProperName(),
-                        icon = ObjectIcon.from(
-                            obj = obj,
-                            layout = obj.layout,
-                            builder = urlBuilder
-                        ),
+                        icon = obj.objectIcon(urlBuilder),
                         description = description,
                         hideIcon = hideIcon
                     )
@@ -81,11 +78,7 @@ suspend fun DVViewer.buildListViews(
                             storeOfObjects = store
                         ),
                         name = obj.getProperName(),
-                        icon = ObjectIcon.from(
-                            obj = obj,
-                            layout = obj.layout,
-                            builder = urlBuilder
-                        ),
+                        icon = obj.objectIcon(urlBuilder),
                         description = description,
                         hideIcon = hideIcon
                     )

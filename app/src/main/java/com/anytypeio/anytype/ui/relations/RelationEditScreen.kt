@@ -71,7 +71,8 @@ fun RelationEditScreen(vm: RelationEditViewModel, preparedName: String, readOnly
                 vm.updateRelationDetails(name = inputValue.value.trim())
             },
             imeOptions = ImeOptions.Done,
-            shouldMoveCursor = preparedName.trim().isNotEmpty()
+            shouldMoveCursor = preparedName.trim().isNotEmpty(),
+            isEditable = readOnly.not()
         )
     }
 
@@ -126,7 +127,8 @@ fun RelationEditWidget(
     state: RelationEditState,
     imeOptions: ImeOptions = ImeOptions.Default,
     onImeDoneClick: (name: String) -> Unit = {},
-    shouldMoveCursor: Boolean
+    shouldMoveCursor: Boolean,
+    isEditable: Boolean = true
 ) {
 
     val focusRequester = remember { FocusRequester() }
@@ -149,6 +151,7 @@ fun RelationEditWidget(
                 nameValid.value = this.isNotEmpty()
             }
         },
+        enabled = isEditable,
         modifier = Modifier
             .focusRequester(focusRequester)
             .padding(start = PaddingStart)

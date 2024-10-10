@@ -27,7 +27,7 @@ class MediaMenuHolder(
                 ivIcon.setImageResource(R.drawable.ic_slash_media_file)
             }
             SlashItem.Media.Picture -> {
-                tvTitle.setText(R.string.slash_widget_media_picture)
+                tvTitle.setText(R.string.slash_widget_media_image)
                 tvSubtitle.setText(R.string.slash_widget_media_picture_subtitle)
                 ivIcon.setImageResource(R.drawable.ic_slash_media_picture)
             }

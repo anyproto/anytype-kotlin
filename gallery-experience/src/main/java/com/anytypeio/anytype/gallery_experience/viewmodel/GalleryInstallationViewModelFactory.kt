@@ -3,6 +3,7 @@ package com.anytypeio.anytype.gallery_experience.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.gallery_experience.DownloadGalleryManifest
 import com.anytypeio.anytype.domain.gallery_experience.ImportExperience
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -23,7 +24,8 @@ class GalleryInstallationViewModelFactory @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val  userPermissionProvider: UserPermissionProvider,
-    private val eventProcessChannel: EventProcessImportChannel
+    private val eventProcessChannel: EventProcessImportChannel,
+    private val configStorage: ConfigStorage
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -37,7 +39,8 @@ class GalleryInstallationViewModelFactory @Inject constructor(
             spaceGradientProvider = spaceGradientProvider,
             createSpace = createSpace,
             userPermissionProvider = userPermissionProvider,
-            eventProcessChannel = eventProcessChannel
+            eventProcessChannel = eventProcessChannel,
+            configStorage = configStorage
         ) as T
     }
 }

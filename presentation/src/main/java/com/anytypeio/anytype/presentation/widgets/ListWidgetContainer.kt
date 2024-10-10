@@ -8,12 +8,14 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.collectionsSorts
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -109,6 +111,7 @@ class ListWidgetContainer(
                             Timber.e(it, "Failed to load favorite objects")
                         }
                 }
+
                 BundledWidgetSourceIds.RECENT -> {
                     val spaceView = getSpaceView.async(
                         GetSpaceView.Params.BySpaceViewId(widget.config.spaceView)
@@ -126,6 +129,7 @@ class ListWidgetContainer(
                         )
                     }
                 }
+
                 else -> {
                     storage.subscribe(buildParams()).map { objects ->
                         buildWidgetViewWithElements(
@@ -146,7 +150,7 @@ class ListWidgetContainer(
         elements = objects.map { obj ->
             WidgetView.ListOfObjects.Element(
                 obj = obj,
-                objectIcon = obj.widgetElementIcon(
+                objectIcon = obj.objectIcon(
                     builder = urlBuilder
                 )
             )
@@ -160,10 +164,7 @@ class ListWidgetContainer(
         spaceCreationDateInSeconds: Long? = null
     ) = params(
         subscription = subscription,
-        spaces = buildList {
-            add(widget.config.space)
-            add(widget.config.techSpace)
-        },
+        space = widget.config.space,
         keys = keys,
         limit = resolveLimit(),
         customFavoritesOrder = customFavoritesOrder,
@@ -188,44 +189,50 @@ class ListWidgetContainer(
 
         fun params(
             subscription: Id,
-            spaces: List<Id>,
+            space: Id,
             keys: List<Id>,
             limit: Int,
             customFavoritesOrder: List<Id> = emptyList(),
             spaceCreationDateInSeconds: Long? = null
-        ) : StoreSearchParams = when (subscription) {
+        ): StoreSearchParams = when (subscription) {
             BundledWidgetSourceIds.RECENT -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecent,
                     filters = ObjectSearchConstants.filterTabRecent(
-                        spaces = spaces,
                         spaceCreationDateInSeconds = spaceCreationDateInSeconds
                     ),
                     keys = keys,
                     limit = limit
                 )
             }
+
             BundledWidgetSourceIds.RECENT_LOCAL -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecentLocal,
-                    filters = ObjectSearchConstants.filterTabRecentLocal(spaces),
+                    filters = ObjectSearchConstants.filterTabRecentLocal(),
                     keys = keys,
                     limit = limit
                 )
             }
+
             BundledWidgetSourceIds.SETS -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabSets,
-                    filters = ObjectSearchConstants.filterTabSets(spaces),
+                    filters = ObjectSearchConstants.filterTabSets(),
                     keys = keys,
                     limit = limit
                 )
             }
+
             BundledWidgetSourceIds.FAVORITE -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = buildList {
                         if (customFavoritesOrder.isNotEmpty()) {
@@ -239,29 +246,34 @@ class ListWidgetContainer(
                             )
                         }
                     },
-                    filters = ObjectSearchConstants.filterTabFavorites(spaces),
+                    filters = ObjectSearchConstants.filterTabFavorites(),
                     keys = keys,
                     limit = limit
                 )
             }
+
             BundledWidgetSourceIds.COLLECTIONS -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = collectionsSorts,
-                    filters = ObjectSearchConstants.collectionFilters(spaces),
+                    filters = ObjectSearchConstants.collectionFilters(),
                     keys = keys,
                     limit = limit
                 )
             }
+
             Subscriptions.SUBSCRIPTION_ARCHIVED -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabArchive,
-                    filters = ObjectSearchConstants.filterTabArchive(spaces),
+                    filters = ObjectSearchConstants.filterTabArchive(),
                     keys = keys,
                     limit = limit
                 )
             }
+
             else -> throw IllegalStateException("Unexpected subscription: $subscription")
         }
 
@@ -272,7 +284,7 @@ class ListWidgetContainer(
     }
 }
 
-fun ObjectView.orderOfRootObjects(root: Id) : Map<Id, Int> {
+fun ObjectView.orderOfRootObjects(root: Id): Map<Id, Int> {
     val parent = blocks.find { it.id == root }
     return if (parent != null) {
         val order = parent.children.withIndex().associate { (index, id) -> id to index }

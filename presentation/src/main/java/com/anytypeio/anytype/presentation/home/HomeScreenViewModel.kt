@@ -32,9 +32,12 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
@@ -94,6 +97,7 @@ import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
@@ -196,7 +200,8 @@ class HomeScreenViewModel(
     private val createBlock: CreateBlock,
     private val dateProvider: DateProvider,
     private val addObjectToCollection: AddObjectToCollection,
-    private val clearLastOpenedSpace: ClearLastOpenedSpace
+    private val clearLastOpenedSpace: ClearLastOpenedSpace,
+    private val clearLastOpenedObject: ClearLastOpenedObject,
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -224,6 +229,7 @@ class HomeScreenViewModel(
 
     // Bundled widget containing archived objects
     private val bin = WidgetView.Bin(Subscriptions.SUBSCRIPTION_ARCHIVED)
+    private val allContentWidget = AllContentWidgetContainer()
 
     private val spaceWidgetView = spaceWidgetContainer.view
 
@@ -383,6 +389,7 @@ class HomeScreenViewModel(
                     combine(
                         flows = buildList<Flow<WidgetView>> {
                             add(spaceWidgetView)
+                            add(allContentWidget.view)
                             addAll(list.map { m -> m.view })
                         }
                     ) { array ->
@@ -392,11 +399,7 @@ class HomeScreenViewModel(
                     spaceWidgetView.map { view -> listOf(view) }
                 }
             }.combine(hasEditAccess) { widgets, hasEditAccess ->
-                if (hasEditAccess) {
-                    widgets + listOf(WidgetView.Library, bin) + actions
-                } else {
-                    widgets
-                }
+                buildListOfWidgets(hasEditAccess, widgets)
             }
                 .catch {
                     Timber.e(it, "Error while rendering widgets")
@@ -404,6 +407,18 @@ class HomeScreenViewModel(
                 .flowOn(appCoroutineDispatchers.io).collect {
                     views.value = it
                 }
+        }
+    }
+
+    private fun buildListOfWidgets(
+        hasEditAccess: Boolean,
+        widgets: List<WidgetView>
+    ): List<WidgetView> {
+        return buildList {
+            addAll(widgets)
+            if (hasEditAccess) {
+                addAll(actions)
+            }
         }
     }
 
@@ -1031,6 +1046,16 @@ class HomeScreenViewModel(
                         )
                     )
                 }
+                WidgetView.AllContent.ALL_CONTENT_WIDGET_ID -> {
+                    if (mode.value == InteractionMode.Edit) {
+                        return@launch
+                    }
+                    navigation(
+                        Navigation.OpenAllContent(
+                            space = space
+                        )
+                    )
+                }
             }
         }
     }
@@ -1225,6 +1250,13 @@ class HomeScreenViewModel(
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
         Timber.d("onResume, deeplink: ${deeplink}")
+        viewModelScope.launch {
+            clearLastOpenedObject.run(
+                ClearLastOpenedObject.Params(
+                    SpaceId(spaceManager.get())
+                )
+            )
+        }
         when (deeplink) {
             is DeepLinkResolver.Action.Import.Experience -> {
                 viewModelScope.launch {
@@ -1454,19 +1486,13 @@ class HomeScreenViewModel(
                 }
                 searchObjects(
                     SearchObjects.Params(
+                        space = SpaceId(config.space),
                         keys = buildList {
                             add(Relations.ID)
                             add(Relations.UNIQUE_KEY)
                             add(Relations.NAME)
                         },
                         filters = buildList {
-                            add(
-                                DVFilter(
-                                    relation = Relations.SPACE_ID,
-                                    value = config.space,
-                                    condition = DVFilterCondition.EQUAL
-                                )
-                            )
                             add(
                                 DVFilter(
                                     relation = Relations.LAYOUT,
@@ -1655,8 +1681,18 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onVaultClicked() {
+    fun onBackClicked() {
         viewModelScope.launch {
+            openWidgetObjectsHistory.forEach { obj ->
+                closeObject
+                    .async(obj)
+                    .onSuccess {
+                        Timber.d("Closed object from widget object session history: $obj")
+                    }
+                    .onFailure {
+                        Timber.e(it, "Error while closing object from history")
+                    }
+            }
             spaceManager.clear()
             clearLastOpenedSpace.async(Unit).fold(
                 onSuccess = {
@@ -2039,6 +2075,7 @@ class HomeScreenViewModel(
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data class OpenLibrary(val space: Id) : Navigation()
+        data class OpenAllContent(val space: Id) : Navigation()
     }
 
     class Factory @Inject constructor(
@@ -2086,7 +2123,8 @@ class HomeScreenViewModel(
         private val dateProvider: DateProvider,
         private val coverImageHashProvider: CoverImageHashProvider,
         private val addObjectToCollection: AddObjectToCollection,
-        private val clearLastOpenedSpace: ClearLastOpenedSpace
+        private val clearLastOpenedSpace: ClearLastOpenedSpace,
+        private val clearLastOpenedObject: ClearLastOpenedObject
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2134,7 +2172,8 @@ class HomeScreenViewModel(
             createBlock = createBlock,
             dateProvider = dateProvider,
             addObjectToCollection = addObjectToCollection,
-            clearLastOpenedSpace = clearLastOpenedSpace
+            clearLastOpenedSpace = clearLastOpenedSpace,
+            clearLastOpenedObject = clearLastOpenedObject
         ) as T
     }
 

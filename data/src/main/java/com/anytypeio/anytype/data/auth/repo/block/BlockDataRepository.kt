@@ -380,6 +380,7 @@ class BlockDataRepository(
     )
 
     override suspend fun searchObjects(
+        space: SpaceId,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         fulltext: String,
@@ -387,6 +388,7 @@ class BlockDataRepository(
         limit: Int,
         keys: List<Id>
     ): List<Map<String, Any?>> = remote.searchObjects(
+        space = space,
         sorts = sorts,
         filters = filters,
         fulltext = fulltext,
@@ -400,6 +402,7 @@ class BlockDataRepository(
     ): List<Command.SearchWithMeta.Result> = remote.searchObjectWithMeta(command)
 
     override suspend fun searchObjectsWithSubscription(
+        space: SpaceId,
         subscription: Id,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
@@ -413,6 +416,7 @@ class BlockDataRepository(
         noDepSubscription: Boolean?,
         collection: Id?
     ): SearchResult = remote.searchObjectsWithSubscription(
+        space = space,
         subscription = subscription,
         sorts = sorts,
         filters = filters,

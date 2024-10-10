@@ -42,6 +42,7 @@ object SupportedLayouts {
         ObjectType.Layout.DASHBOARD,
         ObjectType.Layout.SPACE,
         ObjectType.Layout.SPACE_VIEW,
+        ObjectType.Layout.TAG
     )
 
     val createObjectLayouts = listOf(

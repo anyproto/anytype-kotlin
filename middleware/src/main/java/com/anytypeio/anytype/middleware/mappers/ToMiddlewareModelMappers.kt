@@ -500,6 +500,7 @@ fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
     ObjectType.Layout.PDF -> MOTypeLayout.pdf
     ObjectType.Layout.CHAT -> MOTypeLayout.chat
     ObjectType.Layout.CHAT_DERIVED -> MOTypeLayout.chatDerived
+    ObjectType.Layout.TAG -> MOTypeLayout.tag
 }
 
 fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {

@@ -62,7 +62,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -70,11 +69,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -93,6 +89,7 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultBasicAvatarIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultEmojiObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultFileObjectImageIcon
@@ -478,7 +475,7 @@ private fun GlobalSearchItem(
                     Modifier
             )
     ) {
-        GlobalSearchObjectIcon(
+        ListWidgetObjectIcon(
             icon = globalSearchItemView.icon,
             iconSize = 48.dp,
             modifier = Modifier
@@ -741,50 +738,6 @@ private fun DefaultMetaStatusRelation(
     )
 }
 
-@Composable
-fun GlobalSearchObjectIcon(
-    icon: ObjectIcon,
-    modifier: Modifier,
-    iconSize: Dp = 48.dp,
-    onTaskIconClicked: (Boolean) -> Unit = {},
-    avatarBackgroundColor: Int = R.color.text_tertiary,
-    avatarFontSize: TextUnit = 28.sp,
-    avatarTextStyle: TextStyle = TextStyle(
-        fontWeight = FontWeight.SemiBold,
-        color = colorResource(id = R.color.text_white)
-    )
-) {
-    when (icon) {
-        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(
-            modifier = modifier,
-            iconSize = iconSize,
-            icon = icon,
-            avatarTextStyle = avatarTextStyle,
-            avatarFontSize = avatarFontSize,
-            avatarBackgroundColor = avatarBackgroundColor
-        )
-
-        is ObjectIcon.Profile.Image -> DefaultProfileIconImage(icon, modifier, iconSize)
-        is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
-        is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
-        is ObjectIcon.Basic.Avatar -> DefaultBasicAvatarIcon(modifier, iconSize, icon)
-        is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
-        is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
-        is ObjectIcon.File -> {
-            DefaultFileObjectImageIcon(
-                fileName = icon.fileName.orEmpty(),
-                mime = icon.mime.orEmpty(),
-                modifier = modifier,
-                iconSize = iconSize
-            )
-        }
-
-        else -> {
-            // Draw nothing.
-        }
-    }
-}
-
 @Preview(
     name = "Dark Mode",
     showBackground = true,
@@ -805,7 +758,7 @@ private fun DefaultGlobalSearchItemViewPreview() {
             type = "Band",
             meta = GlobalSearchItemView.Meta.None,
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Avatar("A")
+            icon = ObjectIcon.Basic.Emoji("🎵")
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -833,7 +786,7 @@ private fun DefaultGlobalSearchItemViewWithLongTitlePreview() {
             type = "Band",
             meta = GlobalSearchItemView.Meta.None,
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Avatar("A")
+            icon = ObjectIcon.Basic.Emoji("🎵")
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -864,7 +817,7 @@ private fun DefaultGlobalSearchItemViewWithBlockMetaPreview() {
                 highlights = emptyList()
             ),
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Avatar("A")
+            icon = ObjectIcon.Basic.Emoji("🎵")
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -898,7 +851,7 @@ private fun DefaultGlobalSearchItemViewBlockTwoHighlightsMetaPreview() {
                 )
             ),
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Avatar("A")
+            icon = ObjectIcon.Basic.Emoji("🎵")
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -933,7 +886,7 @@ private fun DefaultGlobalSearchItemViewRelationTwoHighlightsMetaPreview() {
                 )
             ),
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Avatar("A")
+            icon = ObjectIcon.Basic.Emoji("🎵")
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -965,7 +918,7 @@ private fun DefaultGlobalSearchItemViewTagRelationPreview() {
                 color = ThemeColor.TEAL
             ),
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Avatar("A")
+            icon = ObjectIcon.Basic.Emoji("🎵")
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -997,7 +950,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
                 color = ThemeColor.TEAL
             ),
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Avatar("A")
+            icon = ObjectIcon.Basic.Emoji("🎵")
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -1030,7 +983,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                     type = "Band",
                     meta = GlobalSearchItemView.Meta.None,
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Avatar("A")
+                    icon = ObjectIcon.Basic.Emoji("🎵")
                 ),
                 GlobalSearchItemView(
                     id = "ID2",
@@ -1043,7 +996,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                         color = ThemeColor.TEAL
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Avatar("A")
+                    icon = ObjectIcon.Basic.Emoji("🎵")
                 ),
                 GlobalSearchItemView(
                     id = "ID3",
@@ -1056,7 +1009,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                         color = ThemeColor.TEAL
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Avatar("A")
+                    icon = ObjectIcon.Basic.Emoji("🎵")
                 ),
                 GlobalSearchItemView(
                     id = "ID4",
@@ -1072,7 +1025,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                         )
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Avatar("A")
+                    icon = ObjectIcon.Basic.Emoji("🎵")
                 ),
                 GlobalSearchItemView(
                     id = "ID5",
@@ -1084,7 +1037,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                         highlights = emptyList()
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Avatar("A")
+                    icon = ObjectIcon.Basic.Emoji("🎵")
                 )
             )
         ),
@@ -1117,7 +1070,7 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.None,
                 layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Avatar("A")
+                icon = ObjectIcon.Basic.Emoji("🎵")
             ),
             views = listOf(
                 GlobalSearchItemView(
@@ -1127,7 +1080,7 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                     type = "Band",
                     meta = GlobalSearchItemView.Meta.None,
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Avatar("A")
+                    icon = ObjectIcon.Basic.Emoji("🎵")
                 ),
                 GlobalSearchItemView(
                     id = "ID2",
@@ -1140,7 +1093,7 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                         color = ThemeColor.TEAL
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Avatar("A")
+                    icon = ObjectIcon.Basic.Emoji("🎵")
                 ),
                 GlobalSearchItemView(
                     id = "ID3",
@@ -1153,7 +1106,7 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                         color = ThemeColor.TEAL
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Avatar("A")
+                    icon = ObjectIcon.Basic.Emoji("🎵")
                 ),
                 GlobalSearchItemView(
                     id = "ID4",
@@ -1169,7 +1122,7 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                         )
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Avatar("A")
+                    icon = ObjectIcon.Basic.Emoji("🎵")
                 ),
                 GlobalSearchItemView(
                     id = "ID5",
@@ -1181,7 +1134,7 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                         highlights = emptyList()
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Avatar("A")
+                    icon = ObjectIcon.Basic.Emoji("🎵")
                 )
             )
         ),

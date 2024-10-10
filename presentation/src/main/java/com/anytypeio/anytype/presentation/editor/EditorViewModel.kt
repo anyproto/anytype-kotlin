@@ -1254,9 +1254,10 @@ class EditorViewModel(
         }
     }
 
+    // TODO DROID-2731 rename the method
     fun navigateToDesktop() {
         Timber.d("navigateToDesktop, ")
-        navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
+        navigation.postValue(EventWrapper(AppNavigation.Command.ExitToVault))
     }
 
     @Deprecated("replace by onTextBlockTextChanged")
@@ -2318,7 +2319,7 @@ class EditorViewModel(
 
     fun onToggleClicked(target: Id) {
         Timber.d("onToggleClicked, target:[$target]")
-        if (mode is EditorMode.Edit || mode is EditorMode.Locked) {
+        if (mode is EditorMode.Edit || mode is EditorMode.Locked || mode is EditorMode.Read) {
             onToggleChanged(target)
             viewModelScope.launch { refresh() }
         }
@@ -3697,7 +3698,7 @@ class EditorViewModel(
                         onBookmarkClicked(clicked.item)
                         viewModelScope.sendAnalyticsBookmarkOpen(analytics)
                     }
-                    EditorMode.Locked -> onBookmarkClicked(clicked.item)
+                    EditorMode.Locked, EditorMode.Read -> onBookmarkClicked(clicked.item)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
                     else -> Unit
                 }
@@ -3726,7 +3727,7 @@ class EditorViewModel(
             is ListenerType.File.View -> {
                 when (mode) {
                     EditorMode.Edit -> onFileClicked(clicked.target)
-                    EditorMode.Locked -> onFileClicked(clicked.target)
+                    EditorMode.Locked, EditorMode.Read -> onFileClicked(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -3754,7 +3755,7 @@ class EditorViewModel(
             }
             is ListenerType.Picture.View -> {
                 when (mode) {
-                    EditorMode.Edit, EditorMode.Locked -> {
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         val fileBlock = blocks.find { it.id == clicked.target }
                         val url = urlBuilder.getUrlForFileBlock(
                             fileBlock = fileBlock,
@@ -3846,7 +3847,7 @@ class EditorViewModel(
             is ListenerType.LinkToObject -> {
                 when (mode) {
                     EditorMode.Edit -> onPageClicked(blockLinkId = clicked.target)
-                    EditorMode.Locked -> onPageClicked(blockLinkId = clicked.target)
+                    EditorMode.Locked, EditorMode.Read -> onPageClicked(blockLinkId = clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -3889,7 +3890,7 @@ class EditorViewModel(
             }
             is ListenerType.Mention -> {
                 when (mode) {
-                    EditorMode.Edit, EditorMode.Locked -> {
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         viewModelScope.launch {
                             orchestrator.stores.focus.update(Editor.Focus.empty())
                         }
@@ -3942,7 +3943,7 @@ class EditorViewModel(
                     return
                 }
                 when (mode) {
-                    EditorMode.Edit, EditorMode.Locked -> {
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         when (clicked.value) {
                             is BlockView.Relation.Placeholder -> {
                                 Timber.d("Clicked in BlockView.Relation.Placeholder")
@@ -3963,7 +3964,7 @@ class EditorViewModel(
             }
             is ListenerType.Relation.Featured -> {
                 when (mode) {
-                    EditorMode.Edit, EditorMode.Locked -> {
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         viewModelScope.launch {
                             val relation = storeOfRelations.getByKey(clicked.relation.key)
                             if (relation != null) {
@@ -3984,7 +3985,8 @@ class EditorViewModel(
             is ListenerType.TableOfContentsItem -> {
                 when (mode) {
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                    EditorMode.Edit, EditorMode.Locked -> {
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         val block = views.find { it.id == clicked.item }
                         val pos = views.indexOf(block)
                         if (pos != NO_SCROLL_POSITION) {
@@ -4058,7 +4060,7 @@ class EditorViewModel(
             is ListenerType.DataViewClick -> {
                 when (mode) {
                     EditorMode.Edit -> onPageClicked(blockLinkId = clicked.target)
-                    EditorMode.Locked -> onPageClicked(blockLinkId = clicked.target)
+                    EditorMode.Locked, EditorMode.Read -> onPageClicked(blockLinkId = clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -4069,10 +4071,10 @@ class EditorViewModel(
                     is ObjectRelationView.ObjectType.Base -> {
                         viewModelScope.launch {
                             val params = FindObjectSetForType.Params(
+                                space = vmParams.space,
                                 type = relation.type,
                                 filters = ObjectSearchConstants.setsByObjectTypeFilters(
-                                    types = listOf(relation.type),
-                                    space = vmParams.space.id
+                                    types = listOf(relation.type)
                                 )
                             )
                             findObjectSetForType(params).process(
@@ -4113,7 +4115,7 @@ class EditorViewModel(
     }
 
     fun onChangeObjectTypeClicked() {
-        if (mode != EditorMode.Locked) {
+        if (mode != EditorMode.Locked && mode != EditorMode.Read) {
             val restrictions = orchestrator.stores.objectRestrictions.current()
             if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
                 sendToast(NOT_ALLOWED_FOR_OBJECT)
@@ -4156,7 +4158,7 @@ class EditorViewModel(
 
     fun onObjectIconClicked() {
         Timber.d("onPageIconClicked, ")
-        if (mode == EditorMode.Locked) {
+        if (mode == EditorMode.Locked || mode == EditorMode.Read) {
             sendToast("Unlock your object to change its icon")
             return
         }
@@ -5098,11 +5100,9 @@ class EditorViewModel(
     ) {
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
+                space = vmParams.space,
                 sorts = sorts,
                 filters = ObjectSearchConstants.filterTypes(
-                    spaces = buildList {
-                        add(vmParams.space.id)
-                    },
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
@@ -6108,14 +6108,10 @@ class EditorViewModel(
             }
             val fullText = filter.removePrefix(MENTION_PREFIX)
             val params = SearchObjects.Params(
+                space = vmParams.space,
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
-                    ignore = context,
-                    spaces = buildList {
-                        add(vmParams.space.id)
-                        val config = spaceManager.getConfig(vmParams.space)
-                        if (config != null) add(config.techSpace)
-                    },
+                    ignore = context
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
@@ -6223,12 +6219,10 @@ class EditorViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaces = buildList {
-                        add(vmParams.space.id)
-                    },
                     recommendedLayouts = SupportedLayouts.createObjectLayouts
                 ),
-                keys = ObjectSearchConstants.defaultKeysObjectType
+                keys = ObjectSearchConstants.defaultKeysObjectType,
+                space = vmParams.space
             )
             getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
@@ -6587,6 +6581,9 @@ class EditorViewModel(
     fun isObjectTemplate(): Boolean {
         return getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.TEMPLATE
     }
+
+    fun Struct?.isObjectParticipant(): Boolean =
+        this?.getOrDefault(Relations.LAYOUT, null) == ObjectType.Layout.PARTICIPANT.code.toDouble()
 
     fun onSelectTemplateClicked() {
         viewModelScope.launch {
@@ -7384,7 +7381,7 @@ class EditorViewModel(
     //endregion
 
     private fun isReadOnlyValue(objRestrictions: List<ObjectRestriction>): Boolean {
-        return mode == EditorMode.Locked || objRestrictions.contains(ObjectRestriction.DETAILS)
+        return mode == EditorMode.Locked || mode == EditorMode.Read || objRestrictions.contains(ObjectRestriction.DETAILS)
     }
 
     //region SYNC STATUS
@@ -7398,15 +7395,20 @@ class EditorViewModel(
 
     private fun proceedWithCollectingSyncStatus() {
         jobs += viewModelScope.launch {
-            spaceSyncAndP2PStatusProvider
-                .observe()
-                .catch {
-                    Timber.e(it, "Error while observing sync status")
-                }
-                .collect { syncAndP2pState ->
+            combine(
+                spaceSyncAndP2PStatusProvider.observe(),
+                orchestrator.stores.details.stream()
+            ) { state, details ->
+                state to details.details[context]?.map
+            }.catch {
+                Timber.e(it, "Error while observing sync status")
+            }.collect { (syncAndP2pState, struct) ->
+                if (!struct.isNullOrEmpty() && !struct.isObjectParticipant()) {
                     spaceSyncStatus.value = syncAndP2pState
-                    syncStatusWidget.value = syncStatusWidget.value.updateStatus(syncAndP2pState)
+                    syncStatusWidget.value =
+                        syncStatusWidget.value.updateStatus(syncAndP2pState)
                 }
+            }
         }
     }
 

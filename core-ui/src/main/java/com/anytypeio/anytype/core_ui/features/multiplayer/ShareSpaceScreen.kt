@@ -2,12 +2,18 @@ package com.anytypeio.anytype.core_ui.features.multiplayer
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,6 +36,7 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -49,6 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -74,6 +84,8 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
+import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceMemberView
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
@@ -82,6 +94,7 @@ import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShareSpaceScreen(
+    isLoadingInProgress: Boolean,
     spaceAccessType: SpaceAccessType?,
     isCurrentUserOwner: Boolean,
     members: List<ShareSpaceMemberView>,
@@ -264,21 +277,23 @@ fun ShareSpaceScreen(
             DragValue.DRAGGED_DOWN at draggedDownAnchorTop
             DragValue.DRAGGED_UP at 0f
         }
-        // TODO https://linear.app/anytype/issue/DROID-2833/fix-anchoreddraggablestate-in-sharespacescreenkt
-//        val anchoredDraggableState = remember {
-//            AnchoredDraggableState(
-//                initialValue = DragValue.DRAGGED_UP,
-//                anchors = anchors,
-//                positionalThreshold = { distance: Float -> distance * 0.5f },
-//                velocityThreshold = { with(density) { 100.dp.toPx() } },
-//                animationSpec = tween()
-//            )
-//        }
-//        val offset =
-//            if (anchoredDraggableState.offset.isNaN()) 0 else anchoredDraggableState.offset.toInt()
-//        SideEffect {
-//            anchoredDraggableState.updateAnchors(anchors)
-//        }
+
+        val decayAnimation = rememberSplineBasedDecay<Float>()
+
+        val anchoredDraggableState = remember {
+            AnchoredDraggableState(
+                initialValue = DragValue.DRAGGED_UP,
+                positionalThreshold = { distance: Float -> distance * 0.5f },
+                velocityThreshold = { with(density) { 100.dp.toPx() } },
+                snapAnimationSpec = tween(),
+                decayAnimationSpec = decayAnimation
+            )
+        }
+        val offset =
+            if (anchoredDraggableState.offset.isNaN()) 0 else anchoredDraggableState.offset.toInt()
+        SideEffect {
+            anchoredDraggableState.updateAnchors(anchors)
+        }
         AnimatedVisibility(
             visible = shareLinkViewState is ShareLinkViewState.Shared,
             enter = slideInVertically { it },
@@ -287,10 +302,10 @@ fun ShareSpaceScreen(
         ) {
             Box(modifier = Modifier
                 .padding(16.dp)
-//                .offset {
-//                    IntOffset(x = 0, y = offset)
-//                }
-//                .anchoredDraggable(anchoredDraggableState, Orientation.Vertical)
+                .offset {
+                    IntOffset(x = 0, y = offset)
+                }
+                .anchoredDraggable(anchoredDraggableState, Orientation.Vertical)
             ) {
                 if (shareLinkViewState is ShareLinkViewState.Shared) {
                     ShareInviteLinkCard(
@@ -313,6 +328,17 @@ fun ShareSpaceScreen(
                     onGenerateInviteLinkClicked = onGenerateInviteLinkClicked
                 )
             }
+        }
+        val loadingAlpha by animateFloatAsState(targetValue = if (isLoadingInProgress) 1f else 0f)
+
+        if (isLoadingInProgress) {
+            DotsLoadingIndicator(
+                animating = true,
+                modifier = Modifier.graphicsLayer { alpha = loadingAlpha }.align(Alignment.Center),
+                animationSpecs = FadeAnimationSpecs(itemCount = 3),
+                color = colorResource(id = R.color.text_primary),
+                size = ButtonSize.Large
+            )
         }
     }
 }
@@ -811,7 +837,8 @@ fun ShareSpaceScreenPreview() {
         onDeleteLinkClicked = {},
         spaceAccessType = null,
         incentiveState = ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders,
-        onIncentiveClicked = {}
+        onIncentiveClicked = {},
+        isLoadingInProgress = false
     )
 }
 

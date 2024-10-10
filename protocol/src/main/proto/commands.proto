@@ -1768,6 +1768,7 @@ message Rpc {
         // deprecated in favor of SearchWithMeta
         message Search {
             message Request {
+                string spaceId = 8;
                 repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
                 repeated anytype.model.Block.Content.Dataview.Sort sorts = 2;
                 string fullText = 3;
@@ -1796,6 +1797,7 @@ message Rpc {
         }
         message SearchWithMeta {
             message Request {
+                string spaceId = 11;
                 repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
                 repeated anytype.model.Block.Content.Dataview.Sort sorts = 2;
                 string fullText = 3;
@@ -1874,6 +1876,7 @@ message Rpc {
 
         message SearchSubscribe {
             message Request {
+                string spaceId = 15;
                 // (optional) subscription identifier
                 // client can provide some string or middleware will generate it automatically
                 // if subId is already registered on middleware, the new query will replace previous subscription
@@ -1896,7 +1899,6 @@ message Rpc {
 
                 repeated string source = 10;
 
-                string ignoreWorkspace = 12;
                 // disable dependent subscription
                 bool noDepSubscription = 13;
                 string collectionId = 14;
@@ -1958,6 +1960,7 @@ message Rpc {
 
         message SubscribeIds {
             message Request {
+                string spaceId = 13;
                 // (optional) subscription identifier
                 // client can provide some string or middleware will generate it automatically
                 // if subId is already registered on middleware, the new query will replace previous subscription
@@ -1968,7 +1971,6 @@ message Rpc {
                 // (required)  needed keys in details for return, for object fields mw will return (and subscribe) objects as dependent
                 repeated string keys = 3;
 
-                string ignoreWorkspace = 11;
                 // disable dependent subscription
                 bool noDepSubscription = 12;
             }
@@ -3040,6 +3042,30 @@ message Rpc {
                 }
             }
         }
+
+        message ListWithValue {
+            message Request {
+                string spaceId = 1;
+                google.protobuf.Value value = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated string relationKeys = 2;
+                repeated int64 counters = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
     }
 
     message History {
@@ -3060,6 +3086,7 @@ message Rpc {
                 string lastVersionId = 2;
                 // desired count of versions
                 int32 limit = 3;
+                bool notIncludeVersion = 4;
             }
 
             message Response {
@@ -5630,29 +5657,6 @@ message Rpc {
                     }
                 }
             }
-            message ListAvailable {
-                message Request {
-                    string contextId = 1;
-                    string blockId = 2;
-                }
-
-                message Response {
-                    Error error = 1;
-                    repeated anytype.model.Relation relations = 2;
-
-                    message Error {
-                        Code code = 1;
-                        string description = 2;
-
-                        enum Code {
-                            NULL = 0;
-                            UNKNOWN_ERROR = 1;
-                            BAD_INPUT = 2;
-                            // ...
-                        }
-                    }
-                }
-            }
         }
         message SetSource {
             message Request {
@@ -6898,6 +6902,11 @@ message Rpc {
                 string email = 1;
 
                 bool subscribeToNewsletter = 2;
+
+                bool insiderTipsAndTutorials = 3;
+
+                // if we are coming from the onboarding list
+                bool isOnboardingList = 4;
             }
 
             message Response {

@@ -3,8 +3,6 @@ package com.anytypeio.anytype.presentation.home
 import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -30,6 +28,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.bin.EmptyBin
@@ -247,6 +246,9 @@ class HomeScreenViewModelTest {
     @Mock
     lateinit var clearLastOpenedSpace: ClearLastOpenedSpace
 
+    @Mock
+    lateinit var clearLastOpenedObject: ClearLastOpenedObject
+
     lateinit var userPermissionProvider: UserPermissionProvider
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
@@ -273,14 +275,16 @@ class HomeScreenViewModelTest {
 
     private val defaultSpaceWidgetView = WidgetView.SpaceWidget.View(
         space = StubSpaceView(),
-        icon = SpaceIconView.Placeholder,
+        icon = SpaceIconView.Placeholder(),
         type = UNKNOWN_SPACE_TYPE,
         membersCount = 0
     )
 
+    private val allContentWidgetView = WidgetView.AllContent
+
     private val secondSpaceWidgetView = WidgetView.SpaceWidget.View(
         space = StubSpaceView(),
-        icon = SpaceIconView.Placeholder,
+        icon = SpaceIconView.Placeholder(),
         type = UNKNOWN_SPACE_TYPE,
         membersCount = 0
     )
@@ -298,7 +302,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit bin, library and actions and space view if there is no block`() = runTest {
+    fun `should emit actions and space view if there is no block`() = runTest {
 
         // SETUP
 
@@ -311,8 +315,6 @@ class HomeScreenViewModelTest {
             root = WIDGET_OBJECT_ID,
             blocks = listOf(smartBlock)
         )
-
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
 
         val events: Flow<List<Event>> = emptyFlow()
 
@@ -349,8 +351,6 @@ class HomeScreenViewModelTest {
                 actual = secondTimeState,
                 expected = buildList {
                     add(defaultSpaceWidgetView)
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 }
             )
@@ -358,7 +358,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit only bin and actions when home screen has no associated widgets except the default ones`() =
+    fun `should emit only actions when home screen has no associated widgets except the default ones`() =
         runTest {
 
             // SETUP
@@ -402,8 +402,6 @@ class HomeScreenViewModelTest {
                 assertEquals(
                     expected = buildList {
                         add(defaultSpaceWidgetView)
-                        add(WidgetView.Library)
-                        add(binWidget)
                         addAll(HomeScreenViewModel.actions)
                     },
                     actual = secondTimeItem
@@ -419,7 +417,7 @@ class HomeScreenViewModelTest {
         }
 
     @Test
-    fun `should emit tree-widget with empty elements and bin when source has no links`() = runTest {
+    fun `should emit tree-widget with empty elements when source has no links`() = runTest {
 
         // SETUP
 
@@ -456,8 +454,6 @@ class HomeScreenViewModelTest {
             )
         )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
-
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenWidgetObject(givenObjectView)
@@ -487,13 +483,14 @@ class HomeScreenViewModelTest {
             )
             val firstTimeLoadingState = awaitItem()
             assertTrue {
-                val firstWidget = firstTimeLoadingState[1]
-                firstWidget is WidgetView.Tree && firstWidget.isLoading
+                val thirdWidget = firstTimeLoadingState[2]
+                thirdWidget is WidgetView.Tree && thirdWidget.isLoading
             }
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
                     add(defaultSpaceWidgetView)
+                    add(allContentWidgetView)
                     add(
                         WidgetView.Tree(
                             id = widgetBlock.id,
@@ -502,8 +499,6 @@ class HomeScreenViewModelTest {
                             isExpanded = true
                         )
                     )
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
                 actual = secondTimeState
@@ -519,7 +514,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit tree-widget with 2 elements, library and bin`() = runTest {
+    fun `should emit tree-widget with 2 elements`() = runTest {
 
         // SETUP
 
@@ -565,8 +560,6 @@ class HomeScreenViewModelTest {
             )
         )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
-
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenWidgetObject(givenObjectView)
@@ -599,13 +592,14 @@ class HomeScreenViewModelTest {
             )
             val firstTimeLoadingState = awaitItem()
             assertTrue {
-                val secondWidget = firstTimeLoadingState[1]
-                secondWidget is WidgetView.Tree && secondWidget.isLoading
+                val thirdWidget = firstTimeLoadingState[2]
+                thirdWidget is WidgetView.Tree && thirdWidget.isLoading
             }
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
                     add(defaultSpaceWidgetView)
+                    add(allContentWidgetView)
                     add(
                         WidgetView.Tree(
                             id = widgetBlock.id,
@@ -614,14 +608,14 @@ class HomeScreenViewModelTest {
                                 WidgetView.Tree.Element(
                                     elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                     obj = firstLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                    objectIcon = ObjectIcon.Empty.Page,
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + firstLink.id
                                 ),
                                 WidgetView.Tree.Element(
                                     elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                     obj = secondLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                    objectIcon = ObjectIcon.Empty.Page,
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + secondLink.id
                                 )
@@ -629,8 +623,6 @@ class HomeScreenViewModelTest {
                             isExpanded = true
                         )
                     )
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
                 actual = secondTimeState
@@ -639,7 +631,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit list without elements, library and bin`() = runTest {
+    fun `should emit list without elements`() = runTest {
 
         // SETUP
 
@@ -685,8 +677,6 @@ class HomeScreenViewModelTest {
             )
         )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
-
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenWidgetObject(givenObjectView)
@@ -719,13 +709,14 @@ class HomeScreenViewModelTest {
             )
             val firstTimeLoadingState = awaitItem()
             assertTrue {
-                val firstWidget = firstTimeLoadingState[1]
-                firstWidget is WidgetView.SetOfObjects && firstWidget.isLoading
+                val thirdWidget = firstTimeLoadingState[2]
+                thirdWidget is WidgetView.SetOfObjects && thirdWidget.isLoading
             }
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
                     add(defaultSpaceWidgetView)
+                    add(allContentWidgetView)
                     add(
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
@@ -736,8 +727,6 @@ class HomeScreenViewModelTest {
                             tabs = emptyList()
                         )
                     )
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
                 actual = secondTimeState
@@ -746,7 +735,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit compact list without elements, library and bin`() = runTest {
+    fun `should emit compact list without elements`() = runTest {
 
         // SETUP
 
@@ -792,8 +781,6 @@ class HomeScreenViewModelTest {
             )
         )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
-
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenWidgetObject(givenObjectView)
@@ -826,13 +813,14 @@ class HomeScreenViewModelTest {
             )
             val firstTimeLoadingState = awaitItem()
             assertTrue {
-                val firstWidget = firstTimeLoadingState[1]
-                firstWidget is WidgetView.SetOfObjects && firstWidget.isLoading
+                val thirdWidget = firstTimeLoadingState[2]
+                thirdWidget is WidgetView.SetOfObjects && thirdWidget.isLoading
             }
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
                     add(defaultSpaceWidgetView)
+                    add(allContentWidgetView)
                     add(
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
@@ -843,8 +831,6 @@ class HomeScreenViewModelTest {
                             tabs = emptyList()
                         )
                     )
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
                 actual = secondTimeState
@@ -853,7 +839,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit three bundled widgets with tree layout, each having 2 elements, library and bin`() =
+    fun `should emit three bundled widgets with tree layout, each having 2 elements`() =
         runTest {
 
             // SETUP
@@ -918,8 +904,6 @@ class HomeScreenViewModelTest {
                 )
             )
 
-            val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
-
             stubConfig()
             stubInterceptEvents(events = emptyFlow())
             stubOpenWidgetObject(givenObjectView)
@@ -940,7 +924,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.FAVORITE,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.NO_LIMIT
                 ),
@@ -989,7 +973,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.RECENT,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -1001,7 +985,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.SETS,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -1031,15 +1015,15 @@ class HomeScreenViewModelTest {
                 )
                 val firstTimeLoadingState1 = awaitItem()
                 assertTrue {
-                    val firstWidget = firstTimeLoadingState1[1]
+                    val firstWidget = firstTimeLoadingState1[2]
                     firstWidget is WidgetView.Tree && firstWidget.isLoading
                 }
                 assertTrue {
-                    val secondWidget = firstTimeLoadingState1[2]
+                    val secondWidget = firstTimeLoadingState1[3]
                     secondWidget is WidgetView.Tree && secondWidget.isLoading
                 }
                 assertTrue {
-                    val thirdWidget = firstTimeLoadingState1[3]
+                    val thirdWidget = firstTimeLoadingState1[4]
                     thirdWidget is WidgetView.Tree && thirdWidget.isLoading
                 }
 
@@ -1047,15 +1031,15 @@ class HomeScreenViewModelTest {
 
                 val firstTimeLoadingState2 = awaitItem()
                 assertTrue {
-                    val firstWidget = firstTimeLoadingState2[1]
+                    val firstWidget = firstTimeLoadingState2[2]
                     firstWidget is WidgetView.Tree && firstWidget.isLoading
                 }
                 assertTrue {
-                    val secondWidget = firstTimeLoadingState2[2]
+                    val secondWidget = firstTimeLoadingState2[3]
                     secondWidget is WidgetView.Tree && !secondWidget.isLoading
                 }
                 assertTrue {
-                    val thirdWidget = firstTimeLoadingState2[3]
+                    val thirdWidget = firstTimeLoadingState2[4]
                     thirdWidget is WidgetView.Tree && !thirdWidget.isLoading
                 }
 
@@ -1066,6 +1050,7 @@ class HomeScreenViewModelTest {
                 assertEquals(
                     expected = buildList {
                         add(defaultSpaceWidgetView)
+                        add(allContentWidgetView)
                         add(
                             WidgetView.Tree(
                                 id = favoriteWidgetBlock.id,
@@ -1074,14 +1059,14 @@ class HomeScreenViewModelTest {
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + firstLink.id
                                     ),
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + secondLink.id
                                     )
@@ -1097,14 +1082,14 @@ class HomeScreenViewModelTest {
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + firstLink.id
                                     ),
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + secondLink.id
                                     )
@@ -1120,14 +1105,14 @@ class HomeScreenViewModelTest {
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + firstLink.id
                                     ),
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + secondLink.id
                                     )
@@ -1135,8 +1120,6 @@ class HomeScreenViewModelTest {
                                 isExpanded = true
                             )
                         )
-                        add(WidgetView.Library)
-                        add(binWidget)
                         addAll(HomeScreenViewModel.actions)
                     },
                     actual = secondTimeState
@@ -1145,7 +1128,7 @@ class HomeScreenViewModelTest {
         }
 
     @Test
-    fun `should emit link-widget, library, bin and actions`() = runTest {
+    fun `should emit link-widget and actions`() = runTest {
 
         // SETUP
 
@@ -1215,14 +1198,13 @@ class HomeScreenViewModelTest {
             assertEquals(
                 expected = buildList {
                     add(defaultSpaceWidgetView)
+                    add(allContentWidgetView)
                     add(
                         WidgetView.Link(
                             id = widgetBlock.id,
                             source = Widget.Source.Default(sourceObject),
                         )
                     )
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
                 actual = secondTimeState
@@ -1599,7 +1581,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1609,7 +1591,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1619,7 +1601,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1800,7 +1782,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1810,7 +1792,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1822,7 +1804,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1867,7 +1849,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1878,7 +1860,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1979,8 +1961,6 @@ class HomeScreenViewModelTest {
                 actual = secondTimeState,
                 expected = buildList {
                     add(defaultSpaceWidgetView)
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 }
             )
@@ -2127,21 +2107,17 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should react to change-widget-source event when source type is page for old and new source`() =
-        runTest {
-
+    fun `should react to change-widget-source event when source type is page for old and new source`() = runTest {
             val currentSourceObject = StubObject(
                 id = "SOURCE OBJECT 1",
                 links = emptyList(),
                 objectType = ObjectTypeIds.PAGE
             )
-
             val newSourceObject = StubObject(
                 id = "SOURCE OBJECT 2",
                 links = emptyList(),
                 objectType = ObjectTypeIds.PAGE
             )
-
             val sourceLink = StubLinkToObjectBlock(
                 id = "SOURCE LINK",
                 target = currentSourceObject.id
@@ -2209,31 +2185,31 @@ class HomeScreenViewModelTest {
                 )
                 val firstTimeLoadingState = awaitItem()
                 assertTrue {
-                    val firstWidget = firstTimeLoadingState[1]
-                    firstWidget is WidgetView.Tree && firstWidget.isLoading
+                    val thirdWidget = firstTimeLoadingState[2]
+                    thirdWidget is WidgetView.Tree && thirdWidget.isLoading
                 }
                 delay(1)
                 val secondTimeItem = awaitItem()
                 assertTrue {
-                    val secondWidget = secondTimeItem[1]
+                    val secondWidget = secondTimeItem[2]
                     (secondWidget is WidgetView.Tree
                             && secondWidget.source.id == currentSourceObject.id && !secondWidget.isLoading)
                 }
                 val thirdTimeItem = awaitItem()
                 advanceUntilIdle()
                 assertTrue {
-                    val secondWidget = thirdTimeItem[1]
-                    secondWidget is WidgetView.Tree
-                            && secondWidget.source.id == newSourceObject.id
-                            && secondWidget.isLoading
+                    val thirdWidget = thirdTimeItem[2]
+                    thirdWidget is WidgetView.Tree
+                            && thirdWidget.source.id == newSourceObject.id
+                            && thirdWidget.isLoading
                 }
                 advanceUntilIdle()
                 val fourthTimeItem = awaitItem()
                 assertTrue {
-                    val secondWidget = fourthTimeItem[1]
-                    secondWidget is WidgetView.Tree
-                            && secondWidget.source.id == newSourceObject.id
-                            && !secondWidget.isLoading
+                    val thirdWidget = fourthTimeItem[2]
+                    thirdWidget is WidgetView.Tree
+                            && thirdWidget.source.id == newSourceObject.id
+                            && !thirdWidget.isLoading
                 }
             }
         }
@@ -2314,20 +2290,20 @@ class HomeScreenViewModelTest {
             )
             val firstTimeLoadingState = awaitItem()
             assertTrue {
-                val firstWidget = firstTimeLoadingState[1]
-                firstWidget is WidgetView.Tree && firstWidget.isLoading
+                val thirdWidget = firstTimeLoadingState[2]
+                thirdWidget is WidgetView.Tree && thirdWidget.isLoading
             }
             delay(1)
             val secondTimeItem = awaitItem()
             assertTrue {
-                val firstWidget = secondTimeItem[1]
-                firstWidget is WidgetView.Tree
+                val thirdWidget = secondTimeItem[2]
+                thirdWidget is WidgetView.Tree
             }
             val thirdTimeItem = awaitItem()
             advanceUntilIdle()
             assertTrue {
-                val firstWidget = thirdTimeItem[1]
-                firstWidget is WidgetView.Link
+                val thirdWidget = thirdTimeItem[2]
+                thirdWidget is WidgetView.Link
             }
         }
     }
@@ -2410,27 +2386,11 @@ class HomeScreenViewModelTest {
         )
 
         val firstTimeParams = StoreSearchParams(
+            space = SpaceId(defaultSpaceConfig.space),
             subscription = widgetBlock.id,
             filters = buildList {
                 addAll(
-                    ObjectSearchConstants.defaultDataViewFilters(
-                        spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace)
-                    )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.TYPE_UNIQUE_KEY,
-                        condition = DVFilterCondition.NOT_IN,
-                        value = listOf(
-                            ObjectTypeIds.OBJECT_TYPE,
-                            ObjectTypeIds.RELATION,
-                            ObjectTypeIds.TEMPLATE,
-                            ObjectTypeIds.DASHBOARD,
-                            ObjectTypeIds.RELATION_OPTION,
-                            ObjectTypeIds.DASHBOARD,
-                            ObjectTypeIds.DATE
-                        )
-                    ),
+                    ObjectSearchConstants.defaultDataViewFilters()
                 )
             },
             sorts = emptyList(),
@@ -2485,14 +2445,14 @@ class HomeScreenViewModelTest {
             )
             val firstTimeLoadingState = awaitItem()
             assertTrue {
-                val secondWidget = firstTimeLoadingState[1]
-                secondWidget is WidgetView.SetOfObjects && secondWidget.isLoading
+                val thirdWidget = firstTimeLoadingState[2]
+                thirdWidget is WidgetView.SetOfObjects && thirdWidget.isLoading
             }
             delay(1)
             val secondTimeItem = awaitItem()
             assertTrue {
-                val secondWidget = secondTimeItem[1]
-                secondWidget is WidgetView.SetOfObjects && secondWidget.tabs.first().isSelected
+                val thirdWidget = secondTimeItem[2]
+                thirdWidget is WidgetView.SetOfObjects && thirdWidget.tabs.first().isSelected
             }
             verifyBlocking(getObject, times(1)) {
                 run(params = currentWidgetSourceObject.id)
@@ -2525,8 +2485,8 @@ class HomeScreenViewModelTest {
             val thirdTimeItem = awaitItem()
             advanceUntilIdle()
             assertTrue {
-                val secondWidget = thirdTimeItem[1]
-                secondWidget is WidgetView.SetOfObjects && secondWidget.tabs.last().isSelected
+                val thirdWidget = thirdTimeItem[2]
+                thirdWidget is WidgetView.SetOfObjects && thirdWidget.tabs.last().isSelected
             }
             verify(storelessSubscriptionContainer, times(1)).subscribe(
                 secondTimeParams
@@ -2944,7 +2904,8 @@ class HomeScreenViewModelTest {
         createDataViewObject = createDataViewObject,
         dateProvider = dateProvider,
         addObjectToCollection = addObjectToCollection,
-        clearLastOpenedSpace = clearLastOpenedSpace
+        clearLastOpenedSpace = clearLastOpenedSpace,
+        clearLastOpenedObject = clearLastOpenedObject
     )
 
     companion object {

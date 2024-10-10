@@ -19,7 +19,6 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -121,9 +120,10 @@ open class ObjectSearchViewModel(
     protected fun getObjectTypes() {
         jobs += viewModelScope.launch {
             val params = GetObjectTypes.Params(
+                // TODO DROID-2916 Provide space id to vm params
+                space = SpaceId(spaceManager.get()),
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaces = listOf(spaceManager.get()),
                     excludeParticipant = false
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
@@ -246,10 +246,10 @@ open class ObjectSearchViewModel(
     }
 
     open suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
+        // TODO DROID-2916 Provide space id to vm params
+        space = SpaceId(spaceManager.get()),
         limit = SEARCH_LIMIT,
-        filters = ObjectSearchConstants.filterSearchObjects(
-            spaces = spaceManager.getSpaceWithTechSpace()
-        ),
+        filters = ObjectSearchConstants.filterSearchObjects(),
         sorts = ObjectSearchConstants.sortsSearchObjects,
         fulltext = EMPTY_QUERY,
         keys = buildList {

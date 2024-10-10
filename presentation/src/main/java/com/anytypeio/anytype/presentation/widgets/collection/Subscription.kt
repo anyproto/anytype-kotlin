@@ -14,57 +14,57 @@ sealed class Subscription(
     val keys: List<String>,
     val sorts: List<DVSort>,
     val limit: Int,
-    val filters: (List<Id>) -> List<DVFilter>
+    val space: (Id) -> List<DVFilter>
 ) {
-    object Recent : Subscription(
+    data object Recent : Subscription(
         Subscriptions.SUBSCRIPTION_RECENT,
         SUBSCRIPTION_DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
         ObjectSearchConstants.sortTabRecent,
         ObjectSearchConstants.limitTabRecent,
-        filters = { spaces -> ObjectSearchConstants.filterTabRecent(spaces) }
+        space = { space -> ObjectSearchConstants.filterTabRecent() }
     )
 
-    object RecentLocal : Subscription(
+    data object RecentLocal : Subscription(
         Subscriptions.SUBSCRIPTION_RECENT_LOCAL,
         SUBSCRIPTION_DEFAULT_KEYS + Relations.LAST_OPENED_DATE,
         ObjectSearchConstants.sortTabRecentLocal,
         ObjectSearchConstants.limitTabRecent,
-        filters = { spaces -> ObjectSearchConstants.filterTabRecentLocal(spaces) }
+        space = { space -> ObjectSearchConstants.filterTabRecentLocal() }
     )
 
-    object Bin : Subscription(
+    data object Bin : Subscription(
         Subscriptions.SUBSCRIPTION_ARCHIVED,
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabArchive,
         0,
-        filters = { spaces -> ObjectSearchConstants.filterTabArchive(spaces) }
+        space = { space -> ObjectSearchConstants.filterTabArchive() }
     )
 
-    object Sets : Subscription(
+    data object Sets : Subscription(
         Subscriptions.SUBSCRIPTION_SETS,
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabSets,
         0,
-        filters = { spaces -> ObjectSearchConstants.filterTabSets(spaces) }
+        space = { space -> ObjectSearchConstants.filterTabSets() }
     )
 
-    object Collections : Subscription(
+    data object Collections : Subscription(
         Subscriptions.SUBSCRIPTION_COLLECTIONS,
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabSets,
         0,
-        filters = { spaces -> ObjectSearchConstants.collectionFilters(spaces) }
+        space = { space -> ObjectSearchConstants.collectionFilters() }
     )
 
-    object Favorites : Subscription(
+    data object Favorites : Subscription(
         Subscriptions.SUBSCRIPTION_FAVORITES,
         SUBSCRIPTION_DEFAULT_KEYS,
         emptyList(),
         0,
-        filters = { spaces -> ObjectSearchConstants.filterTabFavorites(spaces) }
+        space = { space -> ObjectSearchConstants.filterTabFavorites() }
     )
 
-    object Files : Subscription(
+    data object Files : Subscription(
         id = Subscriptions.SUBSCRIPTION_FILES,
         keys = SUBSCRIPTION_DEFAULT_KEYS + Relations.SIZE_IN_BYTES + Relations.FILE_MIME_TYPE + Relations.FILE_EXT + Relations.FILE_SYNC_STATUS,
         sorts = listOf(
@@ -75,10 +75,10 @@ sealed class Subscription(
             )
         ),
         limit = 0,
-        filters = { spaces -> ObjectSearchConstants.filesFilters(spaces) }
+        space = { spaces -> ObjectSearchConstants.filesFilters(spaces) }
     )
 
-    object None : Subscription("", emptyList(), emptyList(), 0, filters = { emptyList() })
+    data object None : Subscription("", emptyList(), emptyList(), 0, space = { emptyList() })
 }
 
 class SubscriptionMapper {

@@ -228,7 +228,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
-                space = SpaceId(spaceId),
+                space = SpaceId(MARKETPLACE_SPACE_ID),
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -298,7 +298,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
-                    space = SpaceId(spaceId),
+                    space = SpaceId(MARKETPLACE_SPACE_ID),
                     filters = expectedMarketplaceTypeFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -328,7 +328,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
-                    space = SpaceId(spaceId),
+                    space = SpaceId(MARKETPLACE_SPACE_ID),
                     filters = expectedMarketplaceTypeFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -370,7 +370,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
-                space = SpaceId(spaceId),
+                space = SpaceId(MARKETPLACE_SPACE_ID),
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -404,7 +404,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
-                space = SpaceId(spaceId),
+                space = SpaceId(MARKETPLACE_SPACE_ID),
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -420,8 +420,7 @@ class ObjectTypeChangeViewModelTest {
 
         // SETUP
 
-        val space = "space-id"
-        stubSpaceManager(space)
+        stubSpaceManager(spaceId)
         val marketplaceType1 = StubObjectType()
         val marketplaceType2 = StubObjectType()
         val marketplaceType3 = StubObjectType(id = MarketplaceObjectTypeIds.PAGE)
@@ -495,7 +494,7 @@ class ObjectTypeChangeViewModelTest {
             onBlocking {
                 val command = Command.AddObjectToSpace(
                     objectId = marketplaceType3.id,
-                    space = space
+                    space = spaceId
                 )
                 addObjectToSpace(command)
             } doReturn Pair(
@@ -556,7 +555,7 @@ class ObjectTypeChangeViewModelTest {
                 addObjectToSpace(
                     Command.AddObjectToSpace(
                         objectId = marketplaceType3.id,
-                        space = space
+                        space = spaceId
                     )
                 )
             }

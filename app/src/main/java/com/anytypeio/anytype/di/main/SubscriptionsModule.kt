@@ -129,13 +129,15 @@ object SubscriptionsModule {
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         container: StorelessSubscriptionContainer,
         repo: AuthRepository,
-        logger: Logger
+        logger: Logger,
+        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
     ) : UserPermissionProvider = DefaultUserPermissionProvider(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
         repo = repo,
-        logger = logger
+        logger = logger,
+        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
     )
 
     @JvmStatic

@@ -105,7 +105,7 @@ import org.mockito.kotlin.stub
 open class ObjectSetViewModelTestSetup {
 
     val root: Id = "context-${RandomString.make()}"
-    val defaultSpace = MockDataFactory.randomUuid()
+    val defaultSpace = "DEFAULT_SPACE_ID"
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
@@ -368,7 +368,9 @@ open class ObjectSetViewModelTestSetup {
 
     suspend fun stubSpaceManager(space: Id) {
         repo.stub {
-            onBlocking { getSpaceConfig(space) } doReturn spaceConfig
+            onBlocking { getSpaceConfig(space) } doReturn spaceConfig.copy(
+                space = space
+            )
             spaceManager.set(space)
         }
     }

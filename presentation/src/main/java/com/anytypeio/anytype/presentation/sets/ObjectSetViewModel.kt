@@ -487,12 +487,12 @@ class ObjectSetViewModel(
                         Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
                         if (query.state.isInitialized) {
                             dataViewSubscription.startObjectCollectionSubscription(
+                                space = vmParams.space.id,
+                                context = vmParams.ctx,
                                 collection = vmParams.ctx,
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                context = vmParams.ctx,
-                                space = vmParams.space.id,
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
@@ -504,11 +504,11 @@ class ObjectSetViewModel(
                         Timber.d("subscribeToObjectState, NEW SET STATE")
                         if (query.state.isInitialized) {
                             dataViewSubscription.startObjectSetSubscription(
+                                space = vmParams.space.id,
+                                context = vmParams.ctx,
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                context = context,
-                                space = vmParams.space.id,
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {

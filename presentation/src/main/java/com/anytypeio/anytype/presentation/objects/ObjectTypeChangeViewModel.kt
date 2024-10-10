@@ -133,7 +133,9 @@ class ObjectTypeChangeViewModel(
         isWithFiles: Boolean
     ) {
         viewModelScope.launch {
-            getDefaultObjectType.execute(Unit).fold(
+            getDefaultObjectType.execute(
+                SpaceId(spaceManager.get())
+            ).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while getting user settings")
                 },

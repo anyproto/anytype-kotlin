@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
 /**
@@ -21,14 +20,14 @@ import javax.inject.Inject
 class CreateObject @Inject constructor(
     private val repo: BlockRepository,
     private val getDefaultObjectType: GetDefaultObjectType,
-    private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateObject.Param, CreateObject.Result>(dispatchers.io) {
 
     override suspend fun doWork(params: Param): Result {
         if (params.type == null) {
-            val defType = getDefaultObjectType.run(Unit)
+            val defType = getDefaultObjectType.run(params.space)
             return createObject(
+                space = params.space,
                 typeKey = defType.type,
                 template = defType.defaultTemplate,
                 internalFlags = params.internalFlags,
@@ -36,6 +35,7 @@ class CreateObject @Inject constructor(
             )
         } else {
             return createObject(
+                space = params.space,
                 typeKey = params.type,
                 template = params.template,
                 internalFlags = params.internalFlags,
@@ -45,16 +45,15 @@ class CreateObject @Inject constructor(
     }
 
     private suspend fun createObject(
+        space: SpaceId,
         typeKey: TypeKey,
         template: Id?,
         internalFlags: List<InternalFlags>,
         prefilled: Struct
     ): Result {
 
-        val spaceId = SpaceId(spaceManager.get())
-
         val command = Command.CreateObject(
-            space = spaceId,
+            space = space,
             typeKey = typeKey,
             template = template,
             prefilled = prefilled,
@@ -72,10 +71,8 @@ class CreateObject @Inject constructor(
         )
     }
 
-    /**
-     * DROID-2341 TODO provide custom space to params?
-     */
     data class Param(
+        val space: SpaceId,
         val type: TypeKey? = null,
         val template: Id? = null,
         val internalFlags: List<InternalFlags> = emptyList(),

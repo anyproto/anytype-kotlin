@@ -216,7 +216,9 @@ class SelectObjectTypeViewModel(
         }
 
         viewModelScope.launch {
-            getDefaultObjectType.async(Unit).fold(
+            getDefaultObjectType.async(
+                params = vmParams.space
+            ).fold(
                 onSuccess = { response ->
                     defaultObjectTypePipeline.emit(response.type)
                 },
@@ -409,7 +411,7 @@ class SelectObjectTypeViewModel(
     private fun proceedWithCreatingNote(text: String) {
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
-            val defaultObjectType = getDefaultObjectType.async(Unit).getOrNull()?.type?.let {
+            val defaultObjectType = getDefaultObjectType.async(vmParams.space).getOrNull()?.type?.let {
                 if (it.key != ObjectTypeUniqueKeys.COLLECTION && it.key != ObjectTypeUniqueKeys.SET)
                     it
                 else

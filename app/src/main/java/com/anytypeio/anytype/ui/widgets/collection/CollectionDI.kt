@@ -160,8 +160,7 @@ object CollectionModule {
     ): CreateObject = CreateObject(
         repo = repo,
         getDefaultObjectType = getDefaultObjectType,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -172,13 +171,10 @@ object CollectionModule {
         blockRepository: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
-        configStorage: ConfigStorage
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager,
-        configStorage = configStorage
+        dispatchers = dispatchers
     )
 
     @JvmStatic

@@ -3298,7 +3298,10 @@ class EditorViewModel(
         objType: ObjectWrapper.Type?
     ) {
         val startTime = System.currentTimeMillis()
-        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
+        val params = objType?.uniqueKey.getCreateObjectParams(
+            space = vmParams.space,
+            objType?.defaultTemplateId
+        )
         viewModelScope.launch {
             createObject.async(params = params).fold(
                 onSuccess = { result ->
@@ -5961,7 +5964,7 @@ class EditorViewModel(
     fun onAddMentionNewPageClicked(mentionText: String) {
         Timber.d("onAddMentionNewPageClicked, mentionText:[$mentionText]")
         viewModelScope.launch {
-            getDefaultObjectType.async(Unit).fold(
+            getDefaultObjectType.async(vmParams.space).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
                     sendToast("Error while getting default object type, couldn't create a new mention")
@@ -6348,7 +6351,7 @@ class EditorViewModel(
     fun proceedToCreateObjectAndAddToTextAsLink(name: String) {
         Timber.d("proceedToCreateObjectAndAddToTextAsLink, name:[$name]")
         viewModelScope.launch {
-            getDefaultObjectType.async(Unit).fold(
+            getDefaultObjectType.async(vmParams.space).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
                 },

@@ -16,7 +16,6 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
@@ -24,18 +23,15 @@ import javax.inject.Inject
 class GetDefaultObjectType @Inject constructor(
     private val userSettingsRepository: UserSettingsRepository,
     private val blockRepository: BlockRepository,
-    private val spaceManager: SpaceManager,
-    private val configStorage: ConfigStorage,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<Unit, GetDefaultObjectType.Response>(dispatchers.io) {
+) : ResultInteractor<SpaceId, GetDefaultObjectType.Response>(dispatchers.io) {
 
-    override suspend fun doWork(params: Unit): Response {
-        val space = SpaceId(spaceManager.get())
-        val defaultType = userSettingsRepository.getDefaultObjectType(space)
+    override suspend fun doWork(params: SpaceId): Response {
+        val defaultType = userSettingsRepository.getDefaultObjectType(params)
         if (defaultType != null) {
             val item = searchObjectByIdAndSpaceId(
                 type = defaultType,
-                space = space
+                space = params
             )
             return if (item != null) {
                 val key = TypeKey(item.uniqueKey)
@@ -47,17 +43,16 @@ class GetDefaultObjectType @Inject constructor(
                     defaultTemplate = item.defaultTemplateId
                 )
             } else {
-                fetchDefaultType()
+                fetchDefaultType(params)
             }
         } else {
-            return fetchDefaultType()
+            return fetchDefaultType(params)
         }
     }
 
-    private suspend fun fetchDefaultType(): Response {
+    private suspend fun fetchDefaultType(space: SpaceId): Response {
         val structs = blockRepository.searchObjects(
-            // TODO DROID-2916 move space id to use case params
-            space = SpaceId(spaceManager.get()),
+            space = space,
             limit = 1,
             fulltext = NO_VALUE,
             filters = buildList {
@@ -154,9 +149,6 @@ class GetDefaultObjectType @Inject constructor(
         )
     )
 
-    /**
-     * TODO DROID-2916 provide space to params
-     */
     data class Response(
         val id: TypeId,
         val type: TypeKey,

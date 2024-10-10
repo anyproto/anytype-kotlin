@@ -268,12 +268,13 @@ class GlobalSearchViewModel(
             saveSearch = true,
             relatedObjectId = relatedObjectId,
             command = Command.SearchWithMeta(
+                space = space,
                 query = query,
                 limit = DEFAULT_SEARCH_LIMIT,
                 offset = 0,
                 keys = DEFAULT_KEYS,
                 filters = buildList {
-                    addAll(filterSearchObjects(vmParams.space.id))
+                    addAll(filterSearchObjects())
                     add(
                         DVFilter(
                             relation = Relations.ID,
@@ -287,8 +288,7 @@ class GlobalSearchViewModel(
                 },
                 sorts = ObjectSearchConstants.sortsSearchObjects,
                 withMetaRelationDetails = false,
-                withMeta = false,
-                space = space
+                withMeta = false
             )
         )
     }
@@ -303,7 +303,7 @@ class GlobalSearchViewModel(
                     limit = DEFAULT_SEARCH_LIMIT,
                     offset = 0,
                     keys = DEFAULT_KEYS,
-                    filters = ObjectSearchConstants.filterSearchObjects(space.id),
+                    filters = ObjectSearchConstants.filterSearchObjects(),
                     sorts = ObjectSearchConstants.sortsSearchObjects,
                     withMetaRelationDetails = true,
                     withMeta = true,

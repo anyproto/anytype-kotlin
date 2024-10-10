@@ -422,6 +422,7 @@ class AllContentViewModel(
             spaces = listOf(vmParams.spaceId.id)
         )
         return SearchObjects.Params(
+            space = vmParams.spaceId,
             filters = filters,
             keys = listOf(Relations.ID),
             fulltext = activeQuery

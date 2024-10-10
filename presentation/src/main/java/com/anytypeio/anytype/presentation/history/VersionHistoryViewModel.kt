@@ -262,7 +262,8 @@ class VersionHistoryViewModel(
             objectSearch(
                 SearchObjects.Params(
                     filters = filters,
-                    keys = ObjectSearchConstants.spaceMemberKeys
+                    keys = ObjectSearchConstants.spaceMemberKeys,
+                    space = vmParams.spaceId
                 )
             ).process(
                 failure = {

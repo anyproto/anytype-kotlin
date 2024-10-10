@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.library.processors.EventUnsetProcessor
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -62,6 +63,7 @@ interface StorelessSubscriptionContainer {
             flow {
                 with(searchParams) {
                     val initial = repo.searchObjectsWithSubscription(
+                        space = space,
                         subscription = subscription,
                         sorts = sorts,
                         filters = filters,
@@ -82,6 +84,8 @@ interface StorelessSubscriptionContainer {
                         )
                     )
                 }
+            }.catch {
+                logger.logException(it, "Error in storeless subscription container")
             }.flowOn(dispatchers.io)
 
         override fun subscribe(searchParams: StoreSearchByIdsParams) = flow {
@@ -100,7 +104,11 @@ interface StorelessSubscriptionContainer {
                     )
                 )
             }
-        }.flowOn(dispatchers.io)
+        }.catch {
+            logger.logException(it, "Error in storeless subscription container")
+        }.flowOn(
+            context = dispatchers.io
+        )
 
         private fun buildObjectsFlow(
             subscription: Id,
@@ -160,6 +168,7 @@ interface StorelessSubscriptionContainer {
             return flow {
                 with(searchParams) {
                     val initial = repo.searchObjectsWithSubscription(
+                        space = searchParams.space,
                         subscription = subscription,
                         sorts = sorts,
                         filters = filters,
@@ -182,7 +191,11 @@ interface StorelessSubscriptionContainer {
                         )
                     )
                 }
-            }.flowOn(dispatchers.io)
+            }.catch {
+                logger.logException(it, "Error in storeless subscription container")
+            }.flowOn(
+                context = dispatchers.io
+            )
         }
 
         private fun buildObjectsFlow(

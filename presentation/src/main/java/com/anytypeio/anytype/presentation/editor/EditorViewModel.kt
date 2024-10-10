@@ -4071,10 +4071,10 @@ class EditorViewModel(
                     is ObjectRelationView.ObjectType.Base -> {
                         viewModelScope.launch {
                             val params = FindObjectSetForType.Params(
+                                space = vmParams.space,
                                 type = relation.type,
                                 filters = ObjectSearchConstants.setsByObjectTypeFilters(
-                                    types = listOf(relation.type),
-                                    space = vmParams.space.id
+                                    types = listOf(relation.type)
                                 )
                             )
                             findObjectSetForType(params).process(
@@ -5097,11 +5097,9 @@ class EditorViewModel(
     ) {
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
+                space = vmParams.space,
                 sorts = sorts,
                 filters = ObjectSearchConstants.filterTypes(
-                    spaces = buildList {
-                        add(vmParams.space.id)
-                    },
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
@@ -6107,14 +6105,10 @@ class EditorViewModel(
             }
             val fullText = filter.removePrefix(MENTION_PREFIX)
             val params = SearchObjects.Params(
+                space = vmParams.space,
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
-                    ignore = context,
-                    spaces = buildList {
-                        add(vmParams.space.id)
-                        val config = spaceManager.getConfig(vmParams.space)
-                        if (config != null) add(config.techSpace)
-                    },
+                    ignore = context
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
@@ -6222,12 +6216,10 @@ class EditorViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaces = buildList {
-                        add(vmParams.space.id)
-                    },
                     recommendedLayouts = SupportedLayouts.createObjectLayouts
                 ),
-                keys = ObjectSearchConstants.defaultKeysObjectType
+                keys = ObjectSearchConstants.defaultKeysObjectType,
+                space = vmParams.space
             )
             getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },

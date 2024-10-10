@@ -378,6 +378,7 @@ abstract class TestObjectSetSetup {
         repo.stub {
             onBlocking {
                 searchObjectsWithSubscription(
+                    space = any(),
                     subscription = any(),
                     filters = any(),
                     sorts = any(),

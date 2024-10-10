@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Subscription
 import com.anytypeio.anytype.core_models.SubscriptionEvent
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.`object`.move
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -26,6 +27,7 @@ class ObjectSearchSubscriptionContainer(
 
     private fun subscribe(subscriptions: List<Id>) = channel.subscribe(subscriptions)
     fun observe(
+        space: SpaceId,
         subscription: Id,
         sorts: List<DVSort> = emptyList(),
         filters: List<DVFilter> = emptyList(),
@@ -36,6 +38,7 @@ class ObjectSearchSubscriptionContainer(
     ): Flow<Subscription> {
         return flow {
             val initial = repo.searchObjectsWithSubscription(
+                space = space,
                 subscription = subscription,
                 sorts = sorts,
                 filters = filters,

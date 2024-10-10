@@ -227,10 +227,11 @@ class LinkToObjectOrWebViewModel(
     }
 
     suspend fun getSearchObjectsParams(ignore: Id) = SearchObjects.Params(
+        // TODO DROID-2916 Provide space id to vm params
+        space = SpaceId(spaceManager.get()),
         limit = ObjectSearchViewModel.SEARCH_LIMIT,
         filters = ObjectSearchConstants.getFilterLinkTo(
-            ignore = ignore,
-            spaces = spaceManager.getSpaceWithTechSpace()
+            ignore = ignore
         ),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = ObjectSearchViewModel.EMPTY_QUERY,

@@ -42,8 +42,7 @@ object CreateObjectModule {
     ): CreateObject = CreateObject(
         repo = repo,
         getDefaultObjectType = getDefaultObjectType,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -58,9 +57,7 @@ object CreateObjectModule {
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager,
-        configStorage = configStorage
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -81,6 +78,10 @@ object CreateObjectModule {
     @Provides
     @PerScreen
     fun provideViewModelFactory(
-        createObject: CreateObject
-    ): CreateObjectViewModel.Factory = CreateObjectViewModel.Factory(createObject = createObject)
+        createObject: CreateObject,
+        spaceManager: SpaceManager
+    ): CreateObjectViewModel.Factory = CreateObjectViewModel.Factory(
+        createObject = createObject,
+        spaceManager = spaceManager
+    )
 }

@@ -855,8 +855,11 @@ class CollectionViewModel(
         )
 
         val startTime = System.currentTimeMillis()
-        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
         viewModelScope.launch {
+            val params = objType?.uniqueKey.getCreateObjectParams(
+                space = SpaceId(spaceManager.get()),
+                objType?.defaultTemplateId
+            )
             createObject.execute(params).fold(
                 onSuccess = { result ->
                     sendAnalyticsObjectCreateEvent(

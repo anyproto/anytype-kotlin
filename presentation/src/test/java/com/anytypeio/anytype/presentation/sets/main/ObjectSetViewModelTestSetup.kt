@@ -472,7 +472,7 @@ open class ObjectSetViewModelTestSetup {
         template: Id? = null
     ) {
         getDefaultObjectType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultObjectType.Response(
+            onBlocking { run(SpaceId(spaceConfig.space)) } doReturn GetDefaultObjectType.Response(
                 type = type,
                 name = name,
                 id = id,

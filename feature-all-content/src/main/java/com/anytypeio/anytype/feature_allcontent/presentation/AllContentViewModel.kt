@@ -713,7 +713,10 @@ class AllContentViewModel(
         objType: ObjectWrapper.Type? = null
     ) {
         val startTime = System.currentTimeMillis()
-        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
+        val params = objType?.uniqueKey.getCreateObjectParams(
+            space = vmParams.spaceId,
+            objType?.defaultTemplateId
+        )
         viewModelScope.launch {
             createObject.async(params).fold(
                 onSuccess = { result ->

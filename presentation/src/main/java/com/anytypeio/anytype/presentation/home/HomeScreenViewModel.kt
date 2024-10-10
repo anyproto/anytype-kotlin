@@ -1367,7 +1367,10 @@ class HomeScreenViewModel(
         Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
+            val params = objType?.uniqueKey.getCreateObjectParams(
+                space = SpaceId(spaceManager.get()),
+                objType?.defaultTemplateId
+            )
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
@@ -1452,7 +1455,7 @@ class HomeScreenViewModel(
                 }
             }
             .onEach { (config, pinned) ->
-                val defaultObjectType = getDefaultObjectType.async(Unit).getOrNull()?.type
+                val defaultObjectType = getDefaultObjectType.async(SpaceId(config.space)).getOrNull()?.type
                 val keys = buildSet {
                     pinned.take(MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS).forEach { typeId ->
                         val wrapper = storeOfObjectTypes.get(typeId.id)
@@ -1769,6 +1772,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
+                    space = SpaceId(spaceManager.get()),
                     type = type.uniqueKey?.let {
                         TypeKey(it)
                     }
@@ -1802,6 +1806,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
+                    space = SpaceId(spaceManager.get()),
                     type = type.uniqueKey?.let {
                         TypeKey(it)
                     }

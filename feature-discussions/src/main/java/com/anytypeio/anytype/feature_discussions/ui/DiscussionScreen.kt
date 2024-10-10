@@ -107,7 +107,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
-import com.anytypeio.anytype.core_ui.widgets.GlobalSearchObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.feature_discussions.R
@@ -1056,7 +1056,7 @@ fun Attachment(
                 onAttachmentClicked()
             }
     ) {
-        GlobalSearchObjectIcon(
+        ListWidgetObjectIcon(
             icon = icon,
             iconSize = 48.dp,
             modifier = Modifier

@@ -90,15 +90,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultBasicAvatarIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultEmojiObjectIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultFileObjectImageIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultObjectBookmarkIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultObjectImageIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultProfileAvatarIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultProfileIconImage
-import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
-import com.anytypeio.anytype.core_ui.widgets.GlobalSearchObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel

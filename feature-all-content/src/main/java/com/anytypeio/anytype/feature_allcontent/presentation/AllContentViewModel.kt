@@ -675,6 +675,9 @@ class AllContentViewModel(
                     Timber.e("Unexpected layout: ${navigation.layout}")
                     commands.emit(Command.SendToast.UnexpectedLayout(navigation.layout?.name.orEmpty()))
                 }
+                is OpenObjectNavigation.OpenDiscussion -> {
+                    Timber.w("TODO!")
+                }
             }
         }
     }

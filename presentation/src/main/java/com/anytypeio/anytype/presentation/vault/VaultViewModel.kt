@@ -210,13 +210,11 @@ class VaultViewModel(
                     }
                 }
                 is DeepLinkResolver.Action.DeepLinkToMembership -> {
-                    viewModelScope.launch {
-                        commands.emit(
-                            Command.Deeplink.MembershipScreen(
-                                tierId = deeplink.tierId
-                            )
+                    commands.emit(
+                        Command.Deeplink.MembershipScreen(
+                            tierId = deeplink.tierId
                         )
-                    }
+                    )
                 }
                 else -> {
                     Timber.d("No deep link")

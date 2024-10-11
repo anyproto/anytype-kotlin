@@ -134,20 +134,25 @@ class VaultFragment : BaseComposeFragment() {
     }
 
     private fun proceed(destination: Navigation) {
-        Timber.d("New destination: $destination")
         when (destination) {
             is Navigation.OpenObject -> runCatching {
+                findNavController().navigate(R.id.actionOpenSpaceFromVault)
                 navigation().openDocument(
                     target = destination.ctx,
                     space = destination.space
                 )
+            }.onFailure {
+                Timber.e(it, "Error while opening object from vault")
             }
             is Navigation.OpenSet -> runCatching {
+                findNavController().navigate(R.id.actionOpenSpaceFromVault)
                 navigation().openObjectSet(
                     target = destination.ctx,
                     space = destination.space,
                     view = destination.view
                 )
+            }.onFailure {
+                Timber.e(it, "Error while opening set or collection from vault")
             }
         }
     }

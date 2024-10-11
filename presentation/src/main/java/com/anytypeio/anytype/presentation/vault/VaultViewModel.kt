@@ -29,11 +29,14 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.Command
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
+import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -52,8 +55,9 @@ class VaultViewModel(
     private val setVaultSettings: SetVaultSettings,
     private val observeVaultSettings: ObserveVaultSettings,
     private val setVaultSpaceOrder: SetVaultSpaceOrder,
-    private val analytics: Analytics
-) : BaseViewModel() {
+    private val analytics: Analytics,
+    private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
+) : NavigationViewModel<VaultViewModel.Navigation>(), DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -182,10 +186,8 @@ class VaultViewModel(
                 }
 
                 is DeepLinkResolver.Action.Invite -> {
-                    viewModelScope.launch {
-                        delay(1000)
-                        commands.emit(Command.Deeplink.Invite(deeplink.link))
-                    }
+                    delay(1000)
+                    commands.emit(Command.Deeplink.Invite(deeplink.link))
                 }
                 is DeepLinkResolver.Action.Unknown -> {
                     if (BuildConfig.DEBUG) {
@@ -193,21 +195,19 @@ class VaultViewModel(
                     }
                 }
                 is DeepLinkResolver.Action.DeepLinkToObject -> {
-//                    viewModelScope.launch {
-//                        val result = onDeepLinkToObject(
-//                            obj = deeplink.obj,
-//                            space = deeplink.space,
-//                            switchSpaceIfObjectFound = true
-//                        )
-//                        when(result) {
-//                            is DeepLinkToObjectDelegate.Result.Error -> {
-//                                commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
-//                            }
-//                            is DeepLinkToObjectDelegate.Result.Success -> {
-//                                proceedWithNavigation(result.obj.navigation())
-//                            }
-//                        }
-//                    }
+                    val result = onDeepLinkToObject(
+                        obj = deeplink.obj,
+                        space = deeplink.space,
+                        switchSpaceIfObjectFound = true
+                    )
+                    when(result) {
+                        is DeepLinkToObjectDelegate.Result.Error -> {
+                            commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+                        }
+                        is DeepLinkToObjectDelegate.Result.Success -> {
+                            proceedWithNavigation(result.obj.navigation())
+                        }
+                    }
                 }
                 is DeepLinkResolver.Action.DeepLinkToMembership -> {
                     viewModelScope.launch {
@@ -238,6 +238,31 @@ class VaultViewModel(
         )
     }
 
+    private fun proceedWithNavigation(navigation: OpenObjectNavigation) {
+        when(navigation) {
+            is OpenObjectNavigation.OpenDataView -> {
+                navigate(
+                    Navigation.OpenSet(
+                        ctx = navigation.target,
+                        space = navigation.space,
+                        view = null
+                    )
+                )
+            }
+            is OpenObjectNavigation.OpenEditor -> {
+                navigate(
+                    Navigation.OpenObject(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
+            is OpenObjectNavigation.UnexpectedLayoutError -> {
+                sendToast("Unexpected layout: ${navigation.layout}")
+            }
+        }
+    }
+
     class Factory @Inject constructor(
         private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         private val getSpaceWallpapers: GetSpaceWallpapers,
@@ -248,7 +273,8 @@ class VaultViewModel(
         private val setVaultSettings: SetVaultSettings,
         private val setVaultSpaceOrder: SetVaultSpaceOrder,
         private val observeVaultSettings: ObserveVaultSettings,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -263,7 +289,8 @@ class VaultViewModel(
             setVaultSettings = setVaultSettings,
             setVaultSpaceOrder = setVaultSpaceOrder,
             observeVaultSettings = observeVaultSettings,
-            analytics = analytics
+            analytics = analytics,
+            deepLinkToObjectDelegate = deepLinkToObjectDelegate
         ) as T
     }
 
@@ -288,5 +315,10 @@ class VaultViewModel(
             ) : Deeplink()
             data class MembershipScreen(val tierId: String?) : Deeplink()
         }
+    }
+
+    sealed class Navigation {
+        data class OpenObject(val ctx: Id, val space: Id) : Navigation()
+        data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
     }
 }

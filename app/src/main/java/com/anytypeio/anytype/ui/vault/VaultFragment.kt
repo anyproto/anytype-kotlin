@@ -23,10 +23,10 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
+import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.Command
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment.Companion
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.ProfileSettingsFragment
@@ -60,14 +60,15 @@ class VaultFragment : BaseComposeFragment() {
                 )
             }
             LaunchedEffect(Unit) {
-                vm.commands.collect { command ->
-                    proceedWithCommand(command)
-                }
+                vm.commands.collect { command -> proceed(command) }
+            }
+            LaunchedEffect(Unit) {
+                vm.navigation.collect { command -> proceed(command) }
             }
         }
     }
 
-    private fun proceedWithCommand(command: Command) {
+    private fun proceed(command: Command) {
         when (command) {
             is Command.EnterSpaceHomeScreen -> {
                 runCatching {
@@ -127,6 +128,25 @@ class VaultFragment : BaseComposeFragment() {
             is Command.Deeplink.DeepLinkToObjectNotWorking -> {
                 toast(
                     getString(R.string.multiplayer_deeplink_to_your_object_error)
+                )
+            }
+        }
+    }
+
+    private fun proceed(destination: Navigation) {
+        Timber.d("New destination: $destination")
+        when (destination) {
+            is Navigation.OpenObject -> runCatching {
+                navigation().openDocument(
+                    target = destination.ctx,
+                    space = destination.space
+                )
+            }
+            is Navigation.OpenSet -> runCatching {
+                navigation().openObjectSet(
+                    target = destination.ctx,
+                    space = destination.space,
+                    view = destination.view
                 )
             }
         }

@@ -12,18 +12,23 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.Command
+import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment.Companion
+import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
+import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.ProfileSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -96,6 +101,33 @@ class VaultFragment : BaseComposeFragment() {
                 }.onFailure {
                     Timber.e(it, "Error while opening introduce-vault-screen from vault")
                 }
+            }
+            is Command.Deeplink.Invite -> {
+                findNavController().navigate(
+                    R.id.requestJoinSpaceScreen,
+                    RequestJoinSpaceFragment.args(link = command.link)
+                )
+            }
+            is Command.Deeplink.GalleryInstallation -> {
+                findNavController().navigate(
+                    R.id.galleryInstallationScreen,
+                    GalleryInstallationFragment.args(
+                        deepLinkType = command.deepLinkType,
+                        deepLinkSource = command.deepLinkSource
+                    )
+                )
+            }
+            is Command.Deeplink.MembershipScreen -> {
+                findNavController().navigate(
+                    R.id.paymentsScreen,
+                    MembershipFragment.args(command.tierId),
+                    NavOptions.Builder().setLaunchSingleTop(true).build()
+                )
+            }
+            is Command.Deeplink.DeepLinkToObjectNotWorking -> {
+                toast(
+                    getString(R.string.multiplayer_deeplink_to_your_object_error)
+                )
             }
         }
     }

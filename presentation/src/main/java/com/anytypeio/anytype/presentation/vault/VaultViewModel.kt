@@ -26,11 +26,16 @@ import com.anytypeio.anytype.domain.vault.SetVaultSettings
 import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.home.Command
+import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -165,6 +170,59 @@ class VaultViewModel(
                 }
             }
         }
+        viewModelScope.launch {
+            when (deeplink) {
+                is DeepLinkResolver.Action.Import.Experience -> {
+                    commands.emit(
+                        Command.Deeplink.GalleryInstallation(
+                            deepLinkType = deeplink.type,
+                            deepLinkSource = deeplink.source
+                        )
+                    )
+                }
+
+                is DeepLinkResolver.Action.Invite -> {
+                    viewModelScope.launch {
+                        delay(1000)
+                        commands.emit(Command.Deeplink.Invite(deeplink.link))
+                    }
+                }
+                is DeepLinkResolver.Action.Unknown -> {
+                    if (BuildConfig.DEBUG) {
+                        sendToast("Could not resolve deeplink")
+                    }
+                }
+                is DeepLinkResolver.Action.DeepLinkToObject -> {
+//                    viewModelScope.launch {
+//                        val result = onDeepLinkToObject(
+//                            obj = deeplink.obj,
+//                            space = deeplink.space,
+//                            switchSpaceIfObjectFound = true
+//                        )
+//                        when(result) {
+//                            is DeepLinkToObjectDelegate.Result.Error -> {
+//                                commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+//                            }
+//                            is DeepLinkToObjectDelegate.Result.Success -> {
+//                                proceedWithNavigation(result.obj.navigation())
+//                            }
+//                        }
+//                    }
+                }
+                is DeepLinkResolver.Action.DeepLinkToMembership -> {
+                    viewModelScope.launch {
+                        commands.emit(
+                            Command.Deeplink.MembershipScreen(
+                                tierId = deeplink.tierId
+                            )
+                        )
+                    }
+                }
+                else -> {
+                    Timber.d("No deep link")
+                }
+            }
+        }
     }
 
     private suspend fun proceedWithSavingCurrentSpace(targetSpace: String) {
@@ -220,5 +278,15 @@ class VaultViewModel(
         data object CreateNewSpace: Command()
         data class OpenProfileSettings(val space: SpaceId): Command()
         data object ShowIntroduceVault : Command()
+
+        sealed class Deeplink : Command() {
+            data object DeepLinkToObjectNotWorking: Deeplink()
+            data class Invite(val link: String) : Deeplink()
+            data class GalleryInstallation(
+                val deepLinkType: String,
+                val deepLinkSource: String
+            ) : Deeplink()
+            data class MembershipScreen(val tierId: String?) : Deeplink()
+        }
     }
 }

@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toCheckboxView
 import com.anytypeio.anytype.presentation.mapper.toDateView
 import com.anytypeio.anytype.presentation.mapper.toGridRecordRows
@@ -484,12 +485,7 @@ suspend fun ObjectWrapper.Relation.toObjects(
                     else -> ObjectView.Default(
                         id = id,
                         name = wrapper.getProperName(),
-                        icon = ObjectIcon.from(
-                            obj = wrapper,
-                            layout = wrapper.layout,
-                            builder = urlBuilder,
-                            objectTypeNoIcon = false
-                        ),
+                        icon = wrapper.objectIcon(urlBuilder),
                         types = type,
                         isRelation = wrapper.layout == ObjectType.Layout.RELATION
                     )

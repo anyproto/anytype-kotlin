@@ -575,13 +575,21 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .launchIn(lifecycleScope)
 
         binding.bottomToolbar
-            .homeClicks()
-            .onEach { vm.onHomeButtonClicked() }
+            .backClicks()
+            .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
 
         binding.bottomToolbar
-            .backClicks()
-            .onEach { vm.onBackButtonPressed() }
+            .binding
+            .btnBack
+            .longClicks(withHaptic = true)
+            .onEach {
+                runCatching {
+                    findNavController().navigate(R.id.actionOpenSpaceSwitcher)
+                }.onFailure {
+                    Timber.e(it, "Error while opening space switcher from editor")
+                }
+            }
             .launchIn(lifecycleScope)
 
         binding.bottomToolbar

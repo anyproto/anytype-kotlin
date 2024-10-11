@@ -45,11 +45,11 @@
         layout="@layout/item_viewer_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/galleryView"
-        app:layout_constraintBottom_toTopOf="@id/bottomToolbarСontainer"
+        app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
+        app:layout_constraintTop_toBottomOf="@+id/controlDivider2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/controlDivider2" />
+        />
 
     <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewWidget
         android:id="@+id/galleryView"
@@ -57,9 +57,9 @@
         android:layout_height="0dp"
         android:paddingTop="10dp"
         app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
+        app:layout_constraintTop_toBottomOf="@+id/controlDivider2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/controlDivider2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.anytypeio.anytype.core_ui.widgets.dv.ListViewWidget
         android:id="@+id/listView"
@@ -68,9 +68,9 @@
         android:paddingStart="@dimen/dp_20"
         android:paddingEnd="@dimen/dp_20"
         app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
+        app:layout_constraintTop_toBottomOf="@+id/controlDivider2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/controlDivider2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <include
         android:id="@+id/bottomPanel"
@@ -89,7 +89,6 @@
         android:id="@+id/paginatorToolbar"
         android:layout_width="0dp"
         android:layout_height="@dimen/default_toolbar_height"
-        app:layout_constraintBottom_toTopOf="@id/bottomToolbarСontainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -132,7 +131,7 @@
         tools:visibility="visible" />
 
     <FrameLayout
-        android:id="@+id/bottomToolbarСontainer"
+        android:id="@+id/bottomToolbarBox"
         android:layout_width="0dp"
         android:layout_height="@dimen/default_nav_panel_height"
         app:layout_constraintBottom_toTopOf="@+id/bottomPanel"
@@ -143,9 +142,6 @@
             android:id="@+id/bottomToolbar"
             android:layout_width="@dimen/default_nav_panel_width"
             android:layout_height="match_parent"
-            app:layout_constraintBottom_toTopOf="@+id/bottomPanel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_gravity="center"
             tools:visibility="visible" />
     </FrameLayout>

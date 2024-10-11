@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.core_models.ext.DateParser
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -254,7 +255,7 @@ fun Struct.buildFileViews(
 private fun ObjectWrapper.File.toView() : FileView {
     return FileView(
         id = id,
-        name = "${name.orEmpty()}.$fileExt",
+        name = name.orEmpty(),
         mime = fileMimeType.orEmpty(),
         ext = fileExt.orEmpty(),
         icon = ObjectIcon.File(
@@ -305,11 +306,7 @@ suspend fun Struct.buildObjectViews(
                     ObjectView.Default(
                         id = value,
                         name = wrapper.getProperName(),
-                        icon = ObjectIcon.from(
-                            obj = wrapper,
-                            layout = wrapper.layout,
-                            builder = builder
-                        ),
+                        icon = wrapper.objectIcon(builder),
                         types = wrapper.type
                     )
                 )
@@ -328,11 +325,7 @@ suspend fun Struct.buildObjectViews(
                         ObjectView.Default(
                             id = id,
                             name = wrapper.getProperName(),
-                            icon = ObjectIcon.from(
-                                obj = wrapper,
-                                layout = wrapper.layout,
-                                builder = builder
-                            ),
+                            icon = wrapper.objectIcon(builder),
                             types = wrapper.type
                         )
                     )

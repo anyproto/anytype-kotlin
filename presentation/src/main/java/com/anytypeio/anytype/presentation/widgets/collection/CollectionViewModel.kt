@@ -40,7 +40,6 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
@@ -249,7 +248,7 @@ class CollectionViewModel(
         return StoreSearchParams(
             subscription = subscription.id,
             keys = subscription.keys,
-            filters = subscription.filters(spaceManager.getSpaceWithTechSpace()),
+            filters = subscription.space(spaceManager.get()),
             sorts = subscription.sorts,
             limit = subscription.limit
         )
@@ -276,10 +275,7 @@ class CollectionViewModel(
                                 subscription = subscription.id,
                                 keys = subscription.keys,
                                 filters = ObjectSearchConstants.filterTabRecent(
-                                    spaces = buildList {
-                                        add(config.space)
-                                        add(config.techSpace)
-                                    },
+                                    space = config.space,
                                     spaceCreationDateInSeconds = spaceCreationDateInSeconds
                                 ),
                                 sorts = subscription.sorts,
@@ -823,6 +819,12 @@ class CollectionViewModel(
         }
     }
 
+    fun onBackLongClicked() {
+        launch {
+            commands.emit(Command.OpenSpaceSwitcher)
+        }
+    }
+
     fun onSearchClicked(space: Id) {
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -987,6 +989,7 @@ class CollectionViewModel(
         data class ToSearch(val space: Id) : Command()
         data object Vault : Command()
         data object Exit : Command()
+        data object OpenSpaceSwitcher : Command()
     }
 }
 

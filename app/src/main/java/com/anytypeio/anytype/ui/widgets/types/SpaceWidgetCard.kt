@@ -35,7 +35,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 fun SpaceWidgetCardPreview() {
     SpaceWidgetCard(
         onClick = {},
-        icon = SpaceIconView.Placeholder,
+        icon = SpaceIconView.Placeholder(),
         name = "Research",
         spaceType = PRIVATE_SPACE_TYPE,
         onSpaceShareIconClicked = {},
@@ -49,7 +49,7 @@ fun SpaceWidgetCardPreview() {
 fun SharedSpaceWidgetCardPreview() {
     SpaceWidgetCard(
         onClick = {},
-        icon = SpaceIconView.Placeholder,
+        icon = SpaceIconView.Placeholder(),
         name = "Research",
         spaceType = SHARED_SPACE_TYPE,
         onSpaceShareIconClicked = {},

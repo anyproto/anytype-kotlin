@@ -202,7 +202,7 @@ fun PreviewObjectItem() {
                 type = "Type",
                 typeName = "Type Name",
                 description = "Description",
-                icon = ObjectIcon.Basic.Emoji("\uD83D\uDCA1"),
+                icon = ObjectIcon.Basic.Emoji("\uD83D\uDCA1", emptyState = ObjectIcon.Empty.Page),
                 space = "space-1"
             ),
             isSelected = true,

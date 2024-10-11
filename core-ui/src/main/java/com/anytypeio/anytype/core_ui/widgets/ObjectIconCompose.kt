@@ -1,32 +1,27 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.AvatarIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.DeletedIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmptyIconView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
@@ -34,28 +29,31 @@ fun ListWidgetObjectIcon(
     icon: ObjectIcon,
     modifier: Modifier,
     iconSize: Dp = 48.dp,
-    onTaskIconClicked: (Boolean) -> Unit = {},
-    avatarFontSize: TextUnit = 28.sp,
-    avatarTextStyle: TextStyle = TextStyle(
-        fontWeight = FontWeight.SemiBold,
-        color = colorResource(id = R.color.text_white)
-    ),
-    avatarBackgroundColor: Int = R.color.text_tertiary
+    onTaskIconClicked: (Boolean) -> Unit = {}
 ) {
     when (icon) {
-        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(
-            modifier = modifier,
-            iconSize = iconSize,
-            icon = icon,
-            avatarFontSize = avatarFontSize,
-            avatarTextStyle = avatarTextStyle,
-            avatarBackgroundColor = avatarBackgroundColor
-        )
-        is ObjectIcon.Profile.Image -> DefaultProfileIconImage(icon, modifier, iconSize)
-        is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
-        is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
-        is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
-        is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
+        is ObjectIcon.Profile.Avatar -> {
+            AvatarIconView(
+                modifier = modifier,
+                iconSize = iconSize,
+                icon = icon
+            )
+        }
+        is ObjectIcon.Profile.Image -> {
+            DefaultProfileIconImage(icon, modifier, iconSize)
+        }
+        is ObjectIcon.Basic.Emoji -> {
+            EmojiIconView(icon = icon, backgroundSize = iconSize, modifier = modifier)
+        }
+        is ObjectIcon.Basic.Image -> {
+            DefaultObjectImageIcon(icon.hash, modifier, iconSize)
+        }
+        is ObjectIcon.Bookmark -> {
+            DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
+        }
+        is ObjectIcon.Task -> {
+            DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
+        }
         is ObjectIcon.File -> {
             DefaultFileObjectImageIcon(
                 fileName = icon.fileName.orEmpty(),
@@ -65,9 +63,21 @@ fun ListWidgetObjectIcon(
                 extension = icon.extensions
             )
         }
-        else -> {
-            // Draw nothing.
+        is ObjectIcon.Checkbox -> {}
+        ObjectIcon.Deleted -> {
+            DeletedIconView(
+                modifier = modifier,
+                backgroundSize = iconSize
+            )
         }
+        is ObjectIcon.Empty -> {
+            EmptyIconView(
+                modifier = modifier,
+                emptyType = icon,
+                backgroundSize = iconSize
+            )
+        }
+        ObjectIcon.None -> {}
     }
 }
 
@@ -129,65 +139,7 @@ fun DefaultObjectBookmarkIcon(
     }
 }
 
-@Composable
-fun DefaultProfileAvatarIcon(
-    modifier: Modifier,
-    iconSize: Dp,
-    icon: ObjectIcon.Profile.Avatar,
-    avatarFontSize: TextUnit,
-    avatarTextStyle: TextStyle,
-    avatarBackgroundColor: Int
-) {
-    Box(
-        modifier = modifier
-            .size(iconSize)
-            .background(
-                shape = CircleShape,
-                color = colorResource(id = avatarBackgroundColor)
-            )
-    ) {
-        Text(
-            text = icon
-                .name
-                .ifEmpty { stringResource(id = R.string.u) }
-                .take(1)
-                .uppercase(),
-            modifier = Modifier.align(Alignment.Center),
-            style = avatarTextStyle,
-            fontSize = avatarFontSize
-        )
-    }
-}
 
-@Composable
-fun DefaultBasicAvatarIcon(
-    modifier: Modifier,
-    iconSize: Dp,
-    icon: ObjectIcon.Basic.Avatar
-) {
-    Box(
-        modifier = modifier
-            .size(iconSize)
-            .background(
-                shape = RoundedCornerShape(12.dp),
-                color = colorResource(id = R.color.text_tertiary)
-            )
-    ) {
-        Text(
-            text = icon
-                .name
-                .ifEmpty { stringResource(id = R.string.u) }
-                .take(1)
-                .uppercase(),
-            modifier = Modifier.align(Alignment.Center),
-            style = TextStyle(
-                fontSize = 28.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = colorResource(id = R.color.text_white)
-            )
-        )
-    }
-}
 
 @Composable
 fun DefaultProfileIconImage(
@@ -203,40 +155,6 @@ fun DefaultProfileIconImage(
             .clip(CircleShape),
         contentScale = ContentScale.Crop,
     )
-}
-
-@Composable
-fun DefaultEmojiObjectIcon(
-    modifier: Modifier,
-    iconSize: Dp,
-    icon: ObjectIcon.Basic.Emoji
-) {
-    Box(
-        modifier = modifier
-            .size(iconSize)
-            .background(
-                shape = RoundedCornerShape(12.dp),
-                color = colorResource(id = R.color.shape_transparent)
-            )
-    ) {
-        val emoji = Emojifier.safeUri(icon.unicode)
-        if (emoji != Emojifier.Config.EMPTY_URI) {
-            Image(
-                painter = rememberAsyncImagePainter(Emojifier.safeUri(icon.unicode)),
-                contentDescription = "Icon from URI",
-                modifier = Modifier
-                    .size(24.dp)
-                    .align(Alignment.Center)
-            )
-        } else {
-            Text(
-                text = icon.unicode,
-                modifier = Modifier.align(Alignment.Center),
-                fontSize = 22.sp,
-                maxLines = 1,
-            )
-        }
-    }
 }
 
 @Composable
@@ -256,4 +174,25 @@ fun DefaultFileObjectImageIcon(
             .size(iconSize)
             .clip(RoundedCornerShape(2.dp))
     )
+}
+
+fun cornerRadius(size: Dp): Dp {
+    return when (size) {
+        in 0.dp..20.dp -> 2.dp
+        in 21.dp..39.dp -> 4.dp
+        in 40.dp..47.dp -> 5.dp
+        in 48.dp..63.dp -> 6.dp
+        in 64.dp..79.dp -> 8.dp
+        else -> 12.dp
+    }
+}
+
+fun imageAsset(emptyType: ObjectIcon.Empty): Int {
+    return when (emptyType) {
+        ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link
+        ObjectIcon.Empty.Discussion -> R.drawable.ic_empty_state_chat
+        ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list
+        ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type
+        ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page
+    }
 }

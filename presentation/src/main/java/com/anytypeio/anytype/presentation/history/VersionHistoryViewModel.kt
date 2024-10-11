@@ -36,8 +36,10 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenVersionPr
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowVersionHistoryScreen
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsVersionHistoryRestore
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup.GroupTitle
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.getRelationFormat
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -468,11 +470,7 @@ class VersionHistoryViewModel(
             val spaceMember = spaceMembers.find { it.id == spaceMemberId }
                 ?: return@mapNotNull null
 
-            val icon = ObjectIcon.from(
-                obj = spaceMember,
-                layout = spaceMember.layout,
-                builder = urlBuilder
-            )
+            val icon = spaceMember.objectIcon(urlBuilder)
 
             val (latestVersionDate, latestVersionTime) = dateProvider.formatTimestampToDateAndTime(
                 timestamp = latestVersion.timestamp.inMillis,

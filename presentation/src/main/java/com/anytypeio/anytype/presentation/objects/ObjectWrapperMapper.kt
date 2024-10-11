@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
@@ -38,11 +39,7 @@ fun List<ObjectWrapper.Basic>.toView(
             ),
             description = obj.description,
             layout = layout,
-            icon = ObjectIcon.from(
-                obj = obj,
-                layout = layout,
-                builder = urlBuilder
-            ),
+            icon = obj.objectIcon(urlBuilder),
             space = requireNotNull(obj.spaceId)
         )
     }
@@ -75,11 +72,7 @@ fun ObjectWrapper.Basic.toView(
             }
         }?.name,
         layout = layout,
-        icon = ObjectIcon.from(
-            obj = obj,
-            layout = layout,
-            builder = urlBuilder
-        ),
+        icon = obj.objectIcon(urlBuilder),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
         lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
         isFavorite = obj.isFavorite ?: false,
@@ -97,22 +90,14 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                 LibraryView.LibraryTypeView(
                     id = obj.id,
                     name = obj.name.orEmpty(),
-                    icon = ObjectIcon.from(
-                        obj = obj,
-                        layout = obj.getProperLayout(),
-                        builder = urlBuilder
-                    ),
+                    icon = obj.objectIcon(urlBuilder),
                     uniqueKey = obj.uniqueKey
                 )
             } else {
                 LibraryView.MyTypeView(
                     id = obj.id,
                     name = obj.name.orEmpty(),
-                    icon = ObjectIcon.from(
-                        obj = obj,
-                        layout = obj.getProperLayout(),
-                        builder = urlBuilder
-                    ),
+                    icon = obj.objectIcon(urlBuilder),
                     sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
                     uniqueKey = obj.uniqueKey,
                     readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
@@ -159,11 +144,7 @@ fun List<ObjectWrapper.Basic>.toLinkToView(
             subtitle = getProperTypeName(id = typeUrl, types = objectTypes),
             type = typeUrl,
             layout = layout,
-            icon = ObjectIcon.from(
-                obj = obj,
-                layout = layout,
-                builder = urlBuilder
-            ),
+            icon = obj.objectIcon(urlBuilder),
             position = index
         )
     }
@@ -180,11 +161,7 @@ fun ObjectWrapper.Basic.toLinkToObjectView(
         subtitle = getProperTypeName(id = typeUrl, types = objectTypes),
         type = typeUrl,
         layout = layout,
-        icon = ObjectIcon.from(
-            obj = this,
-            layout = layout,
-            builder = urlBuilder
-        )
+        icon = objectIcon(urlBuilder),
     )
 }
 
@@ -201,11 +178,7 @@ fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
                 types = objectTypes
             ),
             name = obj.getProperName(),
-            icon = ObjectIcon.from(
-                obj = obj,
-                layout = obj.getProperLayout(),
-                builder = urlBuilder,
-            ),
+            icon = obj.objectIcon(urlBuilder),
             isSelected = ids?.contains(obj.id) ?: false
         )
     }.sortedByDescending { it.isSelected }
@@ -230,11 +203,7 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
                     ),
                     type = typeUrl,
                     layout = layout,
-                    icon = ObjectIcon.from(
-                        obj = obj,
-                        layout = layout,
-                        builder = urlBuilder,
-                    ),
+                    icon = obj.objectIcon(urlBuilder),
                     isSelected = false,
                     removable = false
                 )

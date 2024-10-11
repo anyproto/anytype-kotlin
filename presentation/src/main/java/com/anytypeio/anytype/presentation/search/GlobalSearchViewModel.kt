@@ -43,6 +43,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinks
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterObjectsByIds
@@ -134,7 +135,7 @@ class GlobalSearchViewModel(
                 keys = DEFAULT_KEYS,
                 filters = filterObjectsByIds(
                     ids = listOf(relatedObjectId),
-                    spaces = listOf(vmParams.space.id)
+                    space = vmParams.space.id
                 ),
                 space = vmParams.space
             )
@@ -272,11 +273,7 @@ class GlobalSearchViewModel(
                 offset = 0,
                 keys = DEFAULT_KEYS,
                 filters = buildList {
-                    addAll(
-                        filterSearchObjects(
-                            spaces = listOf(vmParams.space.id)
-                        )
-                    )
+                    addAll(filterSearchObjects(vmParams.space.id))
                     add(
                         DVFilter(
                             relation = Relations.ID,
@@ -306,10 +303,7 @@ class GlobalSearchViewModel(
                     limit = DEFAULT_SEARCH_LIMIT,
                     offset = 0,
                     keys = DEFAULT_KEYS,
-                    filters = ObjectSearchConstants.filterSearchObjects(
-                        // TODO add tech space?
-                        spaces = listOf(space.id)
-                    ),
+                    filters = ObjectSearchConstants.filterSearchObjects(space.id),
                     sorts = ObjectSearchConstants.sortsSearchObjects,
                     withMetaRelationDetails = true,
                     withMeta = true,
@@ -558,11 +552,7 @@ suspend fun Command.SearchWithMeta.Result.view(
     val meta = metas.firstOrNull()
     return GlobalSearchItemView(
         id = obj,
-        icon = ObjectIcon.from(
-            obj = wrapper,
-            layout = wrapper.layout,
-            builder = urlBuilder
-        ),
+        icon = wrapper.objectIcon(urlBuilder),
         links = wrapper.links,
         backlinks = wrapper.backlinks,
         space = SpaceId(requireNotNull(wrapper.spaceId)),

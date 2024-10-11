@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectTypeView
@@ -107,11 +108,7 @@ class LimitObjectTypeViewModel(
                                 id = t.id,
                                 title = t.name.orEmpty(),
                                 subtitle = t.description,
-                                icon = ObjectIcon.from(
-                                    obj = t,
-                                    layout = t.layout,
-                                    builder = urlBuilder
-                                )
+                                icon = t.objectIcon(urlBuilder)
                             ),
                             isSelected = limitObjectTypes.map { it.id }.contains(t.id)
                         )

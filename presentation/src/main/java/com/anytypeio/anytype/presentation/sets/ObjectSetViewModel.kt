@@ -62,7 +62,6 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -493,7 +492,7 @@ class ObjectSetViewModel(
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
                                 context = vmParams.ctx,
-                                spaces = spaceManager.getSpaceWithTechSpace(space = vmParams.space.id),
+                                space = vmParams.space.id,
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
@@ -509,7 +508,7 @@ class ObjectSetViewModel(
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
                                 context = context,
-                                spaces = spaceManager.getSpaceWithTechSpace(vmParams.space.id),
+                                space = vmParams.space.id,
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {

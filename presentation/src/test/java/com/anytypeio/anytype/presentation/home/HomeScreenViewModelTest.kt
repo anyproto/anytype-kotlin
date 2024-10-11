@@ -3,8 +3,6 @@ package com.anytypeio.anytype.presentation.home
 import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -30,6 +28,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.bin.EmptyBin
@@ -247,6 +246,9 @@ class HomeScreenViewModelTest {
     @Mock
     lateinit var clearLastOpenedSpace: ClearLastOpenedSpace
 
+    @Mock
+    lateinit var clearLastOpenedObject: ClearLastOpenedObject
+
     lateinit var userPermissionProvider: UserPermissionProvider
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
@@ -273,7 +275,7 @@ class HomeScreenViewModelTest {
 
     private val defaultSpaceWidgetView = WidgetView.SpaceWidget.View(
         space = StubSpaceView(),
-        icon = SpaceIconView.Placeholder,
+        icon = SpaceIconView.Placeholder(),
         type = UNKNOWN_SPACE_TYPE,
         membersCount = 0
     )
@@ -282,7 +284,7 @@ class HomeScreenViewModelTest {
 
     private val secondSpaceWidgetView = WidgetView.SpaceWidget.View(
         space = StubSpaceView(),
-        icon = SpaceIconView.Placeholder,
+        icon = SpaceIconView.Placeholder(),
         type = UNKNOWN_SPACE_TYPE,
         membersCount = 0
     )
@@ -606,14 +608,14 @@ class HomeScreenViewModelTest {
                                 WidgetView.Tree.Element(
                                     elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                     obj = firstLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                    objectIcon = ObjectIcon.Empty.Page,
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + firstLink.id
                                 ),
                                 WidgetView.Tree.Element(
                                     elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                     obj = secondLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                    objectIcon = ObjectIcon.Empty.Page,
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + secondLink.id
                                 )
@@ -922,7 +924,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.FAVORITE,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.NO_LIMIT
                 ),
@@ -971,7 +973,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.RECENT,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -983,7 +985,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.SETS,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -1057,14 +1059,14 @@ class HomeScreenViewModelTest {
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + firstLink.id
                                     ),
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + secondLink.id
                                     )
@@ -1080,14 +1082,14 @@ class HomeScreenViewModelTest {
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + firstLink.id
                                     ),
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + secondLink.id
                                     )
@@ -1103,14 +1105,14 @@ class HomeScreenViewModelTest {
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + firstLink.id
                                     ),
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + secondLink.id
                                     )
@@ -1579,7 +1581,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1589,7 +1591,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1599,7 +1601,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1780,7 +1782,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1790,7 +1792,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1802,7 +1804,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1847,7 +1849,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1858,7 +1860,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -2388,23 +2390,8 @@ class HomeScreenViewModelTest {
             filters = buildList {
                 addAll(
                     ObjectSearchConstants.defaultDataViewFilters(
-                        spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace)
+                        space = defaultSpaceConfig.space
                     )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.TYPE_UNIQUE_KEY,
-                        condition = DVFilterCondition.NOT_IN,
-                        value = listOf(
-                            ObjectTypeIds.OBJECT_TYPE,
-                            ObjectTypeIds.RELATION,
-                            ObjectTypeIds.TEMPLATE,
-                            ObjectTypeIds.DASHBOARD,
-                            ObjectTypeIds.RELATION_OPTION,
-                            ObjectTypeIds.DASHBOARD,
-                            ObjectTypeIds.DATE
-                        )
-                    ),
                 )
             },
             sorts = emptyList(),
@@ -2918,7 +2905,8 @@ class HomeScreenViewModelTest {
         createDataViewObject = createDataViewObject,
         dateProvider = dateProvider,
         addObjectToCollection = addObjectToCollection,
-        clearLastOpenedSpace = clearLastOpenedSpace
+        clearLastOpenedSpace = clearLastOpenedSpace,
+        clearLastOpenedObject = clearLastOpenedObject
     )
 
     companion object {

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
@@ -187,10 +188,7 @@ class TreeWidgetContainer(
                 container.subscribe(
                     ListWidgetContainer.params(
                         subscription = widget.source.id,
-                        spaces = buildList {
-                            add(widget.config.space)
-                            add(widget.config.techSpace)
-                        },
+                        space = widget.config.space,
                         keys = keys,
                         limit = rootLevelLimit,
                         spaceCreationDateInSeconds = spaceViewCreationDate
@@ -201,10 +199,7 @@ class TreeWidgetContainer(
                 container.subscribe(
                     ListWidgetContainer.params(
                         subscription = widget.source.id,
-                        spaces = buildList {
-                            add(widget.config.space)
-                            add(widget.config.techSpace)
-                        },
+                        space = widget.config.space,
                         keys = keys,
                         limit = rootLevelLimit
                     )
@@ -264,7 +259,7 @@ class TreeWidgetContainer(
                             expanded = expanded,
                             currentLinkPath = currentLinkPath
                         ),
-                        objectIcon = obj.widgetElementIcon(
+                        objectIcon = obj.objectIcon(
                             builder = urlBuilder
                         ),
                         indent = level,

@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -52,21 +53,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
@@ -75,14 +75,7 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
-import com.anytypeio.anytype.core_ui.widgets.DefaultBasicAvatarIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultEmojiObjectIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultFileObjectImageIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultObjectBookmarkIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultObjectImageIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultProfileAvatarIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultProfileIconImage
-import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
@@ -111,6 +104,7 @@ fun AllContentWrapperScreen(
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem.Type) -> Unit,
+    onRelationClicked: (UiContentItem.Relation) -> Unit,
     onBinClick: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
@@ -120,6 +114,7 @@ fun AllContentWrapperScreen(
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
+    onBackLongClicked: () -> Unit,
     moveToBin: (UiContentItem.Item) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
@@ -161,7 +156,9 @@ fun AllContentWrapperScreen(
         onAddDocClicked = onAddDocClicked,
         onCreateObjectLongClicked = onCreateObjectLongClicked,
         onBackClicked = onBackClicked,
-        moveToBin = moveToBin
+        onBackLongClicked = onBackLongClicked,
+        moveToBin = moveToBin,
+        onRelationClicked = onRelationClicked
     )
 }
 
@@ -178,6 +175,7 @@ fun AllContentMainScreen(
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem.Type) -> Unit,
+    onRelationClicked: (UiContentItem.Relation) -> Unit,
     onBinClick: () -> Unit,
     lazyListState: LazyListState,
     uiContentState: UiContentState,
@@ -186,6 +184,7 @@ fun AllContentMainScreen(
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
+    onBackLongClicked: () -> Unit,
     moveToBin: (UiContentItem.Item) -> Unit
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
@@ -212,7 +211,8 @@ fun AllContentMainScreen(
                     onGlobalSearchClicked = onGlobalSearchClicked,
                     onAddDocClicked = onAddDocClicked,
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
-                    onBackClicked = onBackClicked
+                    onBackClicked = onBackClicked,
+                    onBackLongClicked = onBackLongClicked
                 )
             }
         },
@@ -291,7 +291,8 @@ fun AllContentMainScreen(
                             onTypeClicked = onTypeClicked,
                             uiContentState = uiContentState,
                             lazyListState = lazyListState,
-                            moveToBin = moveToBin
+                            moveToBin = moveToBin,
+                            onRelationClicked = onRelationClicked
                         )
                     }
                 }
@@ -307,13 +308,15 @@ fun BottomMenu(
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onBackLongClicked: () -> Unit,
 ) {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     if (isImeVisible) return
     BottomNavigationMenu(
         modifier = modifier,
         backClick = onBackClicked,
+        backLongClick = onBackLongClicked,
         onProfileClicked = onHomeClicked,
         searchClick = onGlobalSearchClicked,
         addDocClick = onAddDocClicked,
@@ -326,6 +329,7 @@ private fun ContentItems(
     uiItemsState: List<UiContentItem>,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem.Type) -> Unit,
+    onRelationClicked: (UiContentItem.Relation) -> Unit,
     uiContentState: UiContentState,
     lazyListState: LazyListState,
     moveToBin: (UiContentItem.Item) -> Unit
@@ -344,6 +348,7 @@ private fun ContentItems(
                     is UiContentItem.Group -> "group"
                     is UiContentItem.Item -> "item"
                     is UiContentItem.Type -> "type"
+                    is UiContentItem.Relation -> "relation"
                 }
             }
         ) { index ->
@@ -388,8 +393,21 @@ private fun ContentItems(
                             .padding(horizontal = 16.dp)
                             .bottomBorder()
                             .animateItem()
-                            .noRippleClickable {
+                            .noRippleThrottledClickable {
                                 onTypeClicked(item)
+                            },
+                        item = item
+                    )
+                }
+
+                is UiContentItem.Relation -> {
+                    Relation(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .bottomBorder()
+                            .animateItem()
+                            .noRippleThrottledClickable {
+                                onRelationClicked(item)
                             },
                         item = item
                     )
@@ -407,6 +425,9 @@ private fun ContentItems(
                     LoadingState()
                 }
             }
+        }
+        item {
+            Spacer(modifier = Modifier.height(200.dp))
         }
     }
 
@@ -471,7 +492,9 @@ fun PreviewMainScreen() {
         onAddDocClicked = {},
         onCreateObjectLongClicked = {},
         onBackClicked = {},
-        moveToBin = {}
+        moveToBin = {},
+        onBackLongClicked = {},
+        onRelationClicked = {}
     )
 }
 
@@ -498,7 +521,7 @@ fun RowScope.Item(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (description != null) {
+                if (!description.isNullOrBlank()) {
                     Text(
                         text = description,
                         style = Relations3,
@@ -521,7 +544,7 @@ fun RowScope.Item(
             }
         },
         leadingContent = {
-            AllContentItemIcon(icon = item.icon, modifier = Modifier)
+            ListWidgetObjectIcon(icon = item.icon, modifier = Modifier, iconSize = 48.dp)
         }
     )
 }
@@ -540,7 +563,8 @@ private fun Type(
                 .padding(start = 0.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
                 .wrapContentSize()
         ) {
-            AllContentItemIcon(icon = item.icon, modifier = Modifier, iconSize = 24.dp)
+            //todo delete !!
+            ListWidgetObjectIcon(icon = item.icon!!, modifier = Modifier, iconSize = 24.dp)
         }
         val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
 
@@ -555,47 +579,36 @@ private fun Type(
 }
 
 @Composable
-fun AllContentItemIcon(
-    icon: ObjectIcon?,
+private fun Relation(
     modifier: Modifier,
-    iconSize: Dp = 48.dp,
-    onTaskIconClicked: (Boolean) -> Unit = {},
-    avatarBackgroundColor: Int = R.color.shape_secondary,
-    avatarFontSize: TextUnit = 28.sp,
-    avatarTextStyle: TextStyle = TextStyle(
-        fontWeight = FontWeight.SemiBold,
-        color = colorResource(id = R.color.text_white)
-    )
+    item: UiContentItem.Relation
 ) {
-    when (icon) {
-        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(
-            modifier = modifier,
-            iconSize = iconSize,
-            icon = icon,
-            avatarTextStyle = avatarTextStyle,
-            avatarFontSize = avatarFontSize,
-            avatarBackgroundColor = avatarBackgroundColor
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(start = 0.dp, top = 14.dp, end = 12.dp, bottom = 14.dp)
+                .wrapContentSize()
+        ) {
+            item.format.simpleIcon()?.let {
+                Image(
+                    painter = painterResource(id = it),
+                    contentDescription = "Relation format icon",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+        val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
+
+        Text(
+            text = name,
+            style = PreviewTitle1Medium,
+            color = colorResource(id = R.color.text_primary),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
-
-        is ObjectIcon.Profile.Image -> DefaultProfileIconImage(icon, modifier, iconSize)
-        is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
-        is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
-        is ObjectIcon.Basic.Avatar -> DefaultBasicAvatarIcon(modifier, iconSize, icon)
-        is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
-        is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
-        is ObjectIcon.File -> {
-            DefaultFileObjectImageIcon(
-                fileName = icon.fileName.orEmpty(),
-                mime = icon.mime.orEmpty(),
-                modifier = modifier,
-                iconSize = iconSize,
-                extension = icon.extensions
-            )
-        }
-
-        else -> {
-            // Draw nothing.
-        }
     }
 }
 
@@ -707,7 +720,7 @@ fun SwipeToDismissListItems(
                 false
             }
         },
-        positionalThreshold = { it * .30f }
+        positionalThreshold = { it * .5f }
     )
 
     LaunchedEffect(key1 = isRemoved) {
@@ -726,6 +739,7 @@ fun SwipeToDismissListItems(
         SwipeToDismissBox(
             modifier = modifier,
             state = dismissState,
+            enableDismissFromEndToStart = item.isPossibleToDelete,
             enableDismissFromStartToEnd = false,
             backgroundContent = {
                 DismissBackground(

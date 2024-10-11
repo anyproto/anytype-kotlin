@@ -3,12 +3,9 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -20,6 +17,7 @@ import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -220,7 +218,7 @@ class DataViewListWidgetContainer(
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
                         objectIcon = if (withIcon) {
-                            obj.widgetElementIcon(
+                            obj.objectIcon(
                                 builder = urlBuilder
                             )
                         } else {
@@ -266,7 +264,7 @@ class DataViewListWidgetContainer(
                 elements = objects.map { obj ->
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
-                        objectIcon = obj.widgetElementIcon(builder = urlBuilder)
+                        objectIcon = obj.objectIcon(builder = urlBuilder)
                     )
                 },
                 isExpanded = true,
@@ -330,26 +328,8 @@ fun ObjectView.parseDataViewStoreSearchParams(
             addAll(view.filters)
             addAll(
                 ObjectSearchConstants.defaultDataViewFilters(
-                    spaces = buildList {
-                        add(config.space)
-                        add(config.techSpace)
-                    }
+                    space = config.space
                 )
-            )
-            add(
-                DVFilter(
-                    relation = Relations.TYPE_UNIQUE_KEY,
-                    condition = DVFilterCondition.NOT_IN,
-                    value = listOf(
-                        ObjectTypeIds.OBJECT_TYPE,
-                        ObjectTypeIds.RELATION,
-                        ObjectTypeIds.TEMPLATE,
-                        ObjectTypeIds.DASHBOARD,
-                        ObjectTypeIds.RELATION_OPTION,
-                        ObjectTypeIds.DASHBOARD,
-                        ObjectTypeIds.DATE
-                    )
-                ),
             )
         },
         limit = limit,

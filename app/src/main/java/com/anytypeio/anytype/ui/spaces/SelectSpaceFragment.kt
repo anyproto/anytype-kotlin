@@ -20,10 +20,8 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.Command
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
-import com.anytypeio.anytype.ui.settings.ProfileSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
-import timber.log.Timber
 
 class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
 
@@ -58,12 +56,12 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                     onAddClicked = throttledClick(
                         onClick = { vm.onCreateSpaceClicked() }
                     ),
-                    onSettingsClicked = throttledClick(
-                        onClick = vm::onProfileSettingsClicked
-                    ),
-                    onProfileClicked = throttledClick(
-                        onClick = vm::onProfileSettingsClicked
-                    )
+                    onSettingsClicked = {
+                        // Do nothing.
+                    },
+                    onProfileClicked = {
+                        // Do nothing.
+                    }
                 )
             }
             LaunchedEffect(Unit) {
@@ -86,24 +84,9 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                 findNavController().popBackStack()
             }
             is Command.SwitchToNewSpace -> {
-                try {
-                    if (exitHomeWhenSpaceIsSelected == true) {
-                        findNavController().navigate(R.id.switchSpaceAction)
-                    } else {
-                        findNavController().popBackStack()
-                    }
-                } catch (e: Exception) {
-                    Timber.e(e, "Navigation error")
-                }
-            }
-            is Command.NavigateToProfileSettings -> {
-                try {
-                    findNavController().navigate(
-                        R.id.profileScreen,
-                        bundleOf(ProfileSettingsFragment.SPACE_ID_KEY to command.space)
-                    )
-                } catch (e: Exception) {
-                    Timber.e(e, "Navigation error")
+                runCatching {
+                    findNavController().popBackStack(R.id.vaultScreen, false)
+                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
                 }
             }
         }

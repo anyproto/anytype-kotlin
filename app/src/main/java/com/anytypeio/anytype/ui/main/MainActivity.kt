@@ -96,10 +96,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     val container: FragmentContainerView get() = findViewById(R.id.fragment)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setupWindowInsets()
         inject()
         setupTheme()
-        super.onCreate(savedInstanceState)
 
         startAppUpdater()
 

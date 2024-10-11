@@ -8,7 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -56,6 +57,7 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.bouncingClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -211,11 +213,11 @@ fun AllContentTabs(
 
     LazyRow(
         state = scrollState,
-        flingBehavior = snapFlingBehavior,
+        //todo Disabled because, after the scroll animation, the tabs sometimes don’t respond to clicks
+        //flingBehavior = snapFlingBehavior,
         modifier = Modifier
             .fillMaxWidth()
             .height(40.dp),
-        horizontalArrangement = Arrangement.spacedBy(20.dp),
         verticalAlignment = Alignment.CenterVertically,
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp)
     ) {
@@ -242,15 +244,21 @@ private fun AllContentTabText(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    Text(
+    Box(
         modifier = Modifier
-            .wrapContentSize()
-            .noRippleClickable { onClick() },
-        text = getTabText(tab),
-        style = Title2,
-        color = if (isSelected) colorResource(id = R.color.glyph_button) else colorResource(id = R.color.glyph_active),
-        maxLines = 1
-    )
+            .wrapContentWidth()
+            .height(40.dp)
+            .noRippleThrottledClickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = 10.dp),
+            text = getTabText(tab),
+            style = Title2,
+            color = if (isSelected) colorResource(id = R.color.glyph_button) else colorResource(id = R.color.glyph_active),
+            maxLines = 1
+        )
+    }
 }
 
 @Composable
@@ -262,6 +270,7 @@ private fun getTabText(tab: AllContentTab): String {
         AllContentTab.BOOKMARKS -> stringResource(id = R.string.all_content_title_tab_bookmarks)
         AllContentTab.TYPES -> stringResource(id = R.string.all_content_title_tab_objetc_types)
         AllContentTab.LISTS -> stringResource(id = R.string.all_content_title_tab_lists)
+        AllContentTab.RELATIONS -> stringResource(id = R.string.all_content_title_tab_relations)
     }
 }
 
@@ -275,7 +284,8 @@ private fun AllContentTabsPreview() {
                 AllContentTab.FILES,
                 AllContentTab.MEDIA,
                 AllContentTab.BOOKMARKS,
-                AllContentTab.TYPES
+                AllContentTab.TYPES,
+                AllContentTab.RELATIONS
             ),
             selectedTab = AllContentTab.MEDIA
         ),

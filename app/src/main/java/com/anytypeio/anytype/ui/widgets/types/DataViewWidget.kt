@@ -404,7 +404,7 @@ fun ListWidgetElement(
             )
     ) {
         val hasDescription = !obj.description.isNullOrEmpty()
-        val hasIcon = icon != ObjectIcon.None && icon !is ObjectIcon.Basic.Avatar
+        val hasIcon = icon != ObjectIcon.None
         val name = obj.name?.trim()?.orNull()
         val snippet = obj.snippet?.trim().orNull()
         if (hasIcon) {
@@ -537,17 +537,13 @@ private fun GalleryWidgetItemCard(
                     }
                 )
             ) {
-                TreeWidgetObjectIcon(
+                ListWidgetObjectIcon(
+                    iconSize = 18.dp,
                     icon = item.objectIcon,
-                    paddingStart = 0.dp,
-                    paddingEnd = 0.dp,
-                    onTaskIconClicked = {},
                     modifier = Modifier
-                        .padding(
-                            start = 12.dp,
-                            top = 9.dp
-                        ),
-                    size = 16.dp
+                        .align(Alignment.CenterVertically)
+                        .padding(start = 12.dp, top = 9.dp),
+                    onTaskIconClicked = {}
                 )
                 Text(
                     text = item.obj.getProperName().ifEmpty { stringResource(id = R.string.untitled) },

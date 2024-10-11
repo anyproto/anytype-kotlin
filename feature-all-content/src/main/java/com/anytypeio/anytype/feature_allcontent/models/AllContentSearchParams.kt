@@ -10,6 +10,9 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchParams
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeysObjectType
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultRelationKeys
 
 val allContentTabLayouts = mapOf(
     AllContentTab.PAGES to listOf(
@@ -46,6 +49,11 @@ fun createSubscriptionParams(
     limit: Int,
     subscriptionId: String
 ): StoreSearchParams {
+    val keys = when (activeTab) {
+        AllContentTab.TYPES -> defaultKeysObjectType
+        AllContentTab.RELATIONS -> defaultRelationKeys
+        else -> defaultKeys
+    }
     val (filters, sorts) = activeTab.filtersForSubscribe(
         spaces = listOf(spaceId),
         activeSort = activeSort,
@@ -55,33 +63,7 @@ fun createSubscriptionParams(
     return StoreSearchParams(
         filters = filters,
         sorts = sorts,
-        keys = listOf(
-            Relations.ID,
-            Relations.SPACE_ID,
-            Relations.TARGET_SPACE_ID,
-            Relations.UNIQUE_KEY,
-            Relations.NAME,
-            Relations.ICON_IMAGE,
-            Relations.ICON_EMOJI,
-            Relations.ICON_OPTION,
-            Relations.TYPE,
-            Relations.LAYOUT,
-            Relations.IS_ARCHIVED,
-            Relations.IS_DELETED,
-            Relations.IS_HIDDEN,
-            Relations.SNIPPET,
-            Relations.DONE,
-            Relations.IDENTITY_PROFILE_LINK,
-            Relations.RESTRICTIONS,
-            Relations.SIZE_IN_BYTES,
-            Relations.FILE_MIME_TYPE,
-            Relations.FILE_EXT,
-            Relations.LAST_OPENED_DATE,
-            Relations.LAST_MODIFIED_DATE,
-            Relations.CREATED_DATE,
-            Relations.LINKS,
-            Relations.BACKLINKS
-        ),
+        keys = keys,
         limit = limit,
         subscription = subscriptionId
     )
@@ -137,6 +119,38 @@ fun AllContentTab.filtersForSubscribe(
                         condition = DVFilterCondition.EQUAL,
                         value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
                     )
+                )
+                add(
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = ObjectTypeIds.CHAT_DERIVED
+                    )
+                )
+                add(
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = ObjectTypeIds.CHAT
+                    )
+                )
+            }
+            val sorts = listOf(activeSort.toDVSort())
+            return filters to sorts
+        }
+        AllContentTab.RELATIONS -> {
+            val filters = buildList {
+                addAll(buildDeletedFilter())
+                add(buildSpaceIdFilter(spaces))
+                if (limitedObjectIds.isNotEmpty()) {
+                    add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
+                }
+                add(
+                    DVFilter(
+                        relation = Relations.LAYOUT,
+                        condition = DVFilterCondition.EQUAL,
+                        value = ObjectType.Layout.RELATION.code.toDouble()
+                    ),
                 )
                 add(
                     DVFilter(
@@ -247,6 +261,13 @@ fun AllContentSort.toDVSort(): DVSort {
             type = sortType,
             relationFormat = RelationFormat.LONG_TEXT,
             includeTime = false
+        )
+
+        is AllContentSort.ByDateUsed -> DVSort(
+            relationKey = relationKey.key,
+            type = sortType,
+            relationFormat = RelationFormat.DATE,
+            includeTime = true,
         )
     }
 }

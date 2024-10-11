@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObject
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -342,7 +341,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
                     eq(listOf()),
                     eq(
                         mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                            spaces = listOf(spaceConfig.space, spaceConfig.techSpace)
+                            space = spaceConfig.space
                         )
                     ),
                     eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),

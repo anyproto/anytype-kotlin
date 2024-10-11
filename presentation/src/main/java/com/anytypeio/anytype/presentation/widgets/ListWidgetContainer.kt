@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.collectionsSorts
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -146,7 +147,7 @@ class ListWidgetContainer(
         elements = objects.map { obj ->
             WidgetView.ListOfObjects.Element(
                 obj = obj,
-                objectIcon = obj.widgetElementIcon(
+                objectIcon = obj.objectIcon(
                     builder = urlBuilder
                 )
             )
@@ -160,10 +161,7 @@ class ListWidgetContainer(
         spaceCreationDateInSeconds: Long? = null
     ) = params(
         subscription = subscription,
-        spaces = buildList {
-            add(widget.config.space)
-            add(widget.config.techSpace)
-        },
+        space = widget.config.space,
         keys = keys,
         limit = resolveLimit(),
         customFavoritesOrder = customFavoritesOrder,
@@ -188,7 +186,7 @@ class ListWidgetContainer(
 
         fun params(
             subscription: Id,
-            spaces: List<Id>,
+            space: Id,
             keys: List<Id>,
             limit: Int,
             customFavoritesOrder: List<Id> = emptyList(),
@@ -199,7 +197,7 @@ class ListWidgetContainer(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecent,
                     filters = ObjectSearchConstants.filterTabRecent(
-                        spaces = spaces,
+                        space = space,
                         spaceCreationDateInSeconds = spaceCreationDateInSeconds
                     ),
                     keys = keys,
@@ -210,7 +208,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecentLocal,
-                    filters = ObjectSearchConstants.filterTabRecentLocal(spaces),
+                    filters = ObjectSearchConstants.filterTabRecentLocal(space),
                     keys = keys,
                     limit = limit
                 )
@@ -219,7 +217,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabSets,
-                    filters = ObjectSearchConstants.filterTabSets(spaces),
+                    filters = ObjectSearchConstants.filterTabSets(space),
                     keys = keys,
                     limit = limit
                 )
@@ -239,7 +237,7 @@ class ListWidgetContainer(
                             )
                         }
                     },
-                    filters = ObjectSearchConstants.filterTabFavorites(spaces),
+                    filters = ObjectSearchConstants.filterTabFavorites(space),
                     keys = keys,
                     limit = limit
                 )
@@ -248,7 +246,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = collectionsSorts,
-                    filters = ObjectSearchConstants.collectionFilters(spaces),
+                    filters = ObjectSearchConstants.collectionFilters(space),
                     keys = keys,
                     limit = limit
                 )
@@ -257,7 +255,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabArchive,
-                    filters = ObjectSearchConstants.filterTabArchive(spaces),
+                    filters = ObjectSearchConstants.filterTabArchive(space),
                     keys = keys,
                     limit = limit
                 )

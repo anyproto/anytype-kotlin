@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -445,6 +448,19 @@ class SelectObjectTypeViewModel(
                     Timber.d(it, "Error while creating note")
                     sendToast("Error while creating note: ${it.msg()}")
                 }
+            )
+        }
+    }
+
+    fun onResume() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenVault,
+                props = Props(
+                    map = mapOf(
+                        EventsPropertiesKey.type to EventsDictionary.Type.menu
+                    )
+                )
             )
         }
     }

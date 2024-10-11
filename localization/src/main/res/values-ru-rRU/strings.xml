@@ -1536,6 +1536,7 @@
     <string name="all_content_title_tab_bookmarks">Закладки</string>
     <string name="all_content_title_tab_files">Files</string>
     <string name="all_content_title_tab_objetc_types">Типы</string>
+    <string name="all_content_title_tab_relations">Свойства</string>
     <string name="all_content_sort_by">Сортировать по</string>
     <string name="all_content_sort_name_desc">Я → А</string>
     <string name="all_content_sort_name_asc">А → Я</string>
@@ -1543,6 +1544,7 @@
     <string name="all_content_sort_date_asc">Сначала старые</string>
     <string name="all_content_sort_date_updated">Дата обновления</string>
     <string name="all_content_sort_date_created">Дата создания</string>
+    <string name="all_content_sort_date_used">Дата последнего использования</string>
     <string name="all_content_sort_name">Название</string>
     <string name="all_content">Все объекты</string>
     <string name="allContent_group_today">Сегодня</string>
@@ -1560,4 +1562,10 @@
     <string name="all_content_no_results_description">Попробуйте искать по другим ключевым словам.</string>
     <string name="all_content_error_title">Что-то пошло не так.</string>
     <string name="onboarding_my_first_space">Моё первое пространство</string>
+    <string name="all_content_error_unexpected_layout">Ошибка: непредвиденный макет</string>
+    <string name="all_content_toast_relation_added">Связь добавлена</string>
+    <string name="all_content_toast_relation_removed">Связь удалена</string>
+    <string name="all_content_toast_type_added">Тип объекта добавлен</string>
+    <string name="all_content_toast_type_removed">Тип объекта удален</string>
+    <string name="all_content_toast_archived">Объект архивирован</string>
 </resources>

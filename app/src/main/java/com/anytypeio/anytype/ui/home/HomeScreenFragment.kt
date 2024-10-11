@@ -102,8 +102,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onCreateNewObjectLongClicked = throttledClick(
                         onClick = { vm.onCreateNewObjectLongClicked() }
                     ),
-                    onProfileClicked = throttledClick(
-                        onClick = vm::onVaultClicked
+                    onBackClicked = throttledClick(
+                        onClick = vm::onBackClicked
                     ),
                     onSpaceWidgetClicked = throttledClick(
                         onClick = vm::onSpaceSettingsClicked
@@ -360,10 +360,12 @@ class HomeScreenFragment : BaseComposeFragment() {
             }.onFailure { e ->
                 Timber.e(e, "Error while opening space library from widgets")
             }
-            is Navigation.OpenAllContent -> runCatching {
-                navigation().openAllContent(space = destination.space)
-            }.onFailure { e ->
-                Timber.e(e, "Error while opening all content from widgets")
+            is Navigation.OpenAllContent -> {
+                runCatching {
+                    navigation().openAllContent(space = destination.space)
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening all content from widgets")
+                }
             }
         }
     }

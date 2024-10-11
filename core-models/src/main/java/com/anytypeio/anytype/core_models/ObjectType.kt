@@ -52,7 +52,8 @@ data class ObjectType(
         PARTICIPANT(19),
         PDF(20),
         CHAT(21),
-        CHAT_DERIVED(22);
+        CHAT_DERIVED(22),
+        TAG(23);
 
         fun isProfileOrParticipant() = this == PROFILE || this == PARTICIPANT
     }

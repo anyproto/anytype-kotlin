@@ -290,10 +290,7 @@ private fun GroupItem(
                     .size(24.dp)
                     .align(Alignment.CenterVertically),
                 icon = item.icon!!,
-                iconSize = 24.dp,
-                avatarFontSize = 16.sp,
-                avatarBackgroundColor = R.color.shape_tertiary,
-                avatarTextStyle = VersionHistoryAvatarTextStyle()
+                iconSize = 24.dp
             )
         }
     }
@@ -332,10 +329,7 @@ private fun RowScope.HeaderIcons(
                         ListWidgetObjectIcon(
                             modifier = Modifier.size(24.dp),
                             icon = icon,
-                            iconSize = 24.dp,
-                            avatarFontSize = 16.sp,
-                            avatarBackgroundColor = R.color.shape_tertiary,
-                            avatarTextStyle = VersionHistoryAvatarTextStyle()
+                            iconSize = 24.dp
                         )
                     }
                 }

@@ -32,9 +32,12 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
@@ -197,7 +200,8 @@ class HomeScreenViewModel(
     private val createBlock: CreateBlock,
     private val dateProvider: DateProvider,
     private val addObjectToCollection: AddObjectToCollection,
-    private val clearLastOpenedSpace: ClearLastOpenedSpace
+    private val clearLastOpenedSpace: ClearLastOpenedSpace,
+    private val clearLastOpenedObject: ClearLastOpenedObject,
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -1043,6 +1047,9 @@ class HomeScreenViewModel(
                     )
                 }
                 WidgetView.AllContent.ALL_CONTENT_WIDGET_ID -> {
+                    if (mode.value == InteractionMode.Edit) {
+                        return@launch
+                    }
                     navigation(
                         Navigation.OpenAllContent(
                             space = space
@@ -1243,6 +1250,13 @@ class HomeScreenViewModel(
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
         Timber.d("onResume, deeplink: ${deeplink}")
+        viewModelScope.launch {
+            clearLastOpenedObject.run(
+                ClearLastOpenedObject.Params(
+                    SpaceId(spaceManager.get())
+                )
+            )
+        }
         when (deeplink) {
             is DeepLinkResolver.Action.Import.Experience -> {
                 viewModelScope.launch {
@@ -1665,8 +1679,18 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onVaultClicked() {
+    fun onBackClicked() {
         viewModelScope.launch {
+            openWidgetObjectsHistory.forEach { obj ->
+                closeObject
+                    .async(obj)
+                    .onSuccess {
+                        Timber.d("Closed object from widget object session history: $obj")
+                    }
+                    .onFailure {
+                        Timber.e(it, "Error while closing object from history")
+                    }
+            }
             spaceManager.clear()
             clearLastOpenedSpace.async(Unit).fold(
                 onSuccess = {
@@ -2096,7 +2120,8 @@ class HomeScreenViewModel(
         private val dateProvider: DateProvider,
         private val coverImageHashProvider: CoverImageHashProvider,
         private val addObjectToCollection: AddObjectToCollection,
-        private val clearLastOpenedSpace: ClearLastOpenedSpace
+        private val clearLastOpenedSpace: ClearLastOpenedSpace,
+        private val clearLastOpenedObject: ClearLastOpenedObject
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2144,7 +2169,8 @@ class HomeScreenViewModel(
             createBlock = createBlock,
             dateProvider = dateProvider,
             addObjectToCollection = addObjectToCollection,
-            clearLastOpenedSpace = clearLastOpenedSpace
+            clearLastOpenedSpace = clearLastOpenedSpace,
+            clearLastOpenedObject = clearLastOpenedObject
         ) as T
     }
 

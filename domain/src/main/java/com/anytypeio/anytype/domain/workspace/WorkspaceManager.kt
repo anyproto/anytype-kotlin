@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -32,7 +31,6 @@ interface SpaceManager {
     class Impl @Inject constructor(
         private val repo: BlockRepository,
         private val dispatchers: AppCoroutineDispatchers,
-        private val configStorage: ConfigStorage,
         private val logger: Logger
     ) : SpaceManager {
 

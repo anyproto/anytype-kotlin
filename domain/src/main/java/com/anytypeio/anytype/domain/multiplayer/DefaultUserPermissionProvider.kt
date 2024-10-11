@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -83,14 +84,14 @@ class DefaultUserPermissionProvider @Inject constructor(
         logger.logInfo("Starting DefaultUserPermissionProvider")
         clear()
         jobs += scope.launch(dispatchers.io) {
-
             val account = repo.getCurrentAccountId()
-
             spaceViewSubscriptionContainer
                 .observe()
                 .map { spaceViews ->
                     spaceViews.mapNotNull { spaceView -> spaceView.targetSpaceId }
-                }.flatMapLatest { spaces ->
+                }
+                .distinctUntilChanged()
+                .flatMapLatest { spaces ->
                     val subscriptions = spaces.map { space ->
                         container.subscribe(
                             StoreSearchParams(
@@ -167,7 +168,6 @@ class DefaultUserPermissionProvider @Inject constructor(
 
     companion object {
         const val GLOBAL_SUBSCRIPTION = "subscription.global.user-as-space-member-permissions"
-        const val NO_LIMIT = 0
     }
 }
 

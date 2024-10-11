@@ -74,6 +74,7 @@ class VaultViewModel(
                             space.spaceLocalStatus == SpaceStatus.OK
                                     && !space.spaceAccountStatus.isDeletedOrRemoving()
                         }
+                        .distinctBy { it.id }
                         .map { space ->
                             VaultSpaceView(
                                 space = space,

@@ -171,7 +171,7 @@ object EventsDictionary {
 
     // Vault events
 
-    const val screenVault = "ScreenOnboarding"
+    const val screenVault = "ScreenVault"
 
     // About-app screen
 

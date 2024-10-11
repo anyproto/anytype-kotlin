@@ -14,6 +14,7 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager.Companion.ACTION_CREATE_NEW_TYPE_KEY
 import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
@@ -81,7 +82,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
     }
 
     private fun observe(command: SplashViewModel.Command) {
-        Timber.d("DROID-2788 Splash command: $command")
         when (command) {
             is SplashViewModel.Command.NavigateToWidgets -> {
                 runCatching {
@@ -140,12 +140,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             }
             is SplashViewModel.Command.NavigateToAuthStart -> {
                 val intent = activity?.intent
-                Timber.d("DROID-2788 Intent: ${intent}")
-                Timber.d("DROID-2788 Intent action: ${intent?.action}")
-                Timber.d("DROID-2788 Intent extras: ${intent?.extras}")
-                Timber.d("DROID-2788 Intent data string: ${intent?.dataString}")
-                Timber.d("DROID-2788 Intent data: ${intent?.data}")
-
                 val deepLink: String?
                 if (intent != null && (intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND)) {
                     val data = intent.dataString
@@ -165,7 +159,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                         putExtras(Bundle())
                     }
                 }
-                Timber.d("DROID-2788 Deep link is empty: ${deepLink.isNullOrEmpty()}")
                 findNavController().navigate(
                     R.id.action_splashFragment_to_authStart,
                     args = OnboardingFragment.args(deepLink)
@@ -178,11 +171,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             }
             is SplashViewModel.Command.CheckAppStartIntent -> {
                 val intent = activity?.intent
-                Timber.d("DROID-2788 Checking app start intent: $intent")
                 if (intent != null && (intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND)) {
-                    Timber.d("DROID-2788 Data string: ${intent.dataString}")
-                    Timber.d("DROID-2788 Data: ${intent.data}")
-                    val data = intent.dataString
+                    val data = intent.dataString.orNull() ?: intent.extras?.getString(Intent.EXTRA_TEXT)
                     if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
                         // Clearing intent to only handle it once:
                         with(intent) {

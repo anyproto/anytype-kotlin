@@ -451,16 +451,7 @@ class SelectObjectTypeViewModel(
     }
 
     fun onResume() {
-        viewModelScope.launch {
-            analytics.sendEvent(
-                eventName = EventsDictionary.screenVault,
-                props = Props(
-                    map = mapOf(
-                        EventsPropertiesKey.type to EventsDictionary.Type.menu
-                    )
-                )
-            )
-        }
+        // TODO add analytics?
     }
 
     class Factory @Inject constructor(

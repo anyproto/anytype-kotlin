@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onSuccess
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
@@ -140,7 +141,8 @@ class VaultViewModel(
         viewModelScope.launch { commands.emit(Command.CreateNewSpace) }
     }
 
-    fun onResume() {
+    fun onResume(deeplink: DeepLinkResolver.Action? = null) {
+        Timber.d("DROID-2788 Deeplink: ${deeplink}")
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.screenVault,

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -1275,6 +1276,7 @@ class HomeScreenViewModelTest {
             onBlocking {
                 subscribe(
                     StoreSearchByIdsParams(
+                        space = SpaceId(defaultSpaceConfig.space),
                         subscription = HomeScreenViewModel.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                         targets = listOf(defaultSpaceConfig.spaceView),
                         keys = listOf(Relations.ID, Relations.ICON_EMOJI, Relations.ICON_IMAGE)
@@ -1838,6 +1840,7 @@ class HomeScreenViewModelTest {
         verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
                 StoreSearchByIdsParams(
+                    space = Space(defaultSpaceConfig.space),
                     subscription = favoriteSource.id,
                     keys = ListWidgetContainer.keys,
                     targets = emptyList()
@@ -2459,6 +2462,7 @@ class HomeScreenViewModelTest {
             }
             verify(storelessSubscriptionContainer, times(1)).subscribe(
                 StoreSearchByIdsParams(
+                    space = SpaceId(defaultSpaceConfig.techSpace),
                     subscription = HomeScreenViewModel.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                     targets = listOf(defaultSpaceConfig.profile),
                     keys = listOf(
@@ -2672,6 +2676,7 @@ class HomeScreenViewModelTest {
             onBlocking {
                 subscribe(
                     StoreSearchByIdsParams(
+                        space = SpaceId(defaultSpaceConfig.space),
                         subscription = subscription,
                         keys = keys,
                         targets = targets
@@ -2709,6 +2714,7 @@ class HomeScreenViewModelTest {
             onBlocking {
                 subscribe(
                     StoreSearchByIdsParams(
+                        space = SpaceId(defaultSpaceConfig.techSpace),
                         subscription = HomeScreenViewModel.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                         targets = listOf(defaultSpaceConfig.spaceView),
                         keys = listOf(Relations.ID, Relations.ICON_EMOJI, Relations.ICON_IMAGE)

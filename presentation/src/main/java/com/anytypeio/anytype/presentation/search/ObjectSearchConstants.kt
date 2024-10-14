@@ -1148,9 +1148,13 @@ object ObjectSearchConstants {
 
     //region SPACE VIEW
 
-    fun getSpaceViewSearchParams(subscription: String, targetSpaceId: Id): StoreSearchParams {
+    fun getSpaceViewSearchParams(
+        techSpaceId: Id,
+        subscription: String,
+        targetSpaceId: Id
+    ): StoreSearchParams {
         return StoreSearchParams(
-            space = TODO("DROID-2916 Provide space ID"),
+            space = SpaceId(techSpaceId),
             subscription = subscription,
             keys = spaceViewKeys,
             limit = 1,

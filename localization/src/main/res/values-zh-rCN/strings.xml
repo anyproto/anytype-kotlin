@@ -1502,7 +1502,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_date_asc">Oldest first</string>
     <string name="all_content_sort_date_updated">Date updated</string>
     <string name="all_content_sort_date_created">Date created</string>
-    <string name="all_content_sort_date_used">Date last used</string>
+    <string name="all_content_sort_date_used">上次使用日期</string>
     <string name="all_content_sort_name">名称</string>
     <string name="all_content">All Objects</string>
     <string name="allContent_group_today">今天</string>
@@ -1514,7 +1514,7 @@ Please provide specific details of your needs here.</string>
     <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
     <string name="introduce_vault_welcome_to_the_vault">Welcome to the Vault</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Simple & Flexible]]></string>
-    <string name="allContent_empty_state_title">It’s empty here.</string>
+    <string name="allContent_empty_state_title">这里是空的</string>
     <string name="allContent_empty_state_description">Create your first objects to get started.</string>
     <string name="all_content_no_results_title">No results found.</string>
     <string name="all_content_no_results_description">Try searching with different keywords.</string>

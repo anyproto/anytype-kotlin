@@ -1810,15 +1810,14 @@ class EditorViewModel(
     }
 
     private suspend fun updateSelectionUI(views: List<BlockView>) {
-        val targets = views.map { it.id }.toSet()
         orchestrator.stores.focus.update(Editor.Focus.empty())
         orchestrator.stores.views.update(
-            views.enterSAM(targets = targets)
+            views.enterSAM(targets = currentSelection())
         )
         renderCommand.send(Unit)
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.MultiSelect.OnEnter(
-                targets.size,
+                currentSelection().size,
                 isSelectAllVisible = isNotAllBlocksSelected()
             )
         )

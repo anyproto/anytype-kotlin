@@ -42,12 +42,12 @@ fun PulsatingCircleScreen() {
 
     var initialAnimationFinished by remember { mutableStateOf(false) }
 
-    var circleSize by remember { mutableStateOf(16.dp) }
+    var circleSize by remember { mutableStateOf(INITIAL_CIRCLE_SIZE.dp) }
 
     LaunchedEffect(Unit) {
         animate(
-            initialValue = 16f,
-            targetValue = 128f,
+            initialValue = INITIAL_CIRCLE_SIZE,
+            targetValue = TARGET_CIRCLE_SIZE,
             animationSpec = tween(durationMillis = 1000, easing = FastOutLinearInEasing)
         ) { value, _ ->
             circleSize = value.dp
@@ -55,15 +55,15 @@ fun PulsatingCircleScreen() {
         initialAnimationFinished = true
     }
 
-    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val infiniteTransition = rememberInfiniteTransition(label = TRANSITION_LABEL)
     val animatedSize by infiniteTransition.animateValue(
-        initialValue = 64.dp,
-        targetValue = 128.dp,
+        initialValue = MID_CIRCLE_SIZE.dp,
+        targetValue = TARGET_CIRCLE_SIZE.dp,
         Dp.VectorConverter,
         animationSpec = infiniteRepeatable(
             animation = tween(1000, easing = FastOutLinearInEasing),
             repeatMode = RepeatMode.Reverse
-        ), label = ""
+        ), label = TRANSITION_LABEL
     )
 
     val finalSize = if (initialAnimationFinished) animatedSize else circleSize
@@ -124,3 +124,8 @@ fun PreviewPulsatingCircles() {
         PulsatingCircleScreen()
     }
 }
+
+private const val INITIAL_CIRCLE_SIZE = 16f
+private const val MID_CIRCLE_SIZE = 64f
+private const val TARGET_CIRCLE_SIZE = 128f
+private const val TRANSITION_LABEL = "Pulsating transition"

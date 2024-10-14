@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.TechSpaceProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -60,6 +61,7 @@ interface ShareSpaceDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun container(): StorelessSubscriptionContainer
     fun config(): ConfigStorage
+    fun techSpaceProvider(): TechSpaceProvider
     fun permissions(): UserPermissionProvider
     fun analytics(): Analytics
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate

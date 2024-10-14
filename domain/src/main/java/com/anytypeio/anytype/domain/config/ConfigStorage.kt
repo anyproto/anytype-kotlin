@@ -1,9 +1,10 @@
 package com.anytypeio.anytype.domain.config
 
 import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 @Deprecated("Refactoring needed")
-interface ConfigStorage {
+interface ConfigStorage : TechSpaceProvider {
     @Deprecated("Unsafe method. Use getOrNull() instead")
     @Throws(IllegalStateException::class)
     fun get(): Config
@@ -26,5 +27,15 @@ interface ConfigStorage {
         override fun clear() {
             instance = null
         }
+
+        override fun provide(): SpaceId? {
+            return instance?.let {
+                SpaceId(it.techSpace)
+            }
+        }
     }
+}
+
+interface TechSpaceProvider {
+    fun provide(): SpaceId?
 }

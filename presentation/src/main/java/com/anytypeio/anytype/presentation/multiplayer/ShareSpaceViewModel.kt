@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.TechSpaceProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ApproveLeaveSpaceRequest
@@ -81,7 +82,7 @@ class ShareSpaceViewModel(
     private val urlBuilder: UrlBuilder,
     private val analytics: Analytics,
     private val membershipProvider: MembershipProvider,
-    private val configStorage: ConfigStorage
+    private val techSpaceProvider: TechSpaceProvider
 ) : BaseViewModel() {
 
     private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
@@ -131,10 +132,11 @@ class ShareSpaceViewModel(
     private fun proceedWithSubscriptions() {
         viewModelScope.launch {
             val account = getAccount.async(Unit).getOrNull()?.id
+            val techSpace = techSpaceProvider.provide()
             val spaceSearchParams = getSpaceViewSearchParams(
                 targetSpaceId = vmParams.space.id,
                 subscription = SHARE_SPACE_SPACE_SUBSCRIPTION,
-                techSpaceId = configStorage.getOrNull()?.techSpace.orEmpty()
+                techSpaceId = techSpace?.id.orEmpty()
             )
             val spaceMembersSearchParams = getSpaceMembersSearchParams(
                 spaceId = vmParams.space.id,
@@ -555,7 +557,7 @@ class ShareSpaceViewModel(
         private val permissions: UserPermissionProvider,
         private val analytics: Analytics,
         private val membershipProvider: MembershipProvider,
-        private val configStorage: ConfigStorage
+        private val techSpaceProvider: TechSpaceProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
@@ -574,7 +576,7 @@ class ShareSpaceViewModel(
             makeSpaceShareable = makeSpaceShareable,
             analytics = analytics,
             membershipProvider = membershipProvider,
-            configStorage = configStorage
+            techSpaceProvider = techSpaceProvider
         ) as T
     }
 

@@ -33,7 +33,6 @@ import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrThrow
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.TechSpaceProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -44,6 +43,7 @@ import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
 import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -51,17 +51,14 @@ import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.objects.toSpaceMembers
-import com.anytypeio.anytype.presentation.objects.toSpaceView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceMembersSearchParams
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceViewSearchParams
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -82,7 +79,7 @@ class ShareSpaceViewModel(
     private val urlBuilder: UrlBuilder,
     private val analytics: Analytics,
     private val membershipProvider: MembershipProvider,
-    private val techSpaceProvider: TechSpaceProvider
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : BaseViewModel() {
 
     private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
@@ -132,25 +129,24 @@ class ShareSpaceViewModel(
     private fun proceedWithSubscriptions() {
         viewModelScope.launch {
             val account = getAccount.async(Unit).getOrNull()?.id
-            val techSpace = techSpaceProvider.provide()
-            val spaceSearchParams = getSpaceViewSearchParams(
-                targetSpaceId = vmParams.space.id,
-                subscription = SHARE_SPACE_SPACE_SUBSCRIPTION,
-                techSpaceId = techSpace?.id.orEmpty()
-            )
+            val spaceViewFlow = spaceViews
+                .observe()
+                .mapNotNull { spaces ->
+                    spaces.firstOrNull { it.targetSpaceId == vmParams.space.id }
+                }
             val spaceMembersSearchParams = getSpaceMembersSearchParams(
                 spaceId = vmParams.space.id,
                 subscription = SHARE_SPACE_MEMBER_SUBSCRIPTION
             )
             combine(
-                container.subscribe(spaceSearchParams),
+                spaceViewFlow,
                 container.subscribe(spaceMembersSearchParams),
                 isCurrentUserOwner,
                 _activeTier.filterIsInstance<ActiveTierState.Success>()
-            ) { spaceResponse, membersResponse, isCurrentUserOwner, activeTier ->
+            ) { spaceView, membersResponse, isCurrentUserOwner, activeTier ->
                 CombineResult(
                     isCurrentUserOwner = isCurrentUserOwner,
-                    spaceView = spaceResponse.toSpaceView(),
+                    spaceView = spaceView,
                     tierId = activeTier.tierId,
                     spaceMembers = membersResponse.toSpaceMembers()
                 )
@@ -557,7 +553,7 @@ class ShareSpaceViewModel(
         private val permissions: UserPermissionProvider,
         private val analytics: Analytics,
         private val membershipProvider: MembershipProvider,
-        private val techSpaceProvider: TechSpaceProvider
+        private val spaceViews: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
@@ -576,7 +572,7 @@ class ShareSpaceViewModel(
             makeSpaceShareable = makeSpaceShareable,
             analytics = analytics,
             membershipProvider = membershipProvider,
-            techSpaceProvider = techSpaceProvider
+            spaceViews = spaceViews
         ) as T
     }
 

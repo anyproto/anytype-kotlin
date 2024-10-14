@@ -43,7 +43,7 @@
     <string name="space">空间</string>
     <string name="space_name">空间名称</string>
     <string name="default_space">默认空间</string>
-    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
+    <string name="space_settings_apply_random_gradient">应用随机颜色</string>
     <string name="space_settings_apply_upload_image">上传图像</string>
     <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
@@ -268,7 +268,7 @@
     <string name="sync_status_toast_offline">Anytype 节点未连接</string>
     <string name="sync_status_toast_syncing">向某个节点下载或上传数据</string>
     <string name="sync_status_toast_synced">已备份到 Anytype 网络</string>
-    <string name="sync_status_toast_synced_staging">已备份到 Anytype Staging</string>
+    <string name="sync_status_toast_synced_staging">已备份到 Anytype服务器</string>
     <string name="sync_status_toast_synced_local">仅本地</string>
     <string name="sync_status_toast_synced_self_hosted">已备份到自托管网络</string>
     <string name="sync_status_toast_failed">同步失败，正在重试...</string>
@@ -1333,7 +1333,7 @@
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
     <string name="membership_support_subject">会员界面错误报告 - %1$s</string>
-    <string name="membership_support_body">        Hi Anytype Support Team,\n\n
+    <string name="membership_support_body">        Hi，Anytype团队,\n\n
 
         I encountered an error on the Membership Screen in the app. Below are the details:\n
 
@@ -1352,12 +1352,9 @@
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
     <string name="payments_email_subject">升级 %1$s</string>
-    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
-- Extra remote storage\n
-- More space editors\n
-- Additional shared spaces\n
-Specifically,
-Please provide specific details of your needs here.</string>
+    <string name="payments_email_body">您好，Anytype 团队！我想要延长我当前的会员资格(请选择一个选项)：\n- 额外远程存储\n- 更多空间编辑者\n- 额外的共享空间
+具体来说，
+请在这里提供您需要的具体细节。</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">输入出错，请重试</string>
     <string name="membership_name_cache_error">我们这边出错了，请稍后再试</string>
@@ -1484,7 +1481,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">获取成员时出现错误</string>
     <string name="new_object">新对象</string>
     <string name="vault_my_spaces">我的空间</string>
-    <string name="all_content_title_all_content">All objects</string>
+    <string name="all_content_title_all_content">所有对象</string>
     <string name="all_content_title_only_unlinked">仅未链接</string>
     <string name="all_content_title_only_unlinked_description">在图中没有与其他对象直接链接或反向链接的未链接对象。</string>
     <string name="all_content_view_bin">查看垃圾桶</string>
@@ -1509,21 +1506,21 @@ Please provide specific details of your needs here.</string>
     <string name="allContent_group_yesterday">昨天</string>
     <string name="allContent_group_prev_7">7天前</string>
     <string name="allContent_group_prev_14">14天前</string>
-    <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
+    <string name="introduce_vault_text_1">库是您所有空间的新的主页。创建、加入或共享空间 - 一切都安全地存放在这里。</string>
     <string name="introduce_vault_text_2">您现在可以轻松地通过拖放和导航来重新排序您的空间。</string>
     <string name="introduce_vault_text_3">默认情况下，我们会将您空间的图标作为背景模糊。如果需要，您可以在空间设置中更改它。</string>
     <string name="introduce_vault_welcome_to_the_vault">欢迎来到库！</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[简单&灵活的]]></string>
     <string name="allContent_empty_state_title">这里是空的</string>
-    <string name="allContent_empty_state_description">Create your first objects to get started.</string>
-    <string name="all_content_no_results_title">No results found.</string>
-    <string name="all_content_no_results_description">Try searching with different keywords.</string>
-    <string name="all_content_error_title">Something went wrong.</string>
+    <string name="allContent_empty_state_description">创建您的第一个对象以开始操作。</string>
+    <string name="all_content_no_results_title">未找到结果。</string>
+    <string name="all_content_no_results_description">尝试使用不同的关键字搜索</string>
+    <string name="all_content_error_title">发生一些错误。</string>
     <string name="onboarding_my_first_space">我的第一个空间</string>
     <string name="all_content_error_unexpected_layout">错误: 异常布局</string>
-    <string name="all_content_toast_relation_added">Relation added</string>
-    <string name="all_content_toast_relation_removed">Relation removed</string>
-    <string name="all_content_toast_type_added">Object type added</string>
-    <string name="all_content_toast_type_removed">Object type removed</string>
-    <string name="all_content_toast_archived">Object archived</string>
+    <string name="all_content_toast_relation_added">关联类型</string>
+    <string name="all_content_toast_relation_removed">关系已删除</string>
+    <string name="all_content_toast_type_added">对象类型名称</string>
+    <string name="all_content_toast_type_removed">对象类型已删除</string>
+    <string name="all_content_toast_archived">已存档对象</string>
 </resources>

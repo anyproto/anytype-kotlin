@@ -54,12 +54,8 @@ class SpaceViewSubscriptionContainerTest {
         container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
-                expected = true,
-                actual = result.first
-            )
-            assertEquals(
                 expected = 0,
-                actual = result.second
+                actual = result
             )
             awaitComplete()
         }
@@ -94,12 +90,8 @@ class SpaceViewSubscriptionContainerTest {
         container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
-                expected = false,
-                actual = result.first
-            )
-            assertEquals(
                 expected = 1,
-                actual = result.second
+                actual = result
             )
             awaitComplete()
         }
@@ -134,12 +126,8 @@ class SpaceViewSubscriptionContainerTest {
         container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
-                expected = true,
-                actual = result.first
-            )
-            assertEquals(
                 expected = 1,
-                actual = result.second
+                actual = result
             )
             awaitComplete()
         }
@@ -174,12 +162,8 @@ class SpaceViewSubscriptionContainerTest {
         container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
-                expected = false,
-                actual = result.first
-            )
-            assertEquals(
                 expected = 1,
-                actual = result.second
+                actual = result
             )
             awaitComplete()
         }
@@ -214,12 +198,8 @@ class SpaceViewSubscriptionContainerTest {
         container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
-                expected = false,
-                actual = result.first
-            )
-            assertEquals(
                 expected = 2,
-                actual = result.second
+                actual = result
             )
             awaitComplete()
         }
@@ -254,12 +234,8 @@ class SpaceViewSubscriptionContainerTest {
         container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
-                expected = true,
-                actual = result.first
-            )
-            assertEquals(
                 expected = 0,
-                actual = result.second
+                actual = result
             )
             awaitComplete()
         }

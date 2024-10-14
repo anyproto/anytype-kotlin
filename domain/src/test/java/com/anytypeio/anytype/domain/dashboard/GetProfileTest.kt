@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -45,13 +46,20 @@ class GetProfileTest {
 
     private val config = StubConfig()
 
+    val dispatchers = AppCoroutineDispatchers(
+        io = rule.testDispatcher,
+        main = rule.testDispatcher,
+        computation = rule.testDispatcher
+    )
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         usecase = GetProfile(
             repo = repo,
             channel = channel,
-            provider = configStorage
+            provider = configStorage,
+            dispatchers = dispatchers
         )
     }
 

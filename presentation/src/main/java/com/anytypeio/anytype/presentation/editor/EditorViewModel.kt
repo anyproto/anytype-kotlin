@@ -981,7 +981,7 @@ class EditorViewModel(
     }
 
     private fun dispatchToUI(views: List<BlockView>) {
-        syncBlockUpdateMultiSelectMode()
+        onUpdateMultiSelectMode()
         stateData.postValue(
             ViewState.Success(
                 blocks = views
@@ -5951,7 +5951,7 @@ class EditorViewModel(
         }
     }
 
-    fun syncBlockUpdateMultiSelectMode() {
+    private fun onUpdateMultiSelectMode() {
         Timber.d("syncBlockUpdateMultiSelectMode, ")
         if (mode == EditorMode.Select) {
             controlPanelInteractor.onEvent(

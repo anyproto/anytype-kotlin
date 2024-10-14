@@ -179,6 +179,7 @@ interface SpaceViewSubscriptionContainer {
     }
 }
 
+@Deprecated("To de deleted")
 fun SpaceViewSubscriptionContainer.isSharingLimitReached(
     spaceToUserPermissions: Flow<Map<Id, SpaceMemberPermissions>>
 ) : Flow<Pair<Boolean, Int>> {

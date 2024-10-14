@@ -25,26 +25,29 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ui.ViewState
+import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
-import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.icon.SetImageIcon
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.multiplayer.isSharingLimitReached
+import com.anytypeio.anytype.domain.multiplayer.sharedSpacesCount
 import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -63,7 +66,8 @@ class SpaceSettingsViewModel(
     private val spaceViewContainer: SpaceViewSubscriptionContainer,
     private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
     private val getMembership: GetMembershipStatus,
-    private val uploadFile: UploadFile
+    private val uploadFile: UploadFile,
+    private val container: StorelessSubscriptionContainer
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -86,11 +90,44 @@ class SpaceSettingsViewModel(
     private fun proceedWithObservingSpaceView() {
         viewModelScope.launch {
             val config = spaceManager.getConfig(params.space)
+
+            container.subscribe(
+                StoreSearchByIdsParams(
+                    space = SpaceId(config!!.techSpace),
+                    subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+                    targets = listOf(config!!.profile),
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.SHARED_SPACES_LIMIT
+                    )
+                )
+            )
+            val sharedSpacesLimit = container.subscribe(
+                StoreSearchByIdsParams(
+                    space = SpaceId(config!!.techSpace),
+                    subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+                    targets = listOf(config!!.profile),
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.SHARED_SPACES_LIMIT
+                    )
+                )
+            ).map { results ->
+                results.firstOrNull()?.let {
+                    it.getValue<Double?>(Relations.SHARED_SPACES_LIMIT)?.toInt() ?: 0
+                } ?: 0
+            }
+
+            val sharedSpacesCount = spaceViewContainer.sharedSpacesCount(
+                userPermissionProvider.all()
+            )
+
             combine(
                 spaceViewContainer.observe(params.space),
                 userPermissionProvider.observe(params.space),
-                spaceViewContainer.isSharingLimitReached(userPermissionProvider.all())
-            ) { spaceView, permission, shareLimitReached ->
+                sharedSpacesLimit,
+                sharedSpacesCount
+            ) { spaceView, permission, sharedSpacesLimit, sharedSpacesCount ->
                 val store = activeSpaceMemberSubscriptionContainer.get(params.space)
                 val requests: Int = if (store is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     store.members.count { it.status == ParticipantStatus.JOINING }
@@ -119,8 +156,8 @@ class SpaceSettingsViewModel(
                     spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
                     permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS,
                     shareLimitReached = ShareLimitsState(
-                        shareLimitReached = shareLimitReached.first,
-                        sharedSpacesLimit = shareLimitReached.second
+                        shareLimitReached = sharedSpacesCount >= sharedSpacesLimit,
+                        sharedSpacesLimit = sharedSpacesLimit
                     ),
                     requests = requests
                 )
@@ -161,7 +198,11 @@ class SpaceSettingsViewModel(
     }
 
     fun onStop() {
-        // TODO unsubscribe
+        viewModelScope.launch {
+            container.unsubscribe(
+                listOf(SPACE_SETTINGS_PROFILE_SUBSCRIPTION)
+            )
+        }
     }
 
     fun onSpaceDebugClicked() {
@@ -403,7 +444,7 @@ class SpaceSettingsViewModel(
     class Factory @Inject constructor(
         private val params: Params,
         private val analytics: Analytics,
-        private val container: SpaceViewSubscriptionContainer,
+        private val spaceViewsContainer: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val setSpaceDetails: SetSpaceDetails,
         private val gradientProvider: SpaceGradientProvider,
@@ -415,13 +456,14 @@ class SpaceSettingsViewModel(
         private val userPermissionProvider: UserPermissionProvider,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val getMembership: GetMembershipStatus,
-        private val uploadFile: UploadFile
+        private val uploadFile: UploadFile,
+        private val container: StorelessSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T = SpaceSettingsViewModel(
-            spaceViewContainer = container,
+            spaceViewContainer = spaceViewsContainer,
             urlBuilder = urlBuilder,
             spaceManager = spaceManager,
             setSpaceDetails = setSpaceDetails,
@@ -435,7 +477,8 @@ class SpaceSettingsViewModel(
             userPermissionProvider = userPermissionProvider,
             activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer,
             getMembership = getMembership,
-            uploadFile = uploadFile
+            uploadFile = uploadFile,
+            container = container
         ) as T
     }
 
@@ -443,5 +486,6 @@ class SpaceSettingsViewModel(
 
     companion object {
         const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."
+        const val SPACE_SETTINGS_PROFILE_SUBSCRIPTION = "space.settings.profile-subscription"
     }
 }

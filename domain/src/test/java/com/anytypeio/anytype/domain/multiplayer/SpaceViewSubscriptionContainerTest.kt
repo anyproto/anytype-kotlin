@@ -51,7 +51,7 @@ class SpaceViewSubscriptionContainerTest {
             )
         }
 
-        container.isSharingLimitReached(flowOf(permissions)).test {
+        container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
                 expected = true,
@@ -91,7 +91,7 @@ class SpaceViewSubscriptionContainerTest {
             )
         }
 
-        container.isSharingLimitReached(flowOf(permissions)).test {
+        container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
                 expected = false,
@@ -131,7 +131,7 @@ class SpaceViewSubscriptionContainerTest {
             )
         }
 
-        container.isSharingLimitReached(flowOf(permissions)).test {
+        container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
                 expected = true,
@@ -171,7 +171,7 @@ class SpaceViewSubscriptionContainerTest {
             )
         }
 
-        container.isSharingLimitReached(flowOf(permissions)).test {
+        container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
                 expected = false,
@@ -211,7 +211,7 @@ class SpaceViewSubscriptionContainerTest {
             )
         }
 
-        container.isSharingLimitReached(flowOf(permissions)).test {
+        container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
                 expected = false,
@@ -251,7 +251,7 @@ class SpaceViewSubscriptionContainerTest {
             )
         }
 
-        container.isSharingLimitReached(flowOf(permissions)).test {
+        container.sharedSpacesCount(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
                 expected = true,

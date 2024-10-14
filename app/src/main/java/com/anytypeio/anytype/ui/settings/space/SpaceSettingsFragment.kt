@@ -203,6 +203,11 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
         skipCollapsed()
     }
 
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
     override fun injectDependencies() {
         componentManager().spaceSettingsComponent.get(SpaceId(space)).inject(this)
     }

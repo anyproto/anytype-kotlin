@@ -179,11 +179,10 @@ interface SpaceViewSubscriptionContainer {
     }
 }
 
-@Deprecated("To de deleted")
-fun SpaceViewSubscriptionContainer.isSharingLimitReached(
+fun SpaceViewSubscriptionContainer.sharedSpacesCount(
     spaceToUserPermissions: Flow<Map<Id, SpaceMemberPermissions>>
-) : Flow<Pair<Boolean, Int>> {
-    val sharedSpacesCount = combine(
+) : Flow<Int> {
+    return combine(
         observe(),
         spaceToUserPermissions
     ) { spaceViews, permissions ->
@@ -191,18 +190,5 @@ fun SpaceViewSubscriptionContainer.isSharingLimitReached(
             val permission = permissions[spaceView.targetSpaceId]
             spaceView.spaceAccessType == SHARED && permission == OWNER
         }
-    }
-    val sharedSpaceLimit = observe().map { spaceViews ->
-        val defaultSpace = spaceViews.firstOrNull { space ->
-            space.spaceAccessType == SpaceAccessType.DEFAULT
-        }
-        defaultSpace?.sharedSpaceLimit ?: 0
-    }
-    return combine(
-        sharedSpaceLimit,
-        sharedSpacesCount
-    ) { limit, count ->
-        val isLimitReached = limit == 0 || count >= limit
-        Pair(isLimitReached, limit)
     }
 }

@@ -301,6 +301,7 @@ class SpacesStorageViewModel(
             } else {
                 val config = spaceManager.getConfig() ?: return@launch
                 val params = StoreSearchByIdsParams(
+                    space = SpaceId(config.techSpace),
                     subscription = PROFILE_SUBSCRIPTION_ID,
                     keys = listOf(Relations.ID, Relations.NAME),
                     targets = listOf(config.profile)

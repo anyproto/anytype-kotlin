@@ -9,6 +9,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeLocal
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.msg
@@ -205,6 +206,7 @@ class FilesStorageViewModel(
             val profileId = config.profile
             spaceManager.observe()
             val subscribeParams = StoreSearchByIdsParams(
+                space = SpaceId(config.techSpace),
                 subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
                 targets = listOf(spaceId, profileId),
                 keys = listOf(

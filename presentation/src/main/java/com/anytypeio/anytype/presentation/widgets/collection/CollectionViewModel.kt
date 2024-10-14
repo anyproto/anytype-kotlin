@@ -183,6 +183,7 @@ class CollectionViewModel(
                 .flatMapLatest { config ->
                     container.subscribe(
                         StoreSearchByIdsParams(
+                            space = SpaceId(config.space),
                             subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                             targets = listOf(config.profile),
                             keys = listOf(

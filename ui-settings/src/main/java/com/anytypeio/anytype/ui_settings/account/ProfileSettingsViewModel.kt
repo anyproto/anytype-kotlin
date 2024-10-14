@@ -60,6 +60,9 @@ class ProfileSettingsViewModel(
 
     val profileData = container.subscribe(
         StoreSearchByIdsParams(
+            space = SpaceId(
+                configStorage.getOrNull()?.techSpace.orEmpty()
+            ),
             subscription = PROFILE_SUBSCRIPTION_ID,
             keys = listOf(
                 Relations.ID,

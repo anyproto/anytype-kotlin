@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
@@ -127,6 +128,8 @@ abstract class RelationAddViewModelBase(
         query: String
     ): List<ObjectWrapper.Relation> {
         val params = GetRelations.Params(
+            // TODO DROID-2916 Provide space id to vm params
+            space = SpaceId(spaceManager.get()),
             sorts = defaultObjectSearchSorts(),
             filters = buildList {
                 addAll(filterMarketplaceRelations())
@@ -158,16 +161,11 @@ abstract class RelationAddViewModelBase(
         query: String
     ): List<ObjectWrapper.Relation> {
         val params = GetRelations.Params(
+            // TODO DROID-2916 Provide space id to vm params
+            space = SpaceId(spaceManager.get()),
             sorts = defaultObjectSearchSorts(),
             filters = buildList {
                 addAll(filterMyRelations())
-                add(
-                    DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = spaceManager.get()
-                    )
-                )
                 add(
                     DVFilter(
                         relation = Relations.RELATION_KEY,

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscription
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
@@ -27,12 +28,9 @@ class RelationsSubscriptionManager @Inject constructor(
     val pipeline get() = spaceManager.state().flatMapLatest { state ->
         when(state) {
             is SpaceManager.State.Space.Active -> {
+                // DROID-2916 TODO provide other spaces or add new subscription
                 val params = buildParams(
-                    spaces = listOf(
-                        state.config.space,
-                        state.config.techSpace,
-                        Marketplace.MARKETPLACE_SPACE_ID
-                    )
+                    space = SpaceId(state.config.space)
                 )
                 container.observe(params)
             }
@@ -69,7 +67,8 @@ class RelationsSubscriptionManager @Inject constructor(
     }
 
     companion object {
-        fun buildParams(spaces: List<Id>) = RelationsSubscriptionContainer.Params(
+        fun buildParams(space: SpaceId) = RelationsSubscriptionContainer.Params(
+            space = space,
             subscription = RelationsSubscriptionContainer.SUBSCRIPTION_ID,
             filters = listOf(
                 DVFilter(
@@ -86,11 +85,6 @@ class RelationsSubscriptionManager @Inject constructor(
                     relation = Relations.IS_ARCHIVED,
                     condition = DVFilterCondition.NOT_EQUAL,
                     value = true
-                ),
-                DVFilter(
-                    relation = Relations.SPACE_ID,
-                    condition = DVFilterCondition.IN,
-                    value = spaces
                 )
             ),
             limit = 0,

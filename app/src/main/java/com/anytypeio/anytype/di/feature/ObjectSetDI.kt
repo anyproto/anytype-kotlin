@@ -307,13 +307,11 @@ object ObjectSetModule {
     fun getCreateObject(
         repo: BlockRepository,
         getDefaultObjectType: GetDefaultObjectType,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
+        dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getDefaultObjectType = getDefaultObjectType,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -330,15 +328,11 @@ object ObjectSetModule {
     fun provideGetDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
-        configStorage: ConfigStorage
+        dispatchers: AppCoroutineDispatchers
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager,
-        configStorage = configStorage
+        dispatchers = dispatchers
     )
 
     @JvmStatic

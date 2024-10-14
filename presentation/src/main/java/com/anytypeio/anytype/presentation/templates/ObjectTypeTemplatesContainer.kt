@@ -37,6 +37,7 @@ class DefaultObjectTypeTemplatesContainer(
             emptyFlow()
         } else {
             val params = StoreSearchParams(
+                space = space,
                 subscription = subscription,
                 sorts = listOf(
                     DVSort(
@@ -65,11 +66,6 @@ class DefaultObjectTypeTemplatesContainer(
                         relation = Relations.TARGET_OBJECT_TYPE,
                         condition = DVFilterCondition.EQUAL,
                         value = type
-                    ),
-                    DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = space.id
                     ),
                     DVFilter(
                         relation = Relations.ID,

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
@@ -14,6 +15,7 @@ class SearchObjects @Inject constructor(
 
     override suspend fun run(params: Params) = safe {
         repo.searchObjects(
+            space = params.space,
             sorts = params.sorts,
             filters = params.filters,
             fulltext = params.fulltext,
@@ -26,6 +28,7 @@ class SearchObjects @Inject constructor(
     }
 
     data class Params(
+        val space: SpaceId,
         val sorts: List<DVSort> = emptyList(),
         val filters: List<DVFilter> = emptyList(),
         val fulltext: String = EMPTY_TEXT,

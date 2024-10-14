@@ -68,8 +68,10 @@ enum class SystemColor(
             if (idx <= 0) {
                 return YELLOW
             } else {
-                val indexOfColor = idx % MAX_INDEX
-                return SystemColor.entries.first { it.index == indexOfColor } ?: YELLOW
+                val values = SystemColor.entries
+                val size = values.size
+                val normalizedIndex = (idx - 1) % size
+                return values[normalizedIndex]
             }
         }
     }

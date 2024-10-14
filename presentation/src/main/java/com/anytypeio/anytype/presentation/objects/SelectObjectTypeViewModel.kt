@@ -85,14 +85,10 @@ class SelectObjectTypeViewModel(
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 val types = getObjectTypes.stream(
                     GetObjectTypes.Params(
+                        // TODO DROID-2916 Merge with marketplace object types query results
+                        space = vmParams.space,
                         sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                         filters = ObjectSearchConstants.filterTypes(
-                            spaces = buildList {
-                                add(vmParams.space.id)
-                                if (query.isNotEmpty()) {
-                                    add(Marketplace.MARKETPLACE_SPACE_ID)
-                                }
-                            },
                             recommendedLayouts = SupportedLayouts.createObjectLayouts,
                             excludedTypeKeys = vmParams.excludedTypeKeys
                         ),
@@ -220,7 +216,9 @@ class SelectObjectTypeViewModel(
         }
 
         viewModelScope.launch {
-            getDefaultObjectType.async(Unit).fold(
+            getDefaultObjectType.async(
+                params = vmParams.space
+            ).fold(
                 onSuccess = { response ->
                     defaultObjectTypePipeline.emit(response.type)
                 },
@@ -413,7 +411,7 @@ class SelectObjectTypeViewModel(
     private fun proceedWithCreatingNote(text: String) {
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
-            val defaultObjectType = getDefaultObjectType.async(Unit).getOrNull()?.type?.let {
+            val defaultObjectType = getDefaultObjectType.async(vmParams.space).getOrNull()?.type?.let {
                 if (it.key != ObjectTypeUniqueKeys.COLLECTION && it.key != ObjectTypeUniqueKeys.SET)
                     it
                 else
@@ -453,16 +451,7 @@ class SelectObjectTypeViewModel(
     }
 
     fun onResume() {
-        viewModelScope.launch {
-            analytics.sendEvent(
-                eventName = EventsDictionary.screenVault,
-                props = Props(
-                    map = mapOf(
-                        EventsPropertiesKey.type to EventsDictionary.Type.menu
-                    )
-                )
-            )
-        }
+        // TODO add analytics?
     }
 
     class Factory @Inject constructor(

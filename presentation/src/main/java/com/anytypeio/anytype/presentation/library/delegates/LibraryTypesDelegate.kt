@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.library.delegates
 
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -46,11 +47,10 @@ class LibraryTypesDelegate @Inject constructor(
 
     private fun buildSearchParams(): StoreSearchParams {
         return StoreSearchParams(
+            space = SpaceId(MARKETPLACE_SPACE_ID),
             subscription = SUB_LIBRARY_TYPES,
             keys = ObjectSearchConstants.defaultKeys,
-            filters = ObjectSearchConstants.filterTypes(
-                spaces = listOf(MARKETPLACE_SPACE_ID)
-            )
+            filters = ObjectSearchConstants.filterTypes()
         )
     }
 

@@ -120,14 +120,10 @@ object SplashModule {
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
-        configStorage: ConfigStorage
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        spaceManager = spaceManager,
-        dispatchers = dispatchers,
-        configStorage = configStorage
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -148,12 +144,10 @@ object SplashModule {
         repo: BlockRepository,
         getDefaultObjectType: GetDefaultObjectType,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
         getDefaultObjectType = getDefaultObjectType,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager
+        dispatchers = dispatchers
     )
 
     @JvmStatic

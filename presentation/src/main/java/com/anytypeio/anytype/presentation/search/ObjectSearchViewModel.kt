@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
@@ -119,9 +120,10 @@ open class ObjectSearchViewModel(
     protected fun getObjectTypes() {
         jobs += viewModelScope.launch {
             val params = GetObjectTypes.Params(
+                // TODO DROID-2916 Provide space id to vm params
+                space = SpaceId(spaceManager.get()),
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaces = listOf(spaceManager.get()),
                     excludeParticipant = false
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
@@ -244,8 +246,10 @@ open class ObjectSearchViewModel(
     }
 
     open suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
+        // TODO DROID-2916 Provide space id to vm params
+        space = SpaceId(spaceManager.get()),
         limit = SEARCH_LIMIT,
-        filters = ObjectSearchConstants.filterSearchObjects(space = spaceManager.get()),
+        filters = ObjectSearchConstants.filterSearchObjects(),
         sorts = ObjectSearchConstants.sortsSearchObjects,
         fulltext = EMPTY_QUERY,
         keys = buildList {

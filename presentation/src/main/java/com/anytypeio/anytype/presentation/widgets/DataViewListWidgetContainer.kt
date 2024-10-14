@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -317,6 +318,7 @@ fun ObjectView.parseDataViewStoreSearchParams(
     val dataViewKeys = dv.relationLinks.map { it.key }
     val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
     return StoreSearchParams(
+        space = SpaceId(config.space),
         subscription =subscription,
         sorts = view.sorts,
         keys = buildList {
@@ -327,9 +329,7 @@ fun ObjectView.parseDataViewStoreSearchParams(
         filters = buildList {
             addAll(view.filters)
             addAll(
-                ObjectSearchConstants.defaultDataViewFilters(
-                    space = config.space
-                )
+                ObjectSearchConstants.defaultDataViewFilters()
             )
         },
         limit = limit,

@@ -12,6 +12,13 @@ class SystemColorTest {
         assertEquals(
             expected = SystemColor.YELLOW,
             actual = SystemColor.color(
+                idx = -1
+            )
+        )
+
+        assertEquals(
+            expected = SystemColor.YELLOW,
+            actual = SystemColor.color(
                 idx = 0
             )
         )
@@ -46,12 +53,17 @@ class SystemColorTest {
         )
 
         assertEquals(
+            expected = SystemColor.GREEN,
+            actual = SystemColor.color(
+                idx = 18
+            )
+        )
+
+        assertEquals(
             expected = SystemColor.YELLOW,
             actual = SystemColor.color(
                 idx = 19
             )
         )
-
     }
-
 }

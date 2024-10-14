@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubObject
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
@@ -127,6 +128,7 @@ class TreeWidgetContainerTest {
                 verifyBlocking(storelessSubscriptionContainer, times(1)) {
                     subscribe(
                         StoreSearchByIdsParams(
+                            space = SpaceId(config.space),
                             subscription = widget.id,
                             targets = links.map { it.id },
                             keys = TreeWidgetContainer.keys
@@ -209,6 +211,7 @@ class TreeWidgetContainerTest {
             verifyBlocking(storelessSubscriptionContainer, times(1)) {
                 subscribe(
                     StoreSearchByIdsParams(
+                        space = SpaceId(config.space),
                         subscription = widget.id,
                         targets = links.map { it.id },
                         keys = TreeWidgetContainer.keys
@@ -437,6 +440,7 @@ class TreeWidgetContainerTest {
             verifyBlocking(storelessSubscriptionContainer, times(1)) {
                 subscribe(
                     StoreSearchByIdsParams(
+                        space = SpaceId(config.space),
                         subscription = widget.id,
                         targets = emptyList(),
                         keys = TreeWidgetContainer.keys
@@ -499,6 +503,7 @@ class TreeWidgetContainerTest {
             verifyBlocking(storelessSubscriptionContainer, times(1)) {
                 subscribe(
                     StoreSearchByIdsParams(
+                        space = SpaceId(config.space),
                         subscription = widget.id,
                         targets = emptyList(),
                         keys = TreeWidgetContainer.keys
@@ -517,6 +522,7 @@ class TreeWidgetContainerTest {
             on {
                 subscribe(
                     StoreSearchByIdsParams(
+                        space = SpaceId(config.space),
                         subscription = widget.id,
                         targets = targets,
                         keys = TreeWidgetContainer.keys

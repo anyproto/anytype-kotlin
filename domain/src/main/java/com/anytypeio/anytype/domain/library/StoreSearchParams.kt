@@ -4,8 +4,10 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 data class StoreSearchParams(
+    val space: SpaceId,
     val subscription: Id,
     val sorts: List<DVSort> = emptyList(),
     val filters: List<DVFilter> = emptyList(),
@@ -17,6 +19,7 @@ data class StoreSearchParams(
 )
 
 data class StoreSearchByIdsParams(
+    val space: SpaceId,
     val subscription: Id,
     val keys: List<Key>,
     val targets: List<Id>,

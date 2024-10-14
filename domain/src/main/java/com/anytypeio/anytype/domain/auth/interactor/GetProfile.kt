@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.auth.interactor
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SubscriptionEvent
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.unset
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -66,6 +67,7 @@ class GetProfile(
     ): ObjectWrapper.Basic {
         val config = provider.get()
         val result = repo.searchObjectsByIdWithSubscription(
+            space = SpaceId(config.techSpace),
             subscription = subscription,
             ids = listOf(config.profile),
             keys = keys
@@ -80,6 +82,7 @@ class GetProfile(
     override suspend fun run(params: Params) = safe {
         val config = provider.get()
         val result = repo.searchObjectsByIdWithSubscription(
+            space = SpaceId(config.techSpace),
             subscription = params.subscription,
             ids = listOf(config.profile),
             keys = params.keys

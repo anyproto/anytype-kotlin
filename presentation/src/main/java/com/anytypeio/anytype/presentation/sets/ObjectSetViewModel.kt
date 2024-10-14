@@ -396,6 +396,7 @@ class ObjectSetViewModel(
             if (config != null) {
                 storelessSubscriptionContainer.subscribe(
                     StoreSearchByIdsParams(
+                        space = SpaceId(config.techSpace),
                         subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                         targets = listOf(config.profile),
                         keys = listOf(
@@ -487,12 +488,12 @@ class ObjectSetViewModel(
                         Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
                         if (query.state.isInitialized) {
                             dataViewSubscription.startObjectCollectionSubscription(
+                                space = vmParams.space.id,
+                                context = vmParams.ctx,
                                 collection = vmParams.ctx,
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                context = vmParams.ctx,
-                                space = vmParams.space.id,
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
@@ -504,11 +505,11 @@ class ObjectSetViewModel(
                         Timber.d("subscribeToObjectState, NEW SET STATE")
                         if (query.state.isInitialized) {
                             dataViewSubscription.startObjectSetSubscription(
+                                space = vmParams.space.id,
+                                context = vmParams.ctx,
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                context = context,
-                                space = vmParams.space.id,
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
@@ -1598,7 +1599,10 @@ class ObjectSetViewModel(
         Timber.d("onAddNewDocumentClicked, objType:[$objType]")
 
         val startTime = System.currentTimeMillis()
-        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
+        val params = objType?.uniqueKey.getCreateObjectParams(
+            space = vmParams.space,
+            objType?.defaultTemplateId
+        )
         jobs += viewModelScope.launch {
             createObject.async(params).fold(
                 onSuccess = { result ->
@@ -2106,10 +2110,10 @@ class ObjectSetViewModel(
 
     private suspend fun fetchAndProcessObjectTypes(selectedType: Id, widgetState: TypeTemplatesWidgetUI.Data) {
         val filters = ObjectSearchConstants.filterTypes(
-            spaces = listOf(vmParams.space.id),
             recommendedLayouts = SupportedLayouts.createObjectLayouts
         )
         val params = GetObjectTypes.Params(
+            space = vmParams.space,
             filters = filters,
             keys = ObjectSearchConstants.defaultKeysObjectType
         )

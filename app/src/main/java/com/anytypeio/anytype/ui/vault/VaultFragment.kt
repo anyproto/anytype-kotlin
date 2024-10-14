@@ -12,14 +12,23 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
+import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.Command
+import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
+import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
+import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.ProfileSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -27,7 +36,7 @@ import timber.log.Timber
 
 class VaultFragment : BaseComposeFragment() {
 
-    // TODO handle deeplink
+    private val deepLink: String? get() = argOrNull(DEEP_LINK_KEY)
 
     @Inject
     lateinit var factory: VaultViewModel.Factory
@@ -51,14 +60,15 @@ class VaultFragment : BaseComposeFragment() {
                 )
             }
             LaunchedEffect(Unit) {
-                vm.commands.collect { command ->
-                    proceedWithCommand(command)
-                }
+                vm.commands.collect { command -> proceed(command) }
+            }
+            LaunchedEffect(Unit) {
+                vm.navigation.collect { command -> proceed(command) }
             }
         }
     }
 
-    private fun proceedWithCommand(command: Command) {
+    private fun proceed(command: Command) {
         when (command) {
             is Command.EnterSpaceHomeScreen -> {
                 runCatching {
@@ -93,6 +103,57 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while opening introduce-vault-screen from vault")
                 }
             }
+            is Command.Deeplink.Invite -> {
+                findNavController().navigate(
+                    R.id.requestJoinSpaceScreen,
+                    RequestJoinSpaceFragment.args(link = command.link)
+                )
+            }
+            is Command.Deeplink.GalleryInstallation -> {
+                findNavController().navigate(
+                    R.id.galleryInstallationScreen,
+                    GalleryInstallationFragment.args(
+                        deepLinkType = command.deepLinkType,
+                        deepLinkSource = command.deepLinkSource
+                    )
+                )
+            }
+            is Command.Deeplink.MembershipScreen -> {
+                findNavController().navigate(
+                    R.id.paymentsScreen,
+                    MembershipFragment.args(command.tierId),
+                    NavOptions.Builder().setLaunchSingleTop(true).build()
+                )
+            }
+            is Command.Deeplink.DeepLinkToObjectNotWorking -> {
+                toast(
+                    getString(R.string.multiplayer_deeplink_to_your_object_error)
+                )
+            }
+        }
+    }
+
+    private fun proceed(destination: Navigation) {
+        when (destination) {
+            is Navigation.OpenObject -> runCatching {
+                findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                navigation().openDocument(
+                    target = destination.ctx,
+                    space = destination.space
+                )
+            }.onFailure {
+                Timber.e(it, "Error while opening object from vault")
+            }
+            is Navigation.OpenSet -> runCatching {
+                findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                navigation().openObjectSet(
+                    target = destination.ctx,
+                    space = destination.space,
+                    view = destination.view
+                )
+            }.onFailure {
+                Timber.e(it, "Error while opening set or collection from vault")
+            }
         }
     }
 
@@ -106,7 +167,16 @@ class VaultFragment : BaseComposeFragment() {
 
     override fun onResume() {
         super.onResume()
-        vm.onResume()
+        proceedWithDeepLinks()
+    }
+
+    private fun proceedWithDeepLinks() {
+        val deepLinkFromFragmentArgs = deepLink
+        if (deepLinkFromFragmentArgs != null) {
+            Timber.d("Deeplink  from fragment args")
+            vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromFragmentArgs))
+            arguments?.putString(DEEP_LINK_KEY, null)
+        }
     }
 
     override fun injectDependencies() {
@@ -118,8 +188,8 @@ class VaultFragment : BaseComposeFragment() {
     }
 
     companion object {
-        const val SHOW_MNEMONIC_KEY = "arg.vault-screen.show-mnemonic"
-        const val DEEP_LINK_KEY = "arg.vault-screen.deep-link"
+        private const val SHOW_MNEMONIC_KEY = "arg.vault-screen.show-mnemonic"
+        private const val DEEP_LINK_KEY = "arg.vault-screen.deep-link"
         fun args(deeplink: String?) : Bundle = bundleOf(
             DEEP_LINK_KEY to deeplink
         )

@@ -234,7 +234,7 @@ class CreateObjectAsMentionOrLinkTest {
         defaultTemplate: String? = null
     ) {
         getDefaultObjectType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultObjectType.Response(
+            onBlocking { run(SpaceId(spaceId)) } doReturn GetDefaultObjectType.Response(
                 type = type,
                 name = name,
                 id = TypeId(MockDataFactory.randomString()),

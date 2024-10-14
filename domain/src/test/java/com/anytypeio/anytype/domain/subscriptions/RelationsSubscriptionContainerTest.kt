@@ -6,9 +6,11 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubRelationObject
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionContainer
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -45,6 +47,9 @@ class RelationsSubscriptionContainerTest {
     lateinit var repo: BlockRepository
 
     @Mock
+    lateinit var logger: Logger
+
+    @Mock
     lateinit var channel: SubscriptionEventChannel
 
     @Before
@@ -71,7 +76,8 @@ class RelationsSubscriptionContainerTest {
             repo = repo,
             channel = channel,
             store = store,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            logger = logger
         )
 
         val manager = RelationsSubscriptionManager  (
@@ -81,19 +87,11 @@ class RelationsSubscriptionContainerTest {
         )
 
         val defaultSpaceSearchParams = RelationsSubscriptionManager.buildParams(
-            spaces = listOf(
-                defaultSpaceConfig.space,
-                defaultSpaceConfig.techSpace,
-                Marketplace.MARKETPLACE_SPACE_ID,
-            )
+            space = SpaceId(defaultSpaceConfig.space)
         )
 
         val alternativeSpaceSearchParams = RelationsSubscriptionManager.buildParams(
-            spaces = listOf(
-                alternativeSpaceConfig.space,
-                alternativeSpaceConfig.techSpace,
-                Marketplace.MARKETPLACE_SPACE_ID,
-            )
+            space = SpaceId(defaultSpaceConfig.space)
         )
 
         val defaultSpaceTypes = buildList {
@@ -151,6 +149,7 @@ class RelationsSubscriptionContainerTest {
         repo.stub {
             onBlocking {
                 searchObjectsWithSubscription(
+                    space = SpaceId(defaultSpaceConfig.space),
                     subscription = defaultSpaceSearchParams.subscription,
                     sorts = defaultSpaceSearchParams.sorts,
                     filters = defaultSpaceSearchParams.filters,
@@ -173,6 +172,7 @@ class RelationsSubscriptionContainerTest {
         repo.stub {
             onBlocking {
                 searchObjectsWithSubscription(
+                    space = SpaceId(alternativeSpaceConfig.space),
                     subscription = alternativeSpaceSearchParams.subscription,
                     sorts = alternativeSpaceSearchParams.sorts,
                     filters = alternativeSpaceSearchParams.filters,

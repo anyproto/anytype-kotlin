@@ -52,34 +52,6 @@ class SelectSpaceViewModel(
     val commands = MutableSharedFlow<Command>()
     val jobs = mutableListOf<Job>()
 
-    private val profile = spaceManager
-        .observe()
-        .flatMapLatest { config ->
-            container.subscribe(
-                StoreSearchByIdsParams(
-                    subscription = SELECT_SPACE_PROFILE_SUBSCRIPTION,
-                    keys = listOf(
-                        Relations.ID,
-                        Relations.NAME,
-                        Relations.ICON_IMAGE,
-                        Relations.ICON_EMOJI,
-                        Relations.ICON_OPTION
-                    ),
-                    targets = listOf(config.profile)
-                )
-            ).map { results ->
-                if (results.isNotEmpty())
-                    results.first()
-                else {
-                    ObjectWrapper.Basic(
-                        mapOf(
-                            Relations.ID to config.profile
-                        )
-                    )
-                }
-            }
-        }
-
     private val spaces: Flow<List<ObjectWrapper.SpaceView>> = spaceViewContainer
         .observe()
         .map { results ->

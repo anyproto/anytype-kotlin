@@ -178,6 +178,7 @@ interface BlockRemote {
     ): SearchResult
 
     suspend fun searchObjectsByIdWithSubscription(
+        space: SpaceId,
         subscription: Id,
         ids: List<Id>,
         keys: List<String>

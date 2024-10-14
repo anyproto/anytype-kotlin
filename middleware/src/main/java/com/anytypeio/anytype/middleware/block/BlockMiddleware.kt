@@ -388,10 +388,12 @@ class BlockMiddleware(
     )
 
     override suspend fun searchObjectsByIdWithSubscription(
+        space: SpaceId,
         subscription: Id,
         ids: List<Id>,
         keys: List<String>
     ): SearchResult = middleware.objectIdsSubscribe(
+        space = space,
         subscription = subscription,
         ids = ids,
         keys = keys

@@ -396,6 +396,7 @@ class ObjectSetViewModel(
             if (config != null) {
                 storelessSubscriptionContainer.subscribe(
                     StoreSearchByIdsParams(
+                        space = SpaceId(config.techSpace),
                         subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                         targets = listOf(config.profile),
                         keys = listOf(

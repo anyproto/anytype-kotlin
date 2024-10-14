@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.spaces
 
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -36,6 +37,7 @@ class SpaceDeletedStatusWatcher @Inject constructor(
                 .flatMapLatest { config ->
                     container.subscribe(
                         searchParams = StoreSearchByIdsParams(
+                            space = SpaceId(config.techSpace),
                             subscription = GLOBAL_SPACE_VIEW_SUBSCRIPTION,
                             targets = listOf(config.spaceView),
                             keys = buildList {

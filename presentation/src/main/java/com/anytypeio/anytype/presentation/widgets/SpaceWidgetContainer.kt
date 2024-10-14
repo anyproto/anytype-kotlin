@@ -40,6 +40,7 @@ class SpaceWidgetContainer @Inject constructor(
             combine(
                 container.subscribe(
                     StoreSearchByIdsParams(
+                        space = SpaceId(config.techSpace),
                         subscription = SPACE_WIDGET_SUBSCRIPTION,
                         targets = listOf(config.spaceView),
                         keys = buildList {

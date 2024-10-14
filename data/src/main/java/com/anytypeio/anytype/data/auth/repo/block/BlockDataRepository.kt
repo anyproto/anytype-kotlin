@@ -430,10 +430,12 @@ class BlockDataRepository(
     )
 
     override suspend fun searchObjectsByIdWithSubscription(
+        space: SpaceId,
         subscription: Id,
         ids: List<Id>,
         keys: List<String>
     ): SearchResult = remote.searchObjectsByIdWithSubscription(
+        space = space,
         subscription = subscription,
         ids = ids,
         keys = keys

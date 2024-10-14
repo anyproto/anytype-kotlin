@@ -377,6 +377,7 @@ open class ObjectSetViewModelTestSetup {
 
     fun stubProfileIcon() {
         val searchParams = StoreSearchByIdsParams(
+            space = SpaceId(spaceConfig.techSpace),
             subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
             targets = listOf(spaceConfig.profile),
             keys = listOf(

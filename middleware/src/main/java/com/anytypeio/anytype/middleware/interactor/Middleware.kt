@@ -1049,11 +1049,13 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectIdsSubscribe(
+        space: SpaceId,
         subscription: Id,
         ids: List<Id>,
         keys: List<String>
     ): SearchResult {
         val request = Rpc.Object.SubscribeIds.Request(
+            spaceId = space.id,
             subId = subscription,
             keys = keys,
             ids = ids

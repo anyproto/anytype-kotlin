@@ -19,6 +19,7 @@ data class StoreSearchParams(
 )
 
 data class StoreSearchByIdsParams(
+    val space: SpaceId,
     val subscription: Id,
     val keys: List<Key>,
     val targets: List<Id>,

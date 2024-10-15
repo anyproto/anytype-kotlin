@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -86,6 +88,7 @@ import timber.log.Timber
 import com.anytypeio.anytype.core_models.ObjectView as CoreObjectView
 
 class CollectionViewModel(
+    private val vmParams: VmParams,
     private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val getObjectTypes: GetObjectTypes,
@@ -106,16 +109,20 @@ class CollectionViewModel(
     private val spaceManager: SpaceManager,
     private val getSpaceView: GetSpaceView,
     private val dateTypeNameProvider: DateTypeNameProvider,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModel(), Reducer<CoreObjectView, Payload>, AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val payloads: Flow<Payload>
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
+    private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
+
     init {
-        Timber.i("CollectionViewModel, init")
+        Timber.i("CollectionViewModel, init, spaceId:${vmParams.spaceId.id}")
         proceedWithObservingProfileIcon()
+        proceedWithObservingPermissions()
         val externalChannelEvents: Flow<Payload> = spaceManager
             .observe()
             .flatMapLatest { config ->
@@ -166,7 +173,8 @@ class CollectionViewModel(
                     objectActions = actionObjectFilter.filter(subscription, selectedViews()),
                     inDragMode = subscription == Subscription.Favorites && mode == InteractionMode.Edit,
                     displayType = subscription != Subscription.Sets || subscription != Subscription.Files,
-                    operationInProgress = operationInProgress
+                    operationInProgress = operationInProgress,
+                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
                 )
             )
         }.stateIn(
@@ -174,6 +182,16 @@ class CollectionViewModel(
             started = SharingStarted.WhileSubscribed(),
             initialValue = Resultat.loading()
         )
+
+    private fun proceedWithObservingPermissions() {
+        viewModelScope.launch {
+            userPermissionProvider
+                .observe(space = vmParams.spaceId)
+                .collect {
+                    permission.value = it
+                }
+        }
+    }
 
     private fun proceedWithObservingProfileIcon() {
         viewModelScope.launch {
@@ -207,7 +225,7 @@ class CollectionViewModel(
         val params = GetObjectTypes.Params(
             sorts = emptyList(),
             filters = ObjectSearchConstants.filterTypes(
-                spaces = listOf(spaceManager.get())
+                spaces = listOf(vmParams.spaceId.id)
             ),
             keys = ObjectSearchConstants.defaultKeysObjectType
         )
@@ -238,7 +256,7 @@ class CollectionViewModel(
     fun onStart(subscription: Subscription) {
         val isFirstLaunch = this.subscription == Subscription.None
         this.subscription = subscription
-        if (isFirstLaunch && (subscription == Subscription.Bin || subscription == Subscription.Files)) {
+        if (permission.value?.isOwnerOrEditor() == true && isFirstLaunch && (subscription == Subscription.Bin || subscription == Subscription.Files)) {
             onStartEditMode()
         }
         subscribeObjects()
@@ -248,7 +266,7 @@ class CollectionViewModel(
         return StoreSearchParams(
             subscription = subscription.id,
             keys = subscription.keys,
-            filters = subscription.space(spaceManager.get()),
+            filters = subscription.space(vmParams.spaceId.id),
             sorts = subscription.sorts,
             limit = subscription.limit
         )
@@ -457,6 +475,9 @@ class CollectionViewModel(
     }
 
     fun onObjectLongClicked(view: CollectionObjectView) {
+        if (permission.value?.isOwnerOrEditor() != true) {
+            return
+        }
         if (interactionMode.value != InteractionMode.Edit) {
             interactionMode.value = InteractionMode.Edit
         }
@@ -862,7 +883,7 @@ class CollectionViewModel(
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
                         view = EventsDictionary.View.viewHome,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(vmParams.spaceId.id)
                     )
                     proceedWithOpeningObject(result.obj)
                 },
@@ -927,7 +948,10 @@ class CollectionViewModel(
         super.onCleared()
     }
 
+    data class VmParams(val spaceId: SpaceId)
+
     class Factory @Inject constructor(
+        private val vmParams: VmParams,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val getObjectTypes: GetObjectTypes,
@@ -948,7 +972,8 @@ class CollectionViewModel(
         private val spaceManager: SpaceManager,
         private val getSpaceView: GetSpaceView,
         private val dateTypeNameProvider: DateTypeNameProvider,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -974,7 +999,9 @@ class CollectionViewModel(
                 spaceManager = spaceManager,
                 getSpaceView = getSpaceView,
                 dateTypeNameProvider = dateTypeNameProvider,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                userPermissionProvider = userPermissionProvider,
+                vmParams = vmParams
             ) as T
         }
     }

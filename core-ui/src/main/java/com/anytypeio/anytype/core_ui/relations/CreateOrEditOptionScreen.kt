@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -125,17 +126,16 @@ fun CirclesContainer(selectedColor: ThemeColor, action: (ThemeColor) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         maxItemsInEachRow = 5
     ) {
         val itemModifier = Modifier
-            .weight(1f)
-            .fillMaxWidth()
+            .size(60.dp)
             .clip(CircleShape)
             .aspectRatio(1f)
             .align(Alignment.CenterVertically)
-        ThemeColor.values().drop(1).forEach { color ->
+        ThemeColor.entries.drop(1).forEach { color ->
             Box(
                 itemModifier
                     .noRippleClickable { action(color) }

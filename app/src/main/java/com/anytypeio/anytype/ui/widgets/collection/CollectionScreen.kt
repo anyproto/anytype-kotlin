@@ -63,8 +63,10 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
@@ -88,13 +90,12 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.CollectionActionWidget
-import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.setVisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionObjectView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionUiState
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
@@ -141,7 +142,10 @@ fun ScreenContent(
                 SearchBar(vm, uiState)
                 ListView(vm, uiState, stringResource(id = R.string.search_no_results_try))
             }
-            Box(Modifier.align(BottomCenter).padding(bottom = 20.dp)) {
+            Box(
+                Modifier
+                    .align(BottomCenter)
+                    .padding(bottom = 20.dp)) {
                 BottomNavigationMenu(
                     backClick = { vm.onPrevClicked() },
                     homeClick = { vm.onHomeClicked() },
@@ -181,15 +185,17 @@ fun TopBar(
             style = Title1,
             color = colorResource(id = R.color.text_primary)
         )
-        Text(
-            modifier = Modifier
-                .align(CenterEnd)
-                .noRippleClickable { vm.onActionClicked() }
-                .padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
-            text = uiState.actionName,
-            style = UXBody,
-            color = colorResource(id = R.color.glyph_active)
-        )
+        if (uiState.isActionButtonVisible) {
+            Text(
+                modifier = Modifier
+                    .align(CenterEnd)
+                    .noRippleClickable { vm.onActionClicked() }
+                    .padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
+                text = uiState.actionName,
+                style = UXBody,
+                color = colorResource(id = R.color.glyph_active)
+            )
+        }
     }
 }
 
@@ -240,6 +246,7 @@ fun ListView(
                             is CollectionView.FavoritesView -> it.obj.id
                             is SectionView -> it.name
                             is EmptySearch -> it.query
+                            CollectionView.BinEmpty -> "bin-empty"
                         }
                     }
                 ) { item ->
@@ -334,6 +341,33 @@ fun ListView(
                                 }
                             }
                         }
+
+                        CollectionView.BinEmpty -> {
+                            Box(
+                                modifier = Modifier.fillParentMaxHeight()
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .padding(horizontal = 16.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.bin_empty_title),
+                                        style = UXBody,
+                                        color = colorResource(id = R.color.text_primary),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.bin_empty_subtitle),
+                                        style = UXBody,
+                                        color = colorResource(id = R.color.text_secondary),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -400,18 +434,6 @@ fun SearchBar(
 }
 
 @Composable
-fun Icon(icon: ObjectIcon?) {
-    icon?.let {
-        AndroidView(factory = { ctx ->
-            val iconWidget = LayoutInflater.from(ctx)
-                .inflate(R.layout.collections_icon, null) as ObjectIconWidget
-            iconWidget.setIcon(it)
-            iconWidget
-        })
-    }
-}
-
-@Composable
 fun SectionItem(
     view: SectionView
 ) {
@@ -444,6 +466,8 @@ fun CollectionItem(
     displayType: Boolean,
 ) {
 
+    val haptic = LocalHapticFeedback.current
+
     Box(
         Modifier
             .fillMaxWidth()
@@ -454,7 +478,10 @@ fun CollectionItem(
                 } else {
                     Modifier.combinedClickable(
                         onClick = onClick,
-                        onLongClick = onLongClick
+                        onLongClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onLongClick()
+                        }
                     )
                 }
             )
@@ -505,7 +532,7 @@ fun CollectionItem(
                     .size(48.dp)
                     .align(CenterVertically)
             ) {
-                Icon(icon = view.obj.icon)
+                ListWidgetObjectIcon(icon = view.obj.icon, modifier = Modifier, iconSize = 48.dp)
             }
 
             Column(

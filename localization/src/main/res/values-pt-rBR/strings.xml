@@ -1494,7 +1494,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="version_history_error_get_members">Erro ao obter membros</string>
     <string name="new_object">Novo objeto</string>
     <string name="vault_my_spaces">My Spaces</string>
-    <string name="all_content_title_all_content">All objects</string>
+    <string name="all_content_title_all_content">All Objects</string>
     <string name="all_content_title_only_unlinked">Apenas desvinculados</string>
     <string name="all_content_title_only_unlinked_description">Objetos não vinculados que não tenham um link direto ou backlink com outros objetos no gráfico.</string>
     <string name="all_content_view_bin">Visualizar lixeira</string>

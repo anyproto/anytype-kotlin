@@ -486,13 +486,13 @@ class AllContentViewModel(
             else -> {
                 listOf(
                     MenuSortsItem.Sort(
-                        sort = AllContentSort.ByName(isSelected = activeSort is AllContentSort.ByName)
-                    ),
-                    MenuSortsItem.Sort(
                         sort = AllContentSort.ByDateUpdated(isSelected = activeSort is AllContentSort.ByDateUpdated)
                     ),
                     MenuSortsItem.Sort(
                         sort = AllContentSort.ByDateCreated(isSelected = activeSort is AllContentSort.ByDateCreated)
+                    ),
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByName(isSelected = activeSort is AllContentSort.ByName)
                     )
                 )
             }

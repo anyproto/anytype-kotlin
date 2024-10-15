@@ -41,12 +41,12 @@ import dagger.Provides
 )
 @PerScreen
 interface SpaceSettingsComponent {
-    @Component.Builder
-    interface Builder {
-        @BindsInstance
-        fun withParams(params: SpaceSettingsViewModel.Params): Builder
-        fun withDependencies(dependencies: SpaceSettingsDependencies): Builder
-        fun build(): SpaceSettingsComponent
+    @Component.Factory
+    interface Factory {
+        fun create(
+            @BindsInstance vmParams: SpaceSettingsViewModel.VmParams,
+            dependencies: SpaceSettingsDependencies
+        ) : SpaceSettingsComponent
     }
 
     fun inject(fragment: SpaceSettingsFragment)

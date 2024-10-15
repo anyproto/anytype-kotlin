@@ -15,8 +15,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.intents.SystemAction
@@ -36,6 +38,8 @@ class SpacesStorageFragment : BaseBottomSheetComposeFragment() {
     lateinit var factory: SpacesStorageViewModelFactory
 
     private val vm by viewModels<SpacesStorageViewModel> { factory }
+
+    private val space get() = arg<Id>(ARG_SPACE_ID_KEY)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,7 +92,8 @@ class SpacesStorageFragment : BaseBottomSheetComposeFragment() {
         when (command) {
             is SpacesStorageViewModel.Command.OpenRemoteFilesManageScreen -> {
                 openRemoteStorageScreen(
-                    subscription = command.subscription
+                    subscription = command.subscription,
+                    spaceId = space
                 )
             }
             is SpacesStorageViewModel.Command.SendGetMoreSpaceEmail -> {
@@ -108,11 +113,14 @@ class SpacesStorageFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
-    private fun openRemoteStorageScreen(subscription: String) {
+    private fun openRemoteStorageScreen(subscription: String, spaceId: Id) {
         findNavController().safeNavigate(
             R.id.spacesStorageScreen,
             R.id.remoteStorageFragment,
-            bundleOf(RemoteFilesManageFragment.SUBSCRIPTION_KEY to subscription)
+            args = RemoteFilesManageFragment.args(
+                subscription = subscription,
+                space = spaceId
+            ),
         )
     }
 
@@ -129,11 +137,19 @@ class SpacesStorageFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().spacesStorageComponent.get().inject(this)
+        val vmParams = SpacesStorageViewModel.VmParams(
+            spaceId = SpaceId(space)
+        )
+        componentManager().spacesStorageComponent.get(vmParams).inject(this)
     }
 
     override fun releaseDependencies() {
         componentManager().spacesStorageComponent.release()
+    }
+
+    companion object {
+        private const val ARG_SPACE_ID_KEY = "arg.space-storage.space-id"
+        fun args(space: Id) = bundleOf(ARG_SPACE_ID_KEY to space)
     }
 }
 

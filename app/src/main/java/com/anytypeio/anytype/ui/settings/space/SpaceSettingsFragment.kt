@@ -29,6 +29,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
+import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui_settings.space.SpaceSettingsScreen
@@ -69,7 +70,10 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     ),
                     onFileStorageClick = throttledClick(
                         onClick = {
-                            findNavController().navigate(R.id.spacesStorageScreen)
+                            findNavController().navigate(
+                                resId = R.id.spacesStorageScreen,
+                                args = SpacesStorageFragment.args(space = space)
+                            )
                         }
                     ),
                     onPersonalizationClicked = throttledClick(
@@ -204,7 +208,8 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().spaceSettingsComponent.get(SpaceId(space)).inject(this)
+        val vmParams = SpaceSettingsViewModel.VmParams(space = SpaceId(space))
+        componentManager().spaceSettingsComponent.get(params = vmParams).inject(this)
     }
 
     override fun releaseDependencies() {

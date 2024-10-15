@@ -19,9 +19,11 @@ import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModelFactory
 import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -36,11 +38,12 @@ import dagger.Provides
 )
 interface SpacesStorageComponent {
 
-    @Component.Builder
-    interface Builder {
-
-        fun withDependencies(dependency: SpacesStorageDependencies): Builder
-        fun build(): SpacesStorageComponent
+    @Component.Factory
+    interface Factory {
+        fun create(
+            @BindsInstance vmParams: SpacesStorageViewModel.VmParams,
+            dependency: SpacesStorageDependencies
+        ): SpacesStorageComponent
     }
 
     fun inject(fragment: SpacesStorageFragment)

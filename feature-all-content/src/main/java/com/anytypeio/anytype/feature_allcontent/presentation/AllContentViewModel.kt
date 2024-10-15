@@ -457,7 +457,7 @@ class AllContentViewModel(
                     container = container,
                     sorts = uiSorts,
                     types = uiSortTypes,
-                    showBin = permission.value?.isOwnerOrEditor() == true
+                    showBin = true
                 )
             }
         }

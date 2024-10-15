@@ -8,9 +8,12 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -31,6 +34,8 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
     lateinit var factory: CollectionViewModel.Factory
 
     private val navigation get() = navigation()
+
+    private val space get() = arg<Id>(SPACE_ID_KEY)
 
     private val subscription: Subscription by lazy {
         SubscriptionMapper().map(argString(SUBSCRIPTION_KEY))
@@ -127,7 +132,10 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().collectionComponent.get().inject(this)
+        val vmParams = CollectionViewModel.VmParams(
+            spaceId = SpaceId(space)
+        )
+        componentManager().collectionComponent.get(vmParams).inject(this)
     }
 
     override fun releaseDependencies() {
@@ -136,6 +144,11 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
         const val SUBSCRIPTION_KEY: String = "arg.space.files.subscription.key"
+        const val SPACE_ID_KEY = "arg.space.files.space-id"
+        fun args(subscription: Id, space: Id) = bundleOf(
+            SUBSCRIPTION_KEY to subscription,
+            SPACE_ID_KEY  to space
+        )
     }
 }
 

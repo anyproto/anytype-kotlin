@@ -88,13 +88,12 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.CollectionActionWidget
-import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.setVisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionObjectView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionUiState
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
@@ -141,7 +140,10 @@ fun ScreenContent(
                 SearchBar(vm, uiState)
                 ListView(vm, uiState, stringResource(id = R.string.search_no_results_try))
             }
-            Box(Modifier.align(BottomCenter).padding(bottom = 20.dp)) {
+            Box(
+                Modifier
+                    .align(BottomCenter)
+                    .padding(bottom = 20.dp)) {
                 BottomNavigationMenu(
                     backClick = { vm.onPrevClicked() },
                     homeClick = { vm.onHomeClicked() },
@@ -400,18 +402,6 @@ fun SearchBar(
 }
 
 @Composable
-fun Icon(icon: ObjectIcon?) {
-    icon?.let {
-        AndroidView(factory = { ctx ->
-            val iconWidget = LayoutInflater.from(ctx)
-                .inflate(R.layout.collections_icon, null) as ObjectIconWidget
-            iconWidget.setIcon(it)
-            iconWidget
-        })
-    }
-}
-
-@Composable
 fun SectionItem(
     view: SectionView
 ) {
@@ -505,7 +495,7 @@ fun CollectionItem(
                     .size(48.dp)
                     .align(CenterVertically)
             ) {
-                Icon(icon = view.obj.icon)
+                ListWidgetObjectIcon(icon = view.obj.icon, modifier = Modifier, iconSize = 48.dp)
             }
 
             Column(

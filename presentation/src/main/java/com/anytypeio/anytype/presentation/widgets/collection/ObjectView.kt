@@ -26,4 +26,6 @@ sealed class CollectionView {
     ) : CollectionView()
 
     data class EmptySearch(val query: String) : CollectionView()
+
+    data object BinEmpty : CollectionView()
 }

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import javax.inject.Inject
 
 class SpacesStorageViewModelFactory @Inject constructor(
+    private val vmParams: SpacesStorageViewModel.VmParams,
     private val analytics: Analytics,
     private val spaceManager: SpaceManager,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
@@ -39,6 +40,7 @@ class SpacesStorageViewModelFactory @Inject constructor(
         getAccount = getAccount,
         membershipProvider = membershipProvider,
         userPermissionProvider = userPermissionProvider,
-        configStorage = configStorage
+        configStorage = configStorage,
+        vmParams = vmParams
     ) as T
 }

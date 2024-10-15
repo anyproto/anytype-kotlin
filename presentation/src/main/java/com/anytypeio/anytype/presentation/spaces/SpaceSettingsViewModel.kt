@@ -28,8 +28,6 @@ import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
-import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -49,7 +47,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SpaceSettingsViewModel(
-    private val params: Params,
+    private val params: VmParams,
     private val analytics: Analytics,
     private val setSpaceDetails: SetSpaceDetails,
     private val spaceManager: SpaceManager,
@@ -401,7 +399,7 @@ class SpaceSettingsViewModel(
     }
 
     class Factory @Inject constructor(
-        private val params: Params,
+        private val params: VmParams,
         private val analytics: Analytics,
         private val container: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
@@ -439,7 +437,7 @@ class SpaceSettingsViewModel(
         ) as T
     }
 
-    class Params(val space: SpaceId)
+    data class VmParams(val space: SpaceId)
 
     companion object {
         const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."

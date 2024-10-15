@@ -246,6 +246,7 @@ fun ListView(
                             is CollectionView.FavoritesView -> it.obj.id
                             is SectionView -> it.name
                             is EmptySearch -> it.query
+                            CollectionView.BinEmpty -> "bin-empty"
                         }
                     }
                 ) { item ->
@@ -337,6 +338,33 @@ fun ListView(
                                             modifier = Modifier.fillMaxWidth()
                                         )
                                     }
+                                }
+                            }
+                        }
+
+                        CollectionView.BinEmpty -> {
+                            Box(
+                                modifier = Modifier.fillParentMaxHeight()
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .padding(horizontal = 16.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.bin_empty_title),
+                                        style = UXBody,
+                                        color = colorResource(id = R.color.text_primary),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.bin_empty_subtitle),
+                                        style = UXBody,
+                                        color = colorResource(id = R.color.text_secondary),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
                                 }
                             }
                         }

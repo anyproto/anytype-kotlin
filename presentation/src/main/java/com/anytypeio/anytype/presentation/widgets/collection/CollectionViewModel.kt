@@ -342,16 +342,23 @@ class CollectionViewModel(
             container.subscribe(params).map { results -> results.distinctBy { it.id } },
             queryFlow(),
             objectTypes()
-        ) { objs, query, types ->
-            val result = objs.filter { obj ->
-                obj.getProperName().contains(query, true)
-            }.toViews(urlBuilder, types)
+        ) { objects, query, types ->
+
+            val filteredResults = objects.filter { obj ->
+                obj.getProperName().contains(query, ignoreCase = true)
+            }
+
+            val views = filteredResults
+                .toViews(urlBuilder = urlBuilder, objectTypes = types)
                 .map { ObjectView(it) }
                 .tryAddSections()
-            if (result.isEmpty() && query.isNotEmpty())
-                listOf(CollectionView.EmptySearch(query))
-            else
-                result
+
+            when {
+                views.isNotEmpty() -> views
+                subscription == Subscription.Bin && query.isEmpty() -> listOf(CollectionView.BinEmpty)
+                query.isNotEmpty() -> listOf(CollectionView.EmptySearch(query))
+                else -> emptyList()
+            }
         }.catch {
             Timber.e(it, "Error in subscription flow")
         }

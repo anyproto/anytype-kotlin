@@ -12,5 +12,6 @@ class CollectionUiState(
     val objectActions: List<ObjectAction>,
     val inDragMode: Boolean,
     val displayType: Boolean,
-    val operationInProgress: Boolean
+    val operationInProgress: Boolean,
+    val isOwnerOrEditor: Boolean
 )

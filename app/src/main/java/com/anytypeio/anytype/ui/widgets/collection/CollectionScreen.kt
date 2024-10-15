@@ -63,8 +63,10 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
@@ -183,15 +185,17 @@ fun TopBar(
             style = Title1,
             color = colorResource(id = R.color.text_primary)
         )
-        Text(
-            modifier = Modifier
-                .align(CenterEnd)
-                .noRippleClickable { vm.onActionClicked() }
-                .padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
-            text = uiState.actionName,
-            style = UXBody,
-            color = colorResource(id = R.color.glyph_active)
-        )
+        if (uiState.isOwnerOrEditor) {
+            Text(
+                modifier = Modifier
+                    .align(CenterEnd)
+                    .noRippleClickable { vm.onActionClicked() }
+                    .padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
+                text = uiState.actionName,
+                style = UXBody,
+                color = colorResource(id = R.color.glyph_active)
+            )
+        }
     }
 }
 
@@ -434,6 +438,8 @@ fun CollectionItem(
     displayType: Boolean,
 ) {
 
+    val haptic = LocalHapticFeedback.current
+
     Box(
         Modifier
             .fillMaxWidth()
@@ -444,7 +450,10 @@ fun CollectionItem(
                 } else {
                     Modifier.combinedClickable(
                         onClick = onClick,
-                        onLongClick = onLongClick
+                        onLongClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onLongClick()
+                        }
                     )
                 }
             )

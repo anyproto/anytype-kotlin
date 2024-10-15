@@ -144,7 +144,7 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
         const val SUBSCRIPTION_KEY: String = "arg.space.files.subscription.key"
-        const val SPACE_ID_KEY = "arg.space.files.space-id"
+        const val SPACE_ID_KEY = "arg.space.files.space.key"
         fun args(subscription: Id, space: Id) = bundleOf(
             SUBSCRIPTION_KEY to subscription,
             SPACE_ID_KEY  to space

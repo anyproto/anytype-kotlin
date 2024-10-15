@@ -185,7 +185,7 @@ fun TopBar(
             style = Title1,
             color = colorResource(id = R.color.text_primary)
         )
-        if (uiState.isOwnerOrEditor) {
+        if (uiState.isActionButtonVisible) {
             Text(
                 modifier = Modifier
                     .align(CenterEnd)

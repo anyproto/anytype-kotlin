@@ -174,7 +174,7 @@ class CollectionViewModel(
                     inDragMode = subscription == Subscription.Favorites && mode == InteractionMode.Edit,
                     displayType = subscription != Subscription.Sets || subscription != Subscription.Files,
                     operationInProgress = operationInProgress,
-                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
+                    isActionButtonVisible = permission.value?.isOwnerOrEditor() == true
                 )
             )
         }.stateIn(
@@ -483,6 +483,7 @@ class CollectionViewModel(
 
     fun onObjectLongClicked(view: CollectionObjectView) {
         if (permission.value?.isOwnerOrEditor() != true) {
+            Timber.w("User has no permission to edit Collection Screen")
             return
         }
         if (interactionMode.value != InteractionMode.Edit) {

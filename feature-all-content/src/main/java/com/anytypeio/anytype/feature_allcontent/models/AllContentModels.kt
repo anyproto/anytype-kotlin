@@ -21,6 +21,7 @@ import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.presentation.library.DependentData
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getDescriptionOrSnippet
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
 
@@ -224,12 +225,12 @@ fun ObjectWrapper.Basic.toAllContentItem(
     val obj = this
     val typeUrl = obj.getProperType()
     val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
-    val layout = layout ?: ObjectType.Layout.BASIC
+    val layout = obj.layout ?: ObjectType.Layout.BASIC
     return UiContentItem.Item(
         id = obj.id,
         space = space,
         name = obj.getProperName(),
-        description = obj.description,
+        description = getDescriptionOrSnippet(),
         type = typeUrl,
         typeName = objectTypes.firstOrNull { type ->
             if (isProfile) {

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.core_models.ext.DateParser
+import com.anytypeio.anytype.presentation.extension.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.FileView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -357,4 +358,17 @@ suspend fun ObjectWrapper.Basic.objects(
 
 fun ObjectWrapper.File.getProperName(): String {
     return "${name.orEmpty()}.$fileExt"
+}
+
+fun ObjectWrapper.Basic.getDescriptionOrSnippet(): String? {
+    return when (layout) {
+        ObjectType.Layout.NOTE -> description
+        else -> {
+            if (!description.isNullOrBlank()) {
+                description
+            } else {
+                snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
+            }
+        }
+    }
 }

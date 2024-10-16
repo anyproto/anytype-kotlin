@@ -47,3 +47,32 @@ enum class ThemeColor(
         }
     }
 }
+
+
+enum class SystemColor(
+    val index: Int
+) {
+    YELLOW(index = 1),
+    AMBER(index = 2),
+    RED(index = 3),
+    PINK(index = 4),
+    PURPLE(index = 5),
+    BLUE(index = 6),
+    SKY(index = 7),
+    TEAL(index = 8),
+    GREEN(index = 9);
+
+    companion object {
+        private const val MAX_INDEX = 9
+        fun color(idx: Int): SystemColor {
+            if (idx <= 0) {
+                return YELLOW
+            } else {
+                val values = SystemColor.entries
+                val size = values.size
+                val normalizedIndex = (idx - 1) % size
+                return values[normalizedIndex]
+            }
+        }
+    }
+}

@@ -210,7 +210,7 @@ fun RemoteStorageScreen(
                     .height(48.dp)
             ) {
                 SpaceIconView(
-                    icon = data.spaceIcon ?: SpaceIconView.Placeholder,
+                    icon = data.spaceIcon ?: SpaceIconView.Placeholder(),
                     onSpaceIconClick = {},
                     mainSize = 48.dp,
                     gradientSize = 36.dp

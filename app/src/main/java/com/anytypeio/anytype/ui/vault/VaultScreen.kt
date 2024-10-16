@@ -340,7 +340,7 @@ fun VaultSpaceCardPreview() {
         subtitle = "Private space",
         onCardClicked = {},
         wallpaper = Wallpaper.Default,
-        icon = SpaceIconView.Placeholder
+        icon = SpaceIconView.Placeholder()
     )
 }
 
@@ -358,7 +358,7 @@ fun VaultScreenPreview() {
                             Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble()
                         )
                     ),
-                    icon = SpaceIconView.Placeholder
+                    icon = SpaceIconView.Placeholder()
                 )
             )
         },

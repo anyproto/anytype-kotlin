@@ -43,7 +43,7 @@
     <string name="space">空間</string>
     <string name="space_name">空間名稱</string>
     <string name="default_space">初始空間</string>
-    <string name="space_settings_apply_random_gradient">套用隨機漸層</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">上傳圖片</string>
     <string name="delete_space">刪除空間</string>
     <string name="you_can_store">您目前擁有 %1$s 的加密節點儲存空間，您可以將檔案備份到我們的節點當中。 當儲存空間容量到達上限，新的檔案只能存放在您的本地儲存區中。</string>
@@ -1484,7 +1484,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">新增物件</string>
     <string name="vault_my_spaces">My Spaces</string>
-    <string name="all_content_title_all_content">All objects</string>
+    <string name="all_content_title_all_content">All Objects</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_view_bin">View Bin</string>

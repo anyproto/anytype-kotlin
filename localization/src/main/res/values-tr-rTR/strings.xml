@@ -43,7 +43,7 @@
     <string name="space">Alan</string>
     <string name="space_name">Alan ismi</string>
     <string name="default_space">Giriş alanı</string>
-    <string name="space_settings_apply_random_gradient">Rastgele gradyan uygulayın</string>
+    <string name="space_settings_apply_random_gradient">Rastgele düz renk uygula</string>
     <string name="space_settings_apply_upload_image">Resim yükle</string>
     <string name="delete_space">Alanı sil</string>
     <string name="you_can_store">Dosyalarınızın %1$s kadarını şifrelenmiş yedekleme düğümümüzde ücretsiz olarak saklayabilirsiniz. Sınıra ulaşırsanız dosyalar yalnızca yerel olarak depolanacaktır.</string>
@@ -1497,7 +1497,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="version_history_error_get_members">Üyeler alınırken hata oluştu</string>
     <string name="new_object">Yeni nesne</string>
     <string name="vault_my_spaces">Benim Alanlarım</string>
-    <string name="all_content_title_all_content">Tüm nesneler</string>
+    <string name="all_content_title_all_content">Tüm Nesneler</string>
     <string name="all_content_title_only_unlinked">Sadece bağlantısız</string>
     <string name="all_content_title_only_unlinked_description">Grafikteki diğer nesnelerle doğrudan bağlantısı veya geri bağlantısı olmayan bağlantısız nesneler.</string>
     <string name="all_content_view_bin">Geri Dönüşüm Kutusunu Görüntüle</string>

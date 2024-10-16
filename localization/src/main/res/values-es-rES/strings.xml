@@ -43,7 +43,7 @@
     <string name="space">Espacio</string>
     <string name="space_name">Nombre del espacio</string>
     <string name="default_space">Espacio inicial</string>
-    <string name="space_settings_apply_random_gradient">Aplicar degradado aleatorio</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Cargar una imagen</string>
     <string name="delete_space">Eliminar espacio</string>
     <string name="you_can_store">Puedes almacenar gratuitamente hasta %1$s de archivos en nuestro nodo de respaldo cifrado. Si llegas al límite, los archivos se almacenarán solo localmente.</string>
@@ -1496,8 +1496,8 @@ En concreto,
     <string name="version_history_error_get_version">Error al obtener el historial de versiones</string>
     <string name="version_history_error_get_members">Error al obtener los miembros</string>
     <string name="new_object">Nuevo objeto</string>
-    <string name="vault_my_spaces">My Spaces</string>
-    <string name="all_content_title_all_content">Todos los objetos</string>
+    <string name="vault_my_spaces">Mis espacios</string>
+    <string name="all_content_title_all_content">All Objects</string>
     <string name="all_content_title_only_unlinked">Solo desconectados</string>
     <string name="all_content_title_only_unlinked_description">Objetos desconectados que no tienen un enlace a o desde otro objeto del gráfico.</string>
     <string name="all_content_view_bin">Ver papelera</string>

@@ -43,7 +43,7 @@
     <string name="space">Простір</string>
     <string name="space_name">Назва простору</string>
     <string name="default_space">Entry space</string>
-    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="delete_space">Видалити простір </string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -1523,7 +1523,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">New object</string>
     <string name="vault_my_spaces">My Spaces</string>
-    <string name="all_content_title_all_content">All objects</string>
+    <string name="all_content_title_all_content">All Objects</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_view_bin">View Bin</string>

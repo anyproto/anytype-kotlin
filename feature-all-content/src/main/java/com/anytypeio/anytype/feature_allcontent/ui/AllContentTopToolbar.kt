@@ -101,14 +101,8 @@ fun AllContentTopBarContainer(
                 ) {
                     AllContentMenu(
                         uiMenuState = uiMenuState,
-                        onModeClick = {
-                            onModeClick(it)
-                            isMenuExpanded = false
-                        },
-                        onSortClick = {
-                            onSortClick(it)
-                            isMenuExpanded = false
-                        },
+                        onModeClick = onModeClick,
+                        onSortClick = onSortClick,
                         onBinClick = onBinClick
                     )
                 }

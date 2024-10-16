@@ -14,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -62,14 +63,18 @@ interface ProfileSubscriptionManager : GlobalSubscription {
                         ).map {
                             it.firstOrNull()
                         }
-                    }.collect {
+                    }
+                    .flowOn(dispatchers.io)
+                    .collect {
                         state.value = it
                     }
             }
         }
 
         override fun onStop() {
-            // TODO
+            scope.launch(dispatchers.io) {
+                container.unsubscribe(listOf(GLOBAL_PROFILE_SUBSCRIPTION))
+            }
         }
 
         companion object {

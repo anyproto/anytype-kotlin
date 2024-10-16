@@ -319,11 +319,11 @@ class FilesStorageViewModel(
     }
 
     sealed class Event {
-        object OnOffloadFilesClicked : Event()
+        data object OnOffloadFilesClicked : Event()
     }
 
     sealed class Command {
-        object OpenOffloadFilesScreen : Command()
+        data object OpenOffloadFilesScreen : Command()
     }
 
     class Factory @Inject constructor(

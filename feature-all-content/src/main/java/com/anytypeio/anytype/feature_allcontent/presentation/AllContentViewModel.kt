@@ -38,7 +38,7 @@ import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
 import com.anytypeio.anytype.feature_allcontent.models.filtersForSearch
-import com.anytypeio.anytype.feature_allcontent.models.mapRelationKeyToSort
+import com.anytypeio.anytype.feature_allcontent.models.mapToSort
 import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsModeType
 import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsSortType
 import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsTabType
@@ -109,7 +109,7 @@ class AllContentViewModel(
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
-    private val sortState = MutableStateFlow<AllContentSort>(DEFAULT_INITIAL_SORT)
+    private val sortState = MutableStateFlow<AllContentSort>(AllContentSort.ByName())
     val uiTitleState = MutableStateFlow<UiTitleState>(DEFAULT_INITIAL_MODE)
     val uiTabsState = MutableStateFlow<UiTabsState>(UiTabsState())
     val uiMenuState = MutableStateFlow<UiMenuState>(UiMenuState.Hidden)
@@ -167,9 +167,14 @@ class AllContentViewModel(
                     val initialParams = restoreAllContentState.run(
                         RestoreAllContentState.Params(vmParams.spaceId)
                     )
-                    if (!initialParams.activeSort.isNullOrEmpty()) {
-                        sortState.value = initialParams.activeSort.mapRelationKeyToSort()
-                        restartSubscription.value++
+                    when (initialParams) {
+                        RestoreAllContentState.Response.Empty -> {
+                            //do nothing
+                        }
+                        is RestoreAllContentState.Response.Success -> {
+                            sortState.value = initialParams.mapToSort()
+                            restartSubscription.value++
+                        }
                     }
                 }.onFailure { e ->
                     Timber.e(e, "Error restoring state")
@@ -336,7 +341,14 @@ class AllContentViewModel(
                         items
                     }
                 }
-                result
+                if (uiTitleState.value == UiTitleState.OnlyUnlinked) {
+                    buildList {
+                        add(UiContentItem.UnlinkedDescription)
+                        addAll(result)
+                    }
+                } else {
+                    result
+                }
             }
         }
     }
@@ -949,7 +961,6 @@ class AllContentViewModel(
         const val DEFAULT_SEARCH_LIMIT = 100
         val DEFAULT_INITIAL_MODE = UiTitleState.AllContent
         val DEFAULT_INITIAL_TAB = AllContentTab.PAGES
-        val DEFAULT_INITIAL_SORT = AllContentSort.ByName()
         val DEFAULT_QUERY = ""
     }
 }

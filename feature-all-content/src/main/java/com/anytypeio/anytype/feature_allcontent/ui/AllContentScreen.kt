@@ -355,6 +355,7 @@ private fun ContentItems(
                     is UiContentItem.Relation -> "relation"
                     UiContentItem.NewRelation -> "new_relation"
                     UiContentItem.NewType -> "new_type"
+                    UiContentItem.UnlinkedDescription -> "unlinked_description"
                 }
             }
         ) { index ->
@@ -418,6 +419,7 @@ private fun ContentItems(
                         item = item
                     )
                 }
+
                 UiContentItem.NewRelation -> {
                     AddItem(
                         modifier = Modifier
@@ -426,12 +428,18 @@ private fun ContentItems(
                     )
                     Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                 }
+
                 UiContentItem.NewType -> {
                     AddItem(
                         modifier = Modifier
                             .clickable { onTypeClicked(item) },
                         text = stringResource(id = R.string.all_content_new_type)
                     )
+                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                }
+
+                UiContentItem.UnlinkedDescription -> {
+                    UnlinkedDescription()
                     Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                 }
             }
@@ -461,6 +469,24 @@ private fun ContentItems(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun LazyItemScope.UnlinkedDescription() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(64.dp)
+            .animateItem(),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Text(
+            text = stringResource(id = R.string.all_content_unlinked_description),
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+        )
     }
 }
 

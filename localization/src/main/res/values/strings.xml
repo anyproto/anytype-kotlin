@@ -1805,5 +1805,6 @@ Please provide specific details of your needs here.</string>
 
     <string name="all_content_new_relation">New relation</string>
     <string name="all_content_new_type">New type</string>
+    <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
 
 </resources>

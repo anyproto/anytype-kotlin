@@ -15,8 +15,8 @@ import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_SORT
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
 import com.anytypeio.anytype.presentation.library.DependentData
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -160,6 +160,10 @@ sealed class UiContentItem {
         override val id: String = "NewType"
     }
 
+    data object UnlinkedDescription : UiContentItem() {
+        override val id: String = "UnlinkedDescription"
+    }
+
     companion object {
         const val TODAY_ID = "TodayId"
         const val YESTERDAY_ID = "YesterdayId"
@@ -198,12 +202,15 @@ sealed class MenuSortsItem {
 //endregion
 
 //region MAPPING
-fun Key?.mapRelationKeyToSort(): AllContentSort {
-    return when (this) {
-        Relations.CREATED_DATE -> AllContentSort.ByDateCreated()
-        Relations.LAST_MODIFIED_DATE -> AllContentSort.ByDateUpdated()
-        Relations.NAME -> AllContentSort.ByName()
-        else -> DEFAULT_INITIAL_SORT
+
+fun RestoreAllContentState.Response.Success.mapToSort(): AllContentSort {
+    val sortType = if (isAsc) DVSortType.ASC else DVSortType.DESC
+    return when (activeSort) {
+        Relations.CREATED_DATE -> AllContentSort.ByDateCreated(sortType = sortType)
+        Relations.LAST_MODIFIED_DATE -> AllContentSort.ByDateUpdated(sortType = sortType)
+        Relations.NAME -> AllContentSort.ByName(sortType = sortType)
+        Relations.LAST_USED_DATE -> AllContentSort.ByDateUsed(sortType = sortType)
+        else -> AllContentSort.ByName(sortType = DVSortType.ASC)
     }
 }
 

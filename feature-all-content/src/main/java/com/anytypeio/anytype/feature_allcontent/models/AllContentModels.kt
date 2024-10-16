@@ -151,6 +151,14 @@ sealed class UiContentItem {
         val editable: Boolean = true,
     ) : UiContentItem()
 
+    data object NewRelation : UiContentItem() {
+        override val id: String = "NewRelation"
+    }
+
+    data object NewType : UiContentItem() {
+        override val id: String = "NewType"
+    }
+
     companion object {
         const val TODAY_ID = "TodayId"
         const val YESTERDAY_ID = "YesterdayId"

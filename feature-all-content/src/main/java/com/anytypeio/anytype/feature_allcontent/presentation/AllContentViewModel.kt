@@ -296,14 +296,20 @@ class AllContentViewModel(
                     urlBuilder = urlBuilder,
                     isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
                 )
-                items
+                buildList {
+                    add(UiContentItem.NewType)
+                    addAll(items)
+                }
             }
 
             AllContentTab.RELATIONS -> {
                 val items = objectWrappers.toUiContentRelations(
                     isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
                 )
-                items
+                buildList {
+                    add(UiContentItem.NewRelation)
+                    addAll(items)
+                }
             }
 
             else -> {
@@ -737,10 +743,22 @@ class AllContentViewModel(
         }
     }
 
-    fun onTypeClicked(item: UiContentItem.Type) {
+    fun onTypeClicked(item: UiContentItem) {
         Timber.d("onTypeClicked: $item")
-        viewModelScope.launch {
-            commands.emit(Command.OpenTypeEditing(item))
+        when (item) {
+            UiContentItem.NewType -> {
+                viewModelScope.launch {
+                    commands.emit(Command.OpenTypeCreation)
+                }
+            }
+            is UiContentItem.Type -> {
+                viewModelScope.launch {
+                    commands.emit(Command.OpenTypeEditing(item))
+                }
+            }
+            else -> {
+                //do nothing
+            }
         }
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -748,24 +766,38 @@ class AllContentViewModel(
         )
     }
 
-    fun onRelationClicked(item: UiContentItem.Relation) {
+    fun onRelationClicked(item: UiContentItem) {
         Timber.d("onRelationClicked: $item")
-        viewModelScope.launch {
-            commands.emit(
-                Command.OpenRelationEditing(
-                    typeName = item.name,
-                    id = item.id,
-                    iconUnicode = item.format.simpleIcon() ?: 0,
-                    readOnly = item.readOnly
-                )
-            )
+        when (item) {
+            UiContentItem.NewRelation -> {
+                viewModelScope.launch {
+                    commands.emit(
+                        Command.OpenRelationCreation(
+                            space = vmParams.spaceId.id
+                        )
+                    )
+                }
+            }
+            is UiContentItem.Relation -> {
+                viewModelScope.launch {
+                    commands.emit(
+                        Command.OpenRelationEditing(
+                            typeName = item.name,
+                            id = item.id,
+                            iconUnicode = item.format.simpleIcon() ?: 0,
+                            readOnly = item.readOnly
+                        )
+                    )
+                }
+            }
+            else -> {
+                //do nothing
+            }
         }
-        viewModelScope.launch {
-            viewModelScope.sendEvent(
-                analytics = analytics,
-                eventName = libraryScreenRelation
-            )
-        }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = libraryScreenRelation
+        )
     }
 
     fun onStart() {
@@ -897,14 +929,14 @@ class AllContentViewModel(
             data class ObjectArchived(val name: String) : SendToast()
         }
         data class OpenTypeEditing(val item: UiContentItem.Type) : Command()
-        data class OpenTypeCreation(val name: String): Command()
+        data object OpenTypeCreation: Command()
         data class OpenRelationEditing(
             val typeName: String,
             val id: Id,
             val iconUnicode: Int,
             val readOnly: Boolean
         ) : Command()
-        data class OpenRelationCreation(val id: Id, val name: String, val space: Id): Command()
+        data class OpenRelationCreation(val space: Id): Command()
         data object OpenGlobalSearch : Command()
         data object ExitToVault : Command()
         data object Back : Command()

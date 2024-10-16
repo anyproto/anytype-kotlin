@@ -101,7 +101,8 @@ fun HomeScreen(
     onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateObjectInsideWidget: (Id) -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
+    onBackLongClicked: () -> Unit
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -164,6 +165,9 @@ fun HomeScreen(
                 onSearchClicked = throttledClick(onSearchClicked),
                 onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
                 onBackClicked = throttledClick(onBackClicked),
+                onBackLongClicked = {
+                    onBackLongClicked()
+                },
                 onCreateNewObjectLongClicked = onCreateNewObjectLongClicked,
                 modifier = Modifier,
                 isReadOnlyAccess = mode is InteractionMode.ReadOnly
@@ -820,6 +824,7 @@ fun HomeScreenBottomToolbar(
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
+    onBackLongClicked: () -> Unit,
     isReadOnlyAccess: Boolean
 ) {
     val haptic = LocalHapticFeedback.current
@@ -836,11 +841,18 @@ fun HomeScreenBottomToolbar(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
-                .noRippleClickable { onBackClicked() }
+                .noRippleCombinedClickable(
+                    onClick = {
+                        onBackClicked()
+                    },
+                    onLongClicked = {
+                        onBackLongClicked()
+                    }
+                )
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_nav_panel_back),
-                contentDescription = "Search icon",
+                contentDescription = "Back icon",
                 modifier = Modifier.align(Alignment.Center)
             )
         }

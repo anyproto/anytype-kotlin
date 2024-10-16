@@ -213,7 +213,7 @@ class ProfileSettingsViewModel(
                 setImageIcon = setDocumentImageIcon,
                 membershipProvider = membershipProvider,
                 getNetworkMode = getNetworkMode,
-                profileContainer
+                profileContainer = profileSubscriptionManager
             ) as T
         }
     }

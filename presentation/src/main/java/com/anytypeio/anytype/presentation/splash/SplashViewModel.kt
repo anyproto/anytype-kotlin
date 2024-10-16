@@ -66,6 +66,8 @@ class SplashViewModel(
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
+    val loadingState = MutableStateFlow(false)
+
     init {
         Timber.i("SplashViewModel, init")
         checkAuthorizationStatus()
@@ -122,8 +124,10 @@ class SplashViewModel(
     private fun proceedWithLaunchingAccount() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
+            loadingState.value = true
             launchAccount(BaseUseCase.None).proceed(
                 success = { analyticsId ->
+                    loadingState.value = false
                     crashReporter.setUser(analyticsId)
                     updateUserProps(analyticsId)
                     val props = Props.empty()
@@ -132,6 +136,7 @@ class SplashViewModel(
                     commands.emit(Command.CheckAppStartIntent)
                 },
                 failure = { e ->
+                    loadingState.value = false
                     Timber.e(e, "Error while launching account")
                     when (e) {
                         is MigrationNeededException -> {

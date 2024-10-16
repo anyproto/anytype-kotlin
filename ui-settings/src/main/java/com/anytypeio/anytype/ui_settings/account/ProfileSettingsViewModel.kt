@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEvent
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
@@ -46,7 +47,8 @@ class ProfileSettingsViewModel(
     private val urlBuilder: UrlBuilder,
     private val setImageIcon: SetDocumentImageIcon,
     private val membershipProvider: MembershipProvider,
-    private val getNetworkMode: GetNetworkMode
+    private val getNetworkMode: GetNetworkMode,
+    private val profileContainer: ProfileSubscriptionManager
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -56,28 +58,10 @@ class ProfileSettingsViewModel(
     val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
     val showMembershipState = MutableStateFlow<ShowMembership?>(null)
 
-    private val profileId = configStorage.get().profile
-
-    val profileData = container.subscribe(
-        StoreSearchByIdsParams(
-            space = SpaceId(
-                configStorage.getOrNull()?.techSpace.orEmpty()
-            ),
-            subscription = PROFILE_SUBSCRIPTION_ID,
-            keys = listOf(
-                Relations.ID,
-                Relations.NAME,
-                Relations.ICON_IMAGE,
-                Relations.ICON_EMOJI,
-                Relations.ICON_OPTION
-            ),
-            targets = listOf(profileId)
-        )
-    ).map { result ->
-        val obj = result.firstOrNull()
+    val profileData = profileContainer.observe().map { obj ->
         AccountProfile.Data(
-            name = obj?.name.orEmpty(),
-            icon = obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
+            name = obj.name.orEmpty(),
+            icon = obj.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
         )
     }.stateIn(
         viewModelScope,
@@ -113,19 +97,24 @@ class ProfileSettingsViewModel(
     fun onNameChange(name: String) {
         Timber.d("onNameChange, name:[$name]")
         viewModelScope.launch {
-            setObjectDetails.execute(
-                SetObjectDetails.Params(
-                    ctx = profileId,
-                    details = mapOf(Relations.NAME to name)
+            val profile = configStorage.getOrNull()?.profile
+            if (profile != null) {
+                setObjectDetails.execute(
+                    SetObjectDetails.Params(
+                        ctx = profile,
+                        details = mapOf(Relations.NAME to name)
+                    )
+                ).fold(
+                    onFailure = {
+                        Timber.e(it, "Error while updating object details")
+                    },
+                    onSuccess = {
+                        // do nothing
+                    }
                 )
-            ).fold(
-                onFailure = {
-                    Timber.e(it, "Error while updating object details")
-                },
-                onSuccess = {
-                    // do nothing
-                }
-            )
+            } else {
+                Timber.w("Config storage missing")
+            }
         }
     }
 
@@ -209,7 +198,8 @@ class ProfileSettingsViewModel(
         private val urlBuilder: UrlBuilder,
         private val setDocumentImageIcon: SetDocumentImageIcon,
         private val membershipProvider: MembershipProvider,
-        private val getNetworkMode: GetNetworkMode
+        private val getNetworkMode: GetNetworkMode,
+        private val profileSubscriptionManager: ProfileSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -222,7 +212,8 @@ class ProfileSettingsViewModel(
                 urlBuilder = urlBuilder,
                 setImageIcon = setDocumentImageIcon,
                 membershipProvider = membershipProvider,
-                getNetworkMode = getNetworkMode
+                getNetworkMode = getNetworkMode,
+                profileContainer = profileSubscriptionManager
             ) as T
         }
     }

@@ -159,6 +159,10 @@ sealed class UiContentItem {
         override val id: String = "NewType"
     }
 
+    data object UnlinkedDescription : UiContentItem() {
+        override val id: String = "UnlinkedDescription"
+    }
+
     companion object {
         const val TODAY_ID = "TodayId"
         const val YESTERDAY_ID = "YesterdayId"

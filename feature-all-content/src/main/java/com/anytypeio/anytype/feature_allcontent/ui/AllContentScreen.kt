@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,8 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ListItem
@@ -67,6 +70,7 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
@@ -103,8 +107,8 @@ fun AllContentWrapperScreen(
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
-    onTypeClicked: (UiContentItem.Type) -> Unit,
-    onRelationClicked: (UiContentItem.Relation) -> Unit,
+    onTypeClicked: (UiContentItem) -> Unit,
+    onRelationClicked: (UiContentItem) -> Unit,
     onBinClick: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
@@ -174,8 +178,8 @@ fun AllContentMainScreen(
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
-    onTypeClicked: (UiContentItem.Type) -> Unit,
-    onRelationClicked: (UiContentItem.Relation) -> Unit,
+    onTypeClicked: (UiContentItem) -> Unit,
+    onRelationClicked: (UiContentItem) -> Unit,
     onBinClick: () -> Unit,
     lazyListState: LazyListState,
     uiContentState: UiContentState,
@@ -328,8 +332,8 @@ fun BottomMenu(
 private fun ContentItems(
     uiItemsState: List<UiContentItem>,
     onItemClicked: (UiContentItem.Item) -> Unit,
-    onTypeClicked: (UiContentItem.Type) -> Unit,
-    onRelationClicked: (UiContentItem.Relation) -> Unit,
+    onTypeClicked: (UiContentItem) -> Unit,
+    onRelationClicked: (UiContentItem) -> Unit,
     uiContentState: UiContentState,
     lazyListState: LazyListState,
     moveToBin: (UiContentItem.Item) -> Unit
@@ -349,6 +353,8 @@ private fun ContentItems(
                     is UiContentItem.Item -> "item"
                     is UiContentItem.Type -> "type"
                     is UiContentItem.Relation -> "relation"
+                    UiContentItem.NewRelation -> "new_relation"
+                    UiContentItem.NewType -> "new_type"
                 }
             }
         ) { index ->
@@ -412,6 +418,22 @@ private fun ContentItems(
                         item = item
                     )
                 }
+                UiContentItem.NewRelation -> {
+                    AddItem(
+                        modifier = Modifier
+                            .clickable { onRelationClicked(item) },
+                        text = stringResource(id = R.string.all_content_new_relation)
+                    )
+                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                }
+                UiContentItem.NewType -> {
+                    AddItem(
+                        modifier = Modifier
+                            .clickable { onTypeClicked(item) },
+                        text = stringResource(id = R.string.all_content_new_type)
+                    )
+                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                }
             }
         }
         if (uiContentState is UiContentState.Paging) {
@@ -439,6 +461,30 @@ private fun ContentItems(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun LazyItemScope.AddItem(modifier: Modifier, text: String) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .padding(horizontal = 16.dp)
+            .animateItem(),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_default_plus),
+            contentDescription = text,
+            modifier = Modifier.size(24.dp)
+        )
+        Text(
+            modifier = Modifier.padding(start = 34.dp),
+            text = text,
+            style = BodyRegular,
+            color = colorResource(id = R.color.text_secondary),
+        )
     }
 }
 

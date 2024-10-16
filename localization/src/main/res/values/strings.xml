@@ -1803,4 +1803,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_toast_type_removed">Object type removed</string>
     <string name="all_content_toast_archived">Object archived</string>
 
+    <string name="all_content_new_relation">New relation</string>
+    <string name="all_content_new_type">New type</string>
+
 </resources>

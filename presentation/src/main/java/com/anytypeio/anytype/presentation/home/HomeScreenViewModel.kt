@@ -1702,6 +1702,10 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onBackLongClicked() {
+        navigate(destination = Navigation.OpenSpaceSwitcher)
+    }
+
     override fun onCleared() {
         super.onCleared()
         Timber.d("onCleared")
@@ -2071,6 +2075,7 @@ class HomeScreenViewModel(
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
+        data object OpenSpaceSwitcher: Navigation()
         data class OpenLibrary(val space: Id) : Navigation()
         data class OpenAllContent(val space: Id) : Navigation()
     }

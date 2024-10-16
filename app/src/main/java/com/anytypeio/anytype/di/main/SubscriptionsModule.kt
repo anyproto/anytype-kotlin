@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionContainer
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionContainer
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -162,6 +163,23 @@ object SubscriptionsModule {
     @JvmStatic
     @Provides
     @Singleton
+    fun profileSubscriptionManager(
+        dispatchers: AppCoroutineDispatchers,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        container: StorelessSubscriptionContainer,
+        awaitAccountStartManager: AwaitAccountStartManager,
+        configStorage: ConfigStorage
+    ) : ProfileSubscriptionManager = ProfileSubscriptionManager.Default(
+        dispatchers = dispatchers,
+        scope = scope,
+        container = container,
+        awaitAccountStartManager = awaitAccountStartManager,
+        configStorage = configStorage
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
     fun activeSpaceMemberSubscriptionContainer(
         dispatchers: AppCoroutineDispatchers,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
@@ -196,11 +214,13 @@ object SubscriptionsModule {
         types: ObjectTypesSubscriptionManager,
         relations: RelationsSubscriptionManager,
         permissions: UserPermissionProvider,
-        isSpaceDeleted: SpaceDeletedStatusWatcher
+        isSpaceDeleted: SpaceDeletedStatusWatcher,
+        profileSubscriptionManager: ProfileSubscriptionManager
     ) : GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
         permissions = permissions,
-        isSpaceDeleted = isSpaceDeleted
+        isSpaceDeleted = isSpaceDeleted,
+        profile = profileSubscriptionManager
     )
 }

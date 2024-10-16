@@ -33,6 +33,7 @@ interface GlobalSubscriptionManager {
             relations.onStop()
             permissions.stop()
             isSpaceDeleted.onStop()
+            profile.onStop()
         }
     }
 

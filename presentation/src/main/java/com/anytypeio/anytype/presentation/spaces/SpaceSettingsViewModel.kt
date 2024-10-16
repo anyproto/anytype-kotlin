@@ -34,7 +34,9 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.isSharingLimitReached
+import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
 import com.anytypeio.anytype.domain.payments.GetMembershipStatus
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -43,6 +45,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -61,7 +64,8 @@ class SpaceSettingsViewModel(
     private val spaceViewContainer: SpaceViewSubscriptionContainer,
     private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
     private val getMembership: GetMembershipStatus,
-    private val uploadFile: UploadFile
+    private val uploadFile: UploadFile,
+    private val profileContainer: ProfileSubscriptionManager
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -87,8 +91,14 @@ class SpaceSettingsViewModel(
             combine(
                 spaceViewContainer.observe(params.space),
                 userPermissionProvider.observe(params.space),
-                spaceViewContainer.isSharingLimitReached(userPermissionProvider.all())
-            ) { spaceView, permission, shareLimitReached ->
+                profileContainer
+                    .observe()
+                    .map { wrapper ->
+                        wrapper.getValue<Double?>(Relations.SHARED_SPACES_LIMIT)?.toInt() ?: 0
+                         },
+                spaceViewContainer.sharedSpaceCount(userPermissionProvider.all())
+            ) { spaceView, permission, sharedSpaceLimit: Int, sharedSpaceCount: Int ->
+                Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
                 val store = activeSpaceMemberSubscriptionContainer.get(params.space)
                 val requests: Int = if (store is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     store.members.count { it.status == ParticipantStatus.JOINING }
@@ -117,8 +127,8 @@ class SpaceSettingsViewModel(
                     spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
                     permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS,
                     shareLimitReached = ShareLimitsState(
-                        shareLimitReached = shareLimitReached.first,
-                        sharedSpacesLimit = shareLimitReached.second
+                        shareLimitReached = sharedSpaceCount >= sharedSpaceLimit,
+                        sharedSpacesLimit = sharedSpaceLimit
                     ),
                     requests = requests
                 )
@@ -413,7 +423,8 @@ class SpaceSettingsViewModel(
         private val userPermissionProvider: UserPermissionProvider,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val getMembership: GetMembershipStatus,
-        private val uploadFile: UploadFile
+        private val uploadFile: UploadFile,
+        private val profileContainer: ProfileSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -433,7 +444,8 @@ class SpaceSettingsViewModel(
             userPermissionProvider = userPermissionProvider,
             activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer,
             getMembership = getMembership,
-            uploadFile = uploadFile
+            uploadFile = uploadFile,
+            profileContainer = profileContainer
         ) as T
     }
 

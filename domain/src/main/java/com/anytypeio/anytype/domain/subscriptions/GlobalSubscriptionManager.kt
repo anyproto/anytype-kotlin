@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.subscriptions
 
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import javax.inject.Inject
@@ -15,7 +16,8 @@ interface GlobalSubscriptionManager {
         private val types: ObjectTypesSubscriptionManager,
         private val relations: RelationsSubscriptionManager,
         private val permissions: UserPermissionProvider,
-        private val isSpaceDeleted: SpaceDeletedStatusWatcher
+        private val isSpaceDeleted: SpaceDeletedStatusWatcher,
+        private val profile: ProfileSubscriptionManager
     ) : GlobalSubscriptionManager {
 
         override fun onStart() {
@@ -23,6 +25,7 @@ interface GlobalSubscriptionManager {
             relations.onStart()
             permissions.start()
             isSpaceDeleted.onStart()
+            profile.onStart()
         }
 
         override fun onStop() {
@@ -30,6 +33,7 @@ interface GlobalSubscriptionManager {
             relations.onStop()
             permissions.stop()
             isSpaceDeleted.onStop()
+            profile.onStop()
         }
     }
 

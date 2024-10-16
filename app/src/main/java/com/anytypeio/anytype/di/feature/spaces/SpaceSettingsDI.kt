@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.payments.GetMembershipStatus
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -119,4 +120,5 @@ interface SpaceSettingsDependencies : ComponentDependencies {
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
     fun activeSpaceMemberSubscriptionContainer(): ActiveSpaceMemberSubscriptionContainer
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
+    fun profileContainer(): ProfileSubscriptionManager
 }

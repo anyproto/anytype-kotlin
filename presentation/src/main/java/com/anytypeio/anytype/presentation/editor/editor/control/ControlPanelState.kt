@@ -181,6 +181,7 @@ data class ControlPanelState(
          */
         data class MultiSelect(
             override val isVisible: Boolean,
+            val isSelectAllVisible: Boolean = false,
             val isScrollAndMoveEnabled: Boolean = false,
             val isQuickScrollAndMoveMode: Boolean = false,
             val count: Int = 0

@@ -183,11 +183,12 @@ sealed class ControlPanelMachine {
          * Multi-select-related events
          */
         sealed class MultiSelect : Event() {
-            data class OnEnter(val count: Int = 0) : MultiSelect()
+            data class OnEnter(val count: Int = 0, val isSelectAllVisible: Boolean) : MultiSelect()
             object OnExit : MultiSelect()
             object OnDelete : MultiSelect()
             object OnTurnInto : MultiSelect()
-            data class OnBlockClick(val count: Int) : MultiSelect()
+            data class OnBlockClick(val count: Int, val isSelectAllVisible: Boolean) : MultiSelect()
+            data class SyncBlockUpdate(val count: Int, val isSelectAllVisible: Boolean) : MultiSelect()
         }
 
         /**
@@ -845,7 +846,8 @@ sealed class ControlPanelMachine {
                 ),
                 multiSelect = state.multiSelect.copy(
                     isVisible = true,
-                    count = event.count
+                    count = event.count,
+                    isSelectAllVisible = event.isSelectAllVisible
                 ),
                 navigationToolbar = state.navigationToolbar.copy(
                     isVisible = false
@@ -884,9 +886,16 @@ sealed class ControlPanelMachine {
             )
             is Event.MultiSelect.OnBlockClick -> state.copy(
                 multiSelect = state.multiSelect.copy(
-                    count = event.count
+                    count = event.count,
+                    isSelectAllVisible = event.isSelectAllVisible
                 )
             )
+            is Event.MultiSelect.SyncBlockUpdate -> state.copy(
+                    multiSelect = state.multiSelect.copy(
+                        count = event.count,
+                        isSelectAllVisible = event.isSelectAllVisible
+                    )
+                )
         }
 
         private fun handleReadModeEvent(

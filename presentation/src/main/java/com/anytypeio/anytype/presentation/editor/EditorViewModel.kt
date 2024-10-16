@@ -981,6 +981,7 @@ class EditorViewModel(
     }
 
     private fun dispatchToUI(views: List<BlockView>) {
+        onUpdateMultiSelectMode()
         stateData.postValue(
             ViewState.Success(
                 blocks = views
@@ -1789,9 +1790,11 @@ class EditorViewModel(
             renderCommand.send(Unit)
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.MultiSelect.OnEnter(
-                    currentSelection().size
+                    count = currentSelection().size,
+                    isSelectAllVisible = isNotAllBlocksSelected(
+
                 )
-            )
+            ))
             if (isSelected(target) && scrollTarget) {
                 dispatch(Command.ScrollToActionMenu(target = target))
             }
@@ -1799,6 +1802,45 @@ class EditorViewModel(
 
         proceedWithUpdatingActionsForCurrentSelection()
     }
+
+    private fun isNotAllBlocksSelected(): Boolean {
+        val allBlocks = orchestrator.stores.views.current().filter { it is BlockView.Selectable }
+        val selected = currentSelection()
+        return allBlocks.any { !selected.contains(it.id) }
+    }
+
+    private suspend fun updateSelectionUI(views: List<BlockView>) {
+        orchestrator.stores.focus.update(Editor.Focus.empty())
+        orchestrator.stores.views.update(
+            views.enterSAM(targets = currentSelection())
+        )
+        renderCommand.send(Unit)
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.MultiSelect.OnEnter(
+                currentSelection().size,
+                isSelectAllVisible = isNotAllBlocksSelected()
+            )
+        )
+    }
+
+    fun onSelectAllClicked() {
+        val views = orchestrator.stores.views.current()
+
+        views.forEach { view ->
+            if (view is BlockView.Selectable) {
+                select(view.id)
+            } else {
+                Timber.w("SelectAll", "Block with id ${view.id} cannot be selected.")
+            }
+        }
+
+        mode = EditorMode.Select
+
+        viewModelScope.launch {
+            updateSelectionUI(views)
+        }
+    }
+
 
     private fun proceedWithUpdatingActionsForCurrentSelection() {
         val isMultiMode = currentSelection().size > 1
@@ -4321,7 +4363,8 @@ class EditorViewModel(
     private fun onMultiSelectModeBlockClicked() {
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.MultiSelect.OnBlockClick(
-                count = currentSelection().size
+                count = currentSelection().size,
+                isSelectAllVisible = isNotAllBlocksSelected()
             )
         )
     }
@@ -5891,14 +5934,32 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
     }
 
+    @Deprecated("Not used in production code")
     fun onEnterMultiSelectModeClicked() {
         Timber.d("onEnterMultiSelectModeClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter())
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.MultiSelect.OnEnter(
+                count = currentSelection().size,
+                isSelectAllVisible = isNotAllBlocksSelected()
+            )
+        )
         mode = EditorMode.Select
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
         viewModelScope.launch {
             delay(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
             refresh()
+        }
+    }
+
+    private fun onUpdateMultiSelectMode() {
+        Timber.d("syncBlockUpdateMultiSelectMode, ")
+        if (mode == EditorMode.Select) {
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.MultiSelect.SyncBlockUpdate(
+                    count = currentSelection().size,
+                    isSelectAllVisible = isNotAllBlocksSelected()
+                )
+            )
         }
     }
 

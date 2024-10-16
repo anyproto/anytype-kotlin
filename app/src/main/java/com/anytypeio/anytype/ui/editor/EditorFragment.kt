@@ -574,6 +574,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onExitMultiSelectModeClicked() }
             .launchIn(lifecycleScope)
 
+        binding.multiSelectTopToolbar
+            .selectAllBlocks
+            .clicks()
+            .throttleFirst()
+            .onEach { vm.onSelectAllClicked() }
+            .launchIn(lifecycleScope)
+
+
         binding.bottomToolbar
             .backClicks()
             .onEach { vm.onBackButtonPressed() }
@@ -1451,6 +1459,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     setBlockSelectionText(count)
                     visible()
                 }
+
+               binding.multiSelectTopToolbar.selectAllBlocks.isVisible = isSelectAllVisible
 
                 binding.recycler.apply {
                     if (itemAnimator == null) itemAnimator = DefaultItemAnimator()

@@ -178,7 +178,6 @@ class SelectSpaceViewModel(
         viewModelScope.launch {
             container.unsubscribe(
                 subscriptions = listOf(
-                    SELECT_SPACE_PROFILE_SUBSCRIPTION,
                     SELECT_SPACE_SUBSCRIPTION
                 )
             )
@@ -210,7 +209,6 @@ class SelectSpaceViewModel(
 
     companion object {
         const val SELECT_SPACE_SUBSCRIPTION = "select_space_subscription.spaces"
-        const val SELECT_SPACE_PROFILE_SUBSCRIPTION = "select_space_subscription.profile"
         const val MAX_SPACE_COUNT = 10
         const val SPACE_COUNT_EXCEEDED_ERROR = "Space max count exceeded. You cannot create more."
     }

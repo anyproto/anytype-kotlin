@@ -1928,6 +1928,72 @@ message Rpc {
             }
         }
 
+        message CrossSpaceSearchSubscribe {
+            message Request {
+                // (optional) subscription identifier
+                // client can provide some string or middleware will generate it automatically
+                // if subId is already registered on middleware, the new query will replace previous subscription
+                string subId = 1;
+                // filters
+                repeated anytype.model.Block.Content.Dataview.Filter filters = 2;
+                // sorts
+                repeated anytype.model.Block.Content.Dataview.Sort sorts = 3;
+                // (required)  needed keys in details for return, for object fields mw will return (and subscribe) objects as dependent
+                repeated string keys = 7;
+
+                repeated string source = 10;
+
+                // disable dependent subscription
+                bool noDepSubscription = 13;
+                string collectionId = 14;
+            }
+
+            message Response {
+                Error error = 1;
+
+                repeated google.protobuf.Struct records = 2;
+                repeated google.protobuf.Struct dependencies = 3;
+
+                string subId = 4;
+
+                Event.Object.Subscription.Counters counters = 5;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message CrossSpaceSearchUnsubscribe {
+            message Request {
+                   string subId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
         message GroupsSubscribe {
             message Request {
                 string spaceId = 6;

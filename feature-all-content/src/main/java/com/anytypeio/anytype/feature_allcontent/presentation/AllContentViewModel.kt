@@ -341,7 +341,14 @@ class AllContentViewModel(
                         items
                     }
                 }
-                result
+                if (uiTitleState.value == UiTitleState.OnlyUnlinked) {
+                    buildList {
+                        add(UiContentItem.UnlinkedDescription)
+                        addAll(result)
+                    }
+                } else {
+                    result
+                }
             }
         }
     }

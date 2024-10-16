@@ -110,7 +110,7 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         )
     }
 
-    override suspend fun getAllContentSort(space: SpaceId): Pair<Id, Boolean> {
+    override suspend fun getAllContentSort(space: SpaceId): Pair<Id, Boolean>? {
         return cache.getAllContentSort(space)
     }
 

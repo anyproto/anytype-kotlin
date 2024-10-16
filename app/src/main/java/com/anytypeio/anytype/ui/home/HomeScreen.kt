@@ -846,7 +846,9 @@ fun HomeScreenBottomToolbar(
                         onBackClicked()
                     },
                     onLongClicked = {
-                        onBackLongClicked()
+                        onBackLongClicked().also {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        }
                     }
                 )
         ) {

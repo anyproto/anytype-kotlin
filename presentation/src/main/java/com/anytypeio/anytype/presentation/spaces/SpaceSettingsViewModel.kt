@@ -98,6 +98,7 @@ class SpaceSettingsViewModel(
                          },
                 spaceViewContainer.sharedSpaceCount(userPermissionProvider.all())
             ) { spaceView, permission, sharedSpaceLimit: Int, sharedSpaceCount: Int ->
+                Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
                 val store = activeSpaceMemberSubscriptionContainer.get(params.space)
                 val requests: Int = if (store is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     store.members.count { it.status == ParticipantStatus.JOINING }

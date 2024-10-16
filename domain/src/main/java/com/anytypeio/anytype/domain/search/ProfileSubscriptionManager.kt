@@ -6,13 +6,16 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscription
 import javax.inject.Inject
+import kotlin.math.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -31,7 +34,8 @@ interface ProfileSubscriptionManager : GlobalSubscription {
         private val configStorage: ConfigStorage,
         private val awaitAccountStartManager: AwaitAccountStartManager,
         private val container: StorelessSubscriptionContainer,
-        private val dispatchers: AppCoroutineDispatchers
+        private val dispatchers: AppCoroutineDispatchers,
+        private val logger: Logger
     ) : ProfileSubscriptionManager {
 
         private val state = MutableStateFlow<ObjectWrapper.Basic?>(null)
@@ -65,6 +69,7 @@ interface ProfileSubscriptionManager : GlobalSubscription {
                         }
                     }
                     .flowOn(dispatchers.io)
+                    .catch { logger.logException(it, "Error in ProfileSubscriptionManager") }
                     .collect {
                         state.value = it
                     }

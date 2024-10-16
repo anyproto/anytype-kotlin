@@ -168,13 +168,15 @@ object SubscriptionsModule {
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         container: StorelessSubscriptionContainer,
         awaitAccountStartManager: AwaitAccountStartManager,
-        configStorage: ConfigStorage
+        configStorage: ConfigStorage,
+        logger: Logger
     ) : ProfileSubscriptionManager = ProfileSubscriptionManager.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
         awaitAccountStartManager = awaitAccountStartManager,
-        configStorage = configStorage
+        configStorage = configStorage,
+        logger = logger
     )
 
     @JvmStatic

@@ -213,7 +213,7 @@ class AllContentFragment : BaseComposeFragment() {
                 is AllContentViewModel.Command.OpenTypeCreation -> {
                     runCatching {
                         navigation().openTypeCreationScreen(
-                            name = command.name
+                            name = ""
                         )
                     }.onFailure {
                         toast("Failed to open type creation screen")
@@ -224,8 +224,8 @@ class AllContentFragment : BaseComposeFragment() {
                 is AllContentViewModel.Command.OpenRelationCreation -> {
                     runCatching {
                         navigation().openRelationCreationScreen(
-                            id = command.id,
-                            name = command.name,
+                            id = "",
+                            name = "",
                             space = command.space
                         )
                     }.onFailure {

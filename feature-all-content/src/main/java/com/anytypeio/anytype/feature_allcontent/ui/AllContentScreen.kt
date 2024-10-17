@@ -686,7 +686,10 @@ private fun Relation(
 
 @Composable
 private fun ErrorState(message: String) {
-    Column {
+    Column(
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.ime)
+    ) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -716,7 +719,10 @@ private fun EmptyState(isSearchEmpty: Boolean) {
     } else {
         stringResource(R.string.allContent_empty_state_title) to stringResource(R.string.allContent_empty_state_description)
     }
-    Column {
+    Column(
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.ime)
+    ) {
         Text(
             modifier = Modifier
                 .fillMaxWidth(),

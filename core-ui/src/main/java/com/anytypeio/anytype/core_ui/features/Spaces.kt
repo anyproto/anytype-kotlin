@@ -125,7 +125,7 @@ fun SpaceIconView(
                     style = TextStyle(
                         fontSize = fontSize,
                         fontWeight = FontWeight(600),
-                        color = colorResource(id = R.color.text_label_inversion),
+                        color = colorResource(id = R.color.text_white),
                     )
                 )
             }

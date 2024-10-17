@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.CreateSpace
@@ -32,13 +33,11 @@ class CreateSpaceViewModel(
 
     private var spaceGradientId = spaceGradientProvider.randomId()
 
-    val spaceGradient : MutableStateFlow<SpaceIconView.Gradient>
+    val spaceGradient : MutableStateFlow<SpaceIconView.Placeholder>
 
     init {
-        val gradient = spaceGradientProvider.get(spaceGradientId.toDouble())
-        val view = SpaceIconView.Gradient(
-            from = gradient.from,
-            to = gradient.to
+        val view = SpaceIconView.Placeholder(
+            color = SystemColor.entries.random()
         )
         spaceGradient = MutableStateFlow(view)
 
@@ -109,12 +108,9 @@ class CreateSpaceViewModel(
 
     private fun proceedWithResettingRandomSpaceGradient() {
         spaceGradientId = spaceGradientProvider.randomId()
-        val gradient = spaceGradientProvider.get(spaceGradientId.toDouble())
-        val view = SpaceIconView.Gradient(
-            from = gradient.from,
-            to = gradient.to
+        spaceGradient.value = SpaceIconView.Placeholder(
+            color = SystemColor.entries.random()
         )
-        spaceGradient.value = view
     }
 
     class Factory @Inject constructor(

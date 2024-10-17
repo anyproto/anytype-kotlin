@@ -102,10 +102,7 @@ class SelectSpaceViewModel(
                     val (active, others) = spaceViews.partition { view -> view.view.isSelected }
                     addAll(active)
                     addAll(others)
-                    val numberOfSpaces = count { view -> view is SelectSpaceView.Space }
-                    if (numberOfSpaces < MAX_SPACE_COUNT) {
-                        add(SelectSpaceView.Create)
-                    }
+                    add(SelectSpaceView.Create)
                 }
             }
                 .catch {

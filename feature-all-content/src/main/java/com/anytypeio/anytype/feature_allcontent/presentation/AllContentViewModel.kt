@@ -301,24 +301,23 @@ class AllContentViewModel(
         activeSort: AllContentSort,
         activeTab: AllContentTab
     ): List<UiContentItem> {
+        val isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
         return when (activeTab) {
             AllContentTab.TYPES -> {
                 val items = objectWrappers.toUiContentTypes(
                     urlBuilder = urlBuilder,
-                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
+                    isOwnerOrEditor = isOwnerOrEditor
                 )
                 buildList {
-                    add(UiContentItem.NewType)
+                    if (isOwnerOrEditor) add(UiContentItem.NewType)
                     addAll(items)
                 }
             }
 
             AllContentTab.RELATIONS -> {
-                val items = objectWrappers.toUiContentRelations(
-                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
-                )
+                val items = objectWrappers.toUiContentRelations(isOwnerOrEditor = isOwnerOrEditor)
                 buildList {
-                    add(UiContentItem.NewRelation)
+                    if (isOwnerOrEditor) add(UiContentItem.NewRelation)
                     addAll(items)
                 }
             }
@@ -328,7 +327,7 @@ class AllContentViewModel(
                     space = vmParams.spaceId,
                     urlBuilder = urlBuilder,
                     objectTypes = storeOfObjectTypes.getAll(),
-                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
+                    isOwnerOrEditor = isOwnerOrEditor
                 )
                 val result = when (activeSort) {
                     is AllContentSort.ByDateCreated -> {

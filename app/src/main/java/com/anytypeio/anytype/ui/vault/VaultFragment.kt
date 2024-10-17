@@ -176,6 +176,8 @@ class VaultFragment : BaseComposeFragment() {
             Timber.d("Deeplink  from fragment args")
             vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromFragmentArgs))
             arguments?.putString(DEEP_LINK_KEY, null)
+        } else {
+            vm.onResume(null)
         }
     }
 

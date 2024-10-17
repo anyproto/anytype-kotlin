@@ -34,6 +34,7 @@ import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
+import com.anytypeio.anytype.feature_allcontent.models.UiSnackbarState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
@@ -115,6 +116,7 @@ class AllContentViewModel(
     val uiMenuState = MutableStateFlow<UiMenuState>(UiMenuState.Hidden)
     val uiItemsState = MutableStateFlow<List<UiContentItem>>(emptyList())
     val uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
+    val uiSnackbarState = MutableStateFlow<UiSnackbarState>(UiSnackbarState.Hidden)
 
     val commands = MutableSharedFlow<Command>()
 
@@ -844,7 +846,11 @@ class AllContentViewModel(
             setObjectListIsArchived.async(params).fold(
                 onSuccess = { ids ->
                     Timber.d("Successfully archived object: $ids")
-                    commands.emit(Command.SendToast.ObjectArchived(item.name))
+                    val name = item.name
+                    uiSnackbarState.value = UiSnackbarState.Visible(
+                        message = name.take(10),
+                        objId = item.id
+                    )
                 },
                 onFailure = { e ->
                     Timber.e(e, "Error while archiving object")
@@ -852,6 +858,29 @@ class AllContentViewModel(
                 }
             )
         }
+    }
+
+    fun proceedWithUndoMoveToBin(objectId: Id) {
+        val params = SetObjectListIsArchived.Params(
+            targets = listOf(objectId),
+            isArchived = false
+        )
+        viewModelScope.launch {
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = { ids ->
+                    Timber.d("Successfully archived object: $ids")
+                    uiSnackbarState.value = UiSnackbarState.Hidden
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while un-archiving object")
+                    commands.emit(Command.SendToast.Error("Error while un-archiving object"))
+                }
+            )
+        }
+    }
+
+    fun proceedWithDismissSnackbar() {
+        uiSnackbarState.value = UiSnackbarState.Hidden
     }
 
     /**

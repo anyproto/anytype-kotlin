@@ -87,6 +87,7 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
+import com.anytypeio.anytype.feature_allcontent.models.AllContentBottomMenu
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
@@ -110,6 +111,7 @@ fun AllContentWrapperScreen(
     uiMenuState: UiMenuState,
     uiSnackbarState: UiSnackbarState,
     uiItemsState: List<UiContentItem>,
+    uiBottomMenu: AllContentBottomMenu,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
@@ -121,7 +123,6 @@ fun AllContentWrapperScreen(
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
     uiContentState: UiContentState,
-    onHomeClicked: () -> Unit,
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
@@ -166,7 +167,6 @@ fun AllContentWrapperScreen(
         lazyListState = lazyListState,
         uiContentState = uiContentState,
         onTypeClicked = onTypeClicked,
-        onHomeClicked = onHomeClicked,
         onGlobalSearchClicked = onGlobalSearchClicked,
         onAddDocClicked = onAddDocClicked,
         onCreateObjectLongClicked = onCreateObjectLongClicked,
@@ -174,6 +174,7 @@ fun AllContentWrapperScreen(
         onBackLongClicked = onBackLongClicked,
         moveToBin = moveToBin,
         onRelationClicked = onRelationClicked,
+        uiBottomMenu = uiBottomMenu,
         undoMoveToBin = undoMoveToBin,
         onDismissSnackbar = onDismissSnackbar
     )
@@ -187,6 +188,7 @@ fun AllContentMainScreen(
     uiTabsState: UiTabsState,
     uiMenuState: UiMenuState,
     uiSnackbarState: UiSnackbarState,
+    uiBottomMenu: AllContentBottomMenu,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
@@ -197,7 +199,6 @@ fun AllContentMainScreen(
     onBinClick: () -> Unit,
     lazyListState: LazyListState,
     uiContentState: UiContentState,
-    onHomeClicked: () -> Unit,
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
@@ -245,12 +246,12 @@ fun AllContentMainScreen(
             ) {
                 BottomMenu(
                     modifier = Modifier.align(Alignment.BottomCenter),
-                    onHomeClicked = onHomeClicked,
                     onGlobalSearchClicked = onGlobalSearchClicked,
                     onAddDocClicked = onAddDocClicked,
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
                     onBackClicked = onBackClicked,
-                    onBackLongClicked = onBackLongClicked
+                    onBackLongClicked = onBackLongClicked,
+                    uiBottomMenu = uiBottomMenu
                 )
             }
         },
@@ -344,8 +345,8 @@ fun AllContentMainScreen(
 
 @Composable
 fun BottomMenu(
+    uiBottomMenu: AllContentBottomMenu,
     modifier: Modifier = Modifier,
-    onHomeClicked: () -> Unit,
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
@@ -358,10 +359,10 @@ fun BottomMenu(
         modifier = modifier,
         backClick = onBackClicked,
         backLongClick = onBackLongClicked,
-        onProfileClicked = onHomeClicked,
         searchClick = onGlobalSearchClicked,
         addDocClick = onAddDocClicked,
-        onCreateObjectLongClicked = onCreateObjectLongClicked
+        onCreateObjectLongClicked = onCreateObjectLongClicked,
+        isOwnerOrEditor = uiBottomMenu.isOwnerOrEditor
     )
 }
 
@@ -596,7 +597,6 @@ fun PreviewMainScreen() {
         lazyListState = rememberLazyListState(),
         uiContentState = UiContentState.Error("Error message"),
         onTypeClicked = {},
-        onHomeClicked = {},
         onGlobalSearchClicked = {},
         onAddDocClicked = {},
         onCreateObjectLongClicked = {},
@@ -604,6 +604,7 @@ fun PreviewMainScreen() {
         moveToBin = {},
         onBackLongClicked = {},
         onRelationClicked = {},
+        uiBottomMenu = AllContentBottomMenu(isOwnerOrEditor = false),
         uiSnackbarState = UiSnackbarState.Hidden,
         undoMoveToBin = {},
         onDismissSnackbar = {}

@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
+import com.anytypeio.anytype.feature_allcontent.models.AllContentBottomMenu
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
@@ -116,6 +117,7 @@ class AllContentViewModel(
     val uiMenuState = MutableStateFlow<UiMenuState>(UiMenuState.Hidden)
     val uiItemsState = MutableStateFlow<List<UiContentItem>>(emptyList())
     val uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
+    val uiBottomMenu = MutableStateFlow<AllContentBottomMenu>(AllContentBottomMenu())
     val uiSnackbarState = MutableStateFlow<UiSnackbarState>(UiSnackbarState.Hidden)
 
     val commands = MutableSharedFlow<Command>()
@@ -157,6 +159,8 @@ class AllContentViewModel(
             userPermissionProvider
                 .observe(space = vmParams.spaceId)
                 .collect {
+                    uiBottomMenu.value =
+                        AllContentBottomMenu(isOwnerOrEditor = it?.isOwnerOrEditor() == true)
                     permission.value = it
                 }
         }
@@ -297,24 +301,23 @@ class AllContentViewModel(
         activeSort: AllContentSort,
         activeTab: AllContentTab
     ): List<UiContentItem> {
+        val isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
         return when (activeTab) {
             AllContentTab.TYPES -> {
                 val items = objectWrappers.toUiContentTypes(
                     urlBuilder = urlBuilder,
-                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
+                    isOwnerOrEditor = isOwnerOrEditor
                 )
                 buildList {
-                    add(UiContentItem.NewType)
+                    if (isOwnerOrEditor) add(UiContentItem.NewType)
                     addAll(items)
                 }
             }
 
             AllContentTab.RELATIONS -> {
-                val items = objectWrappers.toUiContentRelations(
-                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
-                )
+                val items = objectWrappers.toUiContentRelations(isOwnerOrEditor = isOwnerOrEditor)
                 buildList {
-                    add(UiContentItem.NewRelation)
+                    if (isOwnerOrEditor) add(UiContentItem.NewRelation)
                     addAll(items)
                 }
             }
@@ -324,7 +327,7 @@ class AllContentViewModel(
                     space = vmParams.spaceId,
                     urlBuilder = urlBuilder,
                     objectTypes = storeOfObjectTypes.getAll(),
-                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
+                    isOwnerOrEditor = isOwnerOrEditor
                 )
                 val result = when (activeSort) {
                     is AllContentSort.ByDateCreated -> {

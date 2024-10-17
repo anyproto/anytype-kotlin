@@ -162,14 +162,10 @@ fun Menu(
         backLongClick = {
             onBackLongClicked()
         },
-        homeClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Back) },
         searchClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Search) },
         addDocClick = { viewModel.eventStream(LibraryEvent.BottomMenu.CreateObject) },
         onCreateObjectLongClicked = onCreateObjectLongClicked,
-        onProfileClicked = {
-            viewModel.eventStream(LibraryEvent.BottomMenu.OpenProfile)
-        },
-        profileIcon = viewModel.icon.collectAsState().value
+        isOwnerOrEditor = false
     )
 }
 

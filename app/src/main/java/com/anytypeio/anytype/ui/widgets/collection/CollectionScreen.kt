@@ -148,13 +148,11 @@ fun ScreenContent(
                     .padding(bottom = 20.dp)) {
                 BottomNavigationMenu(
                     backClick = { vm.onPrevClicked() },
-                    homeClick = { vm.onHomeClicked() },
                     searchClick = onSearchClicked,
                     addDocClick = { vm.onAddClicked(null) },
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
-                    onProfileClicked = vm::onProfileClicked,
-                    profileIcon = vm.icon.collectAsState().value,
-                    backLongClick = vm::onBackLongClicked
+                    backLongClick = vm::onBackLongClicked,
+                    isOwnerOrEditor = uiState.isActionButtonVisible
                 )
             }
         }

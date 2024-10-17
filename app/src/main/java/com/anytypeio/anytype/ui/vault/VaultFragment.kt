@@ -90,7 +90,7 @@ class VaultFragment : BaseComposeFragment() {
                 runCatching {
                     findNavController().navigate(
                         R.id.profileScreen,
-                        bundleOf(ProfileSettingsFragment.SPACE_ID_KEY to command.space.id)
+                        null
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening profile settings from vault")

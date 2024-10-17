@@ -8,7 +8,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
@@ -19,7 +19,7 @@ class ResumeAccount @Inject constructor(
     private val repository: AuthRepository,
     private val pathProvider: PathProvider,
     private val configStorage: ConfigStorage,
-    private val metricsProvider: MetricsProvider,
+    private val initialParamsProvider: InitialParamsProvider,
     private val awaitAccountStartManager: AwaitAccountStartManager,
     private val settings: UserSettingsRepository,
     private val spaceManager: SpaceManager
@@ -28,10 +28,7 @@ class ResumeAccount @Inject constructor(
     override suspend fun run(params: None) = proceedWithResuming()
 
     private suspend fun proceedWithResuming() = safe {
-        repository.setMetrics(
-            version = metricsProvider.getVersion(),
-            platform = metricsProvider.getPlatform()
-        )
+        repository.setInitialParams(initialParamsProvider.toCommand())
         val mnemonic = repository.getMnemonic()
         if (mnemonic.isNullOrBlank()) throw IllegalStateException("Mnemonic is empty")
         repository.recoverWallet(

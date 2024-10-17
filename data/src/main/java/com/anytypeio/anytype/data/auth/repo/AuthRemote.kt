@@ -21,5 +21,5 @@ interface AuthRemote {
     suspend fun convertWallet(entropy: String): String
 
     suspend fun getVersion(): String
-    suspend fun setMetrics(platform: String, version: String)
+    suspend fun setInitialParams(command: Command.SetInitialParams)
 }

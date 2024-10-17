@@ -1623,15 +1623,16 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun metricsSetParameters(
-        platform: String,
-        version: String
+        command: Command.SetInitialParams
     ) {
-        val request = Rpc.Metrics.SetParameters.Request(
-            platform = platform,
-            version = version
+        val request = Rpc.Initial.SetParameters.Request(
+            platform = command.platform,
+            version = command.version,
+            logLevel = command.defaultLogLevel,
+            workdir = command.workDir
         )
         logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.metricsSetParameters(request) }
+        val (response, time) = measureTimedValue { service.setInitialParams(request) }
         logResponseIfDebug(response, time)
     }
 

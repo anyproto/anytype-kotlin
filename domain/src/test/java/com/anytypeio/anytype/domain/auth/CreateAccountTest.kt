@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,7 +40,7 @@ class CreateAccountTest {
     lateinit var dispatchers: AppCoroutineDispatchers
 
     @Mock
-    lateinit var metricsProvider: MetricsProvider
+    lateinit var initialParamsProvider: InitialParamsProvider
 
     @Mock
     lateinit var awaitAccountStartManager: AwaitAccountStartManager
@@ -63,7 +63,7 @@ class CreateAccountTest {
         createAccount = CreateAccount(
             repository = repo,
             configStorage = configStorage,
-            metricsProvider = metricsProvider,
+            initialParamsProvider = initialParamsProvider,
             dispatcher = dispatchers,
             awaitAccountStartManager = awaitAccountStartManager,
             spaceManager = spaceManager
@@ -120,7 +120,7 @@ class CreateAccountTest {
             verify(repo, times(1)).createAccount(command)
             verify(repo, times(1)).saveAccount(setup.account)
             verify(repo, times(1)).setCurrentAccount(setup.account.id)
-            verify(repo, times(1)).setMetrics(
+            verify(repo, times(1)).setInitialParams(
                 platform = platform,
                 version = version
             )
@@ -131,7 +131,7 @@ class CreateAccountTest {
         }
 
     private fun stubMetricsProvider(version: String, platform: String) {
-        metricsProvider.stub {
+        initialParamsProvider.stub {
             onBlocking {
                 getVersion()
             } doReturn version

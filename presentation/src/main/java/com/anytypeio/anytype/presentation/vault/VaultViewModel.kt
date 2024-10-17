@@ -124,18 +124,7 @@ class VaultViewModel(
 
     fun onSettingsClicked() {
         viewModelScope.launch {
-            val entrySpaceView = spaces.value.find { space ->
-                space.space.spaceAccessType == SpaceAccessType.DEFAULT
-            }
-            if (entrySpaceView != null && entrySpaceView.space.targetSpaceId != null) {
-                commands.emit(
-                    Command.OpenProfileSettings(
-                        space = SpaceId(requireNotNull(entrySpaceView.space.targetSpaceId))
-                    )
-                )
-            } else {
-                Timber.w("Entry space not found")
-            }
+            commands.emit(Command.OpenProfileSettings)
         }
     }
 
@@ -152,6 +141,7 @@ class VaultViewModel(
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
+        Timber.d("onResume")
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.screenVault,
@@ -301,7 +291,7 @@ class VaultViewModel(
     sealed class Command {
         data object EnterSpaceHomeScreen: Command()
         data object CreateNewSpace: Command()
-        data class OpenProfileSettings(val space: SpaceId): Command()
+        data object OpenProfileSettings: Command()
         data object ShowIntroduceVault : Command()
 
         sealed class Deeplink : Command() {

@@ -90,7 +90,7 @@ class VaultFragment : BaseComposeFragment() {
                 runCatching {
                     findNavController().navigate(
                         R.id.profileScreen,
-                        bundleOf(ProfileSettingsFragment.SPACE_ID_KEY to command.space.id)
+                        null
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening profile settings from vault")
@@ -176,6 +176,8 @@ class VaultFragment : BaseComposeFragment() {
             Timber.d("Deeplink  from fragment args")
             vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromFragmentArgs))
             arguments?.putString(DEEP_LINK_KEY, null)
+        } else {
+            vm.onResume(null)
         }
     }
 

@@ -61,7 +61,7 @@ class ProfileSettingsViewModel(
     val profileData = profileContainer.observe().map { obj ->
         AccountProfile.Data(
             name = obj.name.orEmpty(),
-            icon = obj.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
+            icon = obj.profileIcon(urlBuilder)
         )
     }.stateIn(
         viewModelScope,
@@ -151,7 +151,7 @@ class ProfileSettingsViewModel(
         }
     }
 
-    fun onPickedImageFromDevice(path: String, space: Id) {
+    fun onPickedImageFromDevice(path: String) {
         viewModelScope.launch {
             val config = configStorage.getOrNull()
             if (config != null) {

@@ -274,7 +274,6 @@ class AllContentFragment : BaseComposeFragment() {
                     onUpdateLimitSearch = vm::updateLimit,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                     onTypeClicked = vm::onTypeClicked,
-                    onHomeClicked = vm::onHomeClicked,
                     onGlobalSearchClicked = vm::onGlobalSearchClicked,
                     onAddDocClicked = vm::onAddDockClicked,
                     onCreateObjectLongClicked = {
@@ -299,7 +298,8 @@ class AllContentFragment : BaseComposeFragment() {
                     },
                     onRelationClicked = vm::onRelationClicked,
                     undoMoveToBin = vm::proceedWithUndoMoveToBin,
-                    onDismissSnackbar = vm::proceedWithDismissSnackbar
+                    onDismissSnackbar = vm::proceedWithDismissSnackbar,
+                    uiBottomMenu = vm.uiBottomMenu.collectAsStateWithLifecycle().value
                 )
             }
         }

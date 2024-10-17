@@ -40,12 +40,10 @@ fun BottomNavigationMenu(
     modifier: Modifier = Modifier,
     backClick: () -> Unit = {},
     backLongClick: () -> Unit = {},
-    homeClick: () -> Unit = {},
     searchClick: () -> Unit = {},
     addDocClick: () -> Unit = {},
     onCreateObjectLongClicked: () -> Unit = {},
-    onProfileClicked: () -> Unit = {},
-    profileIcon: ProfileIconView = ProfileIconView.Loading
+    isOwnerOrEditor: Boolean
 ) {
     Row(
         modifier = modifier
@@ -70,7 +68,8 @@ fun BottomNavigationMenu(
         MenuItem(
             res = BottomNavigationItem.ADD_DOC.res,
             onClick = addDocClick,
-            onLongClick = onCreateObjectLongClicked
+            onLongClick = onCreateObjectLongClicked,
+            enabled = isOwnerOrEditor
         )
         MenuItem(
             res = BottomNavigationItem.SEARCH.res,
@@ -84,18 +83,26 @@ private fun MenuItem(
     @DrawableRes res: Int,
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {},
+    enabled: Boolean = true
 ) {
     val haptic = LocalHapticFeedback.current
     Image(
         painter = painterResource(id = res),
         contentDescription = "",
+        alpha = if (enabled) 1f else 0.5f,
         modifier = Modifier.noRippleCombinedClickable(
-            onClick = onClick,
+            onClick = {
+                if (enabled) {
+                    onClick()
+                }
+            },
             onLongClicked = {
-                haptic.performHapticFeedback(
-                    HapticFeedbackType.LongPress
-                )
-                onLongClick()
+                if (enabled) {
+                    haptic.performHapticFeedback(
+                        HapticFeedbackType.LongPress
+                    )
+                    onLongClick()
+                }
             }
         )
     )
@@ -106,7 +113,7 @@ private fun ProfileMenuItem(
     icon: ProfileIconView,
     onClick: () -> Unit = {}
 ) {
-    when(icon) {
+    when (icon) {
         is ProfileIconView.Image -> {
             Image(
                 painter = rememberAsyncImagePainter(
@@ -121,6 +128,7 @@ private fun ProfileMenuItem(
                     .noRippleClickable { onClick() }
             )
         }
+
         is ProfileIconView.Placeholder -> {
             val name = icon.name
             val nameFirstChar = if (name.isNullOrEmpty()) {
@@ -145,6 +153,7 @@ private fun ProfileMenuItem(
                 )
             }
         }
+
         else -> {
             Box(
                 modifier = Modifier

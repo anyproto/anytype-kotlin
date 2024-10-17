@@ -201,6 +201,10 @@ sealed class MenuSortsItem {
 }
 //endregion
 
+//region BOTTOM_MENU
+data class AllContentBottomMenu(val isOwnerOrEditor: Boolean = true)
+//endregion
+
 //region SNACKBAR
 sealed class UiSnackbarState {
     data object Hidden : UiSnackbarState()

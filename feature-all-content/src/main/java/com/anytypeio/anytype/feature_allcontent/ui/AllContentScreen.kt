@@ -830,6 +830,7 @@ fun SwipeToDismissListItems(
 ) {
     var isRemoved by remember { mutableStateOf(false) }
     val dismissState = rememberSwipeToDismissBoxState(
+        initialValue = SwipeToDismissBoxValue.Settled,
         confirmValueChange = { value ->
             if (value == SwipeToDismissBoxValue.EndToStart) {
                 isRemoved = true

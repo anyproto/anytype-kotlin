@@ -201,6 +201,13 @@ sealed class MenuSortsItem {
 }
 //endregion
 
+//region SNACKBAR
+sealed class UiSnackbarState {
+    data object Hidden : UiSnackbarState()
+    data class Visible(val message: String, val objId: Id) : UiSnackbarState()
+}
+//endregion
+
 //region MAPPING
 
 fun RestoreAllContentState.Response.Success.mapToSort(): AllContentSort {

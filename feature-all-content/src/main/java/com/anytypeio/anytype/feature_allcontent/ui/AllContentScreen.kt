@@ -28,12 +28,15 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
@@ -62,6 +65,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
@@ -89,11 +93,14 @@ import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
+import com.anytypeio.anytype.feature_allcontent.models.UiSnackbarState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 @Composable
@@ -101,6 +108,7 @@ fun AllContentWrapperScreen(
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
     uiMenuState: UiMenuState,
+    uiSnackbarState: UiSnackbarState,
     uiItemsState: List<UiContentItem>,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
@@ -119,7 +127,9 @@ fun AllContentWrapperScreen(
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onBackLongClicked: () -> Unit,
-    moveToBin: (UiContentItem.Item) -> Unit
+    moveToBin: (UiContentItem.Item) -> Unit,
+    undoMoveToBin: (Id) -> Unit,
+    onDismissSnackbar: () -> Unit
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -144,6 +154,7 @@ fun AllContentWrapperScreen(
     AllContentMainScreen(
         uiTitleState = uiTitleState,
         uiTabsState = uiTabsState,
+        uiSnackbarState = uiSnackbarState,
         onTabClick = onTabClick,
         onQueryChanged = onQueryChanged,
         uiMenuState = uiMenuState,
@@ -162,7 +173,9 @@ fun AllContentWrapperScreen(
         onBackClicked = onBackClicked,
         onBackLongClicked = onBackLongClicked,
         moveToBin = moveToBin,
-        onRelationClicked = onRelationClicked
+        onRelationClicked = onRelationClicked,
+        undoMoveToBin = undoMoveToBin,
+        onDismissSnackbar = onDismissSnackbar
     )
 }
 
@@ -173,6 +186,7 @@ fun AllContentMainScreen(
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
     uiMenuState: UiMenuState,
+    uiSnackbarState: UiSnackbarState,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
@@ -189,9 +203,29 @@ fun AllContentMainScreen(
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onBackLongClicked: () -> Unit,
-    moveToBin: (UiContentItem.Item) -> Unit
+    moveToBin: (UiContentItem.Item) -> Unit,
+    undoMoveToBin: (Id) -> Unit,
+    onDismissSnackbar: () -> Unit
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    val snackBarText = stringResource(R.string.all_content_snackbar_title)
+    val undoText = stringResource(R.string.undo)
+
+    LaunchedEffect(key1 = uiSnackbarState) {
+        if (uiSnackbarState is UiSnackbarState.Visible) {
+            ShowMoveToBinSnackbar(
+                message = "'${uiSnackbarState.message}' $snackBarText",
+                undo = undoText,
+                scope = this,
+                snackBarHostState = snackBarHostState,
+                objectId = uiSnackbarState.objId,
+                undoMoveToBin = undoMoveToBin,
+                onDismissSnackbar = onDismissSnackbar
+            )
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -301,6 +335,9 @@ fun AllContentMainScreen(
                     }
                 }
             }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState)
         }
     )
 }
@@ -566,7 +603,10 @@ fun PreviewMainScreen() {
         onBackClicked = {},
         moveToBin = {},
         onBackLongClicked = {},
-        onRelationClicked = {}
+        onRelationClicked = {},
+        uiSnackbarState = UiSnackbarState.Hidden,
+        undoMoveToBin = {},
+        onDismissSnackbar = {}
     )
 }
 
@@ -801,6 +841,12 @@ fun SwipeToDismissListItems(
         positionalThreshold = { it * .5f }
     )
 
+    if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
+        LaunchedEffect(Unit) {
+            dismissState.snapTo(SwipeToDismissBoxValue.Settled)
+        }
+    }
+
     LaunchedEffect(key1 = isRemoved) {
         if (isRemoved) {
             delay(animationDuration.toLong())
@@ -827,6 +873,34 @@ fun SwipeToDismissListItems(
             },
             content = { Item(item = item) }
         )
+    }
+}
+
+private fun ShowMoveToBinSnackbar(
+    objectId: Id,
+    message: String,
+    undo: String,
+    scope: CoroutineScope,
+    snackBarHostState: SnackbarHostState,
+    undoMoveToBin: (Id) -> Unit,
+    onDismissSnackbar: () -> Unit
+) {
+    scope.launch {
+        val result = snackBarHostState
+            .showSnackbar(
+                message = message,
+                actionLabel = undo,
+                duration = SnackbarDuration.Short,
+                withDismissAction = true
+            )
+        when (result) {
+            SnackbarResult.ActionPerformed -> {
+                undoMoveToBin(objectId)
+            }
+            SnackbarResult.Dismissed -> {
+                onDismissSnackbar()
+            }
+        }
     }
 }
 

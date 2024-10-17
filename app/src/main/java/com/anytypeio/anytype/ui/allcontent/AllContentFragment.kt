@@ -265,6 +265,7 @@ class AllContentFragment : BaseComposeFragment() {
                     uiTabsState = vm.uiTabsState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
                     uiMenuState = vm.uiMenuState.collectAsStateWithLifecycle().value,
+                    uiSnackbarState = vm.uiSnackbarState.collectAsStateWithLifecycle().value,
                     onSortClick = vm::onSortClicked,
                     onModeClick = vm::onAllContentModeClicked,
                     onItemClicked = vm::onItemClicked,
@@ -296,7 +297,9 @@ class AllContentFragment : BaseComposeFragment() {
                             Timber.e(it, "Error while opening space switcher from all-content screen")
                         }
                     },
-                    onRelationClicked = vm::onRelationClicked
+                    onRelationClicked = vm::onRelationClicked,
+                    undoMoveToBin = vm::proceedWithUndoMoveToBin,
+                    onDismissSnackbar = vm::proceedWithDismissSnackbar
                 )
             }
         }

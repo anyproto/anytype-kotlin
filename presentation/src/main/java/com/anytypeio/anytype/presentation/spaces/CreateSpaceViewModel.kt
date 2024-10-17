@@ -107,7 +107,6 @@ class CreateSpaceViewModel(
     }
 
     private fun proceedWithResettingRandomSpaceGradient() {
-        spaceGradientId = spaceGradientProvider.randomId()
         spaceGradient.value = SpaceIconView.Placeholder(
             color = SystemColor.entries.random()
         )

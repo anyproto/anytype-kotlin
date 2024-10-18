@@ -725,7 +725,6 @@ class ObjectSetViewModel(
                     builder = urlBuilder,
                     objects = dataViewState.objects,
                     dataViewRelations = relations,
-                    details = objectState.details,
                     store = objectStore,
                     storeOfRelations = storeOfRelations
                 )
@@ -777,7 +776,6 @@ class ObjectSetViewModel(
                 builder = urlBuilder,
                 objects = dataViewState.objects,
                 dataViewRelations = relations,
-                details = objectState.details,
                 store = objectStore,
                 objectOrderIds = objectOrderIds,
                 storeOfRelations = storeOfRelations

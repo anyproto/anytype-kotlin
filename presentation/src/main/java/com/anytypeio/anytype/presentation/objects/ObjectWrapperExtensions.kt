@@ -372,3 +372,31 @@ fun ObjectWrapper.Basic.getDescriptionOrSnippet(): String? {
         }
     }
 }
+
+fun List<DefaultObjectRelationValueView>.setTypeRelationIconsAsNone(): List<DefaultObjectRelationValueView> {
+    return this.map { view ->
+        if (view.relationKey == Relations.TYPE) {
+            handleTypeRelation(view)
+        } else {
+            view
+        }
+    }
+}
+
+private fun handleTypeRelation(view: DefaultObjectRelationValueView): DefaultObjectRelationValueView {
+    return when (view) {
+        is DefaultObjectRelationValueView.Object -> {
+            view.copy(
+                objects = view.objects.map { obj -> updateObjectIcon(obj) }
+            )
+        }
+        else -> view
+    }
+}
+
+private fun updateObjectIcon(obj: ObjectView): ObjectView {
+    return when (obj) {
+        is ObjectView.Default -> obj.copy(icon = ObjectIcon.None)
+        is ObjectView.Deleted -> obj
+    }
+}

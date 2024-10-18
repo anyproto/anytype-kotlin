@@ -80,7 +80,6 @@ suspend fun DVViewer.render(
     coverImageHashProvider: CoverImageHashProvider,
     useFallbackView: Boolean = false,
     objects: List<Id>,
-    details: Map<Id, Block.Fields>,
     dataViewRelations: List<ObjectWrapper.Relation>,
     store: ObjectStore,
     objectOrderIds: List<Id> = emptyList(),
@@ -101,7 +100,6 @@ suspend fun DVViewer.render(
                 id = id,
                 items = buildGalleryViews(
                     objectIds = objects,
-                    details = details,
                     relations = dataViewRelations,
                     coverImageHashProvider = coverImageHashProvider,
                     urlBuilder = builder,

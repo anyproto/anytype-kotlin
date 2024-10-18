@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.relationsFilteredByHiddenAndDescription
+import com.anytypeio.anytype.presentation.objects.setTypeRelationIconsAsNone
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 suspend fun DVViewer.buildListViews(
@@ -37,7 +38,7 @@ suspend fun DVViewer.buildListViews(
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
                             storeOfObjects = store
-                        ),
+                        ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         icon = obj.objectIcon(urlBuilder),
                         description = description,
@@ -57,7 +58,7 @@ suspend fun DVViewer.buildListViews(
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
                             storeOfObjects = store
-                        ),
+                        ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         done = obj.done ?: false,
                         description = description
@@ -76,7 +77,7 @@ suspend fun DVViewer.buildListViews(
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
                             storeOfObjects = store
-                        ),
+                        ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         icon = obj.objectIcon(urlBuilder),
                         description = description,

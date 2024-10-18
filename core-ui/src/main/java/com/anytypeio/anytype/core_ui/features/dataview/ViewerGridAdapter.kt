@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType.Layout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridRowBinding
 import com.anytypeio.anytype.core_ui.extensions.drawable
@@ -128,28 +127,7 @@ class ViewerGridAdapter(
 
         private fun showIcon(row: Viewer.GridView.Row) {
             binding.objectIcon.visible()
-            when (row.layout) {
-                Layout.TODO -> binding.objectIcon.setTask(row.isChecked)
-                Layout.BASIC, Layout.BOOKMARK, Layout.SET, Layout.COLLECTION -> {
-                    if (!row.image.isNullOrEmpty() || !row.emoji.isNullOrEmpty()) {
-                        if (!row.image.isNullOrEmpty()) {
-                            binding.objectIcon.setRectangularImage(row.image)
-                        } else {
-                            binding.objectIcon.setEmoji(row.emoji)
-                        }
-                    } else {
-                        binding.objectIcon.gone()
-                    }
-                }
-                Layout.PROFILE -> {
-                    if (!row.image.isNullOrEmpty()) {
-                        binding.objectIcon.setCircularImage(row.image)
-                    } else {
-                        binding.objectIcon.setProfileInitials(row.name.orEmpty())
-                    }
-                }
-                else -> binding.objectIcon.gone()
-            }
+            binding.objectIcon.setIcon(row.objectIcon)
         }
 
         fun bindObjectCells(row: Viewer.GridView.Row) {

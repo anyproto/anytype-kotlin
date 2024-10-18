@@ -45,6 +45,7 @@ sealed class Viewer {
             val cells: List<CellView> = emptyList(),
             val layout: ObjectType.Layout? = null,
             val showIcon: Boolean,
+            val objectIcon: ObjectIcon
         )
 
         companion object {

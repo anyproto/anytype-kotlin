@@ -569,8 +569,6 @@ fun Viewer.Filter.Condition.toDomain(): DVFilterCondition = when (this) {
 suspend fun List<Id>.toGridRecordRows(
     showIcon: Boolean,
     columns: List<ColumnView>,
-    relations: List<ObjectWrapper.Relation>,
-    details: Map<Id, Block.Fields>,
     builder: UrlBuilder,
     store: ObjectStore,
 ): List<Viewer.GridView.Row> {
@@ -581,10 +579,8 @@ suspend fun List<Id>.toGridRecordRows(
             val row = columns.buildGridRow(
                 showIcon = showIcon,
                 obj = record,
-                relations = relations,
                 store = store,
-                builder = builder,
-                details = details
+                builder = builder
             )
             rows.add(row)
         } else {

@@ -307,6 +307,7 @@ fun AllContentMainScreen(
                             }
                         }
                     }
+
                     is UiItemsState.Content -> {
                         ContentItems(
                             uiItemsState = uiItemsState,
@@ -393,7 +394,7 @@ private fun ContentItems(
     ) {
         items(
             count = items.size,
-                key = { index -> items[index].id },
+            key = { index -> items[index].id },
             contentType = { index ->
                 when (items[index]) {
                     is UiContentItem.Group -> "group"
@@ -909,6 +910,7 @@ private fun ShowMoveToBinSnackbar(
             SnackbarResult.ActionPerformed -> {
                 undoMoveToBin(objectId)
             }
+
             SnackbarResult.Dismissed -> {
                 onDismissSnackbar()
             }

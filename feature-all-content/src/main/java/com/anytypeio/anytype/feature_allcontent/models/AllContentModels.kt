@@ -105,6 +105,11 @@ sealed class UiContentState {
     ) : UiContentState()
 }
 
+sealed class UiItemsState{
+    data object Empty : UiItemsState()
+    data class Content(val items: List<UiContentItem>) : UiItemsState()
+}
+
 // ITEMS
 sealed class UiContentItem {
     abstract val id: String

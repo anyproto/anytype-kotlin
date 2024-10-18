@@ -94,6 +94,7 @@ import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
+import com.anytypeio.anytype.feature_allcontent.models.UiItemsState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiSnackbarState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
@@ -110,7 +111,7 @@ fun AllContentWrapperScreen(
     uiTabsState: UiTabsState,
     uiMenuState: UiMenuState,
     uiSnackbarState: UiSnackbarState,
-    uiItemsState: List<UiContentItem>,
+    uiItemsState: UiItemsState,
     uiBottomMenu: AllContentBottomMenu,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
@@ -165,7 +166,7 @@ fun AllContentWrapperScreen(
 
 @Composable
 fun AllContentMainScreen(
-    uiItemsState: List<UiContentItem>,
+    uiItemsState: UiItemsState,
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
     uiMenuState: UiMenuState,
@@ -284,8 +285,8 @@ fun AllContentMainScreen(
                 modifier = contentModifier,
                 contentAlignment = Alignment.Center
             ) {
-                when {
-                    uiItemsState.isEmpty() -> {
+                when (uiItemsState) {
+                    UiItemsState.Empty -> {
                         when (uiContentState) {
                             is UiContentState.Error -> {
                                 ErrorState(uiContentState.message)
@@ -305,8 +306,7 @@ fun AllContentMainScreen(
                             }
                         }
                     }
-
-                    else -> {
+                    is UiItemsState.Content -> {
                         ContentItems(
                             uiItemsState = uiItemsState,
                             onItemClicked = onItemClicked,
@@ -357,7 +357,7 @@ private fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
 
 @Composable
 private fun ContentItems(
-    uiItemsState: List<UiContentItem>,
+    uiItemsState: UiItemsState.Content,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem) -> Unit,
     onRelationClicked: (UiContentItem) -> Unit,
@@ -367,7 +367,7 @@ private fun ContentItems(
     onUpdateLimitSearch: () -> Unit
 ) {
     val items = remember { mutableStateListOf<UiContentItem>() }
-    items.swapList(uiItemsState)
+    items.swapList(uiItemsState.items)
 
     val scope = rememberCoroutineScope()
 
@@ -591,7 +591,7 @@ fun PreviewLoadingState() {
 @Composable
 fun PreviewMainScreen() {
     AllContentMainScreen(
-        uiItemsState = emptyList(),
+        uiItemsState = UiItemsState.Empty,
         uiTitleState = UiTitleState.AllContent,
         uiTabsState = UiTabsState(
             tabs = listOf(

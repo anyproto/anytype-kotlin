@@ -34,6 +34,7 @@ import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
+import com.anytypeio.anytype.feature_allcontent.models.UiItemsState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiSnackbarState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
@@ -115,7 +116,7 @@ class AllContentViewModel(
     val uiTitleState = MutableStateFlow<UiTitleState>(DEFAULT_INITIAL_MODE)
     val uiTabsState = MutableStateFlow<UiTabsState>(UiTabsState())
     val uiMenuState = MutableStateFlow<UiMenuState>(UiMenuState.Hidden)
-    val uiItemsState = MutableStateFlow<List<UiContentItem>>(emptyList())
+    val uiItemsState = MutableStateFlow<UiItemsState>(UiItemsState.Empty)
     val uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
     val uiBottomMenu = MutableStateFlow<AllContentBottomMenu>(AllContentBottomMenu())
     val uiSnackbarState = MutableStateFlow<UiSnackbarState>(UiSnackbarState.Hidden)
@@ -207,7 +208,7 @@ class AllContentViewModel(
                         success = { searchResults ->
                             Timber.d("Search objects by query:[$query], size: : ${searchResults.size}")
                             if (searchResults.isEmpty()) {
-                                uiItemsState.value = emptyList()
+                                uiItemsState.value = UiItemsState.Empty
                                 uiContentState.value = UiContentState.Empty
                             } else {
                                 searchResultIds.value = searchResults.map { it.id }
@@ -229,7 +230,12 @@ class AllContentViewModel(
             restartSubscription.flatMapLatest {
                 loadData()
             }.collectLatest { items ->
-                uiItemsState.value = items
+                if (items.isEmpty()) {
+                    uiItemsState.value = UiItemsState.Empty
+                    uiContentState.value = UiContentState.Empty
+                } else {
+                    uiItemsState.value = UiItemsState.Content(items)
+                }
             }
         }
     }
@@ -555,7 +561,7 @@ class AllContentViewModel(
         tab.updateInitialState()
         shouldScrollToTopItems = true
         resetLimit()
-        uiItemsState.value = emptyList()
+        uiItemsState.value = UiItemsState.Empty
         uiTabsState.value = uiTabsState.value.copy(selectedTab = tab)
         restartSubscription.value++
         viewModelScope.launch {
@@ -569,7 +575,7 @@ class AllContentViewModel(
     fun onAllContentModeClicked(mode: AllContentMenuMode) {
         Timber.d("onAllContentModeClicked: $mode")
         shouldScrollToTopItems = true
-        uiItemsState.value = emptyList()
+        uiItemsState.value = UiItemsState.Empty
         uiTitleState.value = when (mode) {
             is AllContentMenuMode.AllContent -> UiTitleState.AllContent
             is AllContentMenuMode.Unlinked -> UiTitleState.OnlyUnlinked
@@ -600,7 +606,7 @@ class AllContentViewModel(
             }
         }
         shouldScrollToTopItems = true
-        uiItemsState.value = emptyList()
+        uiItemsState.value = UiItemsState.Empty
         sortState.value = newSort
         proceedWithSortSaving(uiTabsState.value, newSort)
         restartSubscription.value++
@@ -835,7 +841,7 @@ class AllContentViewModel(
         viewModelScope.launch {
             userInput.value = DEFAULT_QUERY
             searchResultIds.value = emptyList()
-            uiItemsState.value = emptyList()
+            uiItemsState.value = UiItemsState.Empty
             uiContentState.value = UiContentState.Empty
         }
     }
@@ -899,7 +905,7 @@ class AllContentViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        uiItemsState.value = emptyList()
+        uiItemsState.value = UiItemsState.Empty
         resetLimit()
     }
 

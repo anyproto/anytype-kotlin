@@ -70,6 +70,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
+import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
@@ -348,11 +349,6 @@ fun BottomMenu(
         onCreateObjectLongClicked = onCreateObjectLongClicked,
         isOwnerOrEditor = uiBottomMenu.isOwnerOrEditor
     )
-}
-
-private fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
-    clear()
-    addAll(newList)
 }
 
 @Composable

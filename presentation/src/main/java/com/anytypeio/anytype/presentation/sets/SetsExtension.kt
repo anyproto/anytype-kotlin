@@ -29,8 +29,6 @@ import timber.log.Timber
 suspend fun List<ColumnView>.buildGridRow(
     showIcon: Boolean,
     obj: ObjectWrapper.Basic,
-    relations: List<ObjectWrapper.Relation>,
-    details: Map<Id, Block.Fields>,
     builder: UrlBuilder,
     store: ObjectStore
 ): Viewer.GridView.Row {
@@ -42,6 +40,7 @@ suspend fun List<ColumnView>.buildGridRow(
     val done = obj.done
     val layout = obj.layout
     val space = requireNotNull(obj.spaceId)
+    val objectIcon = obj.objectIcon(builder)
 
     val cells = mutableListOf<CellView>()
     this.map { column ->
@@ -227,6 +226,7 @@ suspend fun List<ColumnView>.buildGridRow(
         layout = layout,
         isChecked = done,
         showIcon = showIcon,
+        objectIcon = objectIcon
     )
 }
 

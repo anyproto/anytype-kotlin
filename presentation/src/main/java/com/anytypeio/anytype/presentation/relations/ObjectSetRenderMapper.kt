@@ -91,7 +91,6 @@ suspend fun DVViewer.render(
             buildGridView(
                 dataViewRelations = dataViewRelations,
                 objects = objects,
-                details = details,
                 builder = builder,
                 store = store,
                 objectOrderIds = objectOrderIds
@@ -137,7 +136,6 @@ suspend fun DVViewer.render(
                 buildGridView(
                     dataViewRelations = dataViewRelations,
                     objects = objects,
-                    details = details,
                     builder = builder,
                     store = store,
                     objectOrderIds = objectOrderIds
@@ -164,7 +162,6 @@ private fun List<Viewer.GridView.Row>.sortObjects(objectOrderIds: List<Id>): Lis
 private suspend fun DVViewer.buildGridView(
     dataViewRelations: List<ObjectWrapper.Relation>,
     objects: List<Id>,
-    details: Map<Id, Block.Fields>,
     builder: UrlBuilder,
     store: ObjectStore,
     objectOrderIds: List<Id>
@@ -183,8 +180,6 @@ private suspend fun DVViewer.buildGridView(
             objects.toGridRecordRows(
                 showIcon = !hideIcon,
                 columns = columns,
-                relations = visibleRelations,
-                details = details,
                 builder = builder,
                 store = store
             )

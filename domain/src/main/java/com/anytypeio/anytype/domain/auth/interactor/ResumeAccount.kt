@@ -56,8 +56,6 @@ class ResumeAccount @Inject constructor(
                     // Falling back to the default space
                     spaceManager.set(setup.config.space)
                 }
-            } else {
-                spaceManager.set(setup.config.space)
             }
             setup.account.id
         }

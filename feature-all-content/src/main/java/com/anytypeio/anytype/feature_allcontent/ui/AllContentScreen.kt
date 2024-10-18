@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -45,10 +44,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -101,7 +102,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 
 @Composable
@@ -132,25 +132,6 @@ fun AllContentWrapperScreen(
     undoMoveToBin: (Id) -> Unit,
     onDismissSnackbar: () -> Unit
 ) {
-    val lazyListState = rememberLazyListState()
-
-    val canPaginateState = remember { mutableStateOf(false) }
-    LaunchedEffect(key1 = canPaginate) {
-        canPaginateState.value = canPaginate
-    }
-
-    val shouldStartPaging = remember {
-        derivedStateOf {
-            canPaginateState.value && (lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                ?: -9) >= (lazyListState.layoutInfo.totalItemsCount - 2)
-        }
-    }
-
-    LaunchedEffect(key1 = shouldStartPaging.value) {
-        if (shouldStartPaging.value && uiContentState is UiContentState.Idle) {
-            onUpdateLimitSearch()
-        }
-    }
 
     AllContentMainScreen(
         uiTitleState = uiTitleState,
@@ -164,7 +145,6 @@ fun AllContentWrapperScreen(
         onItemClicked = onItemClicked,
         onBinClick = onBinClick,
         uiItemsState = uiItemsState,
-        lazyListState = lazyListState,
         uiContentState = uiContentState,
         onTypeClicked = onTypeClicked,
         onGlobalSearchClicked = onGlobalSearchClicked,
@@ -176,7 +156,9 @@ fun AllContentWrapperScreen(
         onRelationClicked = onRelationClicked,
         uiBottomMenu = uiBottomMenu,
         undoMoveToBin = undoMoveToBin,
-        onDismissSnackbar = onDismissSnackbar
+        onDismissSnackbar = onDismissSnackbar,
+        canPaginate = canPaginate,
+        onUpdateLimitSearch = onUpdateLimitSearch
     )
 }
 
@@ -197,7 +179,6 @@ fun AllContentMainScreen(
     onTypeClicked: (UiContentItem) -> Unit,
     onRelationClicked: (UiContentItem) -> Unit,
     onBinClick: () -> Unit,
-    lazyListState: LazyListState,
     uiContentState: UiContentState,
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
@@ -206,7 +187,9 @@ fun AllContentMainScreen(
     onBackLongClicked: () -> Unit,
     moveToBin: (UiContentItem.Item) -> Unit,
     undoMoveToBin: (Id) -> Unit,
-    onDismissSnackbar: () -> Unit
+    onDismissSnackbar: () -> Unit,
+    canPaginate: Boolean,
+    onUpdateLimitSearch: () -> Unit,
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -329,9 +312,10 @@ fun AllContentMainScreen(
                             onItemClicked = onItemClicked,
                             onTypeClicked = onTypeClicked,
                             uiContentState = uiContentState,
-                            lazyListState = lazyListState,
                             moveToBin = moveToBin,
-                            onRelationClicked = onRelationClicked
+                            onRelationClicked = onRelationClicked,
+                            canPaginate = canPaginate,
+                            onUpdateLimitSearch = onUpdateLimitSearch
                         )
                     }
                 }
@@ -366,6 +350,11 @@ fun BottomMenu(
     )
 }
 
+private fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
+    clear()
+    addAll(newList)
+}
+
 @Composable
 private fun ContentItems(
     uiItemsState: List<UiContentItem>,
@@ -373,20 +362,44 @@ private fun ContentItems(
     onTypeClicked: (UiContentItem) -> Unit,
     onRelationClicked: (UiContentItem) -> Unit,
     uiContentState: UiContentState,
-    lazyListState: LazyListState,
-    moveToBin: (UiContentItem.Item) -> Unit
+    canPaginate: Boolean,
+    moveToBin: (UiContentItem.Item) -> Unit,
+    onUpdateLimitSearch: () -> Unit
 ) {
+    val items = remember { mutableStateListOf<UiContentItem>() }
+    items.swapList(uiItemsState)
+
     val scope = rememberCoroutineScope()
+
+    val lazyListState = rememberLazyListState()
+
+    val canPaginateState = remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = canPaginate) {
+        canPaginateState.value = canPaginate
+    }
+
+    val shouldStartPaging = remember {
+        derivedStateOf {
+            canPaginateState.value && (lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                ?: -9) >= (lazyListState.layoutInfo.totalItemsCount - 2)
+        }
+    }
+
+    LaunchedEffect(key1 = shouldStartPaging.value) {
+        if (shouldStartPaging.value && uiContentState is UiContentState.Idle) {
+            onUpdateLimitSearch()
+        }
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = lazyListState
     ) {
         items(
-            count = uiItemsState.size,
-            key = { index -> uiItemsState[index].id },
+            count = items.size,
+                key = { index -> items[index].id },
             contentType = { index ->
-                when (uiItemsState[index]) {
+                when (items[index]) {
                     is UiContentItem.Group -> "group"
                     is UiContentItem.Item -> "item"
                     is UiContentItem.Type -> "type"
@@ -397,7 +410,7 @@ private fun ContentItems(
                 }
             }
         ) { index ->
-            when (val item = uiItemsState[index]) {
+            when (val item = items[index]) {
                 is UiContentItem.Group -> {
                     Box(
                         modifier = Modifier
@@ -594,7 +607,6 @@ fun PreviewMainScreen() {
         onSortClick = {},
         onItemClicked = {},
         onBinClick = {},
-        lazyListState = rememberLazyListState(),
         uiContentState = UiContentState.Error("Error message"),
         onTypeClicked = {},
         onGlobalSearchClicked = {},
@@ -607,7 +619,9 @@ fun PreviewMainScreen() {
         uiBottomMenu = AllContentBottomMenu(isOwnerOrEditor = false),
         uiSnackbarState = UiSnackbarState.Hidden,
         undoMoveToBin = {},
-        onDismissSnackbar = {}
+        onDismissSnackbar = {},
+        canPaginate = true,
+        onUpdateLimitSearch = {}
     )
 }
 

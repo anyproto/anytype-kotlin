@@ -23,6 +23,9 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.DeletedIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmptyIconView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 
 @Composable
 fun ListWidgetObjectIcon(
@@ -46,7 +49,7 @@ fun ListWidgetObjectIcon(
             EmojiIconView(icon = icon, backgroundSize = iconSize, modifier = modifier)
         }
         is ObjectIcon.Basic.Image -> {
-            DefaultObjectImageIcon(icon.hash, modifier, iconSize)
+            DefaultObjectImageIcon(icon.hash, modifier, iconSize, fallback = icon.emptyState)
         }
         is ObjectIcon.Bookmark -> {
             DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
@@ -106,19 +109,23 @@ fun DefaultTaskObjectIcon(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun DefaultObjectImageIcon(
     url: Url,
     modifier: Modifier,
-    iconSize: Dp
+    iconSize: Dp,
+    fallback: ObjectIcon.Empty
 ) {
-    Image(
-        painter = rememberAsyncImagePainter(model = url),
+    GlideImage(
+        model = url,
         contentDescription = "Icon from URI",
         contentScale = ContentScale.Crop,
         modifier = modifier
             .size(iconSize)
-            .clip(RoundedCornerShape(2.dp))
+            .clip(RoundedCornerShape(2.dp)),
+        failure = placeholder(resourceId = imageAsset(fallback)),
+        loading = placeholder(resourceId = R.drawable.ic_icon_loading)
     )
 }
 

@@ -161,7 +161,8 @@ fun IntroduceVaultScreen(
                 .constrainAs(first) {
                     bottom.linkTo(btn.top)
                 },
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            minLines = 3
         )
 
         ButtonSecondary(

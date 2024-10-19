@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.dataview
 
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test
@@ -13,7 +14,10 @@ class GridDiffUtilTest {
     fun `showIcon changed - header payload exists`() {
         val old = Viewer.GridView.Row(
             id = MockDataFactory.randomUuid(),
-            showIcon = false
+            showIcon = false,
+            objectIcon = ObjectIcon.Basic.Image(
+                hash = MockDataFactory.randomUuid()
+            )
         )
         val new = old.copy(
             showIcon = true
@@ -30,7 +34,10 @@ class GridDiffUtilTest {
     fun `nothing changed - payloads is empty`() {
         val old = Viewer.GridView.Row(
             id = MockDataFactory.randomUuid(),
-            showIcon = false
+            showIcon = false,
+            objectIcon = ObjectIcon.Basic.Image(
+                hash = MockDataFactory.randomUuid()
+            )
         )
         val new = old.copy()
         val payload = ViewerGridAdapter.GridDiffUtil.getChangePayload(

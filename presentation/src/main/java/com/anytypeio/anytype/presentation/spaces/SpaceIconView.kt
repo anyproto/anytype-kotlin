@@ -11,8 +11,6 @@ sealed class SpaceIconView {
         val color: SystemColor = SystemColor.YELLOW,
         val name: String = ""
     ): SpaceIconView()
-    @Deprecated("To be deleted")
-    class Gradient(val from: String, val to: String) : SpaceIconView()
     data class Image(val url: Url) : SpaceIconView()
 }
 

@@ -34,6 +34,7 @@ import androidx.core.graphics.toColorInt
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title3
@@ -129,11 +130,13 @@ private fun SpaceItem(space: GallerySpaceView, onSpaceClick: (GallerySpaceView) 
             .noRippleThrottledClickable { onSpaceClick(space) },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        SpaceIcon(
+        SpaceIconView(
             icon = space.icon,
-            modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(8.dp))
+            modifier = Modifier,
+            mainSize = 48.dp,
+            onSpaceIconClick = {
+                // Do nothing
+            }
         )
         Text(
             modifier = Modifier
@@ -143,45 +146,6 @@ private fun SpaceItem(space: GallerySpaceView, onSpaceClick: (GallerySpaceView) 
             style = Title3,
             color = colorResource(id = R.color.text_primary)
         )
-    }
-}
-
-@Composable
-private fun SpaceIcon(
-    icon: SpaceIconView,
-    modifier: Modifier
-) {
-    when (icon) {
-        is SpaceIconView.Image -> {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = icon.url,
-                    error = painterResource(id = R.drawable.ic_home_widget_space)
-                ),
-                contentDescription = "Custom image space icon",
-                contentScale = ContentScale.Crop,
-                modifier = modifier
-                    .clip(RoundedCornerShape(4.dp))
-            )
-        }
-
-        is SpaceIconView.Gradient -> {
-            val gradient = Brush.radialGradient(
-                colors = listOf(
-                    Color(icon.from.toColorInt()),
-                    Color(icon.to.toColorInt())
-                )
-            )
-            Box(
-                modifier = modifier
-                    .clip(CircleShape)
-                    .background(gradient)
-            )
-        }
-
-        else -> {
-            // Draw nothing.
-        }
     }
 }
 

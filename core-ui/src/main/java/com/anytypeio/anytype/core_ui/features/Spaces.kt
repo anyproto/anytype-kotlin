@@ -32,13 +32,11 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 fun SpaceIconView(
     modifier: Modifier = Modifier,
     mainSize: Dp = 96.dp,
-    gradientSize: Dp = 64.dp,
-    gradientBackground: Color = colorResource(id = R.color.default_gradient_background),
-    gradientCornerRadius: Dp = 8.dp,
     icon: SpaceIconView,
     onSpaceIconClick: () -> Unit,
 ) {
     val radius = when(mainSize) {
+        20.dp -> 4.dp
         40.dp -> 5.dp
         48.dp -> 6.dp
         64.dp -> 8.dp
@@ -47,6 +45,7 @@ fun SpaceIconView(
     }
 
     val fontSize = when(mainSize) {
+        20.dp -> 16.sp
         40.dp -> 24.sp
         48.dp -> 28.sp
         64.dp -> 40.sp
@@ -67,30 +66,6 @@ fun SpaceIconView(
                         onSpaceIconClick.invoke()
                     }
             )
-        }
-        is SpaceIconView.Gradient -> {
-            val gradient = Brush.radialGradient(
-                colors = listOf(
-                    Color(icon.from.toColorInt()),
-                    Color(icon.to.toColorInt())
-                )
-            )
-            Box(
-                modifier = modifier
-                    .size(mainSize)
-                    .clip(RoundedCornerShape(gradientCornerRadius))
-                    .background(color = gradientBackground)
-                    .noRippleClickable { onSpaceIconClick.invoke() }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(gradientSize)
-                        .clip(CircleShape)
-                        .background(gradient)
-                )
-            }
-
         }
         is SpaceIconView.Placeholder -> {
             Box(

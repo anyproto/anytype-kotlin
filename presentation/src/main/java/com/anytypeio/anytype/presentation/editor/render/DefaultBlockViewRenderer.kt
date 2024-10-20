@@ -1531,7 +1531,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                     image = details.details[root.id]?.iconImage?.takeIf { it.isNotBlank() }?.let {
                         urlBuilder.medium(it)
                     },
-                    spaceGradient = null,
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,

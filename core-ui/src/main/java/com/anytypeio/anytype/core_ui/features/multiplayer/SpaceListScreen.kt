@@ -140,9 +140,7 @@ fun SpaceListCardItem(
                     top.linkTo(parent.top, margin = 16.dp)
                     start.linkTo(parent.start, margin = 16.dp)
                 },
-            mainSize = 48.dp,
-            gradientSize = 32.dp,
-            gradientCornerRadius = 4.dp
+            mainSize = 48.dp
         )
 
         if (actions.isNotEmpty()) {

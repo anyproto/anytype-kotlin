@@ -200,7 +200,9 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                 is Command.ExitToVault -> {
                     runCatching {
                         findNavController()
-                            .popBackStack(R.id.vaultScreen, true)
+                            .popBackStack(R.id.vaultScreen, false)
+                    }.onFailure {
+                        Timber.e(it, "Error while exiting to vault screen from space settings")
                     }
                 }
             }

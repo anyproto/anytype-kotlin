@@ -123,7 +123,7 @@ class SpaceSettingsViewModel(
                     createdBy = createdBy,
                     spaceId = params.space.id,
                     network = config?.network.orEmpty(),
-                    isDeletable = resolveIsSpaceDeletable(spaceView),
+                    isDeletable = true,
                     spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
                     permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS,
                     shareLimitReached = ShareLimitsState(
@@ -138,9 +138,6 @@ class SpaceSettingsViewModel(
             }
         }
     }
-
-    private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) =
-        spaceView.spaceAccessType != null && spaceView.spaceAccessType != SpaceAccessType.DEFAULT
 
     fun onNameSet(name: String) {
         Timber.d("onNameSet")

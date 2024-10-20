@@ -148,6 +148,14 @@ fun VaultScreen(
                    Spacer(modifier = Modifier.height(40.dp))
                }
            }
+           if (spaceList.isEmpty()) {
+               item {
+                   VaultSpaceAddCard(
+                       onCreateSpaceClicked = onCreateSpaceClicked
+                   )
+                   Spacer(modifier = Modifier.height(40.dp))
+               }
+           }
        }
     }
 }

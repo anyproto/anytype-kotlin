@@ -82,6 +82,11 @@ class LimitObjectTypeViewModel(
                             value = true
                         ),
                         DVFilter(
+                            relation = Relations.IS_HIDDEN_DISCOVERY,
+                            condition = DVFilterCondition.NOT_EQUAL,
+                            value = true
+                        ),
+                        DVFilter(
                             relation = Relations.RESTRICTIONS,
                             condition = DVFilterCondition.NOT_IN,
                             value = listOf(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE.code.toDouble())

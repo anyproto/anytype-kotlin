@@ -40,6 +40,13 @@ object ObjectSearchConstants {
         )
         add(
             DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
                 relation = Relations.IS_DELETED,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = true
@@ -87,6 +94,11 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
@@ -127,6 +139,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
@@ -183,6 +200,11 @@ object ObjectSearchConstants {
                 ),
                 DVFilter(
                     relation = Relations.IS_HIDDEN,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                ),
+                DVFilter(
+                    relation = Relations.IS_HIDDEN_DISCOVERY,
                     condition = DVFilterCondition.NOT_EQUAL,
                     value = true
                 ),
@@ -251,6 +273,13 @@ object ObjectSearchConstants {
         )
         add(
             DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
                 relation = Relations.IS_DELETED,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = true
@@ -300,6 +329,13 @@ object ObjectSearchConstants {
         )
         add(
             DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
                 relation = Relations.IS_DELETED,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = true
@@ -332,6 +368,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
@@ -375,6 +416,13 @@ object ObjectSearchConstants {
         add(
             DVFilter(
                 relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = true
             )
@@ -440,6 +488,11 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
@@ -492,6 +545,11 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
             value = ObjectType.Layout.SET.code.toDouble()
@@ -524,6 +582,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
         )
     )
 
@@ -545,6 +608,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
@@ -707,6 +775,11 @@ object ObjectSearchConstants {
                         value = true
                     ),
                     DVFilter(
+                        relation = Relations.IS_HIDDEN_DISCOVERY,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
+                    DVFilter(
                         relation = Relations.LAYOUT,
                         condition = DVFilterCondition.EQUAL,
                         value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
@@ -784,6 +857,13 @@ object ObjectSearchConstants {
         )
         add(
             DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
                 relation = Relations.LAYOUT,
                 condition = DVFilterCondition.EQUAL,
                 value = ObjectType.Layout.PARTICIPANT.code.toDouble()
@@ -837,6 +917,13 @@ object ObjectSearchConstants {
                 relation = Relations.IS_HIDDEN,
                 condition = Condition.NOT_EQUAL,
                 value = true,
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
             )
         )
         add(
@@ -923,6 +1010,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
         )
     )
 
@@ -946,6 +1038,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
         )
     )
 
@@ -962,6 +1059,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
@@ -998,6 +1100,11 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
             value = listOf(
@@ -1028,6 +1135,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
@@ -1068,6 +1180,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
         )
     )
 
@@ -1084,6 +1201,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),

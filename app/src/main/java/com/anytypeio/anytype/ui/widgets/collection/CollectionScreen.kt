@@ -50,7 +50,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -150,7 +149,7 @@ fun ScreenContent(
                     backClick = { vm.onPrevClicked() },
                     searchClick = onSearchClicked,
                     addDocClick = { vm.onAddClicked(null) },
-                    onCreateObjectLongClicked = onCreateObjectLongClicked,
+                    addDocLongClick = onCreateObjectLongClicked,
                     backLongClick = vm::onBackLongClicked,
                     isOwnerOrEditor = uiState.isActionButtonVisible
                 )

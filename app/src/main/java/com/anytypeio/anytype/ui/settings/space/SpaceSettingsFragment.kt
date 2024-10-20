@@ -197,6 +197,12 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                 Command.NavigateToMembershipUpdate -> {
                     findNavController().navigate(R.id.membershipUpdateScreen)
                 }
+                is Command.ExitToVault -> {
+                    runCatching {
+                        findNavController()
+                            .popBackStack(R.id.vaultScreen, true)
+                    }
+                }
             }
         }
     }

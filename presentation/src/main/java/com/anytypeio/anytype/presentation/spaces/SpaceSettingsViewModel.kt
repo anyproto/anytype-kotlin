@@ -261,7 +261,8 @@ class SpaceSettingsViewModel(
                                 eventName = EventsDictionary.deleteSpace,
                                 props = Props(mapOf(EventsPropertiesKey.type to "Private"))
                             )
-                            fallbackToPersonalSpaceAfterDeletion(personalSpaceId)
+                            spaceManager.clear()
+                            commands.emit(Command.ExitToVault)
                         },
                         onFailure = {
                             Timber.e(it, "Error while deleting space")
@@ -272,11 +273,6 @@ class SpaceSettingsViewModel(
                 sendToast("Space not found. Please, try again later")
             }
         }
-    }
-
-    private suspend fun fallbackToPersonalSpaceAfterDeletion(personalSpaceId: Id) {
-        spaceManager.set(personalSpaceId)
-        isDismissed.value = true
     }
 
     private fun proceedWithSpaceDebug() {
@@ -398,6 +394,7 @@ class SpaceSettingsViewModel(
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
+        data object ExitToVault : Command()
         data object ShowDeleteSpaceWarning : Command()
         data object ShowLeaveSpaceWarning : Command()
         data object ShowShareLimitReachedError : Command()

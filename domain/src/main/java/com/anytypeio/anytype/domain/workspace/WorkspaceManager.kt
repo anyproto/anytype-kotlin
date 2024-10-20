@@ -124,12 +124,3 @@ suspend fun SpaceManager.getSpaceWithTechSpace(): List<Id> {
         listOf(get())
     }
 }
-
-suspend fun SpaceManager.getSpaceWithTechSpace(space: Id): List<Id> {
-    val config = getConfig(SpaceId(space))
-    return if (config != null) {
-        listOf(config.space, config.techSpace)
-    } else {
-        listOf(get())
-    }
-}

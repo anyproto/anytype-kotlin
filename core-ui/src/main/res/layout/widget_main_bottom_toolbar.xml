@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar">
 
     <FrameLayout
         android:id="@+id/btnBack"
@@ -11,9 +13,10 @@
 
         <ImageView
             android:id="@+id/icBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/main_bottom_toolbar_icon_width"
+            android:layout_height="@dimen/main_bottom_toolbar_icon_height"
             android:layout_gravity="center"
+            android:scaleType="center"
             android:contentDescription="@string/content_desc_back_button"
             app:srcCompat="@drawable/ic_nav_panel_back" />
 
@@ -28,9 +31,10 @@
 
         <ImageView
             android:id="@+id/icAddDoc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/main_bottom_toolbar_icon_width"
+            android:layout_height="@dimen/main_bottom_toolbar_icon_height"
             android:layout_gravity="center"
+            android:scaleType="center"
             android:contentDescription="@string/content_desc_add_doc_button"
             app:srcCompat="@drawable/ic_nav_panel_plus" />
 
@@ -46,10 +50,11 @@
 
         <ImageView
             android:id="@+id/icSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/main_bottom_toolbar_icon_width"
+            android:layout_height="@dimen/main_bottom_toolbar_icon_height"
             android:layout_gravity="center"
             android:contentDescription="@string/content_desc_search_button"
+            android:scaleType="center"
             app:srcCompat="@drawable/ic_nav_panel_search" />
 
     </FrameLayout>

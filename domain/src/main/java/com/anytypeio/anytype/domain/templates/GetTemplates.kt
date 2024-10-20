@@ -49,6 +49,11 @@ class GetTemplates(
                             value = true
                         ),
                         DVFilter(
+                            relation = Relations.IS_HIDDEN_DISCOVERY,
+                            condition = DVFilterCondition.NOT_EQUAL,
+                            value = true
+                        ),
+                        DVFilter(
                             relation = Relations.TARGET_OBJECT_TYPE,
                             condition = DVFilterCondition.EQUAL,
                             value = params.type.id

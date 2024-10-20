@@ -35,6 +35,11 @@ class EmptyBin(
                     relation = Relations.IS_HIDDEN,
                     condition = DVFilterCondition.NOT_EQUAL,
                     value = true
+                ),
+                DVFilter(
+                    relation = Relations.IS_HIDDEN_DISCOVERY,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
                 )
             ),
             sorts = emptyList(),

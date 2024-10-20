@@ -23,6 +23,9 @@
     <dimen name="default_toolbar_section_padding_start">16dp</dimen>
     <dimen name="default_toolbar_section_padding_end">16dp</dimen>
 
+    <dimen name="main_bottom_toolbar_icon_width">72dp</dimen>
+    <dimen name="main_bottom_toolbar_icon_height">52dp</dimen>
+
     <dimen name="default_toolbar_option_height">64dp</dimen>
     <dimen name="default_toolbar_option_width">64dp</dimen>
     <dimen name="default_toolbar_option_corner_radius">10dp</dimen>

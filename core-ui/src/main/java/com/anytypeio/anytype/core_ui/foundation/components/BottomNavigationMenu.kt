@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_ui.foundation.components
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -31,7 +30,6 @@ import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults.Height
-import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults.Width
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
@@ -44,7 +42,7 @@ private fun MyBottomNavigationMenu() {
         backLongClick = {},
         searchClick = {},
         addDocClick = {},
-        onCreateObjectLongClicked = {},
+        addDocLongClick = {},
         isOwnerOrEditor = true
     )
 }
@@ -57,7 +55,7 @@ private fun MyBottomViewerNavigationMenu() {
         backLongClick = {},
         searchClick = {},
         addDocClick = {},
-        onCreateObjectLongClicked = {},
+        addDocLongClick = {},
         isOwnerOrEditor = false
     )
 }
@@ -69,7 +67,7 @@ fun BottomNavigationMenu(
     backLongClick: () -> Unit = {},
     searchClick: () -> Unit = {},
     addDocClick: () -> Unit = {},
-    onCreateObjectLongClicked: () -> Unit = {},
+    addDocLongClick: () -> Unit = {},
     isOwnerOrEditor: Boolean
 ) {
     Row(
@@ -99,7 +97,7 @@ fun BottomNavigationMenu(
                 contentDescription = stringResource(id = R.string.main_navigation_content_desc_create_button),
                 res = BottomNavigationItem.ADD_DOC.res,
                 onClick = addDocClick,
-                onLongClick = onCreateObjectLongClicked
+                onLongClick = addDocLongClick
             )
         }
         MenuItem(

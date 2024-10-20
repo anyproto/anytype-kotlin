@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -68,21 +69,27 @@ fun SpaceIconView(
             )
         }
         is SpaceIconView.Placeholder -> {
+            val color = when (icon.color) {
+                SystemColor.YELLOW -> colorResource(id = R.color.palette_system_yellow)
+                SystemColor.AMBER -> colorResource(id = R.color.palette_system_amber_100)
+                SystemColor.RED -> colorResource(id = R.color.palette_system_red)
+                SystemColor.PINK -> colorResource(id = R.color.palette_system_pink)
+                SystemColor.PURPLE -> colorResource(id = R.color.palette_system_purple)
+                SystemColor.BLUE -> colorResource(id = R.color.palette_system_blue)
+                SystemColor.SKY -> colorResource(id = R.color.palette_system_sky)
+                SystemColor.TEAL -> colorResource(id = R.color.palette_system_teal)
+                SystemColor.GREEN -> colorResource(id = R.color.palette_system_green)
+            }
             Box(
                 modifier = modifier
                     .size(mainSize)
                     .background(
-                        color = when (icon.color) {
-                            SystemColor.YELLOW -> colorResource(id = R.color.palette_system_yellow)
-                            SystemColor.AMBER -> colorResource(id = R.color.palette_system_amber_100)
-                            SystemColor.RED -> colorResource(id = R.color.palette_system_red)
-                            SystemColor.PINK -> colorResource(id = R.color.palette_system_pink)
-                            SystemColor.PURPLE -> colorResource(id = R.color.palette_system_purple)
-                            SystemColor.BLUE -> colorResource(id = R.color.palette_system_blue)
-                            SystemColor.SKY -> colorResource(id = R.color.palette_system_sky)
-                            SystemColor.TEAL -> colorResource(id = R.color.palette_system_teal)
-                            SystemColor.GREEN -> colorResource(id = R.color.palette_system_green)
-                        },
+                        Brush.linearGradient(
+                            colors = listOf(
+                                color.copy(alpha = 0.5f),
+                                color
+                            )
+                        ),
                         shape = RoundedCornerShape(radius)
                     )
                     .clip(RoundedCornerShape(radius))

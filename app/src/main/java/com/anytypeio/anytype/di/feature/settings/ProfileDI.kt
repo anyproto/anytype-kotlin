@@ -46,7 +46,6 @@ object ProfileModule {
     @Provides
     @PerScreen
     fun provideViewModelFactory(
-        deleteAccount: DeleteAccount,
         analytics: Analytics,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         setObjectDetails: SetObjectDetails,
@@ -57,7 +56,6 @@ object ProfileModule {
         getNetworkMode: GetNetworkMode,
         profileSubscriptionManager: ProfileSubscriptionManager
     ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
-        deleteAccount = deleteAccount,
         analytics = analytics,
         container = storelessSubscriptionContainer,
         setObjectDetails = setObjectDetails,

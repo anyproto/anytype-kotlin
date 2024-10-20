@@ -123,7 +123,7 @@ class SpaceSettingsViewModel(
                     createdBy = createdBy,
                     spaceId = params.space.id,
                     network = config?.network.orEmpty(),
-                    isDeletable = resolveIsSpaceDeletable(spaceView),
+                    isDeletable = true,
                     spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
                     permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS,
                     shareLimitReached = ShareLimitsState(
@@ -138,9 +138,6 @@ class SpaceSettingsViewModel(
             }
         }
     }
-
-    private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) =
-        spaceView.spaceAccessType != null && spaceView.spaceAccessType != SpaceAccessType.DEFAULT
 
     fun onNameSet(name: String) {
         Timber.d("onNameSet")
@@ -264,7 +261,8 @@ class SpaceSettingsViewModel(
                                 eventName = EventsDictionary.deleteSpace,
                                 props = Props(mapOf(EventsPropertiesKey.type to "Private"))
                             )
-                            fallbackToPersonalSpaceAfterDeletion(personalSpaceId)
+                            spaceManager.clear()
+                            commands.emit(Command.ExitToVault)
                         },
                         onFailure = {
                             Timber.e(it, "Error while deleting space")
@@ -275,11 +273,6 @@ class SpaceSettingsViewModel(
                 sendToast("Space not found. Please, try again later")
             }
         }
-    }
-
-    private suspend fun fallbackToPersonalSpaceAfterDeletion(personalSpaceId: Id) {
-        spaceManager.set(personalSpaceId)
-        isDismissed.value = true
     }
 
     private fun proceedWithSpaceDebug() {
@@ -401,6 +394,7 @@ class SpaceSettingsViewModel(
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
+        data object ExitToVault : Command()
         data object ShowDeleteSpaceWarning : Command()
         data object ShowLeaveSpaceWarning : Command()
         data object ShowShareLimitReachedError : Command()

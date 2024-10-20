@@ -212,8 +212,7 @@ fun RemoteStorageScreen(
                 SpaceIconView(
                     icon = data.spaceIcon ?: SpaceIconView.Placeholder(),
                     onSpaceIconClick = {},
-                    mainSize = 48.dp,
-                    gradientSize = 36.dp
+                    mainSize = 48.dp
                 )
                 Column(
                     modifier = Modifier
@@ -298,7 +297,7 @@ private fun Header(
 }
 
 object MockFileStorage {
-    val mockSpaceIcon = SpaceIconView.Gradient(from = "#EEDEAE", to = "#B93252")
+    val mockSpaceIcon = SpaceIconView.Placeholder()
     val mockSpaceName = "Anton’s space"
     val mockSpaceInfraUsage = "212 MB of 1 GB used"
     val mockSpaceInfraPercent = 0.9F

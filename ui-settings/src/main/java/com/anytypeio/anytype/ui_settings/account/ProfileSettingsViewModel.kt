@@ -40,7 +40,6 @@ import timber.log.Timber
 
 class ProfileSettingsViewModel(
     private val analytics: Analytics,
-    private val deleteAccount: DeleteAccount,
     private val container: StorelessSubscriptionContainer,
     private val setObjectDetails: SetObjectDetails,
     private val configStorage: ConfigStorage,
@@ -118,36 +117,11 @@ class ProfileSettingsViewModel(
         }
     }
 
-    fun onDeleteAccountClicked() {
-        Timber.d("onDeleteAccountClicked, ")
-        jobs += viewModelScope.launch {
-            deleteAccount(BaseUseCase.None).process(
-                success = {
-                    sendEvent(
-                        analytics = analytics,
-                        eventName = EventsDictionary.deleteAccount
-                    )
-                    Timber.d("Successfully deleted account, status")
-                },
-                failure = {
-                    Timber.e(it, "Error while deleting account").also {
-                        sendToast("Error while deleting account")
-                    }
-                }
-            )
-        }
-    }
-
     fun onStop() {
         Timber.d("onStop")
         jobs.apply {
             forEach { it.cancel() }
             clear()
-        }
-        viewModelScope.launch {
-            container.unsubscribe(
-                listOf(PROFILE_SUBSCRIPTION_ID)
-            )
         }
     }
 
@@ -159,7 +133,7 @@ class ProfileSettingsViewModel(
                     SetImageIcon.Params(
                         target = config.profile,
                         path = path,
-                        spaceId = SpaceId(config.space)
+                        spaceId = SpaceId(config.techSpace)
                     )
                 ).process(
                     failure = {
@@ -175,12 +149,6 @@ class ProfileSettingsViewModel(
         }
     }
 
-    fun proceedWithAccountDeletion() {
-        viewModelScope.launch {
-            analytics.sendScreenSettingsDeleteEvent()
-        }
-    }
-
     sealed class AccountProfile {
         data object Idle: AccountProfile()
         class Data(
@@ -190,7 +158,6 @@ class ProfileSettingsViewModel(
     }
 
     class Factory(
-        private val deleteAccount: DeleteAccount,
         private val analytics: Analytics,
         private val container: StorelessSubscriptionContainer,
         private val setObjectDetails: SetObjectDetails,
@@ -204,7 +171,6 @@ class ProfileSettingsViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ProfileSettingsViewModel(
-                deleteAccount = deleteAccount,
                 analytics = analytics,
                 container = container,
                 setObjectDetails = setObjectDetails,

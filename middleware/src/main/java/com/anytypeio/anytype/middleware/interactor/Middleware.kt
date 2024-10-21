@@ -1972,7 +1972,7 @@ class Middleware @Inject constructor(
     fun workspaceCreate(details: Struct): Id {
         val request = Rpc.Workspace.Create.Request(
             details = details,
-            useCase = Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
+            useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceCreate(request) }

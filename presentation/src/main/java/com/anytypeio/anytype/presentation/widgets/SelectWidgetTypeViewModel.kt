@@ -61,10 +61,14 @@ class SelectWidgetTypeViewModel(
                 )
             }
         } else {
-            val objectLayout = ObjectType.Layout.values().find { it.code == sourceLayout }
+            val objectLayout = ObjectType.Layout.entries.find { it.code == sourceLayout }
             if (objectLayout.isDataView()) {
                 views.value = listOf(
                     WidgetTypeView.View().setIsSelected(currentType),
+                    WidgetTypeView.Link().setIsSelected(currentType)
+                )
+            } else if (objectLayout == ObjectType.Layout.PARTICIPANT) {
+                views.value = listOf(
                     WidgetTypeView.Link().setIsSelected(currentType)
                 )
             } else {
@@ -92,11 +96,15 @@ class SelectWidgetTypeViewModel(
                 )
             }
         } else {
-            val objectLayout = ObjectType.Layout.values().find { it.code == layout }
+            val objectLayout = ObjectType.Layout.entries.find { it.code == layout }
             if (objectLayout.isDataView()) {
                 views.value = listOf(
                     WidgetTypeView.View(isSelected = false),
                     WidgetTypeView.Link(isSelected = false)
+                )
+            } else if (objectLayout == ObjectType.Layout.PARTICIPANT) {
+                views.value = listOf(
+                    WidgetTypeView.Link(isSelected = true)
                 )
             } else {
                 views.value = listOf(

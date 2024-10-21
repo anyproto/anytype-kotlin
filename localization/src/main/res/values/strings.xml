@@ -1497,7 +1497,7 @@
     <string name="payments_tier_details_name_title">Pick your unique name</string>
     <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
     <string name="payments_tier_details_name_hint">Myself</string>
-    <string name="payments_tier_details_name_domain">.any</string>
+    <string name="payments_tier_details_name_domain" translatable="false">.any</string>
     <string name="payments_tier_details_name_min">Min 7 characters</string>
     <string name="payments_tier_details_name_error">This name is already taken!</string>
     <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>

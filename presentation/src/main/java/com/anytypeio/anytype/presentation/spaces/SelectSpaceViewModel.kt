@@ -161,13 +161,8 @@ class SelectSpaceViewModel(
     }
 
     fun onCreateSpaceClicked() {
-        val count = views.value.count { view -> view is SelectSpaceView.Space }
-        if (count >= MAX_SPACE_COUNT) {
-            sendToast(SPACE_COUNT_EXCEEDED_ERROR)
-        } else {
-            viewModelScope.launch {
-                commands.emit(Command.CreateSpace)
-            }
+        viewModelScope.launch {
+            commands.emit(Command.CreateSpace)
         }
     }
 
@@ -206,8 +201,6 @@ class SelectSpaceViewModel(
 
     companion object {
         const val SELECT_SPACE_SUBSCRIPTION = "select_space_subscription.spaces"
-        const val MAX_SPACE_COUNT = 10
-        const val SPACE_COUNT_EXCEEDED_ERROR = "Space max count exceeded. You cannot create more."
     }
 }
 

@@ -833,7 +833,10 @@ object ObjectSearchConstants {
         }
     }
 
-    fun filterParticipants(spaces: List<Id>) : List<DVFilter> = buildList {
+    fun filterParticipants(
+        space: SpaceId,
+        hiddenDiscovery: Boolean = true
+    ) : List<DVFilter> = buildList {
         add(
             DVFilter(
                 relation = Relations.IS_ARCHIVED,
@@ -855,13 +858,15 @@ object ObjectSearchConstants {
                 value = true
             )
         )
-        add(
-            DVFilter(
-                relation = Relations.IS_HIDDEN_DISCOVERY,
-                condition = DVFilterCondition.NOT_EQUAL,
-                value = true
+        if (hiddenDiscovery) {
+            add(
+                DVFilter(
+                    relation = Relations.IS_HIDDEN_DISCOVERY,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                )
             )
-        )
+        }
         add(
             DVFilter(
                 relation = Relations.LAYOUT,
@@ -872,8 +877,8 @@ object ObjectSearchConstants {
         add(
             DVFilter(
                 relation = Relations.SPACE_ID,
-                condition = DVFilterCondition.IN,
-                value = spaces
+                condition = DVFilterCondition.EQUAL,
+                value = space.id
             )
         )
     }
@@ -1292,15 +1297,20 @@ object ObjectSearchConstants {
         )
     }
 
-    fun getSpaceMembersSearchParams(subscription: String, spaceId: Id): StoreSearchParams {
+    fun getSpaceMembersSearchParams(
+        subscription: String,
+        space: SpaceId,
+        includeRequests: Boolean = true
+    ): StoreSearchParams {
         return StoreSearchParams(
-            space = SpaceId(spaceId),
+            space = space,
             subscription = subscription,
-            filters = filterParticipants(
-                spaces = listOf(spaceId)
-            ),
             sorts = listOf(sortByName()),
-            keys = spaceMemberKeys
+            keys = spaceMemberKeys,
+            filters = filterParticipants(
+                space = space,
+                hiddenDiscovery = !includeRequests
+            ),
         )
     }
     //endregion

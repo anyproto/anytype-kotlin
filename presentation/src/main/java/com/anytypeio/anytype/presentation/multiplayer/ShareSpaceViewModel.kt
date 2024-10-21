@@ -135,7 +135,7 @@ class ShareSpaceViewModel(
                     spaces.firstOrNull { it.targetSpaceId == vmParams.space.id }
                 }
             val spaceMembersSearchParams = getSpaceMembersSearchParams(
-                spaceId = vmParams.space.id,
+                space = vmParams.space,
                 subscription = SHARE_SPACE_MEMBER_SUBSCRIPTION
             )
             combine(

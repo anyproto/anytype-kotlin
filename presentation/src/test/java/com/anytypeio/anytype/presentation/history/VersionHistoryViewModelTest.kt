@@ -512,7 +512,7 @@ class VersionHistoryViewModelTest {
 
     private fun stubSpaceMembers() {
         val filters =
-            ObjectSearchConstants.filterParticipants(spaces = listOf(vmParams.spaceId.id))
+            ObjectSearchConstants.filterParticipants(vmParams.spaceId)
         val params = SearchObjects.Params(
             space = vmParams.spaceId,
             filters = filters,

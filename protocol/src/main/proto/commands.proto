@@ -6545,6 +6545,42 @@ message Rpc {
                 }
             }
         }
+
+        message AnystoreObjectChanges {
+            message Request {
+                string objectId = 1;
+                OrderBy orderBy = 2;
+
+                enum OrderBy {
+                    ORDER_ID = 0;
+                    ITERATION_ORDER = 1;
+                }
+            }
+
+            message Response {
+                Error error = 1;
+                repeated Change changes = 2;
+                bool wrongOrder = 3;
+
+                message Change {
+                    string changeId = 1;
+                    string orderId = 2;
+                    string error = 3;
+                    google.protobuf.Struct change = 4;
+                }
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
     }
 
     message Metrics {

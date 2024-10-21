@@ -144,11 +144,11 @@
 
     <FrameLayout
         android:id="@+id/bottomToolbarContainer"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/default_nav_panel_height"
-        android:layout_gravity="bottom"
+        android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="@dimen/dp_20"
-        android:background="@color/defaultCanvasColor"
+        android:background="@drawable/widget_main_bottom_toolbar_background"
         android:clickable="true"
         android:focusable="true"
         android:visibility="invisible"
@@ -159,7 +159,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:background="@color/defaultCanvasColor"
             android:clickable="true"
             android:focusable="true"
             android:visibility="visible"

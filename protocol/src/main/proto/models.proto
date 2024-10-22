@@ -51,9 +51,9 @@ enum SmartBlockType {
 
     NotificationObject = 0x217;
     DevicesObject = 0x218;
-
     ChatObject = 0x219; // Container for any-store based chats
     ChatDerivedObject = 0x220; // Any-store based object for chat
+    AccountObject = 0x221; // Container for account data in tech space
 }
 
 message Search {
@@ -805,7 +805,7 @@ message Relation {
     string description = 14;
 
     // on-store fields, injected only locally
-    Scope scope = 20; // scope from which this relation have been aggregated
+    Scope scope = 20; // deprecated, to be removed
     string creator = 21; // creator profile id
     int64 revision = 22; // revision of system relation. Used to check if we should change relation content or not
 

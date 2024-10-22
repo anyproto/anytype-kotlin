@@ -50,7 +50,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -148,13 +147,11 @@ fun ScreenContent(
                     .padding(bottom = 20.dp)) {
                 BottomNavigationMenu(
                     backClick = { vm.onPrevClicked() },
-                    homeClick = { vm.onHomeClicked() },
                     searchClick = onSearchClicked,
                     addDocClick = { vm.onAddClicked(null) },
-                    onCreateObjectLongClicked = onCreateObjectLongClicked,
-                    onProfileClicked = vm::onProfileClicked,
-                    profileIcon = vm.icon.collectAsState().value,
-                    backLongClick = vm::onBackLongClicked
+                    addDocLongClick = onCreateObjectLongClicked,
+                    backLongClick = vm::onBackLongClicked,
+                    isOwnerOrEditor = uiState.isActionButtonVisible
                 )
             }
         }

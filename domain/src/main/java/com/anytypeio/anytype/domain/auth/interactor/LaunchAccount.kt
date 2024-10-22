@@ -20,13 +20,13 @@ import kotlinx.coroutines.Dispatchers
 class LaunchAccount @Inject constructor(
     private val repository: AuthRepository,
     private val pathProvider: PathProvider,
-    private val context: CoroutineContext = Dispatchers.IO,
     private val configStorage: ConfigStorage,
     private val spaceManager: SpaceManager,
     private val metricsProvider: MetricsProvider,
     private val settings: UserSettingsRepository,
-    private val awaitAccountStartManager: AwaitAccountStartManager
-) : BaseUseCase<Id, BaseUseCase.None>(context) {
+    private val awaitAccountStartManager: AwaitAccountStartManager,
+    context: CoroutineContext = Dispatchers.IO
+    ) : BaseUseCase<Id, BaseUseCase.None>(context) {
 
     override suspend fun run(params: None) = safe {
         repository.setMetrics(
@@ -53,8 +53,6 @@ class LaunchAccount @Inject constructor(
                     // Falling back to the default space
                     spaceManager.set(setup.config.space)
                 }
-            } else {
-                spaceManager.set(setup.config.space)
             }
             awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
             setup.config.analytics

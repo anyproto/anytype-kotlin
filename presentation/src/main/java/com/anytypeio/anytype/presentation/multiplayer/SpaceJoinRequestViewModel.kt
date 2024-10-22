@@ -287,9 +287,8 @@ class SpaceJoinRequestViewModel(
 
     private fun proceedWithSpaceMembers(space: SpaceId) {
         val searchMembersParams = SearchObjects.Params(
-            filters = filterParticipants(
-                spaces = listOf(space.id)
-            ),
+            space = space,
+            filters = filterParticipants(space = space),
             keys = ObjectSearchConstants.spaceMemberKeys
         )
         viewModelScope.launch {
@@ -312,6 +311,7 @@ class SpaceJoinRequestViewModel(
             val filters = ObjectSearchConstants.filterNewMember(vmParams.member)
             searchObjects(
                 SearchObjects.Params(
+                    space = vmParams.space,
                     filters = filters,
                     keys = ObjectSearchConstants.spaceMemberKeys,
                     limit = 1

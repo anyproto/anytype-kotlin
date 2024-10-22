@@ -180,3 +180,52 @@ message Change {
         string name = 2;
     }
 }
+
+
+message StoreChange {
+    repeated StoreChangeContent changeSet = 1;
+}
+
+message StoreChangeContent {
+    oneof change {
+        DocumentCreate create = 1;
+        DocumentModify modify = 2;
+        DocumentDelete delete = 3;
+    }
+}
+
+message DocumentCreate {
+    string collection = 1;
+    string documentId = 2;
+    // json
+    string value = 3;
+}
+
+message DocumentModify {
+    string collection = 1;
+    string documentId = 2;
+    repeated KeyModify keys = 4;
+}
+
+message KeyModify {
+    // key path; example: [user, email]
+    repeated string keyPath = 1;
+    // modify op: set, unset, inc, etc.
+    ModifyOp modifyOp = 3;
+    // json value; example: '"new@email.com"'
+    string modifyValue = 4;
+}
+
+enum ModifyOp {
+    Set = 0;
+    Unset = 1;
+    Inc = 2;
+    AddToSet = 3;
+    Pull = 4;
+}
+
+message DocumentDelete {
+    string collection = 1;
+    string documentId = 2;
+}
+

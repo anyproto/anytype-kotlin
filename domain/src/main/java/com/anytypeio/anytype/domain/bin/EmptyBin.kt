@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -17,6 +18,8 @@ class EmptyBin(
 ) : ResultInteractor<Unit, List<Id>>(dispatchers.io) {
     override suspend fun doWork(params: Unit) : List<Id> {
         val archived = repo.searchObjects(
+            // TODO DROID-2916 Move space id to use case params
+            space = SpaceId(spaceManager.get()),
             filters = listOf(
                 DVFilter(
                     relation = Relations.IS_ARCHIVED,
@@ -34,9 +37,9 @@ class EmptyBin(
                     value = true
                 ),
                 DVFilter(
-                    relation = Relations.SPACE_ID,
-                    condition = DVFilterCondition.EQUAL,
-                    value = spaceManager.get()
+                    relation = Relations.IS_HIDDEN_DISCOVERY,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
                 )
             ),
             sorts = emptyList(),

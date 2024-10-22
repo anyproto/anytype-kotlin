@@ -1049,11 +1049,13 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectIdsSubscribe(
+        space: SpaceId,
         subscription: Id,
         ids: List<Id>,
         keys: List<String>
     ): SearchResult {
         val request = Rpc.Object.SubscribeIds.Request(
+            spaceId = space.id,
             subId = subscription,
             keys = keys,
             ids = ids
@@ -1227,6 +1229,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectSearch(
+        space: SpaceId,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         fulltext: String,
@@ -1235,6 +1238,7 @@ class Middleware @Inject constructor(
         keys: List<Id>
     ): List<Map<String, Any?>> {
         val request = Rpc.Object.Search.Request(
+            spaceId = space.id,
             sorts = sorts.map { it.toMiddlewareModel() },
             filters = filters.map { it.toMiddlewareModel() },
             fullText = fulltext,
@@ -1251,6 +1255,7 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectSearchWithMeta(command: Command.SearchWithMeta): List<Command.SearchWithMeta.Result>  {
         val request = Rpc.Object.SearchWithMeta.Request(
+            spaceId = command.space.id,
             sorts = command.sorts.map { it.toMiddlewareModel() },
             filters = command.filters.map { it.toMiddlewareModel() },
             fullText = command.query,
@@ -1266,6 +1271,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectSearchSubscribe(
+        space: SpaceId,
         subscription: Id,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
@@ -1280,6 +1286,7 @@ class Middleware @Inject constructor(
         collection: Id?
     ): SearchResult {
         val request = Rpc.Object.SearchSubscribe.Request(
+            spaceId = space.id,
             subId = subscription,
             sorts = sorts.map { it.toMiddlewareModel() },
             filters = filters.map { it.toMiddlewareModel() },
@@ -1289,7 +1296,6 @@ class Middleware @Inject constructor(
             beforeId = beforeId.orEmpty(),
             afterId = afterId.orEmpty(),
             source = source,
-            ignoreWorkspace = ignoreWorkspace?.toString() ?: "",
             noDepSubscription = noDepSubscription ?: false,
             collectionId = collection.orEmpty()
         )
@@ -1966,7 +1972,7 @@ class Middleware @Inject constructor(
     fun workspaceCreate(details: Struct): Id {
         val request = Rpc.Workspace.Create.Request(
             details = details,
-            useCase = Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
+            useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceCreate(request) }

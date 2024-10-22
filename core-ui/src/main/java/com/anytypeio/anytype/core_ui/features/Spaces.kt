@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -32,13 +33,11 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 fun SpaceIconView(
     modifier: Modifier = Modifier,
     mainSize: Dp = 96.dp,
-    gradientSize: Dp = 64.dp,
-    gradientBackground: Color = colorResource(id = R.color.default_gradient_background),
-    gradientCornerRadius: Dp = 8.dp,
     icon: SpaceIconView,
     onSpaceIconClick: () -> Unit,
 ) {
     val radius = when(mainSize) {
+        20.dp -> 4.dp
         40.dp -> 5.dp
         48.dp -> 6.dp
         64.dp -> 8.dp
@@ -47,6 +46,7 @@ fun SpaceIconView(
     }
 
     val fontSize = when(mainSize) {
+        20.dp -> 16.sp
         40.dp -> 24.sp
         48.dp -> 28.sp
         64.dp -> 40.sp
@@ -68,46 +68,28 @@ fun SpaceIconView(
                     }
             )
         }
-        is SpaceIconView.Gradient -> {
-            val gradient = Brush.radialGradient(
-                colors = listOf(
-                    Color(icon.from.toColorInt()),
-                    Color(icon.to.toColorInt())
-                )
-            )
-            Box(
-                modifier = modifier
-                    .size(mainSize)
-                    .clip(RoundedCornerShape(gradientCornerRadius))
-                    .background(color = gradientBackground)
-                    .noRippleClickable { onSpaceIconClick.invoke() }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(gradientSize)
-                        .clip(CircleShape)
-                        .background(gradient)
-                )
-            }
-
-        }
         is SpaceIconView.Placeholder -> {
+            val color = when (icon.color) {
+                SystemColor.YELLOW -> colorResource(id = R.color.palette_system_yellow)
+                SystemColor.AMBER -> colorResource(id = R.color.palette_system_amber_100)
+                SystemColor.RED -> colorResource(id = R.color.palette_system_red)
+                SystemColor.PINK -> colorResource(id = R.color.palette_system_pink)
+                SystemColor.PURPLE -> colorResource(id = R.color.palette_system_purple)
+                SystemColor.BLUE -> colorResource(id = R.color.palette_system_blue)
+                SystemColor.SKY -> colorResource(id = R.color.palette_system_sky)
+                SystemColor.TEAL -> colorResource(id = R.color.palette_system_teal)
+                SystemColor.GREEN -> colorResource(id = R.color.palette_system_green)
+            }
             Box(
                 modifier = modifier
                     .size(mainSize)
                     .background(
-                        color = when (icon.color) {
-                            SystemColor.YELLOW -> colorResource(id = R.color.palette_system_yellow)
-                            SystemColor.AMBER -> colorResource(id = R.color.palette_system_amber_100)
-                            SystemColor.RED -> colorResource(id = R.color.palette_system_red)
-                            SystemColor.PINK -> colorResource(id = R.color.palette_system_pink)
-                            SystemColor.PURPLE -> colorResource(id = R.color.palette_system_purple)
-                            SystemColor.BLUE -> colorResource(id = R.color.palette_system_blue)
-                            SystemColor.SKY -> colorResource(id = R.color.palette_system_sky)
-                            SystemColor.TEAL -> colorResource(id = R.color.palette_system_teal)
-                            SystemColor.GREEN -> colorResource(id = R.color.palette_system_green)
-                        },
+                        Brush.linearGradient(
+                            colors = listOf(
+                                color.copy(alpha = 0.5f),
+                                color
+                            )
+                        ),
                         shape = RoundedCornerShape(radius)
                     )
                     .clip(RoundedCornerShape(radius))
@@ -125,7 +107,7 @@ fun SpaceIconView(
                     style = TextStyle(
                         fontSize = fontSize,
                         fontWeight = FontWeight(600),
-                        color = colorResource(id = R.color.text_label_inversion),
+                        color = colorResource(id = R.color.text_white),
                     )
                 )
             }

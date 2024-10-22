@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.presentation.sets
 
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
@@ -17,8 +15,8 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
+import com.anytypeio.anytype.presentation.objects.setTypeRelationIconsAsNone
 import com.anytypeio.anytype.presentation.objects.values
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.CoverContainer
@@ -29,7 +27,6 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 suspend fun DVViewer.buildGalleryViews(
     objectIds: List<Id>,
     relations: List<ObjectWrapper.Relation>,
-    details: Map<Id, Block.Fields>,
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
     objectStore: ObjectStore,
@@ -90,7 +87,7 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
             urlBuilder = urlBuilder,
             settings = viewerRelations,
             storeOfObjects = store
-        ),
+        ).setTypeRelationIconsAsNone(),
         hideIcon = hideIcon,
         name = obj.getProperName(),
         icon = obj.objectIcon(urlBuilder)
@@ -126,7 +123,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
             urlBuilder = urlBuilder,
             settings = dvViewer.viewerRelations,
             storeOfObjects = store
-        ),
+        ).setTypeRelationIconsAsNone(),
         hideIcon = dvViewer.hideIcon,
         name = obj.getProperName(),
         icon = obj.objectIcon(urlBuilder),

@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionContainer
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionContainer
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -43,12 +44,14 @@ object SubscriptionsModule {
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
         dispatchers: AppCoroutineDispatchers,
-        store: StoreOfRelations
+        store: StoreOfRelations,
+        logger: Logger
     ): RelationsSubscriptionContainer = RelationsSubscriptionContainer(
         repo = repo,
         channel = channel,
         store = store,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        logger = logger
     )
 
     @JvmStatic
@@ -58,12 +61,14 @@ object SubscriptionsModule {
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
         dispatchers: AppCoroutineDispatchers,
-        store: StoreOfObjectTypes
+        store: StoreOfObjectTypes,
+        logger: Logger
     ): ObjectTypesSubscriptionContainer = ObjectTypesSubscriptionContainer(
         repo = repo,
         channel = channel,
         store = store,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        logger = logger
     )
 
     @JvmStatic
@@ -81,7 +86,7 @@ object SubscriptionsModule {
     @Singleton
     fun relationsSubscriptionManager(
         subscription: RelationsSubscriptionContainer,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
     ): RelationsSubscriptionManager = RelationsSubscriptionManager(
         container = subscription,
         spaceManager = spaceManager
@@ -125,13 +130,15 @@ object SubscriptionsModule {
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         container: StorelessSubscriptionContainer,
         repo: AuthRepository,
-        logger: Logger
+        logger: Logger,
+        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
     ) : UserPermissionProvider = DefaultUserPermissionProvider(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
         repo = repo,
-        logger = logger
+        logger = logger,
+        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
     )
 
     @JvmStatic
@@ -142,12 +149,33 @@ object SubscriptionsModule {
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         container: StorelessSubscriptionContainer,
         awaitAccountStartManager: AwaitAccountStartManager,
-        logger: Logger
+        logger: Logger,
+        configStorage: ConfigStorage
     ) : SpaceViewSubscriptionContainer = SpaceViewSubscriptionContainer.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
         awaitAccountStart = awaitAccountStartManager,
+        logger = logger,
+        config = configStorage
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun profileSubscriptionManager(
+        dispatchers: AppCoroutineDispatchers,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        container: StorelessSubscriptionContainer,
+        awaitAccountStartManager: AwaitAccountStartManager,
+        configStorage: ConfigStorage,
+        logger: Logger
+    ) : ProfileSubscriptionManager = ProfileSubscriptionManager.Default(
+        dispatchers = dispatchers,
+        scope = scope,
+        container = container,
+        awaitAccountStartManager = awaitAccountStartManager,
+        configStorage = configStorage,
         logger = logger
     )
 
@@ -188,11 +216,13 @@ object SubscriptionsModule {
         types: ObjectTypesSubscriptionManager,
         relations: RelationsSubscriptionManager,
         permissions: UserPermissionProvider,
-        isSpaceDeleted: SpaceDeletedStatusWatcher
+        isSpaceDeleted: SpaceDeletedStatusWatcher,
+        profileSubscriptionManager: ProfileSubscriptionManager
     ) : GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
         permissions = permissions,
-        isSpaceDeleted = isSpaceDeleted
+        isSpaceDeleted = isSpaceDeleted,
+        profile = profileSubscriptionManager
     )
 }

@@ -114,7 +114,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
                     onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
                     onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
-                    onCreateDataViewObject = vm::onCreateDataViewObject
+                    onCreateDataViewObject = vm::onCreateDataViewObject,
+                    onBackLongClicked = vm::onBackLongClicked
                 )
 
                 if (featureToggles.enableDiscussionDemo) {
@@ -366,6 +367,9 @@ class HomeScreenFragment : BaseComposeFragment() {
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening all content from widgets")
                 }
+            }
+            is Navigation.OpenSpaceSwitcher -> {
+                findNavController().navigate(R.id.actionOpenSpaceSwitcher)
             }
         }
     }

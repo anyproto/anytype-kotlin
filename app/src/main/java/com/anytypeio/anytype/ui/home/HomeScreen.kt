@@ -15,7 +15,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,8 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -45,9 +42,8 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
-import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults
+import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
@@ -101,7 +97,8 @@ fun HomeScreen(
     onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateObjectInsideWidget: (Id) -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
+    onBackLongClicked: () -> Unit
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -160,13 +157,14 @@ fun HomeScreen(
             enter = fadeIn() + slideInVertically { it },
             exit = fadeOut() + slideOutVertically { it }
         ) {
-            HomeScreenBottomToolbar(
-                onSearchClicked = throttledClick(onSearchClicked),
-                onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
-                onBackClicked = throttledClick(onBackClicked),
-                onCreateNewObjectLongClicked = onCreateNewObjectLongClicked,
+            BottomNavigationMenu(
                 modifier = Modifier,
-                isReadOnlyAccess = mode is InteractionMode.ReadOnly
+                backClick = onBackClicked,
+                backLongClick = onBackLongClicked,
+                searchClick = onSearchClicked,
+                addDocClick = onCreateNewObjectClicked,
+                addDocLongClick = onCreateNewObjectLongClicked,
+                isOwnerOrEditor = mode !is InteractionMode.ReadOnly
             )
         }
     }
@@ -810,80 +808,5 @@ fun WidgetEditModeButton(
             style = UXBody,
             color = colorResource(id = R.color.text_white)
         )
-    }
-}
-
-@Composable
-fun HomeScreenBottomToolbar(
-    modifier: Modifier,
-    onSearchClicked: () -> Unit,
-    onCreateNewObjectClicked: () -> Unit,
-    onCreateNewObjectLongClicked: () -> Unit,
-    onBackClicked: () -> Unit,
-    isReadOnlyAccess: Boolean
-) {
-    val haptic = LocalHapticFeedback.current
-    Row(
-        modifier = modifier
-            .height(BottomNavigationDefaults.Height)
-            .width(BottomNavigationDefaults.Width)
-            .background(
-                shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.home_screen_toolbar_button)
-            )
-    ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-                .noRippleClickable { onBackClicked() }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_back),
-                contentDescription = "Search icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .alpha(if (isReadOnlyAccess) 0.2f else 1f)
-                .fillMaxSize()
-                .then(
-                    if (isReadOnlyAccess)
-                        Modifier.clickable {
-                            // Do nothing.
-                        }
-                    else
-                        Modifier.noRippleCombinedClickable(
-                            onLongClicked = {
-                                onCreateNewObjectLongClicked().also {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                }
-                            },
-                            onClick = {
-                                onCreateNewObjectClicked()
-                            }
-                        )
-                )
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_plus),
-                contentDescription = "Plus icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-                .noRippleClickable { onSearchClicked() }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_search),
-                contentDescription = "Search icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
     }
 }

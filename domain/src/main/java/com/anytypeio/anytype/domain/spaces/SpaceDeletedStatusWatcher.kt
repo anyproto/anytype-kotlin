@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.spaces
 
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -36,7 +37,8 @@ class SpaceDeletedStatusWatcher @Inject constructor(
                 .flatMapLatest { config ->
                     container.subscribe(
                         searchParams = StoreSearchByIdsParams(
-                            subscription = GLOBAL_SPACE_VIEW_SUBSCRIPTION,
+                            space = SpaceId(config.techSpace),
+                            subscription = DELETED_SPACE_VIEW_SUBSCRIPTION,
                             targets = listOf(config.spaceView),
                             keys = buildList {
                                 add(Relations.ID)
@@ -54,11 +56,8 @@ class SpaceDeletedStatusWatcher @Inject constructor(
                     if (spaceView.spaceAccountStatus.isDeletedOrRemoving()) {
                         logger.logWarning("Current space is deleted")
                         val accountConfig = configStorage.getOrNull()
-                        if (accountConfig != null) {
-                            logger.logWarning("Account config found. Switching to default space.")
-                            spaceManager.set(accountConfig.space)
-                        } else {
-                            logger.logWarning("Account config not found. Resetting space.")
+                        if (accountConfig == null) {
+                            logger.logWarning("Account config not found. Clearing space manager.")
                             spaceManager.clear()
                         }
                     }
@@ -72,7 +71,7 @@ class SpaceDeletedStatusWatcher @Inject constructor(
 
     fun onStop() {
         scope.launch(dispatchers.io) {
-            container.unsubscribe(listOf(GLOBAL_SPACE_VIEW_SUBSCRIPTION))
+            container.unsubscribe(listOf(DELETED_SPACE_VIEW_SUBSCRIPTION))
             with(jobs) {
                 forEach { it.cancel() }
                 clear()
@@ -81,6 +80,6 @@ class SpaceDeletedStatusWatcher @Inject constructor(
     }
 
     companion object {
-        const val GLOBAL_SPACE_VIEW_SUBSCRIPTION = "subscription.global.space-view-deleted-status-watcher"
+        const val DELETED_SPACE_VIEW_SUBSCRIPTION = "subscription.global.space-view-deleted-status-watcher"
     }
 }

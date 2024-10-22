@@ -9,17 +9,21 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import javax.inject.Inject
 
 class GetSpaceView @Inject constructor(
     private val repo: BlockRepository,
+    private val configStorage: ConfigStorage,
     dispatchers: AppCoroutineDispatchers
 ): ResultInteractor<GetSpaceView.Params, ObjectWrapper.Basic?>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): ObjectWrapper.Basic? {
         when(params) {
             is Params.BySpaceViewId -> {
+                val techSpace = configStorage.getOrNull()?.techSpace ?: return null
                 val result = repo.searchObjects(
+                    space = SpaceId(techSpace),
                     filters = buildList {
                         add(
                             DVFilter(
@@ -39,6 +43,7 @@ class GetSpaceView @Inject constructor(
             }
             is Params.BySpaceId -> {
                 val result = repo.searchObjects(
+                    space = params.space,
                     filters = buildList {
                         add(
                             DVFilter(

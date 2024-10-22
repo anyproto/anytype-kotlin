@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -57,12 +58,9 @@ class LimitObjectTypeViewModel(
         viewModelScope.launch {
             searchObjects(
                 SearchObjects.Params(
+                    // TODO DROID-2916 Provide space id to vm params
+                    space = SpaceId(spaceManager.get()),
                     filters = listOf(
-                        DVFilter(
-                            relation = Relations.SPACE_ID,
-                            condition = DVFilterCondition.EQUAL,
-                            value = spaceManager.get()
-                        ),
                         DVFilter(
                             relation = Relations.LAYOUT,
                             condition = DVFilterCondition.EQUAL,
@@ -80,6 +78,11 @@ class LimitObjectTypeViewModel(
                         ),
                         DVFilter(
                             relation = Relations.IS_HIDDEN,
+                            condition = DVFilterCondition.NOT_EQUAL,
+                            value = true
+                        ),
+                        DVFilter(
+                            relation = Relations.IS_HIDDEN_DISCOVERY,
                             condition = DVFilterCondition.NOT_EQUAL,
                             value = true
                         ),

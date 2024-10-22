@@ -148,6 +148,14 @@ fun VaultScreen(
                    Spacer(modifier = Modifier.height(40.dp))
                }
            }
+           if (spaceList.isEmpty()) {
+               item {
+                   VaultSpaceAddCard(
+                       onCreateSpaceClicked = onCreateSpaceClicked
+                   )
+                   Spacer(modifier = Modifier.height(40.dp))
+               }
+           }
        }
     }
 }
@@ -259,13 +267,10 @@ fun VaultSpaceCard(
             onSpaceIconClick = {
                 onCardClicked()
             },
-            gradientBackground = colorResource(id = R.color.default_gradient_background),
-            gradientCornerRadius = 4.dp,
             mainSize = 64.dp,
             modifier = Modifier
                 .padding(start = 16.dp)
-                .align(Alignment.CenterStart),
-            gradientSize = 48.dp
+                .align(Alignment.CenterStart)
         )
         Column(
             modifier = Modifier

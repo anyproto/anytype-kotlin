@@ -188,7 +188,7 @@ class SplashViewModel(
                     when (result) {
                         CreateObjectByTypeAndTemplate.Result.ObjectTypeNotFound -> {
                             commands.emit(Command.Toast(ERROR_CREATE_OBJECT))
-                            proceedWithDashboardNavigation()
+                            proceedWithVaultNavigation()
                         }
                         is CreateObjectByTypeAndTemplate.Result.Success -> {
                             val target = result.objectId
@@ -221,7 +221,7 @@ class SplashViewModel(
     fun onDeepLinkLaunch(deeplink: String) {
         Timber.d("onDeepLinkLaunch, deeplink:[$deeplink]")
         viewModelScope.launch {
-            proceedWithDashboardNavigation(deeplink)
+            proceedWithVaultNavigation(deeplink)
         }
     }
 
@@ -232,7 +232,7 @@ class SplashViewModel(
             ).process(
                 failure = {
                     Timber.e(it, "Error while getting last opened object")
-                    proceedWithDashboardNavigation()
+                    proceedWithVaultNavigation()
                 },
                 success = { response ->
                     when (response) {
@@ -257,17 +257,17 @@ class SplashViewModel(
                                         )
                                 }
                             } else {
-                                proceedWithDashboardNavigation()
+                                proceedWithVaultNavigation()
                             }
                         }
-                        else -> proceedWithDashboardNavigation()
+                        else -> proceedWithVaultNavigation()
                     }
                 }
             )
         }
     }
 
-    private suspend fun proceedWithDashboardNavigation(deeplink: String? = null) {
+    private suspend fun proceedWithVaultNavigation(deeplink: String? = null) {
         val space = getLastOpenedSpace.async(Unit).getOrNull()
         if (space != null) {
             commands.emit(Command.NavigateToWidgets(deeplink))

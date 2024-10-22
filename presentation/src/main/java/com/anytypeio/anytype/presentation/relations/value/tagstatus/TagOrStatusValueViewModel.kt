@@ -63,11 +63,12 @@ class TagOrStatusValueViewModel(
             val relation = relations.getOrNull(relation = viewModelParams.relationKey) ?: return@launch
             setupIsRelationNotEditable(relation)
             val searchParams = StoreSearchParams(
+                // TODO DROID-2916 Provide space id to vm params
+                space = SpaceId(spaceManager.get()),
                 subscription = SUB_MY_OPTIONS,
                 keys = ObjectSearchConstants.keysRelationOptions,
                 filters = ObjectSearchConstants.filterRelationOptions(
-                    relationKey = viewModelParams.relationKey,
-                    space = spaceManager.get()
+                    relationKey = viewModelParams.relationKey
                 )
             )
             combine(

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager.Companion.ACTION_CREATE_NEW_TYPE_KEY
 import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
@@ -27,7 +28,7 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.OnboardingFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.anytypeio.anytype.ui.widgets.collection.DefaultTheme
+import com.anytypeio.anytype.ui.vault.VaultFragment
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -71,26 +72,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                         }
                     }
                 }
-
-                launch {
-                    vm.loadingState.collect { isLoading ->
-                        when (isLoading) {
-                            true -> {
-                                binding.loadingContainer.setContent {
-                                    DefaultTheme {
-                                        PulsatingCircleScreen()
-                                    }
-                                }
-                                binding.logo.visibility = View.GONE
-                                binding.loadingContainer.visibility = View.VISIBLE
-                            }
-                            false ->  {
-                                binding.logo.visibility = View.GONE
-                                binding.loadingContainer.visibility = View.GONE
-                            }
-                        }
-                    }
-                }
             }
         }
         if (BuildConfig.DEBUG) {
@@ -106,11 +87,11 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 runCatching {
                     findNavController().navigate(
                         resId = R.id.actionOpenVaultFromSplash,
-                        args = HomeScreenFragment.args(command.deeplink)
+                        args = VaultFragment.args(deeplink = null)
                     )
                     findNavController().navigate(
                         R.id.actionOpenSpaceFromVault,
-                        args = HomeScreenFragment.args(command.deeplink)
+                        args = HomeScreenFragment.args(deeplink = command.deeplink)
                     )
                 }.onFailure {
                     Timber.e(it, "Error while navigating to widgets from splash")
@@ -120,7 +101,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 try {
                     findNavController().navigate(
                         resId = R.id.actionOpenVaultFromSplash,
-                        args = HomeScreenFragment.args(command.deeplink)
+                        args = HomeScreenFragment.args(deeplink = command.deeplink)
                     )
                 } catch (e: Exception) {
                     Timber.e(e, "Error while opening dashboard from splash screen")
@@ -160,12 +141,12 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             is SplashViewModel.Command.NavigateToAuthStart -> {
                 val intent = activity?.intent
                 val deepLink: String?
-                if (intent != null && intent.action == Intent.ACTION_VIEW) {
+                if (intent != null && (intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND)) {
                     val data = intent.dataString
                     deepLink = if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
                         data
                     } else {
-                        null
+                        intent.extras?.getString(Intent.EXTRA_TEXT)
                     }
                 } else {
                     deepLink = null
@@ -178,7 +159,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                         putExtras(Bundle())
                     }
                 }
-                Timber.d("Deep link is empty: ${deepLink.isNullOrEmpty()}")
                 findNavController().navigate(
                     R.id.action_splashFragment_to_authStart,
                     args = OnboardingFragment.args(deepLink)
@@ -191,9 +171,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             }
             is SplashViewModel.Command.CheckAppStartIntent -> {
                 val intent = activity?.intent
-                Timber.d("Timber intent: $intent")
-                if (intent != null && intent.action == Intent.ACTION_VIEW) {
-                    val data = intent.dataString
+                if (intent != null && (intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND)) {
+                    val data = intent.dataString.orNull() ?: intent.extras?.getString(Intent.EXTRA_TEXT)
                     if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
                         // Clearing intent to only handle it once:
                         with(intent) {

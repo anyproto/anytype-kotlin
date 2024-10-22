@@ -15,12 +15,13 @@ import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_SORT
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
 import com.anytypeio.anytype.presentation.library.DependentData
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getDescriptionOrSnippet
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
 
@@ -104,6 +105,11 @@ sealed class UiContentState {
     ) : UiContentState()
 }
 
+sealed class UiItemsState{
+    data object Empty : UiItemsState()
+    data class Content(val items: List<UiContentItem>) : UiItemsState()
+}
+
 // ITEMS
 sealed class UiContentItem {
     abstract val id: String
@@ -151,6 +157,18 @@ sealed class UiContentItem {
         val editable: Boolean = true,
     ) : UiContentItem()
 
+    data object NewRelation : UiContentItem() {
+        override val id: String = "NewRelation"
+    }
+
+    data object NewType : UiContentItem() {
+        override val id: String = "NewType"
+    }
+
+    data object UnlinkedDescription : UiContentItem() {
+        override val id: String = "UnlinkedDescription"
+    }
+
     companion object {
         const val TODAY_ID = "TodayId"
         const val YESTERDAY_ID = "YesterdayId"
@@ -188,13 +206,27 @@ sealed class MenuSortsItem {
 }
 //endregion
 
+//region BOTTOM_MENU
+data class AllContentBottomMenu(val isOwnerOrEditor: Boolean = true)
+//endregion
+
+//region SNACKBAR
+sealed class UiSnackbarState {
+    data object Hidden : UiSnackbarState()
+    data class Visible(val message: String, val objId: Id) : UiSnackbarState()
+}
+//endregion
+
 //region MAPPING
-fun Key?.mapRelationKeyToSort(): AllContentSort {
-    return when (this) {
-        Relations.CREATED_DATE -> AllContentSort.ByDateCreated()
-        Relations.LAST_MODIFIED_DATE -> AllContentSort.ByDateUpdated()
-        Relations.NAME -> AllContentSort.ByName()
-        else -> DEFAULT_INITIAL_SORT
+
+fun RestoreAllContentState.Response.Success.mapToSort(): AllContentSort {
+    val sortType = if (isAsc) DVSortType.ASC else DVSortType.DESC
+    return when (activeSort) {
+        Relations.CREATED_DATE -> AllContentSort.ByDateCreated(sortType = sortType)
+        Relations.LAST_MODIFIED_DATE -> AllContentSort.ByDateUpdated(sortType = sortType)
+        Relations.NAME -> AllContentSort.ByName(sortType = sortType)
+        Relations.LAST_USED_DATE -> AllContentSort.ByDateUsed(sortType = sortType)
+        else -> AllContentSort.ByName(sortType = DVSortType.ASC)
     }
 }
 
@@ -216,12 +248,12 @@ fun ObjectWrapper.Basic.toAllContentItem(
     val obj = this
     val typeUrl = obj.getProperType()
     val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
-    val layout = layout ?: ObjectType.Layout.BASIC
+    val layout = obj.layout ?: ObjectType.Layout.BASIC
     return UiContentItem.Item(
         id = obj.id,
         space = space,
         name = obj.getProperName(),
-        description = obj.description,
+        description = getDescriptionOrSnippet(),
         type = typeUrl,
         typeName = objectTypes.firstOrNull { type ->
             if (isProfile) {

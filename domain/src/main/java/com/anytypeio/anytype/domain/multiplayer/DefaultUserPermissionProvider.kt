@@ -19,6 +19,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -54,6 +57,7 @@ interface UserPermissionProvider  {
 }
 
 class DefaultUserPermissionProvider @Inject constructor(
+    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val container: StorelessSubscriptionContainer,
     private val repo: AuthRepository,
     private val dispatchers: AppCoroutineDispatchers,
@@ -81,45 +85,57 @@ class DefaultUserPermissionProvider @Inject constructor(
         clear()
         jobs += scope.launch(dispatchers.io) {
             val account = repo.getCurrentAccountId()
-            container.subscribe(
-                StoreSearchParams(
-                    subscription = GLOBAL_SUBSCRIPTION,
-                    filters = buildList {
-                        add(
-                            DVFilter(
-                                relation = Relations.LAYOUT,
-                                value = ObjectType.Layout.PARTICIPANT.code.toDouble(),
-                                condition = DVFilterCondition.EQUAL
+            spaceViewSubscriptionContainer
+                .observe()
+                .map { spaceViews ->
+                    spaceViews.mapNotNull { spaceView -> spaceView.targetSpaceId }
+                }
+                .distinctUntilChanged()
+                .flatMapLatest { spaces ->
+                    val subscriptions = spaces.map { space ->
+                        container.subscribe(
+                            StoreSearchParams(
+                                space = SpaceId(space),
+                                subscription = "$GLOBAL_SUBSCRIPTION-$space",
+                                filters = buildList {
+                                    add(
+                                        DVFilter(
+                                            relation = Relations.LAYOUT,
+                                            value = ObjectType.Layout.PARTICIPANT.code.toDouble(),
+                                            condition = DVFilterCondition.EQUAL
+                                        )
+                                    )
+                                    add(
+                                        DVFilter(
+                                            relation = Relations.IDENTITY,
+                                            value = account,
+                                            condition = DVFilterCondition.EQUAL
+                                        )
+                                    )
+                                },
+                                limit = 1,
+                                keys = listOf(
+                                    Relations.ID,
+                                    Relations.SPACE_ID,
+                                    Relations.IDENTITY,
+                                    Relations.PARTICIPANT_PERMISSIONS
+                                )
                             )
-                        )
-                        add(
-                            DVFilter(
-                                relation = Relations.IDENTITY,
-                                value = account,
-                                condition = DVFilterCondition.EQUAL
-                            )
-                        )
-                    },
-                    limit = NO_LIMIT,
-                    keys = listOf(
-                        Relations.ID,
-                        Relations.SPACE_ID,
-                        Relations.IDENTITY,
-                        Relations.PARTICIPANT_PERMISSIONS
-                    )
-                )
-            )
-                .catch { error ->
+                        ).map { results ->
+                            results.map { ObjectWrapper.SpaceMember(it.map) }
+                        }
+                    }
+                    combine(flows = subscriptions) { flow ->
+                        flow.toList().flatten()
+                    }
+                }.catch { error ->
                     logger.logException(
                         e = error,
                         msg = "Failed to subscribe to user-as-space-member-permissions"
                     )
+                }.collect {
+                    members.value = it
                 }
-                .collect { results ->
-                    members.value = results.map {
-                        ObjectWrapper.SpaceMember(it.map)
-                    }
-            }
         }
     }
 
@@ -138,7 +154,11 @@ class DefaultUserPermissionProvider @Inject constructor(
     override fun stop() {
         clear()
         scope.launch(dispatchers.io) {
-            container.unsubscribe(listOf(GLOBAL_SUBSCRIPTION))
+            val subscriptions = spaceViewSubscriptionContainer
+                .get()
+                .mapNotNull { it.targetSpaceId }
+                .map { space -> "$GLOBAL_SUBSCRIPTION-$space" }
+            container.unsubscribe(subscriptions)
         }
     }
 
@@ -148,7 +168,6 @@ class DefaultUserPermissionProvider @Inject constructor(
 
     companion object {
         const val GLOBAL_SUBSCRIPTION = "subscription.global.user-as-space-member-permissions"
-        const val NO_LIMIT = 0
     }
 }
 

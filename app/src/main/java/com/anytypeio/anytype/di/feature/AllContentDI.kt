@@ -112,8 +112,7 @@ object AllContentModule {
     ): CreateObject = CreateObject(
         repo = repo,
         getDefaultObjectType = getDefaultObjectType,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -128,9 +127,7 @@ object AllContentModule {
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager,
-        configStorage = configStorage
+        dispatchers = dispatchers
     )
 
     @JvmStatic

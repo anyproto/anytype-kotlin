@@ -45,6 +45,7 @@ class CreateObjectByTypeAndTemplate @Inject constructor(
     private suspend fun searchObjectType(params: Param): ObjectWrapper.Type? {
         try {
             val struct = repo.searchObjects(
+                space = params.space,
                 limit = 1,
                 keys = params.keys,
                 sorts = params.sorts,
@@ -65,16 +66,16 @@ class CreateObjectByTypeAndTemplate @Inject constructor(
                         value = true
                     ),
                     DVFilter(
-                        relation = Relations.IS_DELETED,
+                        relation = Relations.IS_HIDDEN_DISCOVERY,
                         condition = DVFilterCondition.NOT_EQUAL,
                         value = true
                     ),
                     DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.IN,
-                        value = listOf(params.space.id)
+                        relation = Relations.IS_DELETED,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
                     )
-                ),
+                )
             )
             return if (struct.isNotEmpty()) {
                 ObjectWrapper.Type(struct.first())

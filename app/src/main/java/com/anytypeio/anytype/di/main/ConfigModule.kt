@@ -5,6 +5,7 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.TechSpaceProvider
 import com.anytypeio.anytype.domain.debugging.Logger
 import dagger.Module
 import dagger.Provides
@@ -32,6 +33,13 @@ object ConfigModule {
     @Provides
     @Singleton
     fun provideConfigProvider(): ConfigStorage = ConfigStorage.CacheStorage()
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideTechSpaceProvider(
+        configStorage: ConfigStorage
+    ): TechSpaceProvider = configStorage
 
     @JvmStatic
     @Provides

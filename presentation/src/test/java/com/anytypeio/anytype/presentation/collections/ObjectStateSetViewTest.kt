@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObject
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -337,12 +338,11 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             advanceUntilIdle()
             verifyBlocking(repo, times(1)) {
                 searchObjectsWithSubscription(
+                    eq(SpaceId(mockObjectSet.spaceId)),
                     eq(mockObjectSet.subscriptionId),
                     eq(listOf()),
                     eq(
-                        mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                            space = spaceConfig.space
-                        )
+                        mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters()
                     ),
                     eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),
                     eq(listOf(type2.id)),

@@ -51,7 +51,9 @@ class PersonalizationSettingsViewModel(
 
     init {
         viewModelScope.launch {
-            getDefaultObjectType.execute(Unit).fold(
+            getDefaultObjectType.execute(
+                params = SpaceId(spaceManager.get())
+            ).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while getting user settings")
                 },
@@ -110,19 +112,14 @@ class PersonalizationSettingsViewModel(
             }
             searchObjects(
                 SearchObjects.Params(
+                    // TODO DROID-2916 Provide space id to vm params
+                    space = SpaceId(spaceManager.get()),
                     keys = buildList {
                         add(Relations.ID)
                         add(Relations.UNIQUE_KEY)
                         add(Relations.NAME)
                     },
                     filters = buildList {
-                        add(
-                            DVFilter(
-                                relation = Relations.SPACE_ID,
-                                value = spaceManager.get(),
-                                condition = DVFilterCondition.EQUAL
-                            )
-                        )
                         add(
                             DVFilter(
                                 relation = Relations.LAYOUT,

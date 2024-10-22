@@ -148,6 +148,7 @@ interface BlockRemote {
     ): Payload
 
     suspend fun searchObjects(
+        space: SpaceId,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
         fulltext: String,
@@ -161,6 +162,7 @@ interface BlockRemote {
     ): List<Command.SearchWithMeta.Result>
 
     suspend fun searchObjectsWithSubscription(
+        space: SpaceId,
         subscription: Id,
         sorts: List<DVSort>,
         filters: List<DVFilter>,
@@ -176,6 +178,7 @@ interface BlockRemote {
     ): SearchResult
 
     suspend fun searchObjectsByIdWithSubscription(
+        space: SpaceId,
         subscription: Id,
         ids: List<Id>,
         keys: List<String>

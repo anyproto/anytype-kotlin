@@ -25,8 +25,6 @@ import javax.inject.Inject
 
 class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
 
-    private val exitHomeWhenSpaceIsSelected get() = argOrNull<Boolean>(EXIT_HOME_WHEN_SPACE_IS_SELECTED_KEY)
-
     @Inject
     lateinit var factory: SelectSpaceViewModel.Factory
 

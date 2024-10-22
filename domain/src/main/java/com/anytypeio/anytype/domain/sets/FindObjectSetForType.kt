@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.sets
 
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType.Params
@@ -17,6 +18,7 @@ class FindObjectSetForType(
 
     override suspend fun run(params: Params) = safe {
         val results = repo.searchObjects(
+            space = params.space,
             limit = 1,
             filters = params.filters,
             sorts = emptyList(),
@@ -38,7 +40,11 @@ class FindObjectSetForType(
     /**
      * @property [type] object type id
      */
-    data class Params(val type: Id, val filters: List<DVFilter>)
+    data class Params(
+        val space: SpaceId,
+        val type: Id,
+        val filters: List<DVFilter>
+    )
 
     sealed class Response {
         /**

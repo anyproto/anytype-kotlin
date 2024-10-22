@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.widgets.menu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -171,7 +174,7 @@ fun WidgetActionButton(
 ) {
     Box(
         modifier = modifier
-            .height(32.dp)
+            .defaultMinSize(minHeight = 32.dp)
             .background(
                 shape = RoundedCornerShape(8.dp),
                 color = colorResource(id = R.color.background_primary).copy(alpha = 0.65f)
@@ -182,10 +185,13 @@ fun WidgetActionButton(
         Text(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(horizontal = 12.dp),
+                .padding(horizontal = 12.dp, vertical = 6.dp),
             text = label,
             style = Title2,
-            color = colorResource(id = R.color.text_primary)
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

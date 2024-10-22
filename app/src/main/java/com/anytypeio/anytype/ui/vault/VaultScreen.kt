@@ -192,7 +192,6 @@ fun VaultScreenToolbar(
         )
         if (!spaceCountLimitReached) {
             Image(
-                // TODO change icon
                 painter = painterResource(id = R.drawable.ic_vault_top_toolbar_plus),
                 contentDescription = "Plus button",
                 modifier = Modifier

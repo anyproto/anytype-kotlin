@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
@@ -227,10 +226,11 @@ class LinkToObjectOrWebViewModel(
     }
 
     suspend fun getSearchObjectsParams(ignore: Id) = SearchObjects.Params(
+        // TODO DROID-2916 Provide space id to vm params
+        space = SpaceId(spaceManager.get()),
         limit = ObjectSearchViewModel.SEARCH_LIMIT,
         filters = ObjectSearchConstants.getFilterLinkTo(
-            ignore = ignore,
-            spaces = spaceManager.getSpaceWithTechSpace()
+            ignore = ignore
         ),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = ObjectSearchViewModel.EMPTY_QUERY,

@@ -32,7 +32,14 @@ interface DeepLinkToObjectDelegate {
             space: SpaceId,
             switchSpaceIfObjectFound: Boolean
         ) : Result {
-            val wrapper = fetchObject.async(params = FetchObject.Params(obj = obj)).getOrNull()
+            val wrapper = fetchObject
+                .async(
+                    params = FetchObject.Params(
+                        obj = obj,
+                        space = space
+                    )
+                )
+                .getOrNull()
             if (wrapper != null) {
                 val permission = userPermissionProvider.get(space = space)
                 return if (permission != null && permission.isAtLeastReader()) {

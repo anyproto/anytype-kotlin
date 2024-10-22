@@ -55,7 +55,7 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
         override fun onLoadFailed(
             e: GlideException?,
             model: Any?,
-            target: Target<Drawable>?,
+            target: Target<Drawable>,
             isFirstResource: Boolean
         ): Boolean {
             error.visible()
@@ -63,10 +63,10 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
         }
 
         override fun onResourceReady(
-            resource: Drawable?,
-            model: Any?,
+            resource: Drawable,
+            model: Any,
             target: Target<Drawable>?,
-            dataSource: DataSource?,
+            dataSource: DataSource,
             isFirstResource: Boolean
         ): Boolean {
             error.gone()

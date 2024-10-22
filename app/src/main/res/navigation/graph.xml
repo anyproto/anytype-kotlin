@@ -169,6 +169,9 @@
         <action
             android:id="@+id/action_open_all_content"
             app:destination="@id/allContentScreen" />
+        <action
+            android:id="@+id/actionOpenSpaceSwitcher"
+            app:destination="@id/selectSpaceScreen"/>
     </fragment>
 
     <fragment

@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.download.ProcessCancel
 import com.anytypeio.anytype.domain.media.FileDrop
@@ -69,12 +70,17 @@ class AddToAnytypeViewModel(
     private val permissions: Permissions,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fileDrop: FileDrop,
-    private val eventProcessChannel: EventProcessDropFilesChannel
+    private val eventProcessChannel: EventProcessDropFilesChannel,
+    private val configStorage: ConfigStorage
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
 
-    private val spaces: Flow<List<ObjectWrapper.SpaceView>> = getSpaceViews.asFlow(Unit)
+    private val spaces: Flow<List<ObjectWrapper.SpaceView>> = getSpaceViews.asFlow(
+        SpaceId(
+            configStorage.getOrNull()?.techSpace.orEmpty()
+        )
+    )
 
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val spaceViews = MutableStateFlow<List<SpaceView>>(emptyList())
@@ -489,7 +495,8 @@ class AddToAnytypeViewModel(
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val fileDrop: FileDrop,
         private val eventProcessChannel: EventProcessDropFilesChannel,
-        private val processCancel: ProcessCancel
+        private val processCancel: ProcessCancel,
+        private val configStorage: ConfigStorage
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -505,7 +512,8 @@ class AddToAnytypeViewModel(
                 permissions = permissions,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 fileDrop = fileDrop,
-                eventProcessChannel = eventProcessChannel
+                eventProcessChannel = eventProcessChannel,
+                configStorage = configStorage
             ) as T
         }
     }

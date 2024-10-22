@@ -74,8 +74,7 @@ fun SpaceHeader(
                     if (isEditEnabled) {
                         isSpaceIconMenuExpanded.value = !isSpaceIconMenuExpanded.value
                     }
-                },
-                gradientCornerRadius = 4.dp
+                }
             )
             MaterialTheme(
                 shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))

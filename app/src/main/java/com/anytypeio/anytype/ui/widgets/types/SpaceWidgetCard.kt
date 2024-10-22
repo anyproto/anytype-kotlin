@@ -87,9 +87,7 @@ fun SpaceWidgetCard(
             SpaceIconView(
                 icon = icon,
                 onSpaceIconClick = { onClick() },
-                mainSize = 40.dp,
-                gradientSize = 24.dp,
-                gradientCornerRadius = 2.dp
+                mainSize = 40.dp
             )
         }
         Text(

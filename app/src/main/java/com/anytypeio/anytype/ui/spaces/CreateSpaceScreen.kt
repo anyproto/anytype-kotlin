@@ -94,9 +94,6 @@ fun CreateSpaceScreen(
             Section(title = stringResource(id = R.string.type))
             TypeOfSpace(spaceType = PRIVATE_SPACE_TYPE)
             Divider()
-            Section(title = stringResource(id = R.string.create_space_start_with))
-            UseCase()
-            Divider()
             Spacer(modifier = Modifier.height(78.dp))
         }
         CreateSpaceButton(

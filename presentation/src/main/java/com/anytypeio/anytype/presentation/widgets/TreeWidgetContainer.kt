@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -77,6 +78,7 @@ class TreeWidgetContainer(
                 }.flatMapLatest { rootLevelObjects ->
                     container.subscribe(
                         StoreSearchByIdsParams(
+                            space = SpaceId(widget.config.space),
                             subscription = widget.id,
                             keys = keys,
                             targets = if (!isWidgetCollapsed) {
@@ -118,6 +120,7 @@ class TreeWidgetContainer(
             is Widget.Source.Default -> {
                 container.subscribe(
                     StoreSearchByIdsParams(
+                        space = SpaceId(widget.config.space),
                         subscription = widget.id,
                         keys = keys,
                         targets = if (!isWidgetCollapsed) {
@@ -166,6 +169,7 @@ class TreeWidgetContainer(
                     .flatMapLatest { order ->
                         container.subscribe(
                             StoreSearchByIdsParams(
+                                space = SpaceId(widget.config.space),
                                 subscription = widget.source.id,
                                 targets = order.keys.toList(),
                                 keys = keys

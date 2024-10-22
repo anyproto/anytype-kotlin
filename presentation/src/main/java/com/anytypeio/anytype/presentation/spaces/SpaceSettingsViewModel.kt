@@ -34,7 +34,9 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.isSharingLimitReached
+import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
 import com.anytypeio.anytype.domain.payments.GetMembershipStatus
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -43,6 +45,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -61,7 +64,8 @@ class SpaceSettingsViewModel(
     private val spaceViewContainer: SpaceViewSubscriptionContainer,
     private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
     private val getMembership: GetMembershipStatus,
-    private val uploadFile: UploadFile
+    private val uploadFile: UploadFile,
+    private val profileContainer: ProfileSubscriptionManager
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -87,8 +91,14 @@ class SpaceSettingsViewModel(
             combine(
                 spaceViewContainer.observe(params.space),
                 userPermissionProvider.observe(params.space),
-                spaceViewContainer.isSharingLimitReached(userPermissionProvider.all())
-            ) { spaceView, permission, shareLimitReached ->
+                profileContainer
+                    .observe()
+                    .map { wrapper ->
+                        wrapper.getValue<Double?>(Relations.SHARED_SPACES_LIMIT)?.toInt() ?: 0
+                         },
+                spaceViewContainer.sharedSpaceCount(userPermissionProvider.all())
+            ) { spaceView, permission, sharedSpaceLimit: Int, sharedSpaceCount: Int ->
+                Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
                 val store = activeSpaceMemberSubscriptionContainer.get(params.space)
                 val requests: Int = if (store is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     store.members.count { it.status == ParticipantStatus.JOINING }
@@ -113,12 +123,12 @@ class SpaceSettingsViewModel(
                     createdBy = createdBy,
                     spaceId = params.space.id,
                     network = config?.network.orEmpty(),
-                    isDeletable = resolveIsSpaceDeletable(spaceView),
+                    isDeletable = true,
                     spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
                     permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS,
                     shareLimitReached = ShareLimitsState(
-                        shareLimitReached = shareLimitReached.first,
-                        sharedSpacesLimit = shareLimitReached.second
+                        shareLimitReached = sharedSpaceCount >= sharedSpaceLimit,
+                        sharedSpacesLimit = sharedSpaceLimit
                     ),
                     requests = requests
                 )
@@ -128,9 +138,6 @@ class SpaceSettingsViewModel(
             }
         }
     }
-
-    private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) =
-        spaceView.spaceAccessType != null && spaceView.spaceAccessType != SpaceAccessType.DEFAULT
 
     fun onNameSet(name: String) {
         Timber.d("onNameSet")
@@ -254,7 +261,8 @@ class SpaceSettingsViewModel(
                                 eventName = EventsDictionary.deleteSpace,
                                 props = Props(mapOf(EventsPropertiesKey.type to "Private"))
                             )
-                            fallbackToPersonalSpaceAfterDeletion(personalSpaceId)
+                            spaceManager.clear()
+                            commands.emit(Command.ExitToVault)
                         },
                         onFailure = {
                             Timber.e(it, "Error while deleting space")
@@ -265,11 +273,6 @@ class SpaceSettingsViewModel(
                 sendToast("Space not found. Please, try again later")
             }
         }
-    }
-
-    private suspend fun fallbackToPersonalSpaceAfterDeletion(personalSpaceId: Id) {
-        spaceManager.set(personalSpaceId)
-        isDismissed.value = true
     }
 
     private fun proceedWithSpaceDebug() {
@@ -391,6 +394,7 @@ class SpaceSettingsViewModel(
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
+        data object ExitToVault : Command()
         data object ShowDeleteSpaceWarning : Command()
         data object ShowLeaveSpaceWarning : Command()
         data object ShowShareLimitReachedError : Command()
@@ -413,7 +417,8 @@ class SpaceSettingsViewModel(
         private val userPermissionProvider: UserPermissionProvider,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val getMembership: GetMembershipStatus,
-        private val uploadFile: UploadFile
+        private val uploadFile: UploadFile,
+        private val profileContainer: ProfileSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -433,7 +438,8 @@ class SpaceSettingsViewModel(
             userPermissionProvider = userPermissionProvider,
             activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer,
             getMembership = getMembership,
-            uploadFile = uploadFile
+            uploadFile = uploadFile,
+            profileContainer = profileContainer
         ) as T
     }
 

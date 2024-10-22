@@ -146,6 +146,7 @@ class ObjectValueViewModel(
             }
         }
         return SearchObjects.Params(
+            space = viewModelParams.space,
             keys = searchKeys,
             filters = searchFilters,
             fulltext = if (isEditableRelation) query else SearchObjects.EMPTY_TEXT

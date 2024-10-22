@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -59,7 +60,8 @@ class SpacesStorageViewModel(
     private val getAccount: GetAccount,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val membershipProvider: MembershipProvider,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val configStorage: ConfigStorage
 ) : BaseViewModel() {
 
     private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
@@ -117,21 +119,28 @@ class SpacesStorageViewModel(
 
     private fun subscribeToSpaces() {
         jobs += viewModelScope.launch {
-            val subscribeParams = createStoreSearchParams()
-            combine(
-                _nodeUsageInfo,
-                storelessSubscriptionContainer.subscribe(subscribeParams)
-            ) { nodeUsageInfo, spaces ->
-                createSpacesStorageScreenState(nodeUsageInfo, spaces)
+            val techSpace = configStorage.getOrNull()?.techSpace
+            if (techSpace != null) {
+                val subscribeParams = createStoreSearchParams(
+                    techSpace = SpaceId(techSpace)
+                )
+                combine(
+                    _nodeUsageInfo,
+                    storelessSubscriptionContainer.subscribe(subscribeParams)
+                ) { nodeUsageInfo, spaces ->
+                    createSpacesStorageScreenState(nodeUsageInfo, spaces)
+                }.flowOn(appCoroutineDispatchers.io)
+                    .catch { Timber.e(it, "Error while getting spaces") }
+                    .collect { _viewState.value = it }
+            } else {
+                Timber.e("Tech space was missing")
             }
-                .flowOn(appCoroutineDispatchers.io)
-                .catch { Timber.e(it, "Error while getting spaces") }
-                .collect { _viewState.value = it }
         }
     }
 
-    private fun createStoreSearchParams(): StoreSearchParams {
+    private fun createStoreSearchParams(techSpace: SpaceId): StoreSearchParams {
         return StoreSearchParams(
+            space = techSpace,
             subscription = SPACES_STORAGE_SUBSCRIPTION_ID,
             keys = listOf(
                 Relations.ID,
@@ -298,6 +307,7 @@ class SpacesStorageViewModel(
             } else {
                 val config = spaceManager.getConfig() ?: return@launch
                 val params = StoreSearchByIdsParams(
+                    space = SpaceId(config.techSpace),
                     subscription = PROFILE_SUBSCRIPTION_ID,
                     keys = listOf(Relations.ID, Relations.NAME),
                     targets = listOf(config.profile)

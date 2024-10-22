@@ -52,6 +52,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -78,7 +79,7 @@ fun AddToAnytypeScreenUrlPreview() {
             SpaceView(
                 obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
                 isSelected = true,
-                icon = SpaceIconView.Gradient(from = "#FF0000", to = "#00FF00")
+                icon = SpaceIconView.Placeholder()
             )
         ),
         onSelectSpaceClicked = {},
@@ -101,7 +102,7 @@ fun AddToAnytypeScreenNotePreview() {
             SpaceView(
                 obj = ObjectWrapper.SpaceView(map = mapOf()),
                 isSelected = false,
-                icon = SpaceIconView.Gradient(from = "#FF0000", to = "#00FF00")
+                icon = SpaceIconView.Placeholder()
             )
         ),
         onSelectSpaceClicked = {},
@@ -250,7 +251,7 @@ fun AddToAnytypeScreen(
             )
         } else {
             CurrentSpaceSection(
-                name = stringResource(id = R.string.unknown),
+                name = stringResource(id = R.string.three_dots_text_placeholder),
                 spaces = spaces,
                 onSelectSpaceClicked = onSelectSpaceClicked
             )
@@ -527,11 +528,15 @@ private fun CurrentSpaceSection(
                 .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val hasIcon = icon is SpaceIconView.Gradient || icon is SpaceIconView.Image
+            val hasIcon = icon is SpaceIconView.Placeholder || icon is SpaceIconView.Image
             if (icon != null && hasIcon) {
-                SmallSpaceIcon(
+                SpaceIconView(
                     icon = icon,
-                    modifier = Modifier.padding(end = 8.dp)
+                    modifier = Modifier.padding(end = 8.dp),
+                    mainSize = 20.dp,
+                    onSpaceIconClick = {
+                        // Do nothing.
+                    }
                 )
             }
             Text(
@@ -614,22 +619,6 @@ private fun SmallSpaceIcon(
                     .clip(RoundedCornerShape(4.dp))
             )
         }
-
-        is SpaceIconView.Gradient -> {
-            val gradient = Brush.radialGradient(
-                colors = listOf(
-                    Color(icon.from.toColorInt()),
-                    Color(icon.to.toColorInt())
-                )
-            )
-            Box(
-                modifier = modifier
-                    .size(size)
-                    .clip(CircleShape)
-                    .background(gradient)
-            )
-        }
-
         else -> {
             // Draw nothing.
         }

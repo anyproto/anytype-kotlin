@@ -986,15 +986,11 @@ object EditorUseCaseModule {
     fun provideGetDefaultPageType(
         repo: UserSettingsRepository,
         blockRepository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
-        configStorage: ConfigStorage
+        dispatchers: AppCoroutineDispatchers
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = repo,
         blockRepository = blockRepository,
-        spaceManager = spaceManager,
-        dispatchers = dispatchers,
-        configStorage = configStorage
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -1192,13 +1188,11 @@ object EditorUseCaseModule {
     fun getCreateObject(
         repo: BlockRepository,
         getDefaultObjectType: GetDefaultObjectType,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
+        dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getDefaultObjectType = getDefaultObjectType,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager
+        dispatchers = dispatchers
     )
 
     @Module

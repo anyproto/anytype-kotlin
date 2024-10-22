@@ -131,9 +131,10 @@ class MoveToViewModel(
     private fun getObjectTypes(ctx: Id) {
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
+                // TODO DROID-2916 Provide space id to vm params
+                space = SpaceId(spaceManager.get()),
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaces = listOf(spaceManager.get()),
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
@@ -152,6 +153,8 @@ class MoveToViewModel(
         val filteredTypes = types.value.getOrDefault(emptyList()).map { objectType -> objectType.id }
 
         return SearchObjects.Params(
+            // TODO DROID-2916 Provide space id to vm params
+            space = SpaceId(spaceManager.get()),
             limit = SEARCH_LIMIT,
             filters = ObjectSearchConstants.filterMoveTo(
                 ctx = ctx,

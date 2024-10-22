@@ -46,7 +46,7 @@ interface UserSettingsRepository {
     suspend fun getWidgetSession() : WidgetSession
     suspend fun saveWidgetSession(session: WidgetSession)
 
-    suspend fun getAllContentSort(space: SpaceId): Pair<Id, Boolean>
+    suspend fun getAllContentSort(space: SpaceId): Pair<Id, Boolean>?
     suspend fun setAllContentSort(space: SpaceId, sort: Id, isAsc: Boolean)
 
     suspend fun clear()

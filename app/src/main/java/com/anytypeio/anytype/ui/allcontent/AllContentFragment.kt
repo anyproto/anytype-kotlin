@@ -213,7 +213,7 @@ class AllContentFragment : BaseComposeFragment() {
                 is AllContentViewModel.Command.OpenTypeCreation -> {
                     runCatching {
                         navigation().openTypeCreationScreen(
-                            name = command.name
+                            name = ""
                         )
                     }.onFailure {
                         toast("Failed to open type creation screen")
@@ -224,8 +224,8 @@ class AllContentFragment : BaseComposeFragment() {
                 is AllContentViewModel.Command.OpenRelationCreation -> {
                     runCatching {
                         navigation().openRelationCreationScreen(
-                            id = command.id,
-                            name = command.name,
+                            id = "",
+                            name = "",
                             space = command.space
                         )
                     }.onFailure {
@@ -265,6 +265,7 @@ class AllContentFragment : BaseComposeFragment() {
                     uiTabsState = vm.uiTabsState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
                     uiMenuState = vm.uiMenuState.collectAsStateWithLifecycle().value,
+                    uiSnackbarState = vm.uiSnackbarState.collectAsStateWithLifecycle().value,
                     onSortClick = vm::onSortClicked,
                     onModeClick = vm::onAllContentModeClicked,
                     onItemClicked = vm::onItemClicked,
@@ -273,7 +274,6 @@ class AllContentFragment : BaseComposeFragment() {
                     onUpdateLimitSearch = vm::updateLimit,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                     onTypeClicked = vm::onTypeClicked,
-                    onHomeClicked = vm::onHomeClicked,
                     onGlobalSearchClicked = vm::onGlobalSearchClicked,
                     onAddDocClicked = vm::onAddDockClicked,
                     onCreateObjectLongClicked = {
@@ -296,7 +296,10 @@ class AllContentFragment : BaseComposeFragment() {
                             Timber.e(it, "Error while opening space switcher from all-content screen")
                         }
                     },
-                    onRelationClicked = vm::onRelationClicked
+                    onRelationClicked = vm::onRelationClicked,
+                    undoMoveToBin = vm::proceedWithUndoMoveToBin,
+                    onDismissSnackbar = vm::proceedWithDismissSnackbar,
+                    uiBottomMenu = vm.uiBottomMenu.collectAsStateWithLifecycle().value
                 )
             }
         }

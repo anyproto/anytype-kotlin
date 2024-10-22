@@ -568,6 +568,7 @@ class HomeScreenViewModel(
                 .flatMapLatest { config ->
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
+                            space = SpaceId(config.techSpace),
                             subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                             targets = listOf(config.profile),
                             keys = listOf(
@@ -1367,7 +1368,10 @@ class HomeScreenViewModel(
         Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
+            val params = objType?.uniqueKey.getCreateObjectParams(
+                space = SpaceId(spaceManager.get()),
+                objType?.defaultTemplateId
+            )
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
@@ -1452,7 +1456,7 @@ class HomeScreenViewModel(
                 }
             }
             .onEach { (config, pinned) ->
-                val defaultObjectType = getDefaultObjectType.async(Unit).getOrNull()?.type
+                val defaultObjectType = getDefaultObjectType.async(SpaceId(config.space)).getOrNull()?.type
                 val keys = buildSet {
                     pinned.take(MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS).forEach { typeId ->
                         val wrapper = storeOfObjectTypes.get(typeId.id)
@@ -1478,19 +1482,13 @@ class HomeScreenViewModel(
                 }
                 searchObjects(
                     SearchObjects.Params(
+                        space = SpaceId(config.space),
                         keys = buildList {
                             add(Relations.ID)
                             add(Relations.UNIQUE_KEY)
                             add(Relations.NAME)
                         },
                         filters = buildList {
-                            add(
-                                DVFilter(
-                                    relation = Relations.SPACE_ID,
-                                    value = config.space,
-                                    condition = DVFilterCondition.EQUAL
-                                )
-                            )
                             add(
                                 DVFilter(
                                     relation = Relations.LAYOUT,
@@ -1704,6 +1702,10 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onBackLongClicked() {
+        navigate(destination = Navigation.OpenSpaceSwitcher)
+    }
+
     override fun onCleared() {
         super.onCleared()
         Timber.d("onCleared")
@@ -1775,6 +1777,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
+                    space = SpaceId(spaceManager.get()),
                     type = type.uniqueKey?.let {
                         TypeKey(it)
                     }
@@ -1808,6 +1811,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
+                    space = SpaceId(spaceManager.get()),
                     type = type.uniqueKey?.let {
                         TypeKey(it)
                     }
@@ -2071,6 +2075,7 @@ class HomeScreenViewModel(
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
+        data object OpenSpaceSwitcher: Navigation()
         data class OpenLibrary(val space: Id) : Navigation()
         data class OpenAllContent(val space: Id) : Navigation()
     }

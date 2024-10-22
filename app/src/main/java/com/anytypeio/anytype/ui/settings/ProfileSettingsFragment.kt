@@ -39,8 +39,6 @@ import timber.log.Timber
 
 class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
-    private val space: Id get() = arg(SPACE_ID_KEY)
-
     @Inject
     lateinit var factory: ProfileSettingsViewModel.Factory
 
@@ -141,16 +139,6 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
-    private fun proceedWithAccountDeletion() {
-        vm.proceedWithAccountDeletion()
-        val dialog = DeleteAccountWarning()
-        dialog.onDeletionAccepted = {
-            dialog.dismiss()
-            vm.onDeleteAccountClicked()
-        }
-        dialog.show(childFragmentManager, null)
-    }
-
     private fun proceedWithIconClick() {
         permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
     }
@@ -163,7 +151,7 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
         if (uri != null) {
             try {
                 val path = uri.parseImagePath(requireContext())
-                vm.onPickedImageFromDevice(path = path, space = space)
+                vm.onPickedImageFromDevice(path = path)
             } catch (e: Exception) {
                 toast("Error while parsing path for cover image")
                 Timber.d(e, "Error while parsing path for cover image")

@@ -39,7 +39,7 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
         override fun onLoadFailed(
             e: GlideException?,
             model: Any?,
-            target: Target<Drawable>?,
+            target: Target<Drawable>,
             isFirstResource: Boolean
         ): Boolean {
             error.visible()
@@ -48,10 +48,10 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
         }
 
         override fun onResourceReady(
-            resource: Drawable?,
-            model: Any?,
+            resource: Drawable,
+            model: Any,
             target: Target<Drawable>?,
-            dataSource: DataSource?,
+            dataSource: DataSource,
             isFirstResource: Boolean
         ): Boolean {
             error.invisible()

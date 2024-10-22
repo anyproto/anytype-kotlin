@@ -50,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -225,7 +226,7 @@ fun GlobalSearchScreen(
                                 )
                             },
                             colors = TextFieldDefaults.textFieldColors(
-                                backgroundColor = colorResource(id = R.color.shape_transparent),
+                                backgroundColor = Color.Transparent,
                                 cursorColor = colorResource(id = R.color.cursor_color),
                             ),
                             border = {},

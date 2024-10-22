@@ -200,6 +200,7 @@ class CollectionViewModel(
                 .flatMapLatest { config ->
                     container.subscribe(
                         StoreSearchByIdsParams(
+                            space = SpaceId(config.space),
                             subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                             targets = listOf(config.profile),
                             keys = listOf(
@@ -223,10 +224,10 @@ class CollectionViewModel(
 
     private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
         val params = GetObjectTypes.Params(
+            // TODO DROID-2916 Provide space id to vm params
+            space = SpaceId(spaceManager.get()),
             sorts = emptyList(),
-            filters = ObjectSearchConstants.filterTypes(
-                spaces = listOf(vmParams.spaceId.id)
-            ),
+            filters = ObjectSearchConstants.filterTypes(),
             keys = ObjectSearchConstants.defaultKeysObjectType
         )
         return getObjectTypes.asFlow(params).stateIn(viewModelScope)
@@ -264,6 +265,8 @@ class CollectionViewModel(
 
     private suspend fun buildSearchParams(): StoreSearchParams {
         return StoreSearchParams(
+            // TODO DROID-2916 Provide space id to vm params
+            space = SpaceId(spaceManager.get()),
             subscription = subscription.id,
             keys = subscription.keys,
             filters = subscription.space(vmParams.spaceId.id),
@@ -290,10 +293,10 @@ class CollectionViewModel(
                             ?.toLong()
                         subscriptionFlow(
                             StoreSearchParams(
+                                space = SpaceId(config.space),
                                 subscription = subscription.id,
                                 keys = subscription.keys,
                                 filters = ObjectSearchConstants.filterTabRecent(
-                                    space = config.space,
                                     spaceCreationDateInSeconds = spaceCreationDateInSeconds
                                 ),
                                 sorts = subscription.sorts,
@@ -881,8 +884,11 @@ class CollectionViewModel(
         )
 
         val startTime = System.currentTimeMillis()
-        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
         viewModelScope.launch {
+            val params = objType?.uniqueKey.getCreateObjectParams(
+                space = SpaceId(spaceManager.get()),
+                objType?.defaultTemplateId
+            )
             createObject.execute(params).fold(
                 onSuccess = { result ->
                     sendAnalyticsObjectCreateEvent(

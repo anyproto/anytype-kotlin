@@ -16,7 +16,6 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
@@ -24,18 +23,15 @@ import javax.inject.Inject
 class GetDefaultObjectType @Inject constructor(
     private val userSettingsRepository: UserSettingsRepository,
     private val blockRepository: BlockRepository,
-    private val spaceManager: SpaceManager,
-    private val configStorage: ConfigStorage,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<Unit, GetDefaultObjectType.Response>(dispatchers.io) {
+) : ResultInteractor<SpaceId, GetDefaultObjectType.Response>(dispatchers.io) {
 
-    override suspend fun doWork(params: Unit): Response {
-        val space = SpaceId(spaceManager.get())
-        val defaultType = userSettingsRepository.getDefaultObjectType(space)
+    override suspend fun doWork(params: SpaceId): Response {
+        val defaultType = userSettingsRepository.getDefaultObjectType(params)
         if (defaultType != null) {
             val item = searchObjectByIdAndSpaceId(
                 type = defaultType,
-                space = space
+                space = params
             )
             return if (item != null) {
                 val key = TypeKey(item.uniqueKey)
@@ -47,18 +43,20 @@ class GetDefaultObjectType @Inject constructor(
                     defaultTemplate = item.defaultTemplateId
                 )
             } else {
-                fetchDefaultType()
+                fetchDefaultType(params)
             }
         } else {
-            return fetchDefaultType()
+            return fetchDefaultType(params)
         }
     }
 
-    private suspend fun fetchDefaultType(): Response {
+    private suspend fun fetchDefaultType(space: SpaceId): Response {
         val structs = blockRepository.searchObjects(
+            space = space,
             limit = 1,
             fulltext = NO_VALUE,
             filters = buildList {
+                // TODO DROID-2916 might need to delete this filter
                 add(
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
@@ -66,19 +64,6 @@ class GetDefaultObjectType @Inject constructor(
                         value = ObjectTypeUniqueKeys.NOTE
                     )
                 )
-                val space = spaceManager.get().ifEmpty {
-                    // Fallback to default space.
-                    configStorage.getOrNull()?.space
-                }
-                if (!space.isNullOrEmpty()) {
-                    add(
-                        DVFilter(
-                            relation = Relations.SPACE_ID,
-                            condition = DVFilterCondition.EQUAL,
-                            value = space
-                        )
-                    )
-                }
             },
             offset = 0,
             sorts = emptyList(),
@@ -110,10 +95,11 @@ class GetDefaultObjectType @Inject constructor(
         space: SpaceId
     ): ObjectWrapper.Type? {
         val structs = blockRepository.searchObjects(
+            space = space,
             limit = 1,
             fulltext = NO_VALUE,
             filters = buildList {
-                addAll(filterObjectTypeLibrary(space))
+                addAll(filterObjectTypeLibrary())
                 add(
                     DVFilter(
                         relation = Relations.ID,
@@ -135,7 +121,7 @@ class GetDefaultObjectType @Inject constructor(
         return structs.firstOrNull()?.mapToObjectWrapperType()
     }
 
-    private fun filterObjectTypeLibrary(space: SpaceId) = listOf(
+    private fun filterObjectTypeLibrary() = listOf(
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
@@ -157,9 +143,9 @@ class GetDefaultObjectType @Inject constructor(
             value = true
         ),
         DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space.id
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
         ),
         DVFilter(
             relation = Relations.RESTRICTIONS,
@@ -168,9 +154,6 @@ class GetDefaultObjectType @Inject constructor(
         )
     )
 
-    /**
-     * TODO provide space to params
-     */
     data class Response(
         val id: TypeId,
         val type: TypeKey,

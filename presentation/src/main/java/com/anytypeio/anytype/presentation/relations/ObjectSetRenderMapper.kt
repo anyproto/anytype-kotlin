@@ -80,7 +80,6 @@ suspend fun DVViewer.render(
     coverImageHashProvider: CoverImageHashProvider,
     useFallbackView: Boolean = false,
     objects: List<Id>,
-    details: Map<Id, Block.Fields>,
     dataViewRelations: List<ObjectWrapper.Relation>,
     store: ObjectStore,
     objectOrderIds: List<Id> = emptyList(),
@@ -91,7 +90,6 @@ suspend fun DVViewer.render(
             buildGridView(
                 dataViewRelations = dataViewRelations,
                 objects = objects,
-                details = details,
                 builder = builder,
                 store = store,
                 objectOrderIds = objectOrderIds
@@ -102,7 +100,6 @@ suspend fun DVViewer.render(
                 id = id,
                 items = buildGalleryViews(
                     objectIds = objects,
-                    details = details,
                     relations = dataViewRelations,
                     coverImageHashProvider = coverImageHashProvider,
                     urlBuilder = builder,
@@ -137,7 +134,6 @@ suspend fun DVViewer.render(
                 buildGridView(
                     dataViewRelations = dataViewRelations,
                     objects = objects,
-                    details = details,
                     builder = builder,
                     store = store,
                     objectOrderIds = objectOrderIds
@@ -164,7 +160,6 @@ private fun List<Viewer.GridView.Row>.sortObjects(objectOrderIds: List<Id>): Lis
 private suspend fun DVViewer.buildGridView(
     dataViewRelations: List<ObjectWrapper.Relation>,
     objects: List<Id>,
-    details: Map<Id, Block.Fields>,
     builder: UrlBuilder,
     store: ObjectStore,
     objectOrderIds: List<Id>
@@ -183,8 +178,6 @@ private suspend fun DVViewer.buildGridView(
             objects.toGridRecordRows(
                 showIcon = !hideIcon,
                 columns = columns,
-                relations = visibleRelations,
-                details = details,
                 builder = builder,
                 store = store
             )

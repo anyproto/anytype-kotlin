@@ -436,7 +436,7 @@ private fun WidgetList(
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .padding(top = 6.dp)
+                            .padding(top = 6.dp, start = 20.dp, end = 20.dp)
                             .height(128.dp)
                             .animateItemPlacement(
                                 spring(
@@ -459,13 +459,13 @@ private fun WidgetList(
                                             onCreateWidget()
                                         }
                                     ),
-                                    modifier = Modifier
+                                    modifier = Modifier.weight(1.0f)
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
                                 WidgetActionButton(
                                     label = stringResource(R.string.edit_widgets),
                                     onClick = onEditWidgets,
-                                    modifier = Modifier
+                                    modifier = Modifier.weight(1.0f)
                                 )
                             }
                         }

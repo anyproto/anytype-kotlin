@@ -90,6 +90,10 @@ fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? =
         return true
     }
 
+    if (objectType?.uniqueKey == ObjectTypeIds.TEMPLATE) {
+        return false
+    }
+
     val skipLayouts = fileLayouts + systemLayouts + listOf(ObjectType.Layout.PARTICIPANT)
     return !skipLayouts.contains(objectType?.recommendedLayout)
 }

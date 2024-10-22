@@ -397,10 +397,16 @@ abstract class ObjectMenuViewModelBase(
                     CreateWidget.Params(
                         ctx = config.widgets,
                         source = obj.id,
-                        type = if (obj.layout.isDataView()) {
-                            WidgetLayout.VIEW
-                        } else {
-                            WidgetLayout.TREE
+                        type = when {
+                            obj.layout.isDataView() -> {
+                                WidgetLayout.VIEW
+                            }
+                            obj.layout == ObjectType.Layout.PARTICIPANT -> {
+                                WidgetLayout.LINK
+                            }
+                            else -> {
+                                WidgetLayout.TREE
+                            }
                         }
                     )
                 ).collect { result ->

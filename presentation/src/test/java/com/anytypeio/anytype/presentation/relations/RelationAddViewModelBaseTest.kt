@@ -99,7 +99,7 @@ class RelationAddViewModelBaseTest {
         repo.stub {
             onBlocking {
                 searchObjects(
-                    space = SpaceId(spaceId),
+                    space = SpaceId(MARKETPLACE_SPACE_ID),
                     sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                     filters = buildList {
                         addAll(ObjectSearchConstants.filterMarketplaceRelations())
@@ -212,7 +212,7 @@ class RelationAddViewModelBaseTest {
             repo.stub {
                 onBlocking {
                     searchObjects(
-                        space = SpaceId(spaceId),
+                        space = SpaceId(MARKETPLACE_SPACE_ID),
                         sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                         filters = buildList {
                             addAll(ObjectSearchConstants.filterMarketplaceRelations())

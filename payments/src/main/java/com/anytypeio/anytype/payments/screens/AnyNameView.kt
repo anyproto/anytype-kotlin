@@ -103,7 +103,7 @@ fun AnyNameView(
                             color = colorResource(id = R.color.text_tertiary)
                         )
                         Text(
-                            text = stringResource(id = R.string.payments_tier_details_name_domain),
+                            text = stringResource(id = R.string.payments_tier_details_name_domain_not_translatable),
                             style = BodyRegular,
                             color = colorResource(id = R.color.text_tertiary)
                         )
@@ -131,7 +131,7 @@ fun AnyNameView(
                             interactionSource = remember { MutableInteractionSource() }
                         )
                         Text(
-                            text = stringResource(id = R.string.payments_tier_details_name_domain),
+                            text = stringResource(id = R.string.payments_tier_details_name_domain_not_translatable),
                             style = BodyRegular,
                             color = colorResource(id = R.color.text_primary)
                         )

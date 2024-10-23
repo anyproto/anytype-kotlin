@@ -357,7 +357,7 @@ sealed class ObjectWrapper {
         val status
             get() = getSingleValue<Double>(Relations.PARTICIPANT_STATUS)
                 .let { code ->
-                    ParticipantStatus.values().firstOrNull { it.code == code?.toInt() }
+                    ParticipantStatus.entries.firstOrNull { it.code == code?.toInt() }
                 }
 
         val permissions

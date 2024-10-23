@@ -755,7 +755,8 @@ object ObjectSearchConstants {
     fun filterTypes(
         recommendedLayouts: List<ObjectType.Layout> = emptyList(),
         excludedTypeKeys: List<TypeKey> = emptyList(),
-        excludeParticipant: Boolean = true
+        excludeParticipant: Boolean = true,
+        excludeTemplates: Boolean = true
     ): List<DVFilter> {
         return buildList {
             addAll(
@@ -788,14 +789,18 @@ object ObjectSearchConstants {
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
                         condition = DVFilterCondition.NOT_EMPTY
-                    ),
+                    )
+                )
+            )
+            if (excludeTemplates) {
+                add(
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
                         condition = DVFilterCondition.NOT_EQUAL,
                         value = ObjectTypeUniqueKeys.TEMPLATE
                     )
                 )
-            )
+            }
             if (excludedTypeKeys.isNotEmpty()) {
                 add(
                     DVFilter(

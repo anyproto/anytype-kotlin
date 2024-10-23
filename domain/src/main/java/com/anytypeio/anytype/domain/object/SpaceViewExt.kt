@@ -8,12 +8,13 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 
 fun SpaceView.canAddWriters(
     isCurrentUserOwner: Boolean,
-    participants: List<SpaceMember>
+    participants: List<SpaceMember>,
+    newMember: SpaceMember
 ): Boolean {
-    if (!canAddReaders(isCurrentUserOwner, participants)) return false
+    if (!canAddReaders(isCurrentUserOwner, participants, newMember)) return false
     if (!isCurrentUserOwner) return false
     if (spaceAccessType != SpaceAccessType.SHARED) return false
-    if (participants.none { it.status == ParticipantStatus.JOINING }) return false
+    if (newMember.status != ParticipantStatus.JOINING ) return false
     val isWritersLimitReached =
         isSubscriberLimitReached(activeWriters(participants), writersLimit?.toInt())
     return !isWritersLimitReached
@@ -21,11 +22,12 @@ fun SpaceView.canAddWriters(
 
 fun SpaceView.canAddReaders(
     isCurrentUserOwner: Boolean,
-    participants: List<SpaceMember>
+    participants: List<SpaceMember>,
+    newMember: SpaceMember
 ): Boolean {
     if (!isCurrentUserOwner) return false
     if (spaceAccessType != SpaceAccessType.SHARED) return false
-    if (participants.none { it.status == ParticipantStatus.JOINING }) return false
+    if (newMember.status != ParticipantStatus.JOINING ) return false
     val isReadersLimitReached =
         isSubscriberLimitReached(activeReaders(participants), readersLimit?.toInt())
     return !isReadersLimitReached

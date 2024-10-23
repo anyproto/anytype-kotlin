@@ -23,7 +23,6 @@ import timber.log.Timber
 
 class CreateSpaceViewModel(
     private val createSpace: CreateSpace,
-    private val spaceGradientProvider: SpaceGradientProvider,
     private val spaceManager: SpaceManager,
     private val analytics: Analytics,
     private val spaceViewContainer: SpaceViewSubscriptionContainer
@@ -31,16 +30,13 @@ class CreateSpaceViewModel(
 
     val isInProgress = MutableStateFlow(false)
 
-    private var spaceGradientId = spaceGradientProvider.randomId()
-
-    val spaceGradient : MutableStateFlow<SpaceIconView.Placeholder>
-
-    init {
-        val view = SpaceIconView.Placeholder(
+    val spaceIconView : MutableStateFlow<SpaceIconView.Placeholder> = MutableStateFlow(
+        SpaceIconView.Placeholder(
             color = SystemColor.entries.random()
         )
-        spaceGradient = MutableStateFlow(view)
+    )
 
+    init {
         viewModelScope.launch {
             analytics.sendEvent(eventName = EventsDictionary.screenSettingsSpaceCreate)
         }
@@ -64,7 +60,7 @@ class CreateSpaceViewModel(
                 CreateSpace.Params(
                     details = mapOf(
                         Relations.NAME to name,
-                        Relations.ICON_OPTION to spaceGradientId.toDouble()
+                        Relations.ICON_OPTION to spaceIconView.value.color.index.toDouble()
                     )
                 )
             ).collect { result ->
@@ -107,14 +103,13 @@ class CreateSpaceViewModel(
     }
 
     private fun proceedWithResettingRandomSpaceGradient() {
-        spaceGradient.value = SpaceIconView.Placeholder(
+        spaceIconView.value = SpaceIconView.Placeholder(
             color = SystemColor.entries.random()
         )
     }
 
     class Factory @Inject constructor(
         private val createSpace: CreateSpace,
-        private val spaceGradientProvider: SpaceGradientProvider,
         private val spaceManager: SpaceManager,
         private val analytics: Analytics,
         private val spaceViewContainer: SpaceViewSubscriptionContainer
@@ -124,7 +119,6 @@ class CreateSpaceViewModel(
             modelClass: Class<T>
         ) = CreateSpaceViewModel(
             createSpace = createSpace,
-            spaceGradientProvider = spaceGradientProvider,
             spaceManager = spaceManager,
             analytics = analytics,
             spaceViewContainer = spaceViewContainer

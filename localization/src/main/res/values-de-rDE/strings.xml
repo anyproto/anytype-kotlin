@@ -43,7 +43,7 @@
     <string name="space">Space</string>
     <string name="space_name">Space-Name</string>
     <string name="default_space">Standard Space</string>
-    <string name="space_settings_apply_random_gradient">Zufälligen Farbverlauf anwenden</string>
+    <string name="space_settings_apply_random_gradient">Zufällige Volltonfarbe verwenden</string>
     <string name="space_settings_apply_upload_image">Bild hochladen</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
@@ -841,6 +841,8 @@
     <string name="synced_files">Synchronisierte Dateien</string>
     <string name="log_in">Anmelden</string>
     <string name="create_object_section_library">Anytype-Bibliothek</string>
+    <string name="bin_empty_title">Your trash is empty.</string>
+    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Design</string>
     <string name="slash_widget_main_media">Medien</string>
@@ -1281,7 +1283,6 @@
     <string name="payments_tier_details_name_title">Wähle deinen einzigartigen Namen</string>
     <string name="payments_tier_details_name_subtitle">Dies ist dein eindeutiger Name im Anytype-Netzwerk, der deine Mitgliedschaft bestätigt. Er dient als deine persönliche Domain und kann nicht geändert werden.</string>
     <string name="payments_tier_details_name_hint">Ich</string>
-    <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Mindestens 7 Zeichen</string>
     <string name="payments_tier_details_name_error">Dieser Name ist bereits vergeben!</string>
     <string name="payments_tier_details_name_validated">Dieser Name [%1$s] ist noch zu vergeben!</string>
@@ -1539,4 +1540,11 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_toast_type_added">Objekttyp hinzugefügt</string>
     <string name="all_content_toast_type_removed">Objekttyp entfernt</string>
     <string name="all_content_toast_archived">Objekt archiviert</string>
+    <string name="all_content_new_relation">Neue Relation</string>
+    <string name="all_content_new_type">Neuer Typ</string>
+    <string name="all_content_unlinked_description"></string>
+    <string name="all_content_snackbar_title">moved to bin</string>
+    <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_search_button">Search objects button</string>
+    <string name="main_navigation_content_desc_create_button">Create object button</string>
 </resources>

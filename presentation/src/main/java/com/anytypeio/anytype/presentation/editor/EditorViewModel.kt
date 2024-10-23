@@ -1385,6 +1385,8 @@ class EditorViewModel(
                     Editor.Focus.id(id = id, isPending = false)
                 )
             }
+        } else {
+            sendHideTypesWidgetEvent()
         }
     }
 
@@ -6266,8 +6268,13 @@ class EditorViewModel(
     private fun setTypesWidgetVisibility(visible: Boolean) {
         if (visible) {
             proceedWithGettingObjectTypesForTypesWidget()
+            _typesWidgetState.value = _typesWidgetState.value.copy(visible = true, expanded = false)
+        } else {
+            if (_typesWidgetState.value.visible) {
+                _typesWidgetState.value =
+                    _typesWidgetState.value.copy(visible = false, expanded = false)
+            }
         }
-        _typesWidgetState.value = _typesWidgetState.value.copy(visible = visible, expanded = false)
     }
 
     private fun onTypesWidgetSearchClicked() {

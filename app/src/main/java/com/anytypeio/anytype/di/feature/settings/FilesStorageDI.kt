@@ -9,19 +9,13 @@ import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.ClearFileCache
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
-import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
-import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.settings.FilesStorageFragment
 import dagger.Binds
 import dagger.Component
@@ -54,26 +48,6 @@ object FilesStorageModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideStoreLessSubscriptionContainer(
-        repo: BlockRepository,
-        channel: SubscriptionEventChannel,
-        dispatchers: AppCoroutineDispatchers,
-        logger: Logger
-    ): StorelessSubscriptionContainer = StorelessSubscriptionContainer.Impl(
-        repo = repo,
-        channel = channel,
-        dispatchers = dispatchers,
-        logger = logger
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun clearFileCache(repo: BlockRepository): ClearFileCache = ClearFileCache(repo)
 
     @JvmStatic
@@ -90,14 +64,13 @@ object FilesStorageModule {
     fun provideFileLimitEvents(
         channel: FileLimitsEventChannel,
         dispatchers: AppCoroutineDispatchers
-    ) : InterceptFileLimitEvents = InterceptFileLimitEvents(channel, dispatchers)
+    ): InterceptFileLimitEvents = InterceptFileLimitEvents(channel, dispatchers)
 
     @JvmStatic
     @Provides
     @PerScreen
     fun provideDeleteAccountUseCase(
-        repo: AuthRepository,
-        dispatchers: AppCoroutineDispatchers
+        repo: AuthRepository
     ): DeleteAccount = DeleteAccount(repo = repo)
 
     @Module
@@ -111,15 +84,11 @@ object FilesStorageModule {
 
 interface FilesStorageDependencies : ComponentDependencies {
     fun blockRepo(): BlockRepository
-    fun urlBuilder(): UrlBuilder
     fun dispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
-    fun configStorage(): ConfigStorage
-    fun channel(): SubscriptionEventChannel
     fun fileEventsChannel(): FileLimitsEventChannel
     fun buildProvider(): BuildProvider
     fun authRepo(): AuthRepository
     fun logger(): Logger
-    fun spaceManager(): SpaceManager
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

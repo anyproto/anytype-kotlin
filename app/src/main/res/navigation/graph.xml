@@ -27,6 +27,13 @@
                 app:exitAnim="@anim/nav_default_exit_anim"
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim"
                 app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            <action
+                android:id="@+id/action_pageScreen_to_pdfViewerFragment"
+                app:destination="@id/pdfViewerFragment"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         </fragment>
         <dialog
             android:id="@+id/objectMenuScreen"
@@ -638,5 +645,9 @@
     <dialog
         android:id="@+id/multiplayerFeatureDialog"
         android:name="com.anytypeio.anytype.ui.multiplayer.IntroduceSpaceSharingFragment"/>
+    <fragment
+        android:id="@+id/pdfViewerFragment"
+        android:name="com.anytypeio.anytype.ui.editor.pdf.PdfViewerFragment"
+        android:label="PdfViewerFragment" />
 
 </navigation>

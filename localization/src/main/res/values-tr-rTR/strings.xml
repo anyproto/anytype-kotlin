@@ -43,7 +43,7 @@
     <string name="space">Alan</string>
     <string name="space_name">Alan ismi</string>
     <string name="default_space">Giriş alanı</string>
-    <string name="space_settings_apply_random_gradient">Rastgele gradyan uygulayın</string>
+    <string name="space_settings_apply_random_gradient">Rastgele düz renk uygula</string>
     <string name="space_settings_apply_upload_image">Resim yükle</string>
     <string name="delete_space">Alanı sil</string>
     <string name="you_can_store">Dosyalarınızın %1$s kadarını şifrelenmiş yedekleme düğümümüzde ücretsiz olarak saklayabilirsiniz. Sınıra ulaşırsanız dosyalar yalnızca yerel olarak depolanacaktır.</string>
@@ -841,6 +841,8 @@
     <string name="synced_files">Senkronize edilmiş dosyalar</string>
     <string name="log_in">Giriş yap</string>
     <string name="create_object_section_library">Anytype Kitaplığı</string>
+    <string name="bin_empty_title">Your trash is empty.</string>
+    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Stil</string>
     <string name="slash_widget_main_media">Medya</string>
@@ -1281,7 +1283,6 @@
     <string name="payments_tier_details_name_title">Benzersiz isminizi seçin</string>
     <string name="payments_tier_details_name_subtitle">Bu, Anytype ağında üyeliğinizi onaylayan benzersiz adınızdır. Kişisel alan adınız olarak işlev görür ve değiştirilemez.</string>
     <string name="payments_tier_details_name_hint">Kendim</string>
-    <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Minimum 7 karakter</string>
     <string name="payments_tier_details_name_error">Bu isim çoktan alınmış!</string>
     <string name="payments_tier_details_name_validated">[%1$s] ismi kullanılmak için hazır!</string>
@@ -1497,7 +1498,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="version_history_error_get_members">Üyeler alınırken hata oluştu</string>
     <string name="new_object">Yeni nesne</string>
     <string name="vault_my_spaces">Benim Alanlarım</string>
-    <string name="all_content_title_all_content">Tüm nesneler</string>
+    <string name="all_content_title_all_content">Tüm Nesneler</string>
     <string name="all_content_title_only_unlinked">Sadece bağlantısız</string>
     <string name="all_content_title_only_unlinked_description">Grafikteki diğer nesnelerle doğrudan bağlantısı veya geri bağlantısı olmayan bağlantısız nesneler.</string>
     <string name="all_content_view_bin">Geri Dönüşüm Kutusunu Görüntüle</string>
@@ -1539,4 +1540,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="all_content_toast_type_added">Nesne türü eklendi</string>
     <string name="all_content_toast_type_removed">Nesne türü kaldırıldı</string>
     <string name="all_content_toast_archived">Nesne arşivlendi</string>
+    <string name="all_content_new_relation">Yeni ilişki</string>
+    <string name="all_content_new_type">Yeni tür</string>
+    <string name="all_content_unlinked_description">Grafikteki diğer nesnelerle doğrudan bağlantısı veya geri bağlantısı olmayan bağlantısız nesneler.</string>
+    <string name="all_content_snackbar_title">moved to bin</string>
+    <string name="main_navigation_content_desc_back_button">Geri düğmesi</string>
+    <string name="main_navigation_content_desc_search_button">Search objects button</string>
+    <string name="main_navigation_content_desc_create_button">Create object button</string>
 </resources>

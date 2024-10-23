@@ -139,6 +139,7 @@ import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageFragment
 import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageReceiver
 import com.anytypeio.anytype.ui.editor.modals.SetBlockTextValueFragment
 import com.anytypeio.anytype.ui.editor.modals.TextBlockIconPickerFragment
+import com.anytypeio.anytype.ui.editor.pdf.PdfViewerFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
@@ -1170,7 +1171,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenFileByDefaultApp -> {
                     vm.startSharingFile(command.id) { uri ->
-                        openFileByDefaultApp(uri)
+                        val fileType = requireContext().contentResolver.getType(uri)
+                        if (fileType == "application/pdf") {
+                            findNavController().navigate(
+                                R.id.action_pageScreen_to_pdfViewerFragment,
+                                bundleOf(PdfViewerFragment.ARG_URI to uri)
+                            )
+                        } else {
+                            openFileByDefaultApp(uri)
+                        }
                     }
                 }
                 is Command.SaveTextToSystemClipboard -> {

@@ -128,8 +128,7 @@ abstract class RelationAddViewModelBase(
         query: String
     ): List<ObjectWrapper.Relation> {
         val params = GetRelations.Params(
-            // TODO DROID-2916 Provide space id to vm params
-            space = SpaceId(spaceManager.get()),
+            space = SpaceId(MARKETPLACE_SPACE_ID),
             sorts = defaultObjectSearchSorts(),
             filters = buildList {
                 addAll(filterMarketplaceRelations())

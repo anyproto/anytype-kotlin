@@ -42,6 +42,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -68,6 +73,14 @@ class VaultViewModel(
             val wallpapers = getSpaceWallpapers.async(Unit).getOrNull() ?: emptyMap()
             spaceViewSubscriptionContainer
                 .observe()
+                .take(1)
+                .onCompletion {
+                    emitAll(
+                        spaceViewSubscriptionContainer
+                            .observe()
+                            .debounce(SPACE_VAULT_DEBOUNCE_DURATION)
+                    )
+                }
                 .combine(observeVaultSettings.flow()) { spaces, settings ->
                     spaces
                         .filter { space ->
@@ -308,5 +321,9 @@ class VaultViewModel(
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
+    }
+
+    companion object {
+        const val SPACE_VAULT_DEBOUNCE_DURATION = 300L
     }
 }

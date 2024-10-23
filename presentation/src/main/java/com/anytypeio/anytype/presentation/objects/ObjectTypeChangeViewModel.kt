@@ -295,7 +295,8 @@ class ObjectTypeChangeViewModel(
             space = SpaceId(spaceManager.get()),
             filters = ObjectSearchConstants.filterTypes(
                 recommendedLayouts = recommendedLayouts,
-                excludeParticipant = !setup.isSetSource
+                excludeParticipant = !setup.isSetSource,
+                excludeTemplates = !setup.isSetSource
             ),
             sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
             query = query,

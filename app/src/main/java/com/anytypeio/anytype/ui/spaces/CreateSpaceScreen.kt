@@ -52,7 +52,7 @@ import com.anytypeio.anytype.ui_settings.space.TypeOfSpace
 
 @Composable
 fun CreateSpaceScreen(
-    spaceIconView: SpaceIconView,
+    spaceIconView: SpaceIconView.Placeholder,
     onCreate: (Name) -> Unit,
     onSpaceIconClicked: () -> Unit,
     isLoading: State<Boolean>
@@ -79,7 +79,11 @@ fun CreateSpaceScreen(
             Spacer(modifier = Modifier.height(16.dp))
             SpaceIcon(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                spaceIconView = spaceIconView,
+                spaceIconView = spaceIconView.copy(
+                    name = input.value.ifEmpty { 
+                        stringResource(id = R.string.s)
+                    }
+                ),
                 onSpaceIconClicked = onSpaceIconClicked
             )
             Spacer(modifier = Modifier.height(10.dp))

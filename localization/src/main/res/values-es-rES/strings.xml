@@ -43,7 +43,7 @@
     <string name="space">Espacio</string>
     <string name="space_name">Nombre del espacio</string>
     <string name="default_space">Espacio inicial</string>
-    <string name="space_settings_apply_random_gradient">Aplicar degradado aleatorio</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Cargar una imagen</string>
     <string name="delete_space">Eliminar espacio</string>
     <string name="you_can_store">Puedes almacenar gratuitamente hasta %1$s de archivos en nuestro nodo de respaldo cifrado. Si llegas al límite, los archivos se almacenarán solo localmente.</string>
@@ -841,6 +841,8 @@
     <string name="synced_files">Archivos sincronizados</string>
     <string name="log_in">Iniciar sesión</string>
     <string name="create_object_section_library">Biblioteca de Anytype</string>
+    <string name="bin_empty_title">Your trash is empty.</string>
+    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Estilo</string>
     <string name="slash_widget_main_media">Medios</string>
@@ -1281,7 +1283,6 @@
     <string name="payments_tier_details_name_title">Elige un nombre único</string>
     <string name="payments_tier_details_name_subtitle">Este es tu nombre único en la red Anytype y confirma tu suscripción. Funciona como tu dominio personal y no se puede cambiar.</string>
     <string name="payments_tier_details_name_hint">Yo</string>
-    <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Mínimo 7 caracteres</string>
     <string name="payments_tier_details_name_error">¡Ese nombre ya está en uso!</string>
     <string name="payments_tier_details_name_validated">¡El nombre [%1$s] está disponible!</string>
@@ -1496,8 +1497,8 @@ En concreto,
     <string name="version_history_error_get_version">Error al obtener el historial de versiones</string>
     <string name="version_history_error_get_members">Error al obtener los miembros</string>
     <string name="new_object">Nuevo objeto</string>
-    <string name="vault_my_spaces">My Spaces</string>
-    <string name="all_content_title_all_content">Todos los objetos</string>
+    <string name="vault_my_spaces">Mis espacios</string>
+    <string name="all_content_title_all_content">All Objects</string>
     <string name="all_content_title_only_unlinked">Solo desconectados</string>
     <string name="all_content_title_only_unlinked_description">Objetos desconectados que no tienen un enlace a o desde otro objeto del gráfico.</string>
     <string name="all_content_view_bin">Ver papelera</string>
@@ -1539,4 +1540,11 @@ En concreto,
     <string name="all_content_toast_type_added">Object type added</string>
     <string name="all_content_toast_type_removed">Object type removed</string>
     <string name="all_content_toast_archived">Object archived</string>
+    <string name="all_content_new_relation">Nueva relación</string>
+    <string name="all_content_new_type">Nuevo tipo</string>
+    <string name="all_content_unlinked_description">Objetos desconectados que no tienen un enlace a o desde otro objeto del gráfico.</string>
+    <string name="all_content_snackbar_title">moved to bin</string>
+    <string name="main_navigation_content_desc_back_button">Botón Atrás</string>
+    <string name="main_navigation_content_desc_search_button">Search objects button</string>
+    <string name="main_navigation_content_desc_create_button">Create object button</string>
 </resources>

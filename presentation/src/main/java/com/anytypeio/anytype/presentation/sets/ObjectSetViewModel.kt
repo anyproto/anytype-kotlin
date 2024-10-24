@@ -970,25 +970,6 @@ class ObjectSetViewModel(
     }
 
     /**
-     *  @param [target] Object is a dependent object, therefore we look for data in details.
-     */
-    private suspend fun onRelationObjectClicked(target: Id) {
-        Timber.d("onCellObjectClicked, id:[$target]")
-        stateReducer.state.value.dataViewState() ?: return
-        val obj = objectStore.get(target) ?: return
-        if (obj.type.contains(ObjectTypeIds.OBJECT_TYPE)) {
-            toast("You cannot change type from here.")
-        } else {
-            proceedWithNavigation(
-                target = target,
-                layout = obj.layout,
-                space = requireNotNull(obj.spaceId),
-                identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
-            )
-        }
-    }
-
-    /**
      * @param [target] object is a record contained in this set.
      */
     fun onObjectHeaderClicked(target: Id) {
@@ -1000,7 +981,7 @@ class ObjectSetViewModel(
                 proceedWithNavigation(
                     target = target,
                     layout = obj.layout,
-                    space = requireNotNull(obj.spaceId),
+                    space = vmParams.space.id,
                     identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
                 )
             } else {
@@ -1250,14 +1231,14 @@ class ObjectSetViewModel(
             proceedWithOpeningObject(
                 target = response.objectId,
                 layout = obj.layout,
-                space = requireNotNull(obj.spaceId)
+                space = vmParams.space.id
             )
         } else {
             dispatch(
                 ObjectSetCommand.Modal.SetNameForCreatedObject(
                     ctx = context,
                     target = response.objectId,
-                    space = requireNotNull(obj.spaceId)
+                    space = vmParams.space.id
                 )
             )
         }

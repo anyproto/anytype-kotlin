@@ -302,7 +302,7 @@ abstract class ObjectMenuViewModelBase(
                             currentObjectName = fromName,
                             targetObjectName = obj.getProperName(),
                             icon = obj.objectIcon(urlBuilder),
-                            space = requireNotNull(obj.spaceId)
+                            space = space
                         )
                     )
                 },

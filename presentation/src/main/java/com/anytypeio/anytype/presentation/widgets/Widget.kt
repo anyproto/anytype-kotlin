@@ -95,10 +95,10 @@ sealed class Widget {
     }
 }
 
-fun Widget.isHidden() : Boolean {
+fun Widget.hasValidLayout() : Boolean {
     val widgetSource = source
     return if (widgetSource is Widget.Source.Default) {
-        widgetSource.obj.layout != null && SupportedLayouts.layouts.contains(widgetSource.obj.layout)
+        widgetSource.obj.layout != null || SupportedLayouts.layouts.contains(widgetSource.obj.layout)
     } else {
         true
     }

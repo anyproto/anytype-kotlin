@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -39,7 +40,10 @@ class CreateObjectViewModel(
             awaitAccountStart
                 .awaitStart()
                 .flatMapLatest {
-                    spaceManager.observe()
+                    spaceManager.state()
+                }
+                .filter { state ->
+                    state is SpaceManager.State.Space.Active || state is SpaceManager.State.NoSpace
                 }
                 .take(1)
                 .collect { config ->
@@ -50,27 +54,40 @@ class CreateObjectViewModel(
 
     private suspend fun proceedWithObjectCreation(
         type: Key,
-        config: Config
+        state: SpaceManager.State
     ) {
-        createObject.execute(
-            CreateObject.Param(
-                type = TypeKey(type),
-                space = SpaceId(config.space)
-            )
-        ).fold(
-            onFailure = { e ->
-                Timber.e(e, "Error while creating a new object with type:$type")
-            },
-            onSuccess = { result ->
-                createObjectStatus.emit(
-                    State.Success(
-                        id = result.objectId,
-                        layout = result.obj.layout,
-                        space = requireNotNull(result.obj.spaceId)
+        when(state) {
+            is SpaceManager.State.Space.Active -> {
+                createObject.execute(
+                    CreateObject.Param(
+                        type = TypeKey(type),
+                        space = SpaceId(state.config.space)
                     )
+                ).fold(
+                    onFailure = { e ->
+                        Timber.e(e, "Error while creating a new object with type:$type")
+                    },
+                    onSuccess = { result ->
+                        createObjectStatus.emit(
+                            State.Success(
+                                id = result.objectId,
+                                layout = result.obj.layout,
+                                space = requireNotNull(result.obj.spaceId)
+                            )
+                        )
+                    }
                 )
             }
-        )
+            is SpaceManager.State.NoSpace -> {
+                createObjectStatus.emit(State.Exit)
+            }
+            is SpaceManager.State.Space.Idle -> {
+                // Do nothing.
+            }
+            is SpaceManager.State.Init -> {
+                // Do nothing.
+            }
+        }
     }
 
     fun onStop() {
@@ -85,6 +102,7 @@ class CreateObjectViewModel(
     sealed class State {
         data class Success(val id: String, val layout: ObjectType.Layout?, val space: Id) : State()
         data class Error(val msg: String) : State()
+        data object Exit : State()
     }
 
     class Factory @Inject constructor(

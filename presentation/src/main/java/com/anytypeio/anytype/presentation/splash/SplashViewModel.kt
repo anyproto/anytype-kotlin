@@ -159,6 +159,10 @@ class SplashViewModel(
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
             val spaceId = spaceManager.get()
+            if (spaceId.isEmpty()) {
+                Timber.e("No space found")
+                return@launch
+            }
             val space = SpaceId(spaceId)
             val params = CreateObjectByTypeAndTemplate.Param(
                 typeKey = TypeKey(type),

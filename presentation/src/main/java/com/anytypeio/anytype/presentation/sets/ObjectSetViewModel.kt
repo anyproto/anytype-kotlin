@@ -1694,9 +1694,9 @@ class ObjectSetViewModel(
                             }
                         }
                     }
-                    is ObjectRelationView.ObjectType.Deleted -> TODO()
-                    is ObjectRelationView.Source -> TODO()
-                    else -> TODO()
+                    else -> {
+                        Timber.d("Ignoring click")
+                    }
                 }
             }
             is ListenerType.Relation.Featured -> {

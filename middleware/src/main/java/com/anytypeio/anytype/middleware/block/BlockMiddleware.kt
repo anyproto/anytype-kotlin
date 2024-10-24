@@ -44,11 +44,6 @@ class BlockMiddleware(
     private val middleware: Middleware
 ) : BlockRemote {
 
-    override suspend fun openDashboard(
-        contextId: String,
-        id: String
-    ): Payload = middleware.dashboardOpen(contextId, id)
-
     override suspend fun closeDashboard(id: String) {
         middleware.objectClose(id)
     }

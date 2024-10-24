@@ -70,7 +70,6 @@ interface BlockRemote {
     suspend fun openObjectSet(id: String): Payload
     suspend fun openObjectPreview(id: Id): Payload
     suspend fun closePage(id: String)
-    suspend fun openDashboard(contextId: String, id: String): Payload
     suspend fun closeDashboard(id: String)
     suspend fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload
     suspend fun setDocumentImageIcon(command: Command.SetDocumentImageIcon): Payload

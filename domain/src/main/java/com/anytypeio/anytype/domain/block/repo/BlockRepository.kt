@@ -115,7 +115,6 @@ interface BlockRepository {
     suspend fun openObjectSet(id: String): Result<Payload>
 
     suspend fun closePage(id: String)
-    suspend fun openDashboard(contextId: String, id: String): Payload
     suspend fun closeDashboard(id: String)
 
     /**

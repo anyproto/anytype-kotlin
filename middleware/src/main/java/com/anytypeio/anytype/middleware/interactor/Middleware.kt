@@ -742,21 +742,6 @@ class Middleware @Inject constructor(
     private val coverIdKey = "coverId"
     private val coverTypeKey = "coverType"
 
-    @Deprecated("Should deleted. Use objectOpen()")
-    @Throws(Exception::class)
-    fun dashboardOpen(contextId: String, id: String): Payload {
-        val request: Rpc.Object.Open.Request = Rpc.Object.Open.Request(
-            contextId = contextId,
-            objectId = id
-        )
-        logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.objectOpen(request) }
-        logResponseIfDebug(response, time)
-
-        return response.objectView?.toPayload()
-            ?: throw IllegalStateException("Object view was null")
-    }
-
     @Throws(Exception::class)
     fun debugExportLocalStore(path: String): String {
         val request = Rpc.Debug.ExportLocalstore.Request(

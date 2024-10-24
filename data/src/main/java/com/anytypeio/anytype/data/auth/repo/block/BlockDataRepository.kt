@@ -56,11 +56,6 @@ class BlockDataRepository(
     override suspend fun openObject(id: Id): ObjectView = remote.openObject(id = id)
     override suspend fun getObject(id: Id): ObjectView = remote.getObject(id = id)
 
-    override suspend fun openDashboard(
-        contextId: String,
-        id: String
-    ) = remote.openDashboard(id = id, contextId = contextId)
-
     override suspend fun openObjectPreview(id: Id): Result<Payload> = try {
         Result.Success(remote.openObjectPreview(id))
     } catch (e: AnytypeNeedsUpgradeException) {

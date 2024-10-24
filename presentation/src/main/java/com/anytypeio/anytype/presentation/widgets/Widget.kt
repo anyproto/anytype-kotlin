@@ -96,11 +96,13 @@ sealed class Widget {
 }
 
 fun Widget.hasValidLayout() : Boolean {
-    val widgetSource = source
-    return if (widgetSource is Widget.Source.Default) {
-        widgetSource.obj.layout != null || SupportedLayouts.layouts.contains(widgetSource.obj.layout)
-    } else {
-        true
+    return when (val widgetSource = source) {
+        is Widget.Source.Default -> {
+            widgetSource.obj.layout != null || SupportedLayouts.layouts.contains(widgetSource.obj.layout)
+        }
+        is Widget.Source.Bundled -> {
+            true
+        }
     }
 }
 

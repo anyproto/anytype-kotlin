@@ -90,7 +90,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                     id = mockObjectSet.obj1.id,
                     relationKey = mockObjectSet.relationObject3.key,
                     tags = listOf(),
-                    space = mockObjectSet.space
                 )
             )
 
@@ -163,7 +162,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                             icon = ObjectIcon.None,
                         )
                     ),
-                    space = mockObjectSet.space
                 )
             )
 

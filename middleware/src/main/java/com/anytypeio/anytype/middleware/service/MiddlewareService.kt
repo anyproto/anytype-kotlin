@@ -115,13 +115,7 @@ interface MiddlewareService {
     fun objectSetLayout(request: Rpc.Object.SetLayout.Request): Rpc.Object.SetLayout.Response
 
     @Throws(Exception::class)
-    fun objectSetIsFavorite(request: Rpc.Object.SetIsFavorite.Request): Rpc.Object.SetIsFavorite.Response
-
-    @Throws(Exception::class)
     fun objectListSetIsFavorite(request: Rpc.Object.ListSetIsFavorite.Request): Rpc.Object.ListSetIsFavorite.Response
-
-    @Throws(Exception::class)
-    fun objectSetIsArchived(request: Rpc.Object.SetIsArchived.Request): Rpc.Object.SetIsArchived.Response
 
     @Throws(Exception::class)
     fun objectListSetIsArchived(request: Rpc.Object.ListSetIsArchived.Request): Rpc.Object.ListSetIsArchived.Response

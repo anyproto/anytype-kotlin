@@ -56,11 +56,6 @@ class BlockDataRepository(
     override suspend fun openObject(id: Id): ObjectView = remote.openObject(id = id)
     override suspend fun getObject(id: Id): ObjectView = remote.getObject(id = id)
 
-    override suspend fun openDashboard(
-        contextId: String,
-        id: String
-    ) = remote.openDashboard(id = id, contextId = contextId)
-
     override suspend fun openObjectPreview(id: Id): Result<Payload> = try {
         Result.Success(remote.openObjectPreview(id))
     } catch (e: AnytypeNeedsUpgradeException) {
@@ -511,20 +506,10 @@ class BlockDataRepository(
         relations: List<Id>
     ): Payload = remote.removeFromFeaturedRelations(ctx, relations)
 
-    override suspend fun setObjectIsFavorite(
-        ctx: Id,
-        isFavorite: Boolean
-    ): Payload = remote.setObjectIsFavorite(ctx = ctx, isFavorite = isFavorite)
-
     override suspend fun setObjectListIsFavorite(
         objectIds: List<Id>,
         isFavorite: Boolean
     ) = remote.setObjectListIsFavorite(objectIds, isFavorite)
-
-    override suspend fun setObjectIsArchived(
-        ctx: Id,
-        isArchived: Boolean
-    ) = remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
 
     override suspend fun setObjectListIsArchived(
         targets: List<Id>,

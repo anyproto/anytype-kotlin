@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -79,9 +80,11 @@ object CreateObjectModule {
     @PerScreen
     fun provideViewModelFactory(
         createObject: CreateObject,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+         awaitAccountStartManager: AwaitAccountStartManager
     ): CreateObjectViewModel.Factory = CreateObjectViewModel.Factory(
         createObject = createObject,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        awaitAccountStart = awaitAccountStartManager
     )
 }

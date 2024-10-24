@@ -59,6 +59,9 @@ class CreateObjectFragment : BaseFragment<FragmentCreateObjectBinding>(R.layout.
                         )
                     }
                 }
+                is CreateObjectViewModel.State.Exit -> {
+                    findNavController().popBackStack()
+                }
             }
         }
         super.onStart()

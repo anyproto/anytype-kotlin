@@ -10,12 +10,11 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
-import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
-import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
-import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -34,9 +33,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ObjectSetMenuViewModel(
-    setObjectIsArchived: SetObjectIsArchived,
-    addToFavorite: AddToFavorite,
-    removeFromFavorite: RemoveFromFavorite,
+    setObjectIsArchived: SetObjectListIsArchived,
     addBackLinkToObject: AddBackLinkToObject,
     duplicateObject: DuplicateObject,
     delegator: Delegator<Action>,
@@ -51,11 +48,10 @@ class ObjectSetMenuViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
     private val deepLinkResolver: DeepLinkResolver,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    setObjectListIsFavorite: SetObjectListIsFavorite
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
-    addToFavorite = addToFavorite,
-    removeFromFavorite = removeFromFavorite,
     addBackLinkToObject = addBackLinkToObject,
     duplicateObject = duplicateObject,
     delegator = delegator,
@@ -68,7 +64,8 @@ class ObjectSetMenuViewModel(
     createWidget = createWidget,
     spaceManager = spaceManager,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-    payloadDelegator = payloadDelegator
+    payloadDelegator = payloadDelegator,
+    setObjectListIsFavorite = setObjectListIsFavorite
 ) {
 
     init {
@@ -77,9 +74,6 @@ class ObjectSetMenuViewModel(
 
     @Suppress("UNCHECKED_CAST")
     class Factory @Inject constructor(
-        private val setObjectIsArchived: SetObjectIsArchived,
-        private val addToFavorite: AddToFavorite,
-        private val removeFromFavorite: RemoveFromFavorite,
         private val addBackLinkToObject: AddBackLinkToObject,
         private val duplicateObject: DuplicateObject,
         private val delegator: Delegator<Action>,
@@ -94,13 +88,13 @@ class ObjectSetMenuViewModel(
         private val spaceManager: SpaceManager,
         private val deepLinkResolver: DeepLinkResolver,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val payloadDelegator: PayloadDelegator
+        private val payloadDelegator: PayloadDelegator,
+        private val setObjectListIsFavorite: SetObjectListIsFavorite,
+        private val setObjectListIsArchived: SetObjectListIsArchived
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
-                setObjectIsArchived = setObjectIsArchived,
-                addToFavorite = addToFavorite,
-                removeFromFavorite = removeFromFavorite,
+                setObjectIsArchived = setObjectListIsArchived,
                 addBackLinkToObject = addBackLinkToObject,
                 duplicateObject = duplicateObject,
                 delegator = delegator,
@@ -115,7 +109,8 @@ class ObjectSetMenuViewModel(
                 spaceManager = spaceManager,
                 deepLinkResolver = deepLinkResolver,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-                payloadDelegator = payloadDelegator
+                payloadDelegator = payloadDelegator,
+                setObjectListIsFavorite = setObjectListIsFavorite
             ) as T
         }
     }

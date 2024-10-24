@@ -14,11 +14,10 @@ import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
-import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
-import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
-import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -48,9 +47,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 abstract class ObjectMenuViewModelBase(
-    private val setObjectIsArchived: SetObjectIsArchived,
-    private val addToFavorite: AddToFavorite,
-    private val removeFromFavorite: RemoveFromFavorite,
     private val addBackLinkToObject: AddBackLinkToObject,
     protected val delegator: Delegator<Action>,
     protected val urlBuilder: UrlBuilder,
@@ -63,7 +59,9 @@ abstract class ObjectMenuViewModelBase(
     private val createWidget: CreateWidget,
     private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val payloadDelegator: PayloadDelegator
+    private val payloadDelegator: PayloadDelegator,
+    private val setObjectListIsFavorite: SetObjectListIsFavorite,
+    private val setObjectIsArchived: SetObjectListIsArchived
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     protected val jobs = mutableListOf<Job>()
@@ -130,19 +128,21 @@ abstract class ObjectMenuViewModelBase(
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {
         Timber.d("proceedWithRemovingFromFavorites, cts:[$ctx]")
-        jobs += viewModelScope.launch {
-            removeFromFavorite(
-                RemoveFromFavorite.Params(
-                    target = ctx
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while removing from favorite.") },
-                success = {
+        viewModelScope.launch {
+            val params = SetObjectListIsFavorite.Params(
+                objectIds = listOf(ctx),
+                isFavorite = false
+            )
+            setObjectListIsFavorite.async(params).fold(
+                onSuccess = {
                     sendAnalyticsRemoveFromFavoritesEvent(analytics)
-                    dispatcher.send(it)
                     _toasts.emit(REMOVE_FROM_FAVORITE_SUCCESS_MSG).also {
                         isDismissed.value = true
                     }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while removing from favorite.")
+                    _toasts.emit(SOMETHING_WENT_WRONG_MSG)
                 }
             )
         }
@@ -150,19 +150,21 @@ abstract class ObjectMenuViewModelBase(
 
     protected fun proceedWithAddingToFavorites(ctx: Id) {
         Timber.d("proceedWithAddingToFavorites, ctx:[$ctx]")
-        jobs += viewModelScope.launch {
-            addToFavorite(
-                AddToFavorite.Params(
-                    target = ctx
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while adding to favorites.") },
-                success = {
+        viewModelScope.launch {
+            val params = SetObjectListIsFavorite.Params(
+                objectIds = listOf(ctx),
+                isFavorite = true
+            )
+            setObjectListIsFavorite.async(params).fold(
+                onSuccess = {
                     sendAnalyticsAddToFavoritesEvent(analytics)
-                    dispatcher.send(it)
                     _toasts.emit(ADD_TO_FAVORITE_SUCCESS_MSG).also {
                         isDismissed.value = true
                     }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while removing from favorite.")
+                    _toasts.emit(SOMETHING_WENT_WRONG_MSG)
                 }
             )
         }
@@ -170,18 +172,13 @@ abstract class ObjectMenuViewModelBase(
 
     fun proceedWithUpdatingArchivedStatus(ctx: Id, isArchived: Boolean) {
         Timber.d("proceedWithUpdatingArchivedStatus, cts:[$ctx], isArchived:[$isArchived]")
-        jobs += viewModelScope.launch {
-            setObjectIsArchived(
-                SetObjectIsArchived.Params(
-                    context = ctx,
-                    isArchived = isArchived
-                )
-            ).process(
-                failure = {
-                    Timber.e(it, MOVE_OBJECT_TO_BIN_ERR_MSG)
-                    _toasts.emit(MOVE_OBJECT_TO_BIN_ERR_MSG)
-                },
-                success = {
+        viewModelScope.launch {
+            val params = SetObjectListIsArchived.Params(
+                targets = listOf(ctx),
+                isArchived = isArchived
+            )
+            setObjectIsArchived.async(params).fold(
+                onSuccess = {
                     if (isArchived) {
                         sendAnalyticsMoveToBinEvent(analytics)
                         _toasts.emit(MOVE_OBJECT_TO_BIN_SUCCESS_MSG)
@@ -189,6 +186,10 @@ abstract class ObjectMenuViewModelBase(
                         _toasts.emit(RESTORE_OBJECT_SUCCESS_MSG)
                     }
                     isObjectArchived.value = true
+                },
+                onFailure = {
+                    Timber.e(it, MOVE_OBJECT_TO_BIN_ERR_MSG)
+                    _toasts.emit(MOVE_OBJECT_TO_BIN_ERR_MSG)
                 }
             )
         }

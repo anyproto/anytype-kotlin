@@ -39,7 +39,6 @@ suspend fun List<ColumnView>.buildGridRow(
     val image = obj.iconImage
     val done = obj.done
     val layout = obj.layout
-    val space = requireNotNull(obj.spaceId)
     val objectIcon = obj.objectIcon(builder)
 
     val cells = mutableListOf<CellView>()
@@ -50,8 +49,7 @@ suspend fun List<ColumnView>.buildGridRow(
                     CellView.Description(
                         id = obj.id,
                         relationKey = column.key,
-                        text = "",
-                        space = requireNotNull(obj.spaceId)
+                        text = ""
                     )
                 )
             }
@@ -67,8 +65,7 @@ suspend fun List<ColumnView>.buildGridRow(
                     CellView.Object(
                         id = obj.id,
                         relationKey = column.key,
-                        objects = objects,
-                        space = space
+                        objects = objects
                     )
                 )
             }
@@ -82,8 +79,7 @@ suspend fun List<ColumnView>.buildGridRow(
                             CellView.Description(
                                 id = obj.id,
                                 relationKey = column.key,
-                                text = obj.getValue<String>(column.key).orEmpty(),
-                                space = space
+                                text = obj.getValue<String>(column.key).orEmpty()
                             )
                         }
 
@@ -92,8 +88,7 @@ suspend fun List<ColumnView>.buildGridRow(
                             CellView.Number(
                                 id = obj.id,
                                 relationKey = column.key,
-                                number = NumberParser.parse(value),
-                                space = space
+                                number = NumberParser.parse(value)
                             )
                         }
 
@@ -103,8 +98,7 @@ suspend fun List<ColumnView>.buildGridRow(
                                 id = obj.id,
                                 relationKey = column.key,
                                 timeInSecs = DateParser.parse(value),
-                                dateFormat = column.getDateRelationFormat(),
-                                space = space
+                                dateFormat = column.getDateRelationFormat()
                             )
                         }
 
@@ -132,8 +126,7 @@ suspend fun List<ColumnView>.buildGridRow(
                             CellView.File(
                                 id = obj.id,
                                 relationKey = column.key,
-                                files = files,
-                                space = space
+                                files = files
                             )
                         }
 
@@ -141,8 +134,7 @@ suspend fun List<ColumnView>.buildGridRow(
                             CellView.Checkbox(
                                 id = obj.id,
                                 relationKey = column.key,
-                                isChecked = obj.getValue<Boolean>(column.key) ?: false,
-                                space = space
+                                isChecked = obj.getValue<Boolean>(column.key) ?: false
                             )
                         }
 
@@ -150,8 +142,7 @@ suspend fun List<ColumnView>.buildGridRow(
                             CellView.Url(
                                 id = obj.id,
                                 relationKey = column.key,
-                                url = obj.getValue<String>(column.key).orEmpty(),
-                                space = space
+                                url = obj.getValue<String>(column.key).orEmpty()
                             )
                         }
 
@@ -159,8 +150,7 @@ suspend fun List<ColumnView>.buildGridRow(
                             CellView.Email(
                                 id = obj.id,
                                 relationKey = column.key,
-                                email = obj.getValue<String>(column.key).orEmpty(),
-                                space = space
+                                email = obj.getValue<String>(column.key).orEmpty()
                             )
                         }
 
@@ -168,8 +158,7 @@ suspend fun List<ColumnView>.buildGridRow(
                             CellView.Phone(
                                 id = obj.id,
                                 relationKey = column.key,
-                                phone = obj.getValue<String>(column.key).orEmpty(),
-                                space = space
+                                phone = obj.getValue<String>(column.key).orEmpty()
                             )
                         }
 
@@ -182,8 +171,7 @@ suspend fun List<ColumnView>.buildGridRow(
                             CellView.Object(
                                 id = obj.id,
                                 relationKey = column.key,
-                                objects = objects,
-                                space = space
+                                objects = objects
                             )
                         }
 
@@ -204,8 +192,7 @@ suspend fun List<ColumnView>.buildGridRow(
                             CellView.Tag(
                                 id = obj.id,
                                 relationKey = column.key,
-                                tags = tags,
-                                space = space
+                                tags = tags
                             )
                         }
 
@@ -234,8 +221,7 @@ suspend fun List<ColumnView>.buildGridRow(
                             CellView.Status(
                                 id = obj.id,
                                 relationKey = column.key,
-                                status = status,
-                                space = space
+                                status = status
                             )
                         }
 

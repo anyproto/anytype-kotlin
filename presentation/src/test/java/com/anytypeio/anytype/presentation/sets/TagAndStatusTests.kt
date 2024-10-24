@@ -144,8 +144,7 @@ class TagAndStatusTests {
                 CellView.Description(
                     id = recordId,
                     relationKey = viewerRelations[0].key,
-                    text = "Title4",
-                    space = defaultSpace
+                    text = "Title4"
                 ),
                 CellView.Tag(
                     id = recordId,
@@ -162,7 +161,6 @@ class TagAndStatusTests {
                             color = selOptions[2].color
                         )
                     ),
-                    space = defaultSpace
                 )
             )
         )
@@ -281,7 +279,6 @@ class TagAndStatusTests {
                     id = recordId,
                     relationKey = viewerRelations[0].key,
                     text = "Title4",
-                    space = defaultSpace
                 ),
                 CellView.Status(
                     id = recordId,
@@ -293,7 +290,6 @@ class TagAndStatusTests {
                             color = selOptions[2].color
                         )
                     ),
-                    space = defaultSpace
                 )
             )
         )

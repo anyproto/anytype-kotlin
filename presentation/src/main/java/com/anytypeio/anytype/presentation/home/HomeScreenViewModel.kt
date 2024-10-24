@@ -1362,6 +1362,9 @@ class HomeScreenViewModel(
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
             }
+            OpenObjectNavigation.NonValidObject -> {
+                sendToast("Object id is missing")
+            }
         }
     }
 
@@ -2292,9 +2295,11 @@ sealed class OpenObjectNavigation {
     data class OpenEditor(val target: Id, val space: Id) : OpenObjectNavigation()
     data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
+    data object NonValidObject: OpenObjectNavigation()
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
+    if (!isValid) return OpenObjectNavigation.NonValidObject
     return when (layout) {
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,

@@ -1488,43 +1488,6 @@ class Middleware @Inject constructor(
         return response.event.toPayload()
     }
 
-    @Deprecated(
-        "Use objectListSetIsArchived instead",
-        replaceWith = ReplaceWith("objectListSetIsArchived")
-    )
-    @Throws(Exception::class)
-    fun objectSetIsArchived(
-        ctx: Id,
-        isArchived: Boolean
-    ) {
-        val request = Rpc.Object.SetIsArchived.Request(
-            contextId = ctx,
-            isArchived = isArchived
-        )
-        logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.objectSetIsArchived(request) }
-        logResponseIfDebug(response, time)
-    }
-
-    @Deprecated(
-        "Use objectListSetIsFavorite instead",
-        replaceWith = ReplaceWith("objectListSetIsFavorite")
-    )
-    @Throws(Exception::class)
-    fun objectSetIsFavorite(
-        ctx: Id,
-        isFavorite: Boolean
-    ): Payload {
-        val request = Rpc.Object.SetIsFavorite.Request(
-            contextId = ctx,
-            isFavorite = isFavorite
-        )
-        logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.objectSetIsFavorite(request) }
-        logResponseIfDebug(response, time)
-        return response.event.toPayload()
-    }
-
     @Throws(Exception::class)
     fun objectListSetIsFavorite(
         objectIds: List<Id>,

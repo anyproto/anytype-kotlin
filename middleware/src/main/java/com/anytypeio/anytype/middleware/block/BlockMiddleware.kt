@@ -477,20 +477,10 @@ class BlockMiddleware(
         relations: List<Id>
     ): Payload = middleware.objectRelationRemoveFeatured(ctx, relations)
 
-    override suspend fun setObjectIsFavorite(
-        ctx: Id,
-        isFavorite: Boolean
-    ): Payload = middleware.objectSetIsFavorite(ctx = ctx, isFavorite = isFavorite)
-
     override suspend fun setObjectListIsFavorite(
         objectIds: List<Id>,
         isFavorite: Boolean
     ) = middleware.objectListSetIsFavorite(objectIds, isFavorite)
-
-    override suspend fun setObjectIsArchived(
-        ctx: Id,
-        isArchived: Boolean
-    ) = middleware.objectSetIsArchived(ctx = ctx, isArchived = isArchived)
 
     override suspend fun deleteObjects(targets: List<Id>) = middleware.objectListDelete(
         targets = targets

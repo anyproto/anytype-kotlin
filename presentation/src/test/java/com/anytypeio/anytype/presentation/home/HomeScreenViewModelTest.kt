@@ -2114,12 +2114,14 @@ class HomeScreenViewModelTest {
             val currentSourceObject = StubObject(
                 id = "SOURCE OBJECT 1",
                 links = emptyList(),
-                objectType = ObjectTypeIds.PAGE
+                objectType = ObjectTypeIds.PAGE,
+                layout = ObjectType.Layout.BASIC.code.toDouble()
             )
             val newSourceObject = StubObject(
                 id = "SOURCE OBJECT 2",
                 links = emptyList(),
-                objectType = ObjectTypeIds.PAGE
+                objectType = ObjectTypeIds.PAGE,
+                layout = ObjectType.Layout.BASIC.code.toDouble()
             )
             val sourceLink = StubLinkToObjectBlock(
                 id = "SOURCE LINK",
@@ -2155,6 +2157,11 @@ class HomeScreenViewModelTest {
                     delay(300)
                     emit(
                         listOf(
+                            Event.Command.Details.Set(
+                                context = WIDGET_OBJECT_ID,
+                                target = newSourceObject.id,
+                                details = Block.Fields(newSourceObject.map)
+                            ),
                             Event.Command.LinkGranularChange(
                                 context = WIDGET_OBJECT_ID,
                                 id = sourceLink.id,

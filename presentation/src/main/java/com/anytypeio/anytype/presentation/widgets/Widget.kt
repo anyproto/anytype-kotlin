@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 sealed class Widget {
 
@@ -90,6 +91,17 @@ sealed class Widget {
                 override val id: Id = BundledWidgetSourceIds.RECENT_LOCAL
                 override val type: Id? = null
             }
+        }
+    }
+}
+
+fun Widget.hasValidLayout() : Boolean {
+    return when (val widgetSource = source) {
+        is Widget.Source.Default -> {
+            widgetSource.obj.layout != null && SupportedLayouts.layouts.contains(widgetSource.obj.layout)
+        }
+        is Widget.Source.Bundled -> {
+            true
         }
     }
 }

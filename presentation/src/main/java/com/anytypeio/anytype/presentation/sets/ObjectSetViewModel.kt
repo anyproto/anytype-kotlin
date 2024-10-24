@@ -910,7 +910,7 @@ class ObjectSetViewModel(
                             ctx = context,
                             relationKey = cell.relationKey,
                             recordId = cell.id,
-                            space = cell.space
+                            space = vmParams.space.id
                         )
                     )
                 }
@@ -920,7 +920,7 @@ class ObjectSetViewModel(
                             ctx = context,
                             objectId = cell.id,
                             relationKey = cell.relationKey,
-                            space = cell.space
+                            space = vmParams.space.id
                         )
                     )
                 }
@@ -930,7 +930,7 @@ class ObjectSetViewModel(
                             ctx = context,
                             target = cell.id,
                             relationKey = cell.relationKey,
-                            space = cell.space
+                            space = vmParams.space.id
                         )
                     )
                 }
@@ -941,7 +941,7 @@ class ObjectSetViewModel(
                                 ctx = context,
                                 target = cell.id,
                                 relationKey = cell.relationKey,
-                                space = cell.space
+                                space = vmParams.space.id
                             )
                         )
                     } else {

@@ -43,7 +43,7 @@
     <string name="space">空间</string>
     <string name="space_name">空间名称</string>
     <string name="default_space">默认空间</string>
-    <string name="space_settings_apply_random_gradient">应用随机颜色</string>
+    <string name="space_settings_apply_random_gradient">应用随机纯色</string>
     <string name="space_settings_apply_upload_image">上传图像</string>
     <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
@@ -268,7 +268,7 @@
     <string name="sync_status_toast_offline">Anytype 节点未连接</string>
     <string name="sync_status_toast_syncing">向某个节点下载或上传数据</string>
     <string name="sync_status_toast_synced">已备份到 Anytype 网络</string>
-    <string name="sync_status_toast_synced_staging">已备份到 Anytype服务器</string>
+    <string name="sync_status_toast_synced_staging">已在 Anytype Staging 备份</string>
     <string name="sync_status_toast_synced_local">仅本地</string>
     <string name="sync_status_toast_synced_self_hosted">已备份到自托管网络</string>
     <string name="sync_status_toast_failed">同步失败，正在重试...</string>
@@ -510,7 +510,7 @@
     <string name="collection_widget_description">您的对象的集锦</string>
     <string name="no_type_named">没有名为 “%1$s” 的类型</string>
     <string name="try_to_create_new_one_or_search_for_something_else">试试创建一个新的或搜索其他内容</string>
-    <string name="try_different_search_query">尝试不同的搜索查询。</string>
+    <string name="try_different_search_query">尝试使用不同的搜索查询。</string>
     <string name="change_wallpaper">更换壁纸</string>
     <string name="change_icon">更改图标</string>
     <string name="random">随机</string>
@@ -839,8 +839,8 @@
     <string name="synced_files">已同步的文件</string>
     <string name="log_in">登录</string>
     <string name="create_object_section_library">Anytype 文库</string>
-    <string name="bin_empty_title">Your trash is empty.</string>
-    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
+    <string name="bin_empty_title">您的回收站是空的。</string>
+    <string name="bin_empty_subtitle">看起来您已经整理得井井有条了！</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">样式</string>
     <string name="slash_widget_main_media">媒体</string>
@@ -1179,7 +1179,7 @@
     <string name="multiplayer_show_qr_code">显示二维码</string>
     <string name="multiplayer_how_to_share_space">如何共享空间？</string>
     <string name="multiplayer_how_to_share_space_step_1">请向您与想要合作的人提供这个链接。</string>
-    <string name="multiplayer_how_to_share_space_qr_code">请向您与想要合作的人展示这个二维码。</string>
+    <string name="multiplayer_how_to_share_space_qr_code">将此二维码展示给想要与您协作的人。</string>
     <string name="multiplayer_how_to_share_space_step_2">通过点击链接，将收到一个人加入空间的请求。</string>
     <string name="multiplayer_how_to_share_space_step_3">批准请求后，您可以选择此人的访问权限。</string>
     <string name="multiplayer_how_share_one">1.</string>
@@ -1526,8 +1526,8 @@
     <string name="all_content_new_relation">新增关联</string>
     <string name="all_content_new_type">新建类型</string>
     <string name="all_content_unlinked_description">在图中没有与其他对象直接链接或反向链接的未链接对象。</string>
-    <string name="all_content_snackbar_title">moved to bin</string>
+    <string name="all_content_snackbar_title">已移至回收站</string>
     <string name="main_navigation_content_desc_back_button">返回按钮</string>
-    <string name="main_navigation_content_desc_search_button">Search objects button</string>
-    <string name="main_navigation_content_desc_create_button">Create object button</string>
+    <string name="main_navigation_content_desc_search_button">搜索对象按钮</string>
+    <string name="main_navigation_content_desc_create_button">创建对象按钮</string>
 </resources>

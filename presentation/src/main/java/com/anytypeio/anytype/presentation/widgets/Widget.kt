@@ -147,7 +147,7 @@ fun List<Block>.parseWidgets(
                     }
                     val hasValidSource = when(source) {
                         is Widget.Source.Bundled -> true
-                        is Widget.Source.Default -> source.obj.notDeletedNorArchived
+                        is Widget.Source.Default -> source.obj.isValid && source.obj.notDeletedNorArchived
                     }
                     if (hasValidSource && !WidgetConfig.excludedTypes.contains(source.type)) {
                         when (widgetContent.layout) {

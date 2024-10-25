@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds.DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -60,7 +61,7 @@ class GetDefaultObjectType @Inject constructor(
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
                         condition = DVFilterCondition.EQUAL,
-                        value = ObjectTypeUniqueKeys.NOTE
+                        value = DEFAULT_OBJECT_TYPE
                     )
                 )
             },

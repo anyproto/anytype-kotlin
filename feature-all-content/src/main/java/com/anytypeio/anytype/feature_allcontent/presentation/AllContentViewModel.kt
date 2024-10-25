@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.base.fold
@@ -703,6 +704,9 @@ class AllContentViewModel(
                 is OpenObjectNavigation.UnexpectedLayoutError -> {
                     Timber.e("Unexpected layout: ${navigation.layout}")
                     commands.emit(Command.SendToast.UnexpectedLayout(navigation.layout?.name.orEmpty()))
+                }
+                OpenObjectNavigation.NonValidObject -> {
+                    Timber.e("Object id is missing")
                 }
             }
         }

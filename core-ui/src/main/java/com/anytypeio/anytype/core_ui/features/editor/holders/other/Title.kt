@@ -111,7 +111,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 CoverGradient.GREEN_ORANGE -> R.drawable.wallpaper_gradient_3
                 CoverGradient.SKY -> R.drawable.wallpaper_gradient_4
                 else -> {
-                    Timber.e("Unknown cover gradient: $coverGradient")
+                    Timber.w("Unknown cover gradient: $coverGradient")
                     0
                 }
             }

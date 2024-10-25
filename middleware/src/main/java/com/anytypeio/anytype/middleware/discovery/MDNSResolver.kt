@@ -58,7 +58,7 @@ class MDNSResolver(
                 lock.release()
             }
         } catch (e: Exception) {
-            Timber.e(e, "Error while stopping MDNS resolver")
+            Timber.w(e, "Error while stopping MDNS resolver")
         }
     }
 

@@ -1584,7 +1584,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor()
                 ).also {
-                    Timber.e("Unexpected layout for title: $layout")
+                    Timber.w("Unexpected layout for title: $layout")
                 }
             }
         }

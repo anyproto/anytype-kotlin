@@ -181,7 +181,8 @@ class LibraryFragment : BaseComposeFragment() {
                         R.id.libraryFragment,
                         R.id.dataViewNavigation,
                         bundleOf(
-                            ObjectSetFragment.CONTEXT_ID_KEY to it.id
+                            ObjectSetFragment.CONTEXT_ID_KEY to it.id,
+                            ObjectSetFragment.SPACE_ID_KEY to space
                         )
                     )
                 }

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectOrigin
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -223,7 +224,7 @@ class SelectObjectTypeViewModel(
                     defaultObjectTypePipeline.emit(response.type)
                 },
                 onFailure = {
-                    defaultObjectTypePipeline.emit(TypeKey(""))
+                    defaultObjectTypePipeline.emit(TypeKey(ObjectTypeIds.NOTE))
                     Timber.e(it, "Error while getting default object type for init")
                 }
             )

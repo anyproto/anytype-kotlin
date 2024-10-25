@@ -238,6 +238,9 @@ class LibraryViewModel(
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
             }
+            OpenObjectNavigation.NonValidObject -> {
+                sendToast("Object id is missing")
+            }
         }
     }
 

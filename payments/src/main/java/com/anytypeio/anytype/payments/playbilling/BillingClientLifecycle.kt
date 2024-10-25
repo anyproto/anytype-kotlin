@@ -189,7 +189,7 @@ class BillingClientLifecycle(
             Timber.d("onProductDetailsResponse: ${productDetailsList.size} product(s)")
             processProductDetails(productDetailsList)
         } else {
-            Timber.e("onProductDetailsResponse: ${billingResult.responseCode}")
+            Timber.w("onProductDetailsResponse: ${billingResult.responseCode}")
             _builderSubProductWithProductDetails.value =
                 BillingClientState.Error("onProductDetailsResponse: ${billingResult.responseCode}")
         }

@@ -17,7 +17,6 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
 class GetDefaultObjectType @Inject constructor(
@@ -43,14 +42,14 @@ class GetDefaultObjectType @Inject constructor(
                     defaultTemplate = item.defaultTemplateId
                 )
             } else {
-                fetchDefaultType(params)
+                fetchFallbackObjectType(params)
             }
         } else {
-            return fetchDefaultType(params)
+            return fetchFallbackObjectType(params)
         }
     }
 
-    private suspend fun fetchDefaultType(space: SpaceId): Response {
+    private suspend fun fetchFallbackObjectType(space: SpaceId): Response {
         val structs = blockRepository.searchObjects(
             space = space,
             limit = 1,

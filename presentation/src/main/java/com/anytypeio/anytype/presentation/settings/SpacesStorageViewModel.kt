@@ -73,6 +73,7 @@ class SpacesStorageViewModel(
     private val jobs = mutableListOf<Job>()
 
     init {
+        Timber.d("SpacesStorageViewModel init, spaceId: ${vmParams.spaceId}")
         subscribeToViewEvents()
         subscribeToMiddlewareEvents()
         proceedWithGettingNodeUsageInfo()
@@ -370,7 +371,7 @@ class SpacesStorageViewModel(
         val nodeSpaces = nodeUsageInfo.spaces
 
         if (activeSpace == null || bytesLimit == null || bytesLimit == 0F) {
-            Timber.e("SpacesStorage, Space Id or Node bytesLimit is null or 0")
+            Timber.w("SpacesStorage, Space Id or Node bytesLimit is null or 0")
             return emptyList()
         }
 

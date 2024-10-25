@@ -63,7 +63,6 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
@@ -746,15 +745,6 @@ object EditorUseCaseModule {
     fun provideDuplicateObject(
         repo: BlockRepository
     ): DuplicateObject = DuplicateObject(
-        repo = repo
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideArchiveDocumentUseCase(
-        repo: BlockRepository
-    ): SetObjectIsArchived = SetObjectIsArchived(
         repo = repo
     )
 

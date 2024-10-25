@@ -59,6 +59,7 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.isEndLineClick
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.toPrettyString
@@ -4395,6 +4396,9 @@ class EditorViewModel(
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
             }
+            OpenObjectNavigation.NonValidObject -> {
+                sendToast("Object id is missing")
+            }
         }
     }
 
@@ -4705,7 +4709,6 @@ class EditorViewModel(
             proceedWithSlashItem(item, target.requireTarget())
         } else {
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-            Timber.e("Slash Widget Error, target is empty")
         }
     }
 

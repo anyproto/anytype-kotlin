@@ -115,7 +115,6 @@ interface BlockRepository {
     suspend fun openObjectSet(id: String): Result<Payload>
 
     suspend fun closePage(id: String)
-    suspend fun openDashboard(contextId: String, id: String): Payload
     suspend fun closeDashboard(id: String)
 
     /**
@@ -265,9 +264,7 @@ interface BlockRepository {
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 
-    suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean): Payload
     suspend fun setObjectListIsFavorite(objectIds: List<Id>, isFavorite: Boolean)
-    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean)
     suspend fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
 
     suspend fun deleteObjects(targets: List<Id>)

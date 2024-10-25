@@ -1695,7 +1695,7 @@ class ObjectSetViewModel(
                         }
                     }
                     else -> {
-                        Timber.d("Ignoring click")
+                        Timber.d("Ignoring click on relation, relation:[${clicked.relation}]")
                     }
                 }
             }
@@ -1706,7 +1706,7 @@ class ObjectSetViewModel(
                 )
             }
             else -> {
-                Timber.d("Ignoring click")
+                Timber.d("Ignoring click, listener:[${clicked}]")
             }
         }
     }

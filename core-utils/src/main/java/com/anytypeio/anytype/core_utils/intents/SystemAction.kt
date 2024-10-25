@@ -74,8 +74,8 @@ fun Fragment.proceedWithAction(action: SystemAction) = when(action) {
 
 fun Intent.createEmailOnlyChooserIntent(context: Context, title: CharSequence): Intent {
     val intents = mutableListOf<Intent>()
-    val dummyIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "info@domain.com", null))
-    val activities = context.packageManager.queryIntentActivities(dummyIntent, 0)
+    val placeholderIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "support@anytype.io", null))
+    val activities = context.packageManager.queryIntentActivities(placeholderIntent, 0)
 
     for (resolveInfo in activities) {
         val target = Intent(this)

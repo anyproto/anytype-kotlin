@@ -225,6 +225,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     is OpenObjectNavigation.UnexpectedLayoutError -> {
                                         toast(getString(R.string.error_unexpected_layout))
                                     }
+                                    OpenObjectNavigation.NonValidObject -> {
+                                        toast(getString(R.string.error_non_valid_object))
+                                    }
                                 }
                             }
                             is Command.Deeplink.DeepLinkToObjectNotWorking -> {

@@ -1655,6 +1655,7 @@ Please provide specific details of your needs here.</string>
 
     <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
     <string name="error_unexpected_layout">Error: unexpected layout</string>
+    <string name="error_non_valid_object">Error: object ID is missing</string>
 
     <string name="membership_price_pending">Pending...</string>"
     <string name="per_period">per %1$s</string>

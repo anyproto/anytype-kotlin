@@ -223,6 +223,7 @@ class SelectObjectTypeViewModel(
                     defaultObjectTypePipeline.emit(response.type)
                 },
                 onFailure = {
+                    defaultObjectTypePipeline.emit(TypeKey(""))
                     Timber.e(it, "Error while getting default object type for init")
                 }
             )

@@ -927,6 +927,9 @@ class CollectionViewModel(
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 toasts.emit("Unexpected layout: ${navigation.layout}")
             }
+            OpenObjectNavigation.NonValidObject -> {
+                toasts.emit("Object id is missing")
+            }
         }
     }
 

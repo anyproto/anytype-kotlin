@@ -719,7 +719,7 @@ private fun TemplateItemCoverImage(item: TemplateView.Template) {
 
 @Composable
 private fun TemplateItemCoverGradient(item: TemplateView.Template) {
-    item.coverGradient?.let { it ->
+    item.coverGradient?.let {
         val resourceId = when (it) {
             CoverGradient.YELLOW -> R.drawable.cover_gradient_yellow
             CoverGradient.RED -> R.drawable.cover_gradient_red
@@ -730,7 +730,7 @@ private fun TemplateItemCoverGradient(item: TemplateView.Template) {
             CoverGradient.GREEN_ORANGE -> R.drawable.wallpaper_gradient_3
             CoverGradient.SKY -> R.drawable.wallpaper_gradient_4
             else -> {
-                Timber.e("Unknown cover gradient: $it")
+                Timber.w("Unknown cover gradient: $it")
                 null
             }
         }

@@ -20,6 +20,7 @@ object WidgetConfig {
 
     fun isValidObject(obj: ObjectWrapper.Basic): Boolean {
         return !excludedTypes.contains(obj.type.firstOrNull())
+                && obj.isValid
                 && obj.isArchived != true
                 && obj.isDeleted != true
                 && SupportedLayouts.isSupported(obj.layout)

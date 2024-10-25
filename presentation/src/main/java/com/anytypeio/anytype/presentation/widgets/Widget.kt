@@ -135,9 +135,7 @@ fun List<Block>.parseWidgets(
                 val sourceContent = child.content
                 if (sourceContent is Block.Content.Link) {
                     val target = sourceContent.target
-                    val raw = details[target] ?: run {
-                        mapOf(Relations.ID to sourceContent.target)
-                    }
+                    val raw = details[target] ?: mapOf(Relations.ID to sourceContent.target)
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {
@@ -147,7 +145,7 @@ fun List<Block>.parseWidgets(
                     }
                     val hasValidSource = when(source) {
                         is Widget.Source.Bundled -> true
-                        is Widget.Source.Default -> source.obj.notDeletedNorArchived
+                        is Widget.Source.Default -> source.obj.isValid && source.obj.notDeletedNorArchived
                     }
                     if (hasValidSource && !WidgetConfig.excludedTypes.contains(source.type)) {
                         when (widgetContent.layout) {

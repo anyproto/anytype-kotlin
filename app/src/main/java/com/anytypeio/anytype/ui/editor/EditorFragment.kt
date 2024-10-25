@@ -1138,12 +1138,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }                }
                 is Command.OpenAddRelationScreen -> {
                     hideSoftInput()
-                    val fr = RelationAddToObjectBlockFragment.newInstance(
-                        ctx = command.ctx,
-                        target = command.target,
-                        space = space
-                    )
-                    fr.showChildFragment()
+                    runCatching {
+                        val fr = RelationAddToObjectBlockFragment.newInstance(
+                            ctx = command.ctx,
+                            target = command.target,
+                            space = space
+                        )
+                        fr.showChildFragment()
+                    }.onFailure {
+                        Timber.e(it, "Error while opening relation-add-to-object block screen")
+                    }
                 }
                 is Command.OpenLinkToObjectOrWebScreen -> {
                     hideSoftInput()

@@ -103,7 +103,7 @@ class DataViewListWidgetContainer(
             is Widget.Source.Default -> {
                 val isCompact = widget is Widget.List && widget.isCompact
                 if (isCollapsed) {
-                    when(val w = widget) {
+                    when(widget) {
                         is Widget.List -> {
                             flowOf(
                                 WidgetView.SetOfObjects(
@@ -215,7 +215,7 @@ class DataViewListWidgetContainer(
                 source = widget.source,
                 view = target.id,
                 tabs = obj.tabs(viewer = activeView),
-                elements = objects.map { obj ->
+                elements = objects.filter { obj -> obj.isValid }.map { obj ->
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
                         objectIcon = if (withIcon) {

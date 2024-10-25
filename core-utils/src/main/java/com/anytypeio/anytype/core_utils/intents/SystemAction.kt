@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_utils.intents
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.fragment.app.Fragment
@@ -31,13 +32,19 @@ fun Fragment.proceedWithAction(action: SystemAction) = when(action) {
     }
     is SystemAction.MailTo -> {
         try {
-            Intent(Intent.ACTION_SENDTO).apply {
+            val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:" + action.email)
-            }.let {
-                startActivity(it)
+            }
+            context?.let {
+                startActivity(
+                    emailIntent.createEmailOnlyChooserIntent(
+                        context = it,
+                        title = "Send email"
+                    )
+                )
             }
         } catch (e: Exception) {
-            toast("An error occurred. Email address may be invalid: ${e.message}")
+            toast("An error occurred. Email may be invalid: ${e.message}")
         }
     }
     is SystemAction.OpenUrl -> {
@@ -62,5 +69,25 @@ fun Fragment.proceedWithAction(action: SystemAction) = when(action) {
         } catch (e: Exception) {
             toast("An error occurred. Phone number may be invalid: ${e.message}")
         }
+    }
+}
+
+fun Intent.createEmailOnlyChooserIntent(context: Context, title: CharSequence): Intent {
+    val intents = mutableListOf<Intent>()
+    val placeholderIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "support@anytype.io", null))
+    val activities = context.packageManager.queryIntentActivities(placeholderIntent, 0)
+
+    for (resolveInfo in activities) {
+        val target = Intent(this)
+        target.setPackage(resolveInfo.activityInfo.packageName)
+        intents.add(target)
+    }
+
+    return if (intents.isNotEmpty()) {
+        val chooserIntent = Intent.createChooser(intents.removeAt(0), title)
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
+        chooserIntent
+    } else {
+        Intent.createChooser(this, title)
     }
 }

@@ -922,6 +922,11 @@ class CollectionViewModel(
             .tryAddSections()
     }
 
+    override fun onCleared() {
+        // TODO close object if it was opened.
+        super.onCleared()
+    }
+
     data class VmParams(val spaceId: SpaceId)
 
     class Factory @Inject constructor(

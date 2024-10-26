@@ -838,12 +838,6 @@ class CollectionViewModel(
         }
     }
 
-    fun onProfileClicked() {
-        viewModelScope.launch {
-            commands.emit(Command.Vault)
-        }
-    }
-
     fun onAddClicked(objType: ObjectWrapper.Type?) {
         viewModelScope.sendEvent(
             analytics = analytics,

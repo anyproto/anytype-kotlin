@@ -59,7 +59,7 @@
     <string name="account_name">名称</string>
     <string name="space_settings">空间设置</string>
     <string name="data_management">数据管理</string>
-    <string name="deleted_account_danger_zone_msg">一旦您请求删除您的库，您将有 30 天的时间来取消该请求。在30天后，您的加密库数据将被永久从备份节点中移除，您将无法在新设备上登录 Anytype。</string>
+    <string name="deleted_account_danger_zone_msg">一旦您请求删除您的库，您将有 30 天的时间来取消该请求。在 30 天后，您的加密库数据将被永久从备份节点中移除，您将无法在新设备上登录 Anytype。</string>
     <string name="danger_zone">危险操作区域</string>
     <string name="snackbar_template_add">新模板已添加到类型</string>
     <string name="settings_membership">会员</string>
@@ -1520,9 +1520,9 @@
     <string name="all_content_error_unexpected_layout">错误: 异常布局</string>
     <string name="all_content_toast_relation_added">关联类型</string>
     <string name="all_content_toast_relation_removed">关系已删除</string>
-    <string name="all_content_toast_type_added">对象类型名称</string>
+    <string name="all_content_toast_type_added">对象类型已添加</string>
     <string name="all_content_toast_type_removed">对象类型已删除</string>
-    <string name="all_content_toast_archived">已存档对象</string>
+    <string name="all_content_toast_archived">对象已归档</string>
     <string name="all_content_new_relation">新增关联</string>
     <string name="all_content_new_type">新建类型</string>
     <string name="all_content_unlinked_description">在图中没有与其他对象直接链接或反向链接的未链接对象。</string>

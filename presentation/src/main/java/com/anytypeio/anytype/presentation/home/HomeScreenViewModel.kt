@@ -1782,9 +1782,7 @@ class HomeScreenViewModel(
             createObject.async(
                 params = CreateObject.Param(
                     space = SpaceId(spaceManager.get()),
-                    type = type.uniqueKey?.let {
-                        TypeKey(it)
-                    }
+                    type = TypeKey(type.uniqueKey)
                 )
             ).fold(
                 onSuccess = { response ->
@@ -1816,9 +1814,7 @@ class HomeScreenViewModel(
             createObject.async(
                 params = CreateObject.Param(
                     space = SpaceId(spaceManager.get()),
-                    type = type.uniqueKey?.let {
-                        TypeKey(it)
-                    }
+                    type = TypeKey(type.uniqueKey)
                 )
             ).fold(
                 onSuccess = { result ->

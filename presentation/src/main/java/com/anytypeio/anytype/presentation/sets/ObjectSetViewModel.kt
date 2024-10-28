@@ -2185,10 +2185,11 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             delay(DELAY_BEFORE_CREATING_TEMPLATE)
             val params = CreateTemplate.Params(
-                targetObjectTypeId = targetTypeId
+                targetObjectTypeId = targetTypeId,
+                spaceId = vmParams.space
             )
             createTemplate.async(params).fold(
-                onSuccess = { id ->
+                onSuccess = { createObjectResult ->
                     logEvent(
                         state = stateReducer.state.value,
                         analytics = analytics,
@@ -2197,7 +2198,7 @@ class ObjectSetViewModel(
                         spaceParams = provideParams(vmParams.space.id)
                     )
                     proceedWithOpeningTemplate(
-                        target = id,
+                        target = createObjectResult.id,
                         targetTypeId = targetTypeId,
                         targetTypeKey = targetTypeKey
                     )

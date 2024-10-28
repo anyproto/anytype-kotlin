@@ -69,11 +69,13 @@ class CreateObjectViewModel(
                     onFailure = { e ->
                         Timber.e(e, "Error while creating a new object with type:$type")
                         createObjectStatus.emit(State.Error("Error while creating a new object"))
+                        createObjectStatus.emit(State.Exit)
                     },
                     onSuccess = { result ->
                         when (result) {
                             CreateObjectByTypeAndTemplate.Result.ObjectTypeNotFound -> {
                                 createObjectStatus.emit(State.Error("Object type not found"))
+                                createObjectStatus.emit(State.Exit)
                             }
                             is CreateObjectByTypeAndTemplate.Result.Success -> {
                                 createObjectStatus.emit(

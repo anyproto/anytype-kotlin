@@ -109,7 +109,7 @@
     <string name="background_color">背景颜色</string>
     <string name="content_description_bookmark_logo">书签图标</string>
     <string name="content_description_file_icon">文件图标</string>
-    <string name="content_description_modal_icon">Modal icon</string>
+    <string name="content_description_modal_icon">Modal图标</string>
     <string name="modal_tap_to_type">单击键入</string>
     <string name="modal_gallery">相册</string>
     <string name="modal_kanban">看板</string>
@@ -1109,7 +1109,7 @@
     <string name="object_values_empty_title">输入为空</string>
     <string name="object_values_empty_not_editable">关联是空的</string>
     <string name="object_values_delete_title">是否确定?</string>
-    <string name="object_values_delete_description">对象将被移动到回收站。</string>
+    <string name="object_values_delete_description">此对象将会被移动到回收站。</string>
     <string name="hint_enter_name">输入名称...</string>
     <string name="create_object">创建对象</string>
     <string name="msg_query_cannot_be_changed">只能在桌面端更改此查询</string>

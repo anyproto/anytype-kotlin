@@ -117,7 +117,7 @@ private fun Divider(height: Dp) {
         modifier = Modifier
             .fillMaxWidth()
             .height(height)
-            .background(colorResource(id = R.color.shape_tertiary))
+            .background(colorResource(id = R.color.shape_secondary))
     )
 }
 

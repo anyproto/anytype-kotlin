@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.media
 
 import android.text.Spannable
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.View
@@ -45,9 +47,9 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
         if (item.size != null && item.name != null) {
             val size = item.size?.readableFileSize() ?: ""
             val spannable = if (item.fileExt.isNullOrBlank()) {
-                SpannableStringBuilder("${item.name}  $size")
+                SpannableString("${item.name}  $size")
             } else {
-                SpannableStringBuilder("${item.name}.${item.fileExt}  $size")
+                SpannableString("${item.name}.${item.fileExt}  $size")
             }
             val start = if (item.fileExt.isNullOrBlank()) {
                 item.name!!.length + 2
@@ -71,9 +73,9 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
                 end,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            name.setText(spannable)
+            setEllipsizedText(spannable)
         } else {
-            name.setText(item.name)
+            name.text = item.name
         }
 
         applySearchHighlight(item)
@@ -82,6 +84,18 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
         icon.setImageResource(mimeIcon)
 
         applyBackground(item.background)
+    }
+
+    private fun setEllipsizedText(spannable: Spannable) {
+        name.post {
+            val ellipsizedText = TextUtils.ellipsize(
+                spannable,
+                name.paint,
+                name.width.toFloat(),
+                TextUtils.TruncateAt.MIDDLE
+            )
+            name.text = SpannableString(ellipsizedText)
+        }
     }
 
     private fun applySearchHighlight(item: BlockView.Searchable) {

@@ -688,7 +688,7 @@
     <string name="search_tags">Search tags</string>
     <string name="choose_relation_to_filter">Choose a relation to filter</string>
     <string name="choose_relation_to_sort">Choose a relation to sort</string>
-    <string name="btn_apply_new_object">Add to list</string>
+    <string name="btn_apply_new_object">Ajouter à la liste</string>
     <string name="btn_add">Ajouter</string>
     <string name="btn_upload_gallery">Upload from Gallery</string>
     <string name="btn_upload_storage">Upload from External storage</string>
@@ -709,9 +709,9 @@
     <string name="cover_description">Image d\'arrière-plan</string>
     <string name="layout_description">Arrangement d\'objets sur une toile</string>
     <string name="relations_description">Liste des objets liés</string>
-    <string name="history_description">All version of object</string>
-    <string name="history">History</string>
-    <string name="object_debug">Object Debug</string>
+    <string name="history_description">Toutes les versions de l\'objet</string>
+    <string name="history">Historique</string>
+    <string name="object_debug">Débogage de l\'objet</string>
     <string name="object_diagnostics">Diagnostics</string>
     <string name="provide_name">Provide name for new object</string>
     <string name="soon">Soon</string>
@@ -925,7 +925,7 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
-    <string name="edit_widgets">Edit widgets</string>
+    <string name="edit_widgets">Éditer widgets</string>
     <string name="add_widget">Ajouter un widget</string>
     <string name="widget_source">Source du widget</string>
     <string name="widget_type">Type de widget</string>
@@ -941,7 +941,7 @@
     <string name="widget_type_view_description">Widget avec une mise en page Set ou Collection</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Changer la Source</string>
-    <string name="widget_change_type">Change Type</string>
+    <string name="widget_change_type">Changer le type</string>
     <string name="widget_remove_widget">Supprimer le Widget</string>
     <string name="widget_empty_bin">Vider la poubelle</string>
     <string name="widget_edit_widgets">Modifier les widgets</string>
@@ -966,7 +966,7 @@
     <string name="library_relation_added">La relation %1$s a été ajoutée à votre bibliothèque\"</string>
     <string name="library_relation_removed">La relation %1$s a été supprimée de votre bibliothèque\"</string>
     <string name="library_something_went_wrong">Une erreur s\'est produite. Merci d\'essayer ultérieurement.</string>
-    <string name="type_creation_new_type">New type</string>
+    <string name="type_creation_new_type">Nouveau type</string>
     <string name="type_creation_done">Terminé</string>
     <string name="type_creation_placeholder">Type name</string>
     <!--endregion-->
@@ -1538,7 +1538,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="all_content_toast_type_removed">Type d\'objet supprimé</string>
     <string name="all_content_toast_archived">Objet archivé</string>
     <string name="all_content_new_relation">Nouvelle relation</string>
-    <string name="all_content_new_type">New type</string>
+    <string name="all_content_new_type">Nouveau type</string>
     <string name="all_content_unlinked_description">Objets non liés qui n\'ont pas de lien direct ou de lien en retour avec d\'autres objets dans le graphique.</string>
     <string name="all_content_snackbar_title">déplacé vers la corbeille</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>

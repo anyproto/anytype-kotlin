@@ -9,6 +9,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argInt
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -24,7 +25,7 @@ class EditorTemplateFragment : EditorFragment() {
 
     private val targetTypeId get() = arg<Id>(ARG_TARGET_TYPE_ID)
     private val targetTypeKey get() = arg<Id>(ARG_TARGET_TYPE_KEY)
-    private val fragmentType get() = argInt(ARG_TEMPLATE_TYPE)
+    private val fragmentType get() = argInt(ARG_SCREEN_TYPE)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -119,26 +120,26 @@ class EditorTemplateFragment : EditorFragment() {
 
     companion object {
         fun newInstance(
-            id: String,
+            targetTemplateId: String,
             space: Id,
             targetTypeId: Id,
-            targetTypeKey: Id,
-            type: Int
+            targetTypeKey: Key,
+            screenType: Int
         ): EditorTemplateFragment =
             EditorTemplateFragment().apply {
                 arguments = bundleOf(
-                    CTX_KEY to id,
+                    CTX_KEY to targetTemplateId,
                     SPACE_ID_KEY to space,
                     ARG_TARGET_TYPE_ID to targetTypeId,
                     ARG_TARGET_TYPE_KEY to targetTypeKey,
-                    ARG_TEMPLATE_TYPE to type
+                    ARG_SCREEN_TYPE to screenType
                 )
             }
 
         const val ARG_TEMPLATE_ID = "template_id"
         const val ARG_TARGET_TYPE_ID = "target_type_id"
         const val ARG_TARGET_TYPE_KEY = "target_type_key"
-        const val ARG_TEMPLATE_TYPE = "template_type"
+        const val ARG_SCREEN_TYPE = "screen_type"
         const val TYPE_TEMPLATE_EDIT = 1
         const val TYPE_TEMPLATE_SELECT = 2
         const val TYPE_TEMPLATE_MULTIPLE = 3

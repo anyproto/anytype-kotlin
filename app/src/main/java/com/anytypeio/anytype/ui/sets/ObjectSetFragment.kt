@@ -111,6 +111,7 @@ import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.OnCreateObjectAction
 import com.anytypeio.anytype.ui.objects.types.pickers.OnDataViewSelectSourceAction
 import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
@@ -137,7 +138,8 @@ open class ObjectSetFragment :
     TextValueEditReceiver,
     DateValueEditReceiver,
     OnDataViewSelectSourceAction,
-    OnObjectSelectTypeAction {
+    OnObjectSelectTypeAction,
+    OnCreateObjectAction {
 
     // Controls
 
@@ -328,11 +330,7 @@ open class ObjectSetFragment :
                     val dialog = SelectObjectTypeFragment.new(
                         flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
                         space = space
-                    ).apply {
-                        onTypeSelected = {
-                            vm.onAddNewDocumentClicked(it)
-                        }
-                    }
+                    )
                     dialog.show(childFragmentManager, "set-create-object-of-type-dialog")
                 }
                 .launchIn(lifecycleScope)
@@ -1422,6 +1420,10 @@ open class ObjectSetFragment :
 
     override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
         vm.onNewTypeForViewerClicked(objType)
+    }
+
+    override fun onProceedWithCreateObject(objType: ObjectWrapper.Type) {
+        vm.onAddNewDocumentClicked(objType)
     }
 
     private fun observeSelectingTemplate() {

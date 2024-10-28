@@ -52,6 +52,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 
+@Deprecated("legacy")
 class LibraryFragment : BaseComposeFragment() {
 
     @Inject
@@ -83,11 +84,7 @@ class LibraryFragment : BaseComposeFragment() {
                             val dialog = SelectObjectTypeFragment.new(
                                 flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
                                 space = space
-                            ).apply {
-                                onTypeSelected = {
-                                    vm.onCreateObjectOfTypeClicked(it)
-                                }
-                            }
+                            )
                             dialog.show(childFragmentManager, "library-create-object-of-type-dialog")
                         },
                         onBackLongPressed = {

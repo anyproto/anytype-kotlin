@@ -148,6 +148,7 @@ import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.OnCreateObjectAction
 import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
@@ -182,7 +183,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     ClipboardInterceptor,
     OnMoveToAction,
     OnLinkToAction,
-    OnObjectSelectTypeAction {
+    OnObjectSelectTypeAction,
+    OnCreateObjectAction {
 
     private val keyboardDelayJobs = mutableListOf<Job>()
 
@@ -611,11 +613,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 val dialog = SelectObjectTypeFragment.new(
                     flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
                     space = space
-                ).apply {
-                    onTypeSelected = {
-                        vm.onAddNewDocumentClicked(it)
-                    }
-                }
+                )
                 dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
             }
             .launchIn(lifecycleScope)
@@ -2163,6 +2161,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
         vm.onObjectTypeChanged(objType)
+    }
+
+    override fun onProceedWithCreateObject(objType: ObjectWrapper.Type) {
+        vm.onAddNewDocumentClicked(objType = objType)
     }
 
     override fun onAddRelationToTarget(target: Id, relationKey: Key) {

@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -28,10 +29,11 @@ import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.OnCreateObjectAction
 import javax.inject.Inject
 import timber.log.Timber
 
-class CollectionFragment : BaseComposeFragment() {
+class CollectionFragment : BaseComposeFragment(), OnCreateObjectAction {
 
     @Inject
     lateinit var factory: CollectionViewModel.Factory
@@ -66,11 +68,7 @@ class CollectionFragment : BaseComposeFragment() {
                             val dialog = SelectObjectTypeFragment.new(
                                 flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
                                 space = space
-                            ).apply {
-                                onTypeSelected = {
-                                    vm.onAddClicked(it)
-                                }
-                            }
+                            )
                             dialog.show(childFragmentManager, "fullscreen-widget-create-object-of-type-dialog")
                         },
                         onSearchClicked = {
@@ -147,6 +145,10 @@ class CollectionFragment : BaseComposeFragment() {
             target = target,
             space = space
         )
+    }
+
+    override fun onProceedWithCreateObject(objType: ObjectWrapper.Type) {
+        vm.onAddClicked(objType)
     }
 
     override fun onStop() {

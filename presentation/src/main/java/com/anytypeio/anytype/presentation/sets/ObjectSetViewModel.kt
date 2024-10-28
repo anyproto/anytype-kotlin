@@ -885,7 +885,6 @@ class ObjectSetViewModel(
         if (cell.relationKey == Relations.NAME) return
         val state = stateReducer.state.value.dataViewState() ?: return
         viewModelScope.launch {
-            val dataViewBlock = state.dataViewBlock
             val viewer = state.viewerByIdOrFirst(session.currentViewerId.value)
             val relation = storeOfRelations.getByKey(cell.relationKey)
 

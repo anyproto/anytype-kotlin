@@ -1414,6 +1414,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_prompt_primary_button_text">Aktivieren</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Lesezeichen aus der Zwischenablage erstellen</string>
     <string name="error_unexpected_layout">Fehler: Unerwartetes Layout</string>
+    <string name="error_non_valid_object">Error: object ID is missing</string>
     <string name="membership_price_pending">Ausstehend...</string>
     <string name="per_period">pro %1$s</string>
     <string name="free_for">Kostenlos für %1$s</string>

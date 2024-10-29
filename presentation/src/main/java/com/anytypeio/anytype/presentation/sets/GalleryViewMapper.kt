@@ -48,6 +48,7 @@ suspend fun DVViewer.buildGalleryViews(
 
     return objectIds
         .mapNotNull { objectStore.get(it) }
+        .filter { it.isValid }
         .map { obj ->
             if (hasCover) {
                 obj.mapToCoverItem(

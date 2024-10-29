@@ -845,8 +845,8 @@
     <string name="synced_files">Синхронизированные файлы</string>
     <string name="log_in">Войти</string>
     <string name="create_object_section_library">Библиотека Anytype</string>
-    <string name="bin_empty_title">Your trash is empty.</string>
-    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
+    <string name="bin_empty_title">Ваша корзина пуста.</string>
+    <string name="bin_empty_subtitle">Похоже, у вас всё аккуратно и организовано!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Внешний вид</string>
     <string name="slash_widget_main_media">Медиа-файлы</string>
@@ -1429,7 +1429,7 @@
     <string name="notifications_prompt_primary_button_text">Включить</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Создать закладку из буфера обмена</string>
     <string name="error_unexpected_layout">Ошибка: непредвиденный макет</string>
-    <string name="error_non_valid_object">Error: object ID is missing</string>
+    <string name="error_non_valid_object">Ошибка: ID объекта отсутствует</string>
     <string name="membership_price_pending">Ожидание...</string>
     <string name="per_period">на  %1$s</string>
     <string name="free_for">Бесплатно на %1$s</string>
@@ -1573,8 +1573,8 @@
     <string name="all_content_new_relation">Новое свойство</string>
     <string name="all_content_new_type">Новое свойство</string>
     <string name="all_content_unlinked_description">Непривязанные объекты, не имеющие прямой связи или обратной связи с другими объектами на графике.</string>
-    <string name="all_content_snackbar_title">moved to bin</string>
+    <string name="all_content_snackbar_title">перемещен в корзину</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
-    <string name="main_navigation_content_desc_search_button">Search objects button</string>
-    <string name="main_navigation_content_desc_create_button">Create object button</string>
+    <string name="main_navigation_content_desc_search_button">Кнопка поиска объектов</string>
+    <string name="main_navigation_content_desc_create_button">Кнопка создания объекта</string>
 </resources>

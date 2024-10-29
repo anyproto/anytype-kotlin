@@ -1548,4 +1548,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="main_navigation_content_desc_back_button">Geri düğmesi</string>
     <string name="main_navigation_content_desc_search_button">Nesneleri ara butonu</string>
     <string name="main_navigation_content_desc_create_button">Nesne oluştur butonu</string>
+    <string name="chat">Chat</string>
+    <string name="copy">Kopyala</string>
+    <string name="chats_edit_message">Edit message</string>
+    <string name="chats_message_edited">edited</string>
+    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
 </resources>

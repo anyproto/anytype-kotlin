@@ -35,8 +35,8 @@ import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
-import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.OnCreateObjectAction
+import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_MODIFY_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_UNINSTALL_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_ID
@@ -51,7 +51,7 @@ import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_NAME
 import javax.inject.Inject
 import timber.log.Timber
 
-class AllContentFragment : BaseComposeFragment(), OnCreateObjectAction {
+class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
 
     @Inject
     lateinit var factory: AllContentViewModelFactory
@@ -279,10 +279,7 @@ class AllContentFragment : BaseComposeFragment(), OnCreateObjectAction {
                     onGlobalSearchClicked = vm::onGlobalSearchClicked,
                     onAddDocClicked = vm::onAddDockClicked,
                     onCreateObjectLongClicked = {
-                        val dialog = SelectObjectTypeFragment.new(
-                            flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
-                            space = space
-                        )
+                        val dialog = ObjectTypeSelectionFragment.new(space = space)
                         dialog.show(childFragmentManager, null)
                     },
                     onBackClicked = vm::onBackClicked,
@@ -303,7 +300,7 @@ class AllContentFragment : BaseComposeFragment(), OnCreateObjectAction {
         }
     }
 
-    override fun onProceedWithCreateObject(objType: ObjectWrapper.Type) {
+    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
         vm.onCreateObjectOfTypeClicked(objType = objType)
     }
 

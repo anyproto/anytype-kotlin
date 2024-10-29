@@ -5,7 +5,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
-import com.anytypeio.anytype.core_utils.ext.withParent
+import com.anytypeio.anytype.core_utils.ext.withParentSafe
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 
@@ -26,7 +26,7 @@ class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
     }
 
     override fun onItemClicked(item: ObjectWrapper.Type) {
-        withParent<ObjectTypeSelectionListener> {
+        withParentSafe<ObjectTypeSelectionListener> {
             onSelectObjectType(objType = item)
         }
         hideSoftInput()

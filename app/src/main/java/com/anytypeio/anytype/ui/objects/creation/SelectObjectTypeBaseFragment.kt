@@ -31,7 +31,7 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.clipboard
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ext.withParent
+import com.anytypeio.anytype.core_utils.ext.withParentSafe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -58,7 +58,7 @@ class WidgetObjectTypeFragment: SelectObjectTypeBaseFragment() {
     private val widget get() = arg<Id>(WIDGET_ID_ARG)
 
     override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
-        withParent<WidgetObjectTypeListener> {
+        withParentSafe<WidgetObjectTypeListener> {
             onCreateWidgetObject(objType = objType, widgetId = widget)
         }
     }
@@ -87,7 +87,7 @@ class WidgetSourceTypeFragment : SelectObjectTypeBaseFragment() {
     private val widget get() = arg<Id>(WIDGET_ID_ARG)
 
     override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
-        withParent<WidgetSourceTypeListener> {
+        withParentSafe<WidgetSourceTypeListener> {
             onSetNewWidgetSource(objType = objType, widgetId = widget)
         }
     }
@@ -113,7 +113,7 @@ class WidgetSourceTypeFragment : SelectObjectTypeBaseFragment() {
 class ObjectTypeSelectionFragment : SelectObjectTypeBaseFragment() {
 
     override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
-        withParent<ObjectTypeSelectionListener> {
+        withParentSafe<ObjectTypeSelectionListener> {
             onSelectObjectType(objType = objType)
         }
     }
@@ -135,7 +135,7 @@ class ObjectTypeSelectionFragment : SelectObjectTypeBaseFragment() {
 class ObjectTypeUpdateFragment : SelectObjectTypeBaseFragment() {
 
     override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
-        withParent<ObjectTypeUpdateListener> {
+        withParentSafe<ObjectTypeUpdateListener> {
             onUpdateObjectType(objType = objType)
         }
     }

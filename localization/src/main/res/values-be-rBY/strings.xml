@@ -1426,6 +1426,7 @@
     <string name="notifications_prompt_primary_button_text">Уключыць</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Стварыць закладку з буфера абмену</string>
     <string name="error_unexpected_layout">Памылка: нечаканы макет</string>
+    <string name="error_non_valid_object">Error: object ID is missing</string>
     <string name="membership_price_pending">У чаканні...</string>
     <string name="per_period">у  %1$s</string>
     <string name="free_for">Бясплатна за %1$s</string>

@@ -91,7 +91,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                         }
                         is OpenObjectNavigation.OpenDiscussion -> {
                             findNavController().navigate(
-                                R.id.discussionScreen,
+                                R.id.chatScreen,
                                 DiscussionFragment.args(
                                     ctx = nav.target,
                                     space = nav.space

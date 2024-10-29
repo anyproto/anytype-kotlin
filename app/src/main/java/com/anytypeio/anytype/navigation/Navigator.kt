@@ -23,7 +23,6 @@ import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_SELECT
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
 import com.anytypeio.anytype.ui.types.create.CreateObjectTypeFragment
-import com.anytypeio.anytype.ui.types.create.TypeCreationScreen
 import com.anytypeio.anytype.ui.types.edit.TypeEditFragment
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 import timber.log.Timber
@@ -42,7 +41,7 @@ class Navigator : AppNavigation {
 
     override fun openChat(target: Id, space: Id) {
         navController?.navigate(
-            R.id.discussionScreen,
+            R.id.chatScreen,
             DiscussionFragment.args(
                 ctx = target,
                 space = space
@@ -62,7 +61,7 @@ class Navigator : AppNavigation {
 
     override fun openDiscussion(target: Id, space: Id) {
         navController?.navigate(
-            R.id.discussionScreen,
+            R.id.chatScreen,
             DiscussionFragment.args(
                 ctx = target,
                 space = space

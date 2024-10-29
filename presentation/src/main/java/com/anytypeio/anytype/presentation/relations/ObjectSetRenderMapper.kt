@@ -415,7 +415,8 @@ fun ObjectWrapper.Relation.toCheckbox(value: Any?): Boolean? =
     if (value is Boolean?) {
         value
     } else {
-        throw IllegalArgumentException("Relation format $format value should be Boolean, actual:$value")
+        Timber.e("Relation format $format value should be Boolean, actual:$value")
+        null
     }
 
 suspend fun ObjectWrapper.Relation.toTags(

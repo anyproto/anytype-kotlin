@@ -75,6 +75,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -115,13 +116,10 @@ class CollectionViewModel(
 
     val payloads: Flow<Payload>
 
-    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
-
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
     init {
         Timber.i("CollectionViewModel, init, spaceId:${vmParams.spaceId.id}")
-        proceedWithObservingProfileIcon()
         proceedWithObservingPermissions()
         val externalChannelEvents: Flow<Payload> = spaceManager
             .observe()
@@ -193,39 +191,9 @@ class CollectionViewModel(
         }
     }
 
-    private fun proceedWithObservingProfileIcon() {
-        viewModelScope.launch {
-            spaceManager
-                .observe()
-                .flatMapLatest { config ->
-                    container.subscribe(
-                        StoreSearchByIdsParams(
-                            space = SpaceId(config.space),
-                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                            targets = listOf(config.profile),
-                            keys = listOf(
-                                Relations.ID,
-                                Relations.NAME,
-                                Relations.ICON_EMOJI,
-                                Relations.ICON_IMAGE,
-                                Relations.ICON_OPTION
-                            )
-                        )
-                    ).map { result ->
-                        val obj = result.firstOrNull()
-                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
-                    }
-                }
-                .catch { Timber.e(it, "Error while observing space icon") }
-                .flowOn(dispatchers.io)
-                .collect { icon.value = it }
-        }
-    }
-
     private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
         val params = GetObjectTypes.Params(
-            // TODO DROID-2916 Provide space id to vm params
-            space = SpaceId(spaceManager.get()),
+            space = SpaceId(vmParams.spaceId.id),
             sorts = emptyList(),
             filters = ObjectSearchConstants.filterTypes(),
             keys = ObjectSearchConstants.defaultKeysObjectType
@@ -867,12 +835,6 @@ class CollectionViewModel(
             commands.emit(
                 Command.ToSearch(space = space)
             )
-        }
-    }
-
-    fun onProfileClicked() {
-        viewModelScope.launch {
-            commands.emit(Command.Vault)
         }
     }
 

@@ -147,9 +147,10 @@ import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
-import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.OnCreateObjectAction
-import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
+import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.objects.creation.ObjectTypeUpdateFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeUpdateListener
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
@@ -183,8 +184,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     ClipboardInterceptor,
     OnMoveToAction,
     OnLinkToAction,
-    OnObjectSelectTypeAction,
-    OnCreateObjectAction {
+    ObjectTypeSelectionListener,
+    ObjectTypeUpdateListener {
 
     private val keyboardDelayJobs = mutableListOf<Job>()
 
@@ -610,10 +611,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .btnAddDoc
             .longClicks(withHaptic = true)
             .onEach {
-                val dialog = SelectObjectTypeFragment.new(
-                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
-                    space = space
-                )
+                val dialog = ObjectTypeSelectionFragment.new(space = space)
                 dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
             }
             .launchIn(lifecycleScope)
@@ -1072,10 +1070,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenObjectSelectTypeScreen -> {
                     runCatching {
                         hideKeyboard()
-                        val dialog = SelectObjectTypeFragment.newInstance(
+                        val dialog = ObjectTypeUpdateFragment.new(
                             excludedTypeKeys = command.excludedTypes,
-                            onTypeSelected = vm::onObjectTypeChanged,
-                            flow = SelectObjectTypeFragment.FLOW_CHANGE_TYPE,
                             space = space
                         )
                         dialog.show(childFragmentManager, null)
@@ -2159,11 +2155,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.proceedToCreateObjectAndAddToTextAsLink(name)
     }
 
-    override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
-        vm.onObjectTypeChanged(objType)
+    override fun onUpdateObjectType(objType: ObjectWrapper.Type) {
+        vm.onObjectTypeChanged(objType = objType)
     }
 
-    override fun onProceedWithCreateObject(objType: ObjectWrapper.Type) {
+    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
         vm.onAddNewDocumentClicked(objType = objType)
     }
 

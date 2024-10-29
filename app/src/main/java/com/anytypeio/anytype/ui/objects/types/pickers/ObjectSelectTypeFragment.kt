@@ -26,8 +26,8 @@ class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
     }
 
     override fun onItemClicked(item: ObjectWrapper.Type) {
-        withParent<OnObjectSelectTypeAction> {
-            onProceedWithUpdateType(item)
+        withParent<ObjectTypeSelectionListener> {
+            onSelectObjectType(objType = item)
         }
         hideSoftInput()
         dismiss()

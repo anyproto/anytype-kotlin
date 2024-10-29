@@ -25,13 +25,13 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.clipboard
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -39,26 +39,137 @@ import com.anytypeio.anytype.presentation.objects.ClipboardToolbarViewState
 import com.anytypeio.anytype.presentation.objects.Command
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
+import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeUpdateListener
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
+
+/**
+ * A fragment that allows you to select an object type for a new object in a widget.
+ */
+class WidgetObjectTypeFragment: SelectObjectTypeFragment() {
+
+    private val widget get() = arg<Id>(WIDGET_ID_ARG)
+
+    override fun onAction(objType: ObjectWrapper.Type) {
+        withParent<WidgetObjectTypeListener> {
+            onCreateWidgetObject(objType = objType, widgetId = widget)
+        }
+    }
+
+    override fun resolveScreenTitle(): String {
+        return getString(R.string.create_object)
+    }
+
+    companion object {
+        private const val WIDGET_ID_ARG = "arg.select-object-type.widget-id"
+        fun new(space: Id, widgetId: Id) = WidgetObjectTypeFragment().apply {
+            arguments = bundleOf(
+                SPACE_ID_KEY to space,
+                WIDGET_ID_ARG to widgetId
+            )
+        }
+    }
+}
+
+/**
+ * “A fragment that allows you to select an object type as the source in a new widget.”
+ */
+
+class WidgetSourceTypeFragment : SelectObjectTypeFragment() {
+
+    private val widget get() = arg<Id>(WIDGET_ID_ARG)
+
+    override fun onAction(objType: ObjectWrapper.Type) {
+        withParent<WidgetSourceTypeListener> {
+            onSetNewWidgetSource(objType = objType, widgetId = widget)
+        }
+    }
+
+    override fun resolveScreenTitle(): String {
+        return getString(R.string.create_object)
+    }
+
+    companion object {
+        private const val WIDGET_ID_ARG = "arg.select-source-type.widget-id"
+        fun new(space: Id, widgetId: Id) = WidgetSourceTypeFragment().apply {
+            arguments = bundleOf(
+                SPACE_ID_KEY to space,
+                WIDGET_ID_ARG to widgetId
+            )
+        }
+    }
+}
+
+/**
+ * “A fragment that allows you to select an object type for a new object.”
+ */
+class ObjectTypeSelectionFragment : SelectObjectTypeFragment() {
+
+    override fun onAction(objType: ObjectWrapper.Type) {
+        withParent<ObjectTypeSelectionListener> {
+            onSelectObjectType(objType = objType)
+        }
+    }
+
+    override fun resolveScreenTitle(): String {
+        return getString(R.string.create_object)
+    }
+
+    companion object {
+        fun new(space: Id) = ObjectTypeSelectionFragment().apply {
+            arguments = bundleOf(SPACE_ID_KEY to space)
+        }
+    }
+}
+
+/**
+ * A fragment that allows you to update an object type of an existing object.
+ */
+class ObjectTypeUpdateFragment : SelectObjectTypeFragment() {
+
+    override fun onAction(objType: ObjectWrapper.Type) {
+        withParent<ObjectTypeUpdateListener> {
+            onUpdateObjectType(objType = objType)
+        }
+    }
+
+    override fun resolveScreenTitle(): String {
+        return getString(R.string.change_type)
+    }
+
+    companion object {
+        fun new(space: Id, excludedTypeKeys: List<Key>) = ObjectTypeUpdateFragment().apply {
+            arguments = bundleOf(
+                SPACE_ID_KEY to space,
+                EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys
+            )
+        }
+    }
+}
+
+/**
+ * A base class for fragments that allow you to select an object type.
+ */
+abstract class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
     lateinit var factory: SelectObjectTypeViewModel.Factory
 
     private val excludedTypeKeys get() = argOrNull<List<Key>>(EXCLUDED_TYPE_KEYS_ARG_KEY)
 
-    private val flow get() = arg<FlowType>(FLOW_TYPE_KEY)
-
     private val space get() = arg<Id>(SPACE_ID_KEY)
 
     private val vm by viewModels<SelectObjectTypeViewModel> { factory }
 
-    lateinit var onTypeSelected: (ObjectWrapper.Type) -> Unit
+    abstract fun onAction(objType: ObjectWrapper.Type)
+    abstract fun resolveScreenTitle(): String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -175,12 +286,6 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
-    private fun resolveScreenTitle() : String = when(val type = flow) {
-        FLOW_CHANGE_TYPE -> getString(R.string.change_type)
-        FLOW_CREATE_OBJECT -> getString(R.string.create_object)
-        else -> EMPTY_STRING_VALUE.also { Timber.w("Unexpected flow type: $type") }
-    }
-
     override fun onResume() {
         super.onResume()
         runCatching {
@@ -206,7 +311,7 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
     private fun proceedWithCommand(command: Command) {
         when (command) {
             is Command.DispatchObjectType -> {
-                onTypeSelected(command.type)
+                onAction(objType = command.type)
                 dismiss()
             }
             is Command.ShowTypeInstalledToast -> {
@@ -233,33 +338,6 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
     companion object {
         const val SPACE_ID_KEY = "arg.select-object-type.space-id"
         const val EXCLUDED_TYPE_KEYS_ARG_KEY = "arg.select-object-type.excluded-type-keys"
-        const val FLOW_TYPE_KEY = "arg.select-object-type.flow-type"
-        const val DROP_DOWN_MENU_ACTION_DELAY = 100L
-
-        const val FLOW_CREATE_OBJECT = 0
-        const val FLOW_CHANGE_TYPE = 1
-
-        fun newInstance(
-            excludedTypeKeys: List<Key>,
-            onTypeSelected: (ObjectWrapper.Type) -> Unit,
-            flow: FlowType = FLOW_CHANGE_TYPE,
-            space: Id
-        ): SelectObjectTypeFragment = SelectObjectTypeFragment().apply {
-            this.onTypeSelected = onTypeSelected
-            arguments = bundleOf(
-                EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys,
-                FLOW_TYPE_KEY to flow,
-                SPACE_ID_KEY to space
-            )
-        }
-
-        fun new(
-            flow: FlowType = FLOW_CREATE_OBJECT,
-            space: Id
-        ) = SelectObjectTypeFragment().apply {
-            arguments = bundleOf(FLOW_TYPE_KEY to flow, SPACE_ID_KEY to space)
-        }
+        private const val DROP_DOWN_MENU_ACTION_DELAY = 100L
     }
 }
-
-typealias FlowType = Int

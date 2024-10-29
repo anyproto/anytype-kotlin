@@ -575,7 +575,7 @@ suspend fun List<Id>.toGridRecordRows(
     val rows = mutableListOf<Viewer.GridView.Row>()
     forEach { id ->
         val record = store.get(id)
-        if (record != null) {
+        if (record != null && record.isValid) {
             val row = columns.buildGridRow(
                 showIcon = showIcon,
                 obj = record,

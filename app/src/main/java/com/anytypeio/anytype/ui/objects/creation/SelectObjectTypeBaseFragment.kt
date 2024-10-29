@@ -53,11 +53,11 @@ import timber.log.Timber
 /**
  * A fragment that allows you to select an object type for a new object in a widget.
  */
-class WidgetObjectTypeFragment: SelectObjectTypeFragment() {
+class WidgetObjectTypeFragment: SelectObjectTypeBaseFragment() {
 
     private val widget get() = arg<Id>(WIDGET_ID_ARG)
 
-    override fun onAction(objType: ObjectWrapper.Type) {
+    override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
         withParent<WidgetObjectTypeListener> {
             onCreateWidgetObject(objType = objType, widgetId = widget)
         }
@@ -82,11 +82,11 @@ class WidgetObjectTypeFragment: SelectObjectTypeFragment() {
  * “A fragment that allows you to select an object type as the source in a new widget.”
  */
 
-class WidgetSourceTypeFragment : SelectObjectTypeFragment() {
+class WidgetSourceTypeFragment : SelectObjectTypeBaseFragment() {
 
     private val widget get() = arg<Id>(WIDGET_ID_ARG)
 
-    override fun onAction(objType: ObjectWrapper.Type) {
+    override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
         withParent<WidgetSourceTypeListener> {
             onSetNewWidgetSource(objType = objType, widgetId = widget)
         }
@@ -110,9 +110,9 @@ class WidgetSourceTypeFragment : SelectObjectTypeFragment() {
 /**
  * “A fragment that allows you to select an object type for a new object.”
  */
-class ObjectTypeSelectionFragment : SelectObjectTypeFragment() {
+class ObjectTypeSelectionFragment : SelectObjectTypeBaseFragment() {
 
-    override fun onAction(objType: ObjectWrapper.Type) {
+    override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
         withParent<ObjectTypeSelectionListener> {
             onSelectObjectType(objType = objType)
         }
@@ -132,9 +132,9 @@ class ObjectTypeSelectionFragment : SelectObjectTypeFragment() {
 /**
  * A fragment that allows you to update an object type of an existing object.
  */
-class ObjectTypeUpdateFragment : SelectObjectTypeFragment() {
+class ObjectTypeUpdateFragment : SelectObjectTypeBaseFragment() {
 
-    override fun onAction(objType: ObjectWrapper.Type) {
+    override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
         withParent<ObjectTypeUpdateListener> {
             onUpdateObjectType(objType = objType)
         }
@@ -157,7 +157,7 @@ class ObjectTypeUpdateFragment : SelectObjectTypeFragment() {
 /**
  * A base class for fragments that allow you to select an object type.
  */
-abstract class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
+abstract class SelectObjectTypeBaseFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
     lateinit var factory: SelectObjectTypeViewModel.Factory
@@ -168,7 +168,7 @@ abstract class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<SelectObjectTypeViewModel> { factory }
 
-    abstract fun onAction(objType: ObjectWrapper.Type)
+    abstract fun proceedWithSelectedType(objType: ObjectWrapper.Type)
     abstract fun resolveScreenTitle(): String
 
     override fun onCreateView(
@@ -311,7 +311,7 @@ abstract class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
     private fun proceedWithCommand(command: Command) {
         when (command) {
             is Command.DispatchObjectType -> {
-                onAction(objType = command.type)
+                proceedWithSelectedType(objType = command.type)
                 dismiss()
             }
             is Command.ShowTypeInstalledToast -> {

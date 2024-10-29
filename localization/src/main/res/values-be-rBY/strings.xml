@@ -1574,4 +1574,9 @@
     <string name="main_navigation_content_desc_back_button">Кнопка назад</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
+    <string name="chat">Chat</string>
+    <string name="copy">Капіяваць</string>
+    <string name="chats_edit_message">Edit message</string>
+    <string name="chats_message_edited">edited</string>
+    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
 </resources>

@@ -1411,7 +1411,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="notifications_prompt_primary_button_text">Activé</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Créer un favori depuis le presse-papiers</string>
     <string name="error_unexpected_layout">Erreur: mise en page inattendue</string>
-    <string name="error_non_valid_object">Error: object ID is missing</string>
+    <string name="error_non_valid_object">Erreur : l\'ID de l\'objet est manquant</string>
     <string name="membership_price_pending">En attente…</string>
     <string name="per_period">par %1$s</string>
     <string name="free_for">Gratuit pour %1$s</string>
@@ -1545,9 +1545,9 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_search_button">Bouton de recherche d\'objets</string>
     <string name="main_navigation_content_desc_create_button">Créer un bouton objet</string>
-    <string name="chat">Chat</string>
+    <string name="chat">Messagerie</string>
     <string name="copy">Copier</string>
-    <string name="chats_edit_message">Edit message</string>
-    <string name="chats_message_edited">edited</string>
-    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
+    <string name="chats_edit_message">Modifier le message</string>
+    <string name="chats_message_edited">modifié</string>
+    <string name="chat_empty_state_message">Il n\'y a pas encore de messages.\nSoyez le premier à lancer une discussion.</string>
 </resources>

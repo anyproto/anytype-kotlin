@@ -1415,6 +1415,7 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_prompt_primary_button_text">Abilita</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Crea segnalibro dagli appunti</string>
     <string name="error_unexpected_layout">Errore: layout inaspettato</string>
+    <string name="error_non_valid_object">Error: object ID is missing</string>
     <string name="membership_price_pending">In attesa...</string>
     <string name="per_period">per %1$s</string>
     <string name="free_for">Gratuito per %1$s</string>

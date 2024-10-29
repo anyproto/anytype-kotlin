@@ -705,6 +705,14 @@ class AllContentViewModel(
                     Timber.e("Unexpected layout: ${navigation.layout}")
                     commands.emit(Command.SendToast.UnexpectedLayout(navigation.layout?.name.orEmpty()))
                 }
+                is OpenObjectNavigation.OpenDiscussion -> {
+                    commands.emit(
+                        Command.OpenChat(
+                            target = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
                 OpenObjectNavigation.NonValidObject -> {
                     Timber.e("Object id is missing")
                 }
@@ -972,6 +980,7 @@ class AllContentViewModel(
     //endregion
 
     sealed class Command {
+        data class OpenChat(val target: Id, val space: Id) : Command()
         data class NavigateToEditor(val id: Id, val space: Id) : Command()
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
         data class NavigateToBin(val space: Id) : Command()

@@ -16,6 +16,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,18 +27,34 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -65,6 +82,7 @@ import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
+import kotlinx.coroutines.flow.StateFlow
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
@@ -99,8 +117,11 @@ fun HomeScreen(
     onCreateObjectInsideWidget: (Id) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onBackLongClicked: () -> Unit
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
+    showTooltip: StateFlow<Boolean>,
+    onTooltipDismissed: () -> Unit,
 ) {
-
+    val isTooltipVisible by showTooltip.collectAsStateWithLifecycle()
     Box(modifier = Modifier.fillMaxSize()) {
         WidgetList(
             widgets = widgets,
@@ -166,6 +187,13 @@ fun HomeScreen(
                 addDocLongClick = onCreateNewObjectLongClicked,
                 isOwnerOrEditor = mode !is InteractionMode.ReadOnly
             )
+            if (isTooltipVisible) {
+            SpaceSwitcherTooltip(
+                onDismissRequest = onTooltipDismissed,
+                modifier = Modifier.align(Alignment.BottomCenter)
+                    .padding(bottom = 90.dp),
+             )
+        }
         }
     }
 
@@ -808,5 +836,179 @@ fun WidgetEditModeButton(
             style = UXBody,
             color = colorResource(id = R.color.text_white)
         )
+    }
+}
+
+@Composable
+fun HomeScreenBottomToolbar(
+    modifier: Modifier,
+    onSearchClicked: () -> Unit,
+    onCreateNewObjectClicked: () -> Unit,
+    onCreateNewObjectLongClicked: () -> Unit,
+    onBackClicked: () -> Unit,
+    isReadOnlyAccess: Boolean
+) {
+    val haptic = LocalHapticFeedback.current
+    Row(
+        modifier = modifier
+            .height(BottomNavigationDefaults.Height)
+            .width(BottomNavigationDefaults.Width)
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.home_screen_toolbar_button)
+            )
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize()
+                .noRippleClickable { onBackClicked() }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_nav_panel_back),
+                contentDescription = "Search icon",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .alpha(if (isReadOnlyAccess) 0.2f else 1f)
+                .fillMaxSize()
+                .then(
+                    if (isReadOnlyAccess)
+                        Modifier.clickable {
+                            // Do nothing.
+                        }
+                    else
+                        Modifier.noRippleCombinedClickable(
+                            onLongClicked = {
+                                onCreateNewObjectLongClicked().also {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                }
+                            },
+                            onClick = {
+                                onCreateNewObjectClicked()
+                            }
+                        )
+                )
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_nav_panel_plus),
+                contentDescription = "Plus icon",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize()
+                .noRippleClickable { onSearchClicked() }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_nav_panel_search),
+                contentDescription = "Search icon",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
+}
+
+@Composable
+fun SpaceSwitcherTooltip(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TooltipPopup(
+        modifier = modifier,
+        tooltipContent = {
+            Box(
+                modifier = Modifier
+                    .height(100.dp)
+                    .background(
+                        color = colorResource(id = R.color.home_screen_tooltip),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(12.dp)
+            ) {
+                IconButton(
+                    onClick = onDismissRequest,
+                    modifier = Modifier.align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close",
+                        tint = colorResource(id = R.color.select_space_bottom_sheet_background_color)
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(end = 40.dp)
+                ) {
+                    Text(
+                        text = "Switch spaces quicker",
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        text = "Long tap on back button to switch Space",
+                        color = Color.Black,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun TooltipPopup(
+    modifier: Modifier = Modifier,
+    tooltipContent: @Composable () -> Unit
+) {
+        Popup(
+            alignment = Alignment.BottomCenter,
+            offset = IntOffset(0, -180)
+        ) {
+            BubbleLayout(
+                arrowHeight = 8.dp,
+                arrowPositionX = 0.5f
+            ) {
+                tooltipContent()
+            }
+        }
+}
+
+@Composable
+fun BubbleLayout(
+    modifier: Modifier = Modifier,
+    arrowHeight: Dp,
+    arrowPositionX: Float,
+    content: @Composable () -> Unit
+) {
+    val tooltipColor = colorResource(id = R.color.home_screen_tooltip)
+    val arrowHeightPx = with(LocalDensity.current) { arrowHeight.toPx() }
+
+    Box(
+        modifier = modifier
+            .background(color = tooltipColor, shape = RoundedCornerShape(16.dp))
+            .drawBehind {
+                val path = androidx.compose.ui.graphics.Path()
+                if (arrowPositionX in 0f..1f) {
+                    val arrowCenter = Offset(size.width * arrowPositionX, size.height)
+                    path.apply {
+                        moveTo(arrowCenter.x, arrowCenter.y)
+                        lineTo(arrowCenter.x + arrowHeightPx, arrowCenter.y)
+                        lineTo(arrowCenter.x, arrowCenter.y + arrowHeightPx)
+                        lineTo(arrowCenter.x - arrowHeightPx, arrowCenter.y)
+                        close()
+                    }
+                }
+                drawPath(path, color = tooltipColor)
+            }
+    ) {
+        content()
     }
 }

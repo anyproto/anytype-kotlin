@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.home
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -73,6 +74,8 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
+    private var spaceSwitchCount: Int = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -126,6 +129,9 @@ class HomeScreenFragment : BaseComposeFragment(),
                     onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
                     onCreateDataViewObject = vm::onCreateDataViewObject,
                     onBackLongClicked = vm::onBackLongClicked
+                    onCreateDataViewObject = vm::onCreateDataViewObject,
+                    showTooltip = vm.showTooltip,
+                    onTooltipDismissed = vm::onTooltipDismissed,
                 )
             }
         }
@@ -140,6 +146,49 @@ class HomeScreenFragment : BaseComposeFragment(),
     override fun onStop() {
         super.onStop()
         vm.onStop()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val tooltipShownOnce = isTooltipShown()
+        spaceSwitchCount = getSpaceSwitchCount()
+        if (!tooltipShownOnce && spaceSwitchCount >= 2) {
+            vm.showTooltip()
+            saveTooltipShown(true)
+            spaceSwitchCount = 0
+        } else if (!tooltipShownOnce) {
+            spaceSwitchCount++
+        }
+        saveSpaceSwitchCount(spaceSwitchCount)
+    }
+
+    private fun saveTooltipShown(shown: Boolean) {
+        val sharedPreferences =
+            requireContext().getSharedPreferences(SPACE_SWITCH_PREF, Context.MODE_PRIVATE)
+        sharedPreferences.edit().putBoolean(TOOLTIP_SHOWN_KEY, shown).apply()
+    }
+
+    private fun isTooltipShown(): Boolean {
+        val sharedPreferences =
+            requireContext().getSharedPreferences(SPACE_SWITCH_PREF, Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean(TOOLTIP_SHOWN_KEY, false)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveSpaceSwitchCount(spaceSwitchCount)
+    }
+
+    private fun saveSpaceSwitchCount(count: Int) {
+        val sharedPreferences =
+            requireContext().getSharedPreferences(SPACE_SWITCH_PREF, Context.MODE_PRIVATE)
+        sharedPreferences.edit().putInt(SPACE_SWITCH_COUNT_KEY, count).apply()
+    }
+
+    private fun getSpaceSwitchCount(): Int {
+        val sharedPreferences =
+            requireContext().getSharedPreferences(SPACE_SWITCH_PREF, Context.MODE_PRIVATE)
+        return sharedPreferences.getInt(SPACE_SWITCH_COUNT_KEY, 0)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -390,6 +439,9 @@ class HomeScreenFragment : BaseComposeFragment(),
     }
 
     companion object {
+        private const val TOOLTIP_SHOWN_KEY = "tooltip_shown_key"
+        private const val SPACE_SWITCH_PREF = "HomeScreenPrefs"
+        private const val SPACE_SWITCH_COUNT_KEY = "space_switch_count_key"
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
         const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
         fun args(deeplink: String?) : Bundle = bundleOf(

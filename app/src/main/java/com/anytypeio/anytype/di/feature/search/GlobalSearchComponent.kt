@@ -36,6 +36,7 @@ interface GlobalSearchComponent {
     }
 
     fun inject(fragment: GlobalSearchFragment)
+    fun getViewModel(): GlobalSearchViewModel
 }
 
 @Module

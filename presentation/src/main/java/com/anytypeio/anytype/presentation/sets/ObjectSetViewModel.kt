@@ -1527,6 +1527,31 @@ class ObjectSetViewModel(
                     }
                 )
             }
+            ObjectType.Layout.CHAT -> {
+                closeBlock.async(context).fold(
+                    onSuccess = {
+                        navigate(
+                            EventWrapper(
+                                AppNavigation.Command.OpenChat(
+                                    target = target,
+                                    space = space
+                                )
+                            )
+                        )
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while closing object set: $context")
+                        navigate(
+                            EventWrapper(
+                                AppNavigation.Command.OpenChat(
+                                    target = target,
+                                    space = space
+                                )
+                            )
+                        )
+                    }
+                )
+            }
             else -> {
                 toast("Unexpected layout: $layout")
                 Timber.e("Unexpected layout: $layout")

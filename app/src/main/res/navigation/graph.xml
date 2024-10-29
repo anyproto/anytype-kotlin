@@ -150,6 +150,11 @@
     </navigation>
 
     <fragment
+        android:id="@+id/chatScreen"
+        android:name="com.anytypeio.anytype.di.feature.discussions.DiscussionFragment"
+        android:label="Discussion" />
+
+    <fragment
         android:id="@+id/homeScreen"
         android:name="com.anytypeio.anytype.ui.home.HomeScreenFragment"
         android:label="Home screen"

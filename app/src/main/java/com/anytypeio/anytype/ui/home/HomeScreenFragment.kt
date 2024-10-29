@@ -55,11 +55,12 @@ class HomeScreenFragment : BaseComposeFragment() {
         get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) ?: false
         set(value) { arguments?.putBoolean(SHOW_MNEMONIC_KEY, value) }
 
-    @Inject
-    lateinit var factory: HomeScreenViewModel.Factory
 
     @Inject
     lateinit var featureToggles: FeatureToggles
+
+    @Inject
+    lateinit var factory: HomeScreenViewModel.Factory
 
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
@@ -117,10 +118,6 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onCreateDataViewObject = vm::onCreateDataViewObject,
                     onBackLongClicked = vm::onBackLongClicked
                 )
-
-                if (featureToggles.enableDiscussionDemo) {
-                    DiscussionScreenWrapper()
-                }
             }
         }
     }
@@ -347,6 +344,12 @@ class HomeScreenFragment : BaseComposeFragment() {
                     view = destination.view
                 )
             }
+            is Navigation.OpenDiscussion -> runCatching {
+                navigation().openDiscussion(
+                    target = destination.ctx,
+                    space = destination.space
+                )
+            }
             is Navigation.ExpandWidget -> runCatching {
                 navigation().launchCollections(
                     subscription = destination.subscription,
@@ -385,12 +388,6 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
-    }
-
-    override fun onApplyWindowRootInsets(view: View) {
-        if (!featureToggles.enableDiscussionDemo) {
-            super.onApplyWindowRootInsets(view)
-        }
     }
 
     companion object {

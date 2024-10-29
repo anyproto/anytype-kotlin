@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.discussions.DiscussionFragment
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
@@ -221,6 +222,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         }.onFailure {
                                             Timber.e(it, "Error while editor navigation")
                                         }
+                                    }
+                                    is OpenObjectNavigation.OpenDiscussion -> {
+                                        toast("Cannot open chat from here")
                                     }
                                     is OpenObjectNavigation.UnexpectedLayoutError -> {
                                         toast(getString(R.string.error_unexpected_layout))

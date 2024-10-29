@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -561,6 +562,40 @@ fun MembershipPaymentMethod.toMw(): MMembershipPaymentMethod = when (this) {
     MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> MMembershipPaymentMethod.MethodInappGoogle
 }
 
+fun Chat.Message.mw(): MChatMessage = MChatMessage(
+    id = id,
+    message = content?.mw(),
+    orderId = order,
+    attachments = attachments.map { it.mw() },
+    createdAt = createdAt,
+    modifiedAt = modifiedAt,
+    creator = creator,
+    replyToMessageId = replyToMessageId.orEmpty(),
+    reactions = MChatMessageReactions(
+        reactions = reactions.mapValues { (unicode, ids) ->
+            MChatMessageReactionIdentity(
+                ids = ids
+            )
+        }
+    )
+
+)
+
+fun Chat.Message.Content.mw(): MChatMessageContent = MChatMessageContent(
+    text = text,
+    marks = marks.map { it.toMiddlewareModel() },
+    style = style.toMiddlewareModel()
+)
+
+fun Chat.Message.Attachment.mw(): MChatMessageAttachment = MChatMessageAttachment(
+    target = target,
+    type = when(type) {
+        Chat.Message.Attachment.Type.File -> MChatMessageAttachmentType.FILE
+        Chat.Message.Attachment.Type.Image -> MChatMessageAttachmentType.IMAGE
+        Chat.Message.Attachment.Type.Link -> MChatMessageAttachmentType.LINK
+    }
+)
+
 fun Rpc.Object.SearchWithMeta.Response.toCoreModelSearchResults(): List<Command.SearchWithMeta.Result> {
     return results.map { result ->
         Command.SearchWithMeta.Result(
@@ -594,3 +629,4 @@ fun Rpc.Object.SearchWithMeta.Response.toCoreModelSearchResults(): List<Command.
         )
     }
 }
+

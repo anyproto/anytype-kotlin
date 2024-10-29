@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -1040,5 +1042,35 @@ class BlockDataRepository(
 
     override suspend fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse {
         return remote.diffVersions(command)
+    }
+
+    override suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>> {
+        return remote.addChatMessage(command)
+    }
+
+    override suspend fun editChatMessage(command: Command.ChatCommand.EditMessage) {
+        remote.editChatMessage(command)
+    }
+
+    override suspend fun deleteChatMessage(command: Command.ChatCommand.DeleteMessage) {
+        remote.deleteChatMessage(command)
+    }
+
+    override suspend fun getChatMessages(command: Command.ChatCommand.GetMessages): List<Chat.Message> {
+        return remote.getChatMessages(command)
+    }
+
+    override suspend fun subscribeLastChatMessages(
+        command: Command.ChatCommand.SubscribeLastMessages
+    ): Command.ChatCommand.SubscribeLastMessages.Response {
+        return remote.subscribeLastChatMessages(command)
+    }
+
+    override suspend fun toggleChatMessageReaction(command: Command.ChatCommand.ToggleMessageReaction) {
+        return remote.toggleChatMessageReaction(command = command)
+    }
+
+    override suspend fun unsubscribeChat(chat: Id) {
+        return remote.unsubscribeChat(chat)
     }
 }

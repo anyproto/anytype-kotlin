@@ -259,6 +259,14 @@ class VaultViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenDiscussion -> {
+                navigate(
+                    Navigation.OpenChat(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
             }
@@ -323,6 +331,7 @@ class VaultViewModel(
     }
 
     sealed class Navigation {
+        data class OpenChat(val ctx: Id, val space: Id) : Navigation()
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
     }

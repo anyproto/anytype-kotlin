@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -46,6 +48,7 @@ import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
+import com.anytypeio.anytype.middleware.interactor.events.payload
 import com.anytypeio.anytype.middleware.mappers.MDVFilter
 import com.anytypeio.anytype.middleware.mappers.MDetail
 import com.anytypeio.anytype.middleware.mappers.MNetworkMode
@@ -2693,6 +2696,98 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.diffVersions(request) }
         logResponseIfDebug(response, time)
         return response.toCoreModel(context = command.objectId)
+    }
+
+    @Throws
+    fun chatAddMessage(command: Command.ChatCommand.AddMessage) : Pair<Id, List<Event.Command.Chats>> {
+        val request = Rpc.Chat.AddMessage.Request(
+            chatObjectId = command.chat,
+            message = command.message.mw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatAddMessage(request) }
+        logResponseIfDebug(response, time)
+        val events = response
+            .event
+            ?.messages
+            ?.mapNotNull { msg ->
+                msg.payload(contextId = command.chat)
+            }
+            .orEmpty()
+        return response.messageId to events
+    }
+
+    @Throws
+    fun chatEditMessageContent(command: Command.ChatCommand.EditMessage) {
+        val request = Rpc.Chat.EditMessageContent.Request(
+            chatObjectId = command.chat,
+            messageId = command.message.id,
+            editedMessage = command.message.mw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatEditMessage(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
+    fun chatGetMessages(command: Command.ChatCommand.GetMessages) : List<Chat.Message> {
+        val request = Rpc.Chat.GetMessages.Request(
+            chatObjectId = command.chat
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatGetMessages(request) }
+        logResponseIfDebug(response, time)
+        return response.messages.map { it.core() }
+    }
+
+    @Throws
+    fun chatDeleteMessage(command: Command.ChatCommand.DeleteMessage) {
+        val request = Rpc.Chat.DeleteMessage.Request(
+            chatObjectId = command.chat,
+            messageId = command.msg
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatDeleteMessage(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
+    fun chatSubscribeLastMessages(
+        command: Command.ChatCommand.SubscribeLastMessages
+    ): Command.ChatCommand.SubscribeLastMessages.Response {
+        val request = Rpc.Chat.SubscribeLastMessages.Request(
+            chatObjectId = command.chat,
+            limit = command.limit
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatSubscribeLastMessages(request) }
+        logResponseIfDebug(response, time)
+        return Command.ChatCommand.SubscribeLastMessages.Response(
+            messages = response.messages.map { it.core() },
+            messageCountBefore = response.numMessagesBefore
+        )
+    }
+
+    @Throws
+    fun chatToggleMessageReaction(
+        command: Command.ChatCommand.ToggleMessageReaction
+    ) {
+        val request = Rpc.Chat.ToggleMessageReaction.Request(
+            chatObjectId = command.chat,
+            messageId = command.msg,
+            emoji = command.emoji
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatToggleMessageReaction(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
+    fun chatUnsubscribe(chat: Id) {
+        val request = Rpc.Chat.Unsubscribe.Request(chatObjectId = chat)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatUnsubscribe(request) }
+        logResponseIfDebug(response, time)
     }
 
     private fun logRequestIfDebug(request: Any) {

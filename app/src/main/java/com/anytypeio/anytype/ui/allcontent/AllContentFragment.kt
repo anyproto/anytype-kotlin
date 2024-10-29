@@ -143,6 +143,16 @@ class AllContentFragment : BaseComposeFragment() {
                         Timber.e(it, "Failed to open document from all content")
                     }
                 }
+                is AllContentViewModel.Command.OpenChat -> {
+                    runCatching {
+                        navigation().openChat(
+                            target = command.target,
+                            space = command.space
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Failed to open a chat from all content")
+                    }
+                }
 
                 is AllContentViewModel.Command.NavigateToSetOrCollection -> {
                     runCatching {

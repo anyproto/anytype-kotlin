@@ -6,6 +6,7 @@ import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.di.feature.discussions.DiscussionFragment
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.allcontent.AllContentFragment
@@ -22,7 +23,6 @@ import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_SELECT
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
 import com.anytypeio.anytype.ui.types.create.CreateObjectTypeFragment
-import com.anytypeio.anytype.ui.types.create.TypeCreationScreen
 import com.anytypeio.anytype.ui.types.edit.TypeEditFragment
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 import timber.log.Timber
@@ -39,10 +39,30 @@ class Navigator : AppNavigation {
         }
     }
 
+    override fun openChat(target: Id, space: Id) {
+        navController?.navigate(
+            R.id.chatScreen,
+            DiscussionFragment.args(
+                ctx = target,
+                space = space
+            )
+        )
+    }
+
     override fun openDocument(target: Id, space: Id) {
         navController?.navigate(
             R.id.objectNavigation,
             EditorFragment.args(
+                ctx = target,
+                space = space
+            )
+        )
+    }
+
+    override fun openDiscussion(target: Id, space: Id) {
+        navController?.navigate(
+            R.id.chatScreen,
+            DiscussionFragment.args(
                 ctx = target,
                 space = space
             )

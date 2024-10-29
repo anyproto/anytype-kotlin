@@ -1531,4 +1531,9 @@
     <string name="main_navigation_content_desc_back_button">返回按钮</string>
     <string name="main_navigation_content_desc_search_button">搜索对象按钮</string>
     <string name="main_navigation_content_desc_create_button">创建对象按钮</string>
+    <string name="chat">Chat</string>
+    <string name="copy">拷贝</string>
+    <string name="chats_edit_message">Edit message</string>
+    <string name="chats_message_edited">edited</string>
+    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
 </resources>

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -52,6 +53,7 @@ class ChatContainerTest {
         MockitoAnnotations.openMocks(this)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test()
     fun `should add one message to basic initial state`() = runTest {
 

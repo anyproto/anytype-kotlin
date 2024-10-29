@@ -107,13 +107,12 @@ import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
-import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
+import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.OnCreateObjectAction
 import com.anytypeio.anytype.ui.objects.types.pickers.OnDataViewSelectSourceAction
-import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -138,8 +137,7 @@ open class ObjectSetFragment :
     TextValueEditReceiver,
     DateValueEditReceiver,
     OnDataViewSelectSourceAction,
-    OnObjectSelectTypeAction,
-    OnCreateObjectAction {
+    ObjectTypeSelectionListener {
 
     // Controls
 
@@ -327,10 +325,7 @@ open class ObjectSetFragment :
                 .btnAddDoc
                 .longClicks(withHaptic = true)
                 .onEach {
-                    val dialog = SelectObjectTypeFragment.new(
-                        flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
-                        space = space
-                    )
+                    val dialog = ObjectTypeSelectionFragment.new(space = space)
                     dialog.show(childFragmentManager, "set-create-object-of-type-dialog")
                 }
                 .launchIn(lifecycleScope)
@@ -1418,11 +1413,7 @@ open class ObjectSetFragment :
         inflater, container, false
     )
 
-    override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
-        vm.onNewTypeForViewerClicked(objType)
-    }
-
-    override fun onProceedWithCreateObject(objType: ObjectWrapper.Type) {
+    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
         vm.onAddNewDocumentClicked(objType)
     }
 

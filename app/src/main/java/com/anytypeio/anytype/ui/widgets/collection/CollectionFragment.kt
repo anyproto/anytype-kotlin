@@ -28,12 +28,12 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
-import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.OnCreateObjectAction
+import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import javax.inject.Inject
 import timber.log.Timber
 
-class CollectionFragment : BaseComposeFragment(), OnCreateObjectAction {
+class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
 
     @Inject
     lateinit var factory: CollectionViewModel.Factory
@@ -65,11 +65,8 @@ class CollectionFragment : BaseComposeFragment(), OnCreateObjectAction {
                     CollectionScreen(
                         vm = vm,
                         onCreateObjectLongClicked = {
-                            val dialog = SelectObjectTypeFragment.new(
-                                flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
-                                space = space
-                            )
-                            dialog.show(childFragmentManager, "fullscreen-widget-create-object-of-type-dialog")
+                            val dialog = ObjectTypeSelectionFragment.new(space = space)
+                            dialog.show(childFragmentManager, "fullscreen-widget-create-object-type-dialog")
                         },
                         onSearchClicked = {
                             vm.onSearchClicked(space)
@@ -147,8 +144,8 @@ class CollectionFragment : BaseComposeFragment(), OnCreateObjectAction {
         )
     }
 
-    override fun onProceedWithCreateObject(objType: ObjectWrapper.Type) {
-        vm.onAddClicked(objType)
+    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
+        vm.onAddClicked(objType = objType)
     }
 
     override fun onStop() {

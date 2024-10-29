@@ -1404,6 +1404,7 @@
     <string name="notifications_prompt_primary_button_text">启用</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">从剪贴板创建书签</string>
     <string name="error_unexpected_layout">错误: 异常布局</string>
+    <string name="error_non_valid_object">Error: object ID is missing</string>
     <string name="membership_price_pending">待定…</string>
     <string name="per_period">每 %1$s</string>
     <string name="free_for">为 %1$s 免费</string>

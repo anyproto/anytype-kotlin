@@ -115,7 +115,6 @@ class ChatContainerTest {
                 ),
                 actual = second
             )
-            awaitComplete()
         }
     }
 
@@ -178,7 +177,6 @@ class ChatContainerTest {
                 expected = emptyList(),
                 actual = second
             )
-            awaitComplete()
         }
     }
 
@@ -250,7 +248,6 @@ class ChatContainerTest {
                 ),
                 actual = second
             )
-            awaitComplete()
         }
     }
 
@@ -326,7 +323,6 @@ class ChatContainerTest {
                 ),
                 actual = second
             )
-            awaitComplete()
         }
     }
 

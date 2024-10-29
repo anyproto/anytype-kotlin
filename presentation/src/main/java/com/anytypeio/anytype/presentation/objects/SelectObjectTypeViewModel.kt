@@ -5,14 +5,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
-import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectOrigin
+import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeIds.DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -216,11 +214,14 @@ class SelectObjectTypeViewModel(
         }
 
         viewModelScope.launch {
-            getDefaultObjectType.async(Unit).fold(
+            getDefaultObjectType.async(
+                params = vmParams.space
+            ).fold(
                 onSuccess = { response ->
                     defaultObjectTypePipeline.emit(response.type)
                 },
                 onFailure = {
+                    defaultObjectTypePipeline.emit(TypeKey(DEFAULT_OBJECT_TYPE))
                     Timber.e(it, "Error while getting default object type for init")
                 }
             )
@@ -409,7 +410,7 @@ class SelectObjectTypeViewModel(
     private fun proceedWithCreatingNote(text: String) {
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
-            val defaultObjectType = getDefaultObjectType.async(Unit).getOrNull()?.type?.let {
+            val defaultObjectType = getDefaultObjectType.async(vmParams.space).getOrNull()?.type?.let {
                 if (it.key != ObjectTypeUniqueKeys.COLLECTION && it.key != ObjectTypeUniqueKeys.SET)
                     it
                 else
@@ -449,16 +450,7 @@ class SelectObjectTypeViewModel(
     }
 
     fun onResume() {
-        viewModelScope.launch {
-            analytics.sendEvent(
-                eventName = EventsDictionary.screenVault,
-                props = Props(
-                    map = mapOf(
-                        EventsPropertiesKey.type to EventsDictionary.Type.menu
-                    )
-                )
-            )
-        }
+        // TODO add analytics?
     }
 
     class Factory @Inject constructor(

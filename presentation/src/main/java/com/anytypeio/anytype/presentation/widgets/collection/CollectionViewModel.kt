@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -74,6 +75,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -87,6 +89,7 @@ import timber.log.Timber
 import com.anytypeio.anytype.core_models.ObjectView as CoreObjectView
 
 class CollectionViewModel(
+    private val vmParams: VmParams,
     private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val getObjectTypes: GetObjectTypes,
@@ -107,16 +110,17 @@ class CollectionViewModel(
     private val spaceManager: SpaceManager,
     private val getSpaceView: GetSpaceView,
     private val dateTypeNameProvider: DateTypeNameProvider,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModel(), Reducer<CoreObjectView, Payload>, AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val payloads: Flow<Payload>
 
-    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
+    private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
     init {
-        Timber.i("CollectionViewModel, init")
-        proceedWithObservingProfileIcon()
+        Timber.i("CollectionViewModel, init, spaceId:${vmParams.spaceId.id}")
+        proceedWithObservingPermissions()
         val externalChannelEvents: Flow<Payload> = spaceManager
             .observe()
             .flatMapLatest { config ->
@@ -167,7 +171,8 @@ class CollectionViewModel(
                     objectActions = actionObjectFilter.filter(subscription, selectedViews()),
                     inDragMode = subscription == Subscription.Favorites && mode == InteractionMode.Edit,
                     displayType = subscription != Subscription.Sets || subscription != Subscription.Files,
-                    operationInProgress = operationInProgress
+                    operationInProgress = operationInProgress,
+                    isActionButtonVisible = permission.value?.isOwnerOrEditor() == true
                 )
             )
         }.stateIn(
@@ -176,38 +181,19 @@ class CollectionViewModel(
             initialValue = Resultat.loading()
         )
 
-    private fun proceedWithObservingProfileIcon() {
+    private fun proceedWithObservingPermissions() {
         viewModelScope.launch {
-            spaceManager
-                .observe()
-                .flatMapLatest { config ->
-                    container.subscribe(
-                        StoreSearchByIdsParams(
-                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                            targets = listOf(config.profile),
-                            keys = listOf(
-                                Relations.ID,
-                                Relations.NAME,
-                                Relations.ICON_EMOJI,
-                                Relations.ICON_IMAGE,
-                                Relations.ICON_OPTION
-                            )
-                        )
-                    ).map { result ->
-                        val obj = result.firstOrNull()
-                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
-                    }
+            userPermissionProvider
+                .observe(space = vmParams.spaceId)
+                .collect {
+                    permission.value = it
                 }
-                .catch { Timber.e(it, "Error while observing space icon") }
-                .flowOn(dispatchers.io)
-                .collect { icon.value = it }
         }
     }
 
     private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
         val params = GetObjectTypes.Params(
-            // TODO DROID-2916 Provide space id to vm params
-            space = SpaceId(spaceManager.get()),
+            space = SpaceId(vmParams.spaceId.id),
             sorts = emptyList(),
             filters = ObjectSearchConstants.filterTypes(),
             keys = ObjectSearchConstants.defaultKeysObjectType
@@ -239,7 +225,7 @@ class CollectionViewModel(
     fun onStart(subscription: Subscription) {
         val isFirstLaunch = this.subscription == Subscription.None
         this.subscription = subscription
-        if (isFirstLaunch && (subscription == Subscription.Bin || subscription == Subscription.Files)) {
+        if (permission.value?.isOwnerOrEditor() == true && isFirstLaunch && (subscription == Subscription.Bin || subscription == Subscription.Files)) {
             onStartEditMode()
         }
         subscribeObjects()
@@ -251,7 +237,7 @@ class CollectionViewModel(
             space = SpaceId(spaceManager.get()),
             subscription = subscription.id,
             keys = subscription.keys,
-            filters = subscription.space(spaceManager.get()),
+            filters = subscription.space(vmParams.spaceId.id),
             sorts = subscription.sorts,
             limit = subscription.limit
         )
@@ -327,16 +313,23 @@ class CollectionViewModel(
             container.subscribe(params).map { results -> results.distinctBy { it.id } },
             queryFlow(),
             objectTypes()
-        ) { objs, query, types ->
-            val result = objs.filter { obj ->
-                obj.getProperName().contains(query, true)
-            }.toViews(urlBuilder, types)
+        ) { objects, query, types ->
+
+            val filteredResults = objects.filter { obj ->
+                obj.getProperName().contains(query, ignoreCase = true)
+            }
+
+            val views = filteredResults
+                .toViews(urlBuilder = urlBuilder, objectTypes = types)
                 .map { ObjectView(it) }
                 .tryAddSections()
-            if (result.isEmpty() && query.isNotEmpty())
-                listOf(CollectionView.EmptySearch(query))
-            else
-                result
+
+            when {
+                views.isNotEmpty() -> views
+                subscription == Subscription.Bin && query.isEmpty() -> listOf(CollectionView.BinEmpty)
+                query.isNotEmpty() -> listOf(CollectionView.EmptySearch(query))
+                else -> emptyList()
+            }
         }.catch {
             Timber.e(it, "Error in subscription flow")
         }
@@ -445,14 +438,6 @@ class CollectionViewModel(
                         )
                     )
                 }
-                ObjectType.Layout.CHAT -> {
-                    commands.emit(
-                        Command.OpenChat(
-                            target = target,
-                            space = view.space
-                        )
-                    )
-                }
                 else -> {
                     Timber.e("Unexpected layout: ${view.layout}")
                 }
@@ -468,6 +453,10 @@ class CollectionViewModel(
     }
 
     fun onObjectLongClicked(view: CollectionObjectView) {
+        if (permission.value?.isOwnerOrEditor() != true) {
+            Timber.w("User has no permission to edit Collection Screen")
+            return
+        }
         if (interactionMode.value != InteractionMode.Edit) {
             interactionMode.value = InteractionMode.Edit
         }
@@ -849,12 +838,6 @@ class CollectionViewModel(
         }
     }
 
-    fun onProfileClicked() {
-        viewModelScope.launch {
-            commands.emit(Command.Vault)
-        }
-    }
-
     fun onAddClicked(objType: ObjectWrapper.Type?) {
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -863,8 +846,11 @@ class CollectionViewModel(
         )
 
         val startTime = System.currentTimeMillis()
-        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
         viewModelScope.launch {
+            val params = objType?.uniqueKey.getCreateObjectParams(
+                space = SpaceId(spaceManager.get()),
+                objType?.defaultTemplateId
+            )
             createObject.execute(params).fold(
                 onSuccess = { result ->
                     sendAnalyticsObjectCreateEvent(
@@ -873,7 +859,7 @@ class CollectionViewModel(
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
                         view = EventsDictionary.View.viewHome,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(vmParams.spaceId.id)
                     )
                     proceedWithOpeningObject(result.obj)
                 },
@@ -900,11 +886,11 @@ class CollectionViewModel(
                     )
                 )
             }
-            is OpenObjectNavigation.OpenDiscussion -> {
-                toasts.emit("not implemented")
-            }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 toasts.emit("Unexpected layout: ${navigation.layout}")
+            }
+            OpenObjectNavigation.NonValidObject -> {
+                toasts.emit("Object id is missing")
             }
         }
     }
@@ -941,7 +927,10 @@ class CollectionViewModel(
         super.onCleared()
     }
 
+    data class VmParams(val spaceId: SpaceId)
+
     class Factory @Inject constructor(
+        private val vmParams: VmParams,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val getObjectTypes: GetObjectTypes,
@@ -962,7 +951,8 @@ class CollectionViewModel(
         private val spaceManager: SpaceManager,
         private val getSpaceView: GetSpaceView,
         private val dateTypeNameProvider: DateTypeNameProvider,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -988,7 +978,9 @@ class CollectionViewModel(
                 spaceManager = spaceManager,
                 getSpaceView = getSpaceView,
                 dateTypeNameProvider = dateTypeNameProvider,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                userPermissionProvider = userPermissionProvider,
+                vmParams = vmParams
             ) as T
         }
     }
@@ -998,7 +990,6 @@ class CollectionViewModel(
         data class LaunchDocument(val target: Id, val space: Id) : Command()
         data class OpenCollection(val subscription: Subscription, val space: Id) : Command()
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
-        data class OpenChat(val target: Id, val space: Id) : Command()
 
         data object ToDesktop : Command()
         data class ToSearch(val space: Id) : Command()

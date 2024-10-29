@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
@@ -34,6 +35,13 @@ object ObjectSearchConstants {
         add(
             DVFilter(
                 relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = true
             )
@@ -87,6 +95,11 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
@@ -127,6 +140,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
@@ -183,6 +201,11 @@ object ObjectSearchConstants {
                 ),
                 DVFilter(
                     relation = Relations.IS_HIDDEN,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                ),
+                DVFilter(
+                    relation = Relations.IS_HIDDEN_DISCOVERY,
                     condition = DVFilterCondition.NOT_EQUAL,
                     value = true
                 ),
@@ -251,6 +274,13 @@ object ObjectSearchConstants {
         )
         add(
             DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
                 relation = Relations.IS_DELETED,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = true
@@ -280,6 +310,16 @@ object ObjectSearchConstants {
                     value = limitObjectTypes
                 )
             )
+            add(
+                DVFilter(
+                    relation = Relations.RECOMMENDED_LAYOUT,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = listOf(
+                        ObjectType.Layout.CHAT.code.toDouble(),
+                        ObjectType.Layout.CHAT_DERIVED.code.toDouble()
+                    )
+                )
+            )
         }
     }
 
@@ -294,6 +334,13 @@ object ObjectSearchConstants {
         add(
             DVFilter(
                 relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = true
             )
@@ -332,6 +379,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
@@ -375,6 +427,13 @@ object ObjectSearchConstants {
         add(
             DVFilter(
                 relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = true
             )
@@ -440,6 +499,11 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
@@ -492,6 +556,11 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
             value = ObjectType.Layout.SET.code.toDouble()
@@ -524,6 +593,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
         )
     )
 
@@ -545,6 +619,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
@@ -686,7 +765,8 @@ object ObjectSearchConstants {
     fun filterTypes(
         recommendedLayouts: List<ObjectType.Layout> = emptyList(),
         excludedTypeKeys: List<TypeKey> = emptyList(),
-        excludeParticipant: Boolean = true
+        excludeParticipant: Boolean = true,
+        excludeTemplates: Boolean = true
     ): List<DVFilter> {
         return buildList {
             addAll(
@@ -707,6 +787,11 @@ object ObjectSearchConstants {
                         value = true
                     ),
                     DVFilter(
+                        relation = Relations.IS_HIDDEN_DISCOVERY,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
+                    DVFilter(
                         relation = Relations.LAYOUT,
                         condition = DVFilterCondition.EQUAL,
                         value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
@@ -717,6 +802,15 @@ object ObjectSearchConstants {
                     )
                 )
             )
+            if (excludeTemplates) {
+                add(
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = ObjectTypeUniqueKeys.TEMPLATE
+                    )
+                )
+            }
             if (excludedTypeKeys.isNotEmpty()) {
                 add(
                     DVFilter(
@@ -760,7 +854,10 @@ object ObjectSearchConstants {
         }
     }
 
-    fun filterParticipants(spaces: List<Id>) : List<DVFilter> = buildList {
+    fun filterParticipants(
+        space: SpaceId,
+        hiddenDiscovery: Boolean = true
+    ) : List<DVFilter> = buildList {
         add(
             DVFilter(
                 relation = Relations.IS_ARCHIVED,
@@ -782,6 +879,15 @@ object ObjectSearchConstants {
                 value = true
             )
         )
+        if (hiddenDiscovery) {
+            add(
+                DVFilter(
+                    relation = Relations.IS_HIDDEN_DISCOVERY,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                )
+            )
+        }
         add(
             DVFilter(
                 relation = Relations.LAYOUT,
@@ -792,8 +898,8 @@ object ObjectSearchConstants {
         add(
             DVFilter(
                 relation = Relations.SPACE_ID,
-                condition = DVFilterCondition.IN,
-                value = spaces
+                condition = DVFilterCondition.EQUAL,
+                value = space.id
             )
         )
     }
@@ -837,6 +943,13 @@ object ObjectSearchConstants {
                 relation = Relations.IS_HIDDEN,
                 condition = Condition.NOT_EQUAL,
                 value = true,
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
             )
         )
         add(
@@ -923,6 +1036,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
         )
     )
 
@@ -946,6 +1064,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
         )
     )
 
@@ -962,6 +1085,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
@@ -998,6 +1126,11 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
             value = listOf(
@@ -1028,6 +1161,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
@@ -1068,6 +1206,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
         )
     )
 
@@ -1084,6 +1227,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
@@ -1148,9 +1296,13 @@ object ObjectSearchConstants {
 
     //region SPACE VIEW
 
-    fun getSpaceViewSearchParams(subscription: String, targetSpaceId: Id): StoreSearchParams {
+    fun getSpaceViewSearchParams(
+        techSpaceId: Id,
+        subscription: String,
+        targetSpaceId: Id
+    ): StoreSearchParams {
         return StoreSearchParams(
-            space = TODO("DROID-2916 Provide space ID"),
+            space = SpaceId(techSpaceId),
             subscription = subscription,
             keys = spaceViewKeys,
             limit = 1,
@@ -1166,15 +1318,20 @@ object ObjectSearchConstants {
         )
     }
 
-    fun getSpaceMembersSearchParams(subscription: String, spaceId: Id): StoreSearchParams {
+    fun getSpaceMembersSearchParams(
+        subscription: String,
+        space: SpaceId,
+        includeRequests: Boolean = true
+    ): StoreSearchParams {
         return StoreSearchParams(
-            space = SpaceId(spaceId),
+            space = space,
             subscription = subscription,
-            filters = filterParticipants(
-                spaces = listOf(spaceId)
-            ),
             sorts = listOf(sortByName()),
-            keys = spaceMemberKeys
+            keys = spaceMemberKeys,
+            filters = filterParticipants(
+                space = space,
+                hiddenDiscovery = !includeRequests
+            ),
         )
     }
     //endregion

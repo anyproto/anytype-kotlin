@@ -41,7 +41,7 @@ interface AppNavigation {
     fun exitToVault()
     fun openGlobalSearch(space: Id)
     fun openUpdateAppScreen()
-    fun openRemoteFilesManageScreen(subscription: Id)
+    fun openRemoteFilesManageScreen(subscription: Id, space: Id)
 
     fun deletedAccountScreen(deadline: Long)
 
@@ -99,8 +99,6 @@ interface AppNavigation {
         data class OpenTemplates(val typeId: Id) : Command()
 
         data class OpenLibrary(val space: Id): Command()
-
-        data class OpenRemoteFilesManageScreen(val subscription: Id) : Command()
     }
 
     interface Provider {

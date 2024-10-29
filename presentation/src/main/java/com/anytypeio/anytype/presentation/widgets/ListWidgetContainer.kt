@@ -91,6 +91,7 @@ class ListWidgetContainer(
                         .flatMapLatest { order ->
                             storage.subscribe(
                                 StoreSearchByIdsParams(
+                                    space = SpaceId(widget.config.space),
                                     subscription = subscription,
                                     keys = keys,
                                     targets = order.keys

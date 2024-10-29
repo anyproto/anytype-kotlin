@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -49,34 +51,6 @@ class SelectSpaceViewModel(
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
     val jobs = mutableListOf<Job>()
-
-    private val profile = spaceManager
-        .observe()
-        .flatMapLatest { config ->
-            container.subscribe(
-                StoreSearchByIdsParams(
-                    subscription = SELECT_SPACE_PROFILE_SUBSCRIPTION,
-                    keys = listOf(
-                        Relations.ID,
-                        Relations.NAME,
-                        Relations.ICON_IMAGE,
-                        Relations.ICON_EMOJI,
-                        Relations.ICON_OPTION
-                    ),
-                    targets = listOf(config.profile)
-                )
-            ).map { results ->
-                if (results.isNotEmpty())
-                    results.first()
-                else {
-                    ObjectWrapper.Basic(
-                        mapOf(
-                            Relations.ID to config.profile
-                        )
-                    )
-                }
-            }
-        }
 
     private val spaces: Flow<List<ObjectWrapper.SpaceView>> = spaceViewContainer
         .observe()
@@ -128,8 +102,7 @@ class SelectSpaceViewModel(
                     val (active, others) = spaceViews.partition { view -> view.view.isSelected }
                     addAll(active)
                     addAll(others)
-                    val numberOfSpaces = count { view -> view is SelectSpaceView.Space }
-                    if (numberOfSpaces < MAX_SPACE_COUNT) {
+                    if (size < MAX_SPACE_COUNT) {
                         add(SelectSpaceView.Create)
                     }
                 }
@@ -146,6 +119,16 @@ class SelectSpaceViewModel(
 
     fun onStart() {
         buildUI()
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenVault,
+                props = Props(
+                    map = mapOf(
+                        EventsPropertiesKey.type to EventsDictionary.Type.menu
+                    )
+                )
+            )
+        }
     }
 
     fun onStop() {
@@ -194,7 +177,6 @@ class SelectSpaceViewModel(
         viewModelScope.launch {
             container.unsubscribe(
                 subscriptions = listOf(
-                    SELECT_SPACE_PROFILE_SUBSCRIPTION,
                     SELECT_SPACE_SUBSCRIPTION
                 )
             )
@@ -226,9 +208,8 @@ class SelectSpaceViewModel(
 
     companion object {
         const val SELECT_SPACE_SUBSCRIPTION = "select_space_subscription.spaces"
-        const val SELECT_SPACE_PROFILE_SUBSCRIPTION = "select_space_subscription.profile"
-        const val MAX_SPACE_COUNT = 10
         const val SPACE_COUNT_EXCEEDED_ERROR = "Space max count exceeded. You cannot create more."
+        const val MAX_SPACE_COUNT = 50
     }
 }
 

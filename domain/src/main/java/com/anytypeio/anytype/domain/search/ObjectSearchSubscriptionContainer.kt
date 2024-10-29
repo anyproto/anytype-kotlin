@@ -147,11 +147,13 @@ class ObjectSearchSubscriptionContainer(
     }
 
     fun observe(
+        space: SpaceId,
         subscription: Id,
         targets: List<Id>,
         keys: List<Key>
     ): Flow<List<ObjectWrapper.Basic>> = flow {
         val initial = repo.searchObjectsByIdWithSubscription(
+            space = space,
             subscription = subscription,
             ids = targets,
             keys = keys
@@ -160,10 +162,12 @@ class ObjectSearchSubscriptionContainer(
     }
 
     suspend fun get(
+        space: SpaceId,
         subscription: Id,
         targets: List<Id>,
         keys: List<Key>
     ): List<ObjectWrapper.Basic> = repo.searchObjectsByIdWithSubscription(
+        space = space,
         subscription = subscription,
         ids = targets,
         keys = keys

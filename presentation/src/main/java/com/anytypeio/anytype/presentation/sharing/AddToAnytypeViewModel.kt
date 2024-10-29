@@ -76,7 +76,7 @@ class AddToAnytypeViewModel(
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
 
-    private val spaces: Flow<List<ObjectWrapper.SpaceView>> = getSpaceViews.asFlow(
+    private val spaces: Flow<List<ObjectWrapper.SpaceView>> get() = getSpaceViews.asFlow(
         SpaceId(
             configStorage.getOrNull()?.techSpace.orEmpty()
         )

@@ -171,7 +171,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         binding.ivImage.setImageResource(R.drawable.ic_non_existent_object)
     }
 
-    fun setProfileInitials(
+    private fun setProfileInitials(
         name: String
     ) {
         with(binding) {
@@ -188,7 +188,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    fun setEmoji(emoji: String?) {
+    private fun setEmoji(emoji: String?) {
         if (!emoji.isNullOrBlank()) {
             with(binding) {
                 ivCheckbox.invisible()
@@ -233,7 +233,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    fun setCircularImage(image: Url?) {
+    private fun setCircularImage(image: Url?) {
         if (!image.isNullOrBlank()) {
             with(binding) {
                 ivCheckbox.invisible()
@@ -259,7 +259,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    fun setRectangularImage(image: Url?) {
+    private fun setRectangularImage(image: Url?) {
         if (!image.isNullOrBlank()) {
             with(binding) {
                 ivCheckbox.invisible()
@@ -297,7 +297,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    fun setTask(isChecked: Boolean?) {
+    private fun setTask(isChecked: Boolean?) {
         with(binding) {
             ivCheckbox.visible()
             ivCheckbox.background = context.drawable(R.drawable.ic_data_view_grid_checkbox_selector)

@@ -116,7 +116,9 @@ import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueVi
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
+import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
@@ -157,10 +159,13 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val collectionComponent = Component {
+    val collectionComponent = ComponentWithParams { vmParams: CollectionViewModel.VmParams ->
         DaggerCollectionComponent
             .factory()
-            .create(findComponentDependencies())
+            .create(
+                dependencies = findComponentDependencies(),
+                vmParams = vmParams
+            )
     }
 
     val selectWidgetSourceSubcomponent = Component {
@@ -722,10 +727,13 @@ class ComponentManager(
             .build()
     }
 
-    val spacesStorageComponent = Component {
-        DaggerSpacesStorageComponent.builder()
-            .withDependencies(findComponentDependencies())
-            .build()
+    val spacesStorageComponent = ComponentWithParams { vmParams: SpacesStorageViewModel.VmParams ->
+        DaggerSpacesStorageComponent
+            .factory()
+            .create(
+                vmParams = vmParams,
+                dependency = findComponentDependencies()
+            )
     }
 
     val appearanceComponent = Component {
@@ -845,12 +853,13 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val spaceSettingsComponent = ComponentWithParams { space: SpaceId ->
+    val spaceSettingsComponent = ComponentWithParams { vmParams: SpaceSettingsViewModel.VmParams ->
         DaggerSpaceSettingsComponent
-            .builder()
-            .withParams(SpaceSettingsViewModel.Params(space))
-            .withDependencies(findComponentDependencies())
-            .build()
+            .factory()
+            .create(
+                vmParams = vmParams,
+                dependencies = findComponentDependencies()
+            )
     }
 
     val selectObjectTypeComponent = ComponentWithParams { params: SelectObjectTypeViewModel.Params ->

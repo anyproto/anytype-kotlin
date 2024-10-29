@@ -51,7 +51,9 @@ class PersonalizationSettingsViewModel(
 
     init {
         viewModelScope.launch {
-            getDefaultObjectType.execute(Unit).fold(
+            getDefaultObjectType.execute(
+                params = SpaceId(spaceManager.get())
+            ).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while getting user settings")
                 },

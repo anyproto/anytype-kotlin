@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -32,12 +33,14 @@ import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -52,7 +55,10 @@ interface CollectionComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(dependencies: CollectionDependencies): CollectionComponent
+        fun create(
+            @BindsInstance vmParams: CollectionViewModel.VmParams,
+            dependencies: CollectionDependencies
+        ): CollectionComponent
     }
 
     fun inject(fragment: CollectionFragment)
@@ -160,8 +166,7 @@ object CollectionModule {
     ): CreateObject = CreateObject(
         repo = repo,
         getDefaultObjectType = getDefaultObjectType,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -172,13 +177,10 @@ object CollectionModule {
         blockRepository: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
-        configStorage: ConfigStorage
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager,
-        configStorage = configStorage
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -224,4 +226,5 @@ interface CollectionDependencies : ComponentDependencies {
     fun dateProvider(): DateProvider
     fun dateTypeNameProvider(): DateTypeNameProvider
     fun analyticsHelperDelegate(): AnalyticSpaceHelperDelegate
+    fun provideUserPermissionProvider(): UserPermissionProvider
 }

@@ -52,7 +52,7 @@ import com.anytypeio.anytype.ui_settings.space.TypeOfSpace
 
 @Composable
 fun CreateSpaceScreen(
-    spaceIconView: SpaceIconView,
+    spaceIconView: SpaceIconView.Placeholder,
     onCreate: (Name) -> Unit,
     onSpaceIconClicked: () -> Unit,
     isLoading: State<Boolean>
@@ -79,7 +79,11 @@ fun CreateSpaceScreen(
             Spacer(modifier = Modifier.height(16.dp))
             SpaceIcon(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                spaceIconView = spaceIconView,
+                spaceIconView = spaceIconView.copy(
+                    name = input.value.ifEmpty { 
+                        stringResource(id = R.string.s)
+                    }
+                ),
                 onSpaceIconClicked = onSpaceIconClicked
             )
             Spacer(modifier = Modifier.height(10.dp))
@@ -93,9 +97,6 @@ fun CreateSpaceScreen(
             Divider()
             Section(title = stringResource(id = R.string.type))
             TypeOfSpace(spaceType = PRIVATE_SPACE_TYPE)
-            Divider()
-            Section(title = stringResource(id = R.string.create_space_start_with))
-            UseCase()
             Divider()
             Spacer(modifier = Modifier.height(78.dp))
         }

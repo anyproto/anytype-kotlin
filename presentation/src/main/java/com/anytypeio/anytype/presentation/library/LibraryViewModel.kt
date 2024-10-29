@@ -152,6 +152,7 @@ class LibraryViewModel(
                 .flatMapLatest { config ->
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
+                            space = SpaceId(config.techSpace),
                             subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                             targets = listOf(config.profile),
                             keys = listOf(
@@ -204,8 +205,11 @@ class LibraryViewModel(
         objType: ObjectWrapper.Type? = null
     ) {
         val startTime = System.currentTimeMillis()
-        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
         viewModelScope.launch {
+            val params = objType?.uniqueKey.getCreateObjectParams(
+                space = SpaceId(spaceManager.get()),
+                objType?.defaultTemplateId
+            )
             createObject.async(params).fold(
                 onSuccess = {
                     result -> proceedWithOpeningObject(result.obj)
@@ -236,6 +240,9 @@ class LibraryViewModel(
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
+            }
+            OpenObjectNavigation.NonValidObject -> {
+                sendToast("Object id is missing")
             }
         }
     }

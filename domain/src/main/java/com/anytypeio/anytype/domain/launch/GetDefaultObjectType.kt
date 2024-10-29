@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds.DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -16,26 +17,21 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
 class GetDefaultObjectType @Inject constructor(
     private val userSettingsRepository: UserSettingsRepository,
     private val blockRepository: BlockRepository,
-    private val spaceManager: SpaceManager,
-    private val configStorage: ConfigStorage,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<Unit, GetDefaultObjectType.Response>(dispatchers.io) {
+) : ResultInteractor<SpaceId, GetDefaultObjectType.Response>(dispatchers.io) {
 
-    override suspend fun doWork(params: Unit): Response {
-        val space = SpaceId(spaceManager.get())
-        val defaultType = userSettingsRepository.getDefaultObjectType(space)
+    override suspend fun doWork(params: SpaceId): Response {
+        val defaultType = userSettingsRepository.getDefaultObjectType(params)
         if (defaultType != null) {
             val item = searchObjectByIdAndSpaceId(
                 type = defaultType,
-                space = space
+                space = params
             )
             return if (item != null) {
                 val key = TypeKey(item.uniqueKey)
@@ -47,17 +43,16 @@ class GetDefaultObjectType @Inject constructor(
                     defaultTemplate = item.defaultTemplateId
                 )
             } else {
-                fetchDefaultType()
+                fetchFallbackObjectType(params)
             }
         } else {
-            return fetchDefaultType()
+            return fetchFallbackObjectType(params)
         }
     }
 
-    private suspend fun fetchDefaultType(): Response {
+    private suspend fun fetchFallbackObjectType(space: SpaceId): Response {
         val structs = blockRepository.searchObjects(
-            // TODO DROID-2916 move space id to use case params
-            space = SpaceId(spaceManager.get()),
+            space = space,
             limit = 1,
             fulltext = NO_VALUE,
             filters = buildList {
@@ -66,7 +61,7 @@ class GetDefaultObjectType @Inject constructor(
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
                         condition = DVFilterCondition.EQUAL,
-                        value = ObjectTypeUniqueKeys.NOTE
+                        value = DEFAULT_OBJECT_TYPE
                     )
                 )
             },
@@ -148,15 +143,17 @@ class GetDefaultObjectType @Inject constructor(
             value = true
         ),
         DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
             relation = Relations.RESTRICTIONS,
             condition = DVFilterCondition.NOT_IN,
             value = listOf(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE.code.toDouble())
         )
     )
 
-    /**
-     * TODO DROID-2916 provide space to params
-     */
     data class Response(
         val id: TypeId,
         val type: TypeKey,

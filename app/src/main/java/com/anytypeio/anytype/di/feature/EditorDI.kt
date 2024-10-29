@@ -63,7 +63,6 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
@@ -752,15 +751,6 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideArchiveDocumentUseCase(
-        repo: BlockRepository
-    ): SetObjectIsArchived = SetObjectIsArchived(
-        repo = repo
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideReplaceBlockUseCase(
         repo: BlockRepository
     ): ReplaceBlock = ReplaceBlock(
@@ -986,15 +976,11 @@ object EditorUseCaseModule {
     fun provideGetDefaultPageType(
         repo: UserSettingsRepository,
         blockRepository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
-        configStorage: ConfigStorage
+        dispatchers: AppCoroutineDispatchers
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = repo,
         blockRepository = blockRepository,
-        spaceManager = spaceManager,
-        dispatchers = dispatchers,
-        configStorage = configStorage
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -1192,13 +1178,11 @@ object EditorUseCaseModule {
     fun getCreateObject(
         repo: BlockRepository,
         getDefaultObjectType: GetDefaultObjectType,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
+        dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getDefaultObjectType = getDefaultObjectType,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager
+        dispatchers = dispatchers
     )
 
     @Module

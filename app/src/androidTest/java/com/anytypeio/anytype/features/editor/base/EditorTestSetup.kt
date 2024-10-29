@@ -376,9 +376,7 @@ open class EditorTestSetup {
         getDefaultObjectType = GetDefaultObjectType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = repo,
-            dispatchers = dispatchers,
-            spaceManager = spaceManager,
-            configStorage = configStorage
+            dispatchers = dispatchers
         )
         createObjectSet = CreateObjectSet(repo)
         findObjectSetForType = FindObjectSetForType(repo)

@@ -117,7 +117,7 @@ private fun Divider(height: Dp) {
         modifier = Modifier
             .fillMaxWidth()
             .height(height)
-            .background(colorResource(id = R.color.shape_tertiary))
+            .background(colorResource(id = R.color.shape_secondary))
     )
 }
 
@@ -132,9 +132,10 @@ private fun SortingBox(modifier: Modifier, subtitle: String, isExpanded: Boolean
     ) {
         Image(
             modifier = Modifier
-                .size(32.dp)
+                .padding(start = 10.dp)
+                .size(18.dp)
                 .rotate(rotationAngle),
-            painter = painterResource(R.drawable.ic_menu_arrow_right),
+            painter = painterResource(R.drawable.ic_arrow_disclosure_18),
             contentDescription = "",
             colorFilter = tint(colorResource(id = R.color.glyph_selected))
         )

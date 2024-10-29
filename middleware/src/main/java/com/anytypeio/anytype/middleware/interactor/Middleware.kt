@@ -745,21 +745,6 @@ class Middleware @Inject constructor(
     private val coverIdKey = "coverId"
     private val coverTypeKey = "coverType"
 
-    @Deprecated("Should deleted. Use objectOpen()")
-    @Throws(Exception::class)
-    fun dashboardOpen(contextId: String, id: String): Payload {
-        val request: Rpc.Object.Open.Request = Rpc.Object.Open.Request(
-            contextId = contextId,
-            objectId = id
-        )
-        logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.objectOpen(request) }
-        logResponseIfDebug(response, time)
-
-        return response.objectView?.toPayload()
-            ?: throw IllegalStateException("Object view was null")
-    }
-
     @Throws(Exception::class)
     fun debugExportLocalStore(path: String): String {
         val request = Rpc.Debug.ExportLocalstore.Request(
@@ -1052,11 +1037,13 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectIdsSubscribe(
+        space: SpaceId,
         subscription: Id,
         ids: List<Id>,
         keys: List<String>
     ): SearchResult {
         val request = Rpc.Object.SubscribeIds.Request(
+            spaceId = space.id,
             subId = subscription,
             keys = keys,
             ids = ids
@@ -1486,43 +1473,6 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.objectSetDetails(request) }
         logResponseIfDebug(response, time)
 
-        return response.event.toPayload()
-    }
-
-    @Deprecated(
-        "Use objectListSetIsArchived instead",
-        replaceWith = ReplaceWith("objectListSetIsArchived")
-    )
-    @Throws(Exception::class)
-    fun objectSetIsArchived(
-        ctx: Id,
-        isArchived: Boolean
-    ) {
-        val request = Rpc.Object.SetIsArchived.Request(
-            contextId = ctx,
-            isArchived = isArchived
-        )
-        logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.objectSetIsArchived(request) }
-        logResponseIfDebug(response, time)
-    }
-
-    @Deprecated(
-        "Use objectListSetIsFavorite instead",
-        replaceWith = ReplaceWith("objectListSetIsFavorite")
-    )
-    @Throws(Exception::class)
-    fun objectSetIsFavorite(
-        ctx: Id,
-        isFavorite: Boolean
-    ): Payload {
-        val request = Rpc.Object.SetIsFavorite.Request(
-            contextId = ctx,
-            isFavorite = isFavorite
-        )
-        logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.objectSetIsFavorite(request) }
-        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1973,7 +1923,7 @@ class Middleware @Inject constructor(
     fun workspaceCreate(details: Struct): Id {
         val request = Rpc.Workspace.Create.Request(
             details = details,
-            useCase = Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
+            useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceCreate(request) }

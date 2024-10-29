@@ -46,11 +46,6 @@ class BlockMiddleware(
     private val middleware: Middleware
 ) : BlockRemote {
 
-    override suspend fun openDashboard(
-        contextId: String,
-        id: String
-    ): Payload = middleware.dashboardOpen(contextId, id)
-
     override suspend fun closeDashboard(id: String) {
         middleware.objectClose(id)
     }
@@ -390,10 +385,12 @@ class BlockMiddleware(
     )
 
     override suspend fun searchObjectsByIdWithSubscription(
+        space: SpaceId,
         subscription: Id,
         ids: List<Id>,
         keys: List<String>
     ): SearchResult = middleware.objectIdsSubscribe(
+        space = space,
         subscription = subscription,
         ids = ids,
         keys = keys
@@ -477,20 +474,10 @@ class BlockMiddleware(
         relations: List<Id>
     ): Payload = middleware.objectRelationRemoveFeatured(ctx, relations)
 
-    override suspend fun setObjectIsFavorite(
-        ctx: Id,
-        isFavorite: Boolean
-    ): Payload = middleware.objectSetIsFavorite(ctx = ctx, isFavorite = isFavorite)
-
     override suspend fun setObjectListIsFavorite(
         objectIds: List<Id>,
         isFavorite: Boolean
     ) = middleware.objectListSetIsFavorite(objectIds, isFavorite)
-
-    override suspend fun setObjectIsArchived(
-        ctx: Id,
-        isArchived: Boolean
-    ) = middleware.objectSetIsArchived(ctx = ctx, isArchived = isArchived)
 
     override suspend fun deleteObjects(targets: List<Id>) = middleware.objectListDelete(
         targets = targets

@@ -8,9 +8,12 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import dagger.Binds
@@ -44,6 +47,12 @@ object VaultModule {
         fun bindViewModelFactory(
             factory: VaultViewModel.Factory
         ): ViewModelProvider.Factory
+
+        @PerScreen
+        @Binds
+        fun deepLinkToObjectDelegate(
+            default: DeepLinkToObjectDelegate.Default
+        ) : DeepLinkToObjectDelegate
     }
 }
 
@@ -55,5 +64,7 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
     fun userSettingsRepository(): UserSettingsRepository
     fun spaceManager(): SpaceManager
+    fun userPermissionProvider(): UserPermissionProvider
     fun auth(): AuthRepository
+    fun logger(): Logger
 }

@@ -10,7 +10,7 @@ import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
 import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -20,12 +20,14 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.mock
 import kotlin.test.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
 class ControlPanelStateReducerTest {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val rule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Mock
     lateinit var gateway: Gateway
@@ -348,7 +350,7 @@ class ControlPanelStateReducerTest {
         val result = runBlocking {
             reducer.reduce(
                 state = nonSelected,
-                event = ControlPanelMachine.Event.MultiSelect.OnEnter()
+                event = ControlPanelMachine.Event.MultiSelect.OnEnter(isSelectAllVisible = false)
             )
         }
 
@@ -380,7 +382,7 @@ class ControlPanelStateReducerTest {
         val result = runBlocking {
             reducer.reduce(
                 state = selectedZero,
-                event = ControlPanelMachine.Event.MultiSelect.OnBlockClick(count = 3)
+                event = ControlPanelMachine.Event.MultiSelect.OnBlockClick(count = 3, isSelectAllVisible = false)
             )
         }
 
@@ -847,7 +849,7 @@ class ControlPanelStateReducerTest {
         val stateAfterEnterMultiSelect = runBlocking {
             reducer.reduce(
                 state = stateAfterFocus,
-                event = ControlPanelMachine.Event.MultiSelect.OnEnter()
+                event = ControlPanelMachine.Event.MultiSelect.OnEnter(isSelectAllVisible = false)
             )
         }
 

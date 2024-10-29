@@ -82,9 +82,7 @@ class ObjectTypeChangeViewModelTest {
         getDefaultObjectType = GetDefaultObjectType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = blockRepository,
-            dispatchers = dispatchers,
-            spaceManager = spaceManager,
-            configStorage = configStorage
+            dispatchers = dispatchers
         )
     }
 

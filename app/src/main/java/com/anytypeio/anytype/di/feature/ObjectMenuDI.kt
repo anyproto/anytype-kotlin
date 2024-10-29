@@ -11,13 +11,12 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
-import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.OpenPage
@@ -79,19 +78,6 @@ interface ObjectSetMenuComponent {
 
 @Module
 object ObjectMenuModuleBase {
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun provideAddToFavoriteUseCase(
-        repo: BlockRepository
-    ): AddToFavorite = AddToFavorite(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun provideRemoveFromFavoriteUseCase(
-        repo: BlockRepository
-    ): RemoveFromFavorite = RemoveFromFavorite(repo = repo)
 
     @JvmStatic
     @Provides
@@ -110,11 +96,8 @@ object ObjectMenuModule {
     @Provides
     @PerDialog
     fun provideViewModelFactory(
-        setObjectIsArchived: SetObjectIsArchived,
         duplicateObject: DuplicateObject,
         debugTreeShareDownloader: DebugTreeShareDownloader,
-        addToFavorite: AddToFavorite,
-        removeFromFavorite: RemoveFromFavorite,
         addBackLinkToObject: AddBackLinkToObject,
         urlBuilder: UrlBuilder,
         storage: Editor.Storage,
@@ -131,13 +114,13 @@ object ObjectMenuModule {
         spaceManager: SpaceManager,
         deepLinkResolver: DeepLinkResolver,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        payloadDelegator: PayloadDelegator
+        payloadDelegator: PayloadDelegator,
+        setObjectListIsFavorite: SetObjectListIsFavorite,
+        setObjectIsArchived: SetObjectListIsArchived
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
         debugTreeShareDownloader = debugTreeShareDownloader,
-        addToFavorite = addToFavorite,
-        removeFromFavorite = removeFromFavorite,
         addBackLinkToObject = addBackLinkToObject,
         urlBuilder = urlBuilder,
         storage = storage,
@@ -154,7 +137,8 @@ object ObjectMenuModule {
         spaceManager = spaceManager,
         deepLinkResolver = deepLinkResolver,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        payloadDelegator = payloadDelegator
+        payloadDelegator = payloadDelegator,
+        setObjectListIsFavorite = setObjectListIsFavorite
     )
 
     @JvmStatic
@@ -206,6 +190,22 @@ object ObjectMenuModule {
     @Provides
     @PerDialog
     fun provideDeeplinkResolver() : DeepLinkResolver = DefaultDeepLinkResolver
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideFavoriteUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectListIsFavorite = SetObjectListIsFavorite(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideArchiveUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectListIsArchived = SetObjectListIsArchived(repo = repo, dispatchers = dispatchers)
 }
 
 @Module
@@ -215,9 +215,6 @@ object ObjectSetMenuModule {
     @Provides
     @PerDialog
     fun provideViewModelFactory(
-        setObjectIsArchived: SetObjectIsArchived,
-        addToFavorite: AddToFavorite,
-        removeFromFavorite: RemoveFromFavorite,
         addBackLinkToObject: AddBackLinkToObject,
         duplicateObject: DuplicateObject,
         delegator: Delegator<Action>,
@@ -232,11 +229,11 @@ object ObjectSetMenuModule {
         spaceManager: SpaceManager,
         deepLinkResolver: DeepLinkResolver,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        payloadDelegator: PayloadDelegator
+        payloadDelegator: PayloadDelegator,
+        setObjectListIsFavorite: SetObjectListIsFavorite,
+        setObjectIsArchived: SetObjectListIsArchived
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
-        setObjectIsArchived = setObjectIsArchived,
-        addToFavorite = addToFavorite,
-        removeFromFavorite = removeFromFavorite,
+        setObjectListIsArchived = setObjectIsArchived,
         addBackLinkToObject = addBackLinkToObject,
         duplicateObject = duplicateObject,
         urlBuilder = urlBuilder,
@@ -251,7 +248,8 @@ object ObjectSetMenuModule {
         spaceManager = spaceManager,
         deepLinkResolver = deepLinkResolver,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        payloadDelegator = payloadDelegator
+        payloadDelegator = payloadDelegator,
+        setObjectListIsFavorite = setObjectListIsFavorite
     )
 
     @JvmStatic
@@ -297,6 +295,14 @@ object ObjectSetMenuModule {
     @Provides
     @PerDialog
     fun provideDeeplinkResolver() : DeepLinkResolver = DefaultDeepLinkResolver
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideFavoriteUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectListIsFavorite = SetObjectListIsFavorite(repo = repo, dispatchers = dispatchers)
 
     @JvmStatic
     private fun createMenuOptionsProvider(

@@ -574,6 +574,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onExitMultiSelectModeClicked() }
             .launchIn(lifecycleScope)
 
+        binding.multiSelectTopToolbar
+            .selectAllBlocks
+            .clicks()
+            .throttleFirst()
+            .onEach { vm.onSelectAllClicked() }
+            .launchIn(lifecycleScope)
+
+
         binding.bottomToolbar
             .backClicks()
             .onEach { vm.onBackButtonPressed() }
@@ -1138,12 +1146,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }                }
                 is Command.OpenAddRelationScreen -> {
                     hideSoftInput()
-                    val fr = RelationAddToObjectBlockFragment.newInstance(
-                        ctx = command.ctx,
-                        target = command.target,
-                        space = space
-                    )
-                    fr.showChildFragment()
+                    runCatching {
+                        val fr = RelationAddToObjectBlockFragment.newInstance(
+                            ctx = command.ctx,
+                            target = command.target,
+                            space = space
+                        )
+                        fr.showChildFragment()
+                    }.onFailure {
+                        Timber.e(it, "Error while opening relation-add-to-object block screen")
+                    }
                 }
                 is Command.OpenLinkToObjectOrWebScreen -> {
                     hideSoftInput()
@@ -1451,6 +1463,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     setBlockSelectionText(count)
                     visible()
                 }
+
+               binding.multiSelectTopToolbar.selectAllBlocks.isVisible = isSelectAllVisible
 
                 binding.recycler.apply {
                     if (itemAnimator == null) itemAnimator = DefaultItemAnimator()

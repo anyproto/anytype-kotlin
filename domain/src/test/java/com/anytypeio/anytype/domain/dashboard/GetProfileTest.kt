@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.SubscriptionEvent
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.interactor.GetProfile
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -77,6 +78,7 @@ class GetProfileTest {
         repo.stub {
             onBlocking {
                 searchObjectsByIdWithSubscription(
+                    space = SpaceId(config.techSpace),
                     subscription = subscription,
                     keys = emptyList(),
                     ids = listOf(config.profile)
@@ -145,6 +147,7 @@ class GetProfileTest {
         repo.stub {
             onBlocking {
                 searchObjectsByIdWithSubscription(
+                    space = SpaceId(config.techSpace),
                     subscription = subscription,
                     keys = emptyList(),
                     ids = listOf(config.profile)
@@ -221,6 +224,7 @@ class GetProfileTest {
         repo.stub {
             onBlocking {
                 searchObjectsByIdWithSubscription(
+                    space = SpaceId(config.techSpace),
                     subscription = subscription,
                     keys = emptyList(),
                     ids = listOf(config.profile)
@@ -305,6 +309,7 @@ class GetProfileTest {
         repo.stub {
             onBlocking {
                 searchObjectsByIdWithSubscription(
+                    space = SpaceId(config.techSpace),
                     subscription = subscription,
                     keys = emptyList(),
                     ids = listOf(config.profile)

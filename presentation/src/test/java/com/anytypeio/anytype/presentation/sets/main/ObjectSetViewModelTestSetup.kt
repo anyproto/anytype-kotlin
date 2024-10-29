@@ -377,6 +377,7 @@ open class ObjectSetViewModelTestSetup {
 
     fun stubProfileIcon() {
         val searchParams = StoreSearchByIdsParams(
+            space = SpaceId(spaceConfig.techSpace),
             subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
             targets = listOf(spaceConfig.profile),
             keys = listOf(
@@ -472,7 +473,7 @@ open class ObjectSetViewModelTestSetup {
         template: Id? = null
     ) {
         getDefaultObjectType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultObjectType.Response(
+            onBlocking { run(SpaceId(spaceConfig.space)) } doReturn GetDefaultObjectType.Response(
                 type = type,
                 name = name,
                 id = id,

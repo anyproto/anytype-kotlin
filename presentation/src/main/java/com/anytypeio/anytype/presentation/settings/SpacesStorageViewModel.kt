@@ -51,6 +51,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SpacesStorageViewModel(
+    private val vmParams: VmParams,
     private val analytics: Analytics,
     private val spaceManager: SpaceManager,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
@@ -72,6 +73,7 @@ class SpacesStorageViewModel(
     private val jobs = mutableListOf<Job>()
 
     init {
+        Timber.d("SpacesStorageViewModel init, spaceId: ${vmParams.spaceId}")
         subscribeToViewEvents()
         subscribeToMiddlewareEvents()
         proceedWithGettingNodeUsageInfo()
@@ -90,7 +92,12 @@ class SpacesStorageViewModel(
     private suspend fun dispatchCommand(event: Event) {
         when (event) {
             Event.OnManageFilesClicked -> {
-                commands.emit(Command.OpenRemoteFilesManageScreen(Subscription.Files.id))
+                commands.emit(
+                    Command.OpenRemoteFilesManageScreen(
+                        subscription = Subscription.Files.id,
+                        space = vmParams.spaceId
+                    )
+                )
                 analytics.sendSettingsSpaceStorageManageEvent()
             }
             Event.OnGetMoreSpaceClicked -> {
@@ -178,7 +185,7 @@ class SpacesStorageViewModel(
         val percentUsage = calculatePercentUsage(bytesUsage, bytesLimit)
         val isShowGetMoreSpace = isNeedToShowGetMoreSpace(percentUsage, localUsage, bytesLimit)
         val isShowSpaceUsedWarning = isShowSpaceUsedWarning(percentUsage)
-        val activeSpaceId = spaceManager.get()
+        val activeSpaceId = vmParams.spaceId.id
         val activeSpace = spaces.firstOrNull { it.targetSpaceId == activeSpaceId }
 
         val segmentLegendItems = getSegmentLegendItems(nodeUsageInfo, activeSpace)
@@ -301,6 +308,7 @@ class SpacesStorageViewModel(
             } else {
                 val config = spaceManager.getConfig() ?: return@launch
                 val params = StoreSearchByIdsParams(
+                    space = SpaceId(config.techSpace),
                     subscription = PROFILE_SUBSCRIPTION_ID,
                     keys = listOf(Relations.ID, Relations.NAME),
                     targets = listOf(config.profile)
@@ -327,8 +335,8 @@ class SpacesStorageViewModel(
         activeSpace: ObjectWrapper.Basic?
     ): List<SegmentLegendItem> {
         val result = mutableListOf<SegmentLegendItem>()
-        val currentSpace = nodeUsageInfo.spaces.firstOrNull { it.space == spaceManager.get() }
-        val otherSpaces = nodeUsageInfo.spaces.filter { it.space != spaceManager.get() }
+        val currentSpace = nodeUsageInfo.spaces.firstOrNull { it.space == vmParams.spaceId.id }
+        val otherSpaces = nodeUsageInfo.spaces.filter { it.space != vmParams.spaceId.id }
         var otherSpacesUsages = 0L
         otherSpaces.forEach { spaceUsage ->
             otherSpacesUsages += spaceUsage.bytesUsage
@@ -363,7 +371,7 @@ class SpacesStorageViewModel(
         val nodeSpaces = nodeUsageInfo.spaces
 
         if (activeSpace == null || bytesLimit == null || bytesLimit == 0F) {
-            Timber.e("SpacesStorage, Space Id or Node bytesLimit is null or 0")
+            Timber.w("SpacesStorage, Space Id or Node bytesLimit is null or 0")
             return emptyList()
         }
 
@@ -419,7 +427,7 @@ class SpacesStorageViewModel(
     }
 
     sealed class Command {
-        data class OpenRemoteFilesManageScreen(val subscription: Id) : Command()
+        data class OpenRemoteFilesManageScreen(val subscription: Id, val space: SpaceId) : Command()
         data class SendGetMoreSpaceEmail(val account: Id, val name: String, val limit: String) :
             Command()
         data object ShowMembershipScreen : Command()
@@ -430,6 +438,10 @@ class SpacesStorageViewModel(
         data object Init : ActiveTierState()
         data class Success(val tierId: TierId) : ActiveTierState()
     }
+
+    data class VmParams(
+        val spaceId: SpaceId
+    )
 
     companion object {
         private const val SPACES_STORAGE_SUBSCRIPTION_ID = "spaces_storage_view_model_subscription"

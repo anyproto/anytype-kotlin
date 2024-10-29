@@ -162,9 +162,7 @@ private fun SelectSpaceSpaceItem(
                 icon = item.view.icon,
                 onSpaceIconClick = throttledClick(
                     onClick = { onSpaceClicked(item.view) }
-                ),
-                gradientBackground = colorResource(id = R.color.default_gradient_background),
-                gradientCornerRadius = 4.dp
+                )
             )
             if (item.view.isShared) {
                 Image(

@@ -31,7 +31,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -162,14 +161,10 @@ fun Menu(
         backLongClick = {
             onBackLongClicked()
         },
-        homeClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Back) },
         searchClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Search) },
         addDocClick = { viewModel.eventStream(LibraryEvent.BottomMenu.CreateObject) },
-        onCreateObjectLongClicked = onCreateObjectLongClicked,
-        onProfileClicked = {
-            viewModel.eventStream(LibraryEvent.BottomMenu.OpenProfile)
-        },
-        profileIcon = viewModel.icon.collectAsState().value
+        addDocLongClick = onCreateObjectLongClicked,
+        isOwnerOrEditor = false
     )
 }
 

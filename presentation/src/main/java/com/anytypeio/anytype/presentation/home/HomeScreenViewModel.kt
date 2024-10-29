@@ -117,6 +117,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
+import com.anytypeio.anytype.presentation.widgets.hasValidLayout
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
@@ -426,7 +427,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             widgets.filterNotNull().map { widgets ->
                 val currentlyDisplayedViews = views.value
-                widgets.map { widget ->
+                widgets.filter { widget -> widget.hasValidLayout() }.map { widget ->
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
                             widget = widget
@@ -568,6 +569,7 @@ class HomeScreenViewModel(
                 .flatMapLatest { config ->
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
+                            space = SpaceId(config.techSpace),
                             subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                             targets = listOf(config.profile),
                             keys = listOf(
@@ -1368,6 +1370,9 @@ class HomeScreenViewModel(
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
             }
+            OpenObjectNavigation.NonValidObject -> {
+                sendToast("Object id is missing")
+            }
         }
     }
 
@@ -1375,7 +1380,10 @@ class HomeScreenViewModel(
         Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
+            val params = objType?.uniqueKey.getCreateObjectParams(
+                space = SpaceId(spaceManager.get()),
+                objType?.defaultTemplateId
+            )
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
@@ -1460,7 +1468,7 @@ class HomeScreenViewModel(
                 }
             }
             .onEach { (config, pinned) ->
-                val defaultObjectType = getDefaultObjectType.async(Unit).getOrNull()?.type
+                val defaultObjectType = getDefaultObjectType.async(SpaceId(config.space)).getOrNull()?.type
                 val keys = buildSet {
                     pinned.take(MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS).forEach { typeId ->
                         val wrapper = storeOfObjectTypes.get(typeId.id)
@@ -1706,6 +1714,10 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onBackLongClicked() {
+        navigate(destination = Navigation.OpenSpaceSwitcher)
+    }
+
     override fun onCleared() {
         super.onCleared()
         Timber.d("onCleared")
@@ -1777,9 +1789,8 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
-                    type = type.uniqueKey?.let {
-                        TypeKey(it)
-                    }
+                    space = SpaceId(spaceManager.get()),
+                    type = TypeKey(type.uniqueKey)
                 )
             ).fold(
                 onSuccess = { response ->
@@ -1810,9 +1821,8 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
-                    type = type.uniqueKey?.let {
-                        TypeKey(it)
-                    }
+                    space = SpaceId(spaceManager.get()),
+                    type = TypeKey(type.uniqueKey)
                 )
             ).fold(
                 onSuccess = { result ->
@@ -2074,6 +2084,7 @@ class HomeScreenViewModel(
         data class OpenDiscussion(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
+        data object OpenSpaceSwitcher: Navigation()
         data class OpenLibrary(val space: Id) : Navigation()
         data class OpenAllContent(val space: Id) : Navigation()
     }
@@ -2289,10 +2300,12 @@ sealed class OpenObjectNavigation {
     data class OpenEditor(val target: Id, val space: Id) : OpenObjectNavigation()
     data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
+    data object NonValidObject: OpenObjectNavigation()
     data class OpenDiscussion(val target: Id, val space: Id): OpenObjectNavigation()
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
+    if (!isValid) return OpenObjectNavigation.NonValidObject
     return when (layout) {
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,

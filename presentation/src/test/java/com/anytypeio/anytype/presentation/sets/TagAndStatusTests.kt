@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -128,9 +129,7 @@ class TagAndStatusTests {
 
         val result = columns.buildGridRow(
             obj = ObjectWrapper.Basic(records),
-            relations = dataViewRelations,
             builder = UrlBuilder(gateway),
-            details = emptyMap(),
             showIcon = false,
             store = store
         )
@@ -140,12 +139,12 @@ class TagAndStatusTests {
             name = "",
             type = "Type111",
             showIcon = false,
+            objectIcon = ObjectIcon.Empty.Page,
             cells = listOf(
                 CellView.Description(
                     id = recordId,
                     relationKey = viewerRelations[0].key,
-                    text = "Title4",
-                    space = defaultSpace
+                    text = "Title4"
                 ),
                 CellView.Tag(
                     id = recordId,
@@ -162,7 +161,6 @@ class TagAndStatusTests {
                             color = selOptions[2].color
                         )
                     ),
-                    space = defaultSpace
                 )
             )
         )
@@ -265,9 +263,7 @@ class TagAndStatusTests {
 
         val result = columns.buildGridRow(
             obj = ObjectWrapper.Basic(records),
-            relations = dataViewRelations,
             builder = UrlBuilder(gateway),
-            details = emptyMap(),
             showIcon = false,
             store = store
         )
@@ -277,12 +273,12 @@ class TagAndStatusTests {
             name = "",
             type = "Type111",
             showIcon = false,
+            objectIcon = ObjectIcon.Empty.Page,
             cells = listOf(
                 CellView.Description(
                     id = recordId,
                     relationKey = viewerRelations[0].key,
                     text = "Title4",
-                    space = defaultSpace
                 ),
                 CellView.Status(
                     id = recordId,
@@ -294,7 +290,6 @@ class TagAndStatusTests {
                             color = selOptions[2].color
                         )
                     ),
-                    space = defaultSpace
                 )
             )
         )

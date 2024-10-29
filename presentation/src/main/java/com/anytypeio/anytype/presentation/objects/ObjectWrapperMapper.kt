@@ -17,7 +17,6 @@ import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
 
@@ -183,74 +182,11 @@ fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
         )
     }.sortedByDescending { it.isSelected }
 
-fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
-    excluded: List<Id>,
-    urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
-): List<RelationValueView.Object> =
-    this.mapNotNull { obj ->
-        val typeUrl = obj.getProperType()
-        val layout = obj.getProperLayout()
-        if (obj.id !in excluded) {
-            if (obj.isDeleted == null || obj.isDeleted == false) {
-                RelationValueView.Object.Default(
-                    id = obj.id,
-                    space = requireNotNull(obj.spaceId),
-                    name = obj.getProperName(),
-                    typeName = getProperTypeName(
-                        id = typeUrl,
-                        types = objectTypes
-                    ),
-                    type = typeUrl,
-                    layout = layout,
-                    icon = obj.objectIcon(urlBuilder),
-                    isSelected = false,
-                    removable = false
-                )
-            } else {
-                RelationValueView.Object.NonExistent(
-                    id = obj.id,
-                    space = requireNotNull(obj.spaceId),
-                    isSelected = false,
-                    removable = false
-                )
-            }
-        } else {
-            null
-        }
-    }
-
-fun List<ObjectWrapper.Basic>.toRelationFileValueView(
-    ids: List<String>,
-    urlBuilder: UrlBuilder
-): List<RelationValueView.File> =
-    this.mapNotNull { obj ->
-        val image = obj.getProperFileImage(urlBuilder)
-        if (obj.id !in ids) {
-            RelationValueView.File(
-                id = obj.id,
-                space = requireNotNull(obj.spaceId),
-                name = obj.getProperName(),
-                ext = obj.getProperFileExt(),
-                mime = obj.getProperFileMime(),
-                image = image,
-                isSelected = false
-            )
-        } else {
-            null
-        }
-    }
-
 private fun ObjectWrapper.Basic.getProperLayout() = layout ?: ObjectType.Layout.BASIC
 fun ObjectWrapper.Basic.getProperType() = type.firstOrNull()
-private fun ObjectWrapper.Basic.getProperFileExt() = fileExt.orEmpty()
-private fun ObjectWrapper.Basic.getProperFileMime() = fileMimeType.orEmpty()
 
 private fun getProperTypeName(id: Id?, types: List<ObjectWrapper.Type>) =
     types.find { it.id == id }?.name.orEmpty()
-
-private fun ObjectWrapper.Basic.getProperFileImage(urlBuilder: UrlBuilder): String? =
-    iconImage?.let { if (it.isBlank()) null else urlBuilder.thumbnail(it) }
 
 fun ObjectWrapper.Basic.getProperName(): String {
     return getProperObjectName().orEmpty()
@@ -289,16 +225,4 @@ fun List<ObjectWrapper.Basic>.toSpaceMembers(): List<ObjectWrapper.SpaceMember> 
         } else {
             ObjectWrapper.SpaceMember(basic.map)
         }
-    }
-
-fun List<ObjectWrapper.Basic>.toSpaceView() =
-    if (isNotEmpty()) {
-        val spaceMap = first().map
-        if (spaceMap.isEmpty()) {
-            null
-        } else {
-            ObjectWrapper.SpaceView(spaceMap)
-        }
-    } else {
-        null
     }

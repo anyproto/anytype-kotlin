@@ -167,8 +167,16 @@ class SpaceJoinRequestViewModel(
         newMember: ObjectWrapper.SpaceMember,
         isCurrentUserOwner: Boolean
     ): ViewState {
-        val canAddReaders = spaceView.canAddReaders(isCurrentUserOwner, spaceMembers)
-        val canAddWriters = spaceView.canAddWriters(isCurrentUserOwner, spaceMembers)
+        val canAddReaders = spaceView.canAddReaders(
+            isCurrentUserOwner = isCurrentUserOwner,
+            participants = spaceMembers,
+            newMember = newMember
+        )
+        val canAddWriters = spaceView.canAddWriters(
+            isCurrentUserOwner = isCurrentUserOwner,
+            participants = spaceMembers,
+            newMember = newMember
+        )
         return when {
             !canAddReaders && !canAddWriters ->
                 createViewStateWithButtons(
@@ -197,8 +205,16 @@ class SpaceJoinRequestViewModel(
         newMember: ObjectWrapper.SpaceMember,
         isCurrentUserOwner: Boolean
     ): ViewState {
-        val canAddReaders = spaceView.canAddReaders(isCurrentUserOwner, spaceMembers)
-        val canAddWriters = spaceView.canAddWriters(isCurrentUserOwner, spaceMembers)
+        val canAddReaders = spaceView.canAddReaders(
+            isCurrentUserOwner = isCurrentUserOwner,
+            participants = spaceMembers,
+            newMember = newMember
+        )
+        val canAddWriters = spaceView.canAddWriters(
+            isCurrentUserOwner = isCurrentUserOwner,
+            participants = spaceMembers,
+            newMember = newMember
+        )
         return when {
             !canAddReaders && !canAddWriters ->
                 createViewStateWithButtons(
@@ -229,8 +245,16 @@ class SpaceJoinRequestViewModel(
         newMember: ObjectWrapper.SpaceMember,
         isCurrentUserOwner: Boolean
     ): ViewState {
-        val canAddReaders = spaceView.canAddReaders(isCurrentUserOwner, spaceMembers)
-        val canAddWriters = spaceView.canAddWriters(isCurrentUserOwner, spaceMembers)
+        val canAddReaders = spaceView.canAddReaders(
+            isCurrentUserOwner = isCurrentUserOwner,
+            participants = spaceMembers,
+            newMember = newMember
+        )
+        val canAddWriters = spaceView.canAddWriters(
+            isCurrentUserOwner = isCurrentUserOwner,
+            participants = spaceMembers,
+            newMember = newMember
+        )
         return when {
             !canAddReaders && !canAddWriters -> createViewStateWithButtons(
                 spaceView = spaceView,
@@ -288,9 +312,7 @@ class SpaceJoinRequestViewModel(
     private fun proceedWithSpaceMembers(space: SpaceId) {
         val searchMembersParams = SearchObjects.Params(
             space = space,
-            filters = filterParticipants(
-                spaces = listOf(space.id)
-            ),
+            filters = filterParticipants(space = space),
             keys = ObjectSearchConstants.spaceMemberKeys
         )
         viewModelScope.launch {

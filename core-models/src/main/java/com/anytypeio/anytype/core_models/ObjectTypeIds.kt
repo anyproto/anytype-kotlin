@@ -28,7 +28,7 @@ object ObjectTypeIds {
     const val CHAT_DERIVED = "ot-chatDerived"
     const val CHAT = "ot-chat"
 
-    const val DEFAULT_OBJECT_TYPE_PREFIX = "ot-"
+    const val DEFAULT_OBJECT_TYPE = PAGE
 
     fun getTypesWithoutTemplates(): List<String> =
         listOf(BOOKMARK, NOTE).plus(getFileTypes()).plus(getSetTypes())

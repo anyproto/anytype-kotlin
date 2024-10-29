@@ -8,7 +8,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.FileLimitsEvent
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeLocal
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.msg
@@ -16,35 +15,23 @@ import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.domain.account.DeleteAccount
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.ClearFileCache
-import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsOffloadEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageOffloadEvent
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -52,12 +39,7 @@ import timber.log.Timber
 
 class FilesStorageViewModel(
     private val analytics: Analytics,
-    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val spaceManager: SpaceManager,
     private val clearFileCache: ClearFileCache,
-    private val urlBuilder: UrlBuilder,
-    private val spaceGradientProvider: SpaceGradientProvider,
-    private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val spacesUsageInfo: SpacesUsageInfo,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val buildProvider: BuildProvider,
@@ -80,21 +62,16 @@ class FilesStorageViewModel(
     }
 
     fun onStart() {
+        getSpaceUsageInfo()
         subscribeToFileLimits()
-        subscribeToSpace()
         subscribeToFileLimitEvents()
     }
 
     fun onStop() {
-        viewModelScope.launch {
-            storelessSubscriptionContainer.unsubscribe(
-                listOf(SPACE_STORAGE_SUBSCRIPTION_ID, PROFILE_SUBSCRIPTION_ID)
-            )
-        }
         jobs.cancel()
     }
 
-    private fun subscribeToFileLimits() {
+    private fun getSpaceUsageInfo() {
         jobs += viewModelScope.launch {
             spacesUsageInfo
                 .stream(Unit)
@@ -198,28 +175,9 @@ class FilesStorageViewModel(
         }
     }
 
-    private fun subscribeToSpace() {
-        jobs += viewModelScope.launch {
-            val config = spaceManager.getConfig() ?: return@launch
-            val spaceId = config.space
-            val profileId = config.profile
-            spaceManager.observe()
-            val subscribeParams = StoreSearchByIdsParams(
-                subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
-                targets = listOf(spaceId, profileId),
-                keys = listOf(
-                    Relations.ID,
-                    Relations.NAME,
-                    Relations.ICON_EMOJI,
-                    Relations.ICON_IMAGE,
-                    Relations.ICON_OPTION
-                )
-            )
-            combine(
-                _fileLimitsState,
-                storelessSubscriptionContainer.subscribe(subscribeParams)
-            ) { spaceUsage, result ->
-                val workspace = result.find { it.id == spaceId }
+    private fun subscribeToFileLimits() {
+        viewModelScope.launch {
+            _fileLimitsState.collect { spaceUsage ->
                 val bytesUsage = spaceUsage.bytesUsage
                 val bytesLimit = spaceUsage.bytesLimit
                 val localeUsage = spaceUsage.localBytesUsage
@@ -237,9 +195,7 @@ class FilesStorageViewModel(
                 val isShowSpaceUsedWarning = isShowSpaceUsedWarning(
                     percentUsage = percentUsage
                 )
-                ScreenState(
-                    spaceName = workspace?.name.orEmpty(),
-                    spaceIcon = workspace?.spaceIcon(urlBuilder, spaceGradientProvider),
+                val state = ScreenState(
                     spaceUsage = bytesUsage?.readableFileSize()
                         .orEmpty(),
                     percentUsage = percentUsage,
@@ -250,12 +206,8 @@ class FilesStorageViewModel(
                     isShowGetMoreSpace = isShowGetMoreSpace,
                     isShowSpaceUsedWarning = isShowSpaceUsedWarning
                 )
+                _state.value = state
             }
-                .flowOn(appCoroutineDispatchers.io)
-                .catch {
-                    Timber.e(it, "Error while observing space storage usage")
-                }
-                .collect { _state.value = it }
         }
     }
 
@@ -317,21 +269,16 @@ class FilesStorageViewModel(
     }
 
     sealed class Event {
-        object OnOffloadFilesClicked : Event()
+        data object OnOffloadFilesClicked : Event()
     }
 
     sealed class Command {
-        object OpenOffloadFilesScreen : Command()
+        data object OpenOffloadFilesScreen : Command()
     }
 
     class Factory @Inject constructor(
         private val analytics: Analytics,
-        private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-        private val spaceManager: SpaceManager,
         private val clearFileCache: ClearFileCache,
-        private val urlBuilder: UrlBuilder,
-        private val spaceGradientProvider: SpaceGradientProvider,
-        private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val spacesUsageInfo: SpacesUsageInfo,
         private val interceptFileLimitEvents: InterceptFileLimitEvents,
         private val buildProvider: BuildProvider,
@@ -342,12 +289,7 @@ class FilesStorageViewModel(
             modelClass: Class<T>
         ): T = FilesStorageViewModel(
             analytics = analytics,
-            storelessSubscriptionContainer = storelessSubscriptionContainer,
-            spaceManager = spaceManager,
             clearFileCache = clearFileCache,
-            urlBuilder = urlBuilder,
-            spaceGradientProvider = spaceGradientProvider,
-            appCoroutineDispatchers = appCoroutineDispatchers,
             spacesUsageInfo = spacesUsageInfo,
             interceptFileLimitEvents = interceptFileLimitEvents,
             buildProvider = buildProvider,
@@ -356,8 +298,6 @@ class FilesStorageViewModel(
     }
 
     data class ScreenState(
-        val spaceIcon: SpaceIconView?,
-        val spaceName: String,
         val spaceLimit: String,
         val spaceUsage: String,
         val percentUsage: Float?,
@@ -368,8 +308,6 @@ class FilesStorageViewModel(
     ) {
         companion object {
             fun empty() = ScreenState(
-                spaceIcon = null,
-                spaceName = "",
                 spaceLimit = "",
                 spaceUsage = "",
                 percentUsage = null,
@@ -385,5 +323,3 @@ class FilesStorageViewModel(
         const val WARNING_PERCENT = 0.9f
     }
 }
-
-const val SPACE_STORAGE_SUBSCRIPTION_ID = "settings_space_storage_subscription"

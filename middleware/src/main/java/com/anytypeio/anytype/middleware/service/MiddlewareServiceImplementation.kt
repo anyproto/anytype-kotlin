@@ -1039,32 +1039,6 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun objectSetIsArchived(request: Rpc.Object.SetIsArchived.Request): Rpc.Object.SetIsArchived.Response {
-        val encoded = Service.objectSetIsArchived(
-            Rpc.Object.SetIsArchived.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.Object.SetIsArchived.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.Object.SetIsArchived.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
-    override fun objectSetIsFavorite(request: Rpc.Object.SetIsFavorite.Request): Rpc.Object.SetIsFavorite.Response {
-        val encoded = Service.objectSetIsFavorite(
-            Rpc.Object.SetIsFavorite.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.Object.SetIsFavorite.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.Object.SetIsFavorite.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
     override fun objectListSetIsFavorite(request: Rpc.Object.ListSetIsFavorite.Request): Rpc.Object.ListSetIsFavorite.Response {
         val encoded = Service.objectListSetIsFavorite(
             Rpc.Object.ListSetIsFavorite.Request.ADAPTER.encode(request)

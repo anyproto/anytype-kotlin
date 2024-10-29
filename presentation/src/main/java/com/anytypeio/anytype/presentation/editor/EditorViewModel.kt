@@ -59,6 +59,7 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.isEndLineClick
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.toPrettyString
@@ -469,6 +470,7 @@ class EditorViewModel(
                 .flatMapLatest { config ->
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
+                            space = SpaceId(config.techSpace),
                             subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                             targets = listOf(config.profile),
                             keys = listOf(
@@ -981,6 +983,7 @@ class EditorViewModel(
     }
 
     private fun dispatchToUI(views: List<BlockView>) {
+        onUpdateMultiSelectMode()
         stateData.postValue(
             ViewState.Success(
                 blocks = views
@@ -1383,6 +1386,8 @@ class EditorViewModel(
                     Editor.Focus.id(id = id, isPending = false)
                 )
             }
+        } else {
+            sendHideTypesWidgetEvent()
         }
     }
 
@@ -1789,9 +1794,11 @@ class EditorViewModel(
             renderCommand.send(Unit)
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.MultiSelect.OnEnter(
-                    currentSelection().size
+                    count = currentSelection().size,
+                    isSelectAllVisible = isNotAllBlocksSelected(
+
                 )
-            )
+            ))
             if (isSelected(target) && scrollTarget) {
                 dispatch(Command.ScrollToActionMenu(target = target))
             }
@@ -1799,6 +1806,45 @@ class EditorViewModel(
 
         proceedWithUpdatingActionsForCurrentSelection()
     }
+
+    private fun isNotAllBlocksSelected(): Boolean {
+        val allBlocks = orchestrator.stores.views.current().filter { it is BlockView.Selectable }
+        val selected = currentSelection()
+        return allBlocks.any { !selected.contains(it.id) }
+    }
+
+    private suspend fun updateSelectionUI(views: List<BlockView>) {
+        orchestrator.stores.focus.update(Editor.Focus.empty())
+        orchestrator.stores.views.update(
+            views.enterSAM(targets = currentSelection())
+        )
+        renderCommand.send(Unit)
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.MultiSelect.OnEnter(
+                currentSelection().size,
+                isSelectAllVisible = isNotAllBlocksSelected()
+            )
+        )
+    }
+
+    fun onSelectAllClicked() {
+        val views = orchestrator.stores.views.current()
+
+        views.forEach { view ->
+            if (view is BlockView.Selectable) {
+                select(view.id)
+            } else {
+                Timber.w("SelectAll", "Block with id ${view.id} cannot be selected.")
+            }
+        }
+
+        mode = EditorMode.Select
+
+        viewModelScope.launch {
+            updateSelectionUI(views)
+        }
+    }
+
 
     private fun proceedWithUpdatingActionsForCurrentSelection() {
         val isMultiMode = currentSelection().size > 1
@@ -3298,7 +3344,10 @@ class EditorViewModel(
         objType: ObjectWrapper.Type?
     ) {
         val startTime = System.currentTimeMillis()
-        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
+        val params = objType?.uniqueKey.getCreateObjectParams(
+            space = vmParams.space,
+            objType?.defaultTemplateId
+        )
         viewModelScope.launch {
             createObject.async(params = params).fold(
                 onSuccess = { result ->
@@ -4321,7 +4370,8 @@ class EditorViewModel(
     private fun onMultiSelectModeBlockClicked() {
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.MultiSelect.OnBlockClick(
-                count = currentSelection().size
+                count = currentSelection().size,
+                isSelectAllVisible = isNotAllBlocksSelected()
             )
         )
     }
@@ -4391,6 +4441,9 @@ class EditorViewModel(
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
+            }
+            OpenObjectNavigation.NonValidObject -> {
+                sendToast("Object id is missing")
             }
         }
     }
@@ -4702,7 +4755,6 @@ class EditorViewModel(
             proceedWithSlashItem(item, target.requireTarget())
         } else {
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-            Timber.e("Slash Widget Error, target is empty")
         }
     }
 
@@ -5892,14 +5944,32 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
     }
 
+    @Deprecated("Not used in production code")
     fun onEnterMultiSelectModeClicked() {
         Timber.d("onEnterMultiSelectModeClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter())
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.MultiSelect.OnEnter(
+                count = currentSelection().size,
+                isSelectAllVisible = isNotAllBlocksSelected()
+            )
+        )
         mode = EditorMode.Select
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
         viewModelScope.launch {
             delay(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
             refresh()
+        }
+    }
+
+    private fun onUpdateMultiSelectMode() {
+        Timber.d("syncBlockUpdateMultiSelectMode, ")
+        if (mode == EditorMode.Select) {
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.MultiSelect.SyncBlockUpdate(
+                    count = currentSelection().size,
+                    isSelectAllVisible = isNotAllBlocksSelected()
+                )
+            )
         }
     }
 
@@ -5964,7 +6034,7 @@ class EditorViewModel(
     fun onAddMentionNewPageClicked(mentionText: String) {
         Timber.d("onAddMentionNewPageClicked, mentionText:[$mentionText]")
         viewModelScope.launch {
-            getDefaultObjectType.async(Unit).fold(
+            getDefaultObjectType.async(vmParams.space).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
                     sendToast("Error while getting default object type, couldn't create a new mention")
@@ -6204,8 +6274,13 @@ class EditorViewModel(
     private fun setTypesWidgetVisibility(visible: Boolean) {
         if (visible) {
             proceedWithGettingObjectTypesForTypesWidget()
+            _typesWidgetState.value = _typesWidgetState.value.copy(visible = true, expanded = false)
+        } else {
+            if (_typesWidgetState.value.visible) {
+                _typesWidgetState.value =
+                    _typesWidgetState.value.copy(visible = false, expanded = false)
+            }
         }
-        _typesWidgetState.value = _typesWidgetState.value.copy(visible = visible, expanded = false)
     }
 
     private fun onTypesWidgetSearchClicked() {
@@ -6351,7 +6426,7 @@ class EditorViewModel(
     fun proceedToCreateObjectAndAddToTextAsLink(name: String) {
         Timber.d("proceedToCreateObjectAndAddToTextAsLink, name:[$name]")
         viewModelScope.launch {
-            getDefaultObjectType.async(Unit).fold(
+            getDefaultObjectType.async(vmParams.space).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
                 },

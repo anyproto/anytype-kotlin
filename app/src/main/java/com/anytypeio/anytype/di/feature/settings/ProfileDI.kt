@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -45,7 +46,6 @@ object ProfileModule {
     @Provides
     @PerScreen
     fun provideViewModelFactory(
-        deleteAccount: DeleteAccount,
         analytics: Analytics,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         setObjectDetails: SetObjectDetails,
@@ -53,9 +53,9 @@ object ProfileModule {
         urlBuilder: UrlBuilder,
         setDocumentImageIcon: SetDocumentImageIcon,
         membershipProvider: MembershipProvider,
-        getNetworkMode: GetNetworkMode
+        getNetworkMode: GetNetworkMode,
+        profileSubscriptionManager: ProfileSubscriptionManager
     ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
-        deleteAccount = deleteAccount,
         analytics = analytics,
         container = storelessSubscriptionContainer,
         setObjectDetails = setObjectDetails,
@@ -63,7 +63,8 @@ object ProfileModule {
         urlBuilder = urlBuilder,
         setDocumentImageIcon = setDocumentImageIcon,
         membershipProvider = membershipProvider,
-        getNetworkMode = getNetworkMode
+        getNetworkMode = getNetworkMode,
+        profileSubscriptionManager = profileSubscriptionManager
     )
 
     @Provides

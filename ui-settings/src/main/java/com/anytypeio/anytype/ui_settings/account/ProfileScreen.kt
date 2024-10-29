@@ -209,47 +209,6 @@ fun Section(name: String) {
 }
 
 @Composable
-fun Pincode(
-    onClick: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .height(52.dp)
-            .clickable(onClick = onClick)
-    ) {
-        Image(
-            painterResource(R.drawable.ic_pin_code),
-            contentDescription = "Pincode icon",
-            modifier = Modifier.padding(
-                start = 20.dp
-            )
-        )
-        Text(
-            text = stringResource(R.string.pin_code),
-            color = colorResource(R.color.text_primary),
-            modifier = Modifier.padding(
-                start = 12.dp
-            )
-        )
-        Box(
-            modifier = Modifier.weight(1.0f, true),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            Row {
-                Text(
-                    text = stringResource(R.string.off),
-                    fontSize = 17.sp,
-                    color = colorResource(R.color.text_secondary),
-                    modifier = Modifier.padding(end = 10.dp)
-                )
-                Arrow()
-            }
-        }
-    }
-}
-
-@Composable
 fun Action(
     name: String,
     color: Color = Color.Unspecified,
@@ -441,10 +400,7 @@ fun ProfileImageBlock(
     when (icon) {
         is ProfileIconView.Image -> {
             Image(
-                painter = rememberAsyncImagePainter(
-                    model = icon.url,
-                    error = painterResource(id = R.drawable.ic_home_widget_space)
-                ),
+                painter = rememberAsyncImagePainter(model = icon.url),
                 contentDescription = "Custom image profile",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

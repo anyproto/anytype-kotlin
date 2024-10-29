@@ -57,6 +57,7 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.VaultSpaceView
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
@@ -106,7 +107,8 @@ fun VaultScreen(
 
        VaultScreenToolbar(
            onPlusClicked = onCreateSpaceClicked,
-           onSettingsClicked = onSettingsClicked
+           onSettingsClicked = onSettingsClicked,
+           spaceCountLimitReached = spaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT
        )
 
        LazyColumn(
@@ -141,7 +143,15 @@ fun VaultScreen(
                        icon = item.icon
                    )
                }
-               if (idx == spaces.lastIndex) {
+               if (idx == spaces.lastIndex && spaces.size < SelectSpaceViewModel.MAX_SPACE_COUNT) {
+                   VaultSpaceAddCard(
+                       onCreateSpaceClicked = onCreateSpaceClicked
+                   )
+                   Spacer(modifier = Modifier.height(40.dp))
+               }
+           }
+           if (spaceList.isEmpty()) {
+               item {
                    VaultSpaceAddCard(
                        onCreateSpaceClicked = onCreateSpaceClicked
                    )
@@ -155,6 +165,7 @@ fun VaultScreen(
 
 @Composable
 fun VaultScreenToolbar(
+    spaceCountLimitReached: Boolean = false,
     onPlusClicked: () -> Unit,
     onSettingsClicked: () -> Unit
 ) {
@@ -179,17 +190,18 @@ fun VaultScreenToolbar(
                     onSettingsClicked()
                 }
         )
-        Image(
-            // TODO change icon
-            painter = painterResource(id = R.drawable.ic_plus),
-            contentDescription = "Plus button",
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 16.dp)
-                .noRippleClickable {
-                    onPlusClicked()
-                }
-        )
+        if (!spaceCountLimitReached) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_vault_top_toolbar_plus),
+                contentDescription = "Plus button",
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp)
+                    .noRippleClickable {
+                        onPlusClicked()
+                    }
+            )
+        }
     }
 }
 
@@ -259,13 +271,10 @@ fun VaultSpaceCard(
             onSpaceIconClick = {
                 onCardClicked()
             },
-            gradientBackground = colorResource(id = R.color.default_gradient_background),
-            gradientCornerRadius = 4.dp,
             mainSize = 64.dp,
             modifier = Modifier
                 .padding(start = 16.dp)
-                .align(Alignment.CenterStart),
-            gradientSize = 48.dp
+                .align(Alignment.CenterStart)
         )
         Column(
             modifier = Modifier

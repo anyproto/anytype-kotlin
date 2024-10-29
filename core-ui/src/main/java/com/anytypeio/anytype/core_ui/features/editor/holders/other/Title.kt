@@ -111,7 +111,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 CoverGradient.GREEN_ORANGE -> R.drawable.wallpaper_gradient_3
                 CoverGradient.SKY -> R.drawable.wallpaper_gradient_4
                 else -> {
-                    Timber.e("Unknown cover gradient: $coverGradient")
+                    Timber.w("Unknown cover gradient: $coverGradient")
                     0
                 }
             }
@@ -438,23 +438,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     .into(image)
             } ?: apply {
                 hasImage = false
-                if (item is BlockView.Title.Profile && item.spaceGradient != null) {
-                    val gradient = item.spaceGradient
-                    requireNotNull(gradient)
-                    gradientView.visible()
-                    gradientView.setContent {
-                        RadialGradientComposeView(
-                            modifier = Modifier,
-                            from = gradient.from,
-                            to = gradient.to,
-                            size = 0.dp
-                        )
-                    }
-                } else {
-                    gradientView.gone()
-                    setIconText(item.text)
-                    image.setImageDrawable(null)
-                }
+                gradientView.gone()
+                setIconText(item.text)
+                image.setImageDrawable(null)
             }
         }
 

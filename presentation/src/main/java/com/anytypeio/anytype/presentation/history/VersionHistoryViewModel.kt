@@ -258,7 +258,7 @@ class VersionHistoryViewModel(
     private fun getSpaceMembers() {
         viewModelScope.launch {
             val filters =
-                ObjectSearchConstants.filterParticipants(spaces = listOf(vmParams.spaceId.id))
+                ObjectSearchConstants.filterParticipants(vmParams.spaceId)
             objectSearch(
                 SearchObjects.Params(
                     filters = filters,

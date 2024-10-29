@@ -66,6 +66,8 @@ class SplashViewModel(
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
+    val loadingState = MutableStateFlow(false)
+
     init {
         Timber.i("SplashViewModel, init")
         checkAuthorizationStatus()
@@ -122,8 +124,10 @@ class SplashViewModel(
     private fun proceedWithLaunchingAccount() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
+            loadingState.value = true
             launchAccount(BaseUseCase.None).proceed(
                 success = { analyticsId ->
+                    loadingState.value = false
                     crashReporter.setUser(analyticsId)
                     updateUserProps(analyticsId)
                     val props = Props.empty()
@@ -132,6 +136,7 @@ class SplashViewModel(
                     commands.emit(Command.CheckAppStartIntent)
                 },
                 failure = { e ->
+                    loadingState.value = false
                     Timber.e(e, "Error while launching account")
                     when (e) {
                         is MigrationNeededException -> {
@@ -159,6 +164,10 @@ class SplashViewModel(
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
             val spaceId = spaceManager.get()
+            if (spaceId.isEmpty()) {
+                Timber.e("No space found")
+                return@launch
+            }
             val space = SpaceId(spaceId)
             val params = CreateObjectByTypeAndTemplate.Param(
                 typeKey = TypeKey(type),
@@ -183,7 +192,7 @@ class SplashViewModel(
                     when (result) {
                         CreateObjectByTypeAndTemplate.Result.ObjectTypeNotFound -> {
                             commands.emit(Command.Toast(ERROR_CREATE_OBJECT))
-                            proceedWithDashboardNavigation()
+                            proceedWithVaultNavigation()
                         }
                         is CreateObjectByTypeAndTemplate.Result.Success -> {
                             val target = result.objectId
@@ -216,7 +225,7 @@ class SplashViewModel(
     fun onDeepLinkLaunch(deeplink: String) {
         Timber.d("onDeepLinkLaunch, deeplink:[$deeplink]")
         viewModelScope.launch {
-            proceedWithDashboardNavigation(deeplink)
+            proceedWithVaultNavigation(deeplink)
         }
     }
 
@@ -227,7 +236,7 @@ class SplashViewModel(
             ).process(
                 failure = {
                     Timber.e(it, "Error while getting last opened object")
-                    proceedWithDashboardNavigation()
+                    proceedWithVaultNavigation()
                 },
                 success = { response ->
                     when (response) {
@@ -252,17 +261,17 @@ class SplashViewModel(
                                         )
                                 }
                             } else {
-                                proceedWithDashboardNavigation()
+                                proceedWithVaultNavigation()
                             }
                         }
-                        else -> proceedWithDashboardNavigation()
+                        else -> proceedWithVaultNavigation()
                     }
                 }
             )
         }
     }
 
-    private suspend fun proceedWithDashboardNavigation(deeplink: String? = null) {
+    private suspend fun proceedWithVaultNavigation(deeplink: String? = null) {
         val space = getLastOpenedSpace.async(Unit).getOrNull()
         if (space != null) {
             commands.emit(Command.NavigateToWidgets(deeplink))

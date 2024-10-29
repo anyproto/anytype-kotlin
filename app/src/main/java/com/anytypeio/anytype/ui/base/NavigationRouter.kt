@@ -56,9 +56,6 @@ class NavigationRouter(
                 )
                 is AppNavigation.Command.OpenLibrary -> navigation.openLibrary(command.space)
                 is AppNavigation.Command.MigrationErrorScreen -> navigation.migrationErrorScreen()
-                is AppNavigation.Command.OpenRemoteFilesManageScreen -> navigation.openRemoteFilesManageScreen(
-                    command.subscription
-                )
                 else -> Timber.d("Nav command ignored: $command")
             }
         } catch (e: Exception) {

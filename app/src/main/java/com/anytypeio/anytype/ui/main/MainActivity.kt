@@ -225,8 +225,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     is OpenObjectNavigation.UnexpectedLayoutError -> {
                                         toast(getString(R.string.error_unexpected_layout))
                                     }
-                                    is OpenObjectNavigation.OpenDiscussion -> {
-                                        toast("not implemented")
+                                    OpenObjectNavigation.NonValidObject -> {
+                                        toast(getString(R.string.error_non_valid_object))
                                     }
                                 }
                             }
@@ -357,7 +357,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         if (BuildConfig.DEBUG) Timber.d("Proceeding with share intent: $intent")
         when {
             intent.type == Mimetype.MIME_TEXT_PLAIN.value -> {
-                val raw = intent.getStringExtra(Intent.EXTRA_TEXT)
+                val raw = intent.getStringExtra(Intent.EXTRA_TEXT) ?: intent.dataString
                 if (raw != null) {
                     if (checkDeepLink && DefaultDeepLinkResolver.isDeepLink(raw)) {
                         vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(raw))
@@ -537,7 +537,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 container.setBackgroundResource(R.drawable.cover_gradient_default)
             }
             is Wallpaper.Color -> {
-                val color = WallpaperColor.values().find { it.code == wallpaper.code }
+                val color = WallpaperColor.entries.find { it.code == wallpaper.code }
                 if (color != null) {
                     container.setBackgroundColor(Color.parseColor(color.hex))
                 }

@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -158,7 +159,8 @@ class CollectionFragment : BaseComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().collectionComponent.get().inject(this)
+        val vmParams = CollectionViewModel.VmParams(spaceId = SpaceId(space))
+        componentManager().collectionComponent.get(params = vmParams).inject(this)
     }
 
     override fun releaseDependencies() {

@@ -133,7 +133,9 @@ class ObjectTypeChangeViewModel(
         isWithFiles: Boolean
     ) {
         viewModelScope.launch {
-            getDefaultObjectType.execute(Unit).fold(
+            getDefaultObjectType.execute(
+                SpaceId(spaceManager.get())
+            ).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while getting user settings")
                 },
@@ -293,7 +295,8 @@ class ObjectTypeChangeViewModel(
             space = SpaceId(spaceManager.get()),
             filters = ObjectSearchConstants.filterTypes(
                 recommendedLayouts = recommendedLayouts,
-                excludeParticipant = !setup.isSetSource
+                excludeParticipant = !setup.isSetSource,
+                excludeTemplates = !setup.isSetSource
             ),
             sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
             query = query,

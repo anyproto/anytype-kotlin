@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -89,6 +90,10 @@ fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? =
         return true
     }
 
+    if (objectType?.uniqueKey == ObjectTypeIds.TEMPLATE) {
+        return false
+    }
+
     val skipLayouts = fileLayouts + systemLayouts + listOf(ObjectType.Layout.PARTICIPANT)
     return !skipLayouts.contains(objectType?.recommendedLayout)
 }
@@ -98,7 +103,10 @@ fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? =
  *
  * @return [CreateObject.Param] with the necessary parameters for creating an object.
  */
-fun Key?.getCreateObjectParams(defaultTemplate: Id?): CreateObject.Param {
+fun Key?.getCreateObjectParams(
+    space: SpaceId,
+    defaultTemplate: Id?
+): CreateObject.Param {
     val key = this
     val flags = buildList {
         add(InternalFlags.ShouldEmptyDelete)
@@ -113,6 +121,7 @@ fun Key?.getCreateObjectParams(defaultTemplate: Id?): CreateObject.Param {
     }
 
     return CreateObject.Param(
+        space = space,
         type = key?.let { TypeKey(it) },
         internalFlags = flags,
         template = defaultTemplate

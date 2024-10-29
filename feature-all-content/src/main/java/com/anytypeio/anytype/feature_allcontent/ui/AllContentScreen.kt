@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -26,11 +27,15 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
@@ -39,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -59,14 +65,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
+import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
@@ -79,15 +88,19 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
+import com.anytypeio.anytype.feature_allcontent.models.AllContentBottomMenu
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
+import com.anytypeio.anytype.feature_allcontent.models.UiItemsState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
+import com.anytypeio.anytype.feature_allcontent.models.UiSnackbarState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -97,49 +110,34 @@ fun AllContentWrapperScreen(
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
     uiMenuState: UiMenuState,
-    uiItemsState: List<UiContentItem>,
+    uiSnackbarState: UiSnackbarState,
+    uiItemsState: UiItemsState,
+    uiBottomMenu: AllContentBottomMenu,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
-    onTypeClicked: (UiContentItem.Type) -> Unit,
-    onRelationClicked: (UiContentItem.Relation) -> Unit,
+    onTypeClicked: (UiContentItem) -> Unit,
+    onRelationClicked: (UiContentItem) -> Unit,
     onBinClick: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
     uiContentState: UiContentState,
-    onHomeClicked: () -> Unit,
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onBackLongClicked: () -> Unit,
-    moveToBin: (UiContentItem.Item) -> Unit
+    moveToBin: (UiContentItem.Item) -> Unit,
+    undoMoveToBin: (Id) -> Unit,
+    onDismissSnackbar: () -> Unit
 ) {
-    val lazyListState = rememberLazyListState()
-
-    val canPaginateState = remember { mutableStateOf(false) }
-    LaunchedEffect(key1 = canPaginate) {
-        canPaginateState.value = canPaginate
-    }
-
-    val shouldStartPaging = remember {
-        derivedStateOf {
-            canPaginateState.value && (lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                ?: -9) >= (lazyListState.layoutInfo.totalItemsCount - 2)
-        }
-    }
-
-    LaunchedEffect(key1 = shouldStartPaging.value) {
-        if (shouldStartPaging.value && uiContentState is UiContentState.Idle) {
-            onUpdateLimitSearch()
-        }
-    }
 
     AllContentMainScreen(
         uiTitleState = uiTitleState,
         uiTabsState = uiTabsState,
+        uiSnackbarState = uiSnackbarState,
         onTabClick = onTabClick,
         onQueryChanged = onQueryChanged,
         uiMenuState = uiMenuState,
@@ -148,46 +146,71 @@ fun AllContentWrapperScreen(
         onItemClicked = onItemClicked,
         onBinClick = onBinClick,
         uiItemsState = uiItemsState,
-        lazyListState = lazyListState,
         uiContentState = uiContentState,
         onTypeClicked = onTypeClicked,
-        onHomeClicked = onHomeClicked,
         onGlobalSearchClicked = onGlobalSearchClicked,
         onAddDocClicked = onAddDocClicked,
         onCreateObjectLongClicked = onCreateObjectLongClicked,
         onBackClicked = onBackClicked,
         onBackLongClicked = onBackLongClicked,
         moveToBin = moveToBin,
-        onRelationClicked = onRelationClicked
+        onRelationClicked = onRelationClicked,
+        uiBottomMenu = uiBottomMenu,
+        undoMoveToBin = undoMoveToBin,
+        onDismissSnackbar = onDismissSnackbar,
+        canPaginate = canPaginate,
+        onUpdateLimitSearch = onUpdateLimitSearch
     )
 }
 
 
 @Composable
 fun AllContentMainScreen(
-    uiItemsState: List<UiContentItem>,
+    uiItemsState: UiItemsState,
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
     uiMenuState: UiMenuState,
+    uiSnackbarState: UiSnackbarState,
+    uiBottomMenu: AllContentBottomMenu,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
-    onTypeClicked: (UiContentItem.Type) -> Unit,
-    onRelationClicked: (UiContentItem.Relation) -> Unit,
+    onTypeClicked: (UiContentItem) -> Unit,
+    onRelationClicked: (UiContentItem) -> Unit,
     onBinClick: () -> Unit,
-    lazyListState: LazyListState,
     uiContentState: UiContentState,
-    onHomeClicked: () -> Unit,
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onBackLongClicked: () -> Unit,
-    moveToBin: (UiContentItem.Item) -> Unit
+    moveToBin: (UiContentItem.Item) -> Unit,
+    undoMoveToBin: (Id) -> Unit,
+    onDismissSnackbar: () -> Unit,
+    canPaginate: Boolean,
+    onUpdateLimitSearch: () -> Unit,
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    val snackBarText = stringResource(R.string.all_content_snackbar_title)
+    val undoText = stringResource(R.string.undo)
+
+    LaunchedEffect(key1 = uiSnackbarState) {
+        if (uiSnackbarState is UiSnackbarState.Visible) {
+            ShowMoveToBinSnackbar(
+                message = "'${uiSnackbarState.message}' $snackBarText",
+                undo = undoText,
+                scope = this,
+                snackBarHostState = snackBarHostState,
+                objectId = uiSnackbarState.objId,
+                undoMoveToBin = undoMoveToBin,
+                onDismissSnackbar = onDismissSnackbar
+            )
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -207,12 +230,12 @@ fun AllContentMainScreen(
             ) {
                 BottomMenu(
                     modifier = Modifier.align(Alignment.BottomCenter),
-                    onHomeClicked = onHomeClicked,
                     onGlobalSearchClicked = onGlobalSearchClicked,
                     onAddDocClicked = onAddDocClicked,
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
                     onBackClicked = onBackClicked,
-                    onBackLongClicked = onBackLongClicked
+                    onBackLongClicked = onBackLongClicked,
+                    uiBottomMenu = uiBottomMenu
                 )
             }
         },
@@ -262,8 +285,8 @@ fun AllContentMainScreen(
                 modifier = contentModifier,
                 contentAlignment = Alignment.Center
             ) {
-                when {
-                    uiItemsState.isEmpty() -> {
+                when (uiItemsState) {
+                    UiItemsState.Empty -> {
                         when (uiContentState) {
                             is UiContentState.Error -> {
                                 ErrorState(uiContentState.message)
@@ -284,27 +307,31 @@ fun AllContentMainScreen(
                         }
                     }
 
-                    else -> {
+                    is UiItemsState.Content -> {
                         ContentItems(
                             uiItemsState = uiItemsState,
                             onItemClicked = onItemClicked,
                             onTypeClicked = onTypeClicked,
                             uiContentState = uiContentState,
-                            lazyListState = lazyListState,
                             moveToBin = moveToBin,
-                            onRelationClicked = onRelationClicked
+                            onRelationClicked = onRelationClicked,
+                            canPaginate = canPaginate,
+                            onUpdateLimitSearch = onUpdateLimitSearch
                         )
                     }
                 }
             }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState)
         }
     )
 }
 
 @Composable
 fun BottomMenu(
+    uiBottomMenu: AllContentBottomMenu,
     modifier: Modifier = Modifier,
-    onHomeClicked: () -> Unit,
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
@@ -317,42 +344,69 @@ fun BottomMenu(
         modifier = modifier,
         backClick = onBackClicked,
         backLongClick = onBackLongClicked,
-        onProfileClicked = onHomeClicked,
         searchClick = onGlobalSearchClicked,
         addDocClick = onAddDocClicked,
-        onCreateObjectLongClicked = onCreateObjectLongClicked
+        addDocLongClick = onCreateObjectLongClicked,
+        isOwnerOrEditor = uiBottomMenu.isOwnerOrEditor
     )
 }
 
 @Composable
 private fun ContentItems(
-    uiItemsState: List<UiContentItem>,
+    uiItemsState: UiItemsState.Content,
     onItemClicked: (UiContentItem.Item) -> Unit,
-    onTypeClicked: (UiContentItem.Type) -> Unit,
-    onRelationClicked: (UiContentItem.Relation) -> Unit,
+    onTypeClicked: (UiContentItem) -> Unit,
+    onRelationClicked: (UiContentItem) -> Unit,
     uiContentState: UiContentState,
-    lazyListState: LazyListState,
-    moveToBin: (UiContentItem.Item) -> Unit
+    canPaginate: Boolean,
+    moveToBin: (UiContentItem.Item) -> Unit,
+    onUpdateLimitSearch: () -> Unit
 ) {
+    val items = remember { mutableStateListOf<UiContentItem>() }
+    items.swapList(uiItemsState.items)
+
     val scope = rememberCoroutineScope()
+
+    val lazyListState = rememberLazyListState()
+
+    val canPaginateState = remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = canPaginate) {
+        canPaginateState.value = canPaginate
+    }
+
+    val shouldStartPaging = remember {
+        derivedStateOf {
+            canPaginateState.value && (lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                ?: -9) >= (lazyListState.layoutInfo.totalItemsCount - 2)
+        }
+    }
+
+    LaunchedEffect(key1 = shouldStartPaging.value) {
+        if (shouldStartPaging.value && uiContentState is UiContentState.Idle) {
+            onUpdateLimitSearch()
+        }
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = lazyListState
     ) {
         items(
-            count = uiItemsState.size,
-            key = { index -> uiItemsState[index].id },
+            count = items.size,
+            key = { index -> items[index].id },
             contentType = { index ->
-                when (uiItemsState[index]) {
+                when (items[index]) {
                     is UiContentItem.Group -> "group"
                     is UiContentItem.Item -> "item"
                     is UiContentItem.Type -> "type"
                     is UiContentItem.Relation -> "relation"
+                    UiContentItem.NewRelation -> "new_relation"
+                    UiContentItem.NewType -> "new_type"
+                    UiContentItem.UnlinkedDescription -> "unlinked_description"
                 }
             }
         ) { index ->
-            when (val item = uiItemsState[index]) {
+            when (val item = items[index]) {
                 is UiContentItem.Group -> {
                     Box(
                         modifier = Modifier
@@ -412,6 +466,29 @@ private fun ContentItems(
                         item = item
                     )
                 }
+
+                UiContentItem.NewRelation -> {
+                    AddItem(
+                        modifier = Modifier
+                            .clickable { onRelationClicked(item) },
+                        text = stringResource(id = R.string.all_content_new_relation)
+                    )
+                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                }
+
+                UiContentItem.NewType -> {
+                    AddItem(
+                        modifier = Modifier
+                            .clickable { onTypeClicked(item) },
+                        text = stringResource(id = R.string.all_content_new_type)
+                    )
+                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                }
+
+                UiContentItem.UnlinkedDescription -> {
+                    UnlinkedDescription()
+                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                }
             }
         }
         if (uiContentState is UiContentState.Paging) {
@@ -443,6 +520,48 @@ private fun ContentItems(
 }
 
 @Composable
+private fun LazyItemScope.UnlinkedDescription() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(64.dp)
+            .animateItem(),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Text(
+            text = stringResource(id = R.string.all_content_unlinked_description),
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+        )
+    }
+}
+
+@Composable
+private fun LazyItemScope.AddItem(modifier: Modifier, text: String) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .padding(horizontal = 16.dp)
+            .animateItem(),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_default_plus),
+            contentDescription = text,
+            modifier = Modifier.size(24.dp)
+        )
+        Text(
+            modifier = Modifier.padding(start = 34.dp),
+            text = text,
+            style = BodyRegular,
+            color = colorResource(id = R.color.text_secondary),
+        )
+    }
+}
+
+@Composable
 private fun BoxScope.LoadingState() {
     val loadingAlpha by animateFloatAsState(targetValue = 1f, label = "")
     DotsLoadingIndicator(
@@ -468,7 +587,7 @@ fun PreviewLoadingState() {
 @Composable
 fun PreviewMainScreen() {
     AllContentMainScreen(
-        uiItemsState = emptyList(),
+        uiItemsState = UiItemsState.Empty,
         uiTitleState = UiTitleState.AllContent,
         uiTabsState = UiTabsState(
             tabs = listOf(
@@ -484,17 +603,21 @@ fun PreviewMainScreen() {
         onSortClick = {},
         onItemClicked = {},
         onBinClick = {},
-        lazyListState = rememberLazyListState(),
         uiContentState = UiContentState.Error("Error message"),
         onTypeClicked = {},
-        onHomeClicked = {},
         onGlobalSearchClicked = {},
         onAddDocClicked = {},
         onCreateObjectLongClicked = {},
         onBackClicked = {},
         moveToBin = {},
         onBackLongClicked = {},
-        onRelationClicked = {}
+        onRelationClicked = {},
+        uiBottomMenu = AllContentBottomMenu(isOwnerOrEditor = false),
+        uiSnackbarState = UiSnackbarState.Hidden,
+        undoMoveToBin = {},
+        onDismissSnackbar = {},
+        canPaginate = true,
+        onUpdateLimitSearch = {}
     )
 }
 
@@ -614,7 +737,10 @@ private fun Relation(
 
 @Composable
 private fun ErrorState(message: String) {
-    Column {
+    Column(
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.ime)
+    ) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -644,7 +770,10 @@ private fun EmptyState(isSearchEmpty: Boolean) {
     } else {
         stringResource(R.string.allContent_empty_state_title) to stringResource(R.string.allContent_empty_state_description)
     }
-    Column {
+    Column(
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.ime)
+    ) {
         Text(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -712,6 +841,7 @@ fun SwipeToDismissListItems(
 ) {
     var isRemoved by remember { mutableStateOf(false) }
     val dismissState = rememberSwipeToDismissBoxState(
+        initialValue = SwipeToDismissBoxValue.Settled,
         confirmValueChange = { value ->
             if (value == SwipeToDismissBoxValue.EndToStart) {
                 isRemoved = true
@@ -722,6 +852,12 @@ fun SwipeToDismissListItems(
         },
         positionalThreshold = { it * .5f }
     )
+
+    if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
+        LaunchedEffect(Unit) {
+            dismissState.snapTo(SwipeToDismissBoxValue.Settled)
+        }
+    }
 
     LaunchedEffect(key1 = isRemoved) {
         if (isRemoved) {
@@ -749,6 +885,35 @@ fun SwipeToDismissListItems(
             },
             content = { Item(item = item) }
         )
+    }
+}
+
+private fun ShowMoveToBinSnackbar(
+    objectId: Id,
+    message: String,
+    undo: String,
+    scope: CoroutineScope,
+    snackBarHostState: SnackbarHostState,
+    undoMoveToBin: (Id) -> Unit,
+    onDismissSnackbar: () -> Unit
+) {
+    scope.launch {
+        val result = snackBarHostState
+            .showSnackbar(
+                message = message,
+                actionLabel = undo,
+                duration = SnackbarDuration.Short,
+                withDismissAction = true
+            )
+        when (result) {
+            SnackbarResult.ActionPerformed -> {
+                undoMoveToBin(objectId)
+            }
+
+            SnackbarResult.Dismissed -> {
+                onDismissSnackbar()
+            }
+        }
     }
 }
 

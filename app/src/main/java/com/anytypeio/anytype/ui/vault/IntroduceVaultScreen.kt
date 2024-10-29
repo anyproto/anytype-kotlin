@@ -130,7 +130,7 @@ fun IntroduceVaultScreen(
                 },
             horizontalArrangement = Arrangement.Center
         ) {
-            repeat(3) { iteration ->
+            repeat(2) { iteration ->
                 val color = if (pagerState.currentPage == iteration)
                     colorResource(id = R.color.glyph_active)
                 else
@@ -161,7 +161,8 @@ fun IntroduceVaultScreen(
                 .constrainAs(first) {
                     bottom.linkTo(btn.top)
                 },
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            minLines = 3
         )
 
         ButtonSecondary(

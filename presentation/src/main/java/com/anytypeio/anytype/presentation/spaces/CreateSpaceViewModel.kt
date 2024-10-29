@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.CreateSpace
@@ -22,7 +23,6 @@ import timber.log.Timber
 
 class CreateSpaceViewModel(
     private val createSpace: CreateSpace,
-    private val spaceGradientProvider: SpaceGradientProvider,
     private val spaceManager: SpaceManager,
     private val analytics: Analytics,
     private val spaceViewContainer: SpaceViewSubscriptionContainer
@@ -30,18 +30,13 @@ class CreateSpaceViewModel(
 
     val isInProgress = MutableStateFlow(false)
 
-    private var spaceGradientId = spaceGradientProvider.randomId()
-
-    val spaceGradient : MutableStateFlow<SpaceIconView.Gradient>
+    val spaceIconView : MutableStateFlow<SpaceIconView.Placeholder> = MutableStateFlow(
+        SpaceIconView.Placeholder(
+            color = SystemColor.entries.random()
+        )
+    )
 
     init {
-        val gradient = spaceGradientProvider.get(spaceGradientId.toDouble())
-        val view = SpaceIconView.Gradient(
-            from = gradient.from,
-            to = gradient.to
-        )
-        spaceGradient = MutableStateFlow(view)
-
         viewModelScope.launch {
             analytics.sendEvent(eventName = EventsDictionary.screenSettingsSpaceCreate)
         }
@@ -65,7 +60,7 @@ class CreateSpaceViewModel(
                 CreateSpace.Params(
                     details = mapOf(
                         Relations.NAME to name,
-                        Relations.ICON_OPTION to spaceGradientId.toDouble()
+                        Relations.ICON_OPTION to spaceIconView.value.color.index.toDouble()
                     )
                 )
             ).collect { result ->
@@ -108,18 +103,13 @@ class CreateSpaceViewModel(
     }
 
     private fun proceedWithResettingRandomSpaceGradient() {
-        spaceGradientId = spaceGradientProvider.randomId()
-        val gradient = spaceGradientProvider.get(spaceGradientId.toDouble())
-        val view = SpaceIconView.Gradient(
-            from = gradient.from,
-            to = gradient.to
+        spaceIconView.value = SpaceIconView.Placeholder(
+            color = SystemColor.entries.random()
         )
-        spaceGradient.value = view
     }
 
     class Factory @Inject constructor(
         private val createSpace: CreateSpace,
-        private val spaceGradientProvider: SpaceGradientProvider,
         private val spaceManager: SpaceManager,
         private val analytics: Analytics,
         private val spaceViewContainer: SpaceViewSubscriptionContainer
@@ -129,7 +119,6 @@ class CreateSpaceViewModel(
             modelClass: Class<T>
         ) = CreateSpaceViewModel(
             createSpace = createSpace,
-            spaceGradientProvider = spaceGradientProvider,
             spaceManager = spaceManager,
             analytics = analytics,
             spaceViewContainer = spaceViewContainer

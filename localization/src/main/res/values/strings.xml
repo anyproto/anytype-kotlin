@@ -408,6 +408,7 @@
     <string name="web_pages">Web pages</string>
     <string name="select_files">Select files</string>
     <string name="u">U</string>
+    <string name="s" translatable="false">S</string>
     <string name="enter_text">Enter text</string>
     <string name="enter_number">Enter number</string>
     <string name="enter_date">Enter date</string>
@@ -938,6 +939,9 @@
     <string name="synced_files">Synced files</string>
     <string name="log_in">Log In</string>
     <string name="create_object_section_library">Anytype Library</string>
+
+    <string name="bin_empty_title">Your trash is empty.</string>
+    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
 
 
     <!--region SLASH WIDGET -->
@@ -1494,7 +1498,7 @@
     <string name="payments_tier_details_name_title">Pick your unique name</string>
     <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
     <string name="payments_tier_details_name_hint">Myself</string>
-    <string name="payments_tier_details_name_domain">.any</string>
+    <string name="payments_tier_details_name_domain_not_translatable" translatable="false">.any</string>
     <string name="payments_tier_details_name_min">Min 7 characters</string>
     <string name="payments_tier_details_name_error">This name is already taken!</string>
     <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
@@ -1651,6 +1655,7 @@ Please provide specific details of your needs here.</string>
 
     <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
     <string name="error_unexpected_layout">Error: unexpected layout</string>
+    <string name="error_non_valid_object">Error: object ID is missing</string>
 
     <string name="membership_price_pending">Pending...</string>"
     <string name="per_period">per %1$s</string>
@@ -1748,7 +1753,7 @@ Please provide specific details of your needs here.</string>
     <string name="new_object">New object</string>
     <string name="vault_my_spaces">My Spaces</string>
 
-    <string name="all_content_title_all_content">All objects</string>
+    <string name="all_content_title_all_content">All Objects</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
 
@@ -1800,10 +1805,13 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_toast_type_removed">Object type removed</string>
     <string name="all_content_toast_archived">Object archived</string>
 
-    <string name="chat">Chat</string>
-    <string name="copy">Copy</string>
-    <string name="chats_edit_message">Edit message</string>
-    <string name="chats_message_edited">edited</string>
-    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
+    <string name="all_content_new_relation">New relation</string>
+    <string name="all_content_new_type">New type</string>
+    <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_snackbar_title">moved to bin</string>
+
+    <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_search_button">Search objects button</string>
+    <string name="main_navigation_content_desc_create_button">Create object button</string>
 
 </resources>

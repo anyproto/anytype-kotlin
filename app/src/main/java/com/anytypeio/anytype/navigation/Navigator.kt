@@ -253,9 +253,14 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun openRemoteFilesManageScreen(subscription: Id) {
-        navController?.navigate(R.id.remoteStorageFragment,
-            bundleOf(RemoteFilesManageFragment.SUBSCRIPTION_KEY to subscription))
+    override fun openRemoteFilesManageScreen(subscription: Id, space: Id) {
+        navController?.navigate(
+            resId = R.id.remoteStorageFragment,
+            args = RemoteFilesManageFragment.args(
+                subscription = subscription,
+                space = space
+            )
+        )
     }
 
     override fun openTemplatesModal(typeId: Id) {

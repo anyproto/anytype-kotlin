@@ -22,7 +22,7 @@ class DefaultFeatureToggles @Inject constructor(
 
     override val isAutoUpdateEnabled: Boolean = false
 
-    override val isConciseLogging: Boolean = false
+    override val isConciseLogging: Boolean = true
 
     override val enableDiscussionDemo: Boolean = true
 }

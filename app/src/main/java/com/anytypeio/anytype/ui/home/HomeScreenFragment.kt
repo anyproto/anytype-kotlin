@@ -20,6 +20,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -37,7 +38,12 @@ import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.library.LibraryFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
-import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
+import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.objects.creation.WidgetObjectTypeFragment
+import com.anytypeio.anytype.ui.objects.creation.WidgetSourceTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
+import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -47,7 +53,10 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class HomeScreenFragment : BaseComposeFragment() {
+class HomeScreenFragment : BaseComposeFragment(),
+    ObjectTypeSelectionListener,
+    WidgetObjectTypeListener,
+    WidgetSourceTypeListener {
 
     private val deepLink: String? get() = argOrNull(DEEP_LINK_KEY)
 
@@ -261,33 +270,17 @@ class HomeScreenFragment : BaseComposeFragment() {
                 )
             }
             is Command.CreateSourceForNewWidget -> {
-                val dialog = SelectObjectTypeFragment.new(
-                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
-                    space = command.space.id
-                ).apply {
-                    onTypeSelected = { type ->
-                        vm.onNewWidgetSourceTypeSelected(
-                            type = type,
-                            space = command.space,
-                            widgets = command.widgets
-                        )
-                    }
-                }
+                val dialog = WidgetSourceTypeFragment.new(
+                    space = command.space.id,
+                    widgetId = command.widgets
+                )
                 dialog.show(childFragmentManager, null)
             }
             is Command.CreateObjectForWidget -> {
-                val dialog = SelectObjectTypeFragment.new(
-                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
-                    space = command.space.id
-                ).apply {
-                    onTypeSelected = { type ->
-                        vm.onCreateObjectForWidget(
-                            type = type,
-                            widget = command.widget,
-                            source = command.source
-                        )
-                    }
-                }
+                val dialog = WidgetObjectTypeFragment.new(
+                    space = command.space.id,
+                    widgetId = command.widget
+                )
                 dialog.show(childFragmentManager, null)
             }
             is Command.OpenSpaceSettings -> {
@@ -301,15 +294,9 @@ class HomeScreenFragment : BaseComposeFragment() {
                 }
             }
             is Command.OpenObjectCreateDialog -> {
-                val dialog = SelectObjectTypeFragment.new(
-                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                val dialog = ObjectTypeSelectionFragment.new(
                     space = command.space.id
-                ).apply {
-                    onTypeSelected = {
-                        vm.onCreateNewObjectClicked(it)
-                        dismiss()
-                    }
-                }
+                )
                 dialog.show(childFragmentManager, "object-create-dialog")
             }
             is Command.OpenGlobalSearchScreen -> {
@@ -377,6 +364,18 @@ class HomeScreenFragment : BaseComposeFragment() {
     private fun showMnemonicReminderAlert() {
         isMnemonicReminderDialogNeeded = false
         findNavController().navigate(R.id.dashboardKeychainDialog)
+    }
+
+    override fun onCreateWidgetObject(objType: ObjectWrapper.Type, widgetId: Id) {
+        vm.onCreateObjectForWidget(type = objType, source = widgetId)
+    }
+
+    override fun onSetNewWidgetSource(objType: ObjectWrapper.Type, widgetId: Id) {
+        vm.onNewWidgetSourceTypeSelected(type = objType, widgets = widgetId)
+    }
+
+    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
+        vm.onCreateNewObjectClicked(objType = objType)
     }
 
     override fun injectDependencies() {

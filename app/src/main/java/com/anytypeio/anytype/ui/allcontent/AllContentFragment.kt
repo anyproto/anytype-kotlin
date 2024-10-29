@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -34,7 +35,8 @@ import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
-import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
+import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_MODIFY_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_UNINSTALL_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_ID
@@ -49,7 +51,7 @@ import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_NAME
 import javax.inject.Inject
 import timber.log.Timber
 
-class AllContentFragment : BaseComposeFragment() {
+class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
 
     @Inject
     lateinit var factory: AllContentViewModelFactory
@@ -277,14 +279,7 @@ class AllContentFragment : BaseComposeFragment() {
                     onGlobalSearchClicked = vm::onGlobalSearchClicked,
                     onAddDocClicked = vm::onAddDockClicked,
                     onCreateObjectLongClicked = {
-                        val dialog = SelectObjectTypeFragment.new(
-                            flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
-                            space = space
-                        ).apply {
-                            onTypeSelected = {
-                                vm.onCreateObjectOfTypeClicked(it)
-                            }
-                        }
+                        val dialog = ObjectTypeSelectionFragment.new(space = space)
                         dialog.show(childFragmentManager, null)
                     },
                     onBackClicked = vm::onBackClicked,
@@ -303,6 +298,10 @@ class AllContentFragment : BaseComposeFragment() {
                 )
             }
         }
+    }
+
+    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
+        vm.onCreateObjectOfTypeClicked(objType = objType)
     }
 
     override fun onStart() {

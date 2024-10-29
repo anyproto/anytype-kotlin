@@ -1775,7 +1775,6 @@ class HomeScreenViewModel(
 
     fun onNewWidgetSourceTypeSelected(
         type: ObjectWrapper.Type,
-        space: SpaceId,
         widgets: Id
     ) {
         viewModelScope.launch {
@@ -1807,7 +1806,6 @@ class HomeScreenViewModel(
 
     fun onCreateObjectForWidget(
         type: ObjectWrapper.Type,
-        widget: Id,
         source: Id
     ) {
         viewModelScope.launch {

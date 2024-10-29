@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 
 inline fun <reified T> Fragment.arg(key: String): T {
     return checkNotNull(requireArguments().get(key)) {
@@ -74,5 +75,13 @@ fun Fragment.startMarketPageOrWeb() {
                 Uri.parse(getString(R.string.download_anytype_url))
             )
         )
+    }
+}
+
+inline fun <reified T> Fragment.withParentSafe(action: T.() -> Unit) {
+    if (parentFragment is T) {
+        (parentFragment as T).action()
+    } else {
+        Timber.w("Invalid parent fragment: fragment is not ${T::class.java}")
     }
 }

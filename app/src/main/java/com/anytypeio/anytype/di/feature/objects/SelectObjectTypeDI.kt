@@ -11,7 +11,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
-import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
+import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeBaseFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
@@ -26,7 +26,7 @@ import dagger.Module
 )
 @PerScreen
 interface SelectObjectTypeComponent {
-    fun inject(fragment: SelectObjectTypeFragment)
+    fun inject(fragment: SelectObjectTypeBaseFragment)
     @Component.Factory
     interface Factory {
         fun create(

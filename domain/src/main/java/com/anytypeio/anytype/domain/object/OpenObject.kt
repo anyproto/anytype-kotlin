@@ -29,7 +29,7 @@ class OpenObject @Inject constructor(
         }
         else {
             val givenSpace = params.spaceId
-            if (givenSpace != null && givenSpace.id.isNotEmpty()) {
+            if (givenSpace.id.isNotEmpty()) {
                 settings.clearLastOpenedObject(
                     SpaceId(givenSpace.id)
                 )
@@ -40,6 +40,6 @@ class OpenObject @Inject constructor(
     data class Params(
         val obj: Id,
         val saveAsLastOpened: Boolean = true,
-        val spaceId: SpaceId? = null
+        val spaceId: SpaceId
     )
 }

@@ -24,6 +24,7 @@ interface SpaceManager {
     fun getConfig(): Config?
     fun getConfig(space: SpaceId) : Config?
     fun observe() : Flow<Config>
+    fun observe(space: SpaceId): Flow<Config>
     fun state(): Flow<State>
 
     fun clear()
@@ -77,6 +78,12 @@ interface SpaceManager {
                 } else {
                     info[space]
                 }
+            }
+        }
+
+        override fun observe(space: SpaceId): Flow<Config> {
+            return currentSpace.mapNotNull {
+                info[space.id]
             }
         }
 

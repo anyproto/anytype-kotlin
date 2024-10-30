@@ -366,11 +366,19 @@ class CollectionViewModel(
             container.subscribe(buildSearchParams()),
             queryFlow(),
             objectTypes(),
-            spaceManager.observe().flatMapLatest { config ->
-                openObject
-                    .asFlow(OpenObject.Params(config.home, false))
-                    .flatMapLatest { obj -> payloads.scan(obj) { s, p -> reduce(s, p) } }
-            }
+            spaceManager
+                .observe(vmParams.spaceId)
+                .flatMapLatest { config ->
+                    openObject
+                        .asFlow(
+                            OpenObject.Params(
+                                obj = config.home,
+                                spaceId = vmParams.spaceId,
+                                saveAsLastOpened = false
+                            )
+                        )
+                        .flatMapLatest { obj -> payloads.scan(obj) { s, p -> reduce(s, p) } }
+                }
         ) { objs, query, types, favorotiesObj ->
             val result = prepareFavorites(favorotiesObj, objs, query, types)
             if (result.isEmpty() && query.isNotEmpty())

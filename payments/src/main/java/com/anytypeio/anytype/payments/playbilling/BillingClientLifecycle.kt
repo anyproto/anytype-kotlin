@@ -109,11 +109,11 @@ class BillingClientLifecycle(
                 querySubscriptionPurchases()
             }
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
-                Timber.e("onBillingSetupFinished: BILLING_UNAVAILABLE")
+                Timber.w("onBillingSetupFinished: BILLING_UNAVAILABLE")
                 _builderSubProductWithProductDetails.value = BillingClientState.NotAvailable
             }
             else -> {
-                Timber.e("onBillingSetupFinished: BillingResponse $responseCode")
+                Timber.w("onBillingSetupFinished: BillingResponse $responseCode")
                 _builderSubProductWithProductDetails.value =
                     BillingClientState.Error("BillingResponse $responseCode")
             }
@@ -189,7 +189,7 @@ class BillingClientLifecycle(
             Timber.d("onProductDetailsResponse: ${productDetailsList.size} product(s)")
             processProductDetails(productDetailsList)
         } else {
-            Timber.e("onProductDetailsResponse: ${billingResult.responseCode}")
+            Timber.w("onProductDetailsResponse: ${billingResult.responseCode}")
             _builderSubProductWithProductDetails.value =
                 BillingClientState.Error("onProductDetailsResponse: ${billingResult.responseCode}")
         }

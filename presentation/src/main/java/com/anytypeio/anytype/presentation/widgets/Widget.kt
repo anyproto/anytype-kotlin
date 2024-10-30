@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 sealed class Widget {
 
@@ -94,6 +95,17 @@ sealed class Widget {
     }
 }
 
+fun Widget.hasValidLayout() : Boolean {
+    return when (val widgetSource = source) {
+        is Widget.Source.Default -> {
+            widgetSource.obj.layout != null && SupportedLayouts.layouts.contains(widgetSource.obj.layout)
+        }
+        is Widget.Source.Bundled -> {
+            true
+        }
+    }
+}
+
 fun List<Block>.parseActiveViews() : WidgetToActiveView {
     val result = mutableMapOf<WidgetId, WidgetActiveViewId>()
     forEach { block ->
@@ -123,9 +135,7 @@ fun List<Block>.parseWidgets(
                 val sourceContent = child.content
                 if (sourceContent is Block.Content.Link) {
                     val target = sourceContent.target
-                    val raw = details[target] ?: run {
-                        mapOf(Relations.ID to sourceContent.target)
-                    }
+                    val raw = details[target] ?: mapOf(Relations.ID to sourceContent.target)
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {
@@ -135,7 +145,7 @@ fun List<Block>.parseWidgets(
                     }
                     val hasValidSource = when(source) {
                         is Widget.Source.Bundled -> true
-                        is Widget.Source.Default -> source.obj.notDeletedNorArchived
+                        is Widget.Source.Default -> source.obj.isValid && source.obj.notDeletedNorArchived
                     }
                     if (hasValidSource && !WidgetConfig.excludedTypes.contains(source.type)) {
                         when (widgetContent.layout) {

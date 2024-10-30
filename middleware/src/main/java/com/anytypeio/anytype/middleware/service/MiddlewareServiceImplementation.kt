@@ -1039,32 +1039,6 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun objectSetIsArchived(request: Rpc.Object.SetIsArchived.Request): Rpc.Object.SetIsArchived.Response {
-        val encoded = Service.objectSetIsArchived(
-            Rpc.Object.SetIsArchived.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.Object.SetIsArchived.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.Object.SetIsArchived.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
-    override fun objectSetIsFavorite(request: Rpc.Object.SetIsFavorite.Request): Rpc.Object.SetIsFavorite.Response {
-        val encoded = Service.objectSetIsFavorite(
-            Rpc.Object.SetIsFavorite.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.Object.SetIsFavorite.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.Object.SetIsFavorite.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
     override fun objectListSetIsFavorite(request: Rpc.Object.ListSetIsFavorite.Request): Rpc.Object.ListSetIsFavorite.Response {
         val encoded = Service.objectListSetIsFavorite(
             Rpc.Object.ListSetIsFavorite.Request.ADAPTER.encode(request)
@@ -2318,6 +2292,99 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.History.DiffVersions.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.History.DiffVersions.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatAddMessage(request: Rpc.Chat.AddMessage.Request): Rpc.Chat.AddMessage.Response {
+        val encoded = Service.chatAddMessage(
+            Rpc.Chat.AddMessage.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.AddMessage.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.AddMessage.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatEditMessage(request: Rpc.Chat.EditMessageContent.Request): Rpc.Chat.EditMessageContent.Response {
+        val encoded = Service.chatEditMessageContent(
+            Rpc.Chat.EditMessageContent.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.EditMessageContent.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.EditMessageContent.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatDeleteMessage(request: Rpc.Chat.DeleteMessage.Request): Rpc.Chat.DeleteMessage.Response {
+        val encoded = Service.chatDeleteMessage(
+            Rpc.Chat.DeleteMessage.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.DeleteMessage.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.DeleteMessage.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatGetMessages(request: Rpc.Chat.GetMessages.Request): Rpc.Chat.GetMessages.Response {
+        val encoded = Service.chatGetMessages(
+            Rpc.Chat.GetMessages.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.GetMessages.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.GetMessages.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatSubscribeLastMessages(request: Rpc.Chat.SubscribeLastMessages.Request): Rpc.Chat.SubscribeLastMessages.Response {
+        val encoded = Service.chatSubscribeLastMessages(
+            Rpc.Chat.SubscribeLastMessages.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.SubscribeLastMessages.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.SubscribeLastMessages.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatToggleMessageReaction(
+        request: Rpc.Chat.ToggleMessageReaction.Request
+    ): Rpc.Chat.ToggleMessageReaction.Response {
+        val encoded = Service.chatToggleMessageReaction(
+            Rpc.Chat.ToggleMessageReaction.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.ToggleMessageReaction.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.ToggleMessageReaction.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatUnsubscribe(request: Rpc.Chat.Unsubscribe.Request): Rpc.Chat.Unsubscribe.Response {
+        val encoded = Service.chatUnsubscribe(
+            Rpc.Chat.Unsubscribe.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.Unsubscribe.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.Unsubscribe.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

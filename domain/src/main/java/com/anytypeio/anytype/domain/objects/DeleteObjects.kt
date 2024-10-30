@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for deleting objects.
- * @see SetObjectIsArchived
+ * @see SetObjectListIsArchived
  */
 class DeleteObjects(
     private val repo: BlockRepository,

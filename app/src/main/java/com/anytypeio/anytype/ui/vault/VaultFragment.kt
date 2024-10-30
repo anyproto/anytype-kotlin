@@ -154,6 +154,13 @@ class VaultFragment : BaseComposeFragment() {
             }.onFailure {
                 Timber.e(it, "Error while opening set or collection from vault")
             }
+            is Navigation.OpenChat -> {
+                findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                navigation().openChat(
+                    target = destination.ctx,
+                    space = destination.space
+                )
+            }
         }
     }
 

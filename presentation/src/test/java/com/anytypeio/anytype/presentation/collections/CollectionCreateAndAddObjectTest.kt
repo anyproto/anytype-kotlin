@@ -178,11 +178,11 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
 
             assertIs<DataViewViewState.Init>(first)
 
-            advanceUntilIdle()
+            rule.advanceTime()
 
             cancelAndIgnoreRemainingEvents()
 
-            advanceUntilIdle()
+            rule.advanceTime()
 
             val newObjectTypeKey = MockDataFactory.randomString()
             val newObjectTemplate = MockDataFactory.randomString()
@@ -191,7 +191,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
                 templateId = newObjectTemplate
             )
 
-            advanceUntilIdle()
+            rule.advanceTime()
 
             val spaceId = SpaceId(mockObjectCollection.spaceId)
             val command = Command.CreateObject(

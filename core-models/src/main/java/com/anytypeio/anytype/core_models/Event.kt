@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.Block.Content.Text
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 
@@ -331,6 +332,32 @@ sealed class Event {
                     val defaultObjectTypeId: String?
                 )
             }
+        }
+
+        sealed class Chats : Command() {
+            data class Add(
+                override val context: Id,
+                val id: Id,
+                val order: Id,
+                val message: Chat.Message
+            ) : Chats()
+
+            data class Update(
+                override val context: Id,
+                val id: Id,
+                val message: Chat.Message
+            ) : Chats()
+
+            data class Delete(
+                override val context: Id,
+                val id: Id
+            ) : Chats()
+
+            data class UpdateReactions(
+                override val context: Id,
+                val id: Id,
+                val reactions: Map<String, List<Id>>
+            ) : Chats()
         }
     }
 }

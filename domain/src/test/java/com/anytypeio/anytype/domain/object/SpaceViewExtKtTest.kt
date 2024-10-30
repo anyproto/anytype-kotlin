@@ -15,6 +15,14 @@ class SpaceViewExtKtTest {
 
     val isCurrentUserOwner = true
 
+    val newMember = ObjectWrapper.SpaceMember(
+        map = mapOf(
+            Relations.ID to RandomString.make(),
+            Relations.SPACE_ID to spaceId,
+            Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
+        )
+    )
+
     @Test
     fun `1 participant, zero limits`() {
         val spaceView = createSpaceView(
@@ -33,8 +41,8 @@ class SpaceViewExtKtTest {
             )
         )
 
-        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertFalse(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertFalse(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertFalse(spaceView.canChangeReaderToWriter(participants))
     }
@@ -54,17 +62,11 @@ class SpaceViewExtKtTest {
                     Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.OWNER.code.toDouble(),
                     Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble()
                 )
-            ),
-            ObjectWrapper.SpaceMember(
-                map = mapOf(
-                    Relations.ID to RandomString.make(),
-                    Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
-                )
             )
         )
 
-        assertTrue(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertTrue(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertTrue(spaceView.canChangeReaderToWriter(participants))
     }
@@ -92,17 +94,11 @@ class SpaceViewExtKtTest {
                     Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
                     Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble()
                 )
-            ),
-            ObjectWrapper.SpaceMember(
-                map = mapOf(
-                    Relations.ID to RandomString.make(),
-                    Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
-                )
             )
         )
 
-        assertTrue(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertTrue(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertTrue(spaceView.canChangeReaderToWriter(participants))
     }
@@ -130,17 +126,11 @@ class SpaceViewExtKtTest {
                     Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.READER.code.toDouble(),
                     Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble()
                 )
-            ),
-            ObjectWrapper.SpaceMember(
-                map = mapOf(
-                    Relations.ID to RandomString.make(),
-                    Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
-                )
             )
         )
 
-        assertTrue(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertTrue(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertTrue(spaceView.canChangeReaderToWriter(participants))
     }
@@ -176,17 +166,11 @@ class SpaceViewExtKtTest {
                     Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.READER.code.toDouble(),
                     Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble()
                 )
-            ),
-            ObjectWrapper.SpaceMember(
-                map = mapOf(
-                    Relations.ID to RandomString.make(),
-                    Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
-                )
             )
         )
 
-        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertFalse(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertFalse(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertTrue(spaceView.canChangeReaderToWriter(participants))
     }
@@ -222,17 +206,11 @@ class SpaceViewExtKtTest {
                     Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.READER.code.toDouble(),
                     Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble()
                 )
-            ),
-            ObjectWrapper.SpaceMember(
-                map = mapOf(
-                    Relations.ID to RandomString.make(),
-                    Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
-                )
             )
         )
 
-        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertFalse(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertFalse(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertTrue(spaceView.canChangeReaderToWriter(participants))
     }
@@ -268,17 +246,11 @@ class SpaceViewExtKtTest {
                     Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
                     Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble()
                 )
-            ),
-            ObjectWrapper.SpaceMember(
-                map = mapOf(
-                    Relations.ID to RandomString.make(),
-                    Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
-                )
             )
         )
 
-        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertFalse(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertFalse(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertFalse(spaceView.canChangeReaderToWriter(participants))
     }
@@ -314,17 +286,11 @@ class SpaceViewExtKtTest {
                     Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
                     Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble()
                 )
-            ),
-            ObjectWrapper.SpaceMember(
-                map = mapOf(
-                    Relations.ID to RandomString.make(),
-                    Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
-                )
             )
         )
 
-        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertFalse(spaceView.canChangeReaderToWriter(participants))
     }
@@ -360,17 +326,11 @@ class SpaceViewExtKtTest {
                     Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.READER.code.toDouble(),
                     Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble()
                 )
-            ),
-            ObjectWrapper.SpaceMember(
-                map = mapOf(
-                    Relations.ID to RandomString.make(),
-                    Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
-                )
             )
         )
 
-        assertTrue(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertTrue(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertTrue(spaceView.canChangeReaderToWriter(participants))
     }
@@ -406,17 +366,11 @@ class SpaceViewExtKtTest {
                     Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.READER.code.toDouble(),
                     Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble()
                 )
-            ),
-            ObjectWrapper.SpaceMember(
-                map = mapOf(
-                    Relations.ID to RandomString.make(),
-                    Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
-                )
             )
         )
 
-        assertTrue(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertTrue(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertTrue(spaceView.canChangeReaderToWriter(participants))
     }
@@ -460,17 +414,11 @@ class SpaceViewExtKtTest {
                     Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.READER.code.toDouble(),
                     Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble()
                 )
-            ),
-            ObjectWrapper.SpaceMember(
-                map = mapOf(
-                    Relations.ID to RandomString.make(),
-                    Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
-                )
             )
         )
 
-        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertTrue(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertFalse(spaceView.canChangeReaderToWriter(participants))
     }
@@ -522,17 +470,11 @@ class SpaceViewExtKtTest {
                     Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.READER.code.toDouble(),
                     Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble()
                 )
-            ),
-            ObjectWrapper.SpaceMember(
-                map = mapOf(
-                    Relations.ID to RandomString.make(),
-                    Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
-                )
             )
         )
 
-        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants))
-        assertFalse(spaceView.canAddReaders(isCurrentUserOwner, participants))
+        assertFalse(spaceView.canAddWriters(isCurrentUserOwner, participants, newMember))
+        assertFalse(spaceView.canAddReaders(isCurrentUserOwner, participants, newMember))
         assertTrue(spaceView.canChangeWriterToReader(participants))
         assertFalse(spaceView.canChangeReaderToWriter(participants))
     }

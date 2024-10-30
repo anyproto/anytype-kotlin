@@ -36,12 +36,6 @@ interface CreateSpaceComponent {
 
 @Module
 object CreateSpaceModule {
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
-
     @Module
     interface Declarations {
         @Binds

@@ -66,7 +66,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class GlobalSearchViewModel(
+class GlobalSearchViewModel @Inject constructor(
     private val vmParams: VmParams,
     private val searchWithMeta: SearchWithMeta,
     private val storeOfObjectTypes: StoreOfObjectTypes,
@@ -499,7 +499,7 @@ class GlobalSearchViewModel(
  * @property [title] object title
  * @property [type] type screen name
  */
-data class  GlobalSearchItemView(
+data class GlobalSearchItemView(
     val id: Id,
     val icon: ObjectIcon,
     val space: SpaceId,

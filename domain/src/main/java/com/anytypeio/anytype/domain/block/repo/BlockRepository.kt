@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -115,7 +117,6 @@ interface BlockRepository {
     suspend fun openObjectSet(id: String): Result<Payload>
 
     suspend fun closePage(id: String)
-    suspend fun openDashboard(contextId: String, id: String): Payload
     suspend fun closeDashboard(id: String)
 
     /**
@@ -265,9 +266,7 @@ interface BlockRepository {
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 
-    suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean): Payload
     suspend fun setObjectListIsFavorite(objectIds: List<Id>, isFavorite: Boolean)
-    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean)
     suspend fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
 
     suspend fun deleteObjects(targets: List<Id>)
@@ -488,4 +487,16 @@ interface BlockRepository {
     suspend fun showVersion(command: Command.VersionHistory.ShowVersion): ShowVersionResponse
     suspend fun setVersion(command: Command.VersionHistory.SetVersion)
     suspend fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse
+
+    //region CHATS
+
+    suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>>
+    suspend fun editChatMessage(command: Command.ChatCommand.EditMessage)
+    suspend fun deleteChatMessage(command: Command.ChatCommand.DeleteMessage)
+    suspend fun getChatMessages(command: Command.ChatCommand.GetMessages): List<Chat.Message>
+    suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastMessages): Command.ChatCommand.SubscribeLastMessages.Response
+    suspend fun toggleChatMessageReaction(command: Command.ChatCommand.ToggleMessageReaction)
+    suspend fun unsubscribeChat(chat: Id)
+
+    //endregion
 }

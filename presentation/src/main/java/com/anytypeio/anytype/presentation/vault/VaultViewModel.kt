@@ -11,10 +11,10 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Wallpaper
-import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -27,8 +27,6 @@ import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
-import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
@@ -36,7 +34,6 @@ import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
-import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -44,7 +41,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -166,16 +162,21 @@ class VaultViewModel(
             )
         }
         viewModelScope.launch {
-            getVaultSettings.async(Unit).onSuccess { settings ->
-                if (settings.showIntroduceVault) {
-                    commands.emit(Command.ShowIntroduceVault)
-                    setVaultSettings.async(
-                        params = settings.copy(
-                            showIntroduceVault = false
-                        )
-                    )
+            getVaultSettings.async(Unit)
+                .onSuccess { settings ->
+                    if (settings.showIntroduceVault) {
+                        commands.emit(Command.ShowIntroduceVault)
+                        setVaultSettings.async(
+                            params = settings.copy(
+                                showIntroduceVault = false
+                            )
+                        ).onFailure {
+                            Timber.e(it, "Error while setting vault settings")
+                        }
+                    }
+                }.onFailure {
+                    Timber.e(it, "Error while getting vault settings")
                 }
-            }
         }
         viewModelScope.launch {
             when (deeplink) {
@@ -258,8 +259,19 @@ class VaultViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenDiscussion -> {
+                navigate(
+                    Navigation.OpenChat(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
+            }
+            OpenObjectNavigation.NonValidObject -> {
+                sendToast("Object id is missing")
             }
         }
     }
@@ -319,6 +331,7 @@ class VaultViewModel(
     }
 
     sealed class Navigation {
+        data class OpenChat(val ctx: Id, val space: Id) : Navigation()
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
     }

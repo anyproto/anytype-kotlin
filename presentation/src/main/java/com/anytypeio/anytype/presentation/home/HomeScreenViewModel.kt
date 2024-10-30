@@ -117,6 +117,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
+import com.anytypeio.anytype.presentation.widgets.hasValidLayout
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
@@ -426,7 +427,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             widgets.filterNotNull().map { widgets ->
                 val currentlyDisplayedViews = views.value
-                widgets.map { widget ->
+                widgets.filter { widget -> widget.hasValidLayout() }.map { widget ->
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
                             widget = widget
@@ -1358,8 +1359,19 @@ class HomeScreenViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenDiscussion -> {
+                navigate(
+                    Navigation.OpenDiscussion(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
+            }
+            OpenObjectNavigation.NonValidObject -> {
+                sendToast("Object id is missing")
             }
         }
     }
@@ -1771,16 +1783,13 @@ class HomeScreenViewModel(
 
     fun onNewWidgetSourceTypeSelected(
         type: ObjectWrapper.Type,
-        space: SpaceId,
         widgets: Id
     ) {
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
                     space = SpaceId(spaceManager.get()),
-                    type = type.uniqueKey?.let {
-                        TypeKey(it)
-                    }
+                    type = TypeKey(type.uniqueKey)
                 )
             ).fold(
                 onSuccess = { response ->
@@ -1805,16 +1814,13 @@ class HomeScreenViewModel(
 
     fun onCreateObjectForWidget(
         type: ObjectWrapper.Type,
-        widget: Id,
         source: Id
     ) {
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
                     space = SpaceId(spaceManager.get()),
-                    type = type.uniqueKey?.let {
-                        TypeKey(it)
-                    }
+                    type = TypeKey(type.uniqueKey)
                 )
             ).fold(
                 onSuccess = { result ->
@@ -2073,6 +2079,7 @@ class HomeScreenViewModel(
 
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
+        data class OpenDiscussion(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data object OpenSpaceSwitcher: Navigation()
@@ -2291,9 +2298,12 @@ sealed class OpenObjectNavigation {
     data class OpenEditor(val target: Id, val space: Id) : OpenObjectNavigation()
     data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
+    data object NonValidObject: OpenObjectNavigation()
+    data class OpenDiscussion(val target: Id, val space: Id): OpenObjectNavigation()
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
+    if (!isValid) return OpenObjectNavigation.NonValidObject
     return when (layout) {
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,
@@ -2328,6 +2338,12 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION -> {
             OpenObjectNavigation.OpenDataView(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
+        }
+        ObjectType.Layout.CHAT -> {
+            OpenObjectNavigation.OpenDiscussion(
                 target = id,
                 space = requireNotNull(spaceId)
             )
@@ -2368,6 +2384,12 @@ fun ObjectType.Layout.navigation(
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION -> {
             OpenObjectNavigation.OpenDataView(
+                target = target,
+                space = space
+            )
+        }
+        ObjectType.Layout.CHAT -> {
+            OpenObjectNavigation.OpenDiscussion(
                 target = target,
                 space = space
             )

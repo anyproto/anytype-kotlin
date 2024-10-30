@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -25,6 +26,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -43,11 +45,6 @@ import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 class BlockMiddleware(
     private val middleware: Middleware
 ) : BlockRemote {
-
-    override suspend fun openDashboard(
-        contextId: String,
-        id: String
-    ): Payload = middleware.dashboardOpen(contextId, id)
 
     override suspend fun closeDashboard(id: String) {
         middleware.objectClose(id)
@@ -477,20 +474,10 @@ class BlockMiddleware(
         relations: List<Id>
     ): Payload = middleware.objectRelationRemoveFeatured(ctx, relations)
 
-    override suspend fun setObjectIsFavorite(
-        ctx: Id,
-        isFavorite: Boolean
-    ): Payload = middleware.objectSetIsFavorite(ctx = ctx, isFavorite = isFavorite)
-
     override suspend fun setObjectListIsFavorite(
         objectIds: List<Id>,
         isFavorite: Boolean
     ) = middleware.objectListSetIsFavorite(objectIds, isFavorite)
-
-    override suspend fun setObjectIsArchived(
-        ctx: Id,
-        isArchived: Boolean
-    ) = middleware.objectSetIsArchived(ctx = ctx, isArchived = isArchived)
 
     override suspend fun deleteObjects(targets: List<Id>) = middleware.objectListDelete(
         targets = targets
@@ -1018,5 +1005,39 @@ class BlockMiddleware(
 
     override suspend fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse {
         return middleware.diffVersions(command)
+    }
+
+    override suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>> {
+        return middleware.chatAddMessage(command)
+    }
+
+    override suspend fun editChatMessage(command: Command.ChatCommand.EditMessage) {
+        middleware.chatEditMessageContent(command)
+    }
+
+    override suspend fun deleteChatMessage(command: Command.ChatCommand.DeleteMessage) {
+        middleware.chatDeleteMessage(command)
+    }
+
+    override suspend fun getChatMessages(
+        command: Command.ChatCommand.GetMessages
+    ): List<Chat.Message> {
+        return middleware.chatGetMessages(command)
+    }
+
+    override suspend fun subscribeLastChatMessages(
+        command: Command.ChatCommand.SubscribeLastMessages
+    ): Command.ChatCommand.SubscribeLastMessages.Response {
+        return middleware.chatSubscribeLastMessages(command)
+    }
+
+    override suspend fun toggleChatMessageReaction(command: Command.ChatCommand.ToggleMessageReaction) {
+        middleware.chatToggleMessageReaction(
+            command = command
+        )
+    }
+
+    override suspend fun unsubscribeChat(chat: Id) {
+        return middleware.chatUnsubscribe(chat = chat)
     }
 }

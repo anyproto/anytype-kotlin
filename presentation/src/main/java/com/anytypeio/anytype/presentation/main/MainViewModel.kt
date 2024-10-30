@@ -219,6 +219,7 @@ class MainViewModel(
     }
 
     fun onIntentCreateObject(type: Id) {
+        Timber.d("onIntentCreateObject: $type")
         viewModelScope.launch {
             checkAuthorizationStatus(Unit).process(
                 failure = { e -> Timber.e(e, "Error while checking auth status") },

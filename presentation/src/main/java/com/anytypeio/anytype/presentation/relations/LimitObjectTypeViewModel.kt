@@ -90,6 +90,14 @@ class LimitObjectTypeViewModel(
                             relation = Relations.RESTRICTIONS,
                             condition = DVFilterCondition.NOT_IN,
                             value = listOf(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE.code.toDouble())
+                        ),
+                        DVFilter(
+                            relation = Relations.RECOMMENDED_LAYOUT,
+                            condition = DVFilterCondition.NOT_IN,
+                            value = listOf(
+                                ObjectType.Layout.CHAT.code.toDouble(),
+                                ObjectType.Layout.CHAT_DERIVED.code.toDouble()
+                            )
                         )
                     ),
                     keys = listOf(

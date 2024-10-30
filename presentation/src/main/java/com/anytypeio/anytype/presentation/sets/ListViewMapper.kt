@@ -23,7 +23,7 @@ suspend fun DVViewer.buildListViews(
 ): List<Viewer.ListView.Item> {
     val items = objects.mapNotNull { id ->
         val obj = store.get(id)
-        if (obj != null) {
+        if (obj != null && obj.isValid) {
             when (obj.layout) {
                 ObjectType.Layout.PROFILE -> {
                     val description = if (relations.any { it.key == Relations.DESCRIPTION }) {

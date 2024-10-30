@@ -38,7 +38,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 CreateSpaceScreen(
-                    spaceIconView = vm.spaceGradient.collectAsState().value,
+                    spaceIconView = vm.spaceIconView.collectAsState().value,
                     onCreate = vm::onCreateSpace,
                     onSpaceIconClicked = vm::onSpaceIconClicked,
                     isLoading = vm.isInProgress.collectAsState()

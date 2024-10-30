@@ -37,6 +37,7 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.sets.DateValueView
 
+val DATE_RANGE = IntRange(1900, 2100)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +55,8 @@ fun DatePickerContent(
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                 return state.isEditable
             }
-        }
+        },
+        yearRange = DATE_RANGE
     )
 
     val isFirstLoad = remember { mutableStateOf(true) }

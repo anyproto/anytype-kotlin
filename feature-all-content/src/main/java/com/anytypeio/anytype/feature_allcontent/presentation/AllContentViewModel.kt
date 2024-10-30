@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.base.fold
@@ -704,6 +705,17 @@ class AllContentViewModel(
                     Timber.e("Unexpected layout: ${navigation.layout}")
                     commands.emit(Command.SendToast.UnexpectedLayout(navigation.layout?.name.orEmpty()))
                 }
+                is OpenObjectNavigation.OpenDiscussion -> {
+                    commands.emit(
+                        Command.OpenChat(
+                            target = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
+                OpenObjectNavigation.NonValidObject -> {
+                    Timber.e("Object id is missing")
+                }
             }
         }
     }
@@ -968,6 +980,7 @@ class AllContentViewModel(
     //endregion
 
     sealed class Command {
+        data class OpenChat(val target: Id, val space: Id) : Command()
         data class NavigateToEditor(val id: Id, val space: Id) : Command()
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
         data class NavigateToBin(val space: Id) : Command()

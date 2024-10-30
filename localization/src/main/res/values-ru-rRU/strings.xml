@@ -929,8 +929,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Создать виджет</string>
-    <string name="edit_widgets">Редактировать виджеты</string>
-    <string name="add_widget">Добавить виджет</string>
+    <string name="edit_widgets">Изменить</string>
+    <string name="add_widget">Добавить</string>
     <string name="widget_source">Источник виджета</string>
     <string name="widget_type">Тип виджета</string>
     <string name="widget_add_below">Добавить ниже</string>

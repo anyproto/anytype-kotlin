@@ -925,8 +925,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Criar um componente</string>
-    <string name="edit_widgets">Editar componentes</string>
-    <string name="add_widget">Adicionar aba</string>
+    <string name="edit_widgets">Editar</string>
+    <string name="add_widget">Adicionar</string>
     <string name="widget_source">Fonte do widget</string>
     <string name="widget_type">Tipo de widget</string>
     <string name="widget_add_below">Adicionar abaixo</string>

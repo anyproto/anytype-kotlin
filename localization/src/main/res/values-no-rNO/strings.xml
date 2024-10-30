@@ -925,8 +925,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
-    <string name="edit_widgets">Edit widgets</string>
-    <string name="add_widget">Add widget</string>
+    <string name="edit_widgets">Rediger</string>
+    <string name="add_widget">Legg til</string>
     <string name="widget_source">Widget-kilde</string>
     <string name="widget_type">Widget-type</string>
     <string name="widget_add_below">Legg til under</string>

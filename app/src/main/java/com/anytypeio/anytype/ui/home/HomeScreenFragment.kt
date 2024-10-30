@@ -130,7 +130,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     onCreateDataViewObject = vm::onCreateDataViewObject,
                     onBackLongClicked = vm::onBackLongClicked,
                     showTooltip = vm.showTooltip,
-                    onTooltipDismissed = vm::onTooltipDismissed,
+                    onTooltipDismissed = vm::onTooltipDismissed
                 )
             }
         }

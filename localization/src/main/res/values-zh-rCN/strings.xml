@@ -923,8 +923,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">创建一个小部件</string>
-    <string name="edit_widgets">编辑小部件</string>
-    <string name="add_widget">添加小部件</string>
+    <string name="edit_widgets">编辑</string>
+    <string name="add_widget">添加</string>
     <string name="widget_source">小部件来源</string>
     <string name="widget_type">小部件类型</string>
     <string name="widget_add_below">在下面添加</string>

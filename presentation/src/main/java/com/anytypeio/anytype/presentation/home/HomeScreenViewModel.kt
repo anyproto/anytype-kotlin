@@ -127,6 +127,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -338,6 +339,22 @@ class HomeScreenViewModel(
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
+    }
+
+    private val _showTooltip = MutableStateFlow(false)
+    val showTooltip: StateFlow<Boolean> get() = _showTooltip
+
+    private var tooltipShownOnce = false
+
+    fun showTooltip() {
+        if (!tooltipShownOnce) {
+            _showTooltip.value = true
+            tooltipShownOnce = true
+        }
+    }
+
+    fun onTooltipDismissed() {
+        _showTooltip.value = false
     }
 
     private fun proceedWithViewStatePipeline() {

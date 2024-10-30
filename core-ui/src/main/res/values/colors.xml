@@ -253,4 +253,6 @@
 
     <color name="object_search_cursor_color">#007AFF</color>
 
+    <color name="home_screen_tooltip">#F2F1F7</color>
+
 </resources>

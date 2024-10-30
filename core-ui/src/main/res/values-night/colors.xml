@@ -130,4 +130,6 @@
 
     <color name="home_screen_toolbar_button">#F2222222</color>
 
+    <color name="home_screen_tooltip">#F2F1F7</color>
+
 </resources>

@@ -925,8 +925,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Bir widget oluştur</string>
-    <string name="edit_widgets">Widget\'ları düzenle</string>
-    <string name="add_widget">Widget ekle</string>
+    <string name="edit_widgets">Düzenle</string>
+    <string name="add_widget">Ekle</string>
     <string name="widget_source">Widget kaynağı</string>
     <string name="widget_type">Widget tipi</string>
     <string name="widget_add_below">Aşağıya ekle</string>

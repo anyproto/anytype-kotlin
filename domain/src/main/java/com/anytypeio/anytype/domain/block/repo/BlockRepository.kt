@@ -106,13 +106,13 @@ interface BlockRepository {
     suspend fun getObject(id: Id) : ObjectView
 
     @Deprecated("To be deleted")
-    suspend fun openObjectPreview(id: Id): Result<Payload>
+    suspend fun openObjectPreview(id: Id, space: SpaceId): Result<Payload>
     @Deprecated("To be deleted")
-    suspend fun openPage(id: String): Result<Payload>
+    suspend fun openPage(id: String, space: SpaceId): Result<Payload>
     @Deprecated("To be deleted")
-    suspend fun openProfile(id: String): Payload
+    suspend fun openProfile(id: String, space: SpaceId): Payload
     @Deprecated("To be deleted")
-    suspend fun openObjectSet(id: String): Result<Payload>
+    suspend fun openObjectSet(id: String, space: SpaceId): Result<Payload>
 
     suspend fun closePage(id: String)
     suspend fun closeDashboard(id: String)

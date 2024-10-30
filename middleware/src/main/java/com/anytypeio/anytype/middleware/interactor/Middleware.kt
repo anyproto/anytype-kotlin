@@ -1088,8 +1088,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectOpenOld(id: String): Payload {
-        val request = Rpc.Object.Open.Request(objectId = id)
+    fun objectOpenOld(id: String, space: SpaceId): Payload {
+        val request = Rpc.Object.Open.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectOpen(request) }
         logResponseIfDebug(response, time)
@@ -1528,8 +1528,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectShowOld(id: String): Payload {
-        val request = Rpc.Object.Show.Request(objectId = id)
+    fun objectShowOld(id: String, space: SpaceId): Payload {
+        val request = Rpc.Object.Show.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectShow(request) }
         logResponseIfDebug(response, time)

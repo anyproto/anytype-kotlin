@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
@@ -27,7 +28,8 @@ import javax.inject.Inject
 class TemplateFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fragment_template),
     ClipboardInterceptor, View.OnDragListener {
 
-    private val ctx: String get() = arg(CTX_KEY)
+    private val ctx: Id get() = arg(CTX_KEY)
+    private val space: Id get() = arg(SPACE_KEY)
 
     @Inject
     lateinit var factory: TemplateViewModel.Factory
@@ -80,7 +82,7 @@ class TemplateFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fragment
 
     override fun onStart() {
         super.onStart()
-        vm.onStart(ctx)
+        vm.onStart(ctx = ctx, space = SpaceId(space))
     }
 
     override fun onResume() {
@@ -110,10 +112,14 @@ class TemplateFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fragment
     override fun onDrag(v: View?, event: DragEvent?) = false
 
     companion object {
-        fun new(ctx: Id) = TemplateFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+        fun new(ctx: Id, space: SpaceId) = TemplateFragment().apply {
+            arguments = bundleOf(
+                CTX_KEY to ctx,
+                SPACE_KEY to space.id
+            )
         }
 
-        const val CTX_KEY = "arg.template.ctx"
+        private const val CTX_KEY = "arg.template.ctx"
+        private const val SPACE_KEY = "arg.template.space"
     }
 }

@@ -56,27 +56,32 @@ class BlockDataRepository(
     override suspend fun openObject(id: Id): ObjectView = remote.openObject(id = id)
     override suspend fun getObject(id: Id): ObjectView = remote.getObject(id = id)
 
-    override suspend fun openObjectPreview(id: Id): Result<Payload> = try {
-        Result.Success(remote.openObjectPreview(id))
+    override suspend fun openObjectPreview(id: Id, space: SpaceId): Result<Payload> = try {
+        Result.Success(remote.openObjectPreview(id = id, space = space))
     } catch (e: AnytypeNeedsUpgradeException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {
         Result.Failure(Error.NotFoundObject)
     }
 
-    override suspend fun openPage(id: String): Result<Payload> = try {
-        Result.Success(remote.openPage(id))
+    override suspend fun openPage(id: String, space: SpaceId): Result<Payload> = try {
+        Result.Success(
+            remote.openPage(
+                id = id,
+                space = space
+            )
+        )
     } catch (e: AnytypeNeedsUpgradeException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {
         Result.Failure(Error.NotFoundObject)
     }
 
-    override suspend fun openProfile(id: String): Payload =
-        remote.openProfile(id)
+    override suspend fun openProfile(id: String, space: SpaceId): Payload =
+        remote.openProfile(id = id, space = space)
 
-    override suspend fun openObjectSet(id: String): Result<Payload> = try {
-        Result.Success(remote.openObjectSet(id))
+    override suspend fun openObjectSet(id: String, space: SpaceId): Result<Payload> = try {
+        Result.Success(remote.openObjectSet(id = id, space = space))
     } catch (e: AnytypeNeedsUpgradeException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {

@@ -43,7 +43,7 @@
     <string name="space">Пространство</string>
     <string name="space_name">Название пространства</string>
     <string name="default_space">Пространство входа</string>
-    <string name="space_settings_apply_random_gradient">Применить случайный градиент</string>
+    <string name="space_settings_apply_random_gradient">Применить случайный сплошной цвет</string>
     <string name="space_settings_apply_upload_image">Загрузить изображение</string>
     <string name="delete_space">Удалить пространство</string>
     <string name="you_can_store">Вы можете бесплатно хранить до %1$s ваших файлов на нашем узле резервного копирования. При достижении лимита файлы будут храниться только локально.</string>
@@ -845,6 +845,8 @@
     <string name="synced_files">Синхронизированные файлы</string>
     <string name="log_in">Войти</string>
     <string name="create_object_section_library">Библиотека Anytype</string>
+    <string name="bin_empty_title">Ваша корзина пуста.</string>
+    <string name="bin_empty_subtitle">Похоже, у вас всё аккуратно и организовано!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Внешний вид</string>
     <string name="slash_widget_main_media">Медиа-файлы</string>
@@ -927,8 +929,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Создать виджет</string>
-    <string name="edit_widgets">Редактировать виджеты</string>
-    <string name="add_widget">Добавить виджет</string>
+    <string name="edit_widgets">Изменить</string>
+    <string name="add_widget">Добавить</string>
     <string name="widget_source">Источник виджета</string>
     <string name="widget_type">Тип виджета</string>
     <string name="widget_add_below">Добавить ниже</string>
@@ -1293,7 +1295,6 @@
     <string name="payments_tier_details_name_title">Выберите ваше уникальное имя</string>
     <string name="payments_tier_details_name_subtitle">Это ваше уникальное имя в сети Anytype, подтверждающее ваше членство. Оно служит вашим личным доменом и не может быть изменено.</string>
     <string name="payments_tier_details_name_hint">Меня</string>
-    <string name="payments_tier_details_name_domain">.любой</string>
     <string name="payments_tier_details_name_min">Минимум 7 символов</string>
     <string name="payments_tier_details_name_error">Это имя уже занято!</string>
     <string name="payments_tier_details_name_validated">Это имя [%1$s] доступно!</string>
@@ -1428,6 +1429,7 @@
     <string name="notifications_prompt_primary_button_text">Включить</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Создать закладку из буфера обмена</string>
     <string name="error_unexpected_layout">Ошибка: непредвиденный макет</string>
+    <string name="error_non_valid_object">Ошибка: ID объекта отсутствует</string>
     <string name="membership_price_pending">Ожидание...</string>
     <string name="per_period">на  %1$s</string>
     <string name="free_for">Бесплатно на %1$s</string>
@@ -1568,4 +1570,16 @@
     <string name="all_content_toast_type_added">Тип объекта добавлен</string>
     <string name="all_content_toast_type_removed">Тип объекта удален</string>
     <string name="all_content_toast_archived">Объект архивирован</string>
+    <string name="all_content_new_relation">Новое свойство</string>
+    <string name="all_content_new_type">Новое свойство</string>
+    <string name="all_content_unlinked_description">Непривязанные объекты, не имеющие прямой связи или обратной связи с другими объектами на графике.</string>
+    <string name="all_content_snackbar_title">перемещен в корзину</string>
+    <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_search_button">Кнопка поиска объектов</string>
+    <string name="main_navigation_content_desc_create_button">Кнопка создания объекта</string>
+    <string name="chat">Чат</string>
+    <string name="copy">Копировать</string>
+    <string name="chats_edit_message">Редактировать сообщение</string>
+    <string name="chats_message_edited">отредактировано</string>
+    <string name="chat_empty_state_message">Пока нет сообщений. \nБудьте первыми, кто начнет обсуждение.</string>
 </resources>

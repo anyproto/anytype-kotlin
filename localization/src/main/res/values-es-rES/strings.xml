@@ -925,8 +925,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Crear un widget</string>
-    <string name="edit_widgets">Editar widgets</string>
-    <string name="add_widget">Añadir widget</string>
+    <string name="edit_widgets">Editar</string>
+    <string name="add_widget">Añadir</string>
     <string name="widget_source">Origen del widget</string>
     <string name="widget_type">Tipo de widget</string>
     <string name="widget_add_below">Añadir debajo</string>

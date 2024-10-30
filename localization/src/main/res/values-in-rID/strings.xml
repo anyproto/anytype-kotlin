@@ -923,8 +923,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
-    <string name="edit_widgets">Edit widgets</string>
-    <string name="add_widget">Tambah widget</string>
+    <string name="edit_widgets">Sunting</string>
+    <string name="add_widget">Tambah</string>
     <string name="widget_source">Sumber widget</string>
     <string name="widget_type">Jenis widget</string>
     <string name="widget_add_below">Tambah di bawah</string>

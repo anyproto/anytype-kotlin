@@ -115,8 +115,7 @@ fun HomeScreen(
     onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateObjectInsideWidget: (Id) -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
-    onBackLongClicked: () -> Unit
+    onBackLongClicked: () -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     showTooltip: StateFlow<Boolean>,
     onTooltipDismissed: () -> Unit,
@@ -836,81 +835,6 @@ fun WidgetEditModeButton(
             style = UXBody,
             color = colorResource(id = R.color.text_white)
         )
-    }
-}
-
-@Composable
-fun HomeScreenBottomToolbar(
-    modifier: Modifier,
-    onSearchClicked: () -> Unit,
-    onCreateNewObjectClicked: () -> Unit,
-    onCreateNewObjectLongClicked: () -> Unit,
-    onBackClicked: () -> Unit,
-    isReadOnlyAccess: Boolean
-) {
-    val haptic = LocalHapticFeedback.current
-    Row(
-        modifier = modifier
-            .height(BottomNavigationDefaults.Height)
-            .width(BottomNavigationDefaults.Width)
-            .background(
-                shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.home_screen_toolbar_button)
-            )
-    ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-                .noRippleClickable { onBackClicked() }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_back),
-                contentDescription = "Search icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .alpha(if (isReadOnlyAccess) 0.2f else 1f)
-                .fillMaxSize()
-                .then(
-                    if (isReadOnlyAccess)
-                        Modifier.clickable {
-                            // Do nothing.
-                        }
-                    else
-                        Modifier.noRippleCombinedClickable(
-                            onLongClicked = {
-                                onCreateNewObjectLongClicked().also {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                }
-                            },
-                            onClick = {
-                                onCreateNewObjectClicked()
-                            }
-                        )
-                )
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_plus),
-                contentDescription = "Plus icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-                .noRippleClickable { onSearchClicked() }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_search),
-                contentDescription = "Search icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
     }
 }
 

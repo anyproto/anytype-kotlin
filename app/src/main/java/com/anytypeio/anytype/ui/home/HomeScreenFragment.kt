@@ -128,8 +128,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
                     onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
                     onCreateDataViewObject = vm::onCreateDataViewObject,
-                    onBackLongClicked = vm::onBackLongClicked
-                    onCreateDataViewObject = vm::onCreateDataViewObject,
+                    onBackLongClicked = vm::onBackLongClicked,
                     showTooltip = vm.showTooltip,
                     onTooltipDismissed = vm::onTooltipDismissed,
                 )

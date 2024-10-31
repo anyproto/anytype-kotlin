@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.objects
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import javax.inject.Inject
@@ -16,10 +17,10 @@ class ObjectWatcher @Inject constructor(
     private val events: EventChannel,
     private val reducer: Reducer
 ) {
-    fun watch(target: Id): Flow<ObjectView> = flow {
+    fun watch(target: Id, space: SpaceId): Flow<ObjectView> = flow {
         emitAll(
             events.observeEvents(context = target).scan(
-                initial = repo.openObject(target),
+                initial = repo.openObject(id = target, space = space),
                 operation = reducer
             )
         )

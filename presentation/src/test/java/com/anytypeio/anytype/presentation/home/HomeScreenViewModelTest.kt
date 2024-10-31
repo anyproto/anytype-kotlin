@@ -1638,7 +1638,7 @@ class HomeScreenViewModelTest {
             } doReturn Unit
         }
 
-        given(objectWatcher.watch(any())).willReturn(flowOf())
+        given(objectWatcher.watch(any(), any())).willReturn(flowOf())
         given(storelessSubscriptionContainer.subscribe(any<StoreSearchParams>())).willReturn(flowOf())
         given(storelessSubscriptionContainer.subscribe(any<StoreSearchByIdsParams>())).willReturn(
             flowOf()
@@ -2465,7 +2465,12 @@ class HomeScreenViewModelTest {
                 thirdWidget is WidgetView.SetOfObjects && thirdWidget.tabs.first().isSelected
             }
             verifyBlocking(getObject, times(1)) {
-                run(params = currentWidgetSourceObject.id)
+                run(
+                    params = GetObject.Params(
+                        currentWidgetSourceObject.id,
+                        SpaceId(defaultSpaceConfig.space)
+                    )
+                )
             }
             verify(storelessSubscriptionContainer, times(1)).subscribe(
                 StoreSearchByIdsParams(
@@ -2651,7 +2656,12 @@ class HomeScreenViewModelTest {
     ) {
         getObject.stub {
             onBlocking {
-                run(givenObjectView.root)
+                run(
+                    GetObject.Params(
+                        givenObjectView.root,
+                        SpaceId(defaultSpaceConfig.space)
+                    )
+                )
             } doReturn givenObjectView
         }
     }
@@ -2736,7 +2746,7 @@ class HomeScreenViewModelTest {
     ) {
         objectWatcher.stub {
             on {
-                watch(defaultSpaceConfig.home)
+                watch(defaultSpaceConfig.home, SpaceId(defaultSpaceConfig.space))
             } doReturn flowOf(objectView)
         }
     }

@@ -1889,7 +1889,12 @@ class HomeScreenViewModel(
             if (target != null) {
                 val widgetSource = target.source
                 if (widgetSource is Widget.Source.Default) {
-                    getObject.async(params = target.source.id).fold(
+                    getObject.async(
+                        params = GetObject.Params(
+                            target = target.source.id,
+                            space = SpaceId(target.config.space)
+                        )
+                    ).fold(
                         onSuccess = { obj ->
                             val dv = obj.blocks.find { it.content is DV }?.content as? DV
                             val viewer = if (view.isNullOrEmpty())

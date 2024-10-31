@@ -53,8 +53,8 @@ class BlockDataRepository(
     private val logger: Logger
 ) : BlockRepository {
 
-    override suspend fun openObject(id: Id): ObjectView = remote.openObject(id = id)
-    override suspend fun getObject(id: Id): ObjectView = remote.getObject(id = id)
+    override suspend fun openObject(id: Id, space: SpaceId): ObjectView = remote.openObject(id = id, space = space)
+    override suspend fun getObject(id: Id, space: SpaceId): ObjectView = remote.getObject(id = id, space = space)
 
     override suspend fun openObjectPreview(id: Id, space: SpaceId): Result<Payload> = try {
         Result.Success(remote.openObjectPreview(id = id, space = space))

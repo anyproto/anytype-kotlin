@@ -62,8 +62,8 @@ interface BlockRemote {
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult
 
-    suspend fun openObject(id: Id): ObjectView
-    suspend fun getObject(id: Id): ObjectView
+    suspend fun openObject(id: Id, space: SpaceId): ObjectView
+    suspend fun getObject(id: Id, space: SpaceId): ObjectView
 
     suspend fun openPage(id: String, space: SpaceId): Payload
     suspend fun openProfile(id: String, space: SpaceId): Payload

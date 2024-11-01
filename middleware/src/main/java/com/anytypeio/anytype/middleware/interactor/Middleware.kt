@@ -2783,6 +2783,19 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload {
+        val request = Rpc.BlockDataview.View.SetActive.Request(
+            contextId = command.ctx,
+            blockId = command.dataViewId,
+            viewId = command.viewerId
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewSetActiveView(request) }
+        logResponseIfDebug(response, time)
+        return response.event.toPayload()
+    }
+
+    @Throws
     fun chatUnsubscribe(chat: Id) {
         val request = Rpc.Chat.Unsubscribe.Request(chatObjectId = chat)
         logRequestIfDebug(request)

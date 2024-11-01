@@ -607,4 +607,14 @@ sealed class Command {
             val emoji: String
         ): ChatCommand()
     }
+
+    /**
+     * id of dataview block
+     * id of active vi1ew
+     */
+    data class DataViewSetActiveView(
+        val ctx: Id,
+        val dataViewId: Id,
+        val viewerId: Id
+    )
 }

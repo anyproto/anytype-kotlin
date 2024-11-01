@@ -1653,6 +1653,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun blockDataViewSetActiveView(request: Rpc.BlockDataview.View.SetActive.Request): Rpc.BlockDataview.View.SetActive.Response {
+        val encoded = Service.blockDataviewViewSetActive(
+            Rpc.BlockDataview.View.SetActive.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.View.SetActive.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.View.SetActive.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun createTemplateFromObject(request: Rpc.Template.CreateFromObject.Request): Rpc.Template.CreateFromObject.Response {
         val encoded = Service.templateCreateFromObject(
             Rpc.Template.CreateFromObject.Request.ADAPTER.encode(request)

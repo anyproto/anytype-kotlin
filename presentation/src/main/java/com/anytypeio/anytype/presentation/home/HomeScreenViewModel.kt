@@ -238,7 +238,7 @@ class HomeScreenViewModel(
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
-    private val openWidgetObjectsHistory : MutableSet<Id> = LinkedHashSet()
+    private val openWidgetObjectsHistory : MutableSet<Pair<Id, SpaceId>> = LinkedHashSet()
 
     private val userPermissions = MutableStateFlow<SpaceMemberPermissions?>(null)
 
@@ -265,14 +265,19 @@ class HomeScreenViewModel(
                         unsubscribe(subscriptions)
                     }
                     mutex.withLock {
-                        val closed = mutableSetOf<Id>()
-                        openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
+                        val closed = mutableSetOf<Pair<Id, SpaceId>>()
+                        openWidgetObjectsHistory.forEach { (previouslyOpenedWidgetObject, space) ->
                             if (previouslyOpenedWidgetObject != newConfig.widgets) {
                                 closeObject
-                                    .async(params = previouslyOpenedWidgetObject)
+                                    .async(
+                                        CloseBlock.Params(
+                                            target = previouslyOpenedWidgetObject,
+                                            space = space
+                                        )
+                                    )
                                     .fold(
                                         onSuccess = {
-                                            closed.add(previouslyOpenedWidgetObject)
+                                            closed.add(previouslyOpenedWidgetObject to space)
                                         },
                                         onFailure = {
                                             Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
@@ -299,7 +304,11 @@ class HomeScreenViewModel(
                     onSuccess = { objectView ->
                         onSessionStarted().also {
                             viewModelScope.launch {
-                                mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+                                mutex.withLock {
+                                    openWidgetObjectsHistory.add(
+                                        objectView.root to SpaceId(config.space)
+                                    )
+                                }
                             }
                         }
                     },
@@ -591,7 +600,10 @@ class HomeScreenViewModel(
         }
     }
 
-    private suspend fun proceedWithClosingWidgetObject(widgetObject: Id) {
+    private suspend fun proceedWithClosingWidgetObject(
+        widgetObject: Id,
+        space: SpaceId
+    ) {
         saveWidgetSession.async(
             SaveWidgetSession.Params(
                 WidgetSession(
@@ -613,7 +625,12 @@ class HomeScreenViewModel(
         }
         if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
 
-        closeObject.stream(widgetObject).collect { status ->
+        closeObject.stream(
+            CloseBlock.Params(
+                widgetObject,
+                space
+            )
+        ).collect { status ->
             status.fold(
                 onFailure = {
                     Timber.e(it, "Error while closing widget object")
@@ -1683,9 +1700,9 @@ class HomeScreenViewModel(
 
     fun onBackClicked() {
         viewModelScope.launch {
-            openWidgetObjectsHistory.forEach { obj ->
+            openWidgetObjectsHistory.forEach { (obj, space) ->
                 closeObject
-                    .async(obj)
+                    .async(CloseBlock.Params(obj, space))
                     .onSuccess {
                         Timber.d("Closed object from widget object session history: $obj")
                     }
@@ -1718,7 +1735,10 @@ class HomeScreenViewModel(
                 unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
                 val config = spaceManager.getConfig()
                 if (config != null) {
-                    proceedWithClosingWidgetObject(widgetObject = config.widgets)
+                    proceedWithClosingWidgetObject(
+                        widgetObject = config.widgets,
+                        space = SpaceId(config.space)
+                    )
                 }
                 jobs.cancel()
                 widgetObjectPipelineJobs.cancel()

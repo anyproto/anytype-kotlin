@@ -26,8 +26,8 @@ class ObjectWatcher @Inject constructor(
         )
     }
 
-    suspend fun unwatch(target: Id) {
-        repo.closePage(target)
+    suspend fun unwatch(target: Id, space: SpaceId) {
+        repo.closePage(id = target, space = space)
     }
 
     interface Reducer : (ObjectView, List<Event>) -> ObjectView

@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 interface BlockRemote {
@@ -69,8 +70,7 @@ interface BlockRemote {
     suspend fun openProfile(id: String, space: SpaceId): Payload
     suspend fun openObjectSet(id: String, space: SpaceId): Payload
     suspend fun openObjectPreview(id: Id, space: SpaceId): Payload
-    suspend fun closePage(id: String)
-    suspend fun closeDashboard(id: String)
+    suspend fun closePage(id: String, space: Space)
     suspend fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload
     suspend fun setDocumentImageIcon(command: Command.SetDocumentImageIcon): Payload
     suspend fun setDocumentCoverColor(ctx: String, color: String): Payload

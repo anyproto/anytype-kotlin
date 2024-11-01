@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
@@ -114,8 +115,7 @@ interface BlockRepository {
     @Deprecated("To be deleted")
     suspend fun openObjectSet(id: String, space: SpaceId): Result<Payload>
 
-    suspend fun closePage(id: String)
-    suspend fun closeDashboard(id: String)
+    suspend fun closePage(id: String, space: Space)
 
     /**
      * Upload media or file block by path or url.

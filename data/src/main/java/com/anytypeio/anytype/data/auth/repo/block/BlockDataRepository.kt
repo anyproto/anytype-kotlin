@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
@@ -88,10 +89,6 @@ class BlockDataRepository(
         Result.Failure(Error.NotFoundObject)
     }
 
-    override suspend fun closeDashboard(id: String) {
-        remote.closeDashboard(id)
-    }
-
     override suspend fun updateAlignment(
         command: Command.UpdateAlignment
     ): Payload = remote.updateAlignment(command)
@@ -106,8 +103,8 @@ class BlockDataRepository(
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult = remote.createBlockLinkWithObject(command)
 
-    override suspend fun closePage(id: String) {
-        remote.closePage(id)
+    override suspend fun closePage(id: String, space: Space) {
+        remote.closePage(id = id, space = space)
     }
 
     override suspend fun updateDocumentTitle(

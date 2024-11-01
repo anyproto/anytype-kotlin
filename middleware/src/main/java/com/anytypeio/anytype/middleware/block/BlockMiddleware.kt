@@ -35,6 +35,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.middleware.interactor.Middleware
@@ -43,10 +44,6 @@ import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 class BlockMiddleware(
     private val middleware: Middleware
 ) : BlockRemote {
-
-    override suspend fun closeDashboard(id: String) {
-        middleware.objectClose(id)
-    }
 
     override suspend fun openObject(id: Id, space: SpaceId): ObjectView = middleware.objectOpen(id = id, space = space)
     override suspend fun getObject(id: Id, space: SpaceId): ObjectView = middleware.objectShow(id = id, space = space)
@@ -68,8 +65,8 @@ class BlockMiddleware(
         space = space
     )
 
-    override suspend fun closePage(id: String) {
-        middleware.objectClose(id)
+    override suspend fun closePage(id: String, space: Space) {
+        middleware.objectClose(id = id, space = space)
     }
 
     override suspend fun updateDocumentTitle(command: Command.UpdateTitle) {

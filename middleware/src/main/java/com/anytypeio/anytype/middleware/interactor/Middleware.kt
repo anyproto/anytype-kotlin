@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
@@ -845,8 +846,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectClose(id: String) {
-        val request = Rpc.Object.Close.Request(objectId = id)
+    fun objectClose(id: String, space: Space) {
+        val request = Rpc.Object.Close.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectClose(request) }
         logResponseIfDebug(response, time)

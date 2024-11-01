@@ -382,6 +382,7 @@ interface BlockRemote {
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
     suspend fun nodeUsage(): NodeUsageInfo
+    suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload
 
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
 

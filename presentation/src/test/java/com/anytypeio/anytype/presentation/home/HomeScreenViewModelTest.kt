@@ -1675,7 +1675,12 @@ class HomeScreenViewModelTest {
             )
         }
 
-        verify(closeObject, times(1)).async(params = WIDGET_OBJECT_ID)
+        verify(closeObject, times(1)).async(
+            params = CloseBlock.Params(
+                WIDGET_OBJECT_ID,
+                SpaceId(defaultSpaceConfig.space)
+            )
+        )
     }
 
     @Test
@@ -1886,7 +1891,12 @@ class HomeScreenViewModelTest {
             )
         }
 
-        verify(closeObject, times(1)).async(params = WIDGET_OBJECT_ID)
+        verify(closeObject, times(1)).async(
+            params = CloseBlock.Params(
+                WIDGET_OBJECT_ID,
+                SpaceId(defaultSpaceConfig.space)
+            )
+        )
     }
 
     @Test
@@ -2670,14 +2680,20 @@ class HomeScreenViewModelTest {
         closeObject.stub {
             onBlocking {
                 stream(
-                    params = WIDGET_OBJECT_ID
+                    params = CloseBlock.Params(
+                        WIDGET_OBJECT_ID,
+                        SpaceId(defaultSpaceConfig.space)
+                    )
                 )
             } doReturn flowOf(Resultat.Loading(), Resultat.Success(Unit))
         }
         closeObject.stub {
             onBlocking {
                 async(
-                    params = WIDGET_OBJECT_ID
+                    params = CloseBlock.Params(
+                        WIDGET_OBJECT_ID,
+                        SpaceId(defaultSpaceConfig.space)
+                    )
                 )
             } doReturn Resultat.success(Unit)
         }

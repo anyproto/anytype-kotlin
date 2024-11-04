@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.databinding.FragmentTemplateBinding
@@ -29,7 +30,7 @@ class TemplateFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fragment
     ClipboardInterceptor, View.OnDragListener {
 
     private val ctx: Id get() = arg(CTX_KEY)
-    private val space: Id get() = arg(SPACE_KEY)
+    private val space: Id get() = argOrNull<Id>(SPACE_KEY).orEmpty()
 
     @Inject
     lateinit var factory: TemplateViewModel.Factory

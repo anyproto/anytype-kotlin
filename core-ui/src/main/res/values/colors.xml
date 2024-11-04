@@ -112,7 +112,7 @@
     <color name="text_primary">#252525</color>
     <color name="text_secondary">#949494</color>
     <color name="text_secondary_widgets">#949494</color>
-    <color name="text_tertiary">#C8C8C8</color>
+    <color name="text_tertiary">#BFBFBF</color>
     <color name="text_white">#FFFFFF</color>
     <color name="text_label_inversion">#FFFFFF</color>
     <color name="text_button_label">#FFFFFF</color>
@@ -122,21 +122,21 @@
     <color name="background_secondary">#FFFFFF</color>
     <color name="background_highlighted">#144F4F4F</color>
     <color name="background_highlighted_light">#0A4F4F4F</color>
-    <color name="background_highlighted_medium">#4F4F4F</color>
+    <color name="background_highlighted_medium">#144F4F4F</color>
     <color name="background_multiplayer_request">#252525</color>
 
     <color name="shape_primary">#E3E3E3</color>
     <color name="shape_secondary">#EBEBEB</color>
     <color name="shape_tertiary">#F2F2F2</color>
     <color name="shape_transparent">#14535353</color>
-    <color name="shape_transparent_primary">#294F4F4F</color>
+    <color name="shape_transparent_primary">#1C000000</color>
 
     <color name="glyph_active">#A7A7A7</color>
     <color name="glyph_selected">#252525</color>
     <color name="glyph_inactive">#DCDCDC</color>
     <color name="glyph_accent">#F09C0E</color>
     <color name="glyph_white">#FFFFFF</color>
-    <color name="glyph_label">#FFFFFF</color>
+    <color name="glyph_label">#66000000</color>
     <color name="glyph_button">#252525</color>
 
     <color name="button_text">#FFFFFF</color>
@@ -157,7 +157,7 @@
     <color name="palette_dark_ice">#188DCF</color>
     <color name="palette_dark_teal">#0BA599</color>
     <color name="palette_dark_lime">#4DAE00</color>
-    <color name="palette_dark_grey">#929082</color>
+    <color name="palette_dark_grey">#949494</color>
 
     <color name="palette_light_default">#FFFFFF</color>
     <color name="palette_light_yellow">#F4EB91</color>
@@ -169,7 +169,7 @@
     <color name="palette_light_ice">#B2DFF9</color>
     <color name="palette_light_teal">#A9EBE6</color>
     <color name="palette_light_lime">#C5EFA3</color>
-    <color name="palette_light_grey">#DEDCCC</color>
+    <color name="palette_light_grey">#DCDCDC</color>
 
     <color name="palette_very_light_default">#FFFFFF</color>
     <color name="palette_very_light_yellow">#FCF8D6</color>
@@ -181,7 +181,7 @@
     <color name="palette_very_light_ice">#DDF1FC</color>
     <color name="palette_very_light_teal">#D9F6F4</color>
     <color name="palette_very_light_lime">#E5F8D6</color>
-    <color name="palette_very_light_grey">#F1F0ED</color>
+    <color name="palette_very_light_grey">#F2F2F2</color>
 
     <color name="palette_system_yellow">#ECD91B</color>
     <color name="palette_system_amber_125">#F09C0E</color>

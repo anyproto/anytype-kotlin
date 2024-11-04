@@ -1638,7 +1638,7 @@ class HomeScreenViewModelTest {
             } doReturn Unit
         }
 
-        given(objectWatcher.watch(any(), any())).willReturn(flowOf())
+        given(objectWatcher.watch(defaultSpaceConfig.home, SpaceId(defaultSpaceConfig.space))).willReturn(flowOf())
         given(storelessSubscriptionContainer.subscribe(any<StoreSearchParams>())).willReturn(flowOf())
         given(storelessSubscriptionContainer.subscribe(any<StoreSearchByIdsParams>())).willReturn(
             flowOf()

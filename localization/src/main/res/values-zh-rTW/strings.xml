@@ -372,7 +372,7 @@
     <string name="copy_link">複製連結</string>
     <string name="edit_link">編輯連結</string>
     <string name="unlink">取消連結</string>
-    <string name="choose_layout_type">選擇佈局類型</string>
+    <string name="choose_layout_type">選擇排版類型</string>
     <string name="user_settings_title">使用者設定</string>
     <string name="default_object_type_title">預設物件類型</string>
     <string name="name_layout_basic">默認</string>
@@ -427,7 +427,7 @@
     <string name="hide_icon">隱藏圖示</string>
     <string name="description">描述</string>
     <string name="object_type">物件類型</string>
-    <string name="preview_layout">預覽版型</string>
+    <string name="preview_layout">預覽排版</string>
     <string name="unknown">未知</string>
     <string name="unknown_error">未知錯誤</string>
     <string name="bookmark">書籤</string>
@@ -525,7 +525,7 @@
     <string name="menu_type_create_set">建立 %1$s 的集合</string>
     <string name="toast_active_view_delete">當前檢視無法被刪除</string>
     <string name="type_templates_widget_title">建立物件</string>
-    <string name="view_layout_widget_title">版型</string>
+    <string name="view_layout_widget_title">排版</string>
     <string name="view_layout_cover_widget_title">封面</string>
     <string name="blank">空白</string>
     <string name="templates_menu_default_for_view">預設此檢視</string>
@@ -700,7 +700,7 @@
     <string name="unknown_type">未知類型</string>
     <string name="set">集合</string>
     <string name="collection">集錦</string>
-    <string name="layout">版型</string>
+    <string name="layout">排版</string>
     <string name="restore_from_archive">從封存中還原</string>
     <string name="icon">圖示</string>
     <string name="icon_description">物件的 Emoji 或圖像</string>
@@ -1049,7 +1049,7 @@
     <string name="sharing_menu_save_as_file_option">檔案</string>
     <string name="sharing_menu_save_as_images_option">圖像</string>
     <string name="sharing_menu_save_as_files_option">檔案</string>
-    <string name="sharing_menu_save_as_videos_option">Videos</string>
+    <string name="sharing_menu_save_as_videos_option">影片</string>
     <string name="sharing_menu_data">資料</string>
     <string name="sharing_menu_add_to_anytype_header_title">添加到 Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
@@ -1467,7 +1467,7 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <string name="sync_status_p2p_disabled">Connection not possible</string>
     <string name="sync_status_p2p_restricted">限制。請檢查裝置設定。</string>
-    <string name="sync_status_p2p_not_connected">Not connected</string>
+    <string name="sync_status_p2p_not_connected">未連線</string>
     <string name="sync_status_anytype_network">Anytype 網絡</string>
     <string name="sync_status_anytype_end_to_end">已端到端加密</string>
     <plurals name="sync_status_network_items">
@@ -1480,20 +1480,20 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_incompatible_version">不相容的版本</string>
     <string name="sync_status_network_error">無法進入這個空間</string>
     <string name="sync_status_unrecognized">無法識別的錯誤</string>
-    <string name="version_history_title">Version history</string>
+    <string name="version_history_title">編輯記錄</string>
     <string name="version_history_error_no_versions">No versions found</string>
     <string name="version_history_error_get_version">Error getting version history</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">新增物件</string>
     <string name="vault_my_spaces">My Spaces</string>
-    <string name="all_content_title_all_content">All Objects</string>
+    <string name="all_content_title_all_content">所有物件</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
-    <string name="all_content_view_bin">View Bin</string>
+    <string name="all_content_view_bin">查看垃圾桶</string>
     <string name="all_content_title_tab_pages">Pages</string>
     <string name="all_content_title_tab_lists">列表</string>
     <string name="all_content_title_tab_media">媒體</string>
-    <string name="all_content_title_tab_bookmarks">Bookmarks</string>
+    <string name="all_content_title_tab_bookmarks">書籤</string>
     <string name="all_content_title_tab_files">檔案</string>
     <string name="all_content_title_tab_objetc_types">類型</string>
     <string name="all_content_title_tab_relations">關聯</string>
@@ -1506,7 +1506,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_date_used">Date last used</string>
     <string name="all_content_sort_name">名稱</string>
-    <string name="all_content">All Objects</string>
+    <string name="all_content">所有物件</string>
     <string name="allContent_group_today">今天</string>
     <string name="allContent_group_yesterday">昨天</string>
     <string name="allContent_group_prev_7">過去 7 天</string>

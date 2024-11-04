@@ -43,7 +43,7 @@
     <string name="space">空間</string>
     <string name="space_name">空間名稱</string>
     <string name="default_space">初始空間</string>
-    <string name="space_settings_apply_random_gradient">套用隨機漸層</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">上傳圖片</string>
     <string name="delete_space">刪除空間</string>
     <string name="you_can_store">您目前擁有 %1$s 的加密節點儲存空間，您可以將檔案備份到我們的節點當中。 當儲存空間容量到達上限，新的檔案只能存放在您的本地儲存區中。</string>
@@ -839,6 +839,8 @@
     <string name="synced_files">已同步的檔案</string>
     <string name="log_in">登入</string>
     <string name="create_object_section_library">Anytype 資料庫</string>
+    <string name="bin_empty_title">Your trash is empty.</string>
+    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">樣式</string>
     <string name="slash_widget_main_media">媒體</string>
@@ -921,8 +923,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">建立一個小工具</string>
-    <string name="edit_widgets">編輯小工具</string>
-    <string name="add_widget">Add widget</string>
+    <string name="edit_widgets">編輯</string>
+    <string name="add_widget">添加</string>
     <string name="widget_source">小工具來源</string>
     <string name="widget_type">小工具類型</string>
     <string name="widget_add_below">在下方添加</string>
@@ -1275,7 +1277,6 @@
     <string name="payments_tier_details_name_title">取一個獨特的名字</string>
     <string name="payments_tier_details_name_subtitle">這是您在Anytype網絡的專屬用戶名，以確認您的會員身份。它是您的個人域名，不可更改。</string>
     <string name="payments_tier_details_name_hint">個人使用</string>
-    <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">最少 7 個字元</string>
     <string name="payments_tier_details_name_error">此名稱已被使用。</string>
     <string name="payments_tier_details_name_validated">%1$s 可以被使用！</string>
@@ -1407,6 +1408,7 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_prompt_primary_button_text">啟用</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">從剪貼簿建立書籤</string>
     <string name="error_unexpected_layout">錯誤：版型異常</string>
+    <string name="error_non_valid_object">Error: object ID is missing</string>
     <string name="membership_price_pending">等候中...</string>
     <string name="per_period">每 %1$s</string>
     <string name="free_for">Free for %1$s</string>
@@ -1484,7 +1486,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">新增物件</string>
     <string name="vault_my_spaces">My Spaces</string>
-    <string name="all_content_title_all_content">All objects</string>
+    <string name="all_content_title_all_content">All Objects</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_view_bin">View Bin</string>
@@ -1526,4 +1528,16 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_toast_type_added">Object type added</string>
     <string name="all_content_toast_type_removed">Object type removed</string>
     <string name="all_content_toast_archived">Object archived</string>
+    <string name="all_content_new_relation">新增關聯</string>
+    <string name="all_content_new_type">新增類型</string>
+    <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_snackbar_title">moved to bin</string>
+    <string name="main_navigation_content_desc_back_button">返回按鈕</string>
+    <string name="main_navigation_content_desc_search_button">Search objects button</string>
+    <string name="main_navigation_content_desc_create_button">Create object button</string>
+    <string name="chat">Chat</string>
+    <string name="copy">複製</string>
+    <string name="chats_edit_message">Edit message</string>
+    <string name="chats_message_edited">edited</string>
+    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
 </resources>

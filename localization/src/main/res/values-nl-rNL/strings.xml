@@ -43,7 +43,7 @@
     <string name="space">Ruimte</string>
     <string name="space_name">Naam ruimte</string>
     <string name="default_space">Startruimte</string>
-    <string name="space_settings_apply_random_gradient">Pas willekeurig verloop toe</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Upload afbeelding</string>
     <string name="delete_space">Verwijder ruimte</string>
     <string name="you_can_store">Je kunt maximaal %1$s van je bestanden gratis opslaan op onze versleutelde back-up node. Als de limiet is bereikt, zullen bestanden alleen lokaal worden opgeslagen.</string>
@@ -841,6 +841,8 @@
     <string name="synced_files">Gesynchroniseerde bestanden</string>
     <string name="log_in">Inloggen</string>
     <string name="create_object_section_library">Anytype bibliotheek</string>
+    <string name="bin_empty_title">Your trash is empty.</string>
+    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Stijl</string>
     <string name="slash_widget_main_media">Media</string>
@@ -923,8 +925,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Maak een widget aan</string>
-    <string name="edit_widgets">Bewerk widgets</string>
-    <string name="add_widget">Widget toevoegen</string>
+    <string name="edit_widgets">Bewerk</string>
+    <string name="add_widget">Voeg toe</string>
     <string name="widget_source">Widget bron</string>
     <string name="widget_type">Widget type</string>
     <string name="widget_add_below">Voeg onder toe</string>
@@ -1281,7 +1283,6 @@
     <string name="payments_tier_details_name_title">Kies jouw unieke naam</string>
     <string name="payments_tier_details_name_subtitle">Dit is jouw unieke naam op het Anyty-netwerk, en bevestigt jouw lidmaatschap. Het fungeert als jouw persoonlijke domein en kan niet worden gewijzigd.</string>
     <string name="payments_tier_details_name_hint">Mijzelf</string>
-    <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Minimaal 7 tekens</string>
     <string name="payments_tier_details_name_error">Deze naam is al in gebruik!</string>
     <string name="payments_tier_details_name_validated">Deze naam [%1$s] ligt voor het oprapen!</string>
@@ -1413,6 +1414,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notifications_prompt_primary_button_text">Activeer</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Maak bladwijzer aan vanaf klembord</string>
     <string name="error_unexpected_layout">Fout: onverwachte lay-out</string>
+    <string name="error_non_valid_object">Error: object ID is missing</string>
     <string name="membership_price_pending">In behandeling...</string>
     <string name="per_period">per %1$s</string>
     <string name="free_for">Gratis voor %1$s</string>
@@ -1497,7 +1499,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="version_history_error_get_members">Fout bij ophalen deelnemers</string>
     <string name="new_object">Nieuw object</string>
     <string name="vault_my_spaces">My Spaces</string>
-    <string name="all_content_title_all_content">All objects</string>
+    <string name="all_content_title_all_content">All Objects</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_view_bin">View Bin</string>
@@ -1539,4 +1541,16 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="all_content_toast_type_added">Object type added</string>
     <string name="all_content_toast_type_removed">Object type removed</string>
     <string name="all_content_toast_archived">Object archived</string>
+    <string name="all_content_new_relation">Nieuwe relatie</string>
+    <string name="all_content_new_type">Nieuw type</string>
+    <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_snackbar_title">moved to bin</string>
+    <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_search_button">Search objects button</string>
+    <string name="main_navigation_content_desc_create_button">Create object button</string>
+    <string name="chat">Chat</string>
+    <string name="copy">Kopieer</string>
+    <string name="chats_edit_message">Edit message</string>
+    <string name="chats_message_edited">edited</string>
+    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
 </resources>

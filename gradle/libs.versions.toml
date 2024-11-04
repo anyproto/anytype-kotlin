@@ -1,7 +1,7 @@
 [versions]
-middlewareVersion = "v0.36.5"
-kotlinVersion = '2.0.0'
-kspVersion = "2.0.0-1.0.22"
+middlewareVersion = "v0.36.7"
+kotlinVersion = '2.0.21'
+kspVersion = "2.0.21-1.0.25"
 
 androidxCoreVersion = "1.13.1"
 
@@ -157,8 +157,8 @@ fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", vers
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "8.5.2" }
-library = { id = "com.android.library", version = "8.5.2" }
+application = { id = "com.android.application", version = "8.7.1" }
+library = { id = "com.android.library", version = "8.7.1" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }

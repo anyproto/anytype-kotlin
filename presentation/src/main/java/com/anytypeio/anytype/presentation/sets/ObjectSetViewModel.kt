@@ -808,7 +808,12 @@ class ObjectSetViewModel(
 
     private fun proceedWithClosingAndExit() {
         viewModelScope.launch {
-            closeBlock.async(context).fold(
+            closeBlock.async(
+                CloseBlock.Params(
+                    target = vmParams.ctx,
+                    space = vmParams.space
+                )
+            ).fold(
                 onSuccess = { dispatch(AppNavigation.Command.Exit) },
                 onFailure = {
                     Timber.e(it, "Error while closing object set: $context").also {
@@ -1416,7 +1421,12 @@ class ObjectSetViewModel(
             target = target,
             space = space
         )
-        closeBlock.async(context).fold(
+        closeBlock.async(
+            CloseBlock.Params(
+                target = vmParams.ctx,
+                space = vmParams.space
+            )
+        ).fold(
             onSuccess = { navigate(EventWrapper(navigateCommand)) },
             onFailure = {
                 Timber.e(it, "Error while closing object set: $context")
@@ -1447,7 +1457,12 @@ class ObjectSetViewModel(
         }
         isCustomizeViewPanelVisible.value = false
         jobs += viewModelScope.launch {
-            closeBlock.async(context).fold(
+            closeBlock.async(
+                CloseBlock.Params(
+                    target = vmParams.ctx,
+                    space = vmParams.space
+                )
+            ).fold(
                 onSuccess = {
                     navigate(
                         EventWrapper(
@@ -1503,7 +1518,12 @@ class ObjectSetViewModel(
                 space = space
             )
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
-                closeBlock.async(context).fold(
+                closeBlock.async(
+                    CloseBlock.Params(
+                        target = vmParams.ctx,
+                        space = vmParams.space
+                    )
+                ).fold(
                     onSuccess = {
                         navigate(
                             EventWrapper(
@@ -1550,7 +1570,12 @@ class ObjectSetViewModel(
     fun onHomeButtonClicked() {
         viewModelScope.launch {
             clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
-            closeBlock.async(context).fold(
+            closeBlock.async(
+                CloseBlock.Params(
+                    target = vmParams.ctx,
+                    space = vmParams.space
+                )
+            ).fold(
                 onSuccess = { dispatch(AppNavigation.Command.ExitToVault) },
                 onFailure = {
                     Timber.e(it, "Error while closing object set: $context").also {

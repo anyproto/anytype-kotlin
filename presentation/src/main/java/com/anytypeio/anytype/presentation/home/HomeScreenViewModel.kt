@@ -636,8 +636,8 @@ class HomeScreenViewModel(
 
         closeObject.stream(
             CloseBlock.Params(
-                widgetObject,
-                space
+                target = widgetObject,
+                space = space
             )
         ).collect { status ->
             status.fold(
@@ -1711,7 +1711,12 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             openWidgetObjectsHistory.forEach { (obj, space) ->
                 closeObject
-                    .async(CloseBlock.Params(obj, space))
+                    .async(
+                        CloseBlock.Params(
+                            target = obj,
+                            space = space
+                        )
+                    )
                     .onSuccess {
                         Timber.d("Closed object from widget object session history: $obj")
                     }

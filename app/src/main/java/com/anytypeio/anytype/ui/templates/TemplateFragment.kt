@@ -30,7 +30,7 @@ class TemplateFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fragment
     ClipboardInterceptor, View.OnDragListener {
 
     private val ctx: Id get() = arg(CTX_KEY)
-    private val space: Id get() = argOrNull<Id>(SPACE_KEY).orEmpty()
+    private val space: Id get() = arg<Id>(SPACE_KEY)
 
     @Inject
     lateinit var factory: TemplateViewModel.Factory

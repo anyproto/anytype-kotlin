@@ -473,6 +473,8 @@ class HomeScreenViewModelTest {
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
+        stubSpaceBinWidgetContainer()
+
         val vm = buildViewModel()
 
         // TESTING
@@ -2899,6 +2901,23 @@ class HomeScreenViewModelTest {
     private fun stubAnalyticSpaceHelperDelegate() {
         analyticSpaceHelperDelegate.stub {
             on { provideParams(defaultSpaceConfig.space) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+        }
+    }
+
+    private fun stubSpaceBinWidgetContainer() {
+        storelessSubscriptionContainer.stub {
+            on {
+                subscribe(
+                    searchParams = StoreSearchParams(
+                        space = SpaceId(defaultSpaceConfig.space),
+                        subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                        filters = ObjectSearchConstants.filterTabArchive(),
+                        sorts = emptyList(),
+                        limit = 1,
+                        keys = listOf(Relations.ID)
+                    )
+                )
+            } doReturn flowOf(emptyList())
         }
     }
 

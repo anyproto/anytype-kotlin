@@ -82,7 +82,7 @@ class LibraryFragment : BaseComposeFragment() {
                         onCreateObjectLongClicked = {},
                         onBackLongPressed = {
                             runCatching {
-                                findNavController().navigate(R.id.actionOpenSpaceSwitcher)
+                                findNavController().navigate(R.id.actionExitToSpaceWidgets)
                             }.onFailure {
                                 Timber.e(it, "Error while opening space switcher from library")
                             }

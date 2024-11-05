@@ -476,6 +476,10 @@
             app:destination="@id/vaultScreen"
             app:popUpTo="@id/vaultScreen"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/actionExitToSpaceWidgets"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="false" />
     </fragment>
     <dialog
         android:id="@+id/typeCreationFragment"

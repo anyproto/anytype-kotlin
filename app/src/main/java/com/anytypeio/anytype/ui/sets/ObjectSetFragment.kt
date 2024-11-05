@@ -1329,7 +1329,7 @@ open class ObjectSetFragment :
 
         jobs += lifecycleScope.subscribe(vm.spaceSyncStatus) { setStatus(it) }
 
-        vm.onStart(ctx = ctx, space = space, view = view)
+        vm.onStart(view = view)
     }
 
     override fun onStop() {

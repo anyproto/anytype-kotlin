@@ -584,6 +584,8 @@ class HomeScreenViewModelTest {
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
+        stubSpaceBinWidgetContainer()
+
         val vm = buildViewModel()
 
         // TESTING
@@ -701,6 +703,8 @@ class HomeScreenViewModelTest {
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
+        stubSpaceBinWidgetContainer()
+
         val vm = buildViewModel()
 
         // TESTING
@@ -804,6 +808,8 @@ class HomeScreenViewModelTest {
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
+
+        stubSpaceBinWidgetContainer()
 
         val vm = buildViewModel()
 
@@ -1007,6 +1013,8 @@ class HomeScreenViewModelTest {
             stubUserPermission()
             stubAnalyticSpaceHelperDelegate()
 
+            stubSpaceBinWidgetContainer()
+
             val vm = buildViewModel()
 
             // TESTING
@@ -1186,6 +1194,8 @@ class HomeScreenViewModelTest {
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
+
+        stubSpaceBinWidgetContainer()
 
         val vm = buildViewModel()
 
@@ -2197,7 +2207,9 @@ class HomeScreenViewModelTest {
             stubSpaceManager()
             stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
-            val vm = buildViewModel()
+            stubSpaceBinWidgetContainer()
+
+        val vm = buildViewModel()
 
             // TESTING
 
@@ -2301,6 +2313,8 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+
+        stubSpaceBinWidgetContainer()
 
         val vm = buildViewModel()
 

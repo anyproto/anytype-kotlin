@@ -432,11 +432,10 @@ class HomeScreenViewModel(
         widgets: List<WidgetView>
     ): List<WidgetView> {
         return buildList {
-            addAll(
-                widgets.filter { view ->
-                    !(view is WidgetView.Bin && (view.isEmpty || view.isLoading))
-                }
-            )
+            val filtered = widgets.filterNot { view ->
+                (view is WidgetView.Bin && (view.isEmpty || view.isLoading))
+            }
+            addAll(filtered)
             if (hasEditAccess) {
                 addAll(actions)
             }

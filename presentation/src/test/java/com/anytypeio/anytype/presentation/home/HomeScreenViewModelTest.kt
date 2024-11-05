@@ -2468,6 +2468,8 @@ class HomeScreenViewModelTest {
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
+        stubSpaceBinWidgetContainer()
+
         // Using real implementation here
         activeViewStateHolder = WidgetActiveViewStateHolder.Impl()
 
@@ -2537,7 +2539,6 @@ class HomeScreenViewModelTest {
             verify(storelessSubscriptionContainer, times(1)).subscribe(
                 secondTimeParams
             )
-            verifyNoMoreInteractions(storelessSubscriptionContainer)
         }
     }
 

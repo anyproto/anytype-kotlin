@@ -20,7 +20,6 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertIs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
@@ -211,6 +210,6 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
     }
 
     private fun proceedWithStartingViewModel() {
-        viewModel.onStart(ctx = root, space = defaultSpace)
+        viewModel.onStart()
     }
 }

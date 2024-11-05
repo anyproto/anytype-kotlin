@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -82,6 +81,6 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
     }
 
     private fun proceedWithStartingViewModel(vm: ObjectSetViewModel) {
-        vm.onStart(ctx = root, space = defaultSpace)
+        vm.onStart()
     }
 }

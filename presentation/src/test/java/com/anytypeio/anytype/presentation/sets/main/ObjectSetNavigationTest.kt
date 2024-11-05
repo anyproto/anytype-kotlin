@@ -25,7 +25,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
@@ -284,6 +283,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     }
 
     private fun proceedWithStartingViewModel() {
-        viewModel.onStart(ctx = root, space = defaultSpace)
+        viewModel.onStart()
     }
 }

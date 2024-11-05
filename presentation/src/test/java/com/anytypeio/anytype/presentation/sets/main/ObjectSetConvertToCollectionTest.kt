@@ -18,7 +18,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 
@@ -137,6 +136,6 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
     }
 
     private fun proceedWithStartingViewModel() {
-        viewModel.onStart(ctx = root, space = defaultSpace)
+        viewModel.onStart()
     }
 }

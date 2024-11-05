@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.collections
 import android.util.Log
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -13,7 +12,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.ID
 import com.anytypeio.anytype.core_models.Relations.LAYOUT
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
@@ -300,6 +298,6 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
     }
 
     private fun proceedWithStartingViewModel() {
-        viewModel.onStart(ctx = root, space = defaultSpace)
+        viewModel.onStart()
     }
 }

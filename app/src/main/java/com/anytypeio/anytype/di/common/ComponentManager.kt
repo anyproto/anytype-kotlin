@@ -196,10 +196,6 @@ class ComponentManager(
             .build()
     }
 
-    val templateComponent = Component {
-        main.templateComponentFactory().create()
-    }
-
     val templateSelectComponent = Component {
         DaggerTemplateSelectComponent.factory().create(findComponentDependencies())
     }

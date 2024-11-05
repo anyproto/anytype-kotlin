@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -9,8 +8,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.verifyNoInteractions
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -55,6 +52,6 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
     }
 
     private fun proceedWithStartingViewModel() {
-        viewModel.onStart(ctx = root, space = defaultSpace)
+        viewModel.onStart()
     }
 }

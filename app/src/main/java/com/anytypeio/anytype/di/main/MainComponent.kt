@@ -51,7 +51,6 @@ import com.anytypeio.anytype.di.feature.spaces.SpaceListDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
-import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
 import com.anytypeio.anytype.di.feature.types.CreateObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
 import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
@@ -143,8 +142,6 @@ interface MainComponent :
     fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
     fun wallpaperSelectComponent(): WallpaperSelectSubComponent.Builder
     fun createObjectComponent(): CreateObjectSubComponent.Builder
-    fun templateComponentFactory(): TemplateSubComponent.Factory
-
 
     //region Settings
 

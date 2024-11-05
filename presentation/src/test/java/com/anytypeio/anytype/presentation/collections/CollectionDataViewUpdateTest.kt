@@ -2,11 +2,9 @@ package com.anytypeio.anytype.presentation.collections
 
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -129,6 +127,6 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
     }
 
     private fun proceedWithStartingViewModel() {
-        viewModel.onStart(ctx = root, space = defaultSpace)
+        viewModel.onStart()
     }
 }

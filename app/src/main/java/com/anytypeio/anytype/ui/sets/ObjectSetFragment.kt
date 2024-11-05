@@ -111,8 +111,8 @@ import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.OnDataViewSelectSourceAction
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
+import com.anytypeio.anytype.ui.objects.types.pickers.OnDataViewSelectSourceAction
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -1329,7 +1329,7 @@ open class ObjectSetFragment :
 
         jobs += lifecycleScope.subscribe(vm.spaceSyncStatus) { setStatus(it) }
 
-        vm.onStart(ctx = ctx, space = space, view = view)
+        vm.onStart(view = view)
     }
 
     override fun onStop() {

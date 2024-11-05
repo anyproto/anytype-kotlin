@@ -82,6 +82,7 @@ import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.Widget
@@ -352,6 +353,7 @@ class HomeScreenViewModelTest {
                 actual = secondTimeState,
                 expected = buildList {
                     add(defaultSpaceWidgetView)
+                    add(allContentWidgetView)
                     addAll(HomeScreenViewModel.actions)
                 }
             )
@@ -403,6 +405,7 @@ class HomeScreenViewModelTest {
                 assertEquals(
                     expected = buildList {
                         add(defaultSpaceWidgetView)
+                        add(allContentWidgetView)
                         addAll(HomeScreenViewModel.actions)
                     },
                     actual = secondTimeItem
@@ -469,6 +472,8 @@ class HomeScreenViewModelTest {
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
+
+        stubSpaceBinWidgetContainer()
 
         val vm = buildViewModel()
 
@@ -578,6 +583,8 @@ class HomeScreenViewModelTest {
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
+
+        stubSpaceBinWidgetContainer()
 
         val vm = buildViewModel()
 
@@ -696,6 +703,8 @@ class HomeScreenViewModelTest {
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
+        stubSpaceBinWidgetContainer()
+
         val vm = buildViewModel()
 
         // TESTING
@@ -799,6 +808,8 @@ class HomeScreenViewModelTest {
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
+
+        stubSpaceBinWidgetContainer()
 
         val vm = buildViewModel()
 
@@ -1002,6 +1013,8 @@ class HomeScreenViewModelTest {
             stubUserPermission()
             stubAnalyticSpaceHelperDelegate()
 
+            stubSpaceBinWidgetContainer()
+
             val vm = buildViewModel()
 
             // TESTING
@@ -1181,6 +1194,8 @@ class HomeScreenViewModelTest {
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
+
+        stubSpaceBinWidgetContainer()
 
         val vm = buildViewModel()
 
@@ -1974,6 +1989,7 @@ class HomeScreenViewModelTest {
                 actual = secondTimeState,
                 expected = buildList {
                     add(defaultSpaceWidgetView)
+                    add(allContentWidgetView)
                     addAll(HomeScreenViewModel.actions)
                 }
             )
@@ -2191,7 +2207,9 @@ class HomeScreenViewModelTest {
             stubSpaceManager()
             stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
-            val vm = buildViewModel()
+            stubSpaceBinWidgetContainer()
+
+        val vm = buildViewModel()
 
             // TESTING
 
@@ -2295,6 +2313,8 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+
+        stubSpaceBinWidgetContainer()
 
         val vm = buildViewModel()
 
@@ -2448,6 +2468,8 @@ class HomeScreenViewModelTest {
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
+        stubSpaceBinWidgetContainer()
+
         // Using real implementation here
         activeViewStateHolder = WidgetActiveViewStateHolder.Impl()
 
@@ -2517,7 +2539,6 @@ class HomeScreenViewModelTest {
             verify(storelessSubscriptionContainer, times(1)).subscribe(
                 secondTimeParams
             )
-            verifyNoMoreInteractions(storelessSubscriptionContainer)
         }
     }
 
@@ -2898,6 +2919,23 @@ class HomeScreenViewModelTest {
         }
     }
 
+    private fun stubSpaceBinWidgetContainer() {
+        storelessSubscriptionContainer.stub {
+            on {
+                subscribe(
+                    searchParams = StoreSearchParams(
+                        space = SpaceId(defaultSpaceConfig.space),
+                        subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                        filters = ObjectSearchConstants.filterTabArchive(),
+                        sorts = emptyList(),
+                        limit = 1,
+                        keys = listOf(Relations.ID)
+                    )
+                )
+            } doReturn flowOf(emptyList())
+        }
+    }
+
     private fun buildViewModel() = HomeScreenViewModel(
         interceptEvents = interceptEvents,
         createWidget = createWidget,
@@ -2944,7 +2982,11 @@ class HomeScreenViewModelTest {
         dateProvider = dateProvider,
         addObjectToCollection = addObjectToCollection,
         clearLastOpenedSpace = clearLastOpenedSpace,
-        clearLastOpenedObject = clearLastOpenedObject
+        clearLastOpenedObject = clearLastOpenedObject,
+        spaceBinWidgetContainer = SpaceBinWidgetContainer(
+            container = storelessSubscriptionContainer,
+            manager = spaceManager
+        )
     )
 
     companion object {

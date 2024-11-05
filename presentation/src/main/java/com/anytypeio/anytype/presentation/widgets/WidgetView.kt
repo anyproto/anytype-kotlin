@@ -105,9 +105,11 @@ sealed class WidgetView {
         }
     }
 
-    data class Bin(override val id: Id) : WidgetView() {
-        override val isLoading: Boolean = false
-    }
+    data class Bin(
+        override val id: Id,
+        override val isLoading: Boolean = false,
+        val isEmpty: Boolean = false
+    ) : WidgetView()
 
     data object AllContent: WidgetView() {
         const val ALL_CONTENT_WIDGET_ID = "bundled-widget.all-content"

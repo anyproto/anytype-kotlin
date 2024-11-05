@@ -466,7 +466,7 @@ class ObjectSetViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun subscribeToObjectState() {
-        Timber.d("subscribeToObjectState, ctx:[$vmParams.ctx]")
+        Timber.d("subscribeToObjectState, ctx:[${vmParams.ctx}]")
         viewModelScope.launch {
             combine(
                 stateReducer.state,
@@ -581,7 +581,7 @@ class ObjectSetViewModel(
     }
 
     private fun subscribeToDataViewViewer() {
-        Timber.d("subscribeToDataViewViewer, START SUBSCRIPTION by ctx:[$vmParams.ctx]")
+        Timber.d("subscribeToDataViewViewer, START SUBSCRIPTION by ctx:[${vmParams.ctx}]")
         viewModelScope.launch {
             combine(
                 database.index,
@@ -835,23 +835,19 @@ class ObjectSetViewModel(
                 )
             }
         } else {
-            if (vmParams.ctx.isNotEmpty()) {
-                viewModelScope.launch {
-                    setObjectDetails(
-                        UpdateDetail.Params(
-                            target = vmParams.ctx,
-                            key = Relations.NAME,
-                            value = txt
-                        )
-                    ).process(
-                        success = { dispatcher.send(it) },
-                        failure = {
-                            Timber.e(it, "Error while updating object set name")
-                        }
+            viewModelScope.launch {
+                setObjectDetails(
+                    UpdateDetail.Params(
+                        target = vmParams.ctx,
+                        key = Relations.NAME,
+                        value = txt
                     )
-                }
-            } else {
-                Timber.w("Skipping dispatching title update, because set of objects was not ready.")
+                ).process(
+                    success = { dispatcher.send(it) },
+                    failure = {
+                        Timber.e(it, "Error while updating object set name")
+                    }
+                )
             }
         }
     }

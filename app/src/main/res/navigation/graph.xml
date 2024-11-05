@@ -77,6 +77,10 @@
         <action
             android:id="@+id/actionOpenSpaceSwitcher"
             app:destination="@id/selectSpaceScreen" />
+        <action
+            android:id="@+id/actionExitToSpaceWidgets"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="false" />
     </navigation>
 
     <include app:graph="@navigation/nav_editor_modal" />
@@ -147,6 +151,10 @@
         <action
             android:id="@+id/actionOpenSpaceSwitcher"
             app:destination="@id/selectSpaceScreen"/>
+        <action
+            android:id="@+id/actionExitToSpaceWidgets"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="false" />
     </navigation>
 
     <fragment
@@ -186,6 +194,10 @@
         <action
             android:id="@+id/actionOpenSpaceSwitcher"
             app:destination="@id/selectSpaceScreen" />
+        <action
+            android:id="@+id/actionExitToSpaceWidgets"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <dialog
@@ -464,6 +476,10 @@
             app:destination="@id/vaultScreen"
             app:popUpTo="@id/vaultScreen"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/actionExitToSpaceWidgets"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="false" />
     </fragment>
     <dialog
         android:id="@+id/typeCreationFragment"

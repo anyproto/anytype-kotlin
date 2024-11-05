@@ -823,7 +823,7 @@ class CollectionViewModel(
 
     fun onBackLongClicked() {
         launch {
-            commands.emit(Command.OpenSpaceSwitcher)
+            commands.emit(Command.ExitToSpaceWidgets)
         }
     }
 
@@ -997,7 +997,7 @@ class CollectionViewModel(
         data class ToSearch(val space: Id) : Command()
         data object Vault : Command()
         data object Exit : Command()
-        data object OpenSpaceSwitcher : Command()
+        data object ExitToSpaceWidgets : Command()
     }
 }
 

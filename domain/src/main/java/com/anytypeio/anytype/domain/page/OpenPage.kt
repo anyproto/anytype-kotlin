@@ -18,7 +18,10 @@ open class OpenPage @Inject constructor(
 ) : ResultInteractor<OpenPage.Params, Result<Payload>>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): Result<Payload> {
-        return repo.openPage(params.obj).also {
+        return repo.openPage(
+            id = params.obj,
+            space = params.space
+        ).also {
             if (params.saveAsLastOpened) {
                 settings.setLastOpenedObject(
                     id = params.obj,

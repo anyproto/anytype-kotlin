@@ -829,7 +829,8 @@ fun Account.Info.config(): Config = Config(
     widgets = widgetsId,
     analytics = analyticsId,
     device = deviceId,
-    network = networkId
+    network = networkId,
+    workspaceObjectId = workspaceObjectId
 )
 
 fun MManifestInfo.toCoreModel(): ManifestInfo {

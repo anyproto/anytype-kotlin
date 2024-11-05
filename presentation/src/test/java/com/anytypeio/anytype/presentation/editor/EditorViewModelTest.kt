@@ -2831,7 +2831,7 @@ open class EditorViewModelTest {
         vm.proceedWithExitingBack()
 
         verify(closePage, times(1)).async(
-            params = eq(root)
+            params = eq(CloseBlock.Params(root, SpaceId(defaultSpace)))
         )
     }
 
@@ -3662,7 +3662,7 @@ open class EditorViewModelTest {
     ) {
 
         closePage.stub {
-            onBlocking { if (context == null) async(any()) else async(root) } doReturn Resultat.success(
+            onBlocking { if (context == null) async(any()) else async(CloseBlock.Params(root, SpaceId(defaultSpace))) } doReturn Resultat.success(
                 Unit
             )
         }

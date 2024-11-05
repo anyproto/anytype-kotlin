@@ -10,7 +10,7 @@ interface MiddlewareService {
     //region APP commands
 
     @Throws(Exception::class)
-    fun metricsSetParameters(request: Rpc.Metrics.SetParameters.Request): Rpc.Metrics.SetParameters.Response
+    fun metricsSetParameters(request: Rpc.Initial.SetParameters.Request): Rpc.Initial.SetParameters.Response
 
     @Throws(Exception::class)
     fun versionGet(request: Rpc.App.GetVersion.Request): Rpc.App.GetVersion.Response
@@ -353,6 +353,9 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun blockDataViewSortViewRelation(request: Rpc.BlockDataview.ViewRelation.Sort.Request): Rpc.BlockDataview.ViewRelation.Sort.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewSetActiveView(request: Rpc.BlockDataview.View.SetActive.Request): Rpc.BlockDataview.View.SetActive.Response
 
     //endregion
 

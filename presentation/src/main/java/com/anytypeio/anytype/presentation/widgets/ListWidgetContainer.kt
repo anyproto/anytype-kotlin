@@ -82,7 +82,7 @@ class ListWidgetContainer(
                 BundledWidgetSourceIds.FAVORITE -> {
                     // Objects from favorites have custom sorting logic.
                     objectWatcher
-                        .watch(widget.config.home)
+                        .watch(target = widget.config.home, space = SpaceId(widget.config.space))
                         .map { obj -> obj.orderOfRootObjects(obj.root) }
                         .catch {
                             Timber.e(it)

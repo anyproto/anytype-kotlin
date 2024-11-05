@@ -36,6 +36,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 interface BlockRemote {
@@ -64,15 +65,14 @@ interface BlockRemote {
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult
 
-    suspend fun openObject(id: Id): ObjectView
-    suspend fun getObject(id: Id): ObjectView
+    suspend fun openObject(id: Id, space: SpaceId): ObjectView
+    suspend fun getObject(id: Id, space: SpaceId): ObjectView
 
-    suspend fun openPage(id: String): Payload
-    suspend fun openProfile(id: String): Payload
-    suspend fun openObjectSet(id: String): Payload
-    suspend fun openObjectPreview(id: Id): Payload
-    suspend fun closePage(id: String)
-    suspend fun closeDashboard(id: String)
+    suspend fun openPage(id: String, space: SpaceId): Payload
+    suspend fun openProfile(id: String, space: SpaceId): Payload
+    suspend fun openObjectSet(id: String, space: SpaceId): Payload
+    suspend fun openObjectPreview(id: Id, space: SpaceId): Payload
+    suspend fun closePage(id: String, space: Space)
     suspend fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload
     suspend fun setDocumentImageIcon(command: Command.SetDocumentImageIcon): Payload
     suspend fun setDocumentCoverColor(ctx: String, color: String): Payload
@@ -382,6 +382,7 @@ interface BlockRemote {
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
     suspend fun nodeUsage(): NodeUsageInfo
+    suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload
 
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
 

@@ -105,6 +105,7 @@ import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
@@ -204,6 +205,7 @@ class HomeScreenViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val clearLastOpenedSpace: ClearLastOpenedSpace,
     private val clearLastOpenedObject: ClearLastOpenedObject,
+    private val spaceBinWidgetContainer: SpaceBinWidgetContainer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -229,8 +231,6 @@ class HomeScreenViewModel(
     private val containers = MutableStateFlow<Containers>(null)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
-    // Bundled widget containing archived objects
-    private val bin = WidgetView.Bin(Subscriptions.SUBSCRIPTION_ARCHIVED)
     private val allContentWidget = AllContentWidgetContainer()
 
     private val spaceWidgetView = spaceWidgetContainer.view
@@ -419,13 +419,11 @@ class HomeScreenViewModel(
                 }
             }.combine(hasEditAccess) { widgets, hasEditAccess ->
                 buildListOfWidgets(hasEditAccess, widgets)
+            }.catch {
+                Timber.e(it, "Error while rendering widgets")
+            }.flowOn(appCoroutineDispatchers.io).collect {
+                views.value = it
             }
-                .catch {
-                    Timber.e(it, "Error while rendering widgets")
-                }
-                .flowOn(appCoroutineDispatchers.io).collect {
-                    views.value = it
-                }
         }
     }
 
@@ -434,7 +432,10 @@ class HomeScreenViewModel(
         widgets: List<WidgetView>
     ): List<WidgetView> {
         return buildList {
-            addAll(widgets)
+            val filtered = widgets.filterNot { view ->
+                (view is WidgetView.Bin && (view.isEmpty || view.isLoading))
+            }
+            addAll(filtered)
             if (hasEditAccess) {
                 addAll(actions)
             }
@@ -527,7 +528,7 @@ class HomeScreenViewModel(
                             )
                         }
                     }
-                }
+                } + listOf(spaceBinWidgetContainer)
             }.collect {
                 Timber.d("Emitting list of containers: ${it.size}")
                 containers.value = it
@@ -2163,7 +2164,8 @@ class HomeScreenViewModel(
         private val coverImageHashProvider: CoverImageHashProvider,
         private val addObjectToCollection: AddObjectToCollection,
         private val clearLastOpenedSpace: ClearLastOpenedSpace,
-        private val clearLastOpenedObject: ClearLastOpenedObject
+        private val clearLastOpenedObject: ClearLastOpenedObject,
+        private val spaceBinWidgetContainer: SpaceBinWidgetContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2212,7 +2214,8 @@ class HomeScreenViewModel(
             dateProvider = dateProvider,
             addObjectToCollection = addObjectToCollection,
             clearLastOpenedSpace = clearLastOpenedSpace,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            spaceBinWidgetContainer = spaceBinWidgetContainer
         ) as T
     }
 

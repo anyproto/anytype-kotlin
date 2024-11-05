@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.collections
 
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload

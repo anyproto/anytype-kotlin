@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.templates.OpenTemplate
@@ -31,9 +32,9 @@ class TemplateViewModel(
 
     val state = MutableStateFlow<List<BlockView>>(emptyList())
 
-    fun onStart(ctx: Id) {
+    fun onStart(ctx: Id, space: SpaceId) {
         viewModelScope.launch {
-            state.value = openTemplate.asFlow(OpenTemplate.Params(ctx))
+            state.value = openTemplate.asFlow(OpenTemplate.Params(id = ctx, space = space))
                 .map { result ->
                     when(result) {
                         is Result.Failure -> {

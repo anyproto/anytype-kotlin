@@ -36,6 +36,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
@@ -55,38 +56,39 @@ class BlockDataRepository(
     private val logger: Logger
 ) : BlockRepository {
 
-    override suspend fun openObject(id: Id): ObjectView = remote.openObject(id = id)
-    override suspend fun getObject(id: Id): ObjectView = remote.getObject(id = id)
+    override suspend fun openObject(id: Id, space: SpaceId): ObjectView = remote.openObject(id = id, space = space)
+    override suspend fun getObject(id: Id, space: SpaceId): ObjectView = remote.getObject(id = id, space = space)
 
-    override suspend fun openObjectPreview(id: Id): Result<Payload> = try {
-        Result.Success(remote.openObjectPreview(id))
+    override suspend fun openObjectPreview(id: Id, space: SpaceId): Result<Payload> = try {
+        Result.Success(remote.openObjectPreview(id = id, space = space))
     } catch (e: AnytypeNeedsUpgradeException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {
         Result.Failure(Error.NotFoundObject)
     }
 
-    override suspend fun openPage(id: String): Result<Payload> = try {
-        Result.Success(remote.openPage(id))
+    override suspend fun openPage(id: String, space: SpaceId): Result<Payload> = try {
+        Result.Success(
+            remote.openPage(
+                id = id,
+                space = space
+            )
+        )
     } catch (e: AnytypeNeedsUpgradeException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {
         Result.Failure(Error.NotFoundObject)
     }
 
-    override suspend fun openProfile(id: String): Payload =
-        remote.openProfile(id)
+    override suspend fun openProfile(id: String, space: SpaceId): Payload =
+        remote.openProfile(id = id, space = space)
 
-    override suspend fun openObjectSet(id: String): Result<Payload> = try {
-        Result.Success(remote.openObjectSet(id))
+    override suspend fun openObjectSet(id: String, space: SpaceId): Result<Payload> = try {
+        Result.Success(remote.openObjectSet(id = id, space = space))
     } catch (e: AnytypeNeedsUpgradeException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {
         Result.Failure(Error.NotFoundObject)
-    }
-
-    override suspend fun closeDashboard(id: String) {
-        remote.closeDashboard(id)
     }
 
     override suspend fun updateAlignment(
@@ -103,8 +105,8 @@ class BlockDataRepository(
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult = remote.createBlockLinkWithObject(command)
 
-    override suspend fun closePage(id: String) {
-        remote.closePage(id)
+    override suspend fun closePage(id: String, space: Space) {
+        remote.closePage(id = id, space = space)
     }
 
     override suspend fun updateDocumentTitle(

@@ -353,6 +353,7 @@ class HomeScreenViewModelTest {
                 actual = secondTimeState,
                 expected = buildList {
                     add(defaultSpaceWidgetView)
+                    add(allContentWidgetView)
                     addAll(HomeScreenViewModel.actions)
                 }
             )
@@ -404,6 +405,7 @@ class HomeScreenViewModelTest {
                 assertEquals(
                     expected = buildList {
                         add(defaultSpaceWidgetView)
+                        add(allContentWidgetView)
                         addAll(HomeScreenViewModel.actions)
                     },
                     actual = secondTimeItem
@@ -1975,6 +1977,7 @@ class HomeScreenViewModelTest {
                 actual = secondTimeState,
                 expected = buildList {
                     add(defaultSpaceWidgetView)
+                    add(allContentWidgetView)
                     addAll(HomeScreenViewModel.actions)
                 }
             )

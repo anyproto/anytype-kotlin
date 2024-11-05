@@ -46,7 +46,6 @@ import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_ICON
 import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_ID
 import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_NAME
 import com.anytypeio.anytype.ui.types.edit.TypeEditFragment
-import com.google.accompanist.pager.ExperimentalPagerApi
 import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
@@ -63,7 +62,6 @@ class LibraryFragment : BaseComposeFragment() {
 
     @OptIn(ExperimentalAnimationApi::class)
     @FlowPreview
-    @ExperimentalPagerApi
     @ExperimentalMaterialApi
     @ExperimentalComposeUiApi
     override fun onCreateView(

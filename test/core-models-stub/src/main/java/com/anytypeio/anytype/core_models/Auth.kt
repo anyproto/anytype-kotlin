@@ -13,10 +13,7 @@ fun StubAccountSetup(
 )
 
 fun StubAccount(
-    id : Id = MockDataFactory.randomUuid(),
-    name: String = MockDataFactory.randomString(),
-    avatar: Url? = null,
-    color: String? = null
+    id : Id = MockDataFactory.randomUuid()
 ) : Account = Account(
     id = id
 )

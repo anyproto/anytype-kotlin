@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -213,7 +214,12 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             // CHECK CLOSE BLOCK COMMAND
             advanceUntilIdle()
             verifyBlocking(closeBlock, times(1)) {
-                async(mockObjectSet.root)
+                async(
+                    CloseBlock.Params(
+                        mockObjectSet.root,
+                        SpaceId(defaultSpace)
+                    )
+                )
             }
         }
     }

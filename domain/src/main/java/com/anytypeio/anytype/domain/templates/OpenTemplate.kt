@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.templates
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.ResultInteractor
@@ -20,11 +21,16 @@ class OpenTemplate(
 ) : ResultInteractor<Params, Result<Payload>>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): Result<Payload> {
-        return withContext(dispatchers.io) { repo.openObjectPreview(params.id) }
+        return withContext(dispatchers.io) {
+            repo.openObjectPreview(
+                id = params.id,
+                space = params.space
+            )
+        }
     }
 
     /**
      * @property [id] id of the template object.
      */
-    class Params(val id: Id)
+    class Params(val id: Id, val space: SpaceId)
 }

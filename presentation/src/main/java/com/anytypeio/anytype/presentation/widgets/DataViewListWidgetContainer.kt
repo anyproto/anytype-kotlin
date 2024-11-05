@@ -135,7 +135,12 @@ class DataViewListWidgetContainer(
                     if (source.obj.layout == ObjectType.Layout.SET && source.obj.setOf.isEmpty()) {
                         flowOf(defaultEmptyState())
                     } else {
-                        val obj = getObject.run(widget.source.id)
+                        val obj = getObject.run(
+                            GetObject.Params(
+                                target = widget.source.id,
+                                space = SpaceId(widget.config.space)
+                            )
+                        )
                         val dv = obj.blocks.find { it.content is DV }?.content
                         val target = if (dv is DV) {
                             dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull()

@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -238,7 +239,7 @@ class HomeScreenViewModel(
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
-    private val openWidgetObjectsHistory : MutableSet<Id> = LinkedHashSet()
+    private val openWidgetObjectsHistory : MutableSet<OpenObjectHistoryItem> = LinkedHashSet()
 
     private val userPermissions = MutableStateFlow<SpaceMemberPermissions?>(null)
 
@@ -265,14 +266,24 @@ class HomeScreenViewModel(
                         unsubscribe(subscriptions)
                     }
                     mutex.withLock {
-                        val closed = mutableSetOf<Id>()
-                        openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
+                        val closed = mutableSetOf<OpenObjectHistoryItem>()
+                        openWidgetObjectsHistory.forEach { (previouslyOpenedWidgetObject, space) ->
                             if (previouslyOpenedWidgetObject != newConfig.widgets) {
                                 closeObject
-                                    .async(params = previouslyOpenedWidgetObject)
+                                    .async(
+                                        CloseBlock.Params(
+                                            target = previouslyOpenedWidgetObject,
+                                            space = space
+                                        )
+                                    )
                                     .fold(
                                         onSuccess = {
-                                            closed.add(previouslyOpenedWidgetObject)
+                                            closed.add(
+                                                OpenObjectHistoryItem(
+                                                    obj = previouslyOpenedWidgetObject,
+                                                    space = space
+                                                )
+                                            )
                                         },
                                         onFailure = {
                                             Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
@@ -299,7 +310,14 @@ class HomeScreenViewModel(
                     onSuccess = { objectView ->
                         onSessionStarted().also {
                             viewModelScope.launch {
-                                mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+                                mutex.withLock {
+                                    openWidgetObjectsHistory.add(
+                                        OpenObjectHistoryItem(
+                                            obj = objectView.root,
+                                            space = SpaceId(config.space)
+                                        )
+                                    )
+                                }
                             }
                         }
                     },
@@ -591,7 +609,10 @@ class HomeScreenViewModel(
         }
     }
 
-    private suspend fun proceedWithClosingWidgetObject(widgetObject: Id) {
+    private suspend fun proceedWithClosingWidgetObject(
+        widgetObject: Id,
+        space: SpaceId
+    ) {
         saveWidgetSession.async(
             SaveWidgetSession.Params(
                 WidgetSession(
@@ -613,7 +634,12 @@ class HomeScreenViewModel(
         }
         if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
 
-        closeObject.stream(widgetObject).collect { status ->
+        closeObject.stream(
+            CloseBlock.Params(
+                target = widgetObject,
+                space = space
+            )
+        ).collect { status ->
             status.fold(
                 onFailure = {
                     Timber.e(it, "Error while closing widget object")
@@ -1691,9 +1717,14 @@ class HomeScreenViewModel(
 
     fun onBackClicked() {
         viewModelScope.launch {
-            openWidgetObjectsHistory.forEach { obj ->
+            openWidgetObjectsHistory.forEach { (obj, space) ->
                 closeObject
-                    .async(obj)
+                    .async(
+                        CloseBlock.Params(
+                            target = obj,
+                            space = space
+                        )
+                    )
                     .onSuccess {
                         Timber.d("Closed object from widget object session history: $obj")
                     }
@@ -1726,7 +1757,10 @@ class HomeScreenViewModel(
                 unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
                 val config = spaceManager.getConfig()
                 if (config != null) {
-                    proceedWithClosingWidgetObject(widgetObject = config.widgets)
+                    proceedWithClosingWidgetObject(
+                        widgetObject = config.widgets,
+                        space = SpaceId(config.space)
+                    )
                 }
                 jobs.cancel()
                 widgetObjectPipelineJobs.cancel()
@@ -1897,7 +1931,12 @@ class HomeScreenViewModel(
             if (target != null) {
                 val widgetSource = target.source
                 if (widgetSource is Widget.Source.Default) {
-                    getObject.async(params = target.source.id).fold(
+                    getObject.async(
+                        params = GetObject.Params(
+                            target = target.source.id,
+                            space = SpaceId(target.config.space)
+                        )
+                    ).fold(
                         onSuccess = { obj ->
                             val dv = obj.blocks.find { it.content is DV }?.content as? DV
                             val viewer = if (view.isNullOrEmpty())
@@ -2210,6 +2249,11 @@ sealed class InteractionMode {
     data object Edit : InteractionMode()
     data object ReadOnly: InteractionMode()
 }
+
+data class OpenObjectHistoryItem(
+    val obj: Id,
+    val space: Space
+)
 
 sealed class Command {
 

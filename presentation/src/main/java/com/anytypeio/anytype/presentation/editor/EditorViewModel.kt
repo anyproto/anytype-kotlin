@@ -1228,7 +1228,12 @@ class EditorViewModel(
             Session.IDLE -> navigate(EventWrapper(AppNavigation.Command.Exit))
             Session.OPEN -> {
                 viewModelScope.launch {
-                    closePage.async(context).fold(
+                    closePage.async(
+                        CloseBlock.Params(
+                            vmParams.ctx,
+                            vmParams.space
+                        )
+                    ).fold(
                         onSuccess = { navigate(EventWrapper(AppNavigation.Command.Exit)) },
                         onFailure = {
                             Timber.e(it, "Error while closing document: $context")
@@ -1247,7 +1252,12 @@ class EditorViewModel(
     private fun exitDashboard() {
         viewModelScope.launch {
             clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
-            closePage.async(context).fold(
+            closePage.async(
+                CloseBlock.Params(
+                    vmParams.ctx,
+                    vmParams.space
+                )
+            ).fold(
                 onSuccess = { navigateToDesktop() },
                 onFailure = {
                     Timber.e(it, "Error while closing this page: $context")
@@ -4386,7 +4396,12 @@ class EditorViewModel(
 
     fun proceedWithOpeningObject(target: Id) {
         viewModelScope.launch {
-            closePage.async(context).fold(
+            closePage.async(
+                CloseBlock.Params(
+                    vmParams.ctx,
+                    vmParams.space
+                )
+            ).fold(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(EventWrapper(
@@ -4404,7 +4419,12 @@ class EditorViewModel(
 
     private fun proceedWithCloseCurrentAndOpenObject(obj: ObjectWrapper.Basic) {
         jobs += viewModelScope.launch {
-            closePage.async(context).fold(
+            closePage.async(
+                CloseBlock.Params(
+                    vmParams.ctx,
+                    vmParams.space
+                )
+            ).fold(
                 onSuccess = { proceedWithOpeningObject(obj) },
                 onFailure = {
                     Timber.e(it, "Error while closing object: $context")
@@ -4454,7 +4474,12 @@ class EditorViewModel(
         isPopUpToDashboard: Boolean = false
     ) {
         viewModelScope.launch {
-            closePage.async(vmParams.ctx).fold(
+            closePage.async(
+                CloseBlock.Params(
+                    vmParams.ctx,
+                    vmParams.space
+                )
+            ).fold(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(

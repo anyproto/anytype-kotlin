@@ -15,7 +15,10 @@ class OpenObjectSet(
 ) : BaseUseCase<Result<Payload>, OpenObjectSet.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        repo.openObjectSet(params.obj).also {
+        repo.openObjectSet(
+            id = params.obj,
+            space = params.space
+        ).also {
             settings.setLastOpenedObject(
                 id = params.obj,
                 space = params.space

@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlin.test.assertFalse
@@ -64,6 +66,6 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
 
         assertTrue(stateBackPressed?.styleTextToolbar?.isVisible == false)
 
-        verifyBlocking(closePage, times(1)) { async(root) }
+        verifyBlocking(closePage, times(1)) { async(CloseBlock.Params(root, SpaceId(defaultSpace))) }
     }
 }

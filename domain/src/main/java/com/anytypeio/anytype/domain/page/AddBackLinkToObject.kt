@@ -55,7 +55,7 @@ class AddBackLinkToObject(
                     )
                 )
 
-                closeBlock.run(params.objectToPlaceLink)
+                closeBlock.run(CloseBlock.Params(params.objectToPlaceLink, params.spaceId))
 
                 return ObjectWrapper.Basic(objectDetails)
             }

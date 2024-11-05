@@ -163,6 +163,7 @@ dependencies {
     implementation project(':feature-discussions')
     implementation project(':gallery-experience')
     implementation project(':feature-all-content')
+    implementation project(':feature-date')
 
     //Compile time dependencies
     ksp libs.daggerCompiler

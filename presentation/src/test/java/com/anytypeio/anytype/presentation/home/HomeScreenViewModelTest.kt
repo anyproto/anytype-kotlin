@@ -82,6 +82,7 @@ import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.Widget
@@ -2944,7 +2945,11 @@ class HomeScreenViewModelTest {
         dateProvider = dateProvider,
         addObjectToCollection = addObjectToCollection,
         clearLastOpenedSpace = clearLastOpenedSpace,
-        clearLastOpenedObject = clearLastOpenedObject
+        clearLastOpenedObject = clearLastOpenedObject,
+        spaceBinWidgetContainer = SpaceBinWidgetContainer(
+            container = storelessSubscriptionContainer,
+            manager = spaceManager
+        )
     )
 
     companion object {

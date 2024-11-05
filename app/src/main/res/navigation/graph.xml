@@ -151,6 +151,10 @@
         <action
             android:id="@+id/actionOpenSpaceSwitcher"
             app:destination="@id/selectSpaceScreen"/>
+        <action
+            android:id="@+id/actionExitToSpaceWidgets"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="false" />
     </navigation>
 
     <fragment
@@ -190,6 +194,10 @@
         <action
             android:id="@+id/actionOpenSpaceSwitcher"
             app:destination="@id/selectSpaceScreen" />
+        <action
+            android:id="@+id/actionExitToSpaceWidgets"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <dialog

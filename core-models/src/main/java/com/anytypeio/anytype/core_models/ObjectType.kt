@@ -51,6 +51,7 @@ data class ObjectType(
         SPACE_VIEW(18),
         PARTICIPANT(19),
         PDF(20),
+        @Deprecated("Will be deprecated")
         CHAT(21),
         CHAT_DERIVED(22),
         TAG(23);

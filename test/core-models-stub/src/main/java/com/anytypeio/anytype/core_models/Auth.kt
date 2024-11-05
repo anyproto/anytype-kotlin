@@ -13,10 +13,7 @@ fun StubAccountSetup(
 )
 
 fun StubAccount(
-    id : Id = MockDataFactory.randomUuid(),
-    name: String = MockDataFactory.randomString(),
-    avatar: Url? = null,
-    color: String? = null
+    id : Id = MockDataFactory.randomUuid()
 ) : Account = Account(
     id = id
 )
@@ -31,7 +28,8 @@ fun StubConfig(
     device: Id = MockDataFactory.randomUuid(),
     space: Id = MockDataFactory.randomUuid(),
     techSpace: Id = MockDataFactory.randomUuid(),
-    network: Id = MockDataFactory.randomUuid()
+    network: Id = MockDataFactory.randomUuid(),
+    workspaceObjectId: Id = MockDataFactory.randomUuid()
 ) : Config = Config(
     home = home,
     profile = profile,
@@ -42,5 +40,6 @@ fun StubConfig(
     widgets = widgets,
     analytics = analytics,
     device = device,
-    network = network
+    network = network,
+    workspaceObjectId = workspaceObjectId
 )

@@ -1584,7 +1584,7 @@ class Middleware @Inject constructor(
         platform: String,
         version: String
     ) {
-        val request = Rpc.Metrics.SetParameters.Request(
+        val request = Rpc.Initial.SetParameters.Request(
             platform = platform,
             version = version
         )

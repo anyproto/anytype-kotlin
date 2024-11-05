@@ -16,7 +16,10 @@ class OpenObject @Inject constructor(
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<OpenObject.Params, ObjectView>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params) = repo.openObject(params.obj).also {
+    override suspend fun doWork(params: Params) = repo.openObject(
+        id = params.obj,
+        space = params.spaceId
+    ).also {
         if (params.saveAsLastOpened) {
             val obj = ObjectWrapper.Basic(it.details[params.obj].orEmpty())
             val space = obj.spaceId
@@ -29,7 +32,7 @@ class OpenObject @Inject constructor(
         }
         else {
             val givenSpace = params.spaceId
-            if (givenSpace != null && givenSpace.id.isNotEmpty()) {
+            if (givenSpace.id.isNotEmpty()) {
                 settings.clearLastOpenedObject(
                     SpaceId(givenSpace.id)
                 )
@@ -40,6 +43,6 @@ class OpenObject @Inject constructor(
     data class Params(
         val obj: Id,
         val saveAsLastOpened: Boolean = true,
-        val spaceId: SpaceId? = null
+        val spaceId: SpaceId
     )
 }

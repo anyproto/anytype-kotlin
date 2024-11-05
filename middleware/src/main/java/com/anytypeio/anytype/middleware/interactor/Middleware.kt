@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
@@ -845,8 +846,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectClose(id: String) {
-        val request = Rpc.Object.Close.Request(objectId = id)
+    fun objectClose(id: String, space: Space) {
+        val request = Rpc.Object.Close.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectClose(request) }
         logResponseIfDebug(response, time)
@@ -1088,8 +1089,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectOpenOld(id: String): Payload {
-        val request = Rpc.Object.Open.Request(objectId = id)
+    fun objectOpenOld(id: String, space: SpaceId): Payload {
+        val request = Rpc.Object.Open.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectOpen(request) }
         logResponseIfDebug(response, time)
@@ -1099,8 +1100,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectOpen(id: String): ObjectView {
-        val request = Rpc.Object.Open.Request(objectId = id)
+    fun objectOpen(id: String, space: SpaceId): ObjectView {
+        val request = Rpc.Object.Open.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectOpen(request) }
         logResponseIfDebug(response, time)
@@ -1528,8 +1529,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectShowOld(id: String): Payload {
-        val request = Rpc.Object.Show.Request(objectId = id)
+    fun objectShowOld(id: String, space: SpaceId): Payload {
+        val request = Rpc.Object.Show.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectShow(request) }
         logResponseIfDebug(response, time)
@@ -1538,8 +1539,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectShow(id: String): ObjectView {
-        val request = Rpc.Object.Show.Request(objectId = id)
+    fun objectShow(id: String, space: SpaceId): ObjectView {
+        val request = Rpc.Object.Show.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectShow(request) }
         logResponseIfDebug(response, time)

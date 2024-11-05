@@ -332,7 +332,7 @@ abstract class TestObjectSetSetup {
         relations: List<Relation> = emptyList()
     ) {
         repo.stub {
-            onBlocking { openObjectSet(ctx) } doReturn Result.Success(
+            onBlocking { openObjectSet(ctx, SpaceId(defaultSpace)) } doReturn Result.Success(
                 Payload(
                     context = ctx,
                     events = listOf(
@@ -355,7 +355,7 @@ abstract class TestObjectSetSetup {
         relations: List<Relation> = emptyList()
     ) {
         repo.stub {
-            onBlocking { openObjectSet(ctx) } doReturn Result.Success(
+            onBlocking { openObjectSet(ctx, SpaceId(defaultSpace)) } doReturn Result.Success(
                 Payload(
                     context = ctx,
                     events = listOf(

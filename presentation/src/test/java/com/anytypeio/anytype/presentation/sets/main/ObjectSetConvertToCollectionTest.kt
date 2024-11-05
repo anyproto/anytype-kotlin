@@ -137,6 +137,6 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
     }
 
     private fun proceedWithStartingViewModel() {
-        viewModel.onStart(ctx = root, space = defaultSpace)
+        viewModel.onStart()
     }
 }

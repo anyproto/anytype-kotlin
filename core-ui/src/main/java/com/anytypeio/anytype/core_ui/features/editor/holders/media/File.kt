@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.media
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
-import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.View
@@ -73,7 +72,9 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
                 end,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            setEllipsizedText(spannable)
+            name.post {
+                name.text = spannable
+            }
         } else {
             name.text = item.name
         }
@@ -84,18 +85,6 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
         icon.setImageResource(mimeIcon)
 
         applyBackground(item.background)
-    }
-
-    private fun setEllipsizedText(spannable: Spannable) {
-        name.post {
-            val ellipsizedText = TextUtils.ellipsize(
-                spannable,
-                name.paint,
-                name.width.toFloat(),
-                TextUtils.TruncateAt.MIDDLE
-            )
-            name.text = SpannableString(ellipsizedText)
-        }
     }
 
     private fun applySearchHighlight(item: BlockView.Searchable) {

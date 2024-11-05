@@ -431,6 +431,7 @@ interface BlockRepository {
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
+    suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload
     suspend fun nodeUsage(): NodeUsageInfo
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
     suspend fun duplicateObjectsList(ids: List<Id>): List<Id>

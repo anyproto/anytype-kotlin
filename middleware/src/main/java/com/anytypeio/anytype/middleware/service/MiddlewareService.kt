@@ -354,6 +354,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockDataViewSortViewRelation(request: Rpc.BlockDataview.ViewRelation.Sort.Request): Rpc.BlockDataview.ViewRelation.Sort.Response
 
+    @Throws(Exception::class)
+    fun blockDataViewSetActiveView(request: Rpc.BlockDataview.View.SetActive.Request): Rpc.BlockDataview.View.SetActive.Response
+
     //endregion
 
     //region TEXT BLOCK commands

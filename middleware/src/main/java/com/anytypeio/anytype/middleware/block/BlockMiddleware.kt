@@ -1040,4 +1040,8 @@ class BlockMiddleware(
     override suspend fun unsubscribeChat(chat: Id) {
         return middleware.chatUnsubscribe(chat = chat)
     }
+
+    override suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload {
+        return middleware.dataViewSetActiveView(command)
+    }
 }

@@ -872,6 +872,10 @@ class BlockDataRepository(
         return remote.setQueryToSet(command)
     }
 
+    override suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload {
+        return remote.dataViewSetActiveView(command)
+    }
+
     override suspend fun nodeUsage(): NodeUsageInfo {
         return remote.nodeUsage()
     }

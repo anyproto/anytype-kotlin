@@ -57,7 +57,8 @@ include ':app',
         ':test:android-utils',
         ':test:utils',
         ':test:core-models-stub',
-        ':libs'
+        ':libs',
+        ':feature-date'
 
 include ':ui-settings'
 include ':crash-reporting'
@@ -66,3 +67,4 @@ include ':payments'
 include ':gallery-experience'
 include ':feature-discussions'
 include ':feature-all-content'
+include ':feature-date'

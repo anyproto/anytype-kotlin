@@ -1820,4 +1820,6 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
 
+    <string name="date_layout_mentioned_in">Mentioned in</string>
+
 </resources>

@@ -103,7 +103,7 @@ class DataViewListWidgetContainer(
             is Widget.Source.Default -> {
                 val isCompact = widget is Widget.List && widget.isCompact
                 if (isCollapsed) {
-                    when(val w = widget) {
+                    when(widget) {
                         is Widget.List -> {
                             flowOf(
                                 WidgetView.SetOfObjects(
@@ -135,7 +135,12 @@ class DataViewListWidgetContainer(
                     if (source.obj.layout == ObjectType.Layout.SET && source.obj.setOf.isEmpty()) {
                         flowOf(defaultEmptyState())
                     } else {
-                        val obj = getObject.run(widget.source.id)
+                        val obj = getObject.run(
+                            GetObject.Params(
+                                target = widget.source.id,
+                                space = SpaceId(widget.config.space)
+                            )
+                        )
                         val dv = obj.blocks.find { it.content is DV }?.content
                         val target = if (dv is DV) {
                             dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull()
@@ -215,7 +220,7 @@ class DataViewListWidgetContainer(
                 source = widget.source,
                 view = target.id,
                 tabs = obj.tabs(viewer = activeView),
-                elements = objects.map { obj ->
+                elements = objects.filter { obj -> obj.isValid }.map { obj ->
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
                         objectIcon = if (withIcon) {

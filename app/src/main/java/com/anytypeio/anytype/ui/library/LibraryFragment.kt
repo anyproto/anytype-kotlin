@@ -30,7 +30,6 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_MODIFY_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_UNINSTALL_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_ID
@@ -52,6 +51,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 
+@Deprecated("legacy")
 class LibraryFragment : BaseComposeFragment() {
 
     @Inject
@@ -79,17 +79,7 @@ class LibraryFragment : BaseComposeFragment() {
                         onBackPressed = {
                             findNavController().popBackStack()
                         },
-                        onCreateObjectLongClicked = {
-                            val dialog = SelectObjectTypeFragment.new(
-                                flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
-                                space = space
-                            ).apply {
-                                onTypeSelected = {
-                                    vm.onCreateObjectOfTypeClicked(it)
-                                }
-                            }
-                            dialog.show(childFragmentManager, "library-create-object-of-type-dialog")
-                        },
+                        onCreateObjectLongClicked = {},
                         onBackLongPressed = {
                             runCatching {
                                 findNavController().navigate(R.id.actionOpenSpaceSwitcher)
@@ -181,7 +171,8 @@ class LibraryFragment : BaseComposeFragment() {
                         R.id.libraryFragment,
                         R.id.dataViewNavigation,
                         bundleOf(
-                            ObjectSetFragment.CONTEXT_ID_KEY to it.id
+                            ObjectSetFragment.CONTEXT_ID_KEY to it.id,
+                            ObjectSetFragment.SPACE_ID_KEY to space
                         )
                     )
                 }

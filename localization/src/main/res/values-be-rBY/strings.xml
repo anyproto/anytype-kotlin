@@ -43,7 +43,7 @@
     <string name="space">Прастора</string>
     <string name="space_name">Назва прасторы</string>
     <string name="default_space">Ваша прастора</string>
-    <string name="space_settings_apply_random_gradient">Ужыць выпадковы градыент</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Загрузіць відарыс</string>
     <string name="delete_space">Выдаліць прастору</string>
     <string name="you_can_store">Вы можаце бясплатна захоўваць да %1$s вашых файлаў на нашым зашыфраваным вузле рэзервовага капіравання. Калі вы вычарпаеце ліміт, файлы будуць захоўвацца толькі лакальна.</string>
@@ -845,6 +845,8 @@
     <string name="synced_files">Сінхранізаваныя файлы</string>
     <string name="log_in">Увайсці</string>
     <string name="create_object_section_library">Бібліятэка Anytype</string>
+    <string name="bin_empty_title">Your trash is empty.</string>
+    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Стыль</string>
     <string name="slash_widget_main_media">Медыя</string>
@@ -927,8 +929,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Стварыць віджэт</string>
-    <string name="edit_widgets">Рэдагаваць віджэты</string>
-    <string name="add_widget">Дадаць віджэт</string>
+    <string name="edit_widgets">Рэдагаваць</string>
+    <string name="add_widget">Дадаць</string>
     <string name="widget_source">Крыніца віджэта</string>
     <string name="widget_type">Тып віджэта</string>
     <string name="widget_add_below">Дадаць ніжэй</string>
@@ -1293,7 +1295,6 @@
     <string name="payments_tier_details_name_title">Выберыце сваё ўнікальнае імя</string>
     <string name="payments_tier_details_name_subtitle">Гэта ваша ўнікальнае імя ў сетцы Anytype, якое пацвярджае ваша членства. Яно дзейнічае як ваш асабісты дамен і не можа быць зменены.</string>
     <string name="payments_tier_details_name_hint">Сябе</string>
-    <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Мінімум 7 сімвалаў</string>
     <string name="payments_tier_details_name_error">Назва ўжо выкарыстоўваецца!</string>
     <string name="payments_tier_details_name_validated">Гэтая назва [%1$s] выстаўлена на продаж!</string>
@@ -1425,6 +1426,7 @@
     <string name="notifications_prompt_primary_button_text">Уключыць</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Стварыць закладку з буфера абмену</string>
     <string name="error_unexpected_layout">Памылка: нечаканы макет</string>
+    <string name="error_non_valid_object">Error: object ID is missing</string>
     <string name="membership_price_pending">У чаканні...</string>
     <string name="per_period">у  %1$s</string>
     <string name="free_for">Бясплатна за %1$s</string>
@@ -1522,7 +1524,7 @@
     <string name="version_history_error_get_version">Памылка пры атрыманні гісторыі версій</string>
     <string name="version_history_error_get_members">Памылка атрымання ўдзельнікаў</string>
     <string name="new_object">Новы аб\'ект</string>
-    <string name="vault_my_spaces">My Spaces</string>
+    <string name="vault_my_spaces">Мае прасторы</string>
     <string name="all_content_title_all_content">Усе аб\'екты</string>
     <string name="all_content_title_only_unlinked">Толькі адвязаныя</string>
     <string name="all_content_title_only_unlinked_description">Незвязаныя аб\'екты, якія не маюць прамой або зваротнай сувязі з іншымі аб\'ектамі ў графе.</string>
@@ -1543,7 +1545,7 @@
     <string name="all_content_sort_date_created">Дата стварэння</string>
     <string name="all_content_sort_date_used">Дата апошняга выкарыстання</string>
     <string name="all_content_sort_name">Назва</string>
-    <string name="all_content">All Objects</string>
+    <string name="all_content">Усе аб\'екты</string>
     <string name="allContent_group_today">Сёння</string>
     <string name="allContent_group_yesterday">Учора</string>
     <string name="allContent_group_prev_7">Папярэднія 7 дзён</string>
@@ -1565,4 +1567,16 @@
     <string name="all_content_toast_type_added">Object type added</string>
     <string name="all_content_toast_type_removed">Object type removed</string>
     <string name="all_content_toast_archived">Object archived</string>
+    <string name="all_content_new_relation">Новая ўласцівасць</string>
+    <string name="all_content_new_type">Новы тып</string>
+    <string name="all_content_unlinked_description">Незвязаныя аб\'екты, якія не маюць прамой або зваротнай сувязі з іншымі аб\'ектамі ў графе.</string>
+    <string name="all_content_snackbar_title">moved to bin</string>
+    <string name="main_navigation_content_desc_back_button">Кнопка назад</string>
+    <string name="main_navigation_content_desc_search_button">Search objects button</string>
+    <string name="main_navigation_content_desc_create_button">Create object button</string>
+    <string name="chat">Chat</string>
+    <string name="copy">Капіяваць</string>
+    <string name="chats_edit_message">Edit message</string>
+    <string name="chats_message_edited">edited</string>
+    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
 </resources>

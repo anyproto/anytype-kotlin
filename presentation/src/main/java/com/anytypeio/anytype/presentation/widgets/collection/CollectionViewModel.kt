@@ -27,7 +27,6 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -46,7 +45,6 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
-import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -55,8 +53,6 @@ import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.mapFileObjectToView
 import com.anytypeio.anytype.presentation.objects.toViews
-import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.FavoritesView
@@ -115,13 +111,10 @@ class CollectionViewModel(
 
     val payloads: Flow<Payload>
 
-    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
-
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
     init {
         Timber.i("CollectionViewModel, init, spaceId:${vmParams.spaceId.id}")
-        proceedWithObservingProfileIcon()
         proceedWithObservingPermissions()
         val externalChannelEvents: Flow<Payload> = spaceManager
             .observe()
@@ -193,39 +186,9 @@ class CollectionViewModel(
         }
     }
 
-    private fun proceedWithObservingProfileIcon() {
-        viewModelScope.launch {
-            spaceManager
-                .observe()
-                .flatMapLatest { config ->
-                    container.subscribe(
-                        StoreSearchByIdsParams(
-                            space = SpaceId(config.space),
-                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                            targets = listOf(config.profile),
-                            keys = listOf(
-                                Relations.ID,
-                                Relations.NAME,
-                                Relations.ICON_EMOJI,
-                                Relations.ICON_IMAGE,
-                                Relations.ICON_OPTION
-                            )
-                        )
-                    ).map { result ->
-                        val obj = result.firstOrNull()
-                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
-                    }
-                }
-                .catch { Timber.e(it, "Error while observing space icon") }
-                .flowOn(dispatchers.io)
-                .collect { icon.value = it }
-        }
-    }
-
     private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
         val params = GetObjectTypes.Params(
-            // TODO DROID-2916 Provide space id to vm params
-            space = SpaceId(spaceManager.get()),
+            space = SpaceId(vmParams.spaceId.id),
             sorts = emptyList(),
             filters = ObjectSearchConstants.filterTypes(),
             keys = ObjectSearchConstants.defaultKeysObjectType
@@ -263,10 +226,9 @@ class CollectionViewModel(
         subscribeObjects()
     }
 
-    private suspend fun buildSearchParams(): StoreSearchParams {
+    private fun buildSearchParams(): StoreSearchParams {
         return StoreSearchParams(
-            // TODO DROID-2916 Provide space id to vm params
-            space = SpaceId(spaceManager.get()),
+            space = vmParams.spaceId,
             subscription = subscription.id,
             keys = subscription.keys,
             filters = subscription.space(vmParams.spaceId.id),
@@ -398,11 +360,19 @@ class CollectionViewModel(
             container.subscribe(buildSearchParams()),
             queryFlow(),
             objectTypes(),
-            spaceManager.observe().flatMapLatest { config ->
-                openObject
-                    .asFlow(OpenObject.Params(config.home, false))
-                    .flatMapLatest { obj -> payloads.scan(obj) { s, p -> reduce(s, p) } }
-            }
+            spaceManager
+                .observe(vmParams.spaceId)
+                .flatMapLatest { config ->
+                    openObject
+                        .asFlow(
+                            OpenObject.Params(
+                                obj = config.home,
+                                spaceId = vmParams.spaceId,
+                                saveAsLastOpened = false
+                            )
+                        )
+                        .flatMapLatest { obj -> payloads.scan(obj) { s, p -> reduce(s, p) } }
+                }
         ) { objs, query, types, favorotiesObj ->
             val result = prepareFavorites(favorotiesObj, objs, query, types)
             if (result.isEmpty() && query.isNotEmpty())
@@ -870,12 +840,6 @@ class CollectionViewModel(
         }
     }
 
-    fun onProfileClicked() {
-        viewModelScope.launch {
-            commands.emit(Command.Vault)
-        }
-    }
-
     fun onAddClicked(objType: ObjectWrapper.Type?) {
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -886,7 +850,7 @@ class CollectionViewModel(
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = objType?.uniqueKey.getCreateObjectParams(
-                space = SpaceId(spaceManager.get()),
+                space = vmParams.spaceId,
                 objType?.defaultTemplateId
             )
             createObject.execute(params).fold(
@@ -924,8 +888,19 @@ class CollectionViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenDiscussion -> {
+                commands.emit(
+                    Command.OpenChat(
+                        target = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 toasts.emit("Unexpected layout: ${navigation.layout}")
+            }
+            OpenObjectNavigation.NonValidObject -> {
+                toasts.emit("Object id is missing")
             }
         }
     }
@@ -1025,6 +1000,7 @@ class CollectionViewModel(
         data class LaunchDocument(val target: Id, val space: Id) : Command()
         data class OpenCollection(val subscription: Subscription, val space: Id) : Command()
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
+        data class OpenChat(val target: Id, val space: Id) : Command()
 
         data object ToDesktop : Command()
         data class ToSearch(val space: Id) : Command()

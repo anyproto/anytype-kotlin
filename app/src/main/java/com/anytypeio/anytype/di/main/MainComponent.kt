@@ -20,6 +20,7 @@ import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
+import com.anytypeio.anytype.di.feature.discussions.DiscussionComponentDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
@@ -51,7 +52,6 @@ import com.anytypeio.anytype.di.feature.spaces.SpaceListDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
-import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
 import com.anytypeio.anytype.di.feature.types.CreateObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
 import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
@@ -128,7 +128,8 @@ interface MainComponent :
     GlobalSearchDependencies,
     MembershipUpdateComponentDependencies,
     VaultComponentDependencies,
-    AllContentDependencies
+    AllContentDependencies,
+    DiscussionComponentDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -143,8 +144,6 @@ interface MainComponent :
     fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
     fun wallpaperSelectComponent(): WallpaperSelectSubComponent.Builder
     fun createObjectComponent(): CreateObjectSubComponent.Builder
-    fun templateComponentFactory(): TemplateSubComponent.Factory
-
 
     //region Settings
 
@@ -349,6 +348,11 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(MembershipUpdateComponentDependencies::class)
     abstract fun provideMembershipUpdateComponentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(DiscussionComponentDependencies::class)
+    abstract fun provideDiscussionComponentDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

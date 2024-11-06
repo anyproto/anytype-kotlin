@@ -1638,7 +1638,7 @@ class HomeScreenViewModelTest {
             } doReturn Unit
         }
 
-        given(objectWatcher.watch(any())).willReturn(flowOf())
+        given(objectWatcher.watch(defaultSpaceConfig.home, SpaceId(defaultSpaceConfig.space))).willReturn(flowOf())
         given(storelessSubscriptionContainer.subscribe(any<StoreSearchParams>())).willReturn(flowOf())
         given(storelessSubscriptionContainer.subscribe(any<StoreSearchByIdsParams>())).willReturn(
             flowOf()
@@ -1675,7 +1675,12 @@ class HomeScreenViewModelTest {
             )
         }
 
-        verify(closeObject, times(1)).async(params = WIDGET_OBJECT_ID)
+        verify(closeObject, times(1)).async(
+            params = CloseBlock.Params(
+                WIDGET_OBJECT_ID,
+                SpaceId(defaultSpaceConfig.space)
+            )
+        )
     }
 
     @Test
@@ -1886,7 +1891,12 @@ class HomeScreenViewModelTest {
             )
         }
 
-        verify(closeObject, times(1)).async(params = WIDGET_OBJECT_ID)
+        verify(closeObject, times(1)).async(
+            params = CloseBlock.Params(
+                WIDGET_OBJECT_ID,
+                SpaceId(defaultSpaceConfig.space)
+            )
+        )
     }
 
     @Test
@@ -2114,12 +2124,14 @@ class HomeScreenViewModelTest {
             val currentSourceObject = StubObject(
                 id = "SOURCE OBJECT 1",
                 links = emptyList(),
-                objectType = ObjectTypeIds.PAGE
+                objectType = ObjectTypeIds.PAGE,
+                layout = ObjectType.Layout.BASIC.code.toDouble()
             )
             val newSourceObject = StubObject(
                 id = "SOURCE OBJECT 2",
                 links = emptyList(),
-                objectType = ObjectTypeIds.PAGE
+                objectType = ObjectTypeIds.PAGE,
+                layout = ObjectType.Layout.BASIC.code.toDouble()
             )
             val sourceLink = StubLinkToObjectBlock(
                 id = "SOURCE LINK",
@@ -2155,6 +2167,11 @@ class HomeScreenViewModelTest {
                     delay(300)
                     emit(
                         listOf(
+                            Event.Command.Details.Set(
+                                context = WIDGET_OBJECT_ID,
+                                target = newSourceObject.id,
+                                details = Block.Fields(newSourceObject.map)
+                            ),
                             Event.Command.LinkGranularChange(
                                 context = WIDGET_OBJECT_ID,
                                 id = sourceLink.id,
@@ -2458,7 +2475,12 @@ class HomeScreenViewModelTest {
                 thirdWidget is WidgetView.SetOfObjects && thirdWidget.tabs.first().isSelected
             }
             verifyBlocking(getObject, times(1)) {
-                run(params = currentWidgetSourceObject.id)
+                run(
+                    params = GetObject.Params(
+                        currentWidgetSourceObject.id,
+                        SpaceId(defaultSpaceConfig.space)
+                    )
+                )
             }
             verify(storelessSubscriptionContainer, times(1)).subscribe(
                 StoreSearchByIdsParams(
@@ -2644,7 +2666,12 @@ class HomeScreenViewModelTest {
     ) {
         getObject.stub {
             onBlocking {
-                run(givenObjectView.root)
+                run(
+                    GetObject.Params(
+                        givenObjectView.root,
+                        SpaceId(defaultSpaceConfig.space)
+                    )
+                )
             } doReturn givenObjectView
         }
     }
@@ -2653,14 +2680,20 @@ class HomeScreenViewModelTest {
         closeObject.stub {
             onBlocking {
                 stream(
-                    params = WIDGET_OBJECT_ID
+                    params = CloseBlock.Params(
+                        WIDGET_OBJECT_ID,
+                        SpaceId(defaultSpaceConfig.space)
+                    )
                 )
             } doReturn flowOf(Resultat.Loading(), Resultat.Success(Unit))
         }
         closeObject.stub {
             onBlocking {
                 async(
-                    params = WIDGET_OBJECT_ID
+                    params = CloseBlock.Params(
+                        WIDGET_OBJECT_ID,
+                        SpaceId(defaultSpaceConfig.space)
+                    )
                 )
             } doReturn Resultat.success(Unit)
         }
@@ -2729,7 +2762,7 @@ class HomeScreenViewModelTest {
     ) {
         objectWatcher.stub {
             on {
-                watch(defaultSpaceConfig.home)
+                watch(defaultSpaceConfig.home, SpaceId(defaultSpaceConfig.space))
             } doReturn flowOf(objectView)
         }
     }

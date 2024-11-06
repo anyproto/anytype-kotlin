@@ -43,7 +43,7 @@
     <string name="space">空間</string>
     <string name="space_name">空間名稱</string>
     <string name="default_space">初始空間</string>
-    <string name="space_settings_apply_random_gradient">套用隨機漸層</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">上傳圖片</string>
     <string name="delete_space">刪除空間</string>
     <string name="you_can_store">您目前擁有 %1$s 的加密節點儲存空間，您可以將檔案備份到我們的節點當中。 當儲存空間容量到達上限，新的檔案只能存放在您的本地儲存區中。</string>
@@ -372,7 +372,7 @@
     <string name="copy_link">複製連結</string>
     <string name="edit_link">編輯連結</string>
     <string name="unlink">取消連結</string>
-    <string name="choose_layout_type">選擇佈局類型</string>
+    <string name="choose_layout_type">選擇排版類型</string>
     <string name="user_settings_title">使用者設定</string>
     <string name="default_object_type_title">預設物件類型</string>
     <string name="name_layout_basic">默認</string>
@@ -427,7 +427,7 @@
     <string name="hide_icon">隱藏圖示</string>
     <string name="description">描述</string>
     <string name="object_type">物件類型</string>
-    <string name="preview_layout">預覽版型</string>
+    <string name="preview_layout">預覽排版</string>
     <string name="unknown">未知</string>
     <string name="unknown_error">未知錯誤</string>
     <string name="bookmark">書籤</string>
@@ -525,7 +525,7 @@
     <string name="menu_type_create_set">建立 %1$s 的集合</string>
     <string name="toast_active_view_delete">當前檢視無法被刪除</string>
     <string name="type_templates_widget_title">建立物件</string>
-    <string name="view_layout_widget_title">版型</string>
+    <string name="view_layout_widget_title">排版</string>
     <string name="view_layout_cover_widget_title">封面</string>
     <string name="blank">空白</string>
     <string name="templates_menu_default_for_view">預設此檢視</string>
@@ -700,7 +700,7 @@
     <string name="unknown_type">未知類型</string>
     <string name="set">集合</string>
     <string name="collection">集錦</string>
-    <string name="layout">版型</string>
+    <string name="layout">排版</string>
     <string name="restore_from_archive">從封存中還原</string>
     <string name="icon">圖示</string>
     <string name="icon_description">物件的 Emoji 或圖像</string>
@@ -839,6 +839,8 @@
     <string name="synced_files">已同步的檔案</string>
     <string name="log_in">登入</string>
     <string name="create_object_section_library">Anytype 資料庫</string>
+    <string name="bin_empty_title">Your trash is empty.</string>
+    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">樣式</string>
     <string name="slash_widget_main_media">媒體</string>
@@ -921,8 +923,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">建立一個小工具</string>
-    <string name="edit_widgets">編輯小工具</string>
-    <string name="add_widget">Add widget</string>
+    <string name="edit_widgets">編輯</string>
+    <string name="add_widget">添加</string>
     <string name="widget_source">小工具來源</string>
     <string name="widget_type">小工具類型</string>
     <string name="widget_add_below">在下方添加</string>
@@ -1047,7 +1049,7 @@
     <string name="sharing_menu_save_as_file_option">檔案</string>
     <string name="sharing_menu_save_as_images_option">圖像</string>
     <string name="sharing_menu_save_as_files_option">檔案</string>
-    <string name="sharing_menu_save_as_videos_option">Videos</string>
+    <string name="sharing_menu_save_as_videos_option">影片</string>
     <string name="sharing_menu_data">資料</string>
     <string name="sharing_menu_add_to_anytype_header_title">添加到 Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
@@ -1275,7 +1277,6 @@
     <string name="payments_tier_details_name_title">取一個獨特的名字</string>
     <string name="payments_tier_details_name_subtitle">這是您在Anytype網絡的專屬用戶名，以確認您的會員身份。它是您的個人域名，不可更改。</string>
     <string name="payments_tier_details_name_hint">個人使用</string>
-    <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">最少 7 個字元</string>
     <string name="payments_tier_details_name_error">此名稱已被使用。</string>
     <string name="payments_tier_details_name_validated">%1$s 可以被使用！</string>
@@ -1407,6 +1408,7 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_prompt_primary_button_text">啟用</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">從剪貼簿建立書籤</string>
     <string name="error_unexpected_layout">錯誤：版型異常</string>
+    <string name="error_non_valid_object">Error: object ID is missing</string>
     <string name="membership_price_pending">等候中...</string>
     <string name="per_period">每 %1$s</string>
     <string name="free_for">Free for %1$s</string>
@@ -1465,7 +1467,7 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <string name="sync_status_p2p_disabled">Connection not possible</string>
     <string name="sync_status_p2p_restricted">限制。請檢查裝置設定。</string>
-    <string name="sync_status_p2p_not_connected">Not connected</string>
+    <string name="sync_status_p2p_not_connected">未連線</string>
     <string name="sync_status_anytype_network">Anytype 網絡</string>
     <string name="sync_status_anytype_end_to_end">已端到端加密</string>
     <plurals name="sync_status_network_items">
@@ -1478,20 +1480,20 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_incompatible_version">不相容的版本</string>
     <string name="sync_status_network_error">無法進入這個空間</string>
     <string name="sync_status_unrecognized">無法識別的錯誤</string>
-    <string name="version_history_title">Version history</string>
+    <string name="version_history_title">編輯記錄</string>
     <string name="version_history_error_no_versions">No versions found</string>
     <string name="version_history_error_get_version">Error getting version history</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">新增物件</string>
     <string name="vault_my_spaces">My Spaces</string>
-    <string name="all_content_title_all_content">All objects</string>
+    <string name="all_content_title_all_content">所有物件</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
-    <string name="all_content_view_bin">View Bin</string>
+    <string name="all_content_view_bin">查看垃圾桶</string>
     <string name="all_content_title_tab_pages">Pages</string>
     <string name="all_content_title_tab_lists">列表</string>
     <string name="all_content_title_tab_media">媒體</string>
-    <string name="all_content_title_tab_bookmarks">Bookmarks</string>
+    <string name="all_content_title_tab_bookmarks">書籤</string>
     <string name="all_content_title_tab_files">檔案</string>
     <string name="all_content_title_tab_objetc_types">類型</string>
     <string name="all_content_title_tab_relations">關聯</string>
@@ -1504,7 +1506,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_date_used">Date last used</string>
     <string name="all_content_sort_name">名稱</string>
-    <string name="all_content">All Objects</string>
+    <string name="all_content">所有物件</string>
     <string name="allContent_group_today">今天</string>
     <string name="allContent_group_yesterday">昨天</string>
     <string name="allContent_group_prev_7">過去 7 天</string>
@@ -1526,4 +1528,16 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_toast_type_added">Object type added</string>
     <string name="all_content_toast_type_removed">Object type removed</string>
     <string name="all_content_toast_archived">Object archived</string>
+    <string name="all_content_new_relation">新增關聯</string>
+    <string name="all_content_new_type">新增類型</string>
+    <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_snackbar_title">moved to bin</string>
+    <string name="main_navigation_content_desc_back_button">返回按鈕</string>
+    <string name="main_navigation_content_desc_search_button">Search objects button</string>
+    <string name="main_navigation_content_desc_create_button">Create object button</string>
+    <string name="chat">Chat</string>
+    <string name="copy">複製</string>
+    <string name="chats_edit_message">Edit message</string>
+    <string name="chats_message_edited">edited</string>
+    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
 </resources>

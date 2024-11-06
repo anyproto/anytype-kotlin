@@ -24,11 +24,11 @@ class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>(
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.AppBottomSecondarySheetDialogTheme)
         val editorFragment = EditorTemplateFragment.newInstance(
-            id = template,
+            targetTemplateId = template,
             space = space,
             targetTypeId = templateTypeId,
             targetTypeKey = templateTypeKey,
-            type = screenType
+            screenType = screenType
         )
         childFragmentManager.beginTransaction()
             .add(R.id.fragment_container_view, editorFragment)

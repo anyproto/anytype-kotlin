@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.discussions.DiscussionFragment
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -64,7 +65,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                         }
                     },
                     onShowRelatedClicked = vm::onShowRelatedClicked,
-                    onClearRelatedClicked = vm::onClearRelatedObjectClicked
+                    onClearRelatedClicked = vm::onClearRelatedObjectClicked,
                 )
             }
             LaunchedEffect(Unit) {
@@ -79,7 +80,6 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                                 )
                             )
                         }
-
                         is OpenObjectNavigation.OpenDataView -> {
                             findNavController().navigate(
                                 R.id.dataViewNavigation,
@@ -89,7 +89,15 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                                 )
                             )
                         }
-
+                        is OpenObjectNavigation.OpenDiscussion -> {
+                            findNavController().navigate(
+                                R.id.chatScreen,
+                                DiscussionFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }
                         else -> {
                             // Do nothing.
                         }

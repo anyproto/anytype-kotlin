@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds.DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -17,7 +18,6 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
 class GetDefaultObjectType @Inject constructor(
@@ -43,14 +43,14 @@ class GetDefaultObjectType @Inject constructor(
                     defaultTemplate = item.defaultTemplateId
                 )
             } else {
-                fetchDefaultType(params)
+                fetchFallbackObjectType(params)
             }
         } else {
-            return fetchDefaultType(params)
+            return fetchFallbackObjectType(params)
         }
     }
 
-    private suspend fun fetchDefaultType(space: SpaceId): Response {
+    private suspend fun fetchFallbackObjectType(space: SpaceId): Response {
         val structs = blockRepository.searchObjects(
             space = space,
             limit = 1,
@@ -61,7 +61,7 @@ class GetDefaultObjectType @Inject constructor(
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
                         condition = DVFilterCondition.EQUAL,
-                        value = ObjectTypeUniqueKeys.NOTE
+                        value = DEFAULT_OBJECT_TYPE
                     )
                 )
             },

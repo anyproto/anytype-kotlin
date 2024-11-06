@@ -16,18 +16,18 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.PersonalizationSettingsViewModel
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import javax.inject.Inject
 
 class PersonalizationSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBinding>(),
-    OnObjectSelectTypeAction {
+    ObjectTypeSelectionListener {
 
     @Inject
     lateinit var factory: PersonalizationSettingsViewModel.Factory
 
     private val vm by viewModels<PersonalizationSettingsViewModel> { factory }
 
-    override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
+    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
         vm.proceedWithUpdateType(type = objType.id, key = objType.uniqueKey, name = objType.name)
     }
 

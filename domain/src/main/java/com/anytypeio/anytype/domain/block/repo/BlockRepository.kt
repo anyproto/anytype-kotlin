@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -34,6 +36,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
@@ -102,21 +105,19 @@ interface BlockRepository {
 
     suspend fun setRelationKey(command: Command.SetRelationKey): Payload
 
-    suspend fun openObject(id: Id) : ObjectView
-    suspend fun getObject(id: Id) : ObjectView
+    suspend fun openObject(id: Id, space: SpaceId) : ObjectView
+    suspend fun getObject(id: Id, space: SpaceId) : ObjectView
 
     @Deprecated("To be deleted")
-    suspend fun openObjectPreview(id: Id): Result<Payload>
+    suspend fun openObjectPreview(id: Id, space: SpaceId): Result<Payload>
     @Deprecated("To be deleted")
-    suspend fun openPage(id: String): Result<Payload>
+    suspend fun openPage(id: String, space: SpaceId): Result<Payload>
     @Deprecated("To be deleted")
-    suspend fun openProfile(id: String): Payload
+    suspend fun openProfile(id: String, space: SpaceId): Payload
     @Deprecated("To be deleted")
-    suspend fun openObjectSet(id: String): Result<Payload>
+    suspend fun openObjectSet(id: String, space: SpaceId): Result<Payload>
 
-    suspend fun closePage(id: String)
-    suspend fun openDashboard(contextId: String, id: String): Payload
-    suspend fun closeDashboard(id: String)
+    suspend fun closePage(id: String, space: Space)
 
     /**
      * Upload media or file block by path or url.
@@ -265,9 +266,7 @@ interface BlockRepository {
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 
-    suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean): Payload
     suspend fun setObjectListIsFavorite(objectIds: List<Id>, isFavorite: Boolean)
-    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean)
     suspend fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
 
     suspend fun deleteObjects(targets: List<Id>)
@@ -432,6 +431,7 @@ interface BlockRepository {
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
+    suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload
     suspend fun nodeUsage(): NodeUsageInfo
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
     suspend fun duplicateObjectsList(ids: List<Id>): List<Id>
@@ -488,4 +488,16 @@ interface BlockRepository {
     suspend fun showVersion(command: Command.VersionHistory.ShowVersion): ShowVersionResponse
     suspend fun setVersion(command: Command.VersionHistory.SetVersion)
     suspend fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse
+
+    //region CHATS
+
+    suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>>
+    suspend fun editChatMessage(command: Command.ChatCommand.EditMessage)
+    suspend fun deleteChatMessage(command: Command.ChatCommand.DeleteMessage)
+    suspend fun getChatMessages(command: Command.ChatCommand.GetMessages): List<Chat.Message>
+    suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastMessages): Command.ChatCommand.SubscribeLastMessages.Response
+    suspend fun toggleChatMessageReaction(command: Command.ChatCommand.ToggleMessageReaction)
+    suspend fun unsubscribeChat(chat: Id)
+
+    //endregion
 }

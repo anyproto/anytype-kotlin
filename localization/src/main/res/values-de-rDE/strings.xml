@@ -43,7 +43,7 @@
     <string name="space">Space</string>
     <string name="space_name">Space-Name</string>
     <string name="default_space">Standard Space</string>
-    <string name="space_settings_apply_random_gradient">Zufälligen Farbverlauf anwenden</string>
+    <string name="space_settings_apply_random_gradient">Zufällige Volltonfarbe verwenden</string>
     <string name="space_settings_apply_upload_image">Bild hochladen</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
@@ -841,6 +841,8 @@
     <string name="synced_files">Synchronisierte Dateien</string>
     <string name="log_in">Anmelden</string>
     <string name="create_object_section_library">Anytype-Bibliothek</string>
+    <string name="bin_empty_title">Dein Papierkorb ist leer.</string>
+    <string name="bin_empty_subtitle">Sieht aus, als wärst du total ordentlich und organisiert!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Design</string>
     <string name="slash_widget_main_media">Medien</string>
@@ -923,8 +925,8 @@
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Widget erstellen</string>
-    <string name="edit_widgets">Widgets bearbeiten</string>
-    <string name="add_widget">Widget hinzufügen</string>
+    <string name="edit_widgets">Bearbeiten</string>
+    <string name="add_widget">Hinzufügen</string>
     <string name="widget_source">Widget-Quelle</string>
     <string name="widget_type">Widget-Typ</string>
     <string name="widget_add_below">Unten hinzufügen</string>
@@ -1281,7 +1283,6 @@
     <string name="payments_tier_details_name_title">Wähle deinen einzigartigen Namen</string>
     <string name="payments_tier_details_name_subtitle">Dies ist dein eindeutiger Name im Anytype-Netzwerk, der deine Mitgliedschaft bestätigt. Er dient als deine persönliche Domain und kann nicht geändert werden.</string>
     <string name="payments_tier_details_name_hint">Ich</string>
-    <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Mindestens 7 Zeichen</string>
     <string name="payments_tier_details_name_error">Dieser Name ist bereits vergeben!</string>
     <string name="payments_tier_details_name_validated">Dieser Name [%1$s] ist noch zu vergeben!</string>
@@ -1413,6 +1414,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_prompt_primary_button_text">Aktivieren</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Lesezeichen aus der Zwischenablage erstellen</string>
     <string name="error_unexpected_layout">Fehler: Unerwartetes Layout</string>
+    <string name="error_non_valid_object">Fehler: Objekt-ID fehlt</string>
     <string name="membership_price_pending">Ausstehend...</string>
     <string name="per_period">pro %1$s</string>
     <string name="free_for">Kostenlos für %1$s</string>
@@ -1539,4 +1541,16 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_toast_type_added">Objekttyp hinzugefügt</string>
     <string name="all_content_toast_type_removed">Objekttyp entfernt</string>
     <string name="all_content_toast_archived">Objekt archiviert</string>
+    <string name="all_content_new_relation">Neue Relation</string>
+    <string name="all_content_new_type">Neuer Typ</string>
+    <string name="all_content_unlinked_description"></string>
+    <string name="all_content_snackbar_title">in den  Papierkorb verschoben</string>
+    <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_search_button">Schaltfläche zum Suchen von Objekten</string>
+    <string name="main_navigation_content_desc_create_button">Schaltfläche zum Erstellen eines Objekts</string>
+    <string name="chat">Chat</string>
+    <string name="copy">Kopieren</string>
+    <string name="chats_edit_message">Nachricht bearbeiten</string>
+    <string name="chats_message_edited">bearbeitet</string>
+    <string name="chat_empty_state_message">Es gibt noch keine Nachrichten.\nSei der Erste, der eine Diskussion beginnt.</string>
 </resources>

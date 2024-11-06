@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.FragmentSplashBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.discussions.DiscussionFragment
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
@@ -68,6 +69,24 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                             else -> {
                                 binding.error.gone()
                                 binding.error.text = ""
+                            }
+                        }
+                    }
+                }
+
+                launch {
+                    vm.loadingState.collect { isLoading ->
+                        when (isLoading) {
+                            true -> {
+                                binding.loadingContainer.setContent {
+                                    PulsatingCircleScreen()
+                                }
+                                binding.logo.visibility = View.GONE
+                                binding.loadingContainer.visibility = View.VISIBLE
+                            }
+                            false ->  {
+                                binding.logo.visibility = View.GONE
+                                binding.loadingContainer.visibility = View.GONE
                             }
                         }
                     }

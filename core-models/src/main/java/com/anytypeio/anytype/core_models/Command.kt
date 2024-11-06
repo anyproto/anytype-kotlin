@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_models
 
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -572,4 +573,48 @@ sealed class Command {
             val previousVersion: Id
         ) : VersionHistory()
     }
+
+    sealed class ChatCommand {
+        data class AddMessage(
+            val chat: Id,
+            val message: Chat.Message
+        ): ChatCommand()
+        data class DeleteMessage(
+            val chat: Id,
+            val msg: Id
+        ): ChatCommand()
+        data class EditMessage(
+            val chat: Id,
+            val message: Chat.Message
+        ): ChatCommand()
+        data class GetMessages(
+            val chat: Id,
+            val beforeMessageId: Id,
+            val limit: Int
+        ): ChatCommand()
+        data class SubscribeLastMessages(
+            val chat: Id,
+            val limit: Int
+        ): ChatCommand() {
+            data class Response(
+                val messages: List<Chat.Message>,
+                val messageCountBefore: Int
+            )
+        }
+        data class ToggleMessageReaction(
+            val chat: Id,
+            val msg: Id,
+            val emoji: String
+        ): ChatCommand()
+    }
+
+    /**
+     * id of dataview block
+     * id of active vi1ew
+     */
+    data class DataViewSetActiveView(
+        val ctx: Id,
+        val dataViewId: Id,
+        val viewerId: Id
+    )
 }

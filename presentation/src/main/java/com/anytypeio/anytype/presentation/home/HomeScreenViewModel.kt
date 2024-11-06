@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -117,6 +118,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
+import com.anytypeio.anytype.presentation.widgets.hasValidLayout
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
@@ -237,7 +239,7 @@ class HomeScreenViewModel(
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
-    private val openWidgetObjectsHistory : MutableSet<Id> = LinkedHashSet()
+    private val openWidgetObjectsHistory : MutableSet<OpenObjectHistoryItem> = LinkedHashSet()
 
     private val userPermissions = MutableStateFlow<SpaceMemberPermissions?>(null)
 
@@ -264,14 +266,24 @@ class HomeScreenViewModel(
                         unsubscribe(subscriptions)
                     }
                     mutex.withLock {
-                        val closed = mutableSetOf<Id>()
-                        openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
+                        val closed = mutableSetOf<OpenObjectHistoryItem>()
+                        openWidgetObjectsHistory.forEach { (previouslyOpenedWidgetObject, space) ->
                             if (previouslyOpenedWidgetObject != newConfig.widgets) {
                                 closeObject
-                                    .async(params = previouslyOpenedWidgetObject)
+                                    .async(
+                                        CloseBlock.Params(
+                                            target = previouslyOpenedWidgetObject,
+                                            space = space
+                                        )
+                                    )
                                     .fold(
                                         onSuccess = {
-                                            closed.add(previouslyOpenedWidgetObject)
+                                            closed.add(
+                                                OpenObjectHistoryItem(
+                                                    obj = previouslyOpenedWidgetObject,
+                                                    space = space
+                                                )
+                                            )
                                         },
                                         onFailure = {
                                             Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
@@ -298,7 +310,14 @@ class HomeScreenViewModel(
                     onSuccess = { objectView ->
                         onSessionStarted().also {
                             viewModelScope.launch {
-                                mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+                                mutex.withLock {
+                                    openWidgetObjectsHistory.add(
+                                        OpenObjectHistoryItem(
+                                            obj = objectView.root,
+                                            space = SpaceId(config.space)
+                                        )
+                                    )
+                                }
                             }
                         }
                     },
@@ -426,7 +445,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             widgets.filterNotNull().map { widgets ->
                 val currentlyDisplayedViews = views.value
-                widgets.map { widget ->
+                widgets.filter { widget -> widget.hasValidLayout() }.map { widget ->
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
                             widget = widget
@@ -590,7 +609,10 @@ class HomeScreenViewModel(
         }
     }
 
-    private suspend fun proceedWithClosingWidgetObject(widgetObject: Id) {
+    private suspend fun proceedWithClosingWidgetObject(
+        widgetObject: Id,
+        space: SpaceId
+    ) {
         saveWidgetSession.async(
             SaveWidgetSession.Params(
                 WidgetSession(
@@ -612,7 +634,12 @@ class HomeScreenViewModel(
         }
         if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
 
-        closeObject.stream(widgetObject).collect { status ->
+        closeObject.stream(
+            CloseBlock.Params(
+                target = widgetObject,
+                space = space
+            )
+        ).collect { status ->
             status.fold(
                 onFailure = {
                     Timber.e(it, "Error while closing widget object")
@@ -1358,8 +1385,19 @@ class HomeScreenViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenDiscussion -> {
+                navigate(
+                    Navigation.OpenDiscussion(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
+            }
+            OpenObjectNavigation.NonValidObject -> {
+                sendToast("Object id is missing")
             }
         }
     }
@@ -1679,9 +1717,14 @@ class HomeScreenViewModel(
 
     fun onBackClicked() {
         viewModelScope.launch {
-            openWidgetObjectsHistory.forEach { obj ->
+            openWidgetObjectsHistory.forEach { (obj, space) ->
                 closeObject
-                    .async(obj)
+                    .async(
+                        CloseBlock.Params(
+                            target = obj,
+                            space = space
+                        )
+                    )
                     .onSuccess {
                         Timber.d("Closed object from widget object session history: $obj")
                     }
@@ -1714,7 +1757,10 @@ class HomeScreenViewModel(
                 unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
                 val config = spaceManager.getConfig()
                 if (config != null) {
-                    proceedWithClosingWidgetObject(widgetObject = config.widgets)
+                    proceedWithClosingWidgetObject(
+                        widgetObject = config.widgets,
+                        space = SpaceId(config.space)
+                    )
                 }
                 jobs.cancel()
                 widgetObjectPipelineJobs.cancel()
@@ -1771,16 +1817,13 @@ class HomeScreenViewModel(
 
     fun onNewWidgetSourceTypeSelected(
         type: ObjectWrapper.Type,
-        space: SpaceId,
         widgets: Id
     ) {
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
                     space = SpaceId(spaceManager.get()),
-                    type = type.uniqueKey?.let {
-                        TypeKey(it)
-                    }
+                    type = TypeKey(type.uniqueKey)
                 )
             ).fold(
                 onSuccess = { response ->
@@ -1805,16 +1848,13 @@ class HomeScreenViewModel(
 
     fun onCreateObjectForWidget(
         type: ObjectWrapper.Type,
-        widget: Id,
         source: Id
     ) {
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
                     space = SpaceId(spaceManager.get()),
-                    type = type.uniqueKey?.let {
-                        TypeKey(it)
-                    }
+                    type = TypeKey(type.uniqueKey)
                 )
             ).fold(
                 onSuccess = { result ->
@@ -1891,7 +1931,12 @@ class HomeScreenViewModel(
             if (target != null) {
                 val widgetSource = target.source
                 if (widgetSource is Widget.Source.Default) {
-                    getObject.async(params = target.source.id).fold(
+                    getObject.async(
+                        params = GetObject.Params(
+                            target = target.source.id,
+                            space = SpaceId(target.config.space)
+                        )
+                    ).fold(
                         onSuccess = { obj ->
                             val dv = obj.blocks.find { it.content is DV }?.content as? DV
                             val viewer = if (view.isNullOrEmpty())
@@ -2073,6 +2118,7 @@ class HomeScreenViewModel(
 
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
+        data class OpenDiscussion(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data object OpenSpaceSwitcher: Navigation()
@@ -2204,6 +2250,11 @@ sealed class InteractionMode {
     data object ReadOnly: InteractionMode()
 }
 
+data class OpenObjectHistoryItem(
+    val obj: Id,
+    val space: Space
+)
+
 sealed class Command {
 
     /**
@@ -2291,9 +2342,12 @@ sealed class OpenObjectNavigation {
     data class OpenEditor(val target: Id, val space: Id) : OpenObjectNavigation()
     data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
+    data object NonValidObject: OpenObjectNavigation()
+    data class OpenDiscussion(val target: Id, val space: Id): OpenObjectNavigation()
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
+    if (!isValid) return OpenObjectNavigation.NonValidObject
     return when (layout) {
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,
@@ -2328,6 +2382,12 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION -> {
             OpenObjectNavigation.OpenDataView(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
+        }
+        ObjectType.Layout.CHAT -> {
+            OpenObjectNavigation.OpenDiscussion(
                 target = id,
                 space = requireNotNull(spaceId)
             )
@@ -2368,6 +2428,12 @@ fun ObjectType.Layout.navigation(
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION -> {
             OpenObjectNavigation.OpenDataView(
+                target = target,
+                space = space
+            )
+        }
+        ObjectType.Layout.CHAT -> {
+            OpenObjectNavigation.OpenDiscussion(
                 target = target,
                 space = space
             )

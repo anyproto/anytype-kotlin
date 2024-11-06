@@ -1,12 +1,13 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
-import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.CreateObjectViewModel
@@ -36,13 +37,12 @@ object CreateObjectModule {
     @PerScreen
     fun getCreateObject(
         repo: BlockRepository,
-        getDefaultObjectType: GetDefaultObjectType,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
-    ): CreateObject = CreateObject(
+        logger: Logger
+    ): CreateObjectByTypeAndTemplate = CreateObjectByTypeAndTemplate(
         repo = repo,
-        getDefaultObjectType = getDefaultObjectType,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        logger = logger
     )
 
     @JvmStatic
@@ -51,9 +51,7 @@ object CreateObjectModule {
     fun provideGetDefaultPageType(
         blockRepository: BlockRepository,
         userSettingsRepository: UserSettingsRepository,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
-        configStorage: ConfigStorage
+        dispatchers: AppCoroutineDispatchers
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
@@ -78,10 +76,12 @@ object CreateObjectModule {
     @Provides
     @PerScreen
     fun provideViewModelFactory(
-        createObject: CreateObject,
-        spaceManager: SpaceManager
+        createObject: CreateObjectByTypeAndTemplate,
+        spaceManager: SpaceManager,
+        awaitAccountStartManager: AwaitAccountStartManager
     ): CreateObjectViewModel.Factory = CreateObjectViewModel.Factory(
         createObject = createObject,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        awaitAccountStart = awaitAccountStartManager
     )
 }

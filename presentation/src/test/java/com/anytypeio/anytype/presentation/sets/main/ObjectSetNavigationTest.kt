@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -90,7 +91,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                     id = mockObjectSet.obj1.id,
                     relationKey = mockObjectSet.relationObject3.key,
                     tags = listOf(),
-                    space = mockObjectSet.space
                 )
             )
 
@@ -163,7 +163,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                             icon = ObjectIcon.None,
                         )
                     ),
-                    space = mockObjectSet.space
                 )
             )
 
@@ -215,7 +214,12 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             // CHECK CLOSE BLOCK COMMAND
             advanceUntilIdle()
             verifyBlocking(closeBlock, times(1)) {
-                async(mockObjectSet.root)
+                async(
+                    CloseBlock.Params(
+                        mockObjectSet.root,
+                        SpaceId(defaultSpace)
+                    )
+                )
             }
         }
     }
@@ -280,6 +284,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     }
 
     private fun proceedWithStartingViewModel() {
-        viewModel.onStart(ctx = root, space = defaultSpace)
+        viewModel.onStart()
     }
 }

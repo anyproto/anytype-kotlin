@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -41,11 +43,13 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
+import com.anytypeio.anytype.middleware.interactor.events.payload
 import com.anytypeio.anytype.middleware.mappers.MDVFilter
 import com.anytypeio.anytype.middleware.mappers.MDetail
 import com.anytypeio.anytype.middleware.mappers.MNetworkMode
@@ -742,21 +746,6 @@ class Middleware @Inject constructor(
     private val coverIdKey = "coverId"
     private val coverTypeKey = "coverType"
 
-    @Deprecated("Should deleted. Use objectOpen()")
-    @Throws(Exception::class)
-    fun dashboardOpen(contextId: String, id: String): Payload {
-        val request: Rpc.Object.Open.Request = Rpc.Object.Open.Request(
-            contextId = contextId,
-            objectId = id
-        )
-        logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.objectOpen(request) }
-        logResponseIfDebug(response, time)
-
-        return response.objectView?.toPayload()
-            ?: throw IllegalStateException("Object view was null")
-    }
-
     @Throws(Exception::class)
     fun debugExportLocalStore(path: String): String {
         val request = Rpc.Debug.ExportLocalstore.Request(
@@ -860,8 +849,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectClose(id: String) {
-        val request = Rpc.Object.Close.Request(objectId = id)
+    fun objectClose(id: String, space: Space) {
+        val request = Rpc.Object.Close.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectClose(request) }
         logResponseIfDebug(response, time)
@@ -1103,8 +1092,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectOpenOld(id: String): Payload {
-        val request = Rpc.Object.Open.Request(objectId = id)
+    fun objectOpenOld(id: String, space: SpaceId): Payload {
+        val request = Rpc.Object.Open.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectOpen(request) }
         logResponseIfDebug(response, time)
@@ -1114,8 +1103,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectOpen(id: String): ObjectView {
-        val request = Rpc.Object.Open.Request(objectId = id)
+    fun objectOpen(id: String, space: SpaceId): ObjectView {
+        val request = Rpc.Object.Open.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectOpen(request) }
         logResponseIfDebug(response, time)
@@ -1488,43 +1477,6 @@ class Middleware @Inject constructor(
         return response.event.toPayload()
     }
 
-    @Deprecated(
-        "Use objectListSetIsArchived instead",
-        replaceWith = ReplaceWith("objectListSetIsArchived")
-    )
-    @Throws(Exception::class)
-    fun objectSetIsArchived(
-        ctx: Id,
-        isArchived: Boolean
-    ) {
-        val request = Rpc.Object.SetIsArchived.Request(
-            contextId = ctx,
-            isArchived = isArchived
-        )
-        logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.objectSetIsArchived(request) }
-        logResponseIfDebug(response, time)
-    }
-
-    @Deprecated(
-        "Use objectListSetIsFavorite instead",
-        replaceWith = ReplaceWith("objectListSetIsFavorite")
-    )
-    @Throws(Exception::class)
-    fun objectSetIsFavorite(
-        ctx: Id,
-        isFavorite: Boolean
-    ): Payload {
-        val request = Rpc.Object.SetIsFavorite.Request(
-            contextId = ctx,
-            isFavorite = isFavorite
-        )
-        logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.objectSetIsFavorite(request) }
-        logResponseIfDebug(response, time)
-        return response.event.toPayload()
-    }
-
     @Throws(Exception::class)
     fun objectListSetIsFavorite(
         objectIds: List<Id>,
@@ -1580,8 +1532,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectShowOld(id: String): Payload {
-        val request = Rpc.Object.Show.Request(objectId = id)
+    fun objectShowOld(id: String, space: SpaceId): Payload {
+        val request = Rpc.Object.Show.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectShow(request) }
         logResponseIfDebug(response, time)
@@ -1590,8 +1542,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectShow(id: String): ObjectView {
-        val request = Rpc.Object.Show.Request(objectId = id)
+    fun objectShow(id: String, space: SpaceId): ObjectView {
+        val request = Rpc.Object.Show.Request(objectId = id, spaceId = space.id)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectShow(request) }
         logResponseIfDebug(response, time)
@@ -1632,7 +1584,7 @@ class Middleware @Inject constructor(
         platform: String,
         version: String
     ) {
-        val request = Rpc.Metrics.SetParameters.Request(
+        val request = Rpc.Initial.SetParameters.Request(
             platform = platform,
             version = version
         )
@@ -2745,6 +2697,111 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.diffVersions(request) }
         logResponseIfDebug(response, time)
         return response.toCoreModel(context = command.objectId)
+    }
+
+    @Throws
+    fun chatAddMessage(command: Command.ChatCommand.AddMessage) : Pair<Id, List<Event.Command.Chats>> {
+        val request = Rpc.Chat.AddMessage.Request(
+            chatObjectId = command.chat,
+            message = command.message.mw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatAddMessage(request) }
+        logResponseIfDebug(response, time)
+        val events = response
+            .event
+            ?.messages
+            ?.mapNotNull { msg ->
+                msg.payload(contextId = command.chat)
+            }
+            .orEmpty()
+        return response.messageId to events
+    }
+
+    @Throws
+    fun chatEditMessageContent(command: Command.ChatCommand.EditMessage) {
+        val request = Rpc.Chat.EditMessageContent.Request(
+            chatObjectId = command.chat,
+            messageId = command.message.id,
+            editedMessage = command.message.mw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatEditMessage(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
+    fun chatGetMessages(command: Command.ChatCommand.GetMessages) : List<Chat.Message> {
+        val request = Rpc.Chat.GetMessages.Request(
+            chatObjectId = command.chat
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatGetMessages(request) }
+        logResponseIfDebug(response, time)
+        return response.messages.map { it.core() }
+    }
+
+    @Throws
+    fun chatDeleteMessage(command: Command.ChatCommand.DeleteMessage) {
+        val request = Rpc.Chat.DeleteMessage.Request(
+            chatObjectId = command.chat,
+            messageId = command.msg
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatDeleteMessage(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
+    fun chatSubscribeLastMessages(
+        command: Command.ChatCommand.SubscribeLastMessages
+    ): Command.ChatCommand.SubscribeLastMessages.Response {
+        val request = Rpc.Chat.SubscribeLastMessages.Request(
+            chatObjectId = command.chat,
+            limit = command.limit
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatSubscribeLastMessages(request) }
+        logResponseIfDebug(response, time)
+        return Command.ChatCommand.SubscribeLastMessages.Response(
+            messages = response.messages.map { it.core() },
+            messageCountBefore = response.numMessagesBefore
+        )
+    }
+
+    @Throws
+    fun chatToggleMessageReaction(
+        command: Command.ChatCommand.ToggleMessageReaction
+    ) {
+        val request = Rpc.Chat.ToggleMessageReaction.Request(
+            chatObjectId = command.chat,
+            messageId = command.msg,
+            emoji = command.emoji
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatToggleMessageReaction(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
+    fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload {
+        val request = Rpc.BlockDataview.View.SetActive.Request(
+            contextId = command.ctx,
+            blockId = command.dataViewId,
+            viewId = command.viewerId
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewSetActiveView(request) }
+        logResponseIfDebug(response, time)
+        return response.event.toPayload()
+    }
+
+    @Throws
+    fun chatUnsubscribe(chat: Id) {
+        val request = Rpc.Chat.Unsubscribe.Request(chatObjectId = chat)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatUnsubscribe(request) }
+        logResponseIfDebug(response, time)
     }
 
     private fun logRequestIfDebug(request: Any) {

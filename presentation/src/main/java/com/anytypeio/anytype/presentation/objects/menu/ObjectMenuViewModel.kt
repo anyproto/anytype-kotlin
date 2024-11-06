@@ -17,13 +17,12 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
-import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
-import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -48,9 +47,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ObjectMenuViewModel(
-    setObjectIsArchived: SetObjectIsArchived,
-    addToFavorite: AddToFavorite,
-    removeFromFavorite: RemoveFromFavorite,
     addBackLinkToObject: AddBackLinkToObject,
     delegator: Delegator<Action>,
     urlBuilder: UrlBuilder,
@@ -69,11 +65,11 @@ class ObjectMenuViewModel(
     private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
     private val spaceManager: SpaceManager,
     private val deepLinkResolver: DeepLinkResolver,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val setObjectListIsFavorite: SetObjectListIsFavorite,
+    private val setObjectIsArchived: SetObjectListIsArchived
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
-    addToFavorite = addToFavorite,
-    removeFromFavorite = removeFromFavorite,
     addBackLinkToObject = addBackLinkToObject,
     duplicateObject = duplicateObject,
     delegator = delegator,
@@ -86,7 +82,8 @@ class ObjectMenuViewModel(
     createWidget = createWidget,
     spaceManager = spaceManager,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-    payloadDelegator = payloadDelegator
+    payloadDelegator = payloadDelegator,
+    setObjectListIsFavorite = setObjectListIsFavorite
 ) {
 
     init {
@@ -458,11 +455,8 @@ class ObjectMenuViewModel(
 
     @Suppress("UNCHECKED_CAST")
     class Factory @Inject constructor(
-        private val setObjectIsArchived: SetObjectIsArchived,
         private val duplicateObject: DuplicateObject,
         private val debugTreeShareDownloader: DebugTreeShareDownloader,
-        private val addToFavorite: AddToFavorite,
-        private val removeFromFavorite: RemoveFromFavorite,
         private val addBackLinkToObject: AddBackLinkToObject,
         private val urlBuilder: UrlBuilder,
         private val storage: Editor.Storage,
@@ -479,15 +473,15 @@ class ObjectMenuViewModel(
         private val spaceManager: SpaceManager,
         private val deepLinkResolver: DeepLinkResolver,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val payloadDelegator: PayloadDelegator
+        private val payloadDelegator: PayloadDelegator,
+        private val setObjectListIsFavorite: SetObjectListIsFavorite,
+        private val setObjectIsArchived: SetObjectListIsArchived
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
                 setObjectIsArchived = setObjectIsArchived,
                 duplicateObject = duplicateObject,
                 debugTreeShareDownloader = debugTreeShareDownloader,
-                addToFavorite = addToFavorite,
-                removeFromFavorite = removeFromFavorite,
                 addBackLinkToObject = addBackLinkToObject,
                 urlBuilder = urlBuilder,
                 storage = storage,
@@ -504,7 +498,8 @@ class ObjectMenuViewModel(
                 spaceManager = spaceManager,
                 deepLinkResolver = deepLinkResolver,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-                payloadDelegator = payloadDelegator
+                payloadDelegator = payloadDelegator,
+                setObjectListIsFavorite = setObjectListIsFavorite
             ) as T
         }
     }

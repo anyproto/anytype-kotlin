@@ -10,7 +10,7 @@ interface MiddlewareService {
     //region APP commands
 
     @Throws(Exception::class)
-    fun metricsSetParameters(request: Rpc.Metrics.SetParameters.Request): Rpc.Metrics.SetParameters.Response
+    fun metricsSetParameters(request: Rpc.Initial.SetParameters.Request): Rpc.Initial.SetParameters.Response
 
     @Throws(Exception::class)
     fun versionGet(request: Rpc.App.GetVersion.Request): Rpc.App.GetVersion.Response
@@ -115,13 +115,7 @@ interface MiddlewareService {
     fun objectSetLayout(request: Rpc.Object.SetLayout.Request): Rpc.Object.SetLayout.Response
 
     @Throws(Exception::class)
-    fun objectSetIsFavorite(request: Rpc.Object.SetIsFavorite.Request): Rpc.Object.SetIsFavorite.Response
-
-    @Throws(Exception::class)
     fun objectListSetIsFavorite(request: Rpc.Object.ListSetIsFavorite.Request): Rpc.Object.ListSetIsFavorite.Response
-
-    @Throws(Exception::class)
-    fun objectSetIsArchived(request: Rpc.Object.SetIsArchived.Request): Rpc.Object.SetIsArchived.Response
 
     @Throws(Exception::class)
     fun objectListSetIsArchived(request: Rpc.Object.ListSetIsArchived.Request): Rpc.Object.ListSetIsArchived.Response
@@ -360,6 +354,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockDataViewSortViewRelation(request: Rpc.BlockDataview.ViewRelation.Sort.Request): Rpc.BlockDataview.ViewRelation.Sort.Response
 
+    @Throws(Exception::class)
+    fun blockDataViewSetActiveView(request: Rpc.BlockDataview.View.SetActive.Request): Rpc.BlockDataview.View.SetActive.Response
+
     //endregion
 
     //region TEXT BLOCK commands
@@ -589,5 +586,17 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun diffVersions(request: Rpc.History.DiffVersions.Request): Rpc.History.DiffVersions.Response
+    //endregion
+
+    //region CHATS
+
+    fun chatAddMessage(request: Rpc.Chat.AddMessage.Request): Rpc.Chat.AddMessage.Response
+    fun chatEditMessage(request:  Rpc.Chat.EditMessageContent.Request): Rpc.Chat.EditMessageContent.Response
+    fun chatGetMessages(request: Rpc.Chat.GetMessages.Request): Rpc.Chat.GetMessages.Response
+    fun chatDeleteMessage(request: Rpc.Chat.DeleteMessage.Request): Rpc.Chat.DeleteMessage.Response
+    fun chatSubscribeLastMessages(request: Rpc.Chat.SubscribeLastMessages.Request): Rpc.Chat.SubscribeLastMessages.Response
+    fun chatToggleMessageReaction(request: Rpc.Chat.ToggleMessageReaction.Request): Rpc.Chat.ToggleMessageReaction.Response
+    fun chatUnsubscribe(request: Rpc.Chat.Unsubscribe.Request): Rpc.Chat.Unsubscribe.Response
+
     //endregion
 }

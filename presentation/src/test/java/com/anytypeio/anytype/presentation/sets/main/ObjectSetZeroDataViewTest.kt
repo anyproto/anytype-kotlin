@@ -99,6 +99,6 @@ class ObjectSetZeroDataViewTest : ObjectSetViewModelTestSetup() {
     }
 
     private fun proceedWithStartingViewModel(vm: ObjectSetViewModel) {
-        vm.onStart(ctx = root, space = defaultSpace)
+        vm.onStart()
     }
 }

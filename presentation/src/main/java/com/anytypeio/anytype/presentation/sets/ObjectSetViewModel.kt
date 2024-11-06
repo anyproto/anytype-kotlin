@@ -232,8 +232,6 @@ class ObjectSetViewModel(
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
 
-    private var context: Id = ""
-
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
     init {
@@ -292,7 +290,6 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             titleUpdateChannel
                 .consumeAsFlow()
-                .filter { context.isNotEmpty() }
                 .distinctUntilChanged()
                 .map {
                     UpdateText.Params(
@@ -435,7 +432,7 @@ class ObjectSetViewModel(
             success = { hash ->
                 setDocCoverImage(
                     SetDocCoverImage.Params.FromHash(
-                        context = context,
+                        context = vmParams.ctx,
                         hash = hash
                     )
                 ).process(
@@ -448,14 +445,13 @@ class ObjectSetViewModel(
         )
     }
 
-    fun onStart(ctx: Id, space: Id, view: Id? = null) {
-        Timber.d("onStart, ctx:[$ctx], view:[$view]")
-        this.context = ctx
+    fun onStart(view: Id? = null) {
+        Timber.d("onStart, ctx:[${vmParams.ctx}], space:[${vmParams.space}], view:[$view]")
         if (view != null) {
             session.currentViewerId.value = view
         }
-        subscribeToEvents(ctx = ctx)
-        proceedWithOpeningCurrentObject(ctx = ctx)
+        subscribeToEvents(ctx = vmParams.ctx)
+        proceedWithOpeningCurrentObject(ctx = vmParams.ctx)
         proceedWithObservingProfileIcon()
         proceedWithObservingSyncStatus()
     }
@@ -470,7 +466,7 @@ class ObjectSetViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun subscribeToObjectState() {
-        Timber.d("subscribeToObjectState, ctx:[$context]")
+        Timber.d("subscribeToObjectState, ctx:[${vmParams.ctx}]")
         viewModelScope.launch {
             combine(
                 stateReducer.state,
@@ -585,7 +581,7 @@ class ObjectSetViewModel(
     }
 
     private fun subscribeToDataViewViewer() {
-        Timber.d("subscribeToDataViewViewer, START SUBSCRIPTION by ctx:[$context]")
+        Timber.d("subscribeToDataViewViewer, START SUBSCRIPTION by ctx:[${vmParams.ctx}]")
         viewModelScope.launch {
             combine(
                 database.index,
@@ -649,7 +645,7 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
-                    ctx = context,
+                    ctx = vmParams.ctx,
                     session = session,
                     storeOfRelations = storeOfRelations
                 ) ?: emptyList()
@@ -692,7 +688,7 @@ class ObjectSetViewModel(
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
-        val setOfValue = objectState.getSetOfValue(ctx = context)
+        val setOfValue = objectState.getSetOfValue(ctx = vmParams.ctx)
         val query = objectState.filterOutDeletedAndMissingObjects(query = setOfValue)
         val viewer = objectState.viewerByIdOrFirst(currentViewId)
 
@@ -713,7 +709,7 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
-                    ctx = context,
+                    ctx = vmParams.ctx,
                     session = session,
                     storeOfRelations = storeOfRelations
                 ) ?: emptyList()
@@ -740,7 +736,7 @@ class ObjectSetViewModel(
                     )
                     render.isEmpty() -> {
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            context, viewer, storeOfObjectTypes
+                            vmParams.ctx, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.Set.NoItems(
                             title = render.title,
@@ -750,7 +746,7 @@ class ObjectSetViewModel(
                     }
                     else -> {
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            context, viewer, storeOfObjectTypes
+                            vmParams.ctx, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.Set.Default(
                             viewer = render,
@@ -798,9 +794,9 @@ class ObjectSetViewModel(
     private fun unsubscribeFromAllSubscriptions() {
         viewModelScope.launch {
             val ids = listOf(
-                getDataViewSubscriptionId(context),
+                getDataViewSubscriptionId(vmParams.ctx),
                 HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                "$context$SUBSCRIPTION_TEMPLATES_ID"
+                "${vmParams.ctx}$SUBSCRIPTION_TEMPLATES_ID"
             )
             dataViewSubscription.unsubscribe(ids)
         }
@@ -808,10 +804,15 @@ class ObjectSetViewModel(
 
     private fun proceedWithClosingAndExit() {
         viewModelScope.launch {
-            closeBlock.async(context).fold(
+            closeBlock.async(
+                CloseBlock.Params(
+                    target = vmParams.ctx,
+                    space = vmParams.space
+                )
+            ).fold(
                 onSuccess = { dispatch(AppNavigation.Command.Exit) },
                 onFailure = {
-                    Timber.e(it, "Error while closing object set: $context").also {
+                    Timber.e(it, "Error while closing object set: ${vmParams.ctx}").also {
                         dispatch(AppNavigation.Command.Exit)
                     }
                 }
@@ -834,23 +835,19 @@ class ObjectSetViewModel(
                 )
             }
         } else {
-            if (context.isNotEmpty()) {
-                viewModelScope.launch {
-                    setObjectDetails(
-                        UpdateDetail.Params(
-                            target = context,
-                            key = Relations.NAME,
-                            value = txt
-                        )
-                    ).process(
-                        success = { dispatcher.send(it) },
-                        failure = {
-                            Timber.e(it, "Error while updating object set name")
-                        }
+            viewModelScope.launch {
+                setObjectDetails(
+                    UpdateDetail.Params(
+                        target = vmParams.ctx,
+                        key = Relations.NAME,
+                        value = txt
                     )
-                }
-            } else {
-                Timber.w("Skipping dispatching title update, because set of objects was not ready.")
+                ).process(
+                    success = { dispatcher.send(it) },
+                    failure = {
+                        Timber.e(it, "Error while updating object set name")
+                    }
+                )
             }
         }
     }
@@ -867,7 +864,7 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             setObjectDetails(
                 UpdateDetail.Params(
-                    target = context,
+                    target = vmParams.ctx,
                     key = Relations.DESCRIPTION,
                     value = text
                 )
@@ -885,7 +882,6 @@ class ObjectSetViewModel(
         if (cell.relationKey == Relations.NAME) return
         val state = stateReducer.state.value.dataViewState() ?: return
         viewModelScope.launch {
-            val dataViewBlock = state.dataViewBlock
             val viewer = state.viewerByIdOrFirst(session.currentViewerId.value)
             val relation = storeOfRelations.getByKey(cell.relationKey)
 
@@ -907,30 +903,30 @@ class ObjectSetViewModel(
                 is CellView.Phone -> {
                     dispatch(
                         ObjectSetCommand.Modal.EditGridTextCell(
-                            ctx = context,
+                            ctx = vmParams.ctx,
                             relationKey = cell.relationKey,
                             recordId = cell.id,
-                            space = cell.space
+                            space = vmParams.space.id
                         )
                     )
                 }
                 is CellView.Date -> {
                     dispatch(
                         ObjectSetCommand.Modal.EditGridDateCell(
-                            ctx = context,
+                            ctx = vmParams.ctx,
                             objectId = cell.id,
                             relationKey = cell.relationKey,
-                            space = cell.space
+                            space = vmParams.space.id
                         )
                     )
                 }
                 is CellView.Tag, is CellView.Status -> {
                     dispatch(
                         ObjectSetCommand.Modal.EditTagOrStatusCell(
-                            ctx = context,
+                            ctx = vmParams.ctx,
                             target = cell.id,
                             relationKey = cell.relationKey,
-                            space = cell.space
+                            space = vmParams.space.id
                         )
                     )
                 }
@@ -938,10 +934,10 @@ class ObjectSetViewModel(
                     if (cell.relationKey != Relations.TYPE) {
                         dispatch(
                             ObjectSetCommand.Modal.EditObjectCell(
-                                ctx = context,
+                                ctx = vmParams.ctx,
                                 target = cell.id,
                                 relationKey = cell.relationKey,
-                                space = cell.space
+                                space = vmParams.space.id
                             )
                         )
                     } else {
@@ -970,25 +966,6 @@ class ObjectSetViewModel(
     }
 
     /**
-     *  @param [target] Object is a dependent object, therefore we look for data in details.
-     */
-    private suspend fun onRelationObjectClicked(target: Id) {
-        Timber.d("onCellObjectClicked, id:[$target]")
-        stateReducer.state.value.dataViewState() ?: return
-        val obj = objectStore.get(target) ?: return
-        if (obj.type.contains(ObjectTypeIds.OBJECT_TYPE)) {
-            toast("You cannot change type from here.")
-        } else {
-            proceedWithNavigation(
-                target = target,
-                layout = obj.layout,
-                space = requireNotNull(obj.spaceId),
-                identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
-            )
-        }
-    }
-
-    /**
      * @param [target] object is a record contained in this set.
      */
     fun onObjectHeaderClicked(target: Id) {
@@ -1000,7 +977,7 @@ class ObjectSetViewModel(
                 proceedWithNavigation(
                     target = target,
                     layout = obj.layout,
-                    space = requireNotNull(obj.spaceId),
+                    space = vmParams.space.id,
                     identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
                 )
             } else {
@@ -1070,7 +1047,7 @@ class ObjectSetViewModel(
             toast(NOT_ALLOWED)
         } else {
             val setObject = ObjectWrapper.Basic(
-                currentState.details[context]?.map ?: emptyMap()
+                currentState.details[vmParams.ctx]?.map ?: emptyMap()
             )
             val viewer = currentState.viewerByIdOrFirst(session.currentViewerId.value)
             if (viewer == null) {
@@ -1079,7 +1056,7 @@ class ObjectSetViewModel(
             }
 
             val (defaultObjectType, defaultTemplate) = currentState.getActiveViewTypeAndTemplate(
-                ctx = context,
+                ctx = vmParams.ctx,
                 activeView = viewer,
                 storeOfObjectTypes = storeOfObjectTypes
             )
@@ -1104,7 +1081,7 @@ class ObjectSetViewModel(
                                 dispatch(
                                     ObjectSetCommand.Modal
                                         .CreateBookmark(
-                                            ctx = context,
+                                            ctx = vmParams.ctx,
                                             space = requireNotNull(wrapper.spaceId)
                                         )
                                 )
@@ -1130,7 +1107,7 @@ class ObjectSetViewModel(
                             if (objectTypeUniqueKey == ObjectTypeIds.BOOKMARK) {
                                 dispatch(
                                     ObjectSetCommand.Modal.CreateBookmark(
-                                        ctx = context,
+                                        ctx = vmParams.ctx,
                                         space = requireNotNull(wrapper.spaceId)
                                     )
                                 )
@@ -1173,7 +1150,7 @@ class ObjectSetViewModel(
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
 
         val (defaultObjectType, defaultTemplate) = state.getActiveViewTypeAndTemplate(
-            ctx = context,
+            ctx = vmParams.ctx,
             activeView = viewer,
             storeOfObjectTypes = storeOfObjectTypes
         )
@@ -1210,7 +1187,7 @@ class ObjectSetViewModel(
         } else {
             proceedWithCreatingDataViewObject(createObjectParams) { result ->
                 val params = AddObjectToCollection.Params(
-                    ctx = context,
+                    ctx = vmParams.ctx,
                     after = "",
                     targets = listOf(result.objectId)
                 )
@@ -1250,14 +1227,14 @@ class ObjectSetViewModel(
             proceedWithOpeningObject(
                 target = response.objectId,
                 layout = obj.layout,
-                space = requireNotNull(obj.spaceId)
+                space = vmParams.space.id
             )
         } else {
             dispatch(
                 ObjectSetCommand.Modal.SetNameForCreatedObject(
-                    ctx = context,
+                    ctx = vmParams.ctx,
                     target = response.objectId,
-                    space = requireNotNull(obj.spaceId)
+                    space = vmParams.space.id
                 )
             )
         }
@@ -1296,17 +1273,17 @@ class ObjectSetViewModel(
     fun onMenuClicked() {
         Timber.d("onMenuClicked, ")
         val state = stateReducer.state.value.dataViewState() ?: return
-        val struct = state.details[context]?.map ?: return
+        val struct = state.details[vmParams.ctx]?.map ?: return
         val wrapper = ObjectWrapper.Basic(struct)
         Timber.d("Wrapper: $wrapper")
         val space = wrapper.spaceId
         if (space != null) {
             dispatch(
                 ObjectSetCommand.Modal.Menu(
-                    ctx = context,
+                    ctx = vmParams.ctx,
                     space = space,
-                    isArchived = state.details[context]?.isArchived ?: false,
-                    isFavorite = state.details[context]?.isFavorite ?: false,
+                    isArchived = state.details[vmParams.ctx]?.isArchived ?: false,
+                    isFavorite = state.details[vmParams.ctx]?.isFavorite ?: false,
                 )
             )
         } else {
@@ -1319,13 +1296,13 @@ class ObjectSetViewModel(
     fun onObjectIconClicked() {
         Timber.d("onIconClicked, ")
         val state = stateReducer.state.value.dataViewState() ?: return
-        val struct = state.details[context]
+        val struct = state.details[vmParams.ctx]
         val wrapper = ObjectWrapper.Basic(struct?.map.orEmpty())
         val space = wrapper.spaceId
         if (space != null) {
             dispatch(
                 ObjectSetCommand.Modal.OpenIconActionMenu(
-                    target = context,
+                    target = vmParams.ctx,
                     space = space
                 )
             )
@@ -1355,7 +1332,7 @@ class ObjectSetViewModel(
             val dataViewBlock = state.dataViewBlock
             dispatch(
                 ObjectSetCommand.Modal.OpenSettings(
-                    ctx = context,
+                    ctx = vmParams.ctx,
                     dv = dataViewBlock.id,
                     viewer = viewer
                 )
@@ -1426,9 +1403,9 @@ class ObjectSetViewModel(
         layout: ObjectType.Layout? = null
     ) {
         Timber.d("proceedWithOpeningObject, target:[$target], layout:[$layout]")
-        if (target == context) {
+        if (target == vmParams.ctx) {
             toast("You are already here")
-            Timber.d("proceedWithOpeningObject, target == context")
+            Timber.d("proceedWithOpeningObject, target == vmParams.ctx")
             return
         }
         isCustomizeViewPanelVisible.value = false
@@ -1436,16 +1413,21 @@ class ObjectSetViewModel(
             target = target,
             space = space
         )
-        closeBlock.async(context).fold(
+        closeBlock.async(
+            CloseBlock.Params(
+                target = vmParams.ctx,
+                space = vmParams.space
+            )
+        ).fold(
             onSuccess = { navigate(EventWrapper(navigateCommand)) },
             onFailure = {
-                Timber.e(it, "Error while closing object set: $context")
+                Timber.e(it, "Error while closing object set: ${vmParams.ctx}")
                 navigate(EventWrapper(navigateCommand))
             }
         )
     }
 
-    private suspend fun proceedWithOpeningTemplate(target: Id, targetTypeId: Id, targetTypeKey: Id) {
+    private fun proceedWithOpeningTemplate(target: Id, targetTypeId: Id, targetTypeKey: Id) {
         isCustomizeViewPanelVisible.value = false
         val event = AppNavigation.Command.OpenModalTemplateSelect(
             template = target,
@@ -1453,29 +1435,26 @@ class ObjectSetViewModel(
             templateTypeId = targetTypeId,
             templateTypeKey = targetTypeKey
         )
-        viewModelScope.launch {
-            closeBlock.async(context).fold(
-                onSuccess = { navigate(EventWrapper(event)) },
-                onFailure = {
-                    Timber.e(it, "Error while closing object set: $context")
-                    navigate(EventWrapper(event))
-                }
-            )
-        }
+        navigate(EventWrapper(event))
     }
 
     private suspend fun proceedWithOpeningObjectCollection(
         target: Id,
         space: Id
     ) {
-        if (target == context) {
+        if (target == vmParams.ctx) {
             toast("You are already here")
-            Timber.d("proceedWithOpeningObject, target == context")
+            Timber.d("proceedWithOpeningObject, target == vmParams.ctx")
             return
         }
         isCustomizeViewPanelVisible.value = false
         jobs += viewModelScope.launch {
-            closeBlock.async(context).fold(
+            closeBlock.async(
+                CloseBlock.Params(
+                    target = vmParams.ctx,
+                    space = vmParams.space
+                )
+            ).fold(
                 onSuccess = {
                     navigate(
                         EventWrapper(
@@ -1487,7 +1466,7 @@ class ObjectSetViewModel(
                     )
                 },
                 onFailure = {
-                    Timber.e(it, "Error while closing object set: $context")
+                    Timber.e(it, "Error while closing object set: ${vmParams.ctx}")
                     navigate(
                         EventWrapper(
                             AppNavigation.Command.OpenSetOrCollection(
@@ -1507,9 +1486,9 @@ class ObjectSetViewModel(
         layout: ObjectType.Layout?,
         identityProfileLink: Id? = null
     ) {
-        if (target == context) {
+        if (target == vmParams.ctx) {
             toast("You are already here")
-            Timber.d("proceedWithOpeningObject, target == context")
+            Timber.d("proceedWithOpeningObject, target == vmParams.ctx")
             return
         }
         when (layout) {
@@ -1531,7 +1510,12 @@ class ObjectSetViewModel(
                 space = space
             )
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
-                closeBlock.async(context).fold(
+                closeBlock.async(
+                    CloseBlock.Params(
+                        target = vmParams.ctx,
+                        space = vmParams.space
+                    )
+                ).fold(
                     onSuccess = {
                         navigate(
                             EventWrapper(
@@ -1543,10 +1527,40 @@ class ObjectSetViewModel(
                         )
                     },
                     onFailure = {
-                        Timber.e(it, "Error while closing object set: $context")
+                        Timber.e(it, "Error while closing object set: ${vmParams.ctx}")
                         navigate(
                             EventWrapper(
                                 AppNavigation.Command.OpenSetOrCollection(
+                                    target = target,
+                                    space = space
+                                )
+                            )
+                        )
+                    }
+                )
+            }
+            ObjectType.Layout.CHAT -> {
+                closeBlock.async(
+                    CloseBlock.Params(
+                        target = vmParams.ctx,
+                        space = vmParams.space
+                    )
+                ).fold(
+                    onSuccess = {
+                        navigate(
+                            EventWrapper(
+                                AppNavigation.Command.OpenChat(
+                                    target = target,
+                                    space = space
+                                )
+                            )
+                        )
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while closing object set: ${vmParams.ctx}")
+                        navigate(
+                            EventWrapper(
+                                AppNavigation.Command.OpenChat(
                                     target = target,
                                     space = space
                                 )
@@ -1578,10 +1592,15 @@ class ObjectSetViewModel(
     fun onHomeButtonClicked() {
         viewModelScope.launch {
             clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
-            closeBlock.async(context).fold(
+            closeBlock.async(
+                CloseBlock.Params(
+                    target = vmParams.ctx,
+                    space = vmParams.space
+                )
+            ).fold(
                 onSuccess = { dispatch(AppNavigation.Command.ExitToVault) },
                 onFailure = {
-                    Timber.e(it, "Error while closing object set: $context").also {
+                    Timber.e(it, "Error while closing object set: ${vmParams.ctx}").also {
                         dispatch(AppNavigation.Command.ExitToVault)
                     }
                 }
@@ -1693,7 +1712,7 @@ class ObjectSetViewModel(
                             }
                             is ObjectState.DataView.Set -> {
                                 if (isOwnerOrEditor) {
-                                    val setOfValue = state.getSetOfValue(context)
+                                    val setOfValue = state.getSetOfValue(vmParams.ctx)
                                     val command =
                                         if (state.isSetByRelation(setOfValue = setOfValue)) {
                                             ObjectSetCommand.Modal.ShowObjectSetRelationPopupMenu(
@@ -1713,19 +1732,19 @@ class ObjectSetViewModel(
                             }
                         }
                     }
-                    is ObjectRelationView.ObjectType.Deleted -> TODO()
-                    is ObjectRelationView.Source -> TODO()
-                    else -> TODO()
+                    else -> {
+                        Timber.d("Ignoring click on relation, relation:[${clicked.relation}]")
+                    }
                 }
             }
             is ListenerType.Relation.Featured -> {
                 onRelationClickedListMode(
-                    ctx = context,
+                    ctx = vmParams.ctx,
                     view = clicked.relation
                 )
             }
             else -> {
-                Timber.d("Ignoring click")
+                Timber.d("Ignoring click, listener:[${clicked}]")
             }
         }
     }
@@ -1787,8 +1806,8 @@ class ObjectSetViewModel(
                 RelationFormat.DATE -> {
                     _commands.emit(
                         ObjectSetCommand.Modal.EditGridDateCell(
-                            ctx = context,
-                            objectId = context,
+                            ctx = vmParams.ctx,
+                            objectId = vmParams.ctx,
                             relationKey = relation.key,
                             space = vmParams.space.id
                         )
@@ -1798,7 +1817,7 @@ class ObjectSetViewModel(
                 RelationFormat.TAG -> {
                     _commands.emit(
                         ObjectSetCommand.Modal.EditTagOrStatusRelationValue(
-                            ctx = context,
+                            ctx = vmParams.ctx,
                             relation = relation.key,
                             space = requireNotNull(relation.spaceId)
                         )
@@ -1808,7 +1827,7 @@ class ObjectSetViewModel(
                 RelationFormat.OBJECT -> {
                     _commands.emit(
                         ObjectSetCommand.Modal.EditObjectRelationValue(
-                            ctx = context,
+                            ctx = vmParams.ctx,
                             relation = relation.key,
                             space = requireNotNull(relation.spaceId)
                         )
@@ -1832,7 +1851,7 @@ class ObjectSetViewModel(
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = SetQueryToObjectSet.Params(
-                ctx = context,
+                ctx = vmParams.ctx,
                 query = query
             )
             setQueryToObjectSet.async(params).fold(
@@ -1854,7 +1873,7 @@ class ObjectSetViewModel(
 
     fun proceedWithConvertingToCollection() {
         val startTime = System.currentTimeMillis()
-        val params = ConvertObjectToCollection.Params(ctx = context)
+        val params = ConvertObjectToCollection.Params(ctx = vmParams.ctx)
         viewModelScope.launch {
             objectToCollection.async(params).fold(
                 onFailure = { error -> Timber.e(error, "Error convert object to collection") },
@@ -1901,7 +1920,7 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             val dataView = stateReducer.state.value.dataViewState() ?: return@launch
             val viewer = getViewer(dataView) ?: return@launch
-            val (type, _) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
+            val (type, _) = dataView.getActiveViewTypeAndTemplate(vmParams.ctx, viewer, storeOfObjectTypes)
             if (type == null) return@launch
             typeTemplatesWidgetState.value = createState(viewer)
             selectedTypeFlow.value = type
@@ -1912,41 +1931,43 @@ class ObjectSetViewModel(
     fun onTypeTemplatesWidgetAction(action: TypeTemplatesWidgetUIAction) {
         Timber.d("onTypeTemplatesWidgetAction, action:[$action]")
         val uiState = typeTemplatesWidgetState.value
-        viewModelScope.launch {
-            when (action) {
-                is TypeTemplatesWidgetUIAction.TypeClick.Item -> {
-                    when (uiState) {
-                        is TypeTemplatesWidgetUI.Data -> {
-                            selectedTypeFlow.value = action.type
-                        }
-                        is TypeTemplatesWidgetUI.Init -> Unit
+        when (action) {
+            is TypeTemplatesWidgetUIAction.TypeClick.Item -> {
+                when (uiState) {
+                    is TypeTemplatesWidgetUI.Data -> {
+                        selectedTypeFlow.value = action.type
                     }
+
+                    is TypeTemplatesWidgetUI.Init -> Unit
                 }
-                TypeTemplatesWidgetUIAction.TypeClick.Search -> {
+            }
+            TypeTemplatesWidgetUIAction.TypeClick.Search -> {
+                viewModelScope.launch {
                     _commands.emit(
                         ObjectSetCommand.Modal.OpenSelectTypeScreen(
                             excludedTypes = emptyList()
                         )
                     )
                 }
-                is TypeTemplatesWidgetUIAction.TemplateClick -> {
-                    when (uiState) {
-                        is TypeTemplatesWidgetUI.Data -> uiState.onTemplateClick(action.template)
-                        is TypeTemplatesWidgetUI.Init -> Unit
-                    }
+            }
+            is TypeTemplatesWidgetUIAction.TemplateClick -> {
+                viewModelScope.launch {
+                    uiState.onTemplateClick(action.template)
                 }
             }
         }
     }
 
-    private suspend fun TypeTemplatesWidgetUI.Data.onTemplateClick(
+    private suspend fun TypeTemplatesWidgetUI.onTemplateClick(
         templateView: TemplateView
     ) {
-        if (moreMenuItem != null) {
+        if (this is TypeTemplatesWidgetUI.Data && moreMenuItem != null) {
             typeTemplatesWidgetState.value = hideMoreMenu()
             return
         }
-        typeTemplatesWidgetState.value = copy(showWidget = false)
+        if (this is TypeTemplatesWidgetUI.Data) {
+            typeTemplatesWidgetState.value = copy(showWidget = false)
+        }
         selectedTypeFlow.value = null
         delay(DELAY_BEFORE_CREATING_TEMPLATE)
         when (templateView) {
@@ -1990,7 +2011,6 @@ class ObjectSetViewModel(
                 )
             }
             is TemplateView.New -> {
-                hideTemplatesWidget()
                 proceedWithCreatingTemplate(
                     targetTypeId = templateView.targetTypeId.id,
                     targetTypeKey = templateView.targetTypeKey.key
@@ -2023,7 +2043,7 @@ class ObjectSetViewModel(
                     templatesContainer.subscribeToTemplates(
                         type = selectedType.id,
                         space = vmParams.space,
-                        subscription = "$context$SUBSCRIPTION_TEMPLATES_ID"
+                        subscription = "${vmParams.ctx}$SUBSCRIPTION_TEMPLATES_ID"
                     )
                 }.map { templates ->
                     val state = stateReducer.state.value
@@ -2032,7 +2052,7 @@ class ObjectSetViewModel(
                     val viewer = dataView.viewerById(viewerId) ?: return@map emptyList<TemplateView>()
                     val selectedTypeId = selectedTypeFlow.value?.id ?: return@map emptyList<TemplateView>()
                     val (type, template) = dataView.getActiveViewTypeAndTemplate(
-                        context,
+                        vmParams.ctx,
                         viewer,
                         storeOfObjectTypes
                     )
@@ -2135,7 +2155,7 @@ class ObjectSetViewModel(
         typeId: Id,
         typeKey: Id
     ) {
-        Timber.d("proceedWithSelectedTemplate, template:[$template], objectType:[$typeId]")
+        Timber.d("proceedWithSelectedTemplate, template:[$template], typeId:[$typeId], typeKey:[$typeKey]")
         val templateView = TemplateView.Template(
             id = template,
             targetTypeId = TypeId(typeId),
@@ -2200,33 +2220,32 @@ class ObjectSetViewModel(
         } + newTemplate
     }
 
-    private fun proceedWithCreatingTemplate(targetTypeId: Id, targetTypeKey: Id) {
-        viewModelScope.launch {
-            delay(DELAY_BEFORE_CREATING_TEMPLATE)
-            val params = CreateTemplate.Params(
-                targetObjectTypeId = targetTypeId
-            )
-            createTemplate.async(params).fold(
-                onSuccess = { id ->
-                    logEvent(
-                        state = stateReducer.state.value,
-                        analytics = analytics,
-                        event = ObjectStateAnalyticsEvent.CREATE_TEMPLATE,
-                        type = storeOfObjectTypes.get(targetTypeId)?.sourceObject,
-                        spaceParams = provideParams(vmParams.space.id)
-                    )
-                    proceedWithOpeningTemplate(
-                        target = id,
-                        targetTypeId = targetTypeId,
-                        targetTypeKey = targetTypeKey
-                    )
-                },
-                onFailure = { e ->
-                    Timber.e(e, "Error while creating new template")
-                    toast("Error while creating new template")
-                }
-            )
-        }
+    private suspend fun proceedWithCreatingTemplate(targetTypeId: Id, targetTypeKey: Id) {
+        delay(DELAY_BEFORE_CREATING_TEMPLATE)
+        val params = CreateTemplate.Params(
+            targetObjectTypeId = targetTypeId,
+            spaceId = vmParams.space
+        )
+        createTemplate.async(params).fold(
+            onSuccess = { createObjectResult ->
+                viewModelScope.logEvent(
+                    state = stateReducer.state.value,
+                    analytics = analytics,
+                    event = ObjectStateAnalyticsEvent.CREATE_TEMPLATE,
+                    type = storeOfObjectTypes.get(targetTypeId)?.sourceObject,
+                    spaceParams = provideParams(vmParams.space.id)
+                )
+                proceedWithOpeningTemplate(
+                    target = createObjectResult.id,
+                    targetTypeId = targetTypeId,
+                    targetTypeKey = targetTypeKey
+                )
+            },
+            onFailure = { e ->
+                Timber.e(e, "Error while creating new template")
+                toast("Error while creating new template")
+            }
+        )
     }
 
     fun onEditTemplateButtonClicked() {
@@ -2288,7 +2307,7 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun proceedWithUpdatingViewDefaultTemplate() {
+    private suspend fun proceedWithUpdatingViewDefaultTemplate() {
         when (val uiState = typeTemplatesWidgetState.value) {
             is TypeTemplatesWidgetUI.Data -> {
                 when (val templateToSetAsDefault = uiState.moreMenuItem) {
@@ -2415,7 +2434,7 @@ class ObjectSetViewModel(
                     val startTime = System.currentTimeMillis()
                     onEvent(
                         ViewerEvent.Delete(
-                            ctx = context,
+                            ctx = vmParams.ctx,
                             dv = state.dataViewBlock.id,
                             viewer = action.viewer,
                             onResult = {
@@ -2447,7 +2466,7 @@ class ObjectSetViewModel(
                     val type = action.currentViews[action.to].type
                     viewerDelegate.onEvent(
                         ViewerEvent.UpdatePosition(
-                            ctx = context,
+                            ctx = vmParams.ctx,
                             dv = state.dataViewBlock.id,
                             viewer = action.currentViews[action.to].id,
                             position = action.to,
@@ -2497,7 +2516,7 @@ class ObjectSetViewModel(
                     val startTime = System.currentTimeMillis()
                     viewerDelegate.onEvent(
                         ViewerEvent.AddNew(
-                            ctx = context,
+                            ctx = vmParams.ctx,
                             dv = state.dataViewBlock.id,
                             viewer = newView,
                             onResult = { newViewId ->
@@ -2528,7 +2547,7 @@ class ObjectSetViewModel(
                 val viewer = viewerId ?: state.viewerByIdOrFirst(session.currentViewerId.value)?.id ?: return
                 dispatch(
                     ObjectSetCommand.Modal.ModifyViewerFilters(
-                        ctx = context,
+                        ctx = vmParams.ctx,
                         viewer = viewer
                     )
                 )
@@ -2547,7 +2566,7 @@ class ObjectSetViewModel(
                 val viewer = viewerId ?: state.viewerByIdOrFirst(session.currentViewerId.value)?.id ?: return
                 dispatch(
                     ObjectSetCommand.Modal.ModifyViewerSorts(
-                        ctx = context,
+                        ctx = vmParams.ctx,
                         viewer = viewer
                     )
                 )
@@ -2588,7 +2607,7 @@ class ObjectSetViewModel(
                 viewModelScope.launch {
                     viewerDelegate.onEvent(
                         ViewerEvent.UpdateView(
-                            ctx = context,
+                            ctx = vmParams.ctx,
                             dv = state.dataViewBlock.id,
                             viewer = viewer.copy(name = action.name),
                             onResult = {}
@@ -2607,7 +2626,7 @@ class ObjectSetViewModel(
                     val startTime = System.currentTimeMillis()
                     viewerDelegate.onEvent(
                         ViewerEvent.Delete(
-                            ctx = context,
+                            ctx = vmParams.ctx,
                             dv = state.dataViewBlock.id,
                             viewer = action.id,
                             onResult = {
@@ -2630,7 +2649,7 @@ class ObjectSetViewModel(
                     val startTime = System.currentTimeMillis()
                     viewerDelegate.onEvent(
                         ViewerEvent.Duplicate(
-                            ctx = context,
+                            ctx = vmParams.ctx,
                             dv = state.dataViewBlock.id,
                             viewer = viewer,
                             onResult = {
@@ -2736,28 +2755,36 @@ class ObjectSetViewModel(
                     viewerLayoutWidgetState.value.copy(showCoverMenu = !isCoverMenuVisible)
             }
             is ViewerLayoutWidgetUi.Action.FitImage -> {
-                proceedWithUpdateViewer(
-                    viewerId = viewerLayoutWidgetState.value.viewer
-                ) { it.copy(coverFit = action.toggled) }
+                viewModelScope.launch {
+                    proceedWithUpdateViewer(
+                        viewerId = viewerLayoutWidgetState.value.viewer
+                    ) { it.copy(coverFit = action.toggled) }
+                }
             }
             is ViewerLayoutWidgetUi.Action.Icon -> {
-                proceedWithUpdateViewer(
-                    viewerId = viewerLayoutWidgetState.value.viewer
-                ) { it.copy(hideIcon = !action.toggled) }
+                viewModelScope.launch {
+                    proceedWithUpdateViewer(
+                        viewerId = viewerLayoutWidgetState.value.viewer
+                    ) { it.copy(hideIcon = !action.toggled) }
+                }
             }
             is ViewerLayoutWidgetUi.Action.CardSize -> {
                 viewerLayoutWidgetState.value =
                     viewerLayoutWidgetState.value.copy(showCardSize = false)
                 when (action.cardSize) {
                     ViewerLayoutWidgetUi.State.CardSize.Small -> {
-                        proceedWithUpdateViewer(
-                            viewerId = viewerLayoutWidgetState.value.viewer
-                        ) { it.copy(cardSize = DVViewerCardSize.SMALL) }
+                        viewModelScope.launch {
+                            proceedWithUpdateViewer(
+                                viewerId = viewerLayoutWidgetState.value.viewer
+                            ) { it.copy(cardSize = DVViewerCardSize.SMALL) }
+                        }
                     }
                     ViewerLayoutWidgetUi.State.CardSize.Large -> {
-                        proceedWithUpdateViewer(
-                            viewerId = viewerLayoutWidgetState.value.viewer
-                        ) { it.copy(cardSize = DVViewerCardSize.LARGE) }
+                        viewModelScope.launch {
+                            proceedWithUpdateViewer(
+                                viewerId = viewerLayoutWidgetState.value.viewer
+                            ) { it.copy(cardSize = DVViewerCardSize.LARGE) }
+                        }
                     }
                 }
             }
@@ -2766,9 +2793,11 @@ class ObjectSetViewModel(
                     is ViewerLayoutWidgetUi.State.ImagePreview.PageCover -> {
                         val itemIsChecked = action.item.isChecked
                         if (!itemIsChecked) {
-                            proceedWithUpdateViewer(
-                                viewerId = viewerLayoutWidgetState.value.viewer
-                            ) { it.copy(coverRelationKey = action.item.relationKey.key) }
+                            viewModelScope.launch {
+                                proceedWithUpdateViewer(
+                                    viewerId = viewerLayoutWidgetState.value.viewer
+                                ) { it.copy(coverRelationKey = action.item.relationKey.key) }
+                            }
                         } else {
                             Timber.i("Page cover is already set")
                         }
@@ -2777,9 +2806,11 @@ class ObjectSetViewModel(
                     is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> {
                         val itemIsChecked = action.item.isChecked
                         if (!itemIsChecked) {
-                            proceedWithUpdateViewer(
-                                viewerId = viewerLayoutWidgetState.value.viewer
-                            ) { it.copy(coverRelationKey = action.item.relationKey.key) }
+                            viewModelScope.launch {
+                                proceedWithUpdateViewer(
+                                    viewerId = viewerLayoutWidgetState.value.viewer
+                                ) { it.copy(coverRelationKey = action.item.relationKey.key) }
+                            }
                         } else {
                             Timber.i("Custom cover [${action.item.relationKey.key}] is already set")
                         }
@@ -2788,9 +2819,11 @@ class ObjectSetViewModel(
                     is ViewerLayoutWidgetUi.State.ImagePreview.None -> {
                         val itemIsChecked = action.item.isChecked
                         if (!itemIsChecked) {
-                            proceedWithUpdateViewer(
-                                viewerId = viewerLayoutWidgetState.value.viewer
-                            ) { it.copy(coverRelationKey = null) }
+                            viewModelScope.launch {
+                                proceedWithUpdateViewer(
+                                    viewerId = viewerLayoutWidgetState.value.viewer
+                                ) { it.copy(coverRelationKey = null) }
+                            }
                         } else {
                             Timber.i("No cover is already set")
                         }
@@ -2798,22 +2831,24 @@ class ObjectSetViewModel(
                 }
             }
             is ViewerLayoutWidgetUi.Action.Type -> {
-                proceedWithUpdateViewer(
-                    action = {
-                        val startTime = System.currentTimeMillis()
-                        viewModelScope.launch {
-                            logEvent(
-                                state = stateReducer.state.value,
-                                analytics = analytics,
-                                event = ObjectStateAnalyticsEvent.CHANGE_VIEW_TYPE,
-                                startTime = startTime,
-                                type = action.type.formattedName,
-                                spaceParams = provideParams(vmParams.space.id)
-                            )
-                        }
-                    },
-                    viewerId = viewerLayoutWidgetState.value.viewer
-                ) { it.copy(type = action.type) }
+                viewModelScope.launch {
+                    proceedWithUpdateViewer(
+                        action = {
+                            val startTime = System.currentTimeMillis()
+                            viewModelScope.launch {
+                                logEvent(
+                                    state = stateReducer.state.value,
+                                    analytics = analytics,
+                                    event = ObjectStateAnalyticsEvent.CHANGE_VIEW_TYPE,
+                                    startTime = startTime,
+                                    type = action.type.formattedName,
+                                    spaceParams = provideParams(vmParams.space.id)
+                                )
+                            }
+                        },
+                        viewerId = viewerLayoutWidgetState.value.viewer
+                    ) { it.copy(type = action.type) }
+                }
             }
 
             ViewerLayoutWidgetUi.Action.DismissCoverMenu -> viewerLayoutWidgetState.value =
@@ -2823,23 +2858,25 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun proceedWithUpdateViewer(action: () -> Unit = {}, viewerId: Id?, update: (DVViewer) -> DVViewer) {
+    private suspend fun proceedWithUpdateViewer(
+        action: () -> Unit = {},
+        viewerId: Id?,
+        update: (DVViewer) -> DVViewer
+    ) {
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerById(viewerId)
         if (viewer == null) {
             Timber.e("Couldn't find viewer by id: ${viewerLayoutWidgetState.value.viewer}")
             return
         }
-        viewModelScope.launch {
-            viewerDelegate.onEvent(
-                ViewerEvent.UpdateView(
-                    ctx = context,
-                    dv = state.dataViewBlock.id,
-                    viewer = update.invoke(viewer),
-                    onResult = action
-                )
+        viewerDelegate.onEvent(
+            ViewerEvent.UpdateView(
+                ctx = vmParams.ctx,
+                dv = state.dataViewBlock.id,
+                viewer = update.invoke(viewer),
+                onResult = action
             )
-        }
+        )
     }
     //endregion
 

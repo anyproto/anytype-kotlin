@@ -13,7 +13,7 @@
     android:right="8dp">
     <shape
         android:shape="oval">
-        <solid android:color="#929082" />
+        <solid android:color="@color/default_grey" />
         <size android:width="4dp" android:height="4dp"/>
     </shape>
 </item>

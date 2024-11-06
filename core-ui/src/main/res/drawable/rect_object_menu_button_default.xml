@@ -5,7 +5,7 @@
         <shape
             android:shape="rectangle">
             <corners android:radius="7dp" />
-            <solid android:color="#26000000" />
+            <solid android:color="@color/object_menu_button_default_black_transparent" />
         </shape>
     </item>
 </ripple>

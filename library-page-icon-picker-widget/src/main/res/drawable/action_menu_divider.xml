@@ -3,5 +3,5 @@
     <size
         android:width="1dp"
         android:height="1dp" />
-    <solid android:color="#EAE9E0" />
+    <solid android:color="@color/toolbar_keyboard_background" />
 </shape>

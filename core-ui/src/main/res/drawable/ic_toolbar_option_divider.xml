@@ -4,12 +4,12 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:fillColor="#A646C9"
+        android:fillColor="@color/toolbar_section_other"
         android:pathData="M6,5h11.9688v2h-11.9688z" />
     <path
-        android:fillColor="#A646C9"
+        android:fillColor="@color/toolbar_section_other"
         android:pathData="M3,11h18v2h-18z" />
     <path
-        android:fillColor="#A646C9"
+        android:fillColor="@color/toolbar_section_other"
         android:pathData="M6,17h11.9688v2h-11.9688z" />
 </vector>

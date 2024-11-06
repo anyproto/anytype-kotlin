@@ -10,15 +10,15 @@
         <path
             android:pathData="M18,18m-14,0a14,14 0,1 1,28 0a14,14 0,1 1,-28 0"
             android:strokeWidth="4"
-            android:fillColor="#00000000">
+            android:fillColor="@color/transparent_black">
             <aapt:attr name="android:strokeColor">
                 <gradient
                     android:centerX="18"
                     android:centerY="18"
                     android:gradientRadius="16"
                     android:type="sweep">
-                    <item android:offset="0" android:color="#00A7A7A7"/>
-                    <item android:offset="1" android:color="#FFA7A7A7"/>
+                    <item android:offset="0" android:color="@color/loading_start_transparent"/>
+                    <item android:offset="1" android:color="@color/loading_end"/>
                 </gradient>
             </aapt:attr>
         </path>

@@ -253,4 +253,165 @@
 
     <color name="object_search_cursor_color">#007AFF</color>
 
+    <color name="overlay_black_light_5">#0D000000</color>
+    <color name="transparent_black">#00000000</color>
+    <color name="overlay_black_35">#59000000</color>
+    <color name="background_light_gray">#F3F2EC</color>
+    <color name="background_soft_beige">#DFDDD0</color>
+    <color name="gradient_soft_gray_start">#FFACA996</color>
+    <color name="gradient_soft_gray_end_transparent">#00ACA996</color>
+
+    <!-- Colors from ic_alert_install_gallery.xml -->
+    <color name="gallery_gradient_start">#FFA9F496</color>
+    <color name="gallery_gradient_end">#00BCF2AF</color>
+    <color name="gallery_inactive_gray">#D9D9D9</color>
+
+    <!-- Colors from ic_block_task_checked.xml -->
+    <color name="task_complete_green">#83CF36</color>
+    <color name="toolbar_keyboard_background">#EAE9E0</color>
+    <color name="checkbox_blue">#1BA0EB</color>
+
+    <color name="dnd_muted_gray">#CCCABB</color>
+
+    <!-- Colors from ic_home_widget_space.xml -->
+    <color name="widget_gradient_start">#FFEDD89A</color>
+    <color name="widget_gradient_end">#FFCA4565</color>
+
+    <!-- Colors from ic_icon_loading.xml -->
+    <color name="loading_start_transparent">#00A7A7A7</color>
+    <color name="loading_end">#FFA7A7A7</color>
+
+    <color name="border_gray">#ABA99B</color>
+
+    <!-- Colors from ic_layout_gallery.xml -->
+    <color name="gallery_gradient_bg_start">#FFE9E9E9</color>
+    <color name="gallery_gradient_bg_end">#00F2F2F2</color>
+
+    <!-- Colors from  ic_local_first_internet.xml -->
+    <color name="network_light_gray">#D4D4D4</color>
+
+    <!-- Colors from ic_manage_dv_viewer_grid.xml -->
+    <color name="grid_highlight_orange">#E88B00</color>
+
+    <!-- Colors from ic_object_relation_format -->
+    <color name="tag_date_fill">#FFC107</color>
+    <color name="tag_object_fill">#FF9800</color>
+    <color name="tag_text_fill">#03A9F4</color>
+    <color name="tag_title_fill">#673AB7</color>
+
+    <!-- Colors from ic_onboarding_settings.xml -->
+    <color name="settings_dark_gray">#7B7A72</color>
+
+    <!-- Colors from  ic_relation_format_tag_small.xml -->
+    <color name="tag_icon_gray">#B6B6B6</color>
+
+    <!-- Colors from  ic_set_big.xml -->
+    <color name="set_big_bg_light_gray">#B6C0CF</color>
+    <color name="set_big_bg_medium_gray">#CAD1DC</color>
+    <color name="set_big_bg_dark_gray">#DDE2E9</color>
+
+    <!-- Colors from  из ic_shared_space_arrow.xml -->
+    <color name="space_arrow_overlay_black">#B3252525</color>
+
+    <!--Colors from ic_slash_main_style.xml -->
+    <color name="slash_accent_orange">#F59D08</color>
+
+    <!-- Colors from ic_slash_main_style.xml -->
+    <color name="icon_primary_blue">#1BA0EB</color>
+
+    <!-- Colors from ic_remove_widget.xml -->
+    <color name="widget_remove_dark_gray">#CC2C2B27</color>
+
+    <!-- Colors from из ic_slash_media_picture.xml -->
+    <color name="slash_picture_green">#38C569</color>
+
+    <!--Colors from из ic_sync_grey_10.xml, ic_system_relation.xml -->
+    <color name="sync_icon_gray">#A7A7A7</color>
+
+    <!--Colors from ic_task_1_h1.xml -->
+    <color name="success_green">#57C600</color>
+
+    <!-- Colors from из ic_widget_bundled_source_collection.xml -->
+    <color name="collection_grey_gradient_start">#7FA7A7A7</color>
+    <color name="collection_grey_gradient_end">#FFB6B6B6</color>
+
+    <!-- Colors from item_block_multi_select_selected.xml -->
+    <color name="multi_select_highlight">#33FFB522</color>
+
+    <!-- Colors from logo_builder_64.xml -->
+    <color name="logo_gradient_start">#00A5AEFF</color>
+    <color name="logo_gradient_end">#FFA5AEFF</color>
+
+    <!-- Colors from logo_co_creator_64.xml -->
+    <color name="gradient_light_red_gray_start">#00F05F5F</color>
+    <color name="gradient_light_red_gray_end">#FFF05F5F</color>
+
+    <!-- Colors from logo_custom_64.xml -->
+    <color name="custom_logo_gradient_start">#00E86DE3</color>
+    <color name="custom_logo_gradient_end">#FFE86DE3</color>
+
+    <!-- Colors from logo_explorer_64.xml -->
+    <color name="explorer_gradient_outer_start">#0024BFD4</color>
+    <color name="explorer_gradient_outer_end">#FF24BFD4</color>
+    <color name="explorer_gradient_inner_start">#002AAFC1</color>
+    <color name="explorer_gradient_inner_end">#FF2AAFC1</color>
+
+    <!-- Colors from progressbar.xml-->
+    <color name="progressbar_background">#BDC3C7</color>
+    <color name="progressbar_secondary_progress">#3397DA</color>
+
+    <!-- Colors from rect_default_dragged_block_background.xml -->
+    <color name="dragged_block_stroke">#332AA7EE</color>
+
+    <!-- Colors from rect_dv_manage_viewer_background_active.xml -->
+    <color name="dv_manage_viewer_background_active">#26ACA996</color>
+
+    <!-- Colors fromrect_object_menu_button_default.xml -->
+    <color name="object_menu_button_default_black_transparent">#26000000</color>
+
+    <!-- Colors from rect_tab_layouts.xml -->
+    <color name="tab_layout_stroke_color">#D4D2C5</color>
+
+    <!-- Colors from rectangle_default_page_logo_background.xml -->
+    <color name="page_logo_background">#F7F5F0</color>
+
+    <!-- Colors from rounded_dialog_network_settings.xml -->
+    <color name="dialog_network_background">#171717</color>
+
+    <!-- Colors from wallpaper_gradient_1.xml -->
+    <color name="wallpaper_gradient_1_start">#D8A4E1</color>
+    <color name="wallpaper_gradient_1_center">#FDD0CD</color>
+    <color name="wallpaper_gradient_1_end">#FFCC81</color>
+
+    <!-- Colors from wallpaper_gradient_2.xml -->
+    <color name="wallpaper_gradient_2_start">#73B7F0</color>
+    <color name="wallpaper_gradient_2_center">#ABB6ED</color>
+    <color name="wallpaper_gradient_2_end">#F3BFAC</color>
+
+    <!-- Colors extracted from wallpaper_gradient_3.xml -->
+    <color name="wallpaper_gradient_3_start">#63B3CB</color>
+    <color name="wallpaper_gradient_3_center">#C5D3AC</color>
+    <color name="wallpaper_gradient_3_end">#F6C47A</color>
+
+    <!-- Colors extracted from wallpaper_gradient_4.xml -->
+    <color name="wallpaper_gradient_4_start">#6EB6E4</color>
+    <color name="wallpaper_gradient_4_center">#A4CFEC</color>
+    <color name="wallpaper_gradient_4_end">#DAEAF3</color>
+
+    <!-- Color from ic_launcher_background.xml -->
+    <color name="background_primary_teal">#008577</color>
+    <color name="grid_line_translucent_white">#33FFFFFF</color>
+
+    <!-- Colors extracted from ic_launcher_foreground.xml -->
+    <color name="translucent_black">#44000000</color>
+
+    <!-- Colors extracted from ic_personalization.xml -->
+    <color name="personalization_background_purple">#9F43C1</color>
+
+    <!-- Colors extracted from item_create_filter_tag.xml -->
+    <color name="tag_background_tint">#D6F5F3</color>
+    <color name="tag_text_color">#0CBBAE</color>
+
+    <!-- Colors extracted from playback_off.xml -->
+    <color name="playback_overlay_black">#54000000</color>
 </resources>

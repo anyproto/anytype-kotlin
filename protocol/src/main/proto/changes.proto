@@ -8,12 +8,6 @@ import "google/protobuf/struct.proto";
 
 // the element of change tree used to store and internal apply smartBlock history
 message Change {
-    // ids of previous changes
-    repeated string previous_ids = 1;
-    // id of the last snapshot
-    string last_snapshot_id = 2;
-    // ids of the last changes with details/relations content
-    repeated string previous_meta_ids = 5;
     // set of actions to apply
     repeated Content content = 3;
     // snapshot - when not null, the Content will be ignored
@@ -181,6 +175,16 @@ message Change {
     }
 }
 
+message ChangeNoSnapshot {
+    // set of actions to apply
+    repeated Change.Content content = 3;
+    // file keys related to changes content
+    repeated Change.FileKeys fileKeys = 6;
+    // creation timestamp
+    int64 timestamp = 7;
+    // version of business logic
+    uint32 version = 8;
+}
 
 message StoreChange {
     repeated StoreChangeContent changeSet = 1;

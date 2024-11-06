@@ -12,17 +12,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
-import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
-import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
+import com.anytypeio.anytype.feature_date.presentation.DateLayoutViewModel
+import com.anytypeio.anytype.feature_date.presentation.DateLayoutViewModelFactory
 import com.anytypeio.anytype.feature_date.ui.DateLayoutScreen
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
 class DateLayoutFragment : BaseComposeFragment() {
     @Inject
-    lateinit var factory: AllContentViewModelFactory
+    lateinit var factory: DateLayoutViewModelFactory
 
-    private val vm by viewModels<AllContentViewModel> { factory }
+    private val vm by viewModels<DateLayoutViewModel> { factory }
 
     private val space get() = argString(ARG_SPACE)
 
@@ -45,7 +45,7 @@ class DateLayoutFragment : BaseComposeFragment() {
             startDestination = DATE_MAIN
         ) {
             composable(route = DATE_MAIN) {
-                DateLayoutScreen()
+                //DateLayoutScreen()
             }
         }
     }

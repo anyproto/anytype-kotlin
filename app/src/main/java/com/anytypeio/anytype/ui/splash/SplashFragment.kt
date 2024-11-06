@@ -73,6 +73,24 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                         }
                     }
                 }
+
+                launch {
+                    vm.loadingState.collect { isLoading ->
+                        when (isLoading) {
+                            true -> {
+                                binding.loadingContainer.setContent {
+                                    PulsatingCircleScreen()
+                                }
+                                binding.logo.visibility = View.GONE
+                                binding.loadingContainer.visibility = View.VISIBLE
+                            }
+                            false ->  {
+                                binding.logo.visibility = View.GONE
+                                binding.loadingContainer.visibility = View.GONE
+                            }
+                        }
+                    }
+                }
             }
         }
         if (BuildConfig.DEBUG) {

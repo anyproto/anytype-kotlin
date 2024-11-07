@@ -23,13 +23,13 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.feature_date.R
-import com.anytypeio.anytype.feature_date.models.DateLayoutHeaderState
-import com.anytypeio.anytype.feature_date.models.DateLayoutTopToolbarState
+import com.anytypeio.anytype.feature_date.models.DateObjectHeaderState
+import com.anytypeio.anytype.feature_date.models.DateObjectTopToolbarState
 
 @Composable
 fun DateLayoutHeader(
-    state: DateLayoutHeaderState.Content,
-    onAction: (DateLayoutHeaderState.Action) -> Unit
+    state: DateObjectHeaderState.Content,
+    onAction: (DateObjectHeaderState.Action) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -42,7 +42,7 @@ fun DateLayoutHeader(
                 .width(52.dp)
                 .rotate(180f)
                 .clickable {
-                    onAction(DateLayoutHeaderState.Action.Previous)
+                    onAction(DateObjectHeaderState.Action.Previous)
                 },
             contentDescription = "Previous day",
             painter = painterResource(id = R.drawable.ic_arrow_disclosure_18),
@@ -65,7 +65,7 @@ fun DateLayoutHeader(
                 .height(48.dp)
                 .width(52.dp)
                 .clickable {
-                    onAction(DateLayoutHeaderState.Action.Next)
+                    onAction(DateObjectHeaderState.Action.Next)
                 },
             contentDescription = "Next day",
             painter = painterResource(id = R.drawable.ic_arrow_disclosure_18),
@@ -76,8 +76,8 @@ fun DateLayoutHeader(
 
 @Composable
 fun DateLayoutTopToolbar(
-    state: DateLayoutTopToolbarState.Content,
-    action: (DateLayoutTopToolbarState.Action) -> Unit
+    state: DateObjectTopToolbarState.Content,
+    action: (DateObjectTopToolbarState.Action) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -89,7 +89,7 @@ fun DateLayoutTopToolbar(
                 .size(48.dp)
                 .align(Alignment.CenterEnd)
                 .clickable {
-                    action(DateLayoutTopToolbarState.Action.Calendar)
+                    action(DateObjectTopToolbarState.Action.Calendar)
                 },
             contentDescription = null,
             painter = painterResource(id = R.drawable.ic_calendar_24),
@@ -102,7 +102,7 @@ fun DateLayoutTopToolbar(
 @DefaultPreviews
 fun DateLayoutTopToolbarPreview() {
     DateLayoutTopToolbar(
-        state = DateLayoutTopToolbarState.Content(SpaceSyncStatus.SYNCING),
+        state = DateObjectTopToolbarState.Content(SpaceSyncStatus.SYNCING),
         action = {}
     )
 }
@@ -110,6 +110,6 @@ fun DateLayoutTopToolbarPreview() {
 @Composable
 @DefaultPreviews
 fun DateLayoutHeaderPreview() {
-    val state = DateLayoutHeaderState.Content("Tue, 12 Oct")
+    val state = DateObjectHeaderState.Content("Tue, 12 Oct")
     DateLayoutHeader(state) {}
 }

@@ -22,26 +22,26 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_date.R
-import com.anytypeio.anytype.feature_date.models.DateLayoutBottomMenu
-import com.anytypeio.anytype.feature_date.models.DateLayoutHeaderState
-import com.anytypeio.anytype.feature_date.models.DateLayoutHorizontalListState
-import com.anytypeio.anytype.feature_date.models.DateLayoutTopToolbarState
-import com.anytypeio.anytype.feature_date.models.DateLayoutVerticalListState
+import com.anytypeio.anytype.feature_date.models.DateObjectBottomMenu
+import com.anytypeio.anytype.feature_date.models.DateObjectHeaderState
+import com.anytypeio.anytype.feature_date.models.DateObjectHorizontalListState
+import com.anytypeio.anytype.feature_date.models.DateObjectTopToolbarState
+import com.anytypeio.anytype.feature_date.models.DateObjectVerticalListState
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
 import com.anytypeio.anytype.feature_date.models.UiVerticalListItem
 
 @Composable
-fun DateLayoutScreen(
-    uiTopToolbarState: DateLayoutTopToolbarState,
-    uiHeaderState: DateLayoutHeaderState,
-    uiHorizontalListState: DateLayoutHorizontalListState,
-    uiVerticalListState: DateLayoutVerticalListState,
-    uiDateLayoutBottomMenu: DateLayoutBottomMenu,
-    uiHeaderActions: (DateLayoutHeaderState.Action) -> Unit,
-    uiTopToolbarActions: (DateLayoutTopToolbarState.Action) -> Unit,
+fun DateObjectScreen(
+    uiTopToolbarState: DateObjectTopToolbarState,
+    uiHeaderState: DateObjectHeaderState,
+    uiHorizontalListState: DateObjectHorizontalListState,
+    uiVerticalListState: DateObjectVerticalListState,
+    uiDateObjectBottomMenu: DateObjectBottomMenu,
+    uiHeaderActions: (DateObjectHeaderState.Action) -> Unit,
+    uiTopToolbarActions: (DateObjectTopToolbarState.Action) -> Unit,
     uiHorizontalListActions: (UiHorizontalListItem) -> Unit,
     uiVerticalListActions: (UiVerticalListItem) -> Unit,
-    uiBottomMenuActions: (DateLayoutBottomMenu.Action) -> Unit
+    uiBottomMenuActions: (DateObjectBottomMenu.Action) -> Unit
 ) {
 
     Scaffold(
@@ -50,15 +50,15 @@ fun DateLayoutScreen(
         bottomBar = {
             BottomMenu(
                 uiBottomMenuActions = uiBottomMenuActions,
-                uiDateLayoutBottomMenu = uiDateLayoutBottomMenu
+                uiDateObjectBottomMenu = uiDateObjectBottomMenu
             )
         },
         topBar = {
             Column {
-                if (uiTopToolbarState is DateLayoutTopToolbarState.Content) {
+                if (uiTopToolbarState is DateObjectTopToolbarState.Content) {
                     DateLayoutTopToolbar(uiTopToolbarState, uiTopToolbarActions)
                 }
-                if (uiHeaderState is DateLayoutHeaderState.Content) {
+                if (uiHeaderState is DateObjectHeaderState.Content) {
                     Spacer(modifier = Modifier.height(24.dp))
                     DateLayoutHeader(uiHeaderState, uiHeaderActions)
                 }
@@ -81,10 +81,10 @@ fun DateLayoutScreen(
                 modifier = contentModifier,
                 contentAlignment = Alignment.Center
             ) {
-                if (uiHorizontalListState is DateLayoutHorizontalListState.Content) {
+                if (uiHorizontalListState is DateObjectHorizontalListState.Content) {
                     //DateLayoutHorizontalList(uiHorizontalListState, uiHorizontalListActions)
                 }
-                if (uiVerticalListState is DateLayoutVerticalListState.Content) {
+                if (uiVerticalListState is DateObjectVerticalListState.Content) {
                     //DateLayoutVerticalList(uiVerticalListState, uiVerticalListActions)
                 }
             }
@@ -94,18 +94,18 @@ fun DateLayoutScreen(
 
 @Composable
 private fun BottomMenu(
-    uiDateLayoutBottomMenu: DateLayoutBottomMenu,
-    uiBottomMenuActions: (DateLayoutBottomMenu.Action) -> Unit
+    uiDateObjectBottomMenu: DateObjectBottomMenu,
+    uiBottomMenuActions: (DateObjectBottomMenu.Action) -> Unit
 ) {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     if (isImeVisible) return
     BottomNavigationMenu(
         modifier = Modifier,
-        backClick = { uiBottomMenuActions(DateLayoutBottomMenu.Action.Back) },
-        backLongClick = { uiBottomMenuActions(DateLayoutBottomMenu.Action.BackLong) },
-        searchClick  = { uiBottomMenuActions(DateLayoutBottomMenu.Action.GlobalSearch) },
-        addDocClick = { uiBottomMenuActions(DateLayoutBottomMenu.Action.AddDoc) },
-        addDocLongClick = { uiBottomMenuActions(DateLayoutBottomMenu.Action.CreateObjectLong) },
-        isOwnerOrEditor = uiDateLayoutBottomMenu.isOwnerOrEditor
+        backClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.Back) },
+        backLongClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.BackLong) },
+        searchClick  = { uiBottomMenuActions(DateObjectBottomMenu.Action.GlobalSearch) },
+        addDocClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.AddDoc) },
+        addDocLongClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.CreateObjectLong) },
+        isOwnerOrEditor = uiDateObjectBottomMenu.isOwnerOrEditor
     )
 }

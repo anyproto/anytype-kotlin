@@ -65,7 +65,7 @@ fun DateLayoutHorizontalListScreen(
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 24.dp)
     ) {
         items(
             count = state.items.size,

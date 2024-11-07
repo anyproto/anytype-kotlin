@@ -76,11 +76,12 @@ fun DateLayoutHeader(
 
 @Composable
 fun DateLayoutTopToolbar(
+    modifier: Modifier,
     state: DateObjectTopToolbarState.Content,
     action: (DateObjectTopToolbarState.Action) -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
     ) {
@@ -102,6 +103,7 @@ fun DateLayoutTopToolbar(
 @DefaultPreviews
 fun DateLayoutTopToolbarPreview() {
     DateLayoutTopToolbar(
+        modifier = Modifier.fillMaxWidth(),
         state = DateObjectTopToolbarState.Content(SpaceSyncStatus.SYNCING),
         action = {}
     )

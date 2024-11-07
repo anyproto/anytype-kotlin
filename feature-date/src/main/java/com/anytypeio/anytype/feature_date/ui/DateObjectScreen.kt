@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -47,16 +49,16 @@ fun DateObjectScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = colorResource(id = R.color.background_primary),
-        bottomBar = {
-            BottomMenu(
-                uiBottomMenuActions = uiBottomMenuActions,
-                uiDateObjectBottomMenu = uiDateObjectBottomMenu
-            )
-        },
         topBar = {
+            val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                Modifier
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .fillMaxWidth()
+            else
+                Modifier.fillMaxWidth()
             Column {
                 if (uiTopToolbarState is DateObjectTopToolbarState.Content) {
-                    DateLayoutTopToolbar(uiTopToolbarState, uiTopToolbarActions)
+                    DateLayoutTopToolbar(modifier, uiTopToolbarState, uiTopToolbarActions)
                 }
                 if (uiHeaderState is DateObjectHeaderState.Content) {
                     Spacer(modifier = Modifier.height(24.dp))
@@ -79,33 +81,21 @@ fun DateObjectScreen(
                         .background(color = colorResource(id = R.color.background_primary))
             Box(
                 modifier = contentModifier,
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.TopCenter
             ) {
                 if (uiHorizontalListState is DateObjectHorizontalListState.Content) {
-                    //DateLayoutHorizontalList(uiHorizontalListState, uiHorizontalListActions)
+                    DateLayoutHorizontalListScreen(uiHorizontalListState, uiHorizontalListActions)
                 }
-                if (uiVerticalListState is DateObjectVerticalListState.Content) {
-                    //DateLayoutVerticalList(uiVerticalListState, uiVerticalListActions)
-                }
+                BottomNavigationMenu(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    backClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.Back) },
+                    backLongClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.BackLong) },
+                    searchClick  = { uiBottomMenuActions(DateObjectBottomMenu.Action.GlobalSearch) },
+                    addDocClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.AddDoc) },
+                    addDocLongClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.CreateObjectLong) },
+                    isOwnerOrEditor = uiDateObjectBottomMenu.isOwnerOrEditor
+                )
             }
         }
-    )
-}
-
-@Composable
-private fun BottomMenu(
-    uiDateObjectBottomMenu: DateObjectBottomMenu,
-    uiBottomMenuActions: (DateObjectBottomMenu.Action) -> Unit
-) {
-    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    if (isImeVisible) return
-    BottomNavigationMenu(
-        modifier = Modifier,
-        backClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.Back) },
-        backLongClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.BackLong) },
-        searchClick  = { uiBottomMenuActions(DateObjectBottomMenu.Action.GlobalSearch) },
-        addDocClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.AddDoc) },
-        addDocLongClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.CreateObjectLong) },
-        isOwnerOrEditor = uiDateObjectBottomMenu.isOwnerOrEditor
     )
 }

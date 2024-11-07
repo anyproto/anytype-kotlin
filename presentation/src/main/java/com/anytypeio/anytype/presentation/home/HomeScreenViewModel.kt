@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.home
 
+import android.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -1058,6 +1059,9 @@ class HomeScreenViewModel(
                             space = space
                         )
                     )
+                }
+                else -> {
+                    Timber.w("Skipping widget click: $widget")
                 }
             }
         }

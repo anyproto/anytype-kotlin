@@ -1936,7 +1936,8 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun workspaceOpen(space: Id): Config {
         val request = Rpc.Workspace.Open.Request(
-            spaceId = space
+            spaceId = space,
+            withChat = true
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceOpen(request) }

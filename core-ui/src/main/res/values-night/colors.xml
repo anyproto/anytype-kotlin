@@ -29,7 +29,6 @@
     <color name="glyph_inactive">#494949</color>
     <color name="glyph_accent">#FFB522</color>
     <color name="glyph_white">#FFFFFF</color>
-    <color name="glyph_label">#66FFFFFF</color>
     <color name="glyph_button">#F3F3F3</color>
 
     <color name="button_text">#000000</color>
@@ -78,9 +77,7 @@
     <color name="palette_system_yellow">#ECD91B</color>
     <color name="palette_system_amber_125">#FFC83C</color>
     <color name="palette_system_amber_100">#FFB522</color>
-    <color name="palette_system_amber_80">#D38D00</color>
     <color name="palette_system_amber_50">#9F6B00</color>
-    <color name="palette_system_amber_25">#694500</color>
     <color name="palette_system_red">#F55522</color>
     <color name="palette_system_pink">#E51CA0</color>
     <color name="palette_system_purple">#AB50CC</color>
@@ -91,9 +88,6 @@
 
     <color name="object_loading_state_gradient_start_color">#161615</color>
     <color name="object_loading_state_gradient_end_color">#1F1E1D</color>
-
-    <color name="library_action_btn_text_color">#000000</color>
-    <color name="set_new_btn_text">#000000</color>
 
     <color name="colorPrimary">#FF5722</color>
     <color name="colorPrimaryDark">#000000</color>

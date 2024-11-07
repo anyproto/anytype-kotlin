@@ -2,68 +2,23 @@
 <resources>
     <color name="defaultCanvasColor">#FFFFFF</color>
 
-    <color name="gray_background">#6a6962</color>
-    <color name="button_active">#FFBB2C</color>
-    <color name="button_not_active">#ACA996</color>
-
     <color name="orange">#FFBB2C</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#2C2B27</color>
     <color name="gray">#ACA996</color>
-    <color name="keychain_hint_color">#ACA996</color>
-    <color name="blue">#3F51B5</color>
-
-    <color name="auth_divider">#DFDDD0</color>
-    <color name="hint_color">#ACA996</color>
 
     <color name="default_dashboard_background_color">#0066C3</color>
 
-    <color name="library_action_btn_text_color">#FFFFFF</color>
-
-    <color name="circle_base_light">#F7F5F0</color>
-    <color name="circle_stroke_light">#E0DED2</color>
-    <color name="circle_stroke_filled">#EBE9E0</color>
-    <color name="circle_accent_red">#FF6055</color>
     <color name="circle_accent_sky">#2AA7EE</color>
 
-    <color name="indicator_tab_light">#EAE9E0</color>
-
-    <!-- Colors extracted from gradient_rectangle.xml -->
-    <color name="gradient_base_start_blue_gray">#FF91B5C1</color>
-    <color name="gradient_mid_light_blue">#FFB9D5DA</color>
-    <color name="gradient_mid_warm_gray">#FFCEC9BF</color>
-    <color name="gradient_end_warm_beige">#FFA49D8E</color>
-
-    <color name="gradient_white_base">#FFFFFFFF</color>
     <color name="gradient_light_yellow">#FFFFEDBE</color>
     <color name="gradient_light_pink">#FFFFBCC3</color>
 
-    <color name="check_sync_green">#80B822</color>
-
     <color name="transparent">#00000000</color>
 
-    <color name="icon_black">#FF000000</color>
     <color name="background_black_launcher">#000000</color>
 
     <color name="gray_light_logo">#DBDAD4</color>
     <color name="gray_mnemonic_lock">#A7A7A7</color>
-
-    <color name="green_pin_code">#5DD400</color>
-
-    <color name="black_icon_profile">#FF000000</color>
-
-    <color name="amber_upload_icon">#E89D00</color>
-    <color name="purple_wallpaper">#AB50CC</color>
-
-    <color name="button_background_cover_image">#FEF3C5</color>
-    <color name="yellow_background_viewer_icon">#FFEE94</color>
-
-    <color name="background_search_relation">#F3F2EC</color>
-
-    <!-- Colors extracted from gradient_rectangle.xml -->
-    <color name="gradient_rectangle_blue_gray_start">#FF91B5C1</color>
-    <color name="gradient_rectangle_light_blue_gray_mid">#FFB9D5DA</color>
-    <color name="gradient_rectangle_beige_gray">#FFCEC9BF</color>
-    <color name="gradient_rectangle_light_brown_end">#FFA49D8E</color>
 
 </resources>

@@ -1,69 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="debug">#F44336</color>
     <color name="orange">#FFBB2C</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#2C2B27</color>
     <color name="gray">#ACA996</color>
-    <color name="grey_50">#ACA996</color>
-    <color name="emoji_color">#FFFFFF</color>
 
-    <color name="default_bottom_detail_toolbar_background_color">#F3F2EC</color>
-    <color name="chapter_default">#FFFFFF</color>
     <color name="chapter_yellow">#ECD91B</color>
-    <color name="default_toolbar_option_stroke_color">#DFDDD0</color>
 
     <color name="turquoise">#0FC8BA</color>
 
-    <color name="toolbar_block_turn_into_toggle_selected">#2C2B27</color>
-    <color name="toolbar_block_turn_into_toggle_default">#ACA996</color>
-
-    <color name="toolbar_section_text">#ECD91B</color>
-    <color name="toolbar_section_list">#FFB522</color>
     <color name="toolbar_section_tool">#2AA7EE</color>
-    <color name="toolbar_section_media">#F55522</color>
-    <color name="toolbar_section_other">#A646C9</color>
     <color name="block_highlight_divider">#FFB522</color>
-    <color name="block_file_size_text_color">#ACA996</color>
 
-    <color name="kanban_main">#EEEEEE</color>
-    <color name="kanban_second">#BDBDBD</color>
-
-    <color name="divider">#ACA996</color>
     <color name="viewer_divider">#DFDDD0</color>
 
     <color name="markup_keyboard_bg">#F3F2EC</color>
 
-    <color name="light_grayish">#f3f2ec</color>
     <color name="drag_shadow_alpha">#66000000</color>
-
-    <array name="toolbar_color_text_colors">
-        <item>#2C2B27</item>
-        <item>#ACA996</item>
-        <item>#ECD91B</item>
-        <item>#FFB522</item>
-        <item>#F55522</item>
-        <item>#E51CA0</item>
-        <item>#AB50CC</item>
-        <item>#3E58EB</item>
-        <item>#2AA7EE</item>
-        <item>#83CF36</item>
-    </array>
-
-    <array name="toolbar_color_background_colours">
-        <item>@android:color/transparent</item>
-        <item>#F3F2EC</item>
-        <item>#FEF9CC</item>
-        <item>#FEF3C5</item>
-        <item>#FFEBE5</item>
-        <item>#FEE3F5</item>
-        <item>#F4E3FA</item>
-        <item>#E4E7FC</item>
-        <item>#D6EFFD</item>
-        <item>#D6F5F3</item>
-        <item>#E3F7D0</item>
-    </array>
 
     <array name="avatar_colors">
         <item>#FFB522</item>
@@ -78,36 +32,16 @@
         <item>#88CDF3</item>
     </array>
 
-    <color name="context_menu_selected_item">#ACA996</color>
-
     <color name="default_style_color_circle_outer_stroke_color">#E4E2D7</color>
     <color name="default_style_color_circle_inner_stroke_color">#DFDDD0</color>
-    <color name="viewer_filter_add_stroke_color">#DFDDD0</color>
-    <color name="default_tag_text_color">#E89D00</color>
-    <color name="default_tag_background">#FEF3C5</color>
 
-    <color name="dark_amber">#E89D00</color>
     <color name="amber25">#FFEE94</color>
 
-    <color name="default_filter_tag_background_color">#F3F2EC</color>
     <color name="default_filter_tag_text_color">#6C6A5F</color>
-    <color name="default_filter_status_text_color">@color/black</color>
-    <color name="data_view_divider_color">#DFDDD0</color>
 
-    <color name="dashboard_default_avatar_circle_color">#80F5F5F5</color>
-
-    <color name="default_object_profile_avatar_background_color">#DFDDD0</color>
-    <color name="default_object_profile_avatar_text_color">#FFFFFF</color>
-    <color name="default_object_basic_avatar_background_color">#F3F2EC</color>
-    <color name="default_object_basic_avatar_text_color">#CBC9BD</color>
-    <color name="RelationPlaceholderTextColor">#929082</color>
     <color name="default_status_text_color">@color/text_secondary</color>
     <color name="default_grey">#929082</color>
     <color name="keychain_text_color">#1BA0EB</color>
-
-    <color name="orange_button_background_color">#FFB522</color>
-
-    <color name="auth_background_color">#0066C3</color>
 
     <color name="text_primary">#252525</color>
     <color name="text_secondary">#949494</color>
@@ -136,7 +70,6 @@
     <color name="glyph_inactive">#DCDCDC</color>
     <color name="glyph_accent">#F09C0E</color>
     <color name="glyph_white">#FFFFFF</color>
-    <color name="glyph_label">#66000000</color>
     <color name="glyph_button">#252525</color>
 
     <color name="button_text">#FFFFFF</color>
@@ -186,9 +119,7 @@
     <color name="palette_system_yellow">#ECD91B</color>
     <color name="palette_system_amber_125">#F09C0E</color>
     <color name="palette_system_amber_100">#FFB522</color>
-    <color name="palette_system_amber_80">#FFC532</color>
     <color name="palette_system_amber_50">#FFD15B</color>
-    <color name="palette_system_amber_25">#FFEE94</color>
     <color name="palette_system_red">#F55522</color>
     <color name="palette_system_pink">#E51CA0</color>
     <color name="palette_system_purple">#AB50CC</color>
@@ -197,19 +128,13 @@
     <color name="palette_system_teal">#0FC8BA</color>
     <color name="palette_system_green">#5DD400</color>
 
-    <color name="library_action_btn_text_color">#FFFFFF</color>
-
-    <color name="dashboard_tab_color">#CC0066C3</color>
     <color name="amber_80">#FFC532</color>
     <color name="amber_100">#FFB522</color>
-    <color name="table_row_header_background">#1A50491C</color>
     <color name="object_loading_state_gradient_start_color">#F6F5F3</color>
     <color name="object_loading_state_gradient_end_color">#F1F0ED</color>
 
-    <color name="widget_button">#A6FFFFFF</color>
     <color name="widgets_edit_mode_button">#CC2C2B27</color>
     <color name="home_screen_toolbar_button">#F2F0F0F0</color>
-    <color name="set_new_btn_text">#FFFFFF</color>
 
     <color name="colorPrimary">#FF5722</color>
     <color name="colorPrimaryDark">#000000</color>
@@ -220,7 +145,6 @@
     <color name="ds_button_icon_divider">#1AFFFFFF</color>
 
     <color name="select_space_bottom_sheet_background_color">#7C7C7C</color>
-    <color name="default_gradient_background">#2C2B27</color>
 
     <color name="cursor_color">#FFBB2C</color>
 
@@ -251,14 +175,10 @@
 
     <color name="object_number_background">#F2F2F2</color>
 
-    <color name="object_search_cursor_color">#007AFF</color>
-
     <color name="overlay_black_light_5">#0D000000</color>
     <color name="transparent_black">#00000000</color>
-    <color name="overlay_black_35">#59000000</color>
     <color name="background_light_gray">#F3F2EC</color>
     <color name="background_soft_beige">#DFDDD0</color>
-    <color name="gradient_soft_gray_start">#FFACA996</color>
     <color name="gradient_soft_gray_end_transparent">#00ACA996</color>
 
     <!-- Colors from ic_alert_install_gallery.xml -->
@@ -267,7 +187,6 @@
     <color name="gallery_inactive_gray">#D9D9D9</color>
 
     <!-- Colors from ic_block_task_checked.xml -->
-    <color name="task_complete_green">#83CF36</color>
     <color name="toolbar_keyboard_background">#EAE9E0</color>
     <color name="checkbox_blue">#1BA0EB</color>
 
@@ -290,25 +209,11 @@
     <!-- Colors from  ic_local_first_internet.xml -->
     <color name="network_light_gray">#D4D4D4</color>
 
-    <!-- Colors from ic_manage_dv_viewer_grid.xml -->
-    <color name="grid_highlight_orange">#E88B00</color>
-
-    <!-- Colors from ic_object_relation_format -->
-    <color name="tag_date_fill">#FFC107</color>
-    <color name="tag_object_fill">#FF9800</color>
-    <color name="tag_text_fill">#03A9F4</color>
-    <color name="tag_title_fill">#673AB7</color>
-
     <!-- Colors from ic_onboarding_settings.xml -->
     <color name="settings_dark_gray">#7B7A72</color>
 
     <!-- Colors from  ic_relation_format_tag_small.xml -->
     <color name="tag_icon_gray">#B6B6B6</color>
-
-    <!-- Colors from  ic_set_big.xml -->
-    <color name="set_big_bg_light_gray">#B6C0CF</color>
-    <color name="set_big_bg_medium_gray">#CAD1DC</color>
-    <color name="set_big_bg_dark_gray">#DDE2E9</color>
 
     <!-- Colors from  из ic_shared_space_arrow.xml -->
     <color name="space_arrow_overlay_black">#B3252525</color>
@@ -360,17 +265,8 @@
     <color name="progressbar_background">#BDC3C7</color>
     <color name="progressbar_secondary_progress">#3397DA</color>
 
-    <!-- Colors from rect_default_dragged_block_background.xml -->
-    <color name="dragged_block_stroke">#332AA7EE</color>
-
-    <!-- Colors from rect_dv_manage_viewer_background_active.xml -->
-    <color name="dv_manage_viewer_background_active">#26ACA996</color>
-
     <!-- Colors fromrect_object_menu_button_default.xml -->
     <color name="object_menu_button_default_black_transparent">#26000000</color>
-
-    <!-- Colors from rect_tab_layouts.xml -->
-    <color name="tab_layout_stroke_color">#D4D2C5</color>
 
     <!-- Colors from rectangle_default_page_logo_background.xml -->
     <color name="page_logo_background">#F7F5F0</color>
@@ -398,13 +294,6 @@
     <color name="wallpaper_gradient_4_center">#A4CFEC</color>
     <color name="wallpaper_gradient_4_end">#DAEAF3</color>
 
-    <!-- Color from ic_launcher_background.xml -->
-    <color name="background_primary_teal">#008577</color>
-    <color name="grid_line_translucent_white">#33FFFFFF</color>
-
-    <!-- Colors extracted from ic_launcher_foreground.xml -->
-    <color name="translucent_black">#44000000</color>
-
     <!-- Colors extracted from ic_personalization.xml -->
     <color name="personalization_background_purple">#9F43C1</color>
 
@@ -412,6 +301,4 @@
     <color name="tag_background_tint">#D6F5F3</color>
     <color name="tag_text_color">#0CBBAE</color>
 
-    <!-- Colors extracted from playback_off.xml -->
-    <color name="playback_overlay_black">#54000000</color>
 </resources>

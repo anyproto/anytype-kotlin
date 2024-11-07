@@ -9,12 +9,13 @@ import javax.inject.Inject
 
 class CreateSpace @Inject constructor(
     private val repo: BlockRepository,
-    private val dispatchers: AppCoroutineDispatchers
+    dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateSpace.Params, Id>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): Id = repo.createWorkspace(
-        params.details
+        details = params.details,
+        withChat = params.withChat
     )
 
-    data class Params(val details: Struct)
+    data class Params(val details: Struct, val withChat: Boolean = true)
 }

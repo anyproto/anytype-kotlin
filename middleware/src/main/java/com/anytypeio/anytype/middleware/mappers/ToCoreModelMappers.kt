@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.mappers
 import anytype.ResponseEvent
 import anytype.Rpc
 import anytype.model.Account
+import anytype.model.Import
 import anytype.model.NameserviceNameType
 import anytype.model.ParticipantPermissions
 import anytype.model.Restrictions
@@ -895,11 +896,17 @@ fun MImportErrorCode.toCoreModel(): ImportErrorCode {
         MImportErrorCode.UNKNOWN_ERROR -> ImportErrorCode.UNKNOWN_ERROR
         MImportErrorCode.BAD_INPUT -> ImportErrorCode.BAD_INPUT
         MImportErrorCode.INTERNAL_ERROR -> ImportErrorCode.INTERNAL_ERROR
-        MImportErrorCode.NO_OBJECTS_TO_IMPORT -> ImportErrorCode.NO_OBJECTS_TO_IMPORT
         MImportErrorCode.IMPORT_IS_CANCELED -> ImportErrorCode.IMPORT_IS_CANCELED
-        MImportErrorCode.LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED -> ImportErrorCode.LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED
         MImportErrorCode.FILE_LOAD_ERROR -> ImportErrorCode.FILE_LOAD_ERROR
         MImportErrorCode.INSUFFICIENT_PERMISSIONS -> ImportErrorCode.INSUFFICIENT_PERMISSIONS
+        MImportErrorCode.NOTION_NO_OBJECTS_IN_INTEGRATION -> ImportErrorCode.UNKNOWN_ERROR
+        MImportErrorCode.NOTION_SERVER_IS_UNAVAILABLE -> ImportErrorCode.UNKNOWN_ERROR
+        MImportErrorCode.NOTION_RATE_LIMIT_EXCEEDED -> ImportErrorCode.UNKNOWN_ERROR
+        MImportErrorCode.FILE_IMPORT_NO_OBJECTS_IN_ZIP_ARCHIVE -> ImportErrorCode.UNKNOWN_ERROR
+        MImportErrorCode.FILE_IMPORT_NO_OBJECTS_IN_DIRECTORY -> ImportErrorCode.UNKNOWN_ERROR
+        MImportErrorCode.HTML_WRONG_HTML_STRUCTURE -> ImportErrorCode.UNKNOWN_ERROR
+        MImportErrorCode.PB_NOT_ANYBLOCK_FORMAT -> ImportErrorCode.UNKNOWN_ERROR
+        MImportErrorCode.CSV_LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED -> ImportErrorCode.UNKNOWN_ERROR
     }
 }
 //endregion

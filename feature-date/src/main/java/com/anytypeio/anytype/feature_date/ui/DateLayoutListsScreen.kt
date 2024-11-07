@@ -49,8 +49,8 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_date.R
-import com.anytypeio.anytype.feature_date.models.DateLayoutHorizontalListState
-import com.anytypeio.anytype.feature_date.models.DateLayoutVerticalListState
+import com.anytypeio.anytype.feature_date.models.DateObjectHorizontalListState
+import com.anytypeio.anytype.feature_date.models.DateObjectVerticalListState
 import com.anytypeio.anytype.feature_date.models.UiContentState
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
 import com.anytypeio.anytype.feature_date.models.UiVerticalListItem
@@ -59,7 +59,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DateLayoutHorizontalListScreen(
-    state: DateLayoutHorizontalListState.Content,
+    state: DateObjectHorizontalListState.Content,
     action: (UiHorizontalListItem) -> Unit = {}
 ) {
     LazyRow(
@@ -148,7 +148,7 @@ fun DateLayoutHorizontalListScreen(
 @DefaultPreviews
 fun DateLayoutHorizontalListScreenPreview() {
     DateLayoutHorizontalListScreen(
-        state = DateLayoutHorizontalListState.Content(
+        state = DateObjectHorizontalListState.Content(
             items = listOf(
                 UiHorizontalListItem.Settings(),
                 UiHorizontalListItem.MentionedIn(),
@@ -171,7 +171,7 @@ fun DateLayoutHorizontalListScreenPreview() {
 @Composable
 @DefaultPreviews
 fun DateLayoutVerticalListScreenPreview() {
-    val contentListState = DateLayoutVerticalListState.Content(
+    val contentListState = DateObjectVerticalListState.Content(
         items = listOf(
             UiVerticalListItem(
                 id = "1",
@@ -218,7 +218,7 @@ fun DateLayoutVerticalListScreenPreview() {
 
 @Composable
 private fun DateLayoutVerticalListScreen(
-    state: DateLayoutVerticalListState.Content,
+    state: DateObjectVerticalListState.Content,
     uiContentState: UiContentState,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit

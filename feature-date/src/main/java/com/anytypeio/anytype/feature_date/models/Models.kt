@@ -7,12 +7,12 @@ import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
-sealed class DateLayoutTopToolbarState {
+sealed class DateObjectTopToolbarState {
 
-    data object Hidden : DateLayoutTopToolbarState()
+    data object Hidden : DateObjectTopToolbarState()
     data class Content(
         val syncStatus: SpaceSyncStatus
-    ) : DateLayoutTopToolbarState()
+    ) : DateObjectTopToolbarState()
 
     sealed class Action {
         data object SyncStatus : Action()
@@ -20,12 +20,12 @@ sealed class DateLayoutTopToolbarState {
     }
 }
 
-sealed class DateLayoutHeaderState {
+sealed class DateObjectHeaderState {
 
-    data object Hidden : DateLayoutHeaderState()
+    data object Hidden : DateObjectHeaderState()
     data class Content(
         val title: String
-    ) : DateLayoutHeaderState()
+    ) : DateObjectHeaderState()
 
     sealed class Action {
         data object Next : Action()
@@ -34,14 +34,14 @@ sealed class DateLayoutHeaderState {
 }
 
 
-sealed class DateLayoutHorizontalListState {
+sealed class DateObjectHorizontalListState {
 
-    data object Empty : DateLayoutHorizontalListState()
+    data object Empty : DateObjectHorizontalListState()
 
     data class Content(
         val items: List<UiHorizontalListItem>,
         val selectedItem: Id?
-    ) : DateLayoutHorizontalListState()
+    ) : DateObjectHorizontalListState()
 }
 
 sealed class UiHorizontalListItem {
@@ -60,13 +60,13 @@ sealed class UiHorizontalListItem {
     ) : UiHorizontalListItem()
 }
 
-sealed class DateLayoutVerticalListState {
+sealed class DateObjectVerticalListState {
 
-    data object Empty : DateLayoutVerticalListState()
+    data object Empty : DateObjectVerticalListState()
 
     data class Content(
         val items: List<UiVerticalListItem>
-    ) : DateLayoutVerticalListState()
+    ) : DateObjectVerticalListState()
 }
 
 data class UiVerticalListItem(
@@ -80,7 +80,7 @@ data class UiVerticalListItem(
     val icon: ObjectIcon = ObjectIcon.None
 )
 
-data class DateLayoutBottomMenu(val isOwnerOrEditor: Boolean = true) {
+data class DateObjectBottomMenu(val isOwnerOrEditor: Boolean = true) {
     sealed class Action {
         object GlobalSearch : Action()
         object AddDoc : Action()

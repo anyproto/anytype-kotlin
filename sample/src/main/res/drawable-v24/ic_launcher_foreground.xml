@@ -20,7 +20,7 @@
                     android:color="@color/translucent_black"
                     android:offset="0.0" />
                 <item
-                    android:color="@color/clear_black"
+                    android:color="@color/transparent_black"
                     android:offset="1.0" />
             </gradient>
         </aapt:attr>

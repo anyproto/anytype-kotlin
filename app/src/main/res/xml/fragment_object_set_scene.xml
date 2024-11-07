@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:motion="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <Transition
         motion:constraintSetEnd="@+id/end"
@@ -94,14 +94,14 @@
         <Constraint
             android:id="@id/templatesWidget">
             <PropertySet
-                app:applyMotionScene="false"
-                app:visibilityMode="ignore"/>
+                tools:applyMotionScene="false"
+                tools:visibilityMode="ignore"/>
         </Constraint>
         <Constraint
             android:id="@id/syncStatusWidget">
             <PropertySet
-                app:applyMotionScene="false"
-                app:visibilityMode="ignore"/>
+                tools:applyMotionScene="false"
+                tools:visibilityMode="ignore"/>
         </Constraint>
     </ConstraintSet>
 
@@ -188,14 +188,14 @@
         <Constraint
             android:id="@id/templatesWidget">
             <PropertySet
-                app:applyMotionScene="false"
-                app:visibilityMode="ignore"/>
+                tools:applyMotionScene="false"
+                tools:visibilityMode="ignore"/>
         </Constraint>
         <Constraint
             android:id="@id/syncStatusWidget">
             <PropertySet
-                app:applyMotionScene="false"
-                app:visibilityMode="ignore"/>
+                tools:applyMotionScene="false"
+                tools:visibilityMode="ignore"/>
         </Constraint>
     </ConstraintSet>
 

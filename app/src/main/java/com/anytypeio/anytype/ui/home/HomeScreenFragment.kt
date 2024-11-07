@@ -276,7 +276,8 @@ class HomeScreenFragment : BaseComposeFragment(),
             is Command.CreateObjectForWidget -> {
                 val dialog = WidgetObjectTypeFragment.new(
                     space = command.space.id,
-                    widgetId = command.widget
+                    widgetId = command.widget,
+                    source = command.source
                 )
                 dialog.show(childFragmentManager, null)
             }
@@ -369,8 +370,12 @@ class HomeScreenFragment : BaseComposeFragment(),
         findNavController().navigate(R.id.dashboardKeychainDialog)
     }
 
-    override fun onCreateWidgetObject(objType: ObjectWrapper.Type, widgetId: Id) {
-        vm.onCreateObjectForWidget(type = objType, source = widgetId)
+    override fun onCreateWidgetObject(
+        objType: ObjectWrapper.Type,
+        widgetId: Id,
+        source: Id
+    ) {
+        vm.onCreateObjectForWidget(type = objType, source = source)
     }
 
     override fun onSetNewWidgetSource(objType: ObjectWrapper.Type, widgetId: Id) {

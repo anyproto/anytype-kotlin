@@ -12,7 +12,7 @@ interface ObjectTypeUpdateListener {
 }
 
 interface WidgetObjectTypeListener {
-    fun onCreateWidgetObject(objType: ObjectWrapper.Type, widgetId: Id)
+    fun onCreateWidgetObject(objType: ObjectWrapper.Type, widgetId: Id, source: Id)
 }
 
 interface WidgetSourceTypeListener {

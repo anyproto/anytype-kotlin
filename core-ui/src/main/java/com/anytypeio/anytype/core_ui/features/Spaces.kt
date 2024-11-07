@@ -84,7 +84,7 @@ fun SpaceIconView(
                 modifier = modifier
                     .size(mainSize)
                     .background(
-                        Brush.linearGradient(
+                        Brush.verticalGradient(
                             colors = listOf(
                                 color.copy(alpha = 0.5f),
                                 color

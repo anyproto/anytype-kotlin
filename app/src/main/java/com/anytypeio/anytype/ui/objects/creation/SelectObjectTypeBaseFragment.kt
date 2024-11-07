@@ -56,10 +56,15 @@ import timber.log.Timber
 class WidgetObjectTypeFragment: SelectObjectTypeBaseFragment() {
 
     private val widget get() = arg<Id>(WIDGET_ID_ARG)
+    private val source get() = arg<Id>(SOURCE_ID_ARG)
 
     override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
         withParentSafe<WidgetObjectTypeListener> {
-            onCreateWidgetObject(objType = objType, widgetId = widget)
+            onCreateWidgetObject(
+                objType = objType,
+                widgetId = widget,
+                source = source
+            )
         }
     }
 
@@ -69,10 +74,16 @@ class WidgetObjectTypeFragment: SelectObjectTypeBaseFragment() {
 
     companion object {
         private const val WIDGET_ID_ARG = "arg.select-object-type.widget-id"
-        fun new(space: Id, widgetId: Id) = WidgetObjectTypeFragment().apply {
+        private const val SOURCE_ID_ARG = "arg.select-object-type.widget-source-id"
+        fun new(
+            space: Id,
+            widgetId: Id,
+            source: Id
+        ) = WidgetObjectTypeFragment().apply {
             arguments = bundleOf(
                 SPACE_ID_KEY to space,
-                WIDGET_ID_ARG to widgetId
+                WIDGET_ID_ARG to widgetId,
+                SOURCE_ID_ARG to source
             )
         }
     }

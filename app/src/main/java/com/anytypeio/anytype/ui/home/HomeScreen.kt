@@ -73,7 +73,6 @@ import org.burnoutcrew.reorderable.reorderable
 
 @Composable
 fun HomeScreen(
-    profileIcon: ProfileIconView,
     mode: InteractionMode,
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,

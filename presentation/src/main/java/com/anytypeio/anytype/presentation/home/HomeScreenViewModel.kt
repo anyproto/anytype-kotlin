@@ -235,8 +235,6 @@ class HomeScreenViewModel(
 
     private val spaceWidgetView = spaceWidgetContainer.view
 
-    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
-
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
     private val openWidgetObjectsHistory : MutableSet<OpenObjectHistoryItem> = LinkedHashSet()
@@ -348,7 +346,6 @@ class HomeScreenViewModel(
     init {
         Timber.i("HomeScreenViewModel, init")
         proceedWithUserPermissions()
-        proceedWithObservingProfileIcon()
         proceedWithLaunchingUnsubscriber()
         proceedWithObjectViewStatePipeline()
         proceedWithWidgetContainerPipeline()
@@ -578,35 +575,6 @@ class HomeScreenViewModel(
                 Timber.d("Emitting list of widgets: ${it.size}")
                 widgets.value = it
             }
-        }
-    }
-
-    private fun proceedWithObservingProfileIcon() {
-        viewModelScope.launch {
-            spaceManager
-                .observe()
-                .flatMapLatest { config ->
-                    storelessSubscriptionContainer.subscribe(
-                        StoreSearchByIdsParams(
-                            space = SpaceId(config.techSpace),
-                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                            targets = listOf(config.profile),
-                            keys = listOf(
-                                Relations.ID,
-                                Relations.NAME,
-                                Relations.ICON_EMOJI,
-                                Relations.ICON_IMAGE,
-                                Relations.ICON_OPTION
-                            )
-                        )
-                    ).map { result ->
-                        val obj = result.firstOrNull()
-                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
-                    }
-                }
-                .catch { Timber.e(it, "Error while observing space icon") }
-                .flowOn(appCoroutineDispatchers.io)
-                .collect { icon.value = it }
         }
     }
 

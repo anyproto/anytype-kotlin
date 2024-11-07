@@ -88,7 +88,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                 )
             ) {
                 HomeScreen(
-                    profileIcon = vm.icon.collectAsState().value,
                     widgets = vm.views.collectAsState().value,
                     mode = vm.mode.collectAsState().value,
                     onExpand = { path -> vm.onExpand(path) },

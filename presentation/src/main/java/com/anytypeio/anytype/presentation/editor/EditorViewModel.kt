@@ -4465,6 +4465,16 @@ class EditorViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
             }
+            is OpenObjectNavigation.OpenDataObject -> {
+                navigate(
+                    EventWrapper(
+                        OpenDateObject(
+                            objectId = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                )
+            }
         }
     }
 

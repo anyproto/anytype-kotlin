@@ -16,6 +16,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
+import androidx.navigation.NavOptions.*
 import androidx.navigation.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
@@ -34,7 +35,6 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.di.feature.discussions.DiscussionFragment
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
@@ -50,6 +50,7 @@ import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationCommand
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
+import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
@@ -231,6 +232,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     }
                                     OpenObjectNavigation.NonValidObject -> {
                                         toast(getString(R.string.error_non_valid_object))
+                                    }
+                                    is OpenObjectNavigation.OpenDataObject -> {
+                                        runCatching {
+                                            findNavController(R.id.fragment).navigate(
+                                                R.id.dateObjectScreen,
+                                                args = DateObjectFragment.args(
+                                                    objectId = dest.target,
+                                                    space = dest.space
+                                                ),
+                                                navOptions = Builder()
+                                                    .setPopUpTo(R.id.homeScreen, true)
+                                                    .build()
+                                            )
+                                        }.onFailure {
+                                            Timber.e(it, "Error while date object navigation")
+                                        }
                                     }
                                 }
                             }

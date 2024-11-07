@@ -29,7 +29,6 @@ import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
-import com.anytypeio.anytype.ui.settings.ProfileSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import timber.log.Timber
@@ -158,6 +157,13 @@ class VaultFragment : BaseComposeFragment() {
                 findNavController().navigate(R.id.actionOpenSpaceFromVault)
                 navigation().openChat(
                     target = destination.ctx,
+                    space = destination.space
+                )
+            }
+            is Navigation.OpenDateObject -> {
+                findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                navigation().openDateObject(
+                    objectId = destination.ctx,
                     space = destination.space
                 )
             }

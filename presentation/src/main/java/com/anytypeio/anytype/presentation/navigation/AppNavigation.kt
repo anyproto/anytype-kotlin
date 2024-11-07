@@ -31,6 +31,10 @@ interface AppNavigation {
         templateTypeKey: Key,
         space: Id
     )
+    fun openDateObject(
+        objectId: Id,
+        space: Id
+    )
 
     fun launchDocument(target: String, space: Id)
     fun launchCollections(subscription: Subscription, space: Id)
@@ -88,6 +92,11 @@ interface AppNavigation {
             val target: Id,
             val space: Id,
             val isPopUpToDashboard: Boolean = false
+        ) : Command()
+
+        data class OpenDateObject(
+            val objectId: Id,
+            val space: Id
         ) : Command()
 
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()

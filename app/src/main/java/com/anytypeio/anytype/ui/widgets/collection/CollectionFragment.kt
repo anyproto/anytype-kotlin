@@ -114,9 +114,9 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     Timber.e(it, "Error while exiting to vault")
                 }
             }
-            is Command.OpenSpaceSwitcher -> {
+            is Command.ExitToSpaceWidgets -> {
                 runCatching {
-                    findNavController().navigate(R.id.actionOpenSpaceSwitcher)
+                    findNavController().navigate(R.id.actionExitToSpaceWidgets)
                 }.onFailure {
                     Timber.e(it, "Error while opening space switcher from full-screen widget")
                 }

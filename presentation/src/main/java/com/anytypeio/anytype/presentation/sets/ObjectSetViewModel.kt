@@ -1539,36 +1539,6 @@ class ObjectSetViewModel(
                     }
                 )
             }
-            ObjectType.Layout.CHAT -> {
-                closeBlock.async(
-                    CloseBlock.Params(
-                        target = vmParams.ctx,
-                        space = vmParams.space
-                    )
-                ).fold(
-                    onSuccess = {
-                        navigate(
-                            EventWrapper(
-                                AppNavigation.Command.OpenChat(
-                                    target = target,
-                                    space = space
-                                )
-                            )
-                        )
-                    },
-                    onFailure = {
-                        Timber.e(it, "Error while closing object set: ${vmParams.ctx}")
-                        navigate(
-                            EventWrapper(
-                                AppNavigation.Command.OpenChat(
-                                    target = target,
-                                    space = space
-                                )
-                            )
-                        )
-                    }
-                )
-            }
             else -> {
                 toast("Unexpected layout: $layout")
                 Timber.e("Unexpected layout: $layout")
@@ -1587,25 +1557,6 @@ class ObjectSetViewModel(
         super.onCleared()
         titleUpdateChannel.cancel()
         stateReducer.clear()
-    }
-
-    fun onHomeButtonClicked() {
-        viewModelScope.launch {
-            clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
-            closeBlock.async(
-                CloseBlock.Params(
-                    target = vmParams.ctx,
-                    space = vmParams.space
-                )
-            ).fold(
-                onSuccess = { dispatch(AppNavigation.Command.ExitToVault) },
-                onFailure = {
-                    Timber.e(it, "Error while closing object set: ${vmParams.ctx}").also {
-                        dispatch(AppNavigation.Command.ExitToVault)
-                    }
-                }
-            )
-        }
     }
 
     fun onBackButtonClicked() {

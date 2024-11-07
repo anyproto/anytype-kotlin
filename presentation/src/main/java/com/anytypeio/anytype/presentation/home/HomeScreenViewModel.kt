@@ -106,6 +106,7 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
@@ -232,6 +233,7 @@ class HomeScreenViewModel(
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
     private val allContentWidget = AllContentWidgetContainer()
+    private val spaceChatWidget = SpaceChatWidgetContainer()
 
     private val spaceWidgetView = spaceWidgetContainer.view
 
@@ -405,6 +407,7 @@ class HomeScreenViewModel(
                     combine(
                         flows = buildList<Flow<WidgetView>> {
                             add(spaceWidgetView)
+                            add(spaceChatWidget.view)
                             add(allContentWidget.view)
                             addAll(list.map { m -> m.view })
                         }
@@ -1043,6 +1046,9 @@ class HomeScreenViewModel(
                         )
                     )
                 }
+                WidgetView.SpaceChat.id -> {
+                    proceedWithSpaceChatWidgetHeaderClick()
+                }
                 WidgetView.AllContent.ALL_CONTENT_WIDGET_ID -> {
                     if (mode.value == InteractionMode.Edit) {
                         return@launch
@@ -1054,6 +1060,30 @@ class HomeScreenViewModel(
                     )
                 }
             }
+        }
+    }
+
+    private suspend fun proceedWithSpaceChatWidgetHeaderClick() {
+        if (mode.value == InteractionMode.Edit) {
+            return
+        }
+        val view = views.value.find { it is WidgetView.SpaceWidget.View }
+        if (view != null) {
+            val spaceView = (view as WidgetView.SpaceWidget.View)
+            val chat = spaceView.space.getValue<Id?>(Relations.CHAT_ID)
+            val space = spaceView.space.targetSpaceId
+            if (chat != null && space != null) {
+                navigation(
+                    Navigation.OpenDiscussion(
+                        space = space,
+                        ctx = chat
+                    )
+                )
+            } else {
+                Timber.w("Chat or space not found - not able to open space chat")
+            }
+        } else {
+            Timber.w("Space widget not found")
         }
     }
 

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -66,5 +67,6 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun userPermissionProvider(): UserPermissionProvider
     fun auth(): AuthRepository
+    fun appActionManager(): AppActionManager
     fun logger(): Logger
 }

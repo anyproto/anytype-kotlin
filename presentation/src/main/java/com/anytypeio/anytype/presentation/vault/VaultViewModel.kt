@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -58,6 +59,7 @@ class VaultViewModel(
     private val setVaultSpaceOrder: SetVaultSpaceOrder,
     private val analytics: Analytics,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
+    private val appActionManager: AppActionManager
 ) : NavigationViewModel<VaultViewModel.Navigation>(), DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
@@ -225,6 +227,9 @@ class VaultViewModel(
                 }
             }
         }
+        viewModelScope.launch {
+            appActionManager.setup(AppActionManager.Action.ClearAll)
+        }
     }
 
     private suspend fun proceedWithSavingCurrentSpace(targetSpace: String) {
@@ -279,7 +284,8 @@ class VaultViewModel(
         private val setVaultSpaceOrder: SetVaultSpaceOrder,
         private val observeVaultSettings: ObserveVaultSettings,
         private val analytics: Analytics,
-        private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate
+        private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
+        private val appActionManager: AppActionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -295,7 +301,8 @@ class VaultViewModel(
             setVaultSpaceOrder = setVaultSpaceOrder,
             observeVaultSettings = observeVaultSettings,
             analytics = analytics,
-            deepLinkToObjectDelegate = deepLinkToObjectDelegate
+            deepLinkToObjectDelegate = deepLinkToObjectDelegate,
+            appActionManager = appActionManager
         ) as T
     }
 

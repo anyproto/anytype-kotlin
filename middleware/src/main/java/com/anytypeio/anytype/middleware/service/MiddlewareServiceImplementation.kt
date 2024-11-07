@@ -1156,11 +1156,11 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun metricsSetParameters(request: Rpc.Metrics.SetParameters.Request): Rpc.Metrics.SetParameters.Response {
-        val encoded = Service.metricsSetParameters(Rpc.Metrics.SetParameters.Request.ADAPTER.encode(request))
-        val response = Rpc.Metrics.SetParameters.Response.ADAPTER.decode(encoded)
+    override fun metricsSetParameters(request: Rpc.Initial.SetParameters.Request): Rpc.Initial.SetParameters.Response {
+        val encoded = Service.initialSetParameters(Rpc.Initial.SetParameters.Request.ADAPTER.encode(request))
+        val response = Rpc.Initial.SetParameters.Response.ADAPTER.decode(encoded)
         val error = response.error
-        if (error != null && error.code != Rpc.Metrics.SetParameters.Response.Error.Code.NULL) {
+        if (error != null && error.code != Rpc.Initial.SetParameters.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

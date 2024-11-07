@@ -639,6 +639,7 @@ message Account {
         string archiveObjectId = 3; // archive block id
         string profileObjectId = 4; // profile block id
         string marketplaceWorkspaceId = 11; // marketplace workspace id
+        string workspaceObjectId = 15; // workspace object id. used for space-level chat
 
         string deviceId = 8;
         string accountSpaceId = 9;
@@ -762,7 +763,7 @@ message ObjectType {
         participant = 19;
 
         pdf = 20;
-        chat = 21;
+        chat = 21; // deprecated
         chatDerived = 22;
         tag = 23;
     }

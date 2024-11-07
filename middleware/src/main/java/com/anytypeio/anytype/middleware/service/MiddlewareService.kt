@@ -10,7 +10,7 @@ interface MiddlewareService {
     //region APP commands
 
     @Throws(Exception::class)
-    fun metricsSetParameters(request: Rpc.Metrics.SetParameters.Request): Rpc.Metrics.SetParameters.Response
+    fun metricsSetParameters(request: Rpc.Initial.SetParameters.Request): Rpc.Initial.SetParameters.Response
 
     @Throws(Exception::class)
     fun versionGet(request: Rpc.App.GetVersion.Request): Rpc.App.GetVersion.Response

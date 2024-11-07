@@ -163,7 +163,10 @@ class TreeWidgetContainer(
         return when (widget.source.id) {
             BundledWidgetSourceIds.FAVORITE -> {
                 objectWatcher
-                    .watch(widget.config.home)
+                    .watch(
+                        target = widget.config.home,
+                        space = SpaceId(widget.config.space)
+                    )
                     .map { obj -> obj.orderOfRootObjects(obj.root) }
                     .catch { emit(emptyMap()) }
                     .flatMapLatest { order ->

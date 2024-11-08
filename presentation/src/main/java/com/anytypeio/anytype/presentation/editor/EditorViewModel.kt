@@ -59,7 +59,6 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.isEndLineClick
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.toPrettyString
@@ -234,6 +233,7 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.*
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -4465,6 +4465,16 @@ class EditorViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
             }
+            is OpenObjectNavigation.OpenDataObject -> {
+                navigate(
+                    EventWrapper(
+                        OpenDateObject(
+                            objectId = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                )
+            }
         }
     }
 
@@ -6192,7 +6202,12 @@ class EditorViewModel(
 
     fun onMentionClicked(target: String) {
         if (isObjectTemplate()) return
-        proceedWithOpeningObjectByLayout(target)
+        val details = orchestrator.stores.details.current()
+        val objectDetails = details.details[target]?.map ?: return
+        if (objectDetails.isEmpty()) return
+        val obj = ObjectWrapper.Basic(objectDetails)
+        proceedWithClearingFocus()
+        proceedWithOpeningObject(obj)
     }
 
     private suspend fun onMentionFilter(filter: String) {

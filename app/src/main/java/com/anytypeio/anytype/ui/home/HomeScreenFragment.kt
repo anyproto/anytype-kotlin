@@ -362,6 +362,16 @@ class HomeScreenFragment : BaseComposeFragment(),
             is Navigation.OpenSpaceSwitcher -> {
                 findNavController().navigate(R.id.actionOpenSpaceSwitcher)
             }
+            is Navigation.OpenDateObject -> {
+                runCatching {
+                    navigation().openDateObject(
+                        objectId = destination.ctx,
+                        space = destination.space
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening date object from widgets")
+                }
+            }
         }
     }
 

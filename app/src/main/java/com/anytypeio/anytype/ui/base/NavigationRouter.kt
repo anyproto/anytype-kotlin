@@ -56,6 +56,10 @@ class NavigationRouter(
                 )
                 is AppNavigation.Command.OpenLibrary -> navigation.openLibrary(command.space)
                 is AppNavigation.Command.MigrationErrorScreen -> navigation.migrationErrorScreen()
+                is AppNavigation.Command.OpenDateObject -> navigation.openDateObject(
+                    objectId = command.objectId,
+                    space = command.space
+                )
                 else -> Timber.d("Nav command ignored: $command")
             }
         } catch (e: Exception) {

@@ -31,8 +31,7 @@ import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.library.LibraryViewModel.Navigation.*
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.LibraryTypesDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
@@ -228,23 +227,7 @@ class LibraryViewModel(
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
-        when (val navigation = obj.navigation()) {
-            is OpenObjectNavigation.OpenDataView -> {
-                navigate(Navigation.OpenSetOrCollection(navigation.target))
-            }
-            is OpenObjectNavigation.OpenEditor -> {
-                navigate(Navigation.OpenEditor(navigation.target))
-            }
-            is OpenObjectNavigation.OpenDiscussion -> {
-                sendToast("not implemented")
-            }
-            is OpenObjectNavigation.UnexpectedLayoutError -> {
-                sendToast("Unexpected layout: ${navigation.layout}")
-            }
-            OpenObjectNavigation.NonValidObject -> {
-                sendToast("Object id is missing")
-            }
-        }
+
     }
 
     private fun proceedQueryEvent(event: LibraryEvent.Query) {
@@ -566,6 +549,8 @@ class LibraryViewModel(
         class OpenEditor(val id: Id) : Navigation()
 
         class OpenSetOrCollection(val id: Id) : Navigation()
+
+        class OpenDateObject(val objectId: Id, val space: Id) : Navigation()
     }
 
     sealed class Effect {

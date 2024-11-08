@@ -57,6 +57,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.FavoritesView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.ObjectView
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.*
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -902,6 +903,14 @@ class CollectionViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 toasts.emit("Object id is missing")
             }
+            is OpenObjectNavigation.OpenDataObject -> {
+                commands.emit(
+                    OpenDateObject(
+                        target = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
         }
     }
 
@@ -1001,6 +1010,7 @@ class CollectionViewModel(
         data class OpenCollection(val subscription: Subscription, val space: Id) : Command()
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
         data class OpenChat(val target: Id, val space: Id) : Command()
+        data class OpenDateObject(val target: Id, val space: Id) : Command()
 
         data object ToDesktop : Command()
         data class ToSearch(val space: Id) : Command()

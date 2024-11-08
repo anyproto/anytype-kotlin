@@ -205,6 +205,12 @@
             app:popUpToInclusive="false" />
     </fragment>
 
+    <fragment
+        android:id="@+id/dateObjectScreen"
+        android:name="com.anytypeio.anytype.ui.date.DateObjectFragment"
+        android:label="Date Object">
+    </fragment>
+
     <dialog
         android:id="@+id/selectWidgetSourceScreen"
         android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment" />

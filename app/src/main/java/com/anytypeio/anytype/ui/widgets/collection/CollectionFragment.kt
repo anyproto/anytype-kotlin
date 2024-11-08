@@ -121,6 +121,16 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     Timber.e(it, "Error while opening space switcher from full-screen widget")
                 }
             }
+            is Command.OpenDateObject -> {
+                runCatching {
+                    navigation().openDateObject(
+                        objectId = command.target,
+                        space = command.space
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening date object from Collection screen")
+                }
+            }
         }
     }
 

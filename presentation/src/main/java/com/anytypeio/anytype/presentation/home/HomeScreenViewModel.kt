@@ -1400,6 +1400,14 @@ class HomeScreenViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
             }
+            is OpenObjectNavigation.OpenDataObject -> {
+                navigate(
+                    destination = Navigation.OpenDateObject(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
         }
     }
 
@@ -2125,6 +2133,7 @@ class HomeScreenViewModel(
         data object OpenSpaceSwitcher: Navigation()
         data class OpenLibrary(val space: Id) : Navigation()
         data class OpenAllContent(val space: Id) : Navigation()
+        data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
     }
 
     class Factory @Inject constructor(
@@ -2347,6 +2356,7 @@ sealed class OpenObjectNavigation {
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
     data object NonValidObject: OpenObjectNavigation()
     data class OpenDiscussion(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenDataObject(val target: Id, val space: Id): OpenObjectNavigation()
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
@@ -2391,6 +2401,12 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         }
         ObjectType.Layout.CHAT -> {
             OpenObjectNavigation.OpenDiscussion(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
+        }
+        ObjectType.Layout.DATE -> {
+            OpenObjectNavigation.OpenDataObject(
                 target = id,
                 space = requireNotNull(spaceId)
             )

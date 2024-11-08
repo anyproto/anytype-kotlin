@@ -1783,19 +1783,6 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onLibraryClicked() {
-        viewModelScope.launch {
-            val space = spaceManager.get()
-            if (space.isNotEmpty()) {
-                navigation(
-                    Navigation.OpenLibrary(space)
-                )
-            } else {
-                Timber.w("Space is missing: ${space}")
-            }
-        }
-    }
-
     fun onSearchIconClicked() {
         viewModelScope.launch {
             commands.emit(
@@ -2135,7 +2122,6 @@ class HomeScreenViewModel(
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data object OpenSpaceSwitcher: Navigation()
-        data class OpenLibrary(val space: Id) : Navigation()
         data class OpenAllContent(val space: Id) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
     }

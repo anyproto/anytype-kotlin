@@ -27,11 +27,11 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
-import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
@@ -65,7 +65,7 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
         setFragmentResultListener(REQUEST_KEY_UNINSTALL_TYPE) { _, bundle ->
             val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_ID))
             val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_NAME))
-            vm.uninstallObject(id, LibraryViewModel.LibraryItem.TYPE, name)
+            vm.uninstallObject(id, AllContentTab.TYPES, name)
         }
         setFragmentResultListener(REQUEST_KEY_MODIFY_TYPE) { _, bundle ->
             val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_ID))
@@ -76,7 +76,7 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
         setFragmentResultListener(REQUEST_KEY_UNINSTALL_RELATION) { _, bundle ->
             val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_RELATION_ARG_ID))
             val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_RELATION_ARG_NAME))
-            vm.uninstallObject(id, LibraryViewModel.LibraryItem.RELATION, name)
+            vm.uninstallObject(id, AllContentTab.RELATIONS, name)
         }
         setFragmentResultListener(REQUEST_KEY_MODIFY_RELATION) { _, bundle ->
             val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_RELATION_ARG_ID))

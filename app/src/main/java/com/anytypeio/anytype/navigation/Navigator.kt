@@ -14,7 +14,6 @@ import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
-import com.anytypeio.anytype.ui.library.LibraryFragment
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
 import com.anytypeio.anytype.ui.relations.RelationEditFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
@@ -244,13 +243,6 @@ class Navigator : AppNavigation {
                 inclusive = true
             }
         })
-    }
-
-    override fun openLibrary(space: Id) {
-        navController?.navigate(
-            R.id.libraryFragment,
-            LibraryFragment.args(space)
-        )
     }
 
     override fun openRemoteFilesManageScreen(subscription: Id, space: Id) {

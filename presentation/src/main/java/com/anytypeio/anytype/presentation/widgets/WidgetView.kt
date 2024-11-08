@@ -136,11 +136,6 @@ sealed class WidgetView {
         }
     }
 
-    data object Library : WidgetView() {
-        override val id: Id get() = "id.button.library"
-        override val isLoading: Boolean = false
-    }
-
     sealed class Action : WidgetView() {
         data object EditWidgets : Action() {
             override val id: Id get() = "id.action.edit-widgets"

@@ -49,8 +49,6 @@ interface AppNavigation {
 
     fun deletedAccountScreen(deadline: Long)
 
-    fun openLibrary(space: Id)
-
     fun logout()
 
     fun migrationErrorScreen()
@@ -106,8 +104,6 @@ interface AppNavigation {
         data class DeletedAccountScreen(val deadline: Long) : Command()
 
         data class OpenTemplates(val typeId: Id) : Command()
-
-        data class OpenLibrary(val space: Id): Command()
     }
 
     interface Provider {

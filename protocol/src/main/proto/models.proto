@@ -1122,15 +1122,27 @@ message Import {
     }
 
     enum ErrorCode {
-        NULL = 0;
-        UNKNOWN_ERROR = 1;
-        BAD_INPUT = 2;
-        INTERNAL_ERROR = 3;
-        NO_OBJECTS_TO_IMPORT = 5;
-        IMPORT_IS_CANCELED = 6;
-        LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED = 7;
-        FILE_LOAD_ERROR = 8;
-        INSUFFICIENT_PERMISSIONS = 9;
+      NULL = 0;
+      UNKNOWN_ERROR = 1;
+      BAD_INPUT = 2;
+      INTERNAL_ERROR = 3;
+      FILE_LOAD_ERROR = 8;
+      IMPORT_IS_CANCELED = 6;
+
+      NOTION_NO_OBJECTS_IN_INTEGRATION= 5;
+      NOTION_SERVER_IS_UNAVAILABLE = 12;
+      NOTION_RATE_LIMIT_EXCEEDED= 13;
+
+      FILE_IMPORT_NO_OBJECTS_IN_ZIP_ARCHIVE = 14;
+      FILE_IMPORT_NO_OBJECTS_IN_DIRECTORY = 17;
+
+      HTML_WRONG_HTML_STRUCTURE = 10;
+
+      PB_NOT_ANYBLOCK_FORMAT = 11;
+
+      CSV_LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED = 7;
+
+      INSUFFICIENT_PERMISSIONS = 9;
     }
 }
 
@@ -1172,6 +1184,7 @@ enum ImageKind {
     Basic = 0;
     Cover = 1;
     Icon = 2;
+    AutomaticallyAdded = 3;
 }
 
 enum FileIndexingStatus {

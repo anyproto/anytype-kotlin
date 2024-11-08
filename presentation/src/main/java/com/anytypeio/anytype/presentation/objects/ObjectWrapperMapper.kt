@@ -15,29 +15,6 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
 
-@Deprecated("To be deleted")
-fun List<ObjectWrapper.Basic>.toView(
-    urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
-): List<DefaultObjectView> =
-    this.map { obj ->
-        val typeUrl = obj.getProperType()
-        val layout = obj.getProperLayout()
-        DefaultObjectView(
-            id = obj.id,
-            name = obj.getProperName(),
-            type = typeUrl,
-            typeName = getProperTypeName(
-                id = typeUrl,
-                types = objectTypes
-            ),
-            description = obj.description,
-            layout = layout,
-            icon = obj.objectIcon(urlBuilder),
-            space = requireNotNull(obj.spaceId)
-        )
-    }
-
 fun List<ObjectWrapper.Basic>.toViews(
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>

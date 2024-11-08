@@ -17,4 +17,6 @@ interface FeatureToggles {
     val enableDiscussionDemo: Boolean
 
     val isSpaceLevelChatEnabled: Boolean
+
+    val isNewSpaceHomeEnabled: Boolean
 }

@@ -4,9 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
@@ -27,7 +36,6 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
@@ -41,9 +49,9 @@ import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.creation.WidgetObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.creation.WidgetSourceTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
-import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -87,45 +95,83 @@ class HomeScreenFragment : BaseComposeFragment(),
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
-                HomeScreen(
-                    widgets = vm.views.collectAsState().value,
-                    mode = vm.mode.collectAsState().value,
-                    onExpand = { path -> vm.onExpand(path) },
-                    onCreateWidget = vm::onCreateWidgetClicked,
-                    onEditWidgets = vm::onEditWidgets,
-                    onExitEditMode = vm::onExitEditMode,
-                    onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                        vm.onDropDownMenuAction(widget, action)
-                    },
-                    onWidgetObjectClicked = vm::onWidgetObjectClicked,
-                    onWidgetSourceClicked = vm::onWidgetSourceClicked,
-                    onChangeWidgetView = vm::onChangeCurrentWidgetView,
-                    onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
-                    onSearchClicked = vm::onSearchIconClicked,
-                    onLibraryClicked = {
-                        vm.onLibraryClicked()
-                    },
-                    onCreateNewObjectClicked = throttledClick(
-                        onClick = { vm.onCreateNewObjectClicked() }
-                    ),
-                    onCreateNewObjectLongClicked = throttledClick(
-                        onClick = { vm.onCreateNewObjectLongClicked() }
-                    ),
-                    onBackClicked = throttledClick(
-                        onClick = vm::onBackClicked
-                    ),
-                    onSpaceWidgetClicked = throttledClick(
-                        onClick = vm::onSpaceSettingsClicked
-                    ),
-                    onBundledWidgetClicked = vm::onBundledWidgetClicked,
-                    onMove = vm::onMove,
-                    onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-                    onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
-                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
-                    onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
-                    onCreateDataViewObject = vm::onCreateDataViewObject,
-                    onBackLongClicked = vm::onBackLongClicked
-                )
+                val pagerState = rememberPagerState { 2 }
+                val coroutineScope = rememberCoroutineScope()
+                Box(
+                    Modifier.fillMaxSize()
+                ) {
+                    HomeScreenToolbar(
+                        onWidgetTabClicked = {
+                            Timber.d("onWidgetTabClicked")
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(0)
+                            }
+                        },
+                        onChatTabClicked = {
+                            Timber.d("onChatTabClicked")
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(1)
+                            }
+                        }
+                    )
+                    HorizontalPager(
+                        modifier = Modifier.padding(top = 64.dp),
+                        state = pagerState
+                    ) { page ->
+                        if (page == 0) {
+                            HomeScreen(
+                                modifier = Modifier,
+                                widgets = vm.views.collectAsState().value,
+                                mode = vm.mode.collectAsState().value,
+                                onExpand = { path -> vm.onExpand(path) },
+                                onCreateWidget = vm::onCreateWidgetClicked,
+                                onEditWidgets = vm::onEditWidgets,
+                                onExitEditMode = vm::onExitEditMode,
+                                onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
+                                    vm.onDropDownMenuAction(widget, action)
+                                },
+                                onWidgetObjectClicked = vm::onWidgetObjectClicked,
+                                onWidgetSourceClicked = vm::onWidgetSourceClicked,
+                                onChangeWidgetView = vm::onChangeCurrentWidgetView,
+                                onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
+                                onSearchClicked = vm::onSearchIconClicked,
+                                onLibraryClicked = {
+                                    vm.onLibraryClicked()
+                                },
+                                onCreateNewObjectClicked = throttledClick(
+                                    onClick = { vm.onCreateNewObjectClicked() }
+                                ),
+                                onCreateNewObjectLongClicked = throttledClick(
+                                    onClick = { vm.onCreateNewObjectLongClicked() }
+                                ),
+                                onBackClicked = throttledClick(
+                                    onClick = vm::onBackClicked
+                                ),
+                                onSpaceWidgetClicked = throttledClick(
+                                    onClick = vm::onSpaceSettingsClicked
+                                ),
+                                onBundledWidgetClicked = vm::onBundledWidgetClicked,
+                                onMove = vm::onMove,
+                                onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
+                                onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
+                                onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
+                                onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
+                                onCreateDataViewObject = vm::onCreateDataViewObject,
+                                onBackLongClicked = vm::onBackLongClicked
+                            )
+                        } else {
+                            Box(
+                                Modifier
+                                    .fillMaxSize()
+                            ) {
+                                Text(
+                                    text = "Space level chat",
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }

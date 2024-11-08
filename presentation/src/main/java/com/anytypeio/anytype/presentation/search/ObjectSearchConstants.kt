@@ -1280,8 +1280,9 @@ object ObjectSearchConstants {
 
     val spaceViewKeys = listOf(
         Relations.ID,
-        Relations.NAME,
         Relations.TARGET_SPACE_ID,
+        Relations.CHAT_ID,
+        Relations.NAME,
         Relations.ICON_IMAGE,
         Relations.ICON_EMOJI,
         Relations.ICON_OPTION,

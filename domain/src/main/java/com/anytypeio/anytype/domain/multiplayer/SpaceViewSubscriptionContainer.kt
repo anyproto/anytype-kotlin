@@ -109,6 +109,7 @@ interface SpaceViewSubscriptionContainer {
                     keys = listOf(
                         Relations.ID,
                         Relations.TARGET_SPACE_ID,
+                        Relations.CHAT_ID,
                         Relations.SPACE_ACCOUNT_STATUS,
                         Relations.SPACE_LOCAL_STATUS,
                         Relations.SPACE_ACCESS_TYPE,
@@ -119,7 +120,7 @@ interface SpaceViewSubscriptionContainer {
                         Relations.CREATED_DATE,
                         Relations.CREATOR,
                         Relations.ICON_IMAGE,
-                        Relations.ICON_OPTION,
+                        Relations.ICON_OPTION
                     ),
                     filters = listOf(
                         DVFilter(

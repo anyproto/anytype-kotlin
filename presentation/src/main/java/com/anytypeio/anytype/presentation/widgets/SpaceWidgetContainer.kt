@@ -45,6 +45,7 @@ class SpaceWidgetContainer @Inject constructor(
                         targets = listOf(config.spaceView),
                         keys = buildList {
                             addAll(ObjectSearchConstants.defaultKeys)
+                            add(Relations.CHAT_ID)
                             add(Relations.SPACE_ACCESS_TYPE)
                             add(Relations.ICON_OPTION)
                         }

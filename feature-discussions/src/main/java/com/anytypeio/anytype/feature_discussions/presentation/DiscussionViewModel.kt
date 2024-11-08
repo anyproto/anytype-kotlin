@@ -65,8 +65,7 @@ class DiscussionViewModel(
                     val root = ObjectWrapper.Basic(obj.details[params.ctx].orEmpty())
                     name.value = root.name
                     proceedWithObservingChatMessages(
-                        account = account.id,
-                        root = root
+                        account = account.id
                     )
                 },
                 onFailure = {
@@ -77,8 +76,7 @@ class DiscussionViewModel(
     }
 
     private suspend fun proceedWithObservingChatMessages(
-        account: Id,
-        root: ObjectWrapper.Basic
+        account: Id
     ) {
         chatContainer
             .watch(params.ctx)

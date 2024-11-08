@@ -314,10 +314,7 @@ object ObjectSearchConstants {
                 DVFilter(
                     relation = Relations.RECOMMENDED_LAYOUT,
                     condition = DVFilterCondition.NOT_IN,
-                    value = listOf(
-                        ObjectType.Layout.CHAT.code.toDouble(),
-                        ObjectType.Layout.CHAT_DERIVED.code.toDouble()
-                    )
+                    value = listOf(ObjectType.Layout.CHAT_DERIVED.code.toDouble())
                 )
             )
         }

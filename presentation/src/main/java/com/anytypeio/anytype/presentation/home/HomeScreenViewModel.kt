@@ -2395,7 +2395,7 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
                 space = requireNotNull(spaceId)
             )
         }
-        ObjectType.Layout.CHAT -> {
+        ObjectType.Layout.CHAT_DERIVED -> {
             OpenObjectNavigation.OpenDiscussion(
                 target = id,
                 space = requireNotNull(spaceId)
@@ -2441,7 +2441,7 @@ fun ObjectType.Layout.navigation(
                 space = space
             )
         }
-        ObjectType.Layout.CHAT -> {
+        ObjectType.Layout.CHAT_DERIVED -> {
             OpenObjectNavigation.OpenDiscussion(
                 target = target,
                 space = space

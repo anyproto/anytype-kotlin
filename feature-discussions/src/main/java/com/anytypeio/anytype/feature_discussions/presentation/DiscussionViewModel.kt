@@ -188,7 +188,11 @@ class DiscussionViewModel(
                         Relations.NAME to input
                     )
                 )
-            )
+            ).onSuccess {
+                Timber.d("Updated chat title successfully")
+            }.onFailure {
+                Timber.e(it, "Error while updating chat title")
+            }
         }
     }
 

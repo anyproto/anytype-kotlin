@@ -60,7 +60,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DateLayoutHorizontalListScreen(
     state: DateObjectHorizontalListState.Content,
-    action: (UiHorizontalListItem) -> Unit = {}
+    action: (UiHorizontalListItem) -> Unit
 ) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
@@ -164,7 +164,8 @@ fun DateLayoutHorizontalListScreenPreview() {
                 )
             ),
             selectedItem = "1"
-        )
+        ),
+        action = {}
     )
 }
 

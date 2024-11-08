@@ -100,3 +100,10 @@ sealed class UiContentState {
     ) : UiContentState()
 }
 
+sealed class DateObjectSheetState {
+    data object Empty : DateObjectSheetState()
+    data class Content(
+        val items: List<UiHorizontalListItem>
+    ) : DateObjectSheetState()
+}
+

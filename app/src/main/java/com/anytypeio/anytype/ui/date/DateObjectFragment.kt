@@ -65,6 +65,7 @@ class DateObjectFragment : BaseComposeFragment() {
                     uiHorizontalListState = vm.uiHorizontalListState.collectAsStateWithLifecycle().value,
                     uiVerticalListState = vm.uiVerticalListState.collectAsStateWithLifecycle().value,
                     uiDateObjectBottomMenu = vm.uiBottomMenu.collectAsStateWithLifecycle().value,
+                    uiSheetState = vm.uiSheetState.collectAsStateWithLifecycle().value,
                     uiHeaderActions = {},
                     uiBottomMenuActions = {},
                     uiTopToolbarActions = {},

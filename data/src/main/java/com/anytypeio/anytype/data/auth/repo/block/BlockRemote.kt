@@ -336,7 +336,7 @@ interface BlockRemote {
     suspend fun setSpaceDetails(space: SpaceId, details: Struct)
 
     suspend fun deleteSpace(space: SpaceId)
-    suspend fun createWorkspace(details: Struct): Id
+    suspend fun createWorkspace(details: Struct, withChat: Boolean): Id
 
     suspend fun getSpaceConfig(space: Id): Config
 

@@ -117,6 +117,12 @@ sealed class WidgetView {
         override val id: Id = ALL_CONTENT_WIDGET_ID
     }
 
+    data object SpaceChat : WidgetView() {
+        private const val SPACE_CHAT_WIDGET_ID = "bundled-widget.space-chat"
+        override val isLoading: Boolean = false
+        override val id: Id = SPACE_CHAT_WIDGET_ID
+    }
+
     sealed class SpaceWidget: WidgetView() {
         override val id: Id get() = SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
         data class View(

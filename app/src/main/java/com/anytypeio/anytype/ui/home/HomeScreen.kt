@@ -63,6 +63,7 @@ import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LibraryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
 import org.burnoutcrew.reorderable.ReorderableItem
@@ -73,7 +74,6 @@ import org.burnoutcrew.reorderable.reorderable
 
 @Composable
 fun HomeScreen(
-    profileIcon: ProfileIconView,
     mode: InteractionMode,
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
@@ -419,6 +419,12 @@ private fun WidgetList(
                 }
                 is WidgetView.AllContent -> {
                     AllContentWidgetCard(
+                        mode = mode,
+                        onWidgetClicked = { onBundledWidgetHeaderClicked(item.id) }
+                    )
+                }
+                is WidgetView.SpaceChat -> {
+                    SpaceChatWidgetCard(
                         mode = mode,
                         onWidgetClicked = { onBundledWidgetHeaderClicked(item.id) }
                     )

@@ -758,8 +758,9 @@ class BlockDataRepository(
         remote.deleteSpace(space)
     }
 
-    override suspend fun createWorkspace(details: Struct): Id = remote.createWorkspace(
-        details = details
+    override suspend fun createWorkspace(details: Struct, withChat: Boolean): Id = remote.createWorkspace(
+        details = details,
+        withChat = withChat
     )
 
     override suspend fun setSpaceDetails(space: SpaceId, details: Struct) {

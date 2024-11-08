@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.home
 
+import android.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
@@ -89,8 +91,6 @@ import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
-import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
 import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
@@ -106,6 +106,7 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
@@ -205,7 +206,8 @@ class HomeScreenViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val clearLastOpenedSpace: ClearLastOpenedSpace,
     private val clearLastOpenedObject: ClearLastOpenedObject,
-    private val spaceBinWidgetContainer: SpaceBinWidgetContainer
+    private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
+    private val featureToggles: FeatureToggles
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -232,10 +234,9 @@ class HomeScreenViewModel(
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
     private val allContentWidget = AllContentWidgetContainer()
+    private val spaceChatWidget = SpaceChatWidgetContainer()
 
     private val spaceWidgetView = spaceWidgetContainer.view
-
-    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
@@ -348,7 +349,6 @@ class HomeScreenViewModel(
     init {
         Timber.i("HomeScreenViewModel, init")
         proceedWithUserPermissions()
-        proceedWithObservingProfileIcon()
         proceedWithLaunchingUnsubscriber()
         proceedWithObjectViewStatePipeline()
         proceedWithWidgetContainerPipeline()
@@ -408,6 +408,9 @@ class HomeScreenViewModel(
                     combine(
                         flows = buildList<Flow<WidgetView>> {
                             add(spaceWidgetView)
+                            if (featureToggles.isSpaceLevelChatEnabled) {
+                                add(spaceChatWidget.view)
+                            }
                             add(allContentWidget.view)
                             addAll(list.map { m -> m.view })
                         }
@@ -578,35 +581,6 @@ class HomeScreenViewModel(
                 Timber.d("Emitting list of widgets: ${it.size}")
                 widgets.value = it
             }
-        }
-    }
-
-    private fun proceedWithObservingProfileIcon() {
-        viewModelScope.launch {
-            spaceManager
-                .observe()
-                .flatMapLatest { config ->
-                    storelessSubscriptionContainer.subscribe(
-                        StoreSearchByIdsParams(
-                            space = SpaceId(config.techSpace),
-                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                            targets = listOf(config.profile),
-                            keys = listOf(
-                                Relations.ID,
-                                Relations.NAME,
-                                Relations.ICON_EMOJI,
-                                Relations.ICON_IMAGE,
-                                Relations.ICON_OPTION
-                            )
-                        )
-                    ).map { result ->
-                        val obj = result.firstOrNull()
-                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
-                    }
-                }
-                .catch { Timber.e(it, "Error while observing space icon") }
-                .flowOn(appCoroutineDispatchers.io)
-                .collect { icon.value = it }
         }
     }
 
@@ -1075,6 +1049,9 @@ class HomeScreenViewModel(
                         )
                     )
                 }
+                WidgetView.SpaceChat.id -> {
+                    proceedWithSpaceChatWidgetHeaderClick()
+                }
                 WidgetView.AllContent.ALL_CONTENT_WIDGET_ID -> {
                     if (mode.value == InteractionMode.Edit) {
                         return@launch
@@ -1085,7 +1062,34 @@ class HomeScreenViewModel(
                         )
                     )
                 }
+                else -> {
+                    Timber.w("Skipping widget click: $widget")
+                }
             }
+        }
+    }
+
+    private suspend fun proceedWithSpaceChatWidgetHeaderClick() {
+        if (mode.value == InteractionMode.Edit) {
+            return
+        }
+        val view = views.value.find { it is WidgetView.SpaceWidget.View }
+        if (view != null) {
+            val spaceView = (view as WidgetView.SpaceWidget.View)
+            val chat = spaceView.space.getValue<Id?>(Relations.CHAT_ID)
+            val space = spaceView.space.targetSpaceId
+            if (chat != null && space != null) {
+                navigation(
+                    Navigation.OpenDiscussion(
+                        space = space,
+                        ctx = chat
+                    )
+                )
+            } else {
+                Timber.w("Chat or space not found - not able to open space chat")
+            }
+        } else {
+            Timber.w("Space widget not found")
         }
     }
 
@@ -2183,7 +2187,8 @@ class HomeScreenViewModel(
         private val addObjectToCollection: AddObjectToCollection,
         private val clearLastOpenedSpace: ClearLastOpenedSpace,
         private val clearLastOpenedObject: ClearLastOpenedObject,
-        private val spaceBinWidgetContainer: SpaceBinWidgetContainer
+        private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
+        private val featureToggles: FeatureToggles
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2233,7 +2238,8 @@ class HomeScreenViewModel(
             addObjectToCollection = addObjectToCollection,
             clearLastOpenedSpace = clearLastOpenedSpace,
             clearLastOpenedObject = clearLastOpenedObject,
-            spaceBinWidgetContainer = spaceBinWidgetContainer
+            spaceBinWidgetContainer = spaceBinWidgetContainer,
+            featureToggles = featureToggles
         ) as T
     }
 
@@ -2399,7 +2405,7 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
                 space = requireNotNull(spaceId)
             )
         }
-        ObjectType.Layout.CHAT -> {
+        ObjectType.Layout.CHAT_DERIVED -> {
             OpenObjectNavigation.OpenDiscussion(
                 target = id,
                 space = requireNotNull(spaceId)
@@ -2451,7 +2457,7 @@ fun ObjectType.Layout.navigation(
                 space = space
             )
         }
-        ObjectType.Layout.CHAT -> {
+        ObjectType.Layout.CHAT_DERIVED -> {
             OpenObjectNavigation.OpenDiscussion(
                 target = target,
                 space = space

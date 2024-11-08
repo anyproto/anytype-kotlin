@@ -1,19 +1,14 @@
 package com.anytypeio.anytype.presentation.objects
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.ext.DateParser
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
-import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -77,57 +72,6 @@ fun ObjectWrapper.Basic.toView(
         isFavorite = obj.isFavorite ?: false,
         space = requireNotNull(obj.spaceId)
     )
-}
-
-fun List<ObjectWrapper.Basic>.toLibraryViews(
-    urlBuilder: UrlBuilder
-): List<LibraryView> = map { obj ->
-    val space = obj.getValue<Id?>(Relations.SPACE_ID)
-    when (obj.layout) {
-        ObjectType.Layout.OBJECT_TYPE -> {
-            if (space == Marketplace.MARKETPLACE_SPACE_ID) {
-                LibraryView.LibraryTypeView(
-                    id = obj.id,
-                    name = obj.name.orEmpty(),
-                    icon = obj.objectIcon(urlBuilder),
-                    uniqueKey = obj.uniqueKey
-                )
-            } else {
-                LibraryView.MyTypeView(
-                    id = obj.id,
-                    name = obj.name.orEmpty(),
-                    icon = obj.objectIcon(urlBuilder),
-                    sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
-                    uniqueKey = obj.uniqueKey,
-                    readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
-                    editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
-                )
-            }
-        }
-        ObjectType.Layout.RELATION -> {
-            val relation = ObjectWrapper.Relation(obj.map)
-            if (space == Marketplace.MARKETPLACE_SPACE_ID) {
-                LibraryView.LibraryRelationView(
-                    id = obj.id,
-                    name = obj.name.orEmpty(),
-                    format = relation.format
-                )
-            } else {
-                LibraryView.MyRelationView(
-                    id = obj.id,
-                    name = obj.name.orEmpty(),
-                    format = relation.format,
-                    sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
-                    readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
-                    editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
-                )
-            }
-        }
-        else -> LibraryView.UnknownView(
-            id = obj.id,
-            name = obj.name.orEmpty()
-        )
-    }
 }
 
 fun List<ObjectWrapper.Basic>.toLinkToView(

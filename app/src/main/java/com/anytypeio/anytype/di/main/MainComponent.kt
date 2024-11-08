@@ -23,7 +23,6 @@ import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.discussions.DiscussionComponentDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
-import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipUpdateComponentDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.RequestJoinSpaceDependencies
@@ -90,7 +89,6 @@ import javax.inject.Singleton
 )
 interface MainComponent :
     AppearanceDependencies,
-    LibraryDependencies,
     HomeScreenDependencies,
     CollectionDependencies,
     CreateObjectTypeDependencies,
@@ -163,11 +161,6 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(AppearanceDependencies::class)
     abstract fun provideAppearanceDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(LibraryDependencies::class)
-    abstract fun provideLibraryDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

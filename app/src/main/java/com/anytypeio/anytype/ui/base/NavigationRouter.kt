@@ -54,7 +54,6 @@ class NavigationRouter(
                 is AppNavigation.Command.OpenTemplates -> navigation.openTemplatesModal(
                     typeId = command.typeId
                 )
-                is AppNavigation.Command.OpenLibrary -> navigation.openLibrary(command.space)
                 is AppNavigation.Command.MigrationErrorScreen -> navigation.migrationErrorScreen()
                 else -> Timber.d("Nav command ignored: $command")
             }

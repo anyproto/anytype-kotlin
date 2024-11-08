@@ -2509,20 +2509,6 @@ class HomeScreenViewModelTest {
                 )
             }
             verify(storelessSubscriptionContainer, times(1)).subscribe(
-                StoreSearchByIdsParams(
-                    space = SpaceId(defaultSpaceConfig.techSpace),
-                    subscription = HomeScreenViewModel.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                    targets = listOf(defaultSpaceConfig.profile),
-                    keys = listOf(
-                        Relations.ID,
-                        Relations.NAME,
-                        Relations.ICON_EMOJI,
-                        Relations.ICON_IMAGE,
-                        Relations.ICON_OPTION
-                    )
-                )
-            )
-            verify(storelessSubscriptionContainer, times(1)).subscribe(
                 firstTimeParams
             )
             advanceUntilIdle()

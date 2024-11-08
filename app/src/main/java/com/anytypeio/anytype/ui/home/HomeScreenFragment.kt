@@ -102,13 +102,11 @@ class HomeScreenFragment : BaseComposeFragment(),
                 ) {
                     HomeScreenToolbar(
                         onWidgetTabClicked = {
-                            Timber.d("onWidgetTabClicked")
                             coroutineScope.launch {
                                 pagerState.animateScrollToPage(0)
                             }
                         },
                         onChatTabClicked = {
-                            Timber.d("onChatTabClicked")
                             coroutineScope.launch {
                                 pagerState.animateScrollToPage(1)
                             }
@@ -442,7 +440,10 @@ class HomeScreenFragment : BaseComposeFragment(),
     companion object {
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
         const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
-        fun args(deeplink: String?) : Bundle = bundleOf(
+
+        fun args(
+            deeplink: String?
+        ) : Bundle = bundleOf(
             DEEP_LINK_KEY to deeplink
         )
     }

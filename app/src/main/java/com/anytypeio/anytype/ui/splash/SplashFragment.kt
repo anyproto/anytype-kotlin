@@ -120,7 +120,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 try {
                     findNavController().navigate(
                         resId = R.id.actionOpenVaultFromSplash,
-                        args = HomeScreenFragment.args(deeplink = command.deeplink)
+                        args = VaultFragment.args(deeplink = command.deeplink)
                     )
                 } catch (e: Exception) {
                     Timber.e(e, "Error while opening dashboard from splash screen")

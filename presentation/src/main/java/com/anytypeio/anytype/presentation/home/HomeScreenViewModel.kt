@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
@@ -207,7 +208,8 @@ class HomeScreenViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val clearLastOpenedSpace: ClearLastOpenedSpace,
     private val clearLastOpenedObject: ClearLastOpenedObject,
-    private val spaceBinWidgetContainer: SpaceBinWidgetContainer
+    private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
+    private val featureToggles: FeatureToggles
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -408,7 +410,9 @@ class HomeScreenViewModel(
                     combine(
                         flows = buildList<Flow<WidgetView>> {
                             add(spaceWidgetView)
-                            add(spaceChatWidget.view)
+                            if (featureToggles.isSpaceLevelChatEnabled) {
+                                add(spaceChatWidget.view)
+                            }
                             add(allContentWidget.view)
                             addAll(list.map { m -> m.view })
                         }
@@ -2176,7 +2180,8 @@ class HomeScreenViewModel(
         private val addObjectToCollection: AddObjectToCollection,
         private val clearLastOpenedSpace: ClearLastOpenedSpace,
         private val clearLastOpenedObject: ClearLastOpenedObject,
-        private val spaceBinWidgetContainer: SpaceBinWidgetContainer
+        private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
+        private val featureToggles: FeatureToggles
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2226,7 +2231,8 @@ class HomeScreenViewModel(
             addObjectToCollection = addObjectToCollection,
             clearLastOpenedSpace = clearLastOpenedSpace,
             clearLastOpenedObject = clearLastOpenedObject,
-            spaceBinWidgetContainer = spaceBinWidgetContainer
+            spaceBinWidgetContainer = spaceBinWidgetContainer,
+            featureToggles = featureToggles
         ) as T
     }
 

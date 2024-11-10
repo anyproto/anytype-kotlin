@@ -1215,15 +1215,15 @@
     <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
     <string name="multiplayer_collaborate_step_1">1. Ketuk gawit Ruang untuk mengakses setelan</string>
-    <string name="multiplayer_collaborate_step_2">2.  Open Share section</string>
-    <string name="multiplayer_collaborate_step_3">3.  Generate an invite link and share it</string>
+    <string name="multiplayer_collaborate_step_2">2. Buka bagian Bagikan</string>
+    <string name="multiplayer_collaborate_step_3">3. Buat tautan undangan lalu bagikan</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="other">%1$d anggota</item>
     </plurals>
     <plurals name="multiplayer_number_of_join_requests">
-        <item quantity="other">%1$d requests</item>
+        <item quantity="other">%1$d permintaan</item>
     </plurals>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_you_as_member">kamu</string>
     <string name="multiplayer_spaces">Ruang</string>
     <string name="multiplayer_space_status_joining">Bergabung</string>
     <string name="multiplayer_space_status_active">Aktif</string>
@@ -1261,7 +1261,7 @@
     <string name="payments_tier_custom">Custom</string>
     <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
     <string name="payments_button_learn">Pelajari lebih lanjut</string>
-    <string name="payments_button_manage">Manage payment</string>
+    <string name="payments_button_manage">Kelola pembayaran</string>
     <string name="payments_button_contact">Kontak</string>
     <string name="payments_button_info">Lebih lanjut</string>
     <string name="payments_button_submit">Kirim</string>
@@ -1318,7 +1318,7 @@
     <string name="payments_tier_current_paid_by_crypto">Kripto</string>
     <string name="payments_tier_current_paid_by_apple">Langganan Apple</string>
     <string name="payments_tier_current_paid_by_google">Langganan Google</string>
-    <string name="payments_tier_current_button">Manage payment</string>
+    <string name="payments_tier_current_button">Kelola pembayaran</string>
     <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
     <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
     <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
@@ -1330,7 +1330,7 @@
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
-    <string name="payments_welcome_button">Continue</string>
+    <string name="payments_welcome_button">Lanjutkan</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
     <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
@@ -1408,7 +1408,7 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_prompt_primary_button_text">Nyalakan</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Buat markah dari papan kerani</string>
     <string name="error_unexpected_layout">Galat: tata letak tak terduga</string>
-    <string name="error_non_valid_object">Error: object ID is missing</string>
+    <string name="error_non_valid_object">Galat: ID objek hilang</string>
     <string name="membership_price_pending">Pending...</string>
     <string name="per_period">per %1$s</string>
     <string name="free_for">Gratis hingga %1$s</string>

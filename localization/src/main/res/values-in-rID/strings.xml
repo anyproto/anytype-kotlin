@@ -13,9 +13,9 @@
     <string name="clear_file_cache">Bersihkan tembolok</string>
     <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Debug</string>
-    <string name="account">Vault</string>
+    <string name="account">Brankas</string>
     <string name="reset_account">Setel ulang brankas</string>
-    <string name="delete_account">Delete vault</string>
+    <string name="delete_account">Hapus brankas</string>
     <string name="space_debug">Debug ruang</string>
     <string name="data">Data</string>
     <string name="mode">Mode</string>
@@ -632,7 +632,7 @@
     <string name="link">Tautan</string>
     <string name="move_into_this_page">Move into this page</string>
     <string name="move_into">Move into</string>
-    <string name="fetching_your_account">Fetching your vault…</string>
+    <string name="fetching_your_account">Memperoleh brankasmu …</string>
     <string name="search_on_page">Search on page</string>
     <string name="object_view_type">Object view type</string>
     <string name="object_type_name">Object type name</string>
@@ -787,7 +787,7 @@
     <string name="almost_there">Almost there!</string>
     <string name="i_did_not_not_complete_migration">I didn\'t complete migration</string>
     <string name="not_completed_migration_steps">I didn\'t complete migration</string>
-    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your vault.</string>
+    <string name="almost_there_subtitle">Untuk menggunakan versi aplikasi ini, silakan pilih opsi di bawah untuk memigrasikan brankasmu.</string>
     <string name="i_completed_migration">I completed migration</string>
     <string name="here">di sini</string>
     <string name="update_steps_first">1. Download the desktop app </string>
@@ -839,8 +839,8 @@
     <string name="synced_files">Berkas tersinkronkan</string>
     <string name="log_in">Masuk</string>
     <string name="create_object_section_library">Pustaka Anytype</string>
-    <string name="bin_empty_title">Your trash is empty.</string>
-    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
+    <string name="bin_empty_title">Bak sampah kosong.</string>
+    <string name="bin_empty_subtitle">Kamu orangnya rapi dan tertata, ya?</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Gaya</string>
     <string name="slash_widget_main_media">Media</string>
@@ -989,8 +989,8 @@
     <string name="onboarding_show_my_key">Tampilkan Kunciku</string>
     <string name="onboarding_key_skip">Lewati</string>
     <string name="onboarding_key_copy">Salin ke papan klip</string>
-    <string name="onboarding_set_your_name_title">Set your name</string>
-    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
+    <string name="onboarding_set_your_name_title">Siapa namamu?</string>
+    <string name="onboarding_soul_creation_description">Hanya dapat dilihat oleh orang yang saling berbagi denganmu. Nama ini tidak disimpan secara sentral.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_type_your_key">Masukkan frasa pemulihanmu</string>
@@ -1209,12 +1209,12 @@
     <string name="multiplayer_notification_request_declined">Permintaan ditolak</string>
     <string name="multiplayer_notification_view_request">Tampilan</string>
     <string name="multiplayer_notification_go_to_space">Kunjungi ruang</string>
-    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_toast_permission_not_allowed">Mengubah izin tidak diperbolehkan</string>
     <string name="multiplayer_toast_share_limit_reached">Batas berbagi tercapai</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
     <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
-    <string name="multiplayer_collaborate_step_1">1.  Tap the Space widget to access settings</string>
+    <string name="multiplayer_collaborate_step_1">1. Ketuk gawit Ruang untuk mengakses setelan</string>
     <string name="multiplayer_collaborate_step_2">2.  Open Share section</string>
     <string name="multiplayer_collaborate_step_3">3.  Generate an invite link and share it</string>
     <plurals name="multiplayer_number_of_space_members">
@@ -1448,7 +1448,7 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
     <string name="error_login_select_vault_error">Memilih akun salah.</string>
     <string name="global_search_related_to">"Terkait dengan: "</string>
-    <string name="global_search_no_related_objects_found">No related objects found</string>
+    <string name="global_search_no_related_objects_found">Tidak ada objek terkait ditemukan</string>
     <string name="sort_empty_values_desc">Tampilkan nilai kosong</string>
     <string name="sort_empty_values_bottom">Di bawah</string>
     <string name="sort_empty_values_top">Di atas</string>
@@ -1461,11 +1461,11 @@ Please provide specific details of your needs here.</string>
     <plurals name="sync_status_self_host_syncing">
         <item quantity="other">%1$d items syncing...</item>
     </plurals>
-    <string name="sync_status_p2p">P2P Connection</string>
+    <string name="sync_status_p2p">Koneksi P2P</string>
     <plurals name="sync_status_p2p_devices">
         <item quantity="other">%1$d perangkat terhubung</item>
     </plurals>
-    <string name="sync_status_p2p_disabled">Connection not possible</string>
+    <string name="sync_status_p2p_disabled">Koneksi tidak memungkinkan</string>
     <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
     <string name="sync_status_p2p_not_connected">Tidak terhubung</string>
     <string name="sync_status_anytype_network">Jaringan Anytype</string>
@@ -1500,7 +1500,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_by">Sort by</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
-    <string name="all_content_sort_date_desc">Newest first</string>
+    <string name="all_content_sort_date_desc">Terbaru dahulu</string>
     <string name="all_content_sort_date_asc">Terlama dahulu</string>
     <string name="all_content_sort_date_updated">Tanggal diperbarui</string>
     <string name="all_content_sort_date_created">Tanggal dibuat</string>

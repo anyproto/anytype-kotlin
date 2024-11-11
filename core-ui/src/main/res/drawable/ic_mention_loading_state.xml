@@ -18,8 +18,8 @@
         <gradient
             android:centerColor="@color/shape_primary"
             android:centerY="0.50"
-            android:endColor="#00ACA996"
-            android:startColor="#ACA996"
+            android:endColor="@color/gradient_soft_gray_end_transparent"
+            android:startColor="@color/gray"
             android:type="sweep"
             android:useLevel="false" />
 

@@ -3,4 +3,7 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="translucent_black">#44000000</color>
+    <color name="grid_line_translucent_white">"#33FFFFFF"</color>
+    <color name="background_primary_teal">"#008577"</color>
 </resources>

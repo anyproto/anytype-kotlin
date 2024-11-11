@@ -89,11 +89,6 @@ object SpaceSettingsModule {
 
     @Module
     interface Bindings {
-        @PerScreen
-        @Binds
-        fun bindUriFileProvider(
-            defaultProvider: DefaultUriFileProvider
-        ): UriFileProvider
 
         @PerScreen
         @Binds
@@ -121,4 +116,5 @@ interface SpaceSettingsDependencies : ComponentDependencies {
     fun activeSpaceMemberSubscriptionContainer(): ActiveSpaceMemberSubscriptionContainer
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
     fun profileContainer(): ProfileSubscriptionManager
+    fun uriFileProvider(): UriFileProvider
 }

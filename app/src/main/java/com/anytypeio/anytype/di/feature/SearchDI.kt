@@ -2,15 +2,14 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModelFactory
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
+import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -21,7 +20,8 @@ interface ObjectSearchSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: ObjectSearchModule): Builder
+        @BindsInstance
+        fun withParams(params: ObjectSearchViewModel.VmParams): Builder
         fun build(): ObjectSearchSubComponent
     }
 
@@ -34,32 +34,19 @@ object ObjectSearchModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideGetObjectTypesUseCase(
-        repository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): GetObjectTypes = GetObjectTypes(repository, dispatchers)
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun searchObjects(repo: BlockRepository): SearchObjects = SearchObjects(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideViewModelFactory(
+        vmParams: ObjectSearchViewModel.VmParams,
         urlBuilder: UrlBuilder,
         getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
         analytics: Analytics,
-        spaceManager: SpaceManager,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): ObjectSearchViewModelFactory = ObjectSearchViewModelFactory(
+        vmParams = vmParams,
         urlBuilder = urlBuilder,
         searchObjects = searchObjects,
         getObjectTypes = getObjectTypes,
         analytics = analytics,
-        spaceManager = spaceManager,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 }

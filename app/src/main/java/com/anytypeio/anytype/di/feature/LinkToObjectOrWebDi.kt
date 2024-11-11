@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
-import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -13,40 +12,25 @@ import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModelFactory
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import dagger.BindsInstance
-import dagger.Component
 import dagger.Module
 import dagger.Provides
+import dagger.Subcomponent
 
-@Component(
-    modules = [LinkToObjectOrWebModule::class],
-    dependencies = [LinkToObjectOrWebDependencies::class, EditorComponentDependencies::class]
+@Subcomponent(
+    modules = [LinkToObjectOrWebModule::class]
 )
 @PerModal
 interface LinkToObjectOrWebSubComponent {
 
-    @Component.Factory
-    interface Factory {
-        fun create(
-            @BindsInstance params: LinkToObjectOrWebViewModel.VmParams,
-            dependencies: LinkToObjectOrWebDependencies,
-            editorDependencies: EditorComponentDependencies
-        ): LinkToObjectOrWebSubComponent
+    @Subcomponent.Builder
+    interface Builder {
+        @BindsInstance
+        fun withParams(params: LinkToObjectOrWebViewModel.VmParams): Builder
+        fun module(module: LinkToObjectOrWebModule): Builder
+        fun build(): LinkToObjectOrWebSubComponent
     }
 
     fun inject(fragment: LinkToObjectOrWebPagesFragment)
-}
-
-interface LinkToObjectOrWebDependencies : ComponentDependencies {
-    fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
-    fun urlBuilder(): UrlBuilder
-    fun storeOfObjectTypes(): StoreOfObjectTypes
-    fun searchObjects(): SearchObjects
-    fun analytics(): Analytics
-    fun urlValidator(): UrlValidator
-}
-
-interface EditorComponentDependencies : ComponentDependencies {
-    fun stores(): Editor.Storage
 }
 
 @Module

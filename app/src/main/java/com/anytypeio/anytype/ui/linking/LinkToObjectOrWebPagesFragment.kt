@@ -29,7 +29,6 @@ import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModelFactory
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
-import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -89,7 +88,7 @@ class LinkToObjectOrWebPagesFragment :
         binding.tvScreenStateMessage.invisible()
         binding.progressBar.invisible()
         clearSearchText.setOnClickListener {
-            filterInputField.setText(ObjectSearchFragment.EMPTY_FILTER_TEXT)
+            filterInputField.setText("")
             clearSearchText.invisible()
         }
         with(binding.recyclerView) {

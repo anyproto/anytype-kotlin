@@ -14,7 +14,6 @@ import com.anytypeio.anytype.di.feature.KeychainPhraseSubComponent
 import com.anytypeio.anytype.di.feature.LinkToObjectDependencies
 import com.anytypeio.anytype.di.feature.MainEntrySubComponent
 import com.anytypeio.anytype.di.feature.MoveToDependencies
-import com.anytypeio.anytype.di.feature.ObjectSearchSubComponent
 import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
@@ -141,7 +140,6 @@ interface MainComponent :
 
     fun editorComponentBuilder(): EditorSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
-    fun objectSearchComponentBuilder(): ObjectSearchSubComponent.Builder
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder
     fun objectSetComponentBuilder(): ObjectSetSubComponent.Builder
     fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder

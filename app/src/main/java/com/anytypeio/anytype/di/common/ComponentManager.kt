@@ -323,12 +323,6 @@ class ComponentManager(
             .create(params, findComponentDependencies())
     }
 
-    val objectSearchComponent = ComponentWithParams { param: ObjectSearchViewModel.VmParams ->
-        main.objectSearchComponentBuilder()
-            .withParams(param)
-            .build()
-    }
-
     val globalSearchComponent = ComponentWithParams { params: GlobalSearchViewModel.VmParams ->
         DaggerGlobalSearchComponent
             .factory()

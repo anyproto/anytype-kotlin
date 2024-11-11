@@ -40,7 +40,6 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchView
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.ui.moving.hideProgress
 import com.anytypeio.anytype.ui.moving.showProgress
-import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -206,7 +205,7 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
         binding.tvScreenStateMessage.invisible()
         binding.hideProgress()
         clearSearchText.setOnClickListener {
-            filterInputField.setText(ObjectSearchFragment.EMPTY_FILTER_TEXT)
+            filterInputField.setText("")
             clearSearchText.invisible()
         }
         filterInputField.doAfterTextChanged { newText ->

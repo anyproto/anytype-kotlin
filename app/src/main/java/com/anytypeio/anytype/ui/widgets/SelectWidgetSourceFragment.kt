@@ -269,7 +269,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
             source: Id,
             type: Int,
             isInEditMode: Boolean,
-            spaceId: SpaceId
+            spaceId: Id
         ) = bundleOf(
             CTX_KEY to ctx,
             WIDGET_ID_KEY to widget,
@@ -278,7 +278,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
             TARGET_KEY to null,
             FLOW_EXISTING_WIDGET to true,
             IS_IN_EDIT_MODE_KEY to isInEditMode,
-            SPACE_KEY to spaceId.id
+            SPACE_KEY to spaceId
         )
 
         /**
@@ -286,10 +286,12 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
          */
         fun args(
             target: Id?,
-            isInEditMode: Boolean
+            isInEditMode: Boolean,
+            spaceId: Id
         ) = bundleOf(
             TARGET_KEY to target,
-            IS_IN_EDIT_MODE_KEY to isInEditMode
+            IS_IN_EDIT_MODE_KEY to isInEditMode,
+            SPACE_KEY to spaceId
         )
     }
 }

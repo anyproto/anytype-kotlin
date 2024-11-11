@@ -25,9 +25,9 @@ import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentLinkToObjectOrWebBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModelFactory
-import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -245,12 +245,14 @@ class LinkToObjectOrWebPagesFragment :
     }
 
     override fun injectDependencies() {
-        val params = ObjectSearchViewModel.VmParams(
-            space = SpaceId(space)
-        )
         componentManager()
             .linkToObjectOrWebComponent
-            .get(params)
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
             .inject(this)
     }
 

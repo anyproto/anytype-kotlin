@@ -20,6 +20,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -37,6 +38,7 @@ import com.anytypeio.anytype.presentation.linking.BackLinkOrAddToObjectViewModel
 import com.anytypeio.anytype.presentation.linking.BackLinkOrAddToObjectViewModelFactory
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.ui.moving.hideProgress
 import com.anytypeio.anytype.ui.moving.showProgress
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
@@ -52,6 +54,7 @@ class BacklinkOrAddToObjectFragment :
     @Inject
     lateinit var factory: BackLinkOrAddToObjectViewModelFactory
 
+    private val space get() = arg<Id>(ARG_SPACE)
     private val ctx get() = arg<Id>(ARG_CTX)
     private lateinit var clearSearchText: View
     private lateinit var filterInputField: EditText
@@ -240,7 +243,10 @@ class BacklinkOrAddToObjectFragment :
     }
 
     override fun injectDependencies() {
-        componentManager().backLinkOrAddToObjectComponent.get(ctx).inject(this)
+        val params = ObjectSearchViewModel.VmParams(
+            space = SpaceId(space)
+        )
+        componentManager().backLinkOrAddToObjectComponent.get(params).inject(this)
     }
 
     override fun releaseDependencies() {
@@ -256,10 +262,9 @@ class BacklinkOrAddToObjectFragment :
 
     companion object {
         const val ARG_CTX = "arg.bind_link.ctx"
+        const val ARG_SPACE = "arg.bind_link.space"
 
-        fun new(ctx: Id) = BacklinkOrAddToObjectFragment().apply {
-            arguments = bundleOf(ARG_CTX to ctx)
-        }
+        fun args(ctx: Id, space: Id) = bundleOf(ARG_CTX to ctx, ARG_SPACE to space)
     }
 }
 

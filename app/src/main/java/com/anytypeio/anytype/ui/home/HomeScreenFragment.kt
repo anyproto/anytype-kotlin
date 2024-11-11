@@ -175,7 +175,8 @@ class HomeScreenFragment : BaseComposeFragment(),
                             widget = command.widget,
                             source = command.source,
                             type = command.type,
-                            isInEditMode = command.isInEditMode
+                            isInEditMode = command.isInEditMode,
+                            spaceId = command.space
                         )
                     )
                 }.onFailure {
@@ -188,7 +189,8 @@ class HomeScreenFragment : BaseComposeFragment(),
                         R.id.selectWidgetSourceScreen,
                         args = SelectWidgetSourceFragment.args(
                             target = command.target,
-                            isInEditMode = command.isInEditMode
+                            isInEditMode = command.isInEditMode,
+                            spaceId = command.space
                         )
                     )
                 }.onFailure {

@@ -368,6 +368,46 @@
         <item name="android:paddingBottom">12dp</item>
     </style>
 
+
+    <style name="TextView.ContentStyle.Body.Bold" parent="TextView.ContentStyle.Body">
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:fontWeight">600</item>
+    </style>
+
+    <style name="TextView.ContentStyle.Body.Bold.Italic" parent="TextView.ContentStyle.Body">
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:fontWeight">600</item>
+    </style>
+
+    <style name="TextView.ContentStyle.Body.Italic" parent="TextView.ContentStyle.Body">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:fontWeight">400</item>
+    </style>
+
+    <style name="TextView.ContentStyle.PreviewTitles.1.Regular" parent="BaseTextView">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:fontWeight">400</item>
+        <item name="android:textSize">17sp</item>
+        <item name="lineHeight" tools:targetApi="28">22sp</item>
+        <item name="android:letterSpacing">-0.024</item>
+    </style>
+
+    <style name="TextView.UXStyle.Titles.2.Semibold" parent="BaseTextView">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:fontWeight">600</item>
+        <item name="android:textSize">15sp</item>
+        <item name="lineHeight" tools:targetApi="28">20sp</item>
+        <item name="android:letterSpacing">-0.014</item>
+    </style>
+
+    <style name="Button.Primary.Large.Icon" parent="Widget.Material3.Button.TextButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:insetTop">7dp</item>
+        <item name="android:insetBottom">7dp</item>
+    </style>
+
     <!-- button styles -->
     <attr name="primaryXSmallButtonStyle" format="reference" />
     <attr name="secondaryXSmallButtonStyle" format="reference" />

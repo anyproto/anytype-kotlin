@@ -56,9 +56,9 @@ class ObjectTypeChangeViewModel(
 
     private val pipeline = combine(searchQuery, setup) { query, setup ->
         val recommendedLayouts = if (setup.isWithFiles) {
-            SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts + listOf(ObjectType.Layout.CHAT)
+            SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
         } else {
-            SupportedLayouts.editorLayouts + listOf(ObjectType.Layout.CHAT)
+            SupportedLayouts.editorLayouts
         }
         val myTypes = proceedWithGettingMyTypes(
             query = query,

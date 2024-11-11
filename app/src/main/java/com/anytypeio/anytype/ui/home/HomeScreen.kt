@@ -46,7 +46,6 @@ import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.home.InteractionMode
-import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
 import com.anytypeio.anytype.presentation.widgets.ToIndex
@@ -60,9 +59,9 @@ import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
-import com.anytypeio.anytype.ui.widgets.types.LibraryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
 import org.burnoutcrew.reorderable.ReorderableItem
@@ -73,7 +72,6 @@ import org.burnoutcrew.reorderable.reorderable
 
 @Composable
 fun HomeScreen(
-    profileIcon: ProfileIconView,
     mode: InteractionMode,
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
@@ -87,7 +85,6 @@ fun HomeScreen(
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onExitEditMode: () -> Unit,
     onSearchClicked: () -> Unit,
-    onLibraryClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
@@ -113,7 +110,6 @@ fun HomeScreen(
             mode = mode,
             onChangeWidgetView = onChangeWidgetView,
             onEditWidgets = onEditWidgets,
-            onLibraryClicked = onLibraryClicked,
             onSpaceWidgetClicked = onSpaceWidgetClicked,
             onMove = onMove,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
@@ -185,7 +181,6 @@ private fun WidgetList(
     mode: InteractionMode,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onEditWidgets: () -> Unit,
-    onLibraryClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
@@ -423,13 +418,10 @@ private fun WidgetList(
                         onWidgetClicked = { onBundledWidgetHeaderClicked(item.id) }
                     )
                 }
-                is WidgetView.Library -> {
-                    LibraryWidgetCard(
-                        onDropDownMenuAction = { action ->
-                            onWidgetMenuAction(item.id, action)
-                        },
-                        onClick = onLibraryClicked,
-                        mode = mode
+                is WidgetView.SpaceChat -> {
+                    SpaceChatWidgetCard(
+                        mode = mode,
+                        onWidgetClicked = { onBundledWidgetHeaderClicked(item.id) }
                     )
                 }
                 is WidgetView.Action.EditWidgets -> {

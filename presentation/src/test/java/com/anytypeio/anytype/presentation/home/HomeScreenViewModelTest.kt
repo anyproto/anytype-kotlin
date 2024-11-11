@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
@@ -250,6 +251,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var clearLastOpenedObject: ClearLastOpenedObject
+
+    @Mock
+    lateinit var featureToggles: FeatureToggles
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2505,20 +2509,6 @@ class HomeScreenViewModelTest {
                 )
             }
             verify(storelessSubscriptionContainer, times(1)).subscribe(
-                StoreSearchByIdsParams(
-                    space = SpaceId(defaultSpaceConfig.techSpace),
-                    subscription = HomeScreenViewModel.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                    targets = listOf(defaultSpaceConfig.profile),
-                    keys = listOf(
-                        Relations.ID,
-                        Relations.NAME,
-                        Relations.ICON_EMOJI,
-                        Relations.ICON_IMAGE,
-                        Relations.ICON_OPTION
-                    )
-                )
-            )
-            verify(storelessSubscriptionContainer, times(1)).subscribe(
                 firstTimeParams
             )
             advanceUntilIdle()
@@ -2986,7 +2976,8 @@ class HomeScreenViewModelTest {
         spaceBinWidgetContainer = SpaceBinWidgetContainer(
             container = storelessSubscriptionContainer,
             manager = spaceManager
-        )
+        ),
+        featureToggles = featureToggles
     )
 
     companion object {

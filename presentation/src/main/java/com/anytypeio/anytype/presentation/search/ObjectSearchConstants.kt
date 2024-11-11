@@ -314,10 +314,7 @@ object ObjectSearchConstants {
                 DVFilter(
                     relation = Relations.RECOMMENDED_LAYOUT,
                     condition = DVFilterCondition.NOT_IN,
-                    value = listOf(
-                        ObjectType.Layout.CHAT.code.toDouble(),
-                        ObjectType.Layout.CHAT_DERIVED.code.toDouble()
-                    )
+                    value = listOf(ObjectType.Layout.CHAT_DERIVED.code.toDouble())
                 )
             )
         }
@@ -1280,8 +1277,9 @@ object ObjectSearchConstants {
 
     val spaceViewKeys = listOf(
         Relations.ID,
-        Relations.NAME,
         Relations.TARGET_SPACE_ID,
+        Relations.CHAT_ID,
+        Relations.NAME,
         Relations.ICON_IMAGE,
         Relations.ICON_EMOJI,
         Relations.ICON_OPTION,

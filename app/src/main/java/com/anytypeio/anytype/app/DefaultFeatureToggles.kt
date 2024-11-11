@@ -25,4 +25,7 @@ class DefaultFeatureToggles @Inject constructor(
     override val isConciseLogging: Boolean = true
 
     override val enableDiscussionDemo: Boolean = true
+
+    override val isSpaceLevelChatEnabled: Boolean
+        get() = true
 }

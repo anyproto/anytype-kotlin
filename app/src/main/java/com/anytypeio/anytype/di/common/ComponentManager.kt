@@ -53,7 +53,6 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.discussions.DaggerDiscussionComponent
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
-import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipUpdateComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerRequestJoinSpaceComponent
@@ -106,7 +105,6 @@ import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationVie
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
-import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
@@ -736,14 +734,6 @@ class ComponentManager(
         DaggerAppearanceComponent
             .factory()
             .create(findComponentDependencies())
-    }
-
-    val libraryComponent = ComponentWithParams { (ctx, params) : Pair<Context, LibraryViewModel.Params> ->
-        DaggerLibraryComponent.builder()
-            .withContext(ctx)
-            .withParams(params)
-            .withDependencies(findComponentDependencies())
-            .build()
     }
 
     val backLinkOrAddToObjectComponent = ComponentWithParams { ctx: Id ->

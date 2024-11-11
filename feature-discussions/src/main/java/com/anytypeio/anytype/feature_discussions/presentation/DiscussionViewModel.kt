@@ -51,9 +51,6 @@ class DiscussionViewModel(
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
 
-    // TODO naive implementation; switch to state
-    private lateinit var chat: Id
-
     init {
         viewModelScope.launch {
             val account = requireNotNull(getAccount.async(Unit).getOrNull())
@@ -68,8 +65,7 @@ class DiscussionViewModel(
                     val root = ObjectWrapper.Basic(obj.details[params.ctx].orEmpty())
                     name.value = root.name
                     proceedWithObservingChatMessages(
-                        account = account.id,
-                        root = root
+                        account = account.id
                     )
                 },
                 onFailure = {
@@ -80,53 +76,46 @@ class DiscussionViewModel(
     }
 
     private suspend fun proceedWithObservingChatMessages(
-        account: Id,
-        root: ObjectWrapper.Basic
+        account: Id
     ) {
-        val chat = root.getValue<Id>(Relations.CHAT_ID)
-        if (chat != null) {
-            this.chat = chat
-            chatContainer
-                .watch(chat)
-                .onEach { Timber.d("Got new update: $it") }
-                .collect {
-                    messages.value = it.map { msg ->
-                        val member = members.get().let { type ->
-                            when(type) {
-                                is Store.Data -> type.members.find { member ->
-                                    member.identity == msg.creator
-                                }
-                                is Store.Empty -> null
+        chatContainer
+            .watch(params.ctx)
+            .onEach { Timber.d("Got new update: $it") }
+            .collect {
+                messages.value = it.map { msg ->
+                    val member = members.get().let { type ->
+                        when(type) {
+                            is Store.Data -> type.members.find { member ->
+                                member.identity == msg.creator
                             }
+                            is Store.Empty -> null
                         }
-                        DiscussionView.Message(
-                            id = msg.id,
-                            timestamp = msg.createdAt * 1000,
-                            content = msg.content?.text.orEmpty(),
-                            author = member?.name ?: msg.creator.takeLast(5),
-                            isUserAuthor = msg.creator == account,
-                            isEdited = msg.modifiedAt > msg.createdAt,
-                            reactions = msg.reactions.map{ (emoji, ids) ->
-                                DiscussionView.Message.Reaction(
-                                    emoji = emoji,
-                                    count = ids.size,
-                                    isSelected = ids.contains(account)
-                                )
-                            },
-                            attachments = msg.attachments,
-                            avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
-                                DiscussionView.Message.Avatar.Image(
-                                    urlBuilder.thumbnail(member.iconImage!!)
-                                )
-                            } else {
-                                DiscussionView.Message.Avatar.Initials(member?.name.orEmpty())
-                            }
-                        )
-                    }.reversed()
-                }
-        } else {
-            Timber.w("Chat ID was missing in chat smart-object details")
-        }
+                    }
+                    DiscussionView.Message(
+                        id = msg.id,
+                        timestamp = msg.createdAt * 1000,
+                        content = msg.content?.text.orEmpty(),
+                        author = member?.name ?: msg.creator.takeLast(5),
+                        isUserAuthor = msg.creator == account,
+                        isEdited = msg.modifiedAt > msg.createdAt,
+                        reactions = msg.reactions.map{ (emoji, ids) ->
+                            DiscussionView.Message.Reaction(
+                                emoji = emoji,
+                                count = ids.size,
+                                isSelected = ids.contains(account)
+                            )
+                        },
+                        attachments = msg.attachments,
+                        avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
+                            DiscussionView.Message.Avatar.Image(
+                                urlBuilder.thumbnail(member.iconImage!!)
+                            )
+                        } else {
+                            DiscussionView.Message.Avatar.Initials(member?.name.orEmpty())
+                        }
+                    )
+                }.reversed()
+            }
     }
 
     fun onMessageSent(msg: String) {
@@ -137,7 +126,7 @@ class DiscussionViewModel(
                     // TODO consider moving this use-case inside chat container
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
-                            chat = chat,
+                            chat = params.ctx,
                             message = Chat.Message.new(
                                 text = msg,
                                 attachments = attachments.value.map { a ->
@@ -160,7 +149,7 @@ class DiscussionViewModel(
                 is ChatBoxMode.EditMessage -> {
                     editChatMessage.async(
                         params = Command.ChatCommand.EditMessage(
-                            chat = chat,
+                            chat = params.ctx,
                             message = Chat.Message.updated(
                                 id = mode.msg,
                                 text = msg
@@ -197,7 +186,11 @@ class DiscussionViewModel(
                         Relations.NAME to input
                     )
                 )
-            )
+            ).onSuccess {
+                Timber.d("Updated chat title successfully")
+            }.onFailure {
+                Timber.e(it, "Error while updating chat title")
+            }
         }
     }
 
@@ -216,7 +209,7 @@ class DiscussionViewModel(
             if (message != null) {
                 toggleChatMessageReaction.async(
                     Command.ChatCommand.ToggleMessageReaction(
-                        chat = chat,
+                        chat = params.ctx,
                         msg = msg,
                         emoji = reaction
                     )
@@ -234,7 +227,7 @@ class DiscussionViewModel(
         viewModelScope.launch {
             deleteChatMessage.async(
                 Command.ChatCommand.DeleteMessage(
-                    chat = chat,
+                    chat = params.ctx,
                     msg = msg.id
                 )
             ).onFailure {

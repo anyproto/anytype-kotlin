@@ -1921,10 +1921,11 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceCreate(details: Struct): Id {
+    fun workspaceCreate(details: Struct, withChat: Boolean): Id {
         val request = Rpc.Workspace.Create.Request(
             details = details,
-            useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED
+            useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED,
+            withChat = withChat
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceCreate(request) }
@@ -1935,7 +1936,8 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun workspaceOpen(space: Id): Config {
         val request = Rpc.Workspace.Open.Request(
-            spaceId = space
+            spaceId = space,
+            withChat = true
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceOpen(request) }

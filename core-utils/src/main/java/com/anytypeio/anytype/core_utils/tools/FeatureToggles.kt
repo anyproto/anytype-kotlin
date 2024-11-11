@@ -15,4 +15,6 @@ interface FeatureToggles {
     val isLogEditorControlPanelMachine: Boolean
 
     val enableDiscussionDemo: Boolean
+
+    val isSpaceLevelChatEnabled: Boolean
 }

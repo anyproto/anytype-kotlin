@@ -18,7 +18,6 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
-import com.anytypeio.anytype.presentation.library.DependentData
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getDescriptionOrSnippet
@@ -144,8 +143,7 @@ sealed class UiContentItem {
         val sourceObject: Id? = null,
         val uniqueKey: Key? = null,
         val readOnly: Boolean = true,
-        val editable: Boolean = true,
-        val dependentData: DependentData = DependentData.None
+        val editable: Boolean = true
     ) : UiContentItem()
 
     data class Relation(

@@ -3,13 +3,6 @@
     <style name="AuthHeaderStyle" parent="TextView.ContentStyle.Headline.Heading">
     </style>
 
-    <style name="PinCodeKeyboardNumber" parent="TextView.ContentStyle.Headline.Title">
-        <item name="android:stateListAnimator">@animator/scale_shrink</item>
-        <item name="android:clickable">true</item>
-        <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/selector_pin_code_keyboard</item>
-    </style>
-
     <style name="SyncFromCloudDialog" parent="Theme.MaterialComponents.Dialog.Alert">
         <item name="android:windowNoTitle">true</item>
         <item name="android:background">#fff</item>

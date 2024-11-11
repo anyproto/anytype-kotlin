@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
                 app:trackColor="@color/glyph_inactive"
-                app:indicatorColor="#B6B6B6"
+                app:indicatorColor="@color/tag_icon_gray"
                 app:indicatorSize="20dp"
                 app:trackThickness="@dimen/dp_2"
                 app:layout_constraintBottom_toBottomOf="parent"

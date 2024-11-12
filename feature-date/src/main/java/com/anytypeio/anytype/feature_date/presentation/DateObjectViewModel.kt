@@ -5,12 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationListWithValueItem
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.feature_date.models.DateObjectBottomMenu
 import com.anytypeio.anytype.feature_date.models.DateObjectHeaderState
@@ -40,7 +43,8 @@ class DateObjectViewModel(
     private val urlBuilder: UrlBuilder,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val userPermissionProvider: UserPermissionProvider,
-    private val relationListWithValue: RelationListWithValue
+    private val relationListWithValue: RelationListWithValue,
+    private val storeOfRelations: StoreOfRelations
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiTopToolbarState =
@@ -70,6 +74,7 @@ class DateObjectViewModel(
         Timber.d("Init DateObjectViewModel, date object id: [${vmParams.objectId}], space: [${vmParams.spaceId}]")
         proceedWithObservingPermissions()
         proceedWithGettingObject()
+        proceedWithGettingObjectRelations()
     }
 
     fun onStart() {
@@ -80,6 +85,48 @@ class DateObjectViewModel(
                 analytics = analytics
             )
         }
+    }
+
+    private fun proceedWithGettingObjectRelations() {
+        val params = RelationListWithValue.Params(
+            space = vmParams.spaceId,
+            value = vmParams.objectId
+        )
+        viewModelScope.launch {
+            relationListWithValue.async(params).fold(
+                onSuccess = { items ->
+                    Timber.d("Got object relations: $items")
+                    proceedWithRelations(items)
+                },
+                onFailure = { e -> Timber.e("Error getting object relations") }
+            )
+        }
+    }
+
+    private suspend fun proceedWithRelations(items: List<RelationListWithValueItem>) {
+        val relations = items
+            .sortedByDescending { it.key.key == Relations.MENTIONS }
+            .mapNotNull { item ->
+                val r = storeOfRelations.getByKey(item.key.key)
+                if (r != null) {
+                    UiHorizontalListItem.Item(
+                        id = item.key.key,
+                        key = item.key,
+                        title = r.name.orEmpty()
+                    )
+                } else {
+                    Timber.e("Relation not found: ${item.key.key}")
+                    null
+                }
+            }
+        uiHorizontalListState.value = DateObjectHorizontalListState.Content(
+            items = buildList {
+                add(UiHorizontalListItem.Settings())
+                add(UiHorizontalListItem.MentionedIn())
+                addAll(relations)
+            },
+            selectedItem = null
+        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -112,13 +159,6 @@ class DateObjectViewModel(
                     val root = ObjectWrapper.Basic(obj.details[vmParams.objectId].orEmpty())
                     uiHeaderState.value = DateObjectHeaderState.Content(
                         title = root.name.orEmpty()
-                    )
-                    uiHorizontalListState.value = DateObjectHorizontalListState.Content(
-                        items = listOf(
-                            UiHorizontalListItem.Settings(),
-                            UiHorizontalListItem.MentionedIn()
-                        ),
-                        selectedItem = null
                     )
                 },
                 onFailure = { e -> Timber.e("Error getting date object") }

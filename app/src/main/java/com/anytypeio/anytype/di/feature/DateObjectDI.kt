@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -152,4 +153,5 @@ interface DateObjectDependencies : ComponentDependencies {
     fun localeProvider(): LocaleProvider
     fun config(): ConfigStorage
     fun userPermissionProvider(): UserPermissionProvider
+    fun provideStoreOfRelations(): StoreOfRelations
 }

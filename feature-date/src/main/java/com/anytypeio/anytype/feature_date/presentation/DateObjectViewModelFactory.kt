@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel.VmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -18,7 +19,8 @@ class DateObjectViewModelFactory @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val userPermissionProvider: UserPermissionProvider,
-    private val relationListWithValue: RelationListWithValue
+    private val relationListWithValue: RelationListWithValue,
+    private val storeOfRelations: StoreOfRelations
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -30,6 +32,7 @@ class DateObjectViewModelFactory @Inject constructor(
             urlBuilder = urlBuilder,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             userPermissionProvider = userPermissionProvider,
-            relationListWithValue = relationListWithValue
+            relationListWithValue = relationListWithValue,
+            storeOfRelations = storeOfRelations
         ) as T
 }

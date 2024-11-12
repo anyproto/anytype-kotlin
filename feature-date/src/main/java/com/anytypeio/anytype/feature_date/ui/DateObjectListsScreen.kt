@@ -62,16 +62,20 @@ fun DateLayoutHorizontalListScreen(
     state: DateObjectHorizontalListState.Content,
     action: (UiHorizontalListItem) -> Unit
 ) {
+
+    val items = remember { mutableStateListOf<UiHorizontalListItem>() }
+    items.swapList(state.items)
+
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 24.dp)
     ) {
         items(
-            count = state.items.size,
-            key = { state.items[it].id },
+            count = items.size,
+            key = { items[it].id },
         ) {
-            val item = state.items[it]
+            val item = items[it]
             val background = if (state.selectedItem == item.id) {
                 colorResource(R.color.shape_secondary)
             } else {

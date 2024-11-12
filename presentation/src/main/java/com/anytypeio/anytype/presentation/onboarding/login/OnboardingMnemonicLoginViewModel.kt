@@ -350,10 +350,12 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
             debugAccountSelectTrace.async(params).fold(
                 onSuccess = {
                     Timber.d("On account trace success")
+                    command.emit(Command.ShowToast("On account trace success"))
                     command.emit(Command.ShareDebugGoroutines(path, uriFileProvider))
                 },
                 onFailure = {
                     Timber.e(it, "Error while collecting account trace")
+                    command.emit(Command.ShowToast("Error while collecting account trace: ${it.message}"))
                 }
             )
         }

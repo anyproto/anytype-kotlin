@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
@@ -1056,5 +1057,9 @@ class BlockMiddleware(
 
     override suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload {
         return middleware.dataViewSetActiveView(command)
+    }
+
+    override suspend fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem> {
+        return middleware.objectRelationListWithValue(command)
     }
 }

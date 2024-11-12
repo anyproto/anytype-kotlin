@@ -132,9 +132,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                                 onChangeWidgetView = vm::onChangeCurrentWidgetView,
                                 onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
                                 onSearchClicked = vm::onSearchIconClicked,
-                                onLibraryClicked = {
-                                    vm.onLibraryClicked()
-                                },
                                 onCreateNewObjectClicked = throttledClick(
                                     onClick = { vm.onCreateNewObjectClicked() }
                                 ),

@@ -65,6 +65,11 @@ open class LinkToObjectOrWebViewModelTest {
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
+    val vmParams = LinkToObjectOrWebViewModel.VmParams(
+        space = SpaceId(spaceId),
+    )
+
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -304,8 +309,8 @@ open class LinkToObjectOrWebViewModelTest {
         urlBuilder = builder,
         urlValidator = urlValidator,
         storeOfObjectTypes = storeOfObjectTypes,
-        spaceManager = spaceManager,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        vmParams = vmParams
     )
 
     fun stubSpaceManager() {

@@ -55,7 +55,6 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
@@ -95,9 +94,7 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
-import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -190,14 +187,6 @@ object ObjectSetModule {
         repo = repo,
         dispatchers = dispatchers
     )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideGetObjectTypesUseCase(
-        repository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): GetObjectTypes = GetObjectTypes(repository, dispatchers)
 
     @JvmStatic
     @Provides
@@ -387,11 +376,6 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideDispatcher(): Dispatcher<Payload> = Dispatcher.Default()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideDelegator(): Delegator<Action> = Delegator.Default()
 
     @JvmStatic
@@ -462,13 +446,6 @@ object ObjectSetModule {
     fun provideUpdateDetailUseCase(
         repository: BlockRepository
     ): UpdateDetail = UpdateDetail(repository)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideSearchObjectsUseCase(
-        repo: BlockRepository
-    ): SearchObjects = SearchObjects(repo = repo)
 
     @JvmStatic
     @Provides
@@ -624,12 +601,6 @@ object ObjectSetModule {
         fun bindCoverImageHashProvider(
             defaultProvider: DefaultCoverImageHashProvider
         ): CoverImageHashProvider
-
-        @PerScreen
-        @Binds
-        fun bindUriFileProvider(
-            defaultProvider: DefaultUriFileProvider
-        ): UriFileProvider
     }
 
     @JvmStatic

@@ -97,13 +97,6 @@ object AllContentModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun searchObjects(
-        repo: BlockRepository
-    ): SearchObjects = SearchObjects(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun createObject(
         repo: BlockRepository,
         getDefaultObjectType: GetDefaultObjectType,
@@ -179,4 +172,5 @@ interface AllContentDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun config(): ConfigStorage
     fun userPermissionProvider(): UserPermissionProvider
+    fun searchObjects(): SearchObjects
 }

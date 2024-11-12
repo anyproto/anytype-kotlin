@@ -1127,7 +1127,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         val fr = LinkToObjectFragment.new(
                             target = command.target,
                             position = command.position,
-                            ignore = vm.context
+                            ignore = vm.context,
+                            space = space
                         )
                         fr.showChildFragment()
                     }

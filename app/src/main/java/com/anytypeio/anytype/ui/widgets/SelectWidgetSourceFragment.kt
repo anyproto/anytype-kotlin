@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -32,16 +33,17 @@ import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.widgets.SelectWidgetSourceViewModel
 import com.anytypeio.anytype.ui.moving.hideProgress
 import com.anytypeio.anytype.ui.moving.showProgress
-import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import javax.inject.Inject
 import timber.log.Timber
 
 class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBinding>(),
     TextInputDialogBottomBehaviorApplier.OnDialogCancelListener {
 
+    private val spaceId: Id get() = arg(SPACE_KEY)
     private val ctx: Id get() = arg(CTX_KEY)
     private val widget: Id get() = arg(WIDGET_ID_KEY)
     private val target: Id? get() = argOrNull(TARGET_KEY)
@@ -186,7 +188,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
         binding.tvScreenStateMessage.invisible()
         binding.hideProgress()
         clearSearchText.setOnClickListener {
-            filterInputField.setText(ObjectSearchFragment.EMPTY_FILTER_TEXT)
+            filterInputField.setText("")
             clearSearchText.invisible()
         }
         filterInputField.doAfterTextChanged { newText ->
@@ -230,7 +232,10 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
     }
 
     override fun injectDependencies() {
-        componentManager().selectWidgetSourceSubcomponent.get().inject(this)
+        val vmParams = ObjectSearchViewModel.VmParams(
+            space = SpaceId(spaceId)
+        )
+        componentManager().selectWidgetSourceSubcomponent.get(vmParams).inject(this)
     }
 
     override fun releaseDependencies() {
@@ -256,12 +261,14 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
         private const val WIDGET_SOURCE_KEY = "arg.select-widget-source.widget-source"
         private const val TARGET_KEY = "arg.select-widget-source.target"
         private const val IS_IN_EDIT_MODE_KEY = "arg.select-widget-source.is-in-edit-mode"
+        private const val SPACE_KEY = "arg.select-widget-source.space"
         fun args(
             ctx: Id,
             widget: Id,
             source: Id,
             type: Int,
-            isInEditMode: Boolean
+            isInEditMode: Boolean,
+            spaceId: Id
         ) = bundleOf(
             CTX_KEY to ctx,
             WIDGET_ID_KEY to widget,
@@ -269,7 +276,8 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
             WIDGET_TYPE_KEY to type,
             TARGET_KEY to null,
             FLOW_EXISTING_WIDGET to true,
-            IS_IN_EDIT_MODE_KEY to isInEditMode
+            IS_IN_EDIT_MODE_KEY to isInEditMode,
+            SPACE_KEY to spaceId
         )
 
         /**
@@ -277,10 +285,12 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
          */
         fun args(
             target: Id?,
-            isInEditMode: Boolean
+            isInEditMode: Boolean,
+            spaceId: Id
         ) = bundleOf(
             TARGET_KEY to target,
-            IS_IN_EDIT_MODE_KEY to isInEditMode
+            IS_IN_EDIT_MODE_KEY to isInEditMode,
+            SPACE_KEY to spaceId
         )
     }
 }

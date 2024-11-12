@@ -12,6 +12,6 @@
   <path
       android:pathData="M11,15.25L33,15.25A2.75,2.75 0,0 1,35.75 18L35.75,26A2.75,2.75 0,0 1,33 28.75L11,28.75A2.75,2.75 0,0 1,8.25 26L8.25,18A2.75,2.75 0,0 1,11 15.25z"
       android:strokeWidth="0.5"
-      android:fillColor="#00000000"
+      android:fillColor="@color/transparent_black"
       android:strokeColor="@color/glyph_active"/>
 </vector>

@@ -423,11 +423,6 @@
         android:name="com.anytypeio.anytype.ui.settings.DebugSettingsFragment"
         android:label="DebugSettingsFragment"
         tools:layout="@layout/fragment_debug_settings" />
-    <fragment
-        android:id="@+id/pageSearchFragment"
-        android:name="com.anytypeio.anytype.ui.search.ObjectSearchFragment"
-        android:label="PageSearchFragment"
-        tools:layout="@layout/fragment_object_search" />
     <dialog
         android:id="@+id/globalSearchScreen"
         android:name="com.anytypeio.anytype.ui.search.GlobalSearchFragment"

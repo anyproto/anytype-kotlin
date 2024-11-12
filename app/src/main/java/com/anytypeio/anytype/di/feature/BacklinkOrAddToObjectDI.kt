@@ -2,7 +2,6 @@ package com.anytypeio.anytype.di.feature
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -11,9 +10,9 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.linking.BackLinkOrAddToObjectViewModelFactory
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -38,7 +37,7 @@ interface BacklinkOrAddToObjectComponent {
         fun withDependencies(dependency: BacklinkOrAddToObjectDependencies): Builder
 
         @BindsInstance
-        fun withContext(context: Id): Builder
+        fun withParams(params: ObjectSearchViewModel.VmParams): Builder
 
         fun build(): BacklinkOrAddToObjectComponent
     }
@@ -48,11 +47,6 @@ interface BacklinkOrAddToObjectComponent {
 
 @Module
 object BackLinkToObjectModule {
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun searchObjects(repo: BlockRepository): SearchObjects = SearchObjects(repo = repo)
 
     @JvmStatic
     @Provides
@@ -77,6 +71,6 @@ interface BacklinkOrAddToObjectDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun dispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
-    fun spaceManager(): SpaceManager
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
+    fun searchObjects(): SearchObjects
 }

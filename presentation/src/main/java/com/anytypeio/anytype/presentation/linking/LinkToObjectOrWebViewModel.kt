@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
@@ -34,13 +33,13 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class LinkToObjectOrWebViewModel(
+    private val vmParams: VmParams,
     private val urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val analytics: Analytics,
     private val stores: Editor.Storage,
     private val urlValidator: UrlValidator,
-    private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
@@ -220,14 +219,13 @@ class LinkToObjectOrWebViewModel(
                 analytics = analytics,
                 pos = position + 1,
                 length = userInput.value.length,
-                spaceParams = provideParams(spaceManager.get())
+                spaceParams = provideParams(vmParams.space.id)
             )
         }
     }
 
-    suspend fun getSearchObjectsParams(ignore: Id) = SearchObjects.Params(
-        // TODO DROID-2916 Provide space id to vm params
-        space = SpaceId(spaceManager.get()),
+    fun getSearchObjectsParams(ignore: Id) = SearchObjects.Params(
+        space = vmParams.space,
         limit = ObjectSearchViewModel.SEARCH_LIMIT,
         filters = ObjectSearchConstants.getFilterLinkTo(
             ignore = ignore
@@ -241,13 +239,17 @@ class LinkToObjectOrWebViewModel(
         userInput.value = searchText
     }
 
+    data class VmParams(
+        val space: SpaceId
+    )
+
     sealed class Command {
-        object Exit : Command()
+        data object Exit : Command()
         data class SetUrlAsLink(val url: String) : Command()
         data class SetObjectAsLink(val objectId: Id) : Command()
         data class CreateAndSetObjectAsLink(val objectName: String) : Command()
         data class CopyLink(val link: String) : Command()
-        object RemoveLink : Command()
+        data object RemoveLink : Command()
         data class OpenObject(val objectId: Id) : Command()
         data class OpenUrl(val url: String) : Command()
     }
@@ -300,7 +302,7 @@ sealed class LinkToItemView {
         ) : LinkedTo()
     }
 
-    object RemoveLink : LinkToItemView()
+    data object RemoveLink : LinkToItemView()
     data class CopyLink(val link: String) : LinkToItemView()
-    object PasteFromClipboard : LinkToItemView()
+    data object PasteFromClipboard : LinkToItemView()
 }

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.isDataView
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -251,7 +252,10 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
     }
 
     override fun injectDependencies() {
-        componentManager().moveToComponent.get().inject(this)
+        val params = MoveToViewModel.VmParams(
+            space = SpaceId(space)
+        )
+        componentManager().moveToComponent.get(params).inject(this)
     }
 
     override fun releaseDependencies() {

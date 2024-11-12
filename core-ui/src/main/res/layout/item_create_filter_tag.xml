@@ -11,9 +11,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="24dp"
-        android:backgroundTint="#D6F5F3"
+        android:backgroundTint="@color/tag_background_tint"
         tools:text="Architect"
-        android:textColor="#0CBBAE" />
+        android:textColor="@color/tag_text_color" />
 
     <ImageView
         android:id="@+id/ivSelectTagIcon"

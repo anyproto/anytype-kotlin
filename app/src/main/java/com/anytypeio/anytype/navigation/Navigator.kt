@@ -114,7 +114,7 @@ class Navigator : AppNavigation {
             ),
             navOptions {
                 launchSingleTop = true
-                popUpTo(R.id.pageSearchFragment) {
+                popUpTo(R.id.globalSearchScreen) {
                     inclusive = true
                 }
             }
@@ -140,7 +140,7 @@ class Navigator : AppNavigation {
             ),
             navOptions {
                 launchSingleTop = true
-                popUpTo(R.id.pageSearchFragment) {
+                popUpTo(R.id.globalSearchScreen) {
                     inclusive = true
                 }
             }

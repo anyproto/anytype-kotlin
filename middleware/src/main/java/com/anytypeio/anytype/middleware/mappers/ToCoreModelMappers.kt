@@ -852,23 +852,21 @@ fun MManifestInfo.toCoreModel(): ManifestInfo {
 }
 
 fun MProcess.toCoreModel(): Process {
+    val type = when {
+        dropFiles != null -> Process.Type.DROP_FILES
+        import_ != null -> Process.Type.IMPORT
+        export != null -> Process.Type.EXPORT
+        saveFile != null -> Process.Type.SAVE_FILE
+        migration != null -> Process.Type.MIGRATION
+        else -> Process.Type.UNKNOWN
+    }
     return Process(
         id = id,
-        type = type.toCoreModel(),
+        type = type,
         state = state.toCoreModel(),
-        progress = progress?.toCoreModel()
+        progress = progress?.toCoreModel(),
+        spaceId = spaceId
     )
-}
-
-fun MProcessType.toCoreModel(): Process.Type {
-    return when (this) {
-        MProcessType.DropFiles -> Process.Type.DROP_FILES
-        MProcessType.Import -> Process.Type.IMPORT
-        MProcessType.Export -> Process.Type.EXPORT
-        MProcessType.SaveFile -> Process.Type.SAVE_FILE
-        MProcessType.RecoverAccount -> Process.Type.RECOVER_ACCOUNT
-        MProcessType.Migration -> Process.Type.MIGRATION
-    }
 }
 
 fun MProcessState.toCoreModel(): Process.State {

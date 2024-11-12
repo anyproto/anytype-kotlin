@@ -9,7 +9,6 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -33,7 +32,6 @@ import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
@@ -104,24 +102,6 @@ object CollectionModule {
         store = store,
         dispatchers = dispatchers
     )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun widgetEventDispatcher(): Dispatcher<WidgetDispatchEvent> = Dispatcher.Default()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun objectPayloadDispatcher(): Dispatcher<Payload> = Dispatcher.Default()
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun getObjectTypes(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): GetObjectTypes = GetObjectTypes(repo, dispatchers)
 
     @JvmStatic
     @Provides
@@ -209,6 +189,8 @@ object CollectionModule {
 }
 
 interface CollectionDependencies : ComponentDependencies {
+    fun dispatcherWidgets(): Dispatcher<WidgetDispatchEvent>
+    fun dispatcherPayload(): Dispatcher<Payload>
     fun context(): Context
     fun blockRepo(): BlockRepository
     fun authRepo(): AuthRepository

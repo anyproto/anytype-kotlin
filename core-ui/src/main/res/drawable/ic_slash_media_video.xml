@@ -6,9 +6,9 @@
   <path
       android:pathData="M12,0.75L12,0.75A11.25,11.25 0,0 1,23.25 12L23.25,12A11.25,11.25 0,0 1,12 23.25L12,23.25A11.25,11.25 0,0 1,0.75 12L0.75,12A11.25,11.25 0,0 1,12 0.75z"
       android:strokeWidth="1.5"
-      android:fillColor="#3E58EB"
-      android:strokeColor="#3E58EB"/>
+      android:fillColor="@color/palette_system_blue"
+      android:strokeColor="@color/palette_system_blue"/>
   <path
       android:pathData="M18.5,11.9998L9,6.5V17.5L18.5,11.9998Z"
-      android:fillColor="#ffffff"/>
+      android:fillColor="@color/white"/>
 </vector>

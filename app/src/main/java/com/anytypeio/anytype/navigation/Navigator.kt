@@ -13,7 +13,6 @@ import com.anytypeio.anytype.ui.allcontent.AllContentFragment
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
-import com.anytypeio.anytype.ui.library.LibraryFragment
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
 import com.anytypeio.anytype.ui.relations.RelationEditFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
@@ -114,7 +113,7 @@ class Navigator : AppNavigation {
             ),
             navOptions {
                 launchSingleTop = true
-                popUpTo(R.id.pageSearchFragment) {
+                popUpTo(R.id.globalSearchScreen) {
                     inclusive = true
                 }
             }
@@ -140,7 +139,7 @@ class Navigator : AppNavigation {
             ),
             navOptions {
                 launchSingleTop = true
-                popUpTo(R.id.pageSearchFragment) {
+                popUpTo(R.id.globalSearchScreen) {
                     inclusive = true
                 }
             }
@@ -243,13 +242,6 @@ class Navigator : AppNavigation {
                 inclusive = true
             }
         })
-    }
-
-    override fun openLibrary(space: Id) {
-        navController?.navigate(
-            R.id.libraryFragment,
-            LibraryFragment.args(space)
-        )
     }
 
     override fun openRemoteFilesManageScreen(subscription: Id, space: Id) {

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_models
 
 data class Process(
     val id: String,
+    val spaceId: Id,
     val type: Type,
     val state: State,
     val progress: Progress?
@@ -11,8 +12,8 @@ data class Process(
         IMPORT,
         EXPORT,
         SAVE_FILE,
-        RECOVER_ACCOUNT,
-        MIGRATION
+        MIGRATION,
+        UNKNOWN
     }
 
     enum class State {

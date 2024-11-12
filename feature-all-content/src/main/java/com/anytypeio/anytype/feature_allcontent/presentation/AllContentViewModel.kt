@@ -60,7 +60,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentToBin
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
-import com.anytypeio.anytype.presentation.library.LibraryViewModel.LibraryItem
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import java.time.Instant
 import java.time.LocalDate
@@ -955,7 +954,7 @@ class AllContentViewModel(
         }
     }
 
-    fun uninstallObject(id: Id, type: LibraryItem, name: String) {
+    fun uninstallObject(id: Id, tab: AllContentTab, name: String) {
         viewModelScope.launch {
             removeObjectsFromWorkspace.execute(
                 RemoveObjectsFromWorkspace.Params(listOf(id))
@@ -965,12 +964,15 @@ class AllContentViewModel(
                     commands.emit(Command.SendToast.Error("Error while uninstalling object"))
                 },
                 onSuccess = {
-                    when (type) {
-                        LibraryItem.TYPE -> {
+                    when (tab) {
+                        AllContentTab.TYPES -> {
                             commands.emit(Command.SendToast.TypeRemoved(name))
                         }
-                        LibraryItem.RELATION -> {
+                        AllContentTab.RELATIONS -> {
                             commands.emit(Command.SendToast.RelationRemoved(name))
+                        }
+                        else -> {
+                            //do nothing
                         }
                     }
                 }
@@ -1013,5 +1015,9 @@ class AllContentViewModel(
         val DEFAULT_INITIAL_MODE = UiTitleState.AllContent
         val DEFAULT_INITIAL_TAB = AllContentTab.PAGES
         val DEFAULT_QUERY = ""
+    }
+
+    enum class LibraryItem {
+        TYPE, RELATION
     }
 }

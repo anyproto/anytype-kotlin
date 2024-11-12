@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.di.main
 
+import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -22,6 +24,7 @@ import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionContainer
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
@@ -225,4 +228,19 @@ object SubscriptionsModule {
         isSpaceDeleted = isSpaceDeleted,
         profile = profileSubscriptionManager
     )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun searchObjects(
+        repo: BlockRepository
+    ): SearchObjects = SearchObjects(repo = repo)
+
+    @JvmStatic
+    @PerScreen
+    @Singleton
+    fun getObjectTypes(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetObjectTypes = GetObjectTypes(repo, dispatchers)
 }

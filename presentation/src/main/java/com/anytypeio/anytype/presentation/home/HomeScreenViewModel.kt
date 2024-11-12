@@ -841,7 +841,8 @@ class HomeScreenViewModel(
             )
             commands.emit(
                 Command.SelectWidgetSource(
-                    isInEditMode = isInEditMode()
+                    isInEditMode = isInEditMode(),
+                    space = spaceManager.get()
                 )
             )
         }
@@ -1102,7 +1103,8 @@ class HomeScreenViewModel(
             commands.emit(
                 Command.SelectWidgetSource(
                     target = widget,
-                    isInEditMode = isInEditMode()
+                    isInEditMode = isInEditMode(),
+                    space = spaceManager.get()
                 )
             )
         }
@@ -1152,7 +1154,8 @@ class HomeScreenViewModel(
                             widget = widget,
                             source = curr.source.id,
                             type = parseWidgetType(curr),
-                            isInEditMode = isInEditMode()
+                            isInEditMode = isInEditMode(),
+                            space = config.space
                         )
                     )
                 } else {
@@ -1775,19 +1778,6 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onLibraryClicked() {
-        viewModelScope.launch {
-            val space = spaceManager.get()
-            if (space.isNotEmpty()) {
-                navigation(
-                    Navigation.OpenLibrary(space)
-                )
-            } else {
-                Timber.w("Space is missing: ${space}")
-            }
-        }
-    }
-
     fun onSearchIconClicked() {
         viewModelScope.launch {
             commands.emit(
@@ -2127,7 +2117,6 @@ class HomeScreenViewModel(
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data object OpenSpaceSwitcher: Navigation()
-        data class OpenLibrary(val space: Id) : Navigation()
         data class OpenAllContent(val space: Id) : Navigation()
     }
 
@@ -2271,7 +2260,8 @@ sealed class Command {
      */
     data class SelectWidgetSource(
         val target: Id? = null,
-        val isInEditMode: Boolean
+        val isInEditMode: Boolean,
+        val space: Id
     ) : Command()
 
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
@@ -2295,7 +2285,8 @@ sealed class Command {
         val widget: Id,
         val source: Id,
         val type: Int,
-        val isInEditMode: Boolean
+        val isInEditMode: Boolean,
+        val space: Id
     ) : Command()
 
     data class ChangeWidgetType(

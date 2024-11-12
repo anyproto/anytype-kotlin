@@ -35,7 +35,6 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
-import com.anytypeio.anytype.ui.library.LibraryFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
@@ -102,9 +101,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                     onChangeWidgetView = vm::onChangeCurrentWidgetView,
                     onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
                     onSearchClicked = vm::onSearchIconClicked,
-                    onLibraryClicked = {
-                        vm.onLibraryClicked()
-                    },
                     onCreateNewObjectClicked = throttledClick(
                         onClick = { vm.onCreateNewObjectClicked() }
                     ),
@@ -179,7 +175,8 @@ class HomeScreenFragment : BaseComposeFragment(),
                             widget = command.widget,
                             source = command.source,
                             type = command.type,
-                            isInEditMode = command.isInEditMode
+                            isInEditMode = command.isInEditMode,
+                            spaceId = command.space
                         )
                     )
                 }.onFailure {
@@ -192,7 +189,8 @@ class HomeScreenFragment : BaseComposeFragment(),
                         R.id.selectWidgetSourceScreen,
                         args = SelectWidgetSourceFragment.args(
                             target = command.target,
-                            isInEditMode = command.isInEditMode
+                            isInEditMode = command.isInEditMode,
+                            spaceId = command.space
                         )
                     )
                 }.onFailure {
@@ -342,14 +340,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                     subscription = destination.subscription,
                     space = destination.space
                 )
-            }
-            is Navigation.OpenLibrary -> runCatching {
-                findNavController().navigate(
-                    R.id.libraryFragment,
-                    args = LibraryFragment.args(destination.space)
-                )
-            }.onFailure { e ->
-                Timber.e(e, "Error while opening space library from widgets")
             }
             is Navigation.OpenAllContent -> {
                 runCatching {

@@ -11,7 +11,6 @@ import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -29,19 +28,19 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SelectWidgetSourceViewModel(
+    private val vmParams: VmParams,
     private val urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<WidgetDispatchEvent>,
-    private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ObjectSearchViewModel(
+    vmParams = vmParams,
     urlBuilder = urlBuilder,
     searchObjects = searchObjects,
     getObjectTypes = getObjectTypes,
     analytics = analytics,
-    spaceManager = spaceManager,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
 ) {
 
@@ -254,31 +253,31 @@ class SelectWidgetSourceViewModel(
     }
 
     class Factory(
+        private val vmParams: VmParams,
         private val urlBuilder: UrlBuilder,
         private val searchObjects: SearchObjects,
         private val getObjectTypes: GetObjectTypes,
         private val analytics: Analytics,
         private val dispatcher: Dispatcher<WidgetDispatchEvent>,
-        private val spaceManager: SpaceManager,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return SelectWidgetSourceViewModel(
+                vmParams = vmParams,
                 urlBuilder = urlBuilder,
                 searchObjects = searchObjects,
                 analytics = analytics,
                 getObjectTypes = getObjectTypes,
                 dispatcher = dispatcher,
-                spaceManager = spaceManager,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }
 
     sealed class Config {
-        object None : Config()
+        data object None : Config()
         data class NewWidget(
             val target: Id?,
             val isInEditMode: Boolean

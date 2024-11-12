@@ -1160,18 +1160,24 @@ message ResponseEvent {
 message Model {
     message Process {
         string id = 1;
-        Type type = 2;
         State state = 3;
         Progress progress = 4;
+        string spaceId = 5;
 
-        enum Type {
-            DropFiles = 0;
-            Import = 1;
-            Export = 2;
-            SaveFile = 3;
-            RecoverAccount = 4;
-            Migration = 5;
+        oneof message {
+            DropFiles dropFiles = 6;
+            Import import= 7;
+            Export export= 8;
+            SaveFile saveFile = 9;
+            Migration migration = 10;
         }
+
+        string error = 11;
+        message DropFiles {}
+        message Import {}
+        message Export {}
+        message SaveFile {}
+        message Migration {}
 
         enum State {
             None = 0;

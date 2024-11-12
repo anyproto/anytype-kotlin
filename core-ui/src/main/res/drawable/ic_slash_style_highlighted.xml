@@ -8,5 +8,5 @@
       android:fillColor="@color/glyph_active"/>
   <path
       android:pathData="M0,0h1v28h-1z"
-      android:fillColor="#FFB522"/>
+      android:fillColor="@color/palette_system_amber_100"/>
 </vector>

@@ -18,7 +18,6 @@ import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -40,11 +39,11 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 open class ObjectSearchViewModel(
+    private val vmParams: VmParams,
     private val urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -120,8 +119,7 @@ open class ObjectSearchViewModel(
     protected fun getObjectTypes() {
         jobs += viewModelScope.launch {
             val params = GetObjectTypes.Params(
-                // TODO DROID-2916 Provide space id to vm params
-                space = SpaceId(spaceManager.get()),
+                space = vmParams.space,
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
                     excludeParticipant = false
@@ -238,7 +236,7 @@ open class ObjectSearchViewModel(
                         analytics = analytics,
                         pos = index + 1,
                         length = userInput.value.length,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                 }
             }
@@ -246,8 +244,7 @@ open class ObjectSearchViewModel(
     }
 
     open suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
-        // TODO DROID-2916 Provide space id to vm params
-        space = SpaceId(spaceManager.get()),
+        space = vmParams.space,
         limit = SEARCH_LIMIT,
         filters = ObjectSearchConstants.filterSearchObjects(),
         sorts = ObjectSearchConstants.sortsSearchObjects,
@@ -267,4 +264,8 @@ open class ObjectSearchViewModel(
         const val DEBOUNCE_DURATION = 300L
         const val SEARCH_LIMIT = 50
     }
+
+    data class VmParams(
+        val space: SpaceId
+    )
 }

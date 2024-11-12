@@ -272,7 +272,12 @@ abstract class ObjectMenuBaseFragment :
 
 
     private fun openLinkChooser() {
-        val fr = BacklinkOrAddToObjectFragment.new(ctx = ctx)
+        val fr = BacklinkOrAddToObjectFragment().apply {
+            arguments = BacklinkOrAddToObjectFragment.args(
+                ctx = ctx,
+                space = space
+            )
+        }
         fr.showChildFragment()
     }
 

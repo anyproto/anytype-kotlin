@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.objects.toView
+import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -92,7 +92,7 @@ class ObjectWrapperExtensionsKtTest {
 
         )
 
-        val result = listOf(obj).toView(urlBuilder, objectTypes = listOf())
+        val result = listOf(obj).toViews(urlBuilder, objectTypes = listOf())
 
         assertEquals(
             expected = "OMr2Y",
@@ -116,7 +116,10 @@ class ObjectWrapperExtensionsKtTest {
 
         )
 
-        val result = listOf(obj).toView(urlBuilder, objectTypes = listOf())
+        val result = listOf(obj).toViews(
+            urlBuilder = urlBuilder,
+            objectTypes = listOf()
+        )
 
         assertEquals(
             expected = "LmL7R",
@@ -141,7 +144,7 @@ class ObjectWrapperExtensionsKtTest {
 
         )
 
-        val result = listOf(obj).toView(urlBuilder, objectTypes = listOf())
+        val result = listOf(obj).toViews(urlBuilder, objectTypes = listOf())
 
         assertEquals(
             expected = "Anytype is next-generation sof",

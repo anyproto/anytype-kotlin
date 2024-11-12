@@ -3,11 +3,8 @@ package com.anytypeio.anytype.presentation.moving
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.domain.base.Resultat
@@ -17,7 +14,6 @@ import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -38,11 +34,11 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MoveToViewModel(
+    private val vmParams: VmParams,
     urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModel(), TextInputDialogBottomBehaviorApplier.OnDialogCancelListener,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
@@ -121,7 +117,7 @@ class MoveToViewModel(
                         analytics = analytics,
                         pos = index + 1,
                         length = userInput.value.length,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                 }
             }
@@ -131,8 +127,7 @@ class MoveToViewModel(
     private fun getObjectTypes(ctx: Id) {
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
-                // TODO DROID-2916 Provide space id to vm params
-                space = SpaceId(spaceManager.get()),
+                space = vmParams.space,
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
                     recommendedLayouts = SupportedLayouts.editorLayouts
@@ -149,17 +144,16 @@ class MoveToViewModel(
         }
     }
 
-    private suspend fun getSearchObjectsParams(ctx: Id): SearchObjects.Params {
+    private fun getSearchObjectsParams(ctx: Id): SearchObjects.Params {
         val filteredTypes = types.value.getOrDefault(emptyList()).map { objectType -> objectType.id }
 
         return SearchObjects.Params(
-            // TODO DROID-2916 Provide space id to vm params
-            space = SpaceId(spaceManager.get()),
+            space = vmParams.space,
             limit = SEARCH_LIMIT,
             filters = ObjectSearchConstants.filterMoveTo(
                 ctx = ctx,
                 types = filteredTypes,
-                space = spaceManager.get()
+                space = vmParams.space.id
             ),
             sorts = ObjectSearchConstants.sortMoveTo,
             fulltext = EMPTY_QUERY,
@@ -189,9 +183,13 @@ class MoveToViewModel(
             })
     }
 
+    data class VmParams(
+        val space: SpaceId
+    )
+
     sealed class Command {
-        object Init : Command()
-        object Exit : Command()
+        data object Init : Command()
+        data object Exit : Command()
         data class Move(val view: DefaultObjectView) : Command()
     }
 

@@ -15,7 +15,7 @@
   <path
       android:strokeWidth="1"
       android:pathData="M16,29H32"
-      android:fillColor="#00000000"
+      android:fillColor="@color/transparent_black"
       android:strokeColor="@color/glyph_active"
       android:strokeLineCap="round"/>
 </vector>

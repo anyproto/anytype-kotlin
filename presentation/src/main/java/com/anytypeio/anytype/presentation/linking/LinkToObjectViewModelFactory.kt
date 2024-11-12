@@ -8,76 +8,76 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel.VmParams
 import javax.inject.Inject
 
 class LinkToObjectViewModelFactory(
+    private val vmParams: VmParams,
     private val urlBuilder: UrlBuilder,
     private val getObjectTypes: GetObjectTypes,
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return LinkToObjectViewModel(
+            vmParams = vmParams,
             urlBuilder = urlBuilder,
             getObjectTypes = getObjectTypes,
             searchObjects = searchObjects,
             analytics = analytics,
-            spaceManager = spaceManager,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         ) as T
     }
 }
 
 class LinkToObjectOrWebViewModelFactory(
+    private val vmParams: LinkToObjectOrWebViewModel.VmParams,
     private val urlBuilder: UrlBuilder,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
     private val stores: Editor.Storage,
     private val urlValidator: UrlValidator,
-    private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return LinkToObjectOrWebViewModel(
+            vmParams = vmParams,
             urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes,
             searchObjects = searchObjects,
             analytics = analytics,
             stores = stores,
             urlValidator = urlValidator,
-            spaceManager = spaceManager,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         ) as T
     }
 }
 
 class BackLinkOrAddToObjectViewModelFactory @Inject constructor(
+    private val vmParams: VmParams,
     private val urlBuilder: UrlBuilder,
     private val getObjectTypes: GetObjectTypes,
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return BackLinkOrAddToObjectViewModel(
+            vmParams = vmParams,
             urlBuilder = urlBuilder,
             getObjectTypes = getObjectTypes,
             searchObjects = searchObjects,
             analytics = analytics,
-            spaceManager = spaceManager,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         ) as T
     }

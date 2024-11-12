@@ -102,7 +102,6 @@ import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.Empt
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.ObjectView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.SectionView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
-import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.google.accompanist.themeadapter.material.createMdcTheme
 import kotlinx.coroutines.flow.collectLatest
@@ -397,7 +396,7 @@ fun SearchBar(
                 true
             }
             clearSearchText.setOnClickListener {
-                filterInputField.setText(ObjectSearchFragment.EMPTY_FILTER_TEXT)
+                filterInputField.setText("")
                 clearSearchText.invisible()
             }
             filterInputField.doAfterTextChanged { newText ->

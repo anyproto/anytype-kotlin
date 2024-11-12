@@ -841,7 +841,8 @@ class HomeScreenViewModel(
             )
             commands.emit(
                 Command.SelectWidgetSource(
-                    isInEditMode = isInEditMode()
+                    isInEditMode = isInEditMode(),
+                    space = spaceManager.get()
                 )
             )
         }
@@ -1102,7 +1103,8 @@ class HomeScreenViewModel(
             commands.emit(
                 Command.SelectWidgetSource(
                     target = widget,
-                    isInEditMode = isInEditMode()
+                    isInEditMode = isInEditMode(),
+                    space = spaceManager.get()
                 )
             )
         }
@@ -1152,7 +1154,8 @@ class HomeScreenViewModel(
                             widget = widget,
                             source = curr.source.id,
                             type = parseWidgetType(curr),
-                            isInEditMode = isInEditMode()
+                            isInEditMode = isInEditMode(),
+                            space = config.space
                         )
                     )
                 } else {
@@ -2257,7 +2260,8 @@ sealed class Command {
      */
     data class SelectWidgetSource(
         val target: Id? = null,
-        val isInEditMode: Boolean
+        val isInEditMode: Boolean,
+        val space: Id
     ) : Command()
 
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
@@ -2281,7 +2285,8 @@ sealed class Command {
         val widget: Id,
         val source: Id,
         val type: Int,
-        val isInEditMode: Boolean
+        val isInEditMode: Boolean,
+        val space: Id
     ) : Command()
 
     data class ChangeWidgetType(

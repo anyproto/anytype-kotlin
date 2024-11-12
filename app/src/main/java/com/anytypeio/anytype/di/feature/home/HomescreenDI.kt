@@ -6,8 +6,6 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
-import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceSubcomponent
-import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeSubcomponent
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.bin.EmptyBin
@@ -76,9 +74,6 @@ interface HomeScreenComponent {
     }
 
     fun inject(fragment: HomeScreenFragment)
-
-    fun selectWidgetSourceBuilder(): SelectWidgetSourceSubcomponent.Builder
-    fun selectWidgetTypeBuilder(): SelectWidgetTypeSubcomponent.Builder
 }
 
 @Module
@@ -197,16 +192,6 @@ object HomeScreenModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun widgetEventDispatcher(): Dispatcher<WidgetDispatchEvent> = Dispatcher.Default()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun objectPayloadDispatcher(): Dispatcher<Payload> = Dispatcher.Default()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun interceptEvents(channel: EventChannel): InterceptEvents = InterceptEvents(
         context = Dispatchers.IO,
         channel = channel
@@ -267,6 +252,8 @@ object HomeScreenModule {
 }
 
 interface HomeScreenDependencies : ComponentDependencies {
+    fun dispatcherWidgets(): Dispatcher<WidgetDispatchEvent>
+    fun dispatcherPayload(): Dispatcher<Payload>
     fun blockRepo(): BlockRepository
     fun authRepo(): AuthRepository
     fun userRepo(): UserSettingsRepository

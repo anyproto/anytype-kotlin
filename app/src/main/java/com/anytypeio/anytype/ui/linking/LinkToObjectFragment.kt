@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -35,11 +36,10 @@ import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModelFactory
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.ui.moving.hideProgress
 import com.anytypeio.anytype.ui.moving.showProgress
-import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -57,6 +57,7 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
 
     override val textInput: EditText get() = binding.searchView.root.findViewById(R.id.filterInputField)
 
+    private val space get() = arg<Id>(ARG_SPACE)
     private val target get() = arg<Id>(ARG_TARGET)
     private val position get() = argOrNull<Int>(ARG_POSITION)
     private val ignore get() = arg<Id>(ARG_IGNORE)
@@ -204,7 +205,7 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
         binding.tvScreenStateMessage.invisible()
         binding.hideProgress()
         clearSearchText.setOnClickListener {
-            filterInputField.setText(ObjectSearchFragment.EMPTY_FILTER_TEXT)
+            filterInputField.setText("")
             clearSearchText.invisible()
         }
         filterInputField.doAfterTextChanged { newText ->
@@ -248,7 +249,12 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
     }
 
     override fun injectDependencies() {
-        componentManager().linkToObjectComponent.get().inject(this)
+        val params = ObjectSearchViewModel.VmParams(
+            space = SpaceId(space)
+        )
+        componentManager().linkToObjectComponent.get(
+            params = params
+        ).inject(this)
     }
 
     override fun releaseDependencies() {
@@ -266,16 +272,19 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
         const val ARG_TARGET = "arg.link_to.target"
         const val ARG_POSITION = "arg.link_to.position"
         const val ARG_IGNORE = "arg.link_to.ignore"
+        const val ARG_SPACE = "arg.link_to.spaces"
 
         fun new(
             target: Id,
             position: Int?,
-            ignore: Id
+            ignore: Id,
+            space: Id
         ) = LinkToObjectFragment().apply {
             arguments = bundleOf(
                 ARG_TARGET to target,
                 ARG_POSITION to position,
-                ARG_IGNORE to ignore
+                ARG_IGNORE to ignore,
+                ARG_SPACE to space
             )
         }
     }

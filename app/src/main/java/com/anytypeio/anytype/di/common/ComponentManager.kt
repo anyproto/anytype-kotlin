@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.di.common
 
-import android.content.Context
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -9,17 +8,17 @@ import com.anytypeio.anytype.di.feature.CreateObjectModule
 import com.anytypeio.anytype.di.feature.DaggerAllContentComponent
 import com.anytypeio.anytype.di.feature.DaggerAppPreferencesComponent
 import com.anytypeio.anytype.di.feature.DaggerBacklinkOrAddToObjectComponent
+import com.anytypeio.anytype.di.feature.DaggerLinkToObjectComponent
+import com.anytypeio.anytype.di.feature.DaggerMoveToComponent
 import com.anytypeio.anytype.di.feature.DaggerSplashComponent
 import com.anytypeio.anytype.di.feature.DebugSettingsModule
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.di.feature.EditorSessionModule
 import com.anytypeio.anytype.di.feature.EditorUseCaseModule
 import com.anytypeio.anytype.di.feature.KeychainPhraseModule
-import com.anytypeio.anytype.di.feature.LinkToObjectModule
 import com.anytypeio.anytype.di.feature.LinkToObjectOrWebModule
 import com.anytypeio.anytype.di.feature.MainEntryModule
 import com.anytypeio.anytype.di.feature.ModifyViewerSortModule
-import com.anytypeio.anytype.di.feature.MoveToModule
 import com.anytypeio.anytype.di.feature.ObjectAppearanceIconModule
 import com.anytypeio.anytype.di.feature.ObjectAppearancePreviewLayoutModule
 import com.anytypeio.anytype.di.feature.ObjectAppearanceSettingModule
@@ -29,7 +28,6 @@ import com.anytypeio.anytype.di.feature.ObjectLayoutModule
 import com.anytypeio.anytype.di.feature.ObjectMenuModule
 import com.anytypeio.anytype.di.feature.ObjectMenuModuleBase
 import com.anytypeio.anytype.di.feature.ObjectRelationListModule
-import com.anytypeio.anytype.di.feature.ObjectSearchModule
 import com.anytypeio.anytype.di.feature.ObjectSetCreateBookmarkRecordModule
 import com.anytypeio.anytype.di.feature.ObjectSetIconPickerModule
 import com.anytypeio.anytype.di.feature.ObjectSetMenuModule
@@ -53,7 +51,6 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.discussions.DaggerDiscussionComponent
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
-import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipUpdateComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerRequestJoinSpaceComponent
@@ -98,15 +95,16 @@ import com.anytypeio.anytype.di.feature.types.DaggerTypeIconPickComponent
 import com.anytypeio.anytype.di.feature.update.DaggerMigrationErrorComponent
 import com.anytypeio.anytype.di.feature.vault.DaggerVaultComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
-import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
-import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
+import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetSourceComponent
+import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetTypeComponent
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
-import com.anytypeio.anytype.presentation.library.LibraryViewModel
+import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModel
+import com.anytypeio.anytype.presentation.moving.MoveToViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
@@ -115,6 +113,7 @@ import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionVie
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
@@ -168,20 +167,16 @@ class ComponentManager(
             )
     }
 
-    val selectWidgetSourceSubcomponent = Component {
-        homeScreenComponent
-            .get()
-            .selectWidgetSourceBuilder()
-            .module(SelectWidgetSourceModule)
-            .build()
-    }
+    val selectWidgetSourceSubcomponent =
+        ComponentWithParams { params: ObjectSearchViewModel.VmParams ->
+            DaggerSelectWidgetSourceComponent.factory()
+                .create(params, findComponentDependencies())
+        }
 
     val selectWidgetTypeSubcomponent = Component {
-        homeScreenComponent
-            .get()
-            .selectWidgetTypeBuilder()
-            .module(SelectWidgetTypeModule)
-            .build()
+        DaggerSelectWidgetTypeComponent.factory().create(
+            findComponentDependencies()
+        )
     }
 
     val wallpaperSelectComponent = Component {
@@ -301,31 +296,31 @@ class ComponentManager(
             .build()
     }
 
-    val linkToObjectComponent = Component {
-        main.linkToObjectBuilder()
-            .module(LinkToObjectModule)
-            .build()
+    val linkToObjectComponent = ComponentWithParams { param: ObjectSearchViewModel.VmParams ->
+        DaggerLinkToObjectComponent
+            .factory()
+            .create(
+                params = param,
+                dependencies = findComponentDependencies()
+            )
     }
 
     val linkToObjectOrWebComponent = ComponentWithParams { param: DefaultComponentParam ->
         editorComponent
             .get(key = param.ctx, param = param)
             .linkToObjectOrWebBuilder()
+            .withParams(
+                params = LinkToObjectOrWebViewModel.VmParams(
+                    space = param.space
+                )
+            )
             .module(LinkToObjectOrWebModule)
             .build()
     }
 
-    val moveToComponent = Component {
-        main
-            .moveToBuilder()
-            .module(MoveToModule)
-            .build()
-    }
-
-    val objectSearchComponent = Component {
-        main.objectSearchComponentBuilder()
-            .module(ObjectSearchModule)
-            .build()
+    val moveToComponent = ComponentWithParams { params: MoveToViewModel.VmParams ->
+        DaggerMoveToComponent.factory()
+            .create(params, findComponentDependencies())
     }
 
     val globalSearchComponent = ComponentWithParams { params: GlobalSearchViewModel.VmParams ->
@@ -738,17 +733,9 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val libraryComponent = ComponentWithParams { (ctx, params) : Pair<Context, LibraryViewModel.Params> ->
-        DaggerLibraryComponent.builder()
-            .withContext(ctx)
-            .withParams(params)
-            .withDependencies(findComponentDependencies())
-            .build()
-    }
-
-    val backLinkOrAddToObjectComponent = ComponentWithParams { ctx: Id ->
+    val backLinkOrAddToObjectComponent = ComponentWithParams { vmParams: ObjectSearchViewModel.VmParams ->
         DaggerBacklinkOrAddToObjectComponent.builder()
-            .withContext(ctx)
+            .withParams(vmParams)
             .withDependencies(findComponentDependencies())
             .build()
     }

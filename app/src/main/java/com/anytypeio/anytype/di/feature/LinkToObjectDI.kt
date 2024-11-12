@@ -2,32 +2,45 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModelFactory
+import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
+import dagger.BindsInstance
+import dagger.Component
 import dagger.Module
 import dagger.Provides
-import dagger.Subcomponent
 
-@Subcomponent(
-    modules = [LinkToObjectModule::class]
+@Component(
+    modules = [LinkToObjectModule::class],
+    dependencies = [LinkToObjectDependencies::class]
 )
 @PerScreen
-interface LinkToObjectSubComponent {
+interface LinkToObjectComponent {
 
-    @Subcomponent.Builder
-    interface Builder {
-        fun module(module: LinkToObjectModule): Builder
-        fun build(): LinkToObjectSubComponent
+    @Component.Factory
+    interface Factory {
+        fun create(
+            @BindsInstance
+            params: ObjectSearchViewModel.VmParams,
+            dependencies: LinkToObjectDependencies
+        ) : LinkToObjectComponent
     }
 
     fun inject(fragment: LinkToObjectFragment)
+}
+
+interface LinkToObjectDependencies: ComponentDependencies {
+    fun urlBuilder(): UrlBuilder
+    fun getObjectTypes(): GetObjectTypes
+    fun searchObjects(): SearchObjects
+    fun analytics(): Analytics
+    fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
+
 }
 
 @Module
@@ -37,31 +50,18 @@ object LinkToObjectModule {
     @PerScreen
     @Provides
     fun provideLinkToObjectViewModelFactory(
+        vmParams: ObjectSearchViewModel.VmParams,
         urlBuilder: UrlBuilder,
         getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
         analytics: Analytics,
-        spaceManager: SpaceManager,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): LinkToObjectViewModelFactory = LinkToObjectViewModelFactory(
+        vmParams = vmParams,
         urlBuilder = urlBuilder,
         getObjectTypes = getObjectTypes,
         searchObjects = searchObjects,
         analytics = analytics,
-        spaceManager = spaceManager,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideGetObjectTypesUseCase(
-        repository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): GetObjectTypes = GetObjectTypes(repository, dispatchers)
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun searchObjects(repo: BlockRepository): SearchObjects = SearchObjects(repo = repo)
 }

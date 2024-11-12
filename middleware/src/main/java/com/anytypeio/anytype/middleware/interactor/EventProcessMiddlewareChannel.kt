@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
 
-import anytype.Model
 import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.data.auth.event.EventProcessDropFilesRemoteChannel
 import com.anytypeio.anytype.data.auth.event.EventProcessImportRemoteChannel
@@ -24,8 +23,8 @@ class EventProcessDropFilesMiddlewareChannel(
                     when {
                         eventProcessNew != null -> {
                             val process = eventProcessNew.process
-                            val processType = process?.type
-                            if (processType == Model.Process.Type.DropFiles) {
+                            val processType = process?.dropFiles
+                            if (processType != null) {
                                 Process.Event.DropFiles.New(
                                     process = process.toCoreModel()
                                 )
@@ -36,8 +35,8 @@ class EventProcessDropFilesMiddlewareChannel(
 
                         eventProcessUpdate != null -> {
                             val process = eventProcessUpdate.process
-                            val processType = process?.type
-                            if (processType == Model.Process.Type.DropFiles) {
+                            val processType = process?.dropFiles
+                            if (processType != null) {
                                 Process.Event.DropFiles.Update(
                                     process = process.toCoreModel()
                                 )
@@ -48,8 +47,8 @@ class EventProcessDropFilesMiddlewareChannel(
 
                         eventProcessDone != null -> {
                             val process = eventProcessDone.process
-                            val processType = process?.type
-                            if (processType == Model.Process.Type.DropFiles) {
+                            val processType = process?.dropFiles
+                            if (processType != null) {
                                 Process.Event.DropFiles.Done(
                                     process = process.toCoreModel()
                                 )
@@ -80,8 +79,8 @@ class EventProcessImportMiddlewareChannel(
                     when {
                         eventProcessNew != null -> {
                             val process = eventProcessNew.process
-                            val processType = process?.type
-                            if (processType == Model.Process.Type.Import) {
+                            val processType = process?.import_
+                            if (processType != null) {
                                 Process.Event.Import.New(
                                     process = process.toCoreModel()
                                 )
@@ -92,8 +91,8 @@ class EventProcessImportMiddlewareChannel(
 
                         eventProcessUpdate != null -> {
                             val process = eventProcessUpdate.process
-                            val processType = process?.type
-                            if (processType == Model.Process.Type.Import) {
+                            val processType = process?.import_
+                            if (processType != null) {
                                 Process.Event.Import.Update(
                                     process = process.toCoreModel()
                                 )
@@ -104,8 +103,8 @@ class EventProcessImportMiddlewareChannel(
 
                         eventProcessDone != null -> {
                             val process = eventProcessDone.process
-                            val processType = process?.type
-                            if (processType == Model.Process.Type.Import) {
+                            val processType = process?.import_
+                            if (processType != null) {
                                 Process.Event.Import.Done(
                                     process = process.toCoreModel()
                                 )

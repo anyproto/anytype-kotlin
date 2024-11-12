@@ -11,10 +11,9 @@ import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
 import com.anytypeio.anytype.di.feature.DebugSettingsSubComponent
 import com.anytypeio.anytype.di.feature.EditorSubComponent
 import com.anytypeio.anytype.di.feature.KeychainPhraseSubComponent
-import com.anytypeio.anytype.di.feature.LinkToObjectSubComponent
+import com.anytypeio.anytype.di.feature.LinkToObjectDependencies
 import com.anytypeio.anytype.di.feature.MainEntrySubComponent
-import com.anytypeio.anytype.di.feature.MoveToSubComponent
-import com.anytypeio.anytype.di.feature.ObjectSearchSubComponent
+import com.anytypeio.anytype.di.feature.MoveToDependencies
 import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
@@ -23,7 +22,6 @@ import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.discussions.DiscussionComponentDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
-import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipUpdateComponentDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.RequestJoinSpaceDependencies
@@ -58,6 +56,8 @@ import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
 import com.anytypeio.anytype.di.feature.update.MigrationErrorDependencies
 import com.anytypeio.anytype.di.feature.vault.VaultComponentDependencies
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
+import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceDependencies
+import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeDependencies
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
 import dagger.Binds
 import dagger.Component
@@ -85,12 +85,12 @@ import javax.inject.Singleton
         TemplatesModule::class,
         NetworkModeModule::class,
         NotificationsModule::class,
-        MembershipModule::class
+        MembershipModule::class,
+        DispatcherModule::class
     ]
 )
 interface MainComponent :
     AppearanceDependencies,
-    LibraryDependencies,
     HomeScreenDependencies,
     CollectionDependencies,
     CreateObjectTypeDependencies,
@@ -129,16 +129,17 @@ interface MainComponent :
     MembershipUpdateComponentDependencies,
     VaultComponentDependencies,
     AllContentDependencies,
-    DiscussionComponentDependencies
+    DiscussionComponentDependencies,
+    SelectWidgetSourceDependencies,
+    SelectWidgetTypeDependencies,
+    LinkToObjectDependencies,
+    MoveToDependencies
 {
 
     fun inject(app: AndroidApplication)
 
     fun editorComponentBuilder(): EditorSubComponent.Builder
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
-    fun linkToObjectBuilder(): LinkToObjectSubComponent.Builder
-    fun moveToBuilder(): MoveToSubComponent.Builder
-    fun objectSearchComponentBuilder(): ObjectSearchSubComponent.Builder
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder
     fun objectSetComponentBuilder(): ObjectSetSubComponent.Builder
     fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
@@ -163,11 +164,6 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(AppearanceDependencies::class)
     abstract fun provideAppearanceDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(LibraryDependencies::class)
-    abstract fun provideLibraryDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap
@@ -363,4 +359,24 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(AllContentDependencies::class)
     abstract fun provideAllContentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SelectWidgetSourceDependencies::class)
+    abstract fun provideSelectWidgetSourceDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SelectWidgetTypeDependencies::class)
+    abstract fun provideSelectWidgetTypeDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(LinkToObjectDependencies::class)
+    abstract fun provideLinkToObjectDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(MoveToDependencies::class)
+    abstract fun provideMoveToDependencies(component: MainComponent): ComponentDependencies
 }

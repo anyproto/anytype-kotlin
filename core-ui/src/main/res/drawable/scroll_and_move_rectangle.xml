@@ -5,7 +5,7 @@
         android:height="4dp" />
     <corners android:radius="8dp" />
     <stroke
-        android:color="#FFB522"
+        android:color="@color/palette_system_amber_100"
         android:width="1.5dp" />
-    <solid android:color="#33FFB522" />
+    <solid android:color="@color/multi_select_highlight" />
 </shape>

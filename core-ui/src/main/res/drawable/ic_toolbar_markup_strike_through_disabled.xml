@@ -9,6 +9,6 @@
   <path
       android:pathData="M4.375,11.832h15.25v0.75h-15.25z"
       android:strokeWidth="0.75"
-      android:fillColor="#ACA996"
+      android:fillColor="@color/gray"
       android:strokeColor="@color/glyph_inactive"/>
 </vector>

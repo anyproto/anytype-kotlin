@@ -45,7 +45,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.download.DownloadFile
@@ -132,9 +131,7 @@ import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownload
 import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
-import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import dagger.Binds
 import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
@@ -146,7 +143,6 @@ import kotlinx.coroutines.Dispatchers
     modules = [
         EditorSessionModule::class,
         EditorUseCaseModule::class,
-        EditorUseCaseModule.Bindings::class
     ]
 )
 @PerScreen
@@ -921,11 +917,6 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun providePayloadDispatcher(): Dispatcher<Payload> = Dispatcher.Default()
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideDelegator(): Delegator<Action> = Delegator.Default()
 
     @JvmStatic
@@ -943,14 +934,6 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideGetObjectTypesUseCase(
-        repository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): GetObjectTypes = GetObjectTypes(repository, dispatchers)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideAddFileToObjectUseCase(
         repo: BlockRepository
     ): AddFileToObject = AddFileToObject(repo = repo)
@@ -962,13 +945,6 @@ object EditorUseCaseModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetObjectType = SetObjectType(repo, dispatchers)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun searchObjects(
-        repo: BlockRepository
-    ): SearchObjects = SearchObjects(repo = repo)
 
     @JvmStatic
     @PerScreen
@@ -1184,14 +1160,4 @@ object EditorUseCaseModule {
         getDefaultObjectType = getDefaultObjectType,
         dispatchers = dispatchers
     )
-
-    @Module
-    interface Bindings {
-
-        @PerScreen
-        @Binds
-        fun bindUriFileProvider(
-            defaultProvider: DefaultUriFileProvider
-        ): UriFileProvider
-    }
 }

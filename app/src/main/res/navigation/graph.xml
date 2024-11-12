@@ -417,11 +417,6 @@
         android:name="com.anytypeio.anytype.ui.settings.DebugSettingsFragment"
         android:label="DebugSettingsFragment"
         tools:layout="@layout/fragment_debug_settings" />
-    <fragment
-        android:id="@+id/pageSearchFragment"
-        android:name="com.anytypeio.anytype.ui.search.ObjectSearchFragment"
-        android:label="PageSearchFragment"
-        tools:layout="@layout/fragment_object_search" />
     <dialog
         android:id="@+id/globalSearchScreen"
         android:name="com.anytypeio.anytype.ui.search.GlobalSearchFragment"
@@ -460,32 +455,6 @@
             app:destination="@id/selectSpaceScreen"/>
     </fragment>
 
-    <fragment
-        android:id="@+id/libraryFragment"
-        android:name="com.anytypeio.anytype.ui.library.LibraryFragment"
-        android:label="LibraryFragment">
-        <action
-            android:id="@+id/openTypeCreationScreen"
-            app:destination="@id/typeCreationFragment" />
-        <action
-            android:id="@+id/openTypeEditingScreen"
-            app:destination="@id/typeEditingFragment" />
-        <action
-            android:id="@+id/openRelationCreationScreen"
-            app:destination="@id/relationCreationFragment" />
-        <action
-            android:id="@+id/openRelationEditingScreen"
-            app:destination="@id/relationEditingFragment" />
-        <action
-            android:id="@+id/actionOpenVault"
-            app:destination="@id/vaultScreen"
-            app:popUpTo="@id/vaultScreen"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/actionExitToSpaceWidgets"
-            app:popUpTo="@+id/homeScreen"
-            app:popUpToInclusive="false" />
-    </fragment>
     <dialog
         android:id="@+id/typeCreationFragment"
         android:name="com.anytypeio.anytype.ui.types.create.CreateObjectTypeFragment"

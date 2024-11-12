@@ -53,6 +53,8 @@ import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.persistence.repo.DefaultDebugSettingsCache
 import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
+import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -324,6 +326,13 @@ object DataModule {
     @Provides
     @Singleton
     fun provideMetricsProvider(): MetricsProvider = DefaultMetricsProvider()
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideFileProvider(
+        context: Context
+    ): UriFileProvider = DefaultUriFileProvider(context)
 
     @Module
     interface Bindings {

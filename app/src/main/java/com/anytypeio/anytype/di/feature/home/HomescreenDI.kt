@@ -67,7 +67,6 @@ import kotlinx.coroutines.Dispatchers
 )
 @PerScreen
 interface HomeScreenComponent {
-
     @Component.Factory
     interface Factory {
         fun create(dependencies: HomeScreenDependencies): HomeScreenComponent

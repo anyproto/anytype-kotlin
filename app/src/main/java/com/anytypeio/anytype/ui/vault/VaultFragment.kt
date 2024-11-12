@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.Command
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.ProfileSettingsFragment
@@ -72,7 +73,13 @@ class VaultFragment : BaseComposeFragment() {
         when (command) {
             is Command.EnterSpaceHomeScreen -> {
                 runCatching {
-                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        HomeScreenFragment.args(
+                            space = command.space.id,
+                            deeplink = null
+                        )
+                    )
                 }.onFailure {
                     Timber.e(it, "Error while opening space from vault")
                 }

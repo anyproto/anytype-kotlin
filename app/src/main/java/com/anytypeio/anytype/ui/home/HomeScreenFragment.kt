@@ -30,12 +30,18 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.ext.daggerViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
+import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
@@ -67,8 +73,10 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     private val deepLink: String? get() = argOrNull(DEEP_LINK_KEY)
 
+    private val space: Id get() = arg<Id>(SPACE_ID_KEY)
+
     private var isMnemonicReminderDialogNeeded: Boolean
-        get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) ?: false
+        get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) == true
         set(value) { arguments?.putBoolean(SHOW_MNEMONIC_KEY, value) }
 
 
@@ -154,15 +162,21 @@ class HomeScreenFragment : BaseComposeFragment(),
                                 onBackLongClicked = vm::onBackLongClicked
                             )
                         } else {
-                            Box(
-                                Modifier
-                                    .fillMaxSize()
-                            ) {
-                                Text(
-                                    text = "Space level chat",
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
+                            val component = componentManager().spaceLevelChatComponent
+                            val spaceLevelChatViewModel = daggerViewModel {
+                                component.get(
+                                    key = space,
+                                    param = DiscussionViewModel.Params.SpaceLevelChat(
+                                        space = Space(space)
+                                    )
+                                ).getViewModel()
                             }
+                            DiscussionScreenWrapper(
+                                vm = spaceLevelChatViewModel,
+                                onAttachClicked = {
+//                                    showBottomSheet = true
+                                }
+                            )
                         }
                     }
                 }
@@ -421,20 +435,31 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     override fun injectDependencies() {
         componentManager().homeScreenComponent.get().inject(this)
+//        componentManager().spaceLevelChatComponent
+//            .get(
+//                key = space,
+//                param = DiscussionViewModel.Params.SpaceLevelChat(space = Space(space))
+//            )
+//            .inject(this)
+
     }
 
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
+//        componentManager().spaceLevelChatComponent.release(space)
     }
 
     companion object {
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
         const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
+        const val SPACE_ID_KEY = "arg.home-screen.space-id"
 
         fun args(
+            space: Id,
             deeplink: String?
         ) : Bundle = bundleOf(
-            DEEP_LINK_KEY to deeplink
+            DEEP_LINK_KEY to deeplink,
+            SPACE_ID_KEY to space
         )
     }
 }

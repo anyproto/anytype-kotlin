@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.fold
@@ -240,7 +241,11 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                commands.emit(Command.EnterSpaceHomeScreen)
+                commands.emit(
+                    Command.EnterSpaceHomeScreen(
+                        space = Space(targetSpace)
+                    )
+                )
             }
         )
     }
@@ -321,7 +326,7 @@ class VaultViewModel(
     )
 
     sealed class Command {
-        data object EnterSpaceHomeScreen: Command()
+        data class EnterSpaceHomeScreen(val space: Space): Command()
         data object CreateNewSpace: Command()
         data object OpenProfileSettings: Command()
         data object ShowIntroduceVault : Command()

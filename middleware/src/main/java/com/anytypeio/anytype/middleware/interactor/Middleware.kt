@@ -2806,6 +2806,15 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
     }
 
+    @Throws(Exception::class)
+    fun debugAccountSelectTrace(): String {
+        val request = Rpc.Debug.AccountSelectTrace.Request()
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugAccountSelectTrace(request) }
+        logResponseIfDebug(response, time)
+        return response.path
+    }
+
     private fun logRequestIfDebug(request: Any) {
         if (BuildConfig.DEBUG) {
             logger.logRequest(request).also {

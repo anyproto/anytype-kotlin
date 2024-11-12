@@ -6,10 +6,10 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.relations.ObjectRelationListWithValue.Params
+import com.anytypeio.anytype.domain.relations.RelationListWithValue.Params
 import javax.inject.Inject
 
-class ObjectRelationListWithValue @Inject constructor(
+class RelationListWithValue @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<Params, List<RelationListWithValueItem>>(dispatchers.io) {

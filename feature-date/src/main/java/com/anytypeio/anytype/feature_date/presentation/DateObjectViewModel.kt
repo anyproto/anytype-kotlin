@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.feature_date.models.DateObjectBottomMenu
 import com.anytypeio.anytype.feature_date.models.DateObjectHeaderState
 import com.anytypeio.anytype.feature_date.models.DateObjectHorizontalListState
@@ -38,7 +39,8 @@ class DateObjectViewModel(
     private val analytics: Analytics,
     private val urlBuilder: UrlBuilder,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val relationListWithValue: RelationListWithValue
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiTopToolbarState =

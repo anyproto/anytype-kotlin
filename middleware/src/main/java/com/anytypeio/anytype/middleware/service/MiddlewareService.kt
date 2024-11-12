@@ -175,6 +175,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun objectRelationListAvailable(request: Rpc.ObjectRelation.ListAvailable.Request): Rpc.ObjectRelation.ListAvailable.Response
 
+    @Throws(Exception::class)
+    fun objectRelationListWithValue(request: Rpc.Relation.ListWithValue.Request): Rpc.Relation.ListWithValue.Response
+
 //    @Throws(Exception::class)
 //    fun objectRelationOptionAdd(request: Rpc.ObjectRelationOption.Add.Request): Rpc.ObjectRelationOption.Add.Response
 

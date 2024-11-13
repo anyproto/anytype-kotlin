@@ -17,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
@@ -102,6 +103,16 @@ class HomeScreenFragment : BaseComposeFragment(),
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
+                val focus = LocalFocusManager.current
+                val component = componentManager().spaceLevelChatComponent
+                val spaceLevelChatViewModel = daggerViewModel {
+                    component.get(
+                        key = space,
+                        param = DiscussionViewModel.Params.SpaceLevelChat(
+                            space = Space(space)
+                        )
+                    ).getViewModel()
+                }
                 val pagerState = rememberPagerState { 2 }
                 val coroutineScope = rememberCoroutineScope()
                 Box(
@@ -124,6 +135,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                         state = pagerState
                     ) { page ->
                         if (page == 0) {
+                            focus.clearFocus(force = true)
                             HomeScreen(
                                 modifier = Modifier,
                                 widgets = vm.views.collectAsState().value,
@@ -162,16 +174,8 @@ class HomeScreenFragment : BaseComposeFragment(),
                                 onBackLongClicked = vm::onBackLongClicked
                             )
                         } else {
-                            val component = componentManager().spaceLevelChatComponent
-                            val spaceLevelChatViewModel = daggerViewModel {
-                                component.get(
-                                    key = space,
-                                    param = DiscussionViewModel.Params.SpaceLevelChat(
-                                        space = Space(space)
-                                    )
-                                ).getViewModel()
-                            }
                             DiscussionScreenWrapper(
+                                withHeader = false,
                                 vm = spaceLevelChatViewModel,
                                 onAttachClicked = {
 //                                    showBottomSheet = true
@@ -435,18 +439,15 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     override fun injectDependencies() {
         componentManager().homeScreenComponent.get().inject(this)
-//        componentManager().spaceLevelChatComponent
-//            .get(
-//                key = space,
-//                param = DiscussionViewModel.Params.SpaceLevelChat(space = Space(space))
-//            )
-//            .inject(this)
 
     }
 
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
-//        componentManager().spaceLevelChatComponent.release(space)
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        super.onApplyWindowRootInsets(view)
     }
 
     companion object {

@@ -122,6 +122,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DiscussionScreenWrapper(
+    withHeader: Boolean = true,
     vm: DiscussionViewModel,
     // TODO move to view model
     onAttachClicked: () -> Unit
@@ -136,13 +137,20 @@ fun DiscussionScreenWrapper(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        color = colorResource(id = R.color.background_primary)
+                    .then(
+                        if (withHeader) {
+                            Modifier.background(
+                                color = colorResource(id = R.color.background_primary)
+                            )
+                        } else {
+                            Modifier
+                        }
                     )
             ) {
                 val clipboard = LocalClipboardManager.current
                 val lazyListState = rememberLazyListState()
                 DiscussionScreen(
+                    withHeader = withHeader,
                     title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
                     attachments = vm.attachments.collectAsState().value,
@@ -185,6 +193,7 @@ fun DiscussionScreenWrapper(
  */
 @Composable
 fun DiscussionScreen(
+    withHeader: Boolean,
     isInEditMessageMode: Boolean = false,
     lazyListState: LazyListState,
     title: String?,
@@ -221,14 +230,17 @@ fun DiscussionScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars)
+//            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
-        TopDiscussionToolbar(
-            title = title,
-            isHeaderVisible = isHeaderVisible
-        )
+        if (withHeader) {
+            TopDiscussionToolbar(
+                title = title,
+                isHeaderVisible = isHeaderVisible
+            )
+        }
         Box(modifier = Modifier.weight(1.0f)) {
             Messages(
+                withHeader = withHeader,
                 modifier = Modifier.fillMaxSize(),
                 messages = messages,
                 scrollState = lazyListState,
@@ -412,7 +424,8 @@ private fun ChatBox(
                 if (isTitleFocused)
                     Modifier
                 else
-                    Modifier.imePadding()
+//                    Modifier.imePadding()
+                    Modifier
             )
             .fillMaxWidth()
             .defaultMinSize(minHeight = 56.dp)
@@ -598,6 +611,7 @@ private fun DefaultHintDecorationBox(
 
 @Composable
 fun Messages(
+    withHeader: Boolean = true,
     title: String?,
     onTitleChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -704,21 +718,23 @@ fun Messages(
                 }
             }
         }
-        item(key = HEADER_KEY) {
-            Column {
-                DiscussionTitle(
-                    title = title,
-                    onTitleChanged = onTitleChanged,
-                    onFocusChanged = onTitleFocusChanged
-                )
-                Text(
-                    style = Relations2,
-                    text = stringResource(R.string.chat),
-                    color = colorResource(id = R.color.text_secondary),
-                    modifier = Modifier.padding(
-                        start = 20.dp
+        if (withHeader) {
+            item(key = HEADER_KEY) {
+                Column {
+                    DiscussionTitle(
+                        title = title,
+                        onTitleChanged = onTitleChanged,
+                        onFocusChanged = onTitleFocusChanged
                     )
-                )
+                    Text(
+                        style = Relations2,
+                        text = stringResource(R.string.chat),
+                        color = colorResource(id = R.color.text_secondary),
+                        modifier = Modifier.padding(
+                            start = 20.dp
+                        )
+                    )
+                }
             }
         }
     }

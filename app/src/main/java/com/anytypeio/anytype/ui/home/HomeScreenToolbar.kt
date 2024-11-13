@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.ui.home
 
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.feature_discussions.R
 
 @Composable
 fun HomeScreenToolbar(
@@ -25,31 +29,27 @@ fun HomeScreenToolbar(
             .height(64.dp)
             .padding(horizontal = 20.dp)
     ) {
-        Box(
+
+        Image(
+           painter = painterResource(id = R.drawable.ic_home_toolbar_widgets),
             modifier = Modifier
                 .size(32.dp)
-                .background(color = Color.Red)
                 .align(Alignment.CenterStart)
                 .noRippleClickable {
                     onWidgetTabClicked()
-                }
+                },
+            contentDescription = "Widgets button"
         )
 
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .background(color = Color.Yellow)
-                .align(Alignment.Center)
-        )
-
-        Box(
+        Image(
+            painter = painterResource(id = R.drawable.ic_home_toolbar_chat),
             modifier = Modifier
                 .size(32.dp)
-                .background(color = Color.Blue)
                 .align(Alignment.CenterEnd)
                 .noRippleClickable {
                     onChatTabClicked()
-                }
+                },
+            contentDescription = "Chats button"
         )
     }
 }

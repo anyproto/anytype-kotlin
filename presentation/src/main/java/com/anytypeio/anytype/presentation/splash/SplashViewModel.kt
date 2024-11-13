@@ -274,7 +274,10 @@ class SplashViewModel(
     private suspend fun proceedWithVaultNavigation(deeplink: String? = null) {
         val space = getLastOpenedSpace.async(Unit).getOrNull()
         if (space != null) {
-            commands.emit(Command.NavigateToWidgets(deeplink))
+            commands.emit(Command.NavigateToWidgets(
+                space = space.id,
+                deeplink = deeplink
+            ))
         } else {
             commands.emit(Command.NavigateToVault(deeplink))
         }
@@ -305,7 +308,7 @@ class SplashViewModel(
     }
 
     sealed class Command {
-        data class NavigateToWidgets(val deeplink: String? = null) : Command()
+        data class NavigateToWidgets(val space: Id, val deeplink: String? = null) : Command()
         data class NavigateToVault(val deeplink: String? = null) : Command()
         data object NavigateToAuthStart : Command()
         data object NavigateToMigration: Command()

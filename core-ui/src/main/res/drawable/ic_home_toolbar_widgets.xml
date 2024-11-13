@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <path
+      android:pathData="M5,8C5,6.895 5.895,6 7,6H25C26.105,6 27,6.895 27,8C27,9.105 26.105,10 25,10H7C5.895,10 5,9.105 5,8ZM5,24C5,22.895 5.895,22 7,22H25C26.105,22 27,22.895 27,24C27,25.105 26.105,26 25,26H7C5.895,26 5,25.105 5,24ZM7,12C5.895,12 5,12.895 5,14V18C5,19.105 5.895,20 7,20H25C26.105,20 27,19.105 27,18V14C27,12.895 26.105,12 25,12H7Z"
+      android:fillColor="@color/glyph_button"
+      android:fillType="evenOdd"/>
+</vector>

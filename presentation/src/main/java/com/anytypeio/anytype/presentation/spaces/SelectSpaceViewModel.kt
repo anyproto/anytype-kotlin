@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_utils.ext.allUniqueBy
@@ -141,14 +142,15 @@ class SelectSpaceViewModel(
             Timber.d("Setting space: $view")
             if (!view.isSelected) {
                 analytics.sendEvent(eventName = EventsDictionary.switchSpace)
-                spaceManager.set(view.space).fold(
+                val space = SpaceId(view.space)
+                spaceManager.set(space.id).fold(
                     onSuccess = {
-                        saveCurrentSpace.async(SaveCurrentSpace.Params(SpaceId(view.space))).fold(
+                        saveCurrentSpace.async(SaveCurrentSpace.Params(space)).fold(
                             onFailure = {
                                 Timber.e(it, "Error while saving current space in user settings")
                             },
                             onSuccess = {
-                                commands.emit(Command.SwitchToNewSpace)
+                                commands.emit(Command.SwitchToNewSpace(space))
                             }
                         )
                     },
@@ -239,5 +241,5 @@ sealed class SelectSpaceView {
 sealed class Command {
     data object CreateSpace : Command()
     data object Dismiss : Command()
-    data object SwitchToNewSpace: Command()
+    data class SwitchToNewSpace(val space: Space): Command()
 }

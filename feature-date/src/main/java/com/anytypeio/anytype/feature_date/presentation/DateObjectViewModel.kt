@@ -212,6 +212,7 @@ class DateObjectViewModel(
                 handleData(objWrappers)
             }.catch { e ->
                 Timber.e("Error loading data: $e")
+                handleError(e)
             }
     }
 
@@ -325,6 +326,12 @@ class DateObjectViewModel(
     private fun updateHorizontalListState(selectedItem: UiHorizontalListItem.Item) {
         uiHorizontalListState.value = uiHorizontalListState.value.copy(
             selectedRelationKey = selectedItem.key
+        )
+    }
+
+    private fun handleError(e: Throwable) {
+        uiContentState.value = UiContentState.Error(
+            message = e.message ?: "An error occurred while loading data."
         )
     }
     //endregion

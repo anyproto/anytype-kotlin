@@ -6,15 +6,19 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ObjectType
@@ -49,6 +54,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_date.R
 import com.anytypeio.anytype.feature_date.models.DateObjectHorizontalListState
@@ -190,41 +196,7 @@ fun DateLayoutHorizontalListScreenLoadingPreview() {
 @DefaultPreviews
 fun DateLayoutVerticalListScreenPreview() {
     val contentListState = DateObjectVerticalListState(
-        items = listOf(
-            UiVerticalListItem.Item(
-                id = "1",
-                name = "Item 1",
-                space = SpaceId("space1"),
-                type = "type1",
-                typeName = "Task",
-                createdBy = "by Joseph Wolf",
-                layout = ObjectType.Layout.TODO,
-                icon = ObjectIcon.Task(isChecked = true)
-            ),
-            UiVerticalListItem.Item(
-                id = "2",
-                name = "Item 2",
-                space = SpaceId("space2"),
-                type = "type2",
-                typeName = "Page",
-                createdBy = "by Mike Long",
-                layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Emoji("😃")
-            ),
-            UiVerticalListItem.Item(
-                id = "3",
-                name = "Item 3",
-                space = SpaceId("space3"),
-                type = "type3",
-                typeName = "File",
-                createdBy = null,
-                layout = ObjectType.Layout.FILE,
-                icon = ObjectIcon.File(
-                    mime = "image/png",
-                    fileName = "test_image.png"
-                )
-            )
-        )
+        items = StubVerticalItems
     )
     DateLayoutVerticalListScreen(
         state = contentListState,
@@ -274,6 +246,11 @@ fun DateLayoutVerticalListScreen(
             .fillMaxSize(),
         state = lazyListState
     ) {
+        if (uiContentState is UiContentState.Empty) {
+            item {
+                EmptyState()
+            }
+        }
         items(
             count = items.size,
             key = { index -> items[index].id },
@@ -411,4 +388,33 @@ private fun ListItemLoading(
             )
         }
     )
+}
+
+@Composable
+private fun EmptyState() {
+    val (title, description) = stringResource(R.string.allContent_empty_state_title) to stringResource(
+        R.string.allContent_empty_state_description)
+    Box(
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.ime)
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = title,
+            color = colorResource(id = R.color.text_primary),
+            style = UXBody,
+            textAlign = TextAlign.Center
+        )
+//        Text(
+//            modifier = Modifier
+//                .fillMaxWidth(),
+//            text = description,
+//            color = colorResource(id = R.color.text_secondary),
+//            style = UXBody,
+//            textAlign = TextAlign.Center
+//        )
+    }
 }

@@ -226,34 +226,7 @@ private fun DateObjectSearchBarPreview() {
     Column {
         DateObjectSheetScreen(
             uiSheetState = DateObjectSheetState.Content(
-                items = listOf(
-                    UiHorizontalListItem.Settings(),
-                    UiHorizontalListItem.Item(
-                        "Item 1",
-                        title = "Title1",
-                        key = RelationKey("key1")
-                    ),
-                    UiHorizontalListItem.Item(
-                        "Item 2",
-                        title = "Title2",
-                        key = RelationKey("key2")
-                    ),
-                    UiHorizontalListItem.Item(
-                        "Item 3",
-                        title = "Title3",
-                        key = RelationKey("key3")
-                    ),
-                    UiHorizontalListItem.Item(
-                        "Item 4",
-                        title = "Title4",
-                        key = RelationKey("key4")
-                    ),
-                    UiHorizontalListItem.Item(
-                        "Item 5",
-                        title = "Title5",
-                        key = RelationKey("key5")
-                    ),
-                )
+                items = StubHorizontalItems
             ),
             uiHeaderActions = {},
             onQueryChange = {}

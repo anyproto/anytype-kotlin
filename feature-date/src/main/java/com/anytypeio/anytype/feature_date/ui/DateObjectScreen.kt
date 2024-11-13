@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -25,10 +27,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_date.R
 import com.anytypeio.anytype.feature_date.models.DateObjectBottomMenu
@@ -185,6 +190,22 @@ private fun MainContent(
             onUpdateLimitSearch = onUpdateLimitSearch,
             uiVerticalListActions = uiVerticalListActions
         )
+//        Box(
+//            modifier = contentModifier,
+//            contentAlignment = Alignment.Center
+//        ) {
+//            when (uiContentState) {
+//                is UiContentState.Empty -> {
+//                    EmptyState()
+//                }
+//                is UiContentState.Error -> {
+//                    ErrorState(uiContentState.message)
+//                }
+//                else -> {
+//                    // Do nothing.
+//                }
+//            }
+//        }
         BottomNavigationMenu(
             modifier = Modifier.align(Alignment.BottomCenter),
             backClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.Back) },
@@ -197,9 +218,69 @@ private fun MainContent(
     }
 }
 
+@Composable
+private fun ErrorState(message: String) {
+    Column(
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.ime)
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            text = stringResource(id = R.string.all_content_error_title),
+            color = colorResource(id = R.color.text_primary),
+            style = UXBody,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            text = message,
+            color = colorResource(id = R.color.palette_system_red),
+            style = UXBody,
+            textAlign = TextAlign.Center,
+            maxLines = 3
+        )
+    }
+}
+
 @DefaultPreviews
 @Composable
 fun DateObjectScreenPreview() {
+    DateObjectScreen(
+        uiTopToolbarState = DateObjectTopToolbarState.Content(
+            syncStatus = SpaceSyncStatus.SYNCING,
+        ),
+        uiHeaderState = DateObjectHeaderState.Content(
+            title = "06 Nov 2024"
+        ),
+        uiHorizontalListState = DateObjectHorizontalListState(
+            items = StubHorizontalItems,
+            selectedRelationKey = null
+        ),
+        uiVerticalListState = DateObjectVerticalListState(
+            items = StubVerticalItems
+        ),
+        uiDateObjectBottomMenu = DateObjectBottomMenu(isOwnerOrEditor = true),
+        uiSheetState = DateObjectSheetState.Content(
+            items = emptyList()
+        ),
+        uiHeaderActions = {},
+        uiTopToolbarActions = {},
+        uiHorizontalListActions = {},
+        uiVerticalListActions = {},
+        uiBottomMenuActions = {},
+        uiContentState = UiContentState.Idle(),
+        canPaginate = false,
+        onUpdateLimitSearch = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun DateObjectScreenEmptyPreview() {
     DateObjectScreen(
         uiTopToolbarState = DateObjectTopToolbarState.Content(
             syncStatus = SpaceSyncStatus.SYNCING,

@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.Command
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
@@ -84,7 +85,13 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
             is Command.SwitchToNewSpace -> {
                 runCatching {
                     findNavController().popBackStack(R.id.vaultScreen, false)
-                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        HomeScreenFragment.args(
+                            space = command.space.id,
+                            deeplink = null
+                        )
+                    )
                 }
             }
         }

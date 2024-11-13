@@ -301,4 +301,6 @@
     <color name="tag_background_tint">#D6F5F3</color>
     <color name="tag_text_color">#0CBBAE</color>
 
+    <color name="home_screen_tooltip">#F2F1F7</color>
+
 </resources>

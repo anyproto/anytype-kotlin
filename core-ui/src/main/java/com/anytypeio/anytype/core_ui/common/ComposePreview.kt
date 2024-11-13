@@ -8,12 +8,16 @@ import androidx.compose.ui.tooling.preview.Preview
     backgroundColor = 0xFFFFFFFF,
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO,
-    name = "Light Mode"
+    name = "Light Mode",
+    apiLevel = 34,
+    showSystemUi = true
 )
 @Preview(
     backgroundColor = 0x000000,
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES,
-    name = "Dark Mode"
+    name = "Dark Mode",
+    apiLevel = 34,
+    showSystemUi = true
 )
 annotation class DefaultPreviews

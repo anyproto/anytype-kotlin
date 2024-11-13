@@ -99,34 +99,9 @@ fun ColumnScope.DateObjectSheetScreen(
                         }
                         Divider()
                     }
-                    is UiHorizontalListItem.MentionedIn -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp)
-                                .height(52.dp)
-                        ) {
-                            Image(
-                                modifier = Modifier
-                                    .wrapContentSize()
-                                    .align(Alignment.CenterStart),
-                                painter = painterResource(R.drawable.ic_mention_24),
-                                contentDescription = "List of date relations",
-                                contentScale = ContentScale.Inside
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .padding(start = 34.dp)
-                                    .wrapContentSize()
-                                    .align(Alignment.CenterStart),
-                                text = stringResource(R.string.date_layout_mentioned_in),
-                                color = colorResource(R.color.text_primary),
-                                style = BodyRegular
-                            )
-                        }
-                        Divider()
-                    }
                     is UiHorizontalListItem.Settings -> {}
+                    is UiHorizontalListItem.Loading.Item -> TODO()
+                    is UiHorizontalListItem.Loading.Settings -> TODO()
                 }
             }
         )
@@ -252,7 +227,7 @@ private fun DateObjectSearchBarPreview() {
         DateObjectSheetScreen(
             uiSheetState = DateObjectSheetState.Content(
                 items = listOf(
-                    UiHorizontalListItem.MentionedIn(),
+                    UiHorizontalListItem.Settings(),
                     UiHorizontalListItem.Item(
                         "Item 1",
                         title = "Title1",

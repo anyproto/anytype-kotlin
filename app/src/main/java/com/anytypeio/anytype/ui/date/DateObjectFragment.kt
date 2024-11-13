@@ -23,7 +23,6 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModelFactory
 import com.anytypeio.anytype.feature_date.ui.DateObjectScreen
-import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
 class DateObjectFragment : BaseComposeFragment() {
@@ -40,9 +39,7 @@ class DateObjectFragment : BaseComposeFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = content {
-        MaterialTheme(
-            typography = typography
-        ) {
+        MaterialTheme {
             DateLayoutScreenWrapper()
         }
     }
@@ -66,11 +63,14 @@ class DateObjectFragment : BaseComposeFragment() {
                     uiVerticalListState = vm.uiVerticalListState.collectAsStateWithLifecycle().value,
                     uiDateObjectBottomMenu = vm.uiBottomMenu.collectAsStateWithLifecycle().value,
                     uiSheetState = vm.uiSheetState.collectAsStateWithLifecycle().value,
+                    uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
+                    canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     uiHeaderActions = {},
                     uiBottomMenuActions = {},
                     uiTopToolbarActions = {},
                     uiVerticalListActions = {},
-                    uiHorizontalListActions = {}
+                    uiHorizontalListActions = vm::onHorizontalItemClicked,
+                    onUpdateLimitSearch = {}
                 )
             }
         }

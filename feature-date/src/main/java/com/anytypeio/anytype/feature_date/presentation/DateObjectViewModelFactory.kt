@@ -3,9 +3,11 @@ package com.anytypeio.anytype.feature_date.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel.VmParams
@@ -20,7 +22,9 @@ class DateObjectViewModelFactory @Inject constructor(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val userPermissionProvider: UserPermissionProvider,
     private val relationListWithValue: RelationListWithValue,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -33,6 +37,8 @@ class DateObjectViewModelFactory @Inject constructor(
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             userPermissionProvider = userPermissionProvider,
             relationListWithValue = relationListWithValue,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes,
+            storelessSubscriptionContainer = storelessSubscriptionContainer
         ) as T
 }

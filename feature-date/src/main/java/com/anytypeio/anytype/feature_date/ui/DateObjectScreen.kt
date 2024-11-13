@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_date.R
@@ -35,6 +37,7 @@ import com.anytypeio.anytype.feature_date.models.DateObjectHorizontalListState
 import com.anytypeio.anytype.feature_date.models.DateObjectSheetState
 import com.anytypeio.anytype.feature_date.models.DateObjectTopToolbarState
 import com.anytypeio.anytype.feature_date.models.DateObjectVerticalListState
+import com.anytypeio.anytype.feature_date.models.UiContentState
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
 import com.anytypeio.anytype.feature_date.models.UiVerticalListItem
 import kotlinx.coroutines.launch
@@ -52,7 +55,10 @@ fun DateObjectScreen(
     uiTopToolbarActions: (DateObjectTopToolbarState.Action) -> Unit,
     uiHorizontalListActions: (UiHorizontalListItem) -> Unit,
     uiVerticalListActions: (UiVerticalListItem) -> Unit,
-    uiBottomMenuActions: (DateObjectBottomMenu.Action) -> Unit
+    uiBottomMenuActions: (DateObjectBottomMenu.Action) -> Unit,
+    uiContentState: UiContentState,
+    canPaginate: Boolean,
+    onUpdateLimitSearch: () -> Unit,
 ) {
 
     val scope = rememberCoroutineScope()
@@ -78,29 +84,59 @@ fun DateObjectScreen(
         containerColor = colorResource(id = R.color.background_primary),
         contentColor = colorResource(id = R.color.background_primary),
         topBar = {
-            TopBar(
-                uiTopToolbarState = uiTopToolbarState,
-                uiHeaderState = uiHeaderState,
-                uiTopToolbarActions = uiTopToolbarActions,
-                uiHeaderActions = uiHeaderActions
-            )
+            Column(
+                modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .fillMaxWidth()
+                        .background(color = colorResource(id = R.color.background_primary))
+                else
+                    Modifier.fillMaxWidth()
+                        .background(color = colorResource(id = R.color.background_primary))
+            ) {
+                DateObjectTopToolbar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    state = uiTopToolbarState,
+                    action = uiTopToolbarActions
+                )
+                Spacer(
+                    modifier = Modifier.height(24.dp)
+                )
+                DateObjectHeader(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    state = uiHeaderState,
+                    action = uiHeaderActions
+                )
+                DateLayoutHorizontalListScreen(
+                    state = uiHorizontalListState,
+                    action = {
+                        if (it is UiHorizontalListItem.Settings) {
+                            scope.launch {
+                                scaffoldState.bottomSheetState.expand()
+                            }
+                        }
+                        uiHorizontalListActions(it)
+                    }
+                )
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+            }
         },
         content = { paddingValues ->
             MainContent(
                 paddingValues = paddingValues,
-                uiHorizontalListState = uiHorizontalListState,
                 uiVerticalListState = uiVerticalListState,
                 uiDateObjectBottomMenu = uiDateObjectBottomMenu,
-                uiHorizontalListActions = {
-                    if (it is UiHorizontalListItem.Settings) {
-                        scope.launch {
-                            scaffoldState.bottomSheetState.expand()
-                        }
-                    }
-                    uiHorizontalListActions(it)
-                },
                 uiVerticalListActions = uiVerticalListActions,
-                uiBottomMenuActions = uiBottomMenuActions
+                uiBottomMenuActions = uiBottomMenuActions,
+                uiContentState = uiContentState,
+                canPaginate = canPaginate,
+                onUpdateLimitSearch = onUpdateLimitSearch
             )
         },
         sheetContent = {
@@ -116,38 +152,15 @@ fun DateObjectScreen(
 }
 
 @Composable
-private fun TopBar(
-    uiTopToolbarState: DateObjectTopToolbarState,
-    uiHeaderState: DateObjectHeaderState,
-    uiTopToolbarActions: (DateObjectTopToolbarState.Action) -> Unit,
-    uiHeaderActions: (DateObjectHeaderState.Action) -> Unit
-) {
-    val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-        Modifier
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .fillMaxWidth()
-    else
-        Modifier.fillMaxWidth()
-    Column {
-        if (uiTopToolbarState is DateObjectTopToolbarState.Content) {
-            DateLayoutTopToolbar(modifier, uiTopToolbarState, uiTopToolbarActions)
-        }
-        if (uiHeaderState is DateObjectHeaderState.Content) {
-            Spacer(modifier = Modifier.height(24.dp))
-            DateLayoutHeader(uiHeaderState, uiHeaderActions)
-        }
-    }
-}
-
-@Composable
 private fun MainContent(
     paddingValues: PaddingValues,
-    uiHorizontalListState: DateObjectHorizontalListState,
     uiVerticalListState: DateObjectVerticalListState,
     uiDateObjectBottomMenu: DateObjectBottomMenu,
-    uiHorizontalListActions: (UiHorizontalListItem) -> Unit,
     uiVerticalListActions: (UiVerticalListItem) -> Unit,
-    uiBottomMenuActions: (DateObjectBottomMenu.Action) -> Unit
+    uiBottomMenuActions: (DateObjectBottomMenu.Action) -> Unit,
+    uiContentState: UiContentState,
+    canPaginate: Boolean,
+    onUpdateLimitSearch: () -> Unit
 ) {
     val contentModifier =
         if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
@@ -165,12 +178,13 @@ private fun MainContent(
         modifier = contentModifier,
         contentAlignment = Alignment.TopCenter
     ) {
-        if (uiHorizontalListState is DateObjectHorizontalListState.Content) {
-            DateLayoutHorizontalListScreen(
-                state = uiHorizontalListState,
-                action = uiHorizontalListActions
-            )
-        }
+        DateLayoutVerticalListScreen(
+            state = uiVerticalListState,
+            uiContentState = uiContentState,
+            canPaginate = canPaginate,
+            onUpdateLimitSearch = onUpdateLimitSearch,
+            uiVerticalListActions = uiVerticalListActions
+        )
         BottomNavigationMenu(
             modifier = Modifier.align(Alignment.BottomCenter),
             backClick = { uiBottomMenuActions(DateObjectBottomMenu.Action.Back) },
@@ -181,4 +195,33 @@ private fun MainContent(
             isOwnerOrEditor = uiDateObjectBottomMenu.isOwnerOrEditor
         )
     }
+}
+
+@DefaultPreviews
+@Composable
+fun DateObjectScreenPreview() {
+    DateObjectScreen(
+        uiTopToolbarState = DateObjectTopToolbarState.Content(
+            syncStatus = SpaceSyncStatus.SYNCING,
+        ),
+        uiHeaderState = DateObjectHeaderState.Content(
+            title = "06 Nov 2024"
+        ),
+        uiHorizontalListState = DateObjectHorizontalListState.loadingState(),
+        uiVerticalListState = DateObjectVerticalListState(
+            items = emptyList()
+        ),
+        uiDateObjectBottomMenu = DateObjectBottomMenu(isOwnerOrEditor = true),
+        uiSheetState = DateObjectSheetState.Content(
+            items = emptyList()
+        ),
+        uiHeaderActions = {},
+        uiTopToolbarActions = {},
+        uiHorizontalListActions = {},
+        uiVerticalListActions = {},
+        uiBottomMenuActions = {},
+        uiContentState = UiContentState.Empty,
+        canPaginate = false,
+        onUpdateLimitSearch = {}
+    )
 }

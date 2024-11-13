@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_date.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,7 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,6 +43,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -59,7 +61,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DateLayoutHorizontalListScreen(
-    state: DateObjectHorizontalListState.Content,
+    state: DateObjectHorizontalListState,
     action: (UiHorizontalListItem) -> Unit
 ) {
 
@@ -74,9 +76,16 @@ fun DateLayoutHorizontalListScreen(
         items(
             count = items.size,
             key = { items[it].id },
+            contentType = { index ->
+                when (items[index]) {
+                    is UiHorizontalListItem.Settings -> "settings"
+                    is UiHorizontalListItem.Item -> "item"
+                    is UiHorizontalListItem.Loading -> "loading"
+                }
+            }
         ) {
             val item = items[it]
-            val background = if (state.selectedItem == item.id) {
+            val background = if (state.selectedRelationKey?.key == item.id) {
                 colorResource(R.color.shape_secondary)
             } else {
                 Color.Transparent
@@ -110,27 +119,6 @@ fun DateLayoutHorizontalListScreen(
                         )
                     }
 
-                    is UiHorizontalListItem.MentionedIn -> {
-                        Image(
-                            modifier = Modifier
-                                .padding(start = 12.dp)
-                                .wrapContentSize()
-                                .align(Alignment.CenterStart),
-                            painter = painterResource(R.drawable.ic_mention_24),
-                            contentDescription = "List of date relations",
-                            contentScale = ContentScale.Inside
-                        )
-                        Text(
-                            modifier = Modifier
-                                .padding(start = 42.dp, end = 12.dp)
-                                .wrapContentSize()
-                                .align(Alignment.CenterEnd),
-                            text = stringResource(R.string.date_layout_mentioned_in),
-                            color = colorResource(R.color.text_primary),
-                            style = PreviewTitle2Medium
-                        )
-                    }
-
                     is UiHorizontalListItem.Item -> {
                         Text(
                             modifier = Modifier
@@ -140,6 +128,23 @@ fun DateLayoutHorizontalListScreen(
                             text = item.title,
                             color = colorResource(R.color.text_primary),
                             style = PreviewTitle2Medium
+                        )
+                    }
+                    is UiHorizontalListItem.Loading.Item -> {
+                        ShimmerEffect(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .align(Alignment.Center)
+                                .width(88.dp)
+                                .height(20.dp)
+                        )
+                    }
+                    is UiHorizontalListItem.Loading.Settings -> {
+                        ShimmerEffect(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .align(Alignment.Center)
+                                .size(24.dp)
                         )
                     }
                 }
@@ -152,10 +157,9 @@ fun DateLayoutHorizontalListScreen(
 @DefaultPreviews
 fun DateLayoutHorizontalListScreenPreview() {
     DateLayoutHorizontalListScreen(
-        state = DateObjectHorizontalListState.Content(
+        state = DateObjectHorizontalListState(
             items = listOf(
                 UiHorizontalListItem.Settings(),
-                UiHorizontalListItem.MentionedIn(),
                 UiHorizontalListItem.Item(
                     id = "1",
                     title = "Today",
@@ -167,7 +171,7 @@ fun DateLayoutHorizontalListScreenPreview() {
                     key = RelationKey("2")
                 )
             ),
-            selectedItem = "1"
+            selectedRelationKey = RelationKey("1")
         ),
         action = {}
     )
@@ -175,10 +179,19 @@ fun DateLayoutHorizontalListScreenPreview() {
 
 @Composable
 @DefaultPreviews
+fun DateLayoutHorizontalListScreenLoadingPreview() {
+    DateLayoutHorizontalListScreen(
+        state = DateObjectHorizontalListState.loadingState(),
+        action = {}
+    )
+}
+
+@Composable
+@DefaultPreviews
 fun DateLayoutVerticalListScreenPreview() {
-    val contentListState = DateObjectVerticalListState.Content(
+    val contentListState = DateObjectVerticalListState(
         items = listOf(
-            UiVerticalListItem(
+            UiVerticalListItem.Item(
                 id = "1",
                 name = "Item 1",
                 space = SpaceId("space1"),
@@ -188,7 +201,7 @@ fun DateLayoutVerticalListScreenPreview() {
                 layout = ObjectType.Layout.TODO,
                 icon = ObjectIcon.Task(isChecked = true)
             ),
-            UiVerticalListItem(
+            UiVerticalListItem.Item(
                 id = "2",
                 name = "Item 2",
                 space = SpaceId("space2"),
@@ -198,7 +211,7 @@ fun DateLayoutVerticalListScreenPreview() {
                 layout = ObjectType.Layout.BASIC,
                 icon = ObjectIcon.Basic.Emoji("😃")
             ),
-            UiVerticalListItem(
+            UiVerticalListItem.Item(
                 id = "3",
                 name = "Item 3",
                 space = SpaceId("space3"),
@@ -217,16 +230,18 @@ fun DateLayoutVerticalListScreenPreview() {
         state = contentListState,
         uiContentState = UiContentState.Idle(scrollToTop = false),
         canPaginate = true,
-        onUpdateLimitSearch = {}
+        onUpdateLimitSearch = {},
+        uiVerticalListActions = {}
     )
 }
 
 @Composable
-private fun DateLayoutVerticalListScreen(
-    state: DateObjectVerticalListState.Content,
+fun DateLayoutVerticalListScreen(
+    state: DateObjectVerticalListState,
     uiContentState: UiContentState,
     canPaginate: Boolean,
-    onUpdateLimitSearch: () -> Unit
+    onUpdateLimitSearch: () -> Unit,
+    uiVerticalListActions: (UiVerticalListItem) -> Unit
 ) {
     val items = remember { mutableStateListOf<UiVerticalListItem>() }
     items.swapList(state.items)
@@ -254,16 +269,33 @@ private fun DateLayoutVerticalListScreen(
     }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .fillMaxSize(),
         state = lazyListState
     ) {
         items(
             count = items.size,
             key = { index -> items[index].id },
+            contentType = { index ->
+                when (items[index]) {
+                    is UiVerticalListItem.Loading -> "loading"
+                    is UiVerticalListItem.Item -> "item"
+                }
+            }
         ) { index ->
-            ListItem(
-                item = items[index]
-            )
+            val item = items[index]
+            when (item) {
+                is UiVerticalListItem.Item -> {
+                    ListItem(
+                        modifier = Modifier.clickable { uiVerticalListActions(item) },
+                        item = item
+                    )
+                }
+                is UiVerticalListItem.Loading -> {
+                    ListItemLoading(modifier = Modifier)
+                }
+            }
         }
         if (uiContentState is UiContentState.Paging) {
             item {
@@ -295,7 +327,8 @@ private fun DateLayoutVerticalListScreen(
 
 @Composable
 private fun ListItem(
-    item: UiVerticalListItem
+    modifier: Modifier,
+    item: UiVerticalListItem.Item
 ) {
     val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
     val createdBy = item.createdBy
@@ -304,7 +337,7 @@ private fun ListItem(
         colors = ListItemDefaults.colors(
             containerColor = colorResource(id = R.color.background_primary),
         ),
-        modifier = Modifier
+        modifier = modifier
             .height(72.dp)
             .fillMaxWidth(),
         headlineContent = {
@@ -340,6 +373,42 @@ private fun ListItem(
         },
         leadingContent = {
             ListWidgetObjectIcon(icon = item.icon, modifier = Modifier, iconSize = 48.dp)
+        }
+    )
+}
+
+
+@Composable
+private fun ListItemLoading(
+    modifier: Modifier
+) {
+
+    ListItem(
+        colors = ListItemDefaults.colors(
+            containerColor = colorResource(id = R.color.background_primary),
+        ),
+        modifier = modifier
+            .height(72.dp)
+            .fillMaxWidth(),
+        headlineContent = {
+            ShimmerEffect(
+                modifier = Modifier
+                    .width(164.dp)
+                    .height(18.dp)
+            )
+        },
+        supportingContent = {
+            ShimmerEffect(
+                modifier = Modifier
+                    .width(64.dp)
+                    .height(13.dp)
+            )
+        },
+        leadingContent = {
+            ShimmerEffect(
+                modifier = Modifier
+                    .size(48.dp)
+            )
         }
     )
 }

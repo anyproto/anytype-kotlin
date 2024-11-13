@@ -1,24 +1,22 @@
 package com.anytypeio.anytype.feature_date.ui
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +29,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,23 +37,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.RelationKey
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
-import com.anytypeio.anytype.core_ui.views.UXBody
+import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
+import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_date.R
 import com.anytypeio.anytype.feature_date.models.DateObjectHorizontalListState
@@ -62,7 +61,6 @@ import com.anytypeio.anytype.feature_date.models.DateObjectVerticalListState
 import com.anytypeio.anytype.feature_date.models.UiContentState
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
 import com.anytypeio.anytype.feature_date.models.UiVerticalListItem
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.coroutines.launch
 
 @Composable
@@ -248,7 +246,24 @@ fun DateLayoutVerticalListScreen(
     ) {
         if (uiContentState is UiContentState.Empty) {
             item {
-                EmptyState()
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    EmptyState()
+                }
+            }
+        }
+        if (uiContentState is UiContentState.Error) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ErrorState(uiContentState.message)
+                }
             }
         }
         items(
@@ -282,7 +297,7 @@ fun DateLayoutVerticalListScreen(
                         .height(52.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    //LoadingState()
+                    LoadingState()
                 }
             }
         }
@@ -359,7 +374,6 @@ private fun ListItem(
 private fun ListItemLoading(
     modifier: Modifier
 ) {
-
     ListItem(
         colors = ListItemDefaults.colors(
             containerColor = colorResource(id = R.color.background_primary),
@@ -391,30 +405,15 @@ private fun ListItemLoading(
 }
 
 @Composable
-private fun EmptyState() {
-    val (title, description) = stringResource(R.string.allContent_empty_state_title) to stringResource(
-        R.string.allContent_empty_state_description)
-    Box(
+private fun BoxScope.LoadingState() {
+    val loadingAlpha by animateFloatAsState(targetValue = 1f, label = "")
+    DotsLoadingIndicator(
+        animating = true,
         modifier = Modifier
-            .windowInsetsPadding(WindowInsets.ime)
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth(),
-            text = title,
-            color = colorResource(id = R.color.text_primary),
-            style = UXBody,
-            textAlign = TextAlign.Center
-        )
-//        Text(
-//            modifier = Modifier
-//                .fillMaxWidth(),
-//            text = description,
-//            color = colorResource(id = R.color.text_secondary),
-//            style = UXBody,
-//            textAlign = TextAlign.Center
-//        )
-    }
+            .graphicsLayer { alpha = loadingAlpha }
+            .align(Alignment.Center),
+        animationSpecs = FadeAnimationSpecs(itemCount = 3),
+        color = colorResource(id = R.color.glyph_active),
+        size = ButtonSize.Small
+    )
 }

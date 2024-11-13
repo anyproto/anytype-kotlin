@@ -70,7 +70,7 @@ class DateObjectFragment : BaseComposeFragment() {
                     uiTopToolbarActions = {},
                     uiVerticalListActions = {},
                     uiHorizontalListActions = vm::onHorizontalItemClicked,
-                    onUpdateLimitSearch = {}
+                    onUpdateLimitSearch = vm::updateLimit
                 )
             }
         }

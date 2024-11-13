@@ -1080,4 +1080,8 @@ class BlockDataRepository(
     override suspend fun unsubscribeChat(chat: Id) {
         return remote.unsubscribeChat(chat)
     }
+
+    override suspend fun debugAccountSelectTrace(dir: String): String {
+        return remote.debugAccountSelectTrace(dir)
+    }
 }

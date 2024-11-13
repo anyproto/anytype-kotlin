@@ -599,4 +599,7 @@ interface MiddlewareService {
     fun chatUnsubscribe(request: Rpc.Chat.Unsubscribe.Request): Rpc.Chat.Unsubscribe.Response
 
     //endregion
+
+    @Throws(Exception::class)
+    fun debugAccountSelectTrace(request: Rpc.Debug.AccountSelectTrace.Request): Rpc.Debug.AccountSelectTrace.Response
 }

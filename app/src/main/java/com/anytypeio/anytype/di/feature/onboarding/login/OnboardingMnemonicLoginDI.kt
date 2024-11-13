@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.DebugGoroutines
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -97,4 +98,5 @@ interface OnboardingMnemonicLoginDependencies : ComponentDependencies {
     fun userSettings(): UserSettingsRepository
     fun spaceManager(): SpaceManager
     fun globalSubscriptionManager(): GlobalSubscriptionManager
+    fun debugAccountSelectTrace(): DebugAccountSelectTrace
 }

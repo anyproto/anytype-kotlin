@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -116,7 +117,7 @@ object SubscriptionsModule {
         configStorage: ConfigStorage,
         container: StorelessSubscriptionContainer,
         logger: Logger
-    ) : SpaceDeletedStatusWatcher = SpaceDeletedStatusWatcher(
+    ): SpaceDeletedStatusWatcher = SpaceDeletedStatusWatcher(
         spaceManager = spaceManager,
         dispatchers = dispatchers,
         configStorage = configStorage,
@@ -135,7 +136,7 @@ object SubscriptionsModule {
         repo: AuthRepository,
         logger: Logger,
         spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
-    ) : UserPermissionProvider = DefaultUserPermissionProvider(
+    ): UserPermissionProvider = DefaultUserPermissionProvider(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
@@ -154,7 +155,7 @@ object SubscriptionsModule {
         awaitAccountStartManager: AwaitAccountStartManager,
         logger: Logger,
         configStorage: ConfigStorage
-    ) : SpaceViewSubscriptionContainer = SpaceViewSubscriptionContainer.Default(
+    ): SpaceViewSubscriptionContainer = SpaceViewSubscriptionContainer.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
@@ -173,7 +174,7 @@ object SubscriptionsModule {
         awaitAccountStartManager: AwaitAccountStartManager,
         configStorage: ConfigStorage,
         logger: Logger
-    ) : ProfileSubscriptionManager = ProfileSubscriptionManager.Default(
+    ): ProfileSubscriptionManager = ProfileSubscriptionManager.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
@@ -192,7 +193,7 @@ object SubscriptionsModule {
         spaceManager: SpaceManager,
         awaitAccountStartManager: AwaitAccountStartManager,
         logger: Logger
-    ) : ActiveSpaceMemberSubscriptionContainer = ActiveSpaceMemberSubscriptionContainer.Default(
+    ): ActiveSpaceMemberSubscriptionContainer = ActiveSpaceMemberSubscriptionContainer.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
@@ -221,7 +222,7 @@ object SubscriptionsModule {
         permissions: UserPermissionProvider,
         isSpaceDeleted: SpaceDeletedStatusWatcher,
         profileSubscriptionManager: ProfileSubscriptionManager
-    ) : GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
+    ): GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
         permissions = permissions,
@@ -243,4 +244,16 @@ object SubscriptionsModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): GetObjectTypes = GetObjectTypes(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideDebugAccountSelectTrace(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DebugAccountSelectTrace =
+        DebugAccountSelectTrace(
+            repo = repo,
+            dispatchers = dispatchers
+        )
 }

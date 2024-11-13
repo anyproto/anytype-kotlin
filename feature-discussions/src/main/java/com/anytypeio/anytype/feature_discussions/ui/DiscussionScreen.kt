@@ -121,7 +121,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DiscussionScreenWrapper(
-    isSpaceLevelChat: Boolean = true,
+    isSpaceLevelChat: Boolean = false,
     vm: DiscussionViewModel,
     // TODO move to view model
     onAttachClicked: () -> Unit

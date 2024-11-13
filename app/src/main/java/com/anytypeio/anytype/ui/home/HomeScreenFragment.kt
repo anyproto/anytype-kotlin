@@ -172,7 +172,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                             )
                         } else {
                             DiscussionScreenWrapper(
-                                isSpaceLevelChat = false,
+                                isSpaceLevelChat = true,
                                 vm = spaceLevelChatViewModel,
                                 onAttachClicked = {
 //                                    showBottomSheet = true

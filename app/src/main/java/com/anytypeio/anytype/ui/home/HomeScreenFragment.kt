@@ -129,7 +129,8 @@ class HomeScreenFragment : BaseComposeFragment(),
                     )
                     HorizontalPager(
                         modifier = Modifier.padding(top = 64.dp),
-                        state = pagerState
+                        state = pagerState,
+                        userScrollEnabled = false
                     ) { page ->
                         if (page == 0) {
                             focus.clearFocus(force = true)

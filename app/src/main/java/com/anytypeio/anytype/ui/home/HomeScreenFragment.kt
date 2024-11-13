@@ -176,7 +176,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                                 isSpaceLevelChat = true,
                                 vm = spaceLevelChatViewModel,
                                 onAttachClicked = {
-//                                    showBottomSheet = true
+                                    // TODO
                                 }
                             )
                         }

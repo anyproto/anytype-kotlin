@@ -11,10 +11,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
@@ -31,7 +29,6 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -41,7 +38,6 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
@@ -175,7 +171,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                             )
                         } else {
                             DiscussionScreenWrapper(
-                                withHeader = false,
+                                isSpaceLevelChat = false,
                                 vm = spaceLevelChatViewModel,
                                 onAttachClicked = {
 //                                    showBottomSheet = true

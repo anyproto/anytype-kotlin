@@ -81,7 +81,7 @@ fun DiscussionScreenPreview() {
         onAttachmentClicked = {},
         onEditMessage = {},
         onExitEditMessageMode = {},
-        withHeader = true
+        isSpaceLevelChat = true
     )
 }
 

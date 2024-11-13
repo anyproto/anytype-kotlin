@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -122,7 +121,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DiscussionScreenWrapper(
-    withHeader: Boolean = true,
+    isSpaceLevelChat: Boolean = true,
     vm: DiscussionViewModel,
     // TODO move to view model
     onAttachClicked: () -> Unit
@@ -138,7 +137,7 @@ fun DiscussionScreenWrapper(
                 modifier = Modifier
                     .fillMaxSize()
                     .then(
-                        if (withHeader) {
+                        if (!isSpaceLevelChat) {
                             Modifier.background(
                                 color = colorResource(id = R.color.background_primary)
                             )
@@ -150,7 +149,7 @@ fun DiscussionScreenWrapper(
                 val clipboard = LocalClipboardManager.current
                 val lazyListState = rememberLazyListState()
                 DiscussionScreen(
-                    withHeader = withHeader,
+                    isSpaceLevelChat = isSpaceLevelChat,
                     title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
                     attachments = vm.attachments.collectAsState().value,
@@ -193,7 +192,7 @@ fun DiscussionScreenWrapper(
  */
 @Composable
 fun DiscussionScreen(
-    withHeader: Boolean,
+    isSpaceLevelChat: Boolean,
     isInEditMessageMode: Boolean = false,
     lazyListState: LazyListState,
     title: String?,
@@ -230,9 +229,14 @@ fun DiscussionScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-//            .windowInsetsPadding(WindowInsets.systemBars)
+            .then(
+                if (isSpaceLevelChat)
+                    Modifier
+                else
+                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
+            )
     ) {
-        if (withHeader) {
+        if (!isSpaceLevelChat) {
             TopDiscussionToolbar(
                 title = title,
                 isHeaderVisible = isHeaderVisible
@@ -240,7 +244,7 @@ fun DiscussionScreen(
         }
         Box(modifier = Modifier.weight(1.0f)) {
             Messages(
-                withHeader = withHeader,
+                isSpaceLevelChat = isSpaceLevelChat,
                 modifier = Modifier.fillMaxSize(),
                 messages = messages,
                 scrollState = lazyListState,
@@ -420,13 +424,6 @@ private fun ChatBox(
 
     Row(
         modifier = Modifier
-            .then(
-                if (isTitleFocused)
-                    Modifier
-                else
-//                    Modifier.imePadding()
-                    Modifier
-            )
             .fillMaxWidth()
             .defaultMinSize(minHeight = 56.dp)
     ) {
@@ -611,7 +608,7 @@ private fun DefaultHintDecorationBox(
 
 @Composable
 fun Messages(
-    withHeader: Boolean = true,
+    isSpaceLevelChat: Boolean = true,
     title: String?,
     onTitleChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -718,7 +715,7 @@ fun Messages(
                 }
             }
         }
-        if (withHeader) {
+        if (!isSpaceLevelChat) {
             item(key = HEADER_KEY) {
                 Column {
                     DiscussionTitle(

@@ -779,6 +779,9 @@ private fun ChatUserAvatar(
     }
 }
 
+val defaultBubbleColor = Color(0x99FFFFFF)
+val userMessageBubbleColor = Color(0x66000000)
+
 @Composable
 fun Bubble(
     modifier: Modifier = Modifier,
@@ -801,9 +804,9 @@ fun Bubble(
             .fillMaxWidth()
             .background(
                 color = if (isUserAuthor)
-                    colorResource(id = R.color.palette_very_light_lime)
+                    userMessageBubbleColor
                 else
-                    colorResource(id = R.color.palette_very_light_grey),
+                    defaultBubbleColor,
                 shape = RoundedCornerShape(24.dp)
             )
             .clip(RoundedCornerShape(24.dp))
@@ -821,7 +824,10 @@ fun Bubble(
             Text(
                 text = name,
                 style = PreviewTitle2Medium,
-                color = colorResource(id = R.color.text_primary),
+                color = if (isUserAuthor)
+                    colorResource(id = R.color.text_white)
+                else
+                    colorResource(id = R.color.text_primary),
                 maxLines = 1,
                 modifier = Modifier.weight(1f)
             )
@@ -830,7 +836,10 @@ fun Bubble(
                     TIME_H24
                 ),
                 style = Caption1Regular,
-                color = colorResource(id = R.color.text_secondary),
+                color = if (isUserAuthor)
+                    colorResource(id = R.color.text_white)
+                else
+                    colorResource(id = R.color.text_secondary),
                 maxLines = 1
             )
         }
@@ -845,7 +854,12 @@ fun Bubble(
                 text = buildAnnotatedString {
                     append(msg)
                     withStyle(
-                        style = SpanStyle(color = colorResource(id = R.color.text_secondary))
+                        style = SpanStyle(
+                            color = if (isUserAuthor)
+                                colorResource(id = R.color.text_white)
+                            else
+                                colorResource(id = R.color.text_primary),
+                        )
                     ) {
                         append(
                             " (${stringResource(R.string.chats_message_edited)})"
@@ -865,7 +879,10 @@ fun Bubble(
                 ),
                 text = msg,
                 style = BodyRegular,
-                color = colorResource(id = R.color.text_primary)
+                color = if (isUserAuthor)
+                    colorResource(id = R.color.text_white)
+                else
+                    colorResource(id = R.color.text_primary),
             )
         }
         attachments.forEach { attachment ->

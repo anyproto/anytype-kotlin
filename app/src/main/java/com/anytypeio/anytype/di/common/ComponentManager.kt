@@ -50,6 +50,7 @@ import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.discussions.DaggerDiscussionComponent
+import com.anytypeio.anytype.di.feature.discussions.DaggerSpaceLevelChatComponent
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
@@ -101,6 +102,7 @@ import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetTypeComponent
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -1059,8 +1061,16 @@ class ComponentManager(
                 .build()
         }
 
-    val discussionComponent = ComponentMapWithParam { params: BaseViewModel.DefaultParams ->
+    val discussionComponent = ComponentMapWithParam { params: DiscussionViewModel.Params ->
         DaggerDiscussionComponent
+            .builder()
+            .withDependencies(findComponentDependencies())
+            .withParams(params)
+            .build()
+    }
+
+    val spaceLevelChatComponent = ComponentMapWithParam { params: DiscussionViewModel.Params ->
+        DaggerSpaceLevelChatComponent
             .builder()
             .withDependencies(findComponentDependencies())
             .withParams(params)

@@ -43,7 +43,7 @@
     <string name="space">Espacio</string>
     <string name="space_name">Nombre del espacio</string>
     <string name="default_space">Espacio inicial</string>
-    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
+    <string name="space_settings_apply_random_gradient">Aplicar color sólido aleatorio</string>
     <string name="space_settings_apply_upload_image">Cargar una imagen</string>
     <string name="delete_space">Eliminar espacio</string>
     <string name="you_can_store">Puedes almacenar gratuitamente hasta %1$s de archivos en nuestro nodo de respaldo cifrado. Si llegas al límite, los archivos se almacenarán solo localmente.</string>
@@ -841,8 +841,8 @@
     <string name="synced_files">Archivos sincronizados</string>
     <string name="log_in">Iniciar sesión</string>
     <string name="create_object_section_library">Biblioteca de Anytype</string>
-    <string name="bin_empty_title">Your trash is empty.</string>
-    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
+    <string name="bin_empty_title">Tu papelera está vacía.</string>
+    <string name="bin_empty_subtitle">¡Parece que te gusta tenerlo todo ordenado!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Estilo</string>
     <string name="slash_widget_main_media">Medios</string>
@@ -1414,7 +1414,7 @@ En concreto,
     <string name="notifications_prompt_primary_button_text">Habilitar</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Crear marcador desde el portapapeles</string>
     <string name="error_unexpected_layout">Error: diseño inesperado</string>
-    <string name="error_non_valid_object">Error: object ID is missing</string>
+    <string name="error_non_valid_object">Error: falta el ID del objeto.</string>
     <string name="membership_price_pending">Pendiente…</string>
     <string name="per_period">por %1$s</string>
     <string name="free_for">Gratis durante %1$s</string>
@@ -1517,7 +1517,7 @@ En concreto,
     <string name="all_content_sort_date_asc">Antiguos primero</string>
     <string name="all_content_sort_date_updated">Fecha de modificación</string>
     <string name="all_content_sort_date_created">Fecha de creación</string>
-    <string name="all_content_sort_date_used">Date last used</string>
+    <string name="all_content_sort_date_used">Fecha de último uso</string>
     <string name="all_content_sort_name">Nombre</string>
     <string name="all_content">Todos los objetos</string>
     <string name="allContent_group_today">Hoy</string>
@@ -1536,21 +1536,21 @@ En concreto,
     <string name="all_content_error_title">Se ha producido un error.</string>
     <string name="onboarding_my_first_space">Mi Primer Espacio</string>
     <string name="all_content_error_unexpected_layout">Error: diseño inesperado</string>
-    <string name="all_content_toast_relation_added">Relation added</string>
-    <string name="all_content_toast_relation_removed">Relation removed</string>
-    <string name="all_content_toast_type_added">Object type added</string>
-    <string name="all_content_toast_type_removed">Object type removed</string>
-    <string name="all_content_toast_archived">Object archived</string>
+    <string name="all_content_toast_relation_added">Relación añadida</string>
+    <string name="all_content_toast_relation_removed">Relación eliminada</string>
+    <string name="all_content_toast_type_added">Tipo de objeto añadido</string>
+    <string name="all_content_toast_type_removed">Tipo de objeto eliminado</string>
+    <string name="all_content_toast_archived">Objeto archivado</string>
     <string name="all_content_new_relation">Nueva relación</string>
     <string name="all_content_new_type">Nuevo tipo</string>
     <string name="all_content_unlinked_description">Objetos desconectados que no tienen un enlace a o desde otro objeto del gráfico.</string>
-    <string name="all_content_snackbar_title">moved to bin</string>
+    <string name="all_content_snackbar_title">se ha movido a la papelera</string>
     <string name="main_navigation_content_desc_back_button">Botón Atrás</string>
-    <string name="main_navigation_content_desc_search_button">Search objects button</string>
-    <string name="main_navigation_content_desc_create_button">Create object button</string>
+    <string name="main_navigation_content_desc_search_button">Botón Buscar objetos</string>
+    <string name="main_navigation_content_desc_create_button">Botón Crear objeto</string>
     <string name="chat">Chat</string>
     <string name="copy">Copiar</string>
-    <string name="chats_edit_message">Edit message</string>
-    <string name="chats_message_edited">edited</string>
-    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
+    <string name="chats_edit_message">Editar mensaje</string>
+    <string name="chats_message_edited">editado</string>
+    <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>
 </resources>

@@ -6,6 +6,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
@@ -18,11 +20,13 @@ import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,8 +34,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class DiscussionViewModel(
-    private val params: DefaultParams,
+class DiscussionViewModel @Inject constructor(
+    private val vmParams: Params,
     private val setObjectDetails: SetObjectDetails,
     private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
@@ -41,7 +45,8 @@ class DiscussionViewModel(
     private val toggleChatMessageReaction: ToggleChatMessageReaction,
     private val members: ActiveSpaceMemberSubscriptionContainer,
     private val getAccount: GetAccount,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -51,43 +56,65 @@ class DiscussionViewModel(
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
 
+    var chat: Id = ""
+
     init {
         viewModelScope.launch {
             val account = requireNotNull(getAccount.async(Unit).getOrNull())
-            openObject.async(
-                OpenObject.Params(
-                    spaceId = params.space,
-                    obj = params.ctx,
-                    saveAsLastOpened = false
-                )
-            ).fold(
-                onSuccess = { obj ->
-                    val root = ObjectWrapper.Basic(obj.details[params.ctx].orEmpty())
-                    name.value = root.name
-                    proceedWithObservingChatMessages(
-                        account = account.id
+            when (vmParams) {
+                is Params.Default -> {
+                    chat = vmParams.ctx
+                    openObject.async(
+                        OpenObject.Params(
+                            spaceId = vmParams.space,
+                            obj = vmParams.ctx,
+                            saveAsLastOpened = false
+                        )
+                    ).fold(
+                        onSuccess = { obj ->
+                            val root = ObjectWrapper.Basic(obj.details[vmParams.ctx].orEmpty())
+                            name.value = root.name
+                            proceedWithObservingChatMessages(
+                                account = account.id,
+                                chat = vmParams.ctx
+                            )
+                        },
+                        onFailure = {
+                            Timber.e(it, "Error while opening chat object")
+                        }
                     )
-                },
-                onFailure = {
-                    Timber.e(it, "Error while opening chat object")
                 }
-            )
+
+                is Params.SpaceLevelChat -> {
+                    val targetSpaceView = spaceViews.get(vmParams.space)
+                    val spaceLevelChat = targetSpaceView?.getValue<Id>(Relations.CHAT_ID)
+                    if (spaceLevelChat != null) {
+                        chat = spaceLevelChat
+                        proceedWithObservingChatMessages(
+                            account = account.id,
+                            chat = spaceLevelChat
+                        )
+                    }
+                }
+            }
         }
     }
 
     private suspend fun proceedWithObservingChatMessages(
-        account: Id
+        account: Id,
+        chat: Id
     ) {
         chatContainer
-            .watch(params.ctx)
+            .watch(chat = chat)
             .onEach { Timber.d("Got new update: $it") }
             .collect {
                 messages.value = it.map { msg ->
                     val member = members.get().let { type ->
-                        when(type) {
+                        when (type) {
                             is Store.Data -> type.members.find { member ->
                                 member.identity == msg.creator
                             }
+
                             is Store.Empty -> null
                         }
                     }
@@ -98,7 +125,7 @@ class DiscussionViewModel(
                         author = member?.name ?: msg.creator.takeLast(5),
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,
-                        reactions = msg.reactions.map{ (emoji, ids) ->
+                        reactions = msg.reactions.map { (emoji, ids) ->
                             DiscussionView.Message.Reaction(
                                 emoji = emoji,
                                 count = ids.size,
@@ -121,12 +148,12 @@ class DiscussionViewModel(
     fun onMessageSent(msg: String) {
         Timber.d("DROID-2635 OnMessageSent: $msg")
         viewModelScope.launch {
-            when(val mode = chatBoxMode.value) {
+            when (val mode = chatBoxMode.value) {
                 is ChatBoxMode.Default -> {
                     // TODO consider moving this use-case inside chat container
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
-                            chat = params.ctx,
+                            chat = chat,
                             message = Chat.Message.new(
                                 text = msg,
                                 attachments = attachments.value.map { a ->
@@ -146,10 +173,11 @@ class DiscussionViewModel(
                         Timber.e(it, "Error while adding message")
                     }
                 }
+
                 is ChatBoxMode.EditMessage -> {
                     editChatMessage.async(
                         params = Command.ChatCommand.EditMessage(
-                            chat = params.ctx,
+                            chat = chat,
                             message = Chat.Message.updated(
                                 id = mode.msg,
                                 text = msg
@@ -181,7 +209,7 @@ class DiscussionViewModel(
             name.value = input
             setObjectDetails.async(
                 params = SetObjectDetails.Params(
-                    ctx = params.ctx,
+                    ctx = chat,
                     details = mapOf(
                         Relations.NAME to input
                     )
@@ -209,7 +237,7 @@ class DiscussionViewModel(
             if (message != null) {
                 toggleChatMessageReaction.async(
                     Command.ChatCommand.ToggleMessageReaction(
-                        chat = params.ctx,
+                        chat = chat,
                         msg = msg,
                         emoji = reaction
                     )
@@ -227,7 +255,7 @@ class DiscussionViewModel(
         viewModelScope.launch {
             deleteChatMessage.async(
                 Command.ChatCommand.DeleteMessage(
-                    chat = params.ctx,
+                    chat = chat,
                     msg = msg.id
                 )
             ).onFailure {
@@ -242,7 +270,7 @@ class DiscussionViewModel(
             navigation.emit(
                 OpenObjectNavigation.OpenEditor(
                     target = attachment.target,
-                    space = params.space.id
+                    space = vmParams.space.id
                 )
             )
         }
@@ -255,13 +283,27 @@ class DiscussionViewModel(
     }
 
     sealed class UXCommand {
-        data object JumpToBottom: UXCommand()
-        data class SetChatBoxInput(val input: String): UXCommand()
+        data object JumpToBottom : UXCommand()
+        data class SetChatBoxInput(val input: String) : UXCommand()
     }
 
     sealed class ChatBoxMode {
         data object Default : ChatBoxMode()
         data class EditMessage(val msg: Id) : ChatBoxMode()
+    }
+
+    sealed class Params {
+
+        abstract val space: Space
+
+        data class Default(
+            val ctx: Id,
+            override val space: Space
+        ) : Params()
+
+        data class SpaceLevelChat(
+            override val space: Space
+        ) : Params()
     }
 
     companion object {

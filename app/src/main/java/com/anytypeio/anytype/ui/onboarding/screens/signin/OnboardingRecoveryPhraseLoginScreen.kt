@@ -3,11 +3,13 @@ package com.anytypeio.anytype.ui.onboarding.screens.signin
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -37,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
@@ -51,6 +54,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel.SetupState
 import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicInput
+import kotlin.Unit
 
 @Composable
 fun RecoveryScreenWrapper(
@@ -64,7 +68,10 @@ fun RecoveryScreenWrapper(
         onActionDoneClicked = vm::onActionDone,
         onScanQrClicked = onScanQrClick,
         isLoading = vm.state.collectAsState().value is SetupState.InProgress,
-        onEnterMyVaultClicked = vm::onEnterMyVaultClicked
+        onEnterMyVaultClicked = vm::onEnterMyVaultClicked,
+        onDebugAccountTraceClicked = {
+            vm.onAccountThraceButtonClicked()
+        }
     )
 }
 
@@ -75,7 +82,8 @@ fun RecoveryScreen(
     onActionDoneClicked: (Mnemonic) -> Unit,
     onScanQrClicked: () -> Unit,
     isLoading: Boolean,
-    onEnterMyVaultClicked: () -> Unit
+    onEnterMyVaultClicked: () -> Unit,
+    onDebugAccountTraceClicked: () -> Unit
 ) {
     val focus = LocalFocusManager.current
     val context = LocalContext.current
@@ -96,7 +104,7 @@ fun RecoveryScreen(
         )
         Text(
             modifier = Modifier
-                .noRippleClickable{ onEnterMyVaultClicked() }
+                .noRippleClickable { onEnterMyVaultClicked() }
                 .align(Alignment.TopCenter)
                 .padding(top = 17.dp, start = 18.dp, end = 18.dp)
             ,
@@ -105,6 +113,19 @@ fun RecoveryScreen(
                 color = colorResource(id = R.color.text_white)
             )
         )
+        if (BuildConfig.DEBUG) {
+            Image(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(top = 16.dp, end = 16.dp)
+                    .align(Alignment.TopEnd)
+                    .clickable {
+                        onDebugAccountTraceClicked()
+                    },
+                painter = painterResource(R.drawable.ic_vault_settings),
+                contentDescription = "Debug account select command"
+            )
+        }
 
         val emptyRecoveryPhraseError = stringResource(R.string.onboarding_your_key_can_t_be_empty)
 
@@ -247,7 +268,8 @@ fun RecoveryScreenPreview() {
         onActionDoneClicked = {},
         onScanQrClicked = {},
         isLoading = false,
-        onEnterMyVaultClicked = {}
+        onEnterMyVaultClicked = {},
+        onDebugAccountTraceClicked = {}
     )
 }
 
@@ -261,6 +283,7 @@ fun RecoveryScreenLoadingPreview() {
         onActionDoneClicked = {},
         onScanQrClicked = {},
         isLoading = true,
-        onEnterMyVaultClicked = {}
+        onEnterMyVaultClicked = {},
+        onDebugAccountTraceClicked = {}
     )
 }

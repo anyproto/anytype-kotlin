@@ -37,7 +37,7 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.sets.DateValueView
 
-val DATE_RANGE = IntRange(1900, 2100)
+val DATE_RANGE = IntRange(0, 3000)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

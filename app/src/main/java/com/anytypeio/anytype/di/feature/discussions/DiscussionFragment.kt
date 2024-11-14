@@ -151,7 +151,7 @@ class DiscussionFragment : BaseComposeFragment() {
             .discussionComponent
             .get(
                 key = ctx,
-                param = BaseViewModel.DefaultParams(
+                param = DiscussionViewModel.Params.Default(
                     ctx = ctx,
                     space = SpaceId(space)
                 )

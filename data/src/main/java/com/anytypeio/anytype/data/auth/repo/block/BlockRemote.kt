@@ -457,4 +457,6 @@ interface BlockRemote {
     suspend fun unsubscribeChat(chat: Id)
 
     //endregion
+
+    suspend fun debugAccountSelectTrace(dir: String): String
 }

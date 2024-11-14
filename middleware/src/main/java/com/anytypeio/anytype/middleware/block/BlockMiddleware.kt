@@ -1057,4 +1057,8 @@ class BlockMiddleware(
     override suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload {
         return middleware.dataViewSetActiveView(command)
     }
+
+    override suspend fun debugAccountSelectTrace(dir: String): String {
+        return middleware.debugAccountSelectTrace(dir)
+    }
 }

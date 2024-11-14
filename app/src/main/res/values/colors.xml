@@ -20,5 +20,6 @@
 
     <color name="gray_light_logo">#DBDAD4</color>
     <color name="gray_mnemonic_lock">#A7A7A7</color>
+    <color name="gradient_white">#FFFFFFFF</color>
 
 </resources>

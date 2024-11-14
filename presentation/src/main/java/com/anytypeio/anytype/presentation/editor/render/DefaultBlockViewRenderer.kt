@@ -2083,22 +2083,13 @@ class DefaultBlockViewRenderer @Inject constructor(
                     values = details.details[ctx]?.map ?: emptyMap(),
                     urlBuilder = urlBuilder
                 )
-                return if (view != null) {
-                    BlockView.Relation.Related(
-                        id = block.id,
-                        view = view,
-                        indent = indent,
-                        background = block.parseThemeBackgroundColor(),
-                        decorations = schema.toBlockViewDecoration(block)
-                    )
-                } else {
-                    BlockView.Relation.Deleted(
-                        id = block.id,
-                        indent = indent,
-                        decorations = schema.toBlockViewDecoration(block),
-                        background = block.parseThemeBackgroundColor()
-                    )
-                }
+                return BlockView.Relation.Related(
+                    id = block.id,
+                    view = view,
+                    indent = indent,
+                    background = block.parseThemeBackgroundColor(),
+                    decorations = schema.toBlockViewDecoration(block)
+                )
             } else {
                 return BlockView.Relation.Deleted(
                     id = block.id,

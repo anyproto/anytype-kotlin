@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import com.anytypeio.anytype.core_ui.R
 
@@ -32,11 +31,6 @@ fun ShimmerEffect(
         colorStart,
         colorEnd,
         colorStart
-//        Color.White.copy(alpha = 0.3f),
-//        Color.White.copy(alpha = 0.5f),
-//        Color.White.copy(alpha = 1.0f),
-//        Color.White.copy(alpha = 0.5f),
-//        Color.White.copy(alpha = 0.3f),
     )
 
     val infiniteTransition = rememberInfiniteTransition(label = "")

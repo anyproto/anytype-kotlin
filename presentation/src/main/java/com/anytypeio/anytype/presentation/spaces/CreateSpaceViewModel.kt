@@ -11,12 +11,15 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SystemColor
+import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -29,6 +32,8 @@ class CreateSpaceViewModel(
 ) : BaseViewModel() {
 
     val isInProgress = MutableStateFlow(false)
+
+    val commands = MutableSharedFlow<Command>(replay = 0)
 
     val spaceIconView : MutableStateFlow<SpaceIconView.Placeholder> = MutableStateFlow(
         SpaceIconView.Placeholder(
@@ -43,11 +48,9 @@ class CreateSpaceViewModel(
     }
 
     val isDismissed = MutableStateFlow(false)
-    val isSucceeded = MutableStateFlow(false)
-    val exitWithMultiplayerTip = MutableStateFlow(false)
 
     fun onCreateSpace(name: String) {
-        if (isDismissed.value || isSucceeded.value) {
+        if (isDismissed.value) {
             return
         }
         if (isInProgress.value) {
@@ -75,12 +78,13 @@ class CreateSpaceViewModel(
                         )
                         setNewSpaceAsCurrentSpace(space)
                         Timber.d("Successfully created space: $space").also {
-                            if (isSingleSpace) {
-                                exitWithMultiplayerTip.value = true
-                            } else {
-                                isSucceeded.value = true
-                            }
                             isInProgress.value = false
+                            commands.emit(
+                                Command.SwitchSpace(
+                                    space = Space(space),
+                                    showMultiplayerTooltip = isSingleSpace
+                                )
+                            )
                         }
                     },
                     onFailure = {
@@ -123,5 +127,12 @@ class CreateSpaceViewModel(
             analytics = analytics,
             spaceViewContainer = spaceViewContainer
         ) as T
+    }
+
+    sealed class Command {
+        data class SwitchSpace(
+            val space: Space,
+            val showMultiplayerTooltip: Boolean
+        ): Command()
     }
 }

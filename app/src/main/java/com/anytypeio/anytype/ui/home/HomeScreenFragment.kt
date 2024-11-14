@@ -455,7 +455,7 @@ class HomeScreenFragment : BaseComposeFragment(),
 
         fun args(
             space: Id,
-            deeplink: String?
+            deeplink: String? = null
         ) : Bundle = bundleOf(
             DEEP_LINK_KEY to deeplink,
             SPACE_ID_KEY to space

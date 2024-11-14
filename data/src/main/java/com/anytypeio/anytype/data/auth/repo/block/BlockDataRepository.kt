@@ -1085,4 +1085,8 @@ class BlockDataRepository(
     override suspend fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem> {
         return remote.objectRelationListWithValue(command)
     }
+
+    override suspend fun debugAccountSelectTrace(dir: String): String {
+        return remote.debugAccountSelectTrace(dir)
+    }
 }

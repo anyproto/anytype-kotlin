@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.DebugGoroutines
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -53,7 +54,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val debugGoroutines: DebugGoroutines,
     private val uriFileProvider: UriFileProvider,
     private val logout: Logout,
-    private val globalSubscriptionManager: GlobalSubscriptionManager
+    private val globalSubscriptionManager: GlobalSubscriptionManager,
+    private val debugAccountSelectTrace: DebugAccountSelectTrace
 ) : ViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -339,6 +341,26 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         }
     }
 
+    fun onAccountThraceButtonClicked() {
+        jobs += viewModelScope.launch {
+            val path = pathProvider.providePath()
+            val params = DebugAccountSelectTrace.Params(
+                dir = path
+            )
+            debugAccountSelectTrace.async(params).fold(
+                onSuccess = {
+                    Timber.d("On account trace success")
+                    command.emit(Command.ShowToast("On account trace success"))
+                    command.emit(Command.ShareDebugGoroutines(path, uriFileProvider))
+                },
+                onFailure = {
+                    Timber.e(it, "Error while collecting account trace")
+                    command.emit(Command.ShowToast("Error while collecting account trace: ${it.message}"))
+                }
+            )
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         goroutinesJob?.cancel()
@@ -384,7 +406,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         private val debugGoroutines: DebugGoroutines,
         private val uriFileProvider: UriFileProvider,
         private val logout: Logout,
-        private val globalSubscriptionManager: GlobalSubscriptionManager
+        private val globalSubscriptionManager: GlobalSubscriptionManager,
+        private val debugAccountSelectTrace: DebugAccountSelectTrace
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -403,7 +426,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 debugGoroutines = debugGoroutines,
                 uriFileProvider = uriFileProvider,
                 logout = logout,
-                globalSubscriptionManager = globalSubscriptionManager
+                globalSubscriptionManager = globalSubscriptionManager,
+                debugAccountSelectTrace = debugAccountSelectTrace
             ) as T
         }
     }

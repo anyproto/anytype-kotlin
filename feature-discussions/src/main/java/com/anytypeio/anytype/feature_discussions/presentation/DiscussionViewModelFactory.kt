@@ -10,13 +10,14 @@ import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 
 class DiscussionViewModelFactory @Inject constructor(
-    private val params: BaseViewModel.DefaultParams,
+    private val params: DiscussionViewModel.Params,
     private val setObjectDetails: SetObjectDetails,
     private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
@@ -26,11 +27,12 @@ class DiscussionViewModelFactory @Inject constructor(
     private val toggleChatMessageReaction: ToggleChatMessageReaction,
     private val members: ActiveSpaceMemberSubscriptionContainer,
     private val getAccount: GetAccount,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = DiscussionViewModel(
-        params = params,
+        vmParams = params,
         setObjectDetails = setObjectDetails,
         openObject = openObject,
         chatContainer = chatContainer,
@@ -40,6 +42,7 @@ class DiscussionViewModelFactory @Inject constructor(
         getAccount = getAccount,
         deleteChatMessage = deleteChatMessage,
         urlBuilder = urlBuilder,
-        editChatMessage = editChatMessage
+        editChatMessage = editChatMessage,
+        spaceViews = spaceViews
     ) as T
 }

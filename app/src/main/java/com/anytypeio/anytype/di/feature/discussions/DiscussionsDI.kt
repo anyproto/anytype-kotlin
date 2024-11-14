@@ -14,10 +14,13 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
@@ -35,11 +38,31 @@ interface DiscussionComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun withParams(params: BaseViewModel.DefaultParams): Builder
+        fun withParams(params: DiscussionViewModel.Params): Builder
         fun withDependencies(dependencies: DiscussionComponentDependencies): Builder
         fun build(): DiscussionComponent
     }
     fun inject(fragment: DiscussionFragment)
+}
+
+@Component(
+    dependencies = [DiscussionComponentDependencies::class],
+    modules = [
+        DiscussionModule::class,
+        DiscussionModule.Declarations::class
+    ]
+)
+@PerScreen
+interface SpaceLevelChatComponent {
+    @Component.Builder
+    interface Builder {
+        @BindsInstance
+        fun withParams(params: DiscussionViewModel.Params): Builder
+        fun withDependencies(dependencies: DiscussionComponentDependencies): Builder
+        fun build(): SpaceLevelChatComponent
+    }
+
+    fun getViewModel(): DiscussionViewModel
 }
 
 @Module
@@ -51,7 +74,6 @@ object DiscussionModule {
         fun bindViewModelFactory(
             factory: DiscussionViewModelFactory
         ): ViewModelProvider.Factory
-
     }
 }
 
@@ -68,4 +90,5 @@ interface DiscussionComponentDependencies : ComponentDependencies {
     fun chatEventChannel(): ChatEventChannel
     fun logger(): Logger
     fun members(): ActiveSpaceMemberSubscriptionContainer
+    fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
 }

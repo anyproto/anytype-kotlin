@@ -72,6 +72,7 @@ import org.burnoutcrew.reorderable.reorderable
 
 @Composable
 fun HomeScreen(
+    modifier: Modifier,
     mode: InteractionMode,
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
@@ -98,7 +99,7 @@ fun HomeScreen(
     onBackLongClicked: () -> Unit
 ) {
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         WidgetList(
             widgets = widgets,
             onExpand = onExpand,

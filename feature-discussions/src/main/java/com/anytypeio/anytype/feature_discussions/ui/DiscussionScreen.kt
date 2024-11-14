@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -122,6 +121,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DiscussionScreenWrapper(
+    isSpaceLevelChat: Boolean = false,
     vm: DiscussionViewModel,
     // TODO move to view model
     onAttachClicked: () -> Unit
@@ -136,13 +136,20 @@ fun DiscussionScreenWrapper(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        color = colorResource(id = R.color.background_primary)
+                    .then(
+                        if (!isSpaceLevelChat) {
+                            Modifier.background(
+                                color = colorResource(id = R.color.background_primary)
+                            )
+                        } else {
+                            Modifier
+                        }
                     )
             ) {
                 val clipboard = LocalClipboardManager.current
                 val lazyListState = rememberLazyListState()
                 DiscussionScreen(
+                    isSpaceLevelChat = isSpaceLevelChat,
                     title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
                     attachments = vm.attachments.collectAsState().value,
@@ -185,6 +192,7 @@ fun DiscussionScreenWrapper(
  */
 @Composable
 fun DiscussionScreen(
+    isSpaceLevelChat: Boolean,
     isInEditMessageMode: Boolean = false,
     lazyListState: LazyListState,
     title: String?,
@@ -221,14 +229,22 @@ fun DiscussionScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars)
+            .then(
+                if (isSpaceLevelChat)
+                    Modifier
+                else
+                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
+            )
     ) {
-        TopDiscussionToolbar(
-            title = title,
-            isHeaderVisible = isHeaderVisible
-        )
+        if (!isSpaceLevelChat) {
+            TopDiscussionToolbar(
+                title = title,
+                isHeaderVisible = isHeaderVisible
+            )
+        }
         Box(modifier = Modifier.weight(1.0f)) {
             Messages(
+                isSpaceLevelChat = isSpaceLevelChat,
                 modifier = Modifier.fillMaxSize(),
                 messages = messages,
                 scrollState = lazyListState,
@@ -408,12 +424,6 @@ private fun ChatBox(
 
     Row(
         modifier = Modifier
-            .then(
-                if (isTitleFocused)
-                    Modifier
-                else
-                    Modifier.imePadding()
-            )
             .fillMaxWidth()
             .defaultMinSize(minHeight = 56.dp)
     ) {
@@ -598,6 +608,7 @@ private fun DefaultHintDecorationBox(
 
 @Composable
 fun Messages(
+    isSpaceLevelChat: Boolean = true,
     title: String?,
     onTitleChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -704,21 +715,23 @@ fun Messages(
                 }
             }
         }
-        item(key = HEADER_KEY) {
-            Column {
-                DiscussionTitle(
-                    title = title,
-                    onTitleChanged = onTitleChanged,
-                    onFocusChanged = onTitleFocusChanged
-                )
-                Text(
-                    style = Relations2,
-                    text = stringResource(R.string.chat),
-                    color = colorResource(id = R.color.text_secondary),
-                    modifier = Modifier.padding(
-                        start = 20.dp
+        if (!isSpaceLevelChat) {
+            item(key = HEADER_KEY) {
+                Column {
+                    DiscussionTitle(
+                        title = title,
+                        onTitleChanged = onTitleChanged,
+                        onFocusChanged = onTitleFocusChanged
                     )
-                )
+                    Text(
+                        style = Relations2,
+                        text = stringResource(R.string.chat),
+                        color = colorResource(id = R.color.text_secondary),
+                        modifier = Modifier.padding(
+                            start = 20.dp
+                        )
+                    )
+                }
             }
         }
     }
@@ -763,6 +776,9 @@ private fun ChatUserAvatar(
     }
 }
 
+val defaultBubbleColor = Color(0x99FFFFFF)
+val userMessageBubbleColor = Color(0x66000000)
+
 @Composable
 fun Bubble(
     modifier: Modifier = Modifier,
@@ -785,9 +801,9 @@ fun Bubble(
             .fillMaxWidth()
             .background(
                 color = if (isUserAuthor)
-                    colorResource(id = R.color.palette_very_light_lime)
+                    userMessageBubbleColor
                 else
-                    colorResource(id = R.color.palette_very_light_grey),
+                    defaultBubbleColor,
                 shape = RoundedCornerShape(24.dp)
             )
             .clip(RoundedCornerShape(24.dp))
@@ -805,7 +821,10 @@ fun Bubble(
             Text(
                 text = name,
                 style = PreviewTitle2Medium,
-                color = colorResource(id = R.color.text_primary),
+                color = if (isUserAuthor)
+                    colorResource(id = R.color.text_white)
+                else
+                    colorResource(id = R.color.text_primary),
                 maxLines = 1,
                 modifier = Modifier.weight(1f)
             )
@@ -814,7 +833,10 @@ fun Bubble(
                     TIME_H24
                 ),
                 style = Caption1Regular,
-                color = colorResource(id = R.color.text_secondary),
+                color = if (isUserAuthor)
+                    colorResource(id = R.color.text_white)
+                else
+                    colorResource(id = R.color.text_secondary),
                 maxLines = 1
             )
         }
@@ -829,7 +851,12 @@ fun Bubble(
                 text = buildAnnotatedString {
                     append(msg)
                     withStyle(
-                        style = SpanStyle(color = colorResource(id = R.color.text_secondary))
+                        style = SpanStyle(
+                            color = if (isUserAuthor)
+                                colorResource(id = R.color.text_white)
+                            else
+                                colorResource(id = R.color.text_primary),
+                        )
                     ) {
                         append(
                             " (${stringResource(R.string.chats_message_edited)})"
@@ -849,7 +876,10 @@ fun Bubble(
                 ),
                 text = msg,
                 style = BodyRegular,
-                color = colorResource(id = R.color.text_primary)
+                color = if (isUserAuthor)
+                    colorResource(id = R.color.text_white)
+                else
+                    colorResource(id = R.color.text_primary),
             )
         }
         attachments.forEach { attachment ->

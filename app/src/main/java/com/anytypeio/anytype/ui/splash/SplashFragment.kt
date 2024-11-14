@@ -109,7 +109,10 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     )
                     findNavController().navigate(
                         R.id.actionOpenSpaceFromVault,
-                        args = HomeScreenFragment.args(deeplink = command.deeplink)
+                        args = HomeScreenFragment.args(
+                            deeplink = command.deeplink,
+                            space = command.space
+                        )
                     )
                 }.onFailure {
                     Timber.e(it, "Error while navigating to widgets from splash")
@@ -119,7 +122,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 try {
                     findNavController().navigate(
                         resId = R.id.actionOpenVaultFromSplash,
-                        args = HomeScreenFragment.args(deeplink = command.deeplink)
+                        args = VaultFragment.args(deeplink = command.deeplink)
                     )
                 } catch (e: Exception) {
                     Timber.e(e, "Error while opening dashboard from splash screen")
@@ -129,7 +132,13 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             is SplashViewModel.Command.NavigateToObject -> {
                 runCatching {
                     findNavController().navigate(R.id.actionOpenVaultFromSplash)
-                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        args = HomeScreenFragment.args(
+                            space = command.space,
+                            deeplink = null
+                        )
+                    )
                     findNavController().navigate(
                         resId = R.id.objectNavigation,
                         args = EditorFragment.args(
@@ -144,7 +153,13 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             is SplashViewModel.Command.NavigateToObjectSet -> {
                 runCatching {
                     findNavController().navigate(R.id.actionOpenVaultFromSplash)
-                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        args = HomeScreenFragment.args(
+                            space = command.space,
+                            deeplink = null
+                        )
+                    )
                     findNavController().navigate(
                         resId = R.id.dataViewNavigation,
                         args = ObjectSetFragment.args(

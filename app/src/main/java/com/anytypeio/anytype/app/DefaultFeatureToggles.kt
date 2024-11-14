@@ -28,4 +28,7 @@ class DefaultFeatureToggles @Inject constructor(
 
     override val isSpaceLevelChatEnabled: Boolean
         get() = true
+
+    override val isNewSpaceHomeEnabled: Boolean
+        get() = true
 }

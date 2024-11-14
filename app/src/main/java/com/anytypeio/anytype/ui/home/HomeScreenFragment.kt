@@ -4,10 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
@@ -21,12 +29,16 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.ext.daggerViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
@@ -40,9 +52,9 @@ import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.creation.WidgetObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.creation.WidgetSourceTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
-import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -59,8 +71,10 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     private val deepLink: String? get() = argOrNull(DEEP_LINK_KEY)
 
+    private val space: Id get() = arg<Id>(SPACE_ID_KEY)
+
     private var isMnemonicReminderDialogNeeded: Boolean
-        get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) ?: false
+        get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) == true
         set(value) { arguments?.putBoolean(SHOW_MNEMONIC_KEY, value) }
 
 
@@ -86,42 +100,88 @@ class HomeScreenFragment : BaseComposeFragment(),
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
-                HomeScreen(
-                    widgets = vm.views.collectAsState().value,
-                    mode = vm.mode.collectAsState().value,
-                    onExpand = { path -> vm.onExpand(path) },
-                    onCreateWidget = vm::onCreateWidgetClicked,
-                    onEditWidgets = vm::onEditWidgets,
-                    onExitEditMode = vm::onExitEditMode,
-                    onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                        vm.onDropDownMenuAction(widget, action)
-                    },
-                    onWidgetObjectClicked = vm::onWidgetObjectClicked,
-                    onWidgetSourceClicked = vm::onWidgetSourceClicked,
-                    onChangeWidgetView = vm::onChangeCurrentWidgetView,
-                    onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
-                    onSearchClicked = vm::onSearchIconClicked,
-                    onCreateNewObjectClicked = throttledClick(
-                        onClick = { vm.onCreateNewObjectClicked() }
-                    ),
-                    onCreateNewObjectLongClicked = throttledClick(
-                        onClick = { vm.onCreateNewObjectLongClicked() }
-                    ),
-                    onBackClicked = throttledClick(
-                        onClick = vm::onBackClicked
-                    ),
-                    onSpaceWidgetClicked = throttledClick(
-                        onClick = vm::onSpaceSettingsClicked
-                    ),
-                    onBundledWidgetClicked = vm::onBundledWidgetClicked,
-                    onMove = vm::onMove,
-                    onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-                    onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
-                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
-                    onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
-                    onCreateDataViewObject = vm::onCreateDataViewObject,
-                    onBackLongClicked = vm::onBackLongClicked
-                )
+                val focus = LocalFocusManager.current
+                val component = componentManager().spaceLevelChatComponent
+                val spaceLevelChatViewModel = daggerViewModel {
+                    component.get(
+                        key = space,
+                        param = DiscussionViewModel.Params.SpaceLevelChat(
+                            space = Space(space)
+                        )
+                    ).getViewModel()
+                }
+                val pagerState = rememberPagerState { 2 }
+                val coroutineScope = rememberCoroutineScope()
+                Box(
+                    Modifier.fillMaxSize()
+                ) {
+                    HomeScreenToolbar(
+                        onWidgetTabClicked = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(0)
+                            }
+                        },
+                        onChatTabClicked = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(1)
+                            }
+                        }
+                    )
+                    HorizontalPager(
+                        modifier = Modifier.padding(top = 64.dp),
+                        state = pagerState,
+                        userScrollEnabled = false
+                    ) { page ->
+                        if (page == 0) {
+                            focus.clearFocus(force = true)
+                            HomeScreen(
+                                modifier = Modifier,
+                                widgets = vm.views.collectAsState().value,
+                                mode = vm.mode.collectAsState().value,
+                                onExpand = { path -> vm.onExpand(path) },
+                                onCreateWidget = vm::onCreateWidgetClicked,
+                                onEditWidgets = vm::onEditWidgets,
+                                onExitEditMode = vm::onExitEditMode,
+                                onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
+                                    vm.onDropDownMenuAction(widget, action)
+                                },
+                                onWidgetObjectClicked = vm::onWidgetObjectClicked,
+                                onWidgetSourceClicked = vm::onWidgetSourceClicked,
+                                onChangeWidgetView = vm::onChangeCurrentWidgetView,
+                                onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
+                                onSearchClicked = vm::onSearchIconClicked,
+                                onCreateNewObjectClicked = throttledClick(
+                                    onClick = { vm.onCreateNewObjectClicked() }
+                                ),
+                                onCreateNewObjectLongClicked = throttledClick(
+                                    onClick = { vm.onCreateNewObjectLongClicked() }
+                                ),
+                                onBackClicked = throttledClick(
+                                    onClick = vm::onBackClicked
+                                ),
+                                onSpaceWidgetClicked = throttledClick(
+                                    onClick = vm::onSpaceSettingsClicked
+                                ),
+                                onBundledWidgetClicked = vm::onBundledWidgetClicked,
+                                onMove = vm::onMove,
+                                onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
+                                onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
+                                onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
+                                onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
+                                onCreateDataViewObject = vm::onCreateDataViewObject,
+                                onBackLongClicked = vm::onBackLongClicked
+                            )
+                        } else {
+                            DiscussionScreenWrapper(
+                                isSpaceLevelChat = true,
+                                vm = spaceLevelChatViewModel,
+                                onAttachClicked = {
+                                    // TODO
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -387,17 +447,28 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     override fun injectDependencies() {
         componentManager().homeScreenComponent.get().inject(this)
+
     }
 
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
     }
 
+    override fun onApplyWindowRootInsets(view: View) {
+        super.onApplyWindowRootInsets(view)
+    }
+
     companion object {
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
         const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
-        fun args(deeplink: String?) : Bundle = bundleOf(
-            DEEP_LINK_KEY to deeplink
+        const val SPACE_ID_KEY = "arg.home-screen.space-id"
+
+        fun args(
+            space: Id,
+            deeplink: String?
+        ) : Bundle = bundleOf(
+            DEEP_LINK_KEY to deeplink,
+            SPACE_ID_KEY to space
         )
     }
 }

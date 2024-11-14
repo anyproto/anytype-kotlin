@@ -1062,4 +1062,8 @@ class BlockMiddleware(
     override suspend fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem> {
         return middleware.objectRelationListWithValue(command)
     }
+
+    override suspend fun debugAccountSelectTrace(dir: String): String {
+        return middleware.debugAccountSelectTrace(dir)
+    }
 }

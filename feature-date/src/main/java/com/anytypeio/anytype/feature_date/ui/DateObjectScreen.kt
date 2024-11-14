@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
+import com.anytypeio.anytype.core_ui.relations.DatePickerContent
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_date.R
 import com.anytypeio.anytype.feature_date.models.DateObjectBottomMenu
@@ -40,7 +41,9 @@ import com.anytypeio.anytype.feature_date.models.DateObjectVerticalListState
 import com.anytypeio.anytype.feature_date.models.UiContentState
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
 import com.anytypeio.anytype.feature_date.models.UiVerticalListItem
+import com.anytypeio.anytype.presentation.sets.DateValueView
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +62,7 @@ fun DateObjectScreen(
     uiContentState: UiContentState,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
+    onCalendarDateSelected: (Long?) -> Unit
 ) {
 
     val scope = rememberCoroutineScope()
@@ -99,7 +103,17 @@ fun DateObjectScreen(
                         .fillMaxWidth()
                         .height(48.dp),
                     state = uiTopToolbarState,
-                    action = uiTopToolbarActions
+                    action = { action ->
+                        when (action)  {
+                            DateObjectTopToolbarState.Action.Calendar -> {
+                                scope.launch {
+                                    scaffoldState.bottomSheetState.expand()
+                                }
+                            }
+                            DateObjectTopToolbarState.Action.SyncStatus -> {}
+                        }
+                        uiTopToolbarActions(action)
+                    }
                 )
                 Spacer(
                     modifier = Modifier.height(24.dp)
@@ -140,12 +154,27 @@ fun DateObjectScreen(
             )
         },
         sheetContent = {
-            if (uiSheetState is DateObjectSheetState.Content) {
-                DateObjectSheetScreen(
-                    uiSheetState = uiSheetState,
-                    uiHeaderActions = {},
-                    onQueryChange = {}
-                )
+            when (uiSheetState)  {
+                is DateObjectSheetState.Calendar -> {
+                    DatePickerContent(
+                        state = DateValueView(),
+                        onDateSelected = {
+                            Timber.d("Date selected: $it")
+                            onCalendarDateSelected(it)
+                        },
+                        onClear = {},
+                        onTodayClicked = {},
+                        onTomorrowClicked = {}
+                    )
+                }
+                is DateObjectSheetState.Content -> {
+                    DateObjectSheetScreen(
+                        uiSheetState = uiSheetState,
+                        uiHeaderActions = {},
+                        onQueryChange = {}
+                    )
+                }
+                DateObjectSheetState.Empty -> {}
             }
         }
     )
@@ -225,7 +254,8 @@ fun DateObjectScreenPreview() {
         uiBottomMenuActions = {},
         uiContentState = UiContentState.Idle(),
         canPaginate = false,
-        onUpdateLimitSearch = {}
+        onUpdateLimitSearch = {},
+        onCalendarDateSelected = {}
     )
 }
 
@@ -254,7 +284,8 @@ fun DateObjectScreenEmptyPreview() {
         uiBottomMenuActions = {},
         uiContentState = UiContentState.Empty,
         canPaginate = false,
-        onUpdateLimitSearch = {}
+        onUpdateLimitSearch = {},
+        onCalendarDateSelected = {}
     )
 }
 
@@ -285,6 +316,7 @@ fun DateObjectScreenErrorPreview() {
             message = "Error message"
         ),
         canPaginate = false,
-        onUpdateLimitSearch = {}
+        onUpdateLimitSearch = {},
+        onCalendarDateSelected = {}
     )
 }

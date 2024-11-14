@@ -112,11 +112,23 @@ class DateObjectViewModel(
 
     fun onStop() {
         unsubscribe()
+        viewModelScope.launch {
+            resetLimit()
+            canPaginate.value = false
+            uiVerticalListState.value = DateObjectVerticalListState.empty()
+            uiContentState.value = UiContentState.Empty
+        }
     }
 
     override fun onCleared() {
+        Timber.d("onCleared")
         super.onCleared()
         uiContentState.value = UiContentState.Empty
+        uiHeaderState.value = DateObjectHeaderState.Empty
+        uiTopToolbarState.value = DateObjectTopToolbarState.Empty
+        uiHorizontalListState.value = DateObjectHorizontalListState.empty()
+        uiVerticalListState.value = DateObjectVerticalListState.empty()
+        uiSheetState.value = DateObjectSheetState.Empty
         resetLimit()
     }
 
@@ -139,7 +151,6 @@ class DateObjectViewModel(
             value = vmParams.objectId
         )
         viewModelScope.launch {
-            delay(3000L)
             relationListWithValue.async(params).fold(
                 onSuccess = { result ->
                     Timber.d("Got object relation list: $result")
@@ -157,7 +168,6 @@ class DateObjectViewModel(
             space = vmParams.spaceId
         )
         viewModelScope.launch {
-            delay(3000L)
             getObject.async(params).fold(
                 onSuccess = { obj ->
                     uiTopToolbarState.value = DateObjectTopToolbarState.Content(
@@ -219,6 +229,8 @@ class DateObjectViewModel(
     private suspend fun handleData(
         objWrappers: List<ObjectWrapper.Basic>
     ): List<UiVerticalListItem> {
+
+        delay(1000)
 
         canPaginate.value = objWrappers.size == itemsLimit
 
@@ -285,7 +297,9 @@ class DateObjectViewModel(
             is UiHorizontalListItem.Item -> {
                 shouldScrollToTopItems = true
                 resetLimit()
+                canPaginate.value = false
                 uiContentState.value = UiContentState.Empty
+                uiVerticalListState.value = DateObjectVerticalListState.loadingState()
                 _activeRelationKey.value = item.key
                 restartSubscription.value++
                 updateHorizontalListState(selectedItem = item)
@@ -305,9 +319,30 @@ class DateObjectViewModel(
     fun onPreviousDayClicked() {
     }
 
-    fun onCalendarClicked() {}
+    fun onTopToolbarActions(action: DateObjectTopToolbarState.Action) {
+        when (action) {
+            DateObjectTopToolbarState.Action.Calendar -> {
+                uiSheetState.value = DateObjectSheetState.Calendar(selectedDate = null)
+            }
+            DateObjectTopToolbarState.Action.SyncStatus -> TODO()
+        }
+    }
 
     fun onSyncStatusClicked() {}
+
+    fun onCalendarDateSelected(selectedDate: Long?) {
+        //TODO get proper Id from timestamp
+        Timber.d("Selected date: $selectedDate")
+        viewModelScope.launch {
+            unsubscribe()
+            commands.emit(
+                Command.NavigateToDateObject(
+                    objectId = "_date_2025-04-22",
+                    space = vmParams.spaceId
+                )
+            )
+        }
+    }
     //endregion
 
     //region Ui State
@@ -321,6 +356,10 @@ class DateObjectViewModel(
             },
             selectedRelationKey = _activeRelationKey.value
         )
+        if (relations.isEmpty()) {
+            uiContentState.value = UiContentState.Empty
+            uiVerticalListState.value = DateObjectVerticalListState.empty()
+        }
     }
 
     private fun updateHorizontalListState(selectedItem: UiHorizontalListItem.Item) {
@@ -347,6 +386,7 @@ class DateObjectViewModel(
         data class NavigateToEditor(val id: Id, val space: Id) : Command()
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
         data class NavigateToBin(val space: Id) : Command()
+        data class NavigateToDateObject(val objectId: Id, val space: SpaceId) : Command()
         sealed class SendToast : Command() {
             data class Error(val message: String) : SendToast()
             data class RelationRemoved(val name: String) : SendToast()
@@ -354,7 +394,6 @@ class DateObjectViewModel(
             data class UnexpectedLayout(val layout: String) : SendToast()
             data class ObjectArchived(val name: String) : SendToast()
         }
-
         data object OpenGlobalSearch : Command()
         data object ExitToVault : Command()
         data object Back : Command()

@@ -11,25 +11,35 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModelFactory
 import com.anytypeio.anytype.feature_date.ui.DateObjectScreen
+import com.anytypeio.anytype.ui.search.GlobalSearchFragment
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
+import timber.log.Timber
 
 class DateObjectFragment : BaseComposeFragment() {
     @Inject
     lateinit var factory: DateObjectViewModelFactory
 
     private val vm by viewModels<DateObjectViewModel> { factory }
+    private lateinit var navComposeController: NavHostController
 
     private val space get() = argString(ARG_SPACE)
     private val objectId get() = argString(ARG_OBJECT_ID)
@@ -44,15 +54,60 @@ class DateObjectFragment : BaseComposeFragment() {
         }
     }
 
-    override fun onStart() {
-        vm.onStart()
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        subscribe(vm.commands) { command ->
+            Timber.d("Received command: $command")
+            when (command) {
+                DateObjectViewModel.Command.Back -> TODO()
+                DateObjectViewModel.Command.ExitToVault -> TODO()
+                is DateObjectViewModel.Command.NavigateToBin -> TODO()
+                is DateObjectViewModel.Command.NavigateToEditor -> TODO()
+                is DateObjectViewModel.Command.NavigateToSetOrCollection -> TODO()
+                is DateObjectViewModel.Command.OpenChat -> TODO()
+                DateObjectViewModel.Command.OpenGlobalSearch -> TODO()
+                is DateObjectViewModel.Command.SendToast.Error -> TODO()
+                is DateObjectViewModel.Command.SendToast.ObjectArchived -> TODO()
+                is DateObjectViewModel.Command.SendToast.RelationRemoved -> TODO()
+                is DateObjectViewModel.Command.SendToast.TypeRemoved -> TODO()
+                is DateObjectViewModel.Command.SendToast.UnexpectedLayout -> TODO()
+                is DateObjectViewModel.Command.NavigateToDateObject -> {
+                    runCatching {
+                        findNavController().navigate(
+                            resId = R.id.dateObjectScreen,
+                            args = args(
+                                objectId = command.objectId,
+                                space = command.space.id
+                            ),
+                            navOptions = navOptions {
+                                launchSingleTop = true
+                            }
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Failed to navigate to date object")
+                    }
+                }
+            }
+        }
     }
 
+    override fun onStart() {
+        super.onStart()
+        vm.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
+    @OptIn(ExperimentalMaterialNavigationApi::class)
     @Composable
     fun DateLayoutScreenWrapper() {
+        val bottomSheetNavigator = rememberBottomSheetNavigator()
+        navComposeController = rememberNavController(bottomSheetNavigator)
         NavHost(
-            navController = rememberNavController(),
+            navController = navComposeController,
             startDestination = DATE_MAIN
         ) {
             composable(route = DATE_MAIN) {
@@ -67,10 +122,11 @@ class DateObjectFragment : BaseComposeFragment() {
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     uiHeaderActions = {},
                     uiBottomMenuActions = {},
-                    uiTopToolbarActions = {},
+                    uiTopToolbarActions = vm::onTopToolbarActions,
                     uiVerticalListActions = {},
                     uiHorizontalListActions = vm::onHorizontalItemClicked,
-                    onUpdateLimitSearch = vm::updateLimit
+                    onUpdateLimitSearch = vm::updateLimit,
+                    onCalendarDateSelected = vm::onCalendarDateSelected
                 )
             }
         }
@@ -98,8 +154,6 @@ class DateObjectFragment : BaseComposeFragment() {
 
     companion object DateLayoutNavigation {
         private const val DATE_MAIN = "date_main"
-        private const val DATE_CALENDAR = "date_calendar"
-        private const val DATE_ALL_RELATIONS = "date_all_relations"
         const val ARG_SPACE = "arg.date.object.space"
         const val ARG_OBJECT_ID = "arg.date.object.object_id"
 

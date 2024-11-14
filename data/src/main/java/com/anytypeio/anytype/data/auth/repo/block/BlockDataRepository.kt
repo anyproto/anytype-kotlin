@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
@@ -1079,6 +1080,10 @@ class BlockDataRepository(
 
     override suspend fun unsubscribeChat(chat: Id) {
         return remote.unsubscribeChat(chat)
+    }
+
+    override suspend fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem> {
+        return remote.objectRelationListWithValue(command)
     }
 
     override suspend fun debugAccountSelectTrace(dir: String): String {

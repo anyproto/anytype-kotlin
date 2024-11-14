@@ -465,6 +465,8 @@ sealed class Command {
 
     data class DeleteRelationOptions(val optionIds: List<Id>)
 
+    data class RelationListWithValue(val space: SpaceId, val value: Any?)
+
     data class SendJoinSpaceRequest(
         val space: SpaceId,
         val network: Id?,

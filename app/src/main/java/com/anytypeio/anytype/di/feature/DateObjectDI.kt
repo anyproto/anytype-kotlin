@@ -17,10 +17,11 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModelFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -94,7 +95,6 @@ object DateObjectModule {
         repo: BlockRepository,
         getDefaultObjectType: GetDefaultObjectType,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
     ): CreateObject = CreateObject(
         repo = repo,
         getDefaultObjectType = getDefaultObjectType,
@@ -107,14 +107,20 @@ object DateObjectModule {
     fun provideGetDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
-        configStorage: ConfigStorage
+        dispatchers: AppCoroutineDispatchers
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
         dispatchers = dispatchers
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRelationListWithValue(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): RelationListWithValue = RelationListWithValue(repository, dispatchers)
 
     @JvmStatic
     @Provides
@@ -145,7 +151,7 @@ interface DateObjectDependencies : ComponentDependencies {
     fun subEventChannel(): SubscriptionEventChannel
     fun logger(): Logger
     fun localeProvider(): LocaleProvider
-    fun spaceManager(): SpaceManager
     fun config(): ConfigStorage
     fun userPermissionProvider(): UserPermissionProvider
+    fun provideStoreOfRelations(): StoreOfRelations
 }

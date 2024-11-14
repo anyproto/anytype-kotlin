@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
@@ -457,6 +458,8 @@ interface BlockRemote {
     suspend fun unsubscribeChat(chat: Id)
 
     //endregion
+
+    suspend fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem>
 
     suspend fun debugAccountSelectTrace(dir: String): String
 }

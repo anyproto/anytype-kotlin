@@ -104,7 +104,6 @@ import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
-import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModel

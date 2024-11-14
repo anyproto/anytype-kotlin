@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
@@ -1157,6 +1158,18 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.objectRelationDelete(request) }
         logResponseIfDebug(response, time)
         return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem> {
+        val request = Rpc.Relation.ListWithValue.Request(
+            spaceId = command.space.id,
+            value_ = command.value
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectRelationListWithValue(request) }
+        logResponseIfDebug(response, time)
+        return response.list.map { it.toCoreModel() }
     }
 
     @Throws(Exception::class)

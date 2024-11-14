@@ -1,10 +1,13 @@
 package com.anytypeio.anytype.feature_date.ui
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +29,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,21 +37,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.RelationKey
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
+import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_date.R
 import com.anytypeio.anytype.feature_date.models.DateObjectHorizontalListState
@@ -54,25 +61,35 @@ import com.anytypeio.anytype.feature_date.models.DateObjectVerticalListState
 import com.anytypeio.anytype.feature_date.models.UiContentState
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
 import com.anytypeio.anytype.feature_date.models.UiVerticalListItem
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.coroutines.launch
 
 @Composable
 fun DateLayoutHorizontalListScreen(
-    state: DateObjectHorizontalListState.Content,
+    state: DateObjectHorizontalListState,
     action: (UiHorizontalListItem) -> Unit
 ) {
+
+    val items = remember { mutableStateListOf<UiHorizontalListItem>() }
+    items.swapList(state.items)
+
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 24.dp)
     ) {
         items(
-            count = state.items.size,
-            key = { state.items[it].id },
+            count = items.size,
+            key = { items[it].id },
+            contentType = { index ->
+                when (items[index]) {
+                    is UiHorizontalListItem.Settings -> "settings"
+                    is UiHorizontalListItem.Item -> "item"
+                    is UiHorizontalListItem.Loading -> "loading"
+                }
+            }
         ) {
-            val item = state.items[it]
-            val background = if (state.selectedItem == item.id) {
+            val item = items[it]
+            val background = if (state.selectedRelationKey?.key == item.id) {
                 colorResource(R.color.shape_secondary)
             } else {
                 Color.Transparent
@@ -106,27 +123,6 @@ fun DateLayoutHorizontalListScreen(
                         )
                     }
 
-                    is UiHorizontalListItem.MentionedIn -> {
-                        Image(
-                            modifier = Modifier
-                                .padding(start = 12.dp)
-                                .wrapContentSize()
-                                .align(Alignment.CenterStart),
-                            painter = painterResource(R.drawable.ic_mention_24),
-                            contentDescription = "List of date relations",
-                            contentScale = ContentScale.Inside
-                        )
-                        Text(
-                            modifier = Modifier
-                                .padding(start = 42.dp, end = 12.dp)
-                                .wrapContentSize()
-                                .align(Alignment.CenterEnd),
-                            text = stringResource(R.string.date_layout_mentioned_in),
-                            color = colorResource(R.color.text_primary),
-                            style = PreviewTitle2Medium
-                        )
-                    }
-
                     is UiHorizontalListItem.Item -> {
                         Text(
                             modifier = Modifier
@@ -136,6 +132,23 @@ fun DateLayoutHorizontalListScreen(
                             text = item.title,
                             color = colorResource(R.color.text_primary),
                             style = PreviewTitle2Medium
+                        )
+                    }
+                    is UiHorizontalListItem.Loading.Item -> {
+                        ShimmerEffect(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .align(Alignment.Center)
+                                .width(88.dp)
+                                .height(20.dp)
+                        )
+                    }
+                    is UiHorizontalListItem.Loading.Settings -> {
+                        ShimmerEffect(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .align(Alignment.Center)
+                                .size(24.dp)
                         )
                     }
                 }
@@ -148,10 +161,9 @@ fun DateLayoutHorizontalListScreen(
 @DefaultPreviews
 fun DateLayoutHorizontalListScreenPreview() {
     DateLayoutHorizontalListScreen(
-        state = DateObjectHorizontalListState.Content(
+        state = DateObjectHorizontalListState(
             items = listOf(
                 UiHorizontalListItem.Settings(),
-                UiHorizontalListItem.MentionedIn(),
                 UiHorizontalListItem.Item(
                     id = "1",
                     title = "Today",
@@ -163,7 +175,7 @@ fun DateLayoutHorizontalListScreenPreview() {
                     key = RelationKey("2")
                 )
             ),
-            selectedItem = "1"
+            selectedRelationKey = RelationKey("1")
         ),
         action = {}
     )
@@ -171,58 +183,35 @@ fun DateLayoutHorizontalListScreenPreview() {
 
 @Composable
 @DefaultPreviews
+fun DateLayoutHorizontalListScreenLoadingPreview() {
+    DateLayoutHorizontalListScreen(
+        state = DateObjectHorizontalListState.loadingState(),
+        action = {}
+    )
+}
+
+@Composable
+@DefaultPreviews
 fun DateLayoutVerticalListScreenPreview() {
-    val contentListState = DateObjectVerticalListState.Content(
-        items = listOf(
-            UiVerticalListItem(
-                id = "1",
-                name = "Item 1",
-                space = SpaceId("space1"),
-                type = "type1",
-                typeName = "Task",
-                createdBy = "by Joseph Wolf",
-                layout = ObjectType.Layout.TODO,
-                icon = ObjectIcon.Task(isChecked = true)
-            ),
-            UiVerticalListItem(
-                id = "2",
-                name = "Item 2",
-                space = SpaceId("space2"),
-                type = "type2",
-                typeName = "Page",
-                createdBy = "by Mike Long",
-                layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Emoji("😃")
-            ),
-            UiVerticalListItem(
-                id = "3",
-                name = "Item 3",
-                space = SpaceId("space3"),
-                type = "type3",
-                typeName = "File",
-                createdBy = null,
-                layout = ObjectType.Layout.FILE,
-                icon = ObjectIcon.File(
-                    mime = "image/png",
-                    fileName = "test_image.png"
-                )
-            )
-        )
+    val contentListState = DateObjectVerticalListState(
+        items = StubVerticalItems
     )
     DateLayoutVerticalListScreen(
         state = contentListState,
         uiContentState = UiContentState.Idle(scrollToTop = false),
         canPaginate = true,
-        onUpdateLimitSearch = {}
+        onUpdateLimitSearch = {},
+        uiVerticalListActions = {}
     )
 }
 
 @Composable
-private fun DateLayoutVerticalListScreen(
-    state: DateObjectVerticalListState.Content,
+fun DateLayoutVerticalListScreen(
+    state: DateObjectVerticalListState,
     uiContentState: UiContentState,
     canPaginate: Boolean,
-    onUpdateLimitSearch: () -> Unit
+    onUpdateLimitSearch: () -> Unit,
+    uiVerticalListActions: (UiVerticalListItem) -> Unit
 ) {
     val items = remember { mutableStateListOf<UiVerticalListItem>() }
     items.swapList(state.items)
@@ -250,16 +239,55 @@ private fun DateLayoutVerticalListScreen(
     }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .fillMaxSize(),
         state = lazyListState
     ) {
+        if (uiContentState is UiContentState.Empty) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    EmptyState()
+                }
+            }
+        }
+        if (uiContentState is UiContentState.Error) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ErrorState(uiContentState.message)
+                }
+            }
+        }
         items(
             count = items.size,
             key = { index -> items[index].id },
+            contentType = { index ->
+                when (items[index]) {
+                    is UiVerticalListItem.Loading -> "loading"
+                    is UiVerticalListItem.Item -> "item"
+                }
+            }
         ) { index ->
-            ListItem(
-                item = items[index]
-            )
+            val item = items[index]
+            when (item) {
+                is UiVerticalListItem.Item -> {
+                    ListItem(
+                        modifier = Modifier.clickable { uiVerticalListActions(item) },
+                        item = item
+                    )
+                }
+                is UiVerticalListItem.Loading -> {
+                    ListItemLoading(modifier = Modifier)
+                }
+            }
         }
         if (uiContentState is UiContentState.Paging) {
             item {
@@ -269,7 +297,7 @@ private fun DateLayoutVerticalListScreen(
                         .height(52.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    //LoadingState()
+                    LoadingState()
                 }
             }
         }
@@ -291,7 +319,8 @@ private fun DateLayoutVerticalListScreen(
 
 @Composable
 private fun ListItem(
-    item: UiVerticalListItem
+    modifier: Modifier,
+    item: UiVerticalListItem.Item
 ) {
     val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
     val createdBy = item.createdBy
@@ -300,7 +329,7 @@ private fun ListItem(
         colors = ListItemDefaults.colors(
             containerColor = colorResource(id = R.color.background_primary),
         ),
-        modifier = Modifier
+        modifier = modifier
             .height(72.dp)
             .fillMaxWidth(),
         headlineContent = {
@@ -337,5 +366,54 @@ private fun ListItem(
         leadingContent = {
             ListWidgetObjectIcon(icon = item.icon, modifier = Modifier, iconSize = 48.dp)
         }
+    )
+}
+
+
+@Composable
+private fun ListItemLoading(
+    modifier: Modifier
+) {
+    ListItem(
+        colors = ListItemDefaults.colors(
+            containerColor = colorResource(id = R.color.background_primary),
+        ),
+        modifier = modifier
+            .height(72.dp)
+            .fillMaxWidth(),
+        headlineContent = {
+            ShimmerEffect(
+                modifier = Modifier
+                    .width(164.dp)
+                    .height(18.dp)
+            )
+        },
+        supportingContent = {
+            ShimmerEffect(
+                modifier = Modifier
+                    .width(64.dp)
+                    .height(13.dp)
+            )
+        },
+        leadingContent = {
+            ShimmerEffect(
+                modifier = Modifier
+                    .size(48.dp)
+            )
+        }
+    )
+}
+
+@Composable
+private fun BoxScope.LoadingState() {
+    val loadingAlpha by animateFloatAsState(targetValue = 1f, label = "")
+    DotsLoadingIndicator(
+        animating = true,
+        modifier = Modifier
+            .graphicsLayer { alpha = loadingAlpha }
+            .align(Alignment.Center),
+        animationSpecs = FadeAnimationSpecs(itemCount = 3),
+        color = colorResource(id = R.color.glyph_active),
+        size = ButtonSize.Small
     )
 }

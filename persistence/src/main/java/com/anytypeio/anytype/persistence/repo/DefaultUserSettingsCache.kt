@@ -32,19 +32,23 @@ import com.anytypeio.anytype.persistence.preferences.SPACE_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.SpacePrefSerializer
 import com.anytypeio.anytype.persistence.preferences.VAULT_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.VaultPrefsSerializer
+import com.anytypeio.anytype.persistence.providers.AppDefaultDateFormatProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class DefaultUserSettingsCache(
     private val prefs: SharedPreferences,
-    private val context: Context
+    private val context: Context,
+    private val appDefaultDateFormatProvider: AppDefaultDateFormatProvider
 ) : UserSettingsCache {
 
     //region Vault default settings
     fun initialVaultSettings(): VaultPreference {
         return VaultPreference(
-            showIntroduceVault = true
+            showIntroduceVault = true,
+            isRelativeDates = true,
+            dateFormat = appDefaultDateFormatProvider.provide()
         )
     }
     //endregion
@@ -454,6 +458,41 @@ class DefaultUserSettingsCache(
                     account.id to VaultPreference(
                         orderOfSpaces = settings.orderOfSpaces,
                         showIntroduceVault = settings.showIntroduceVault
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun setRelativeDates(account: Account, enabled: Boolean) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        isRelativeDates = enabled
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun setDateFormat(
+        account: Account,
+        format: String
+    ) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        dateFormat = format
                     )
                 )
             )

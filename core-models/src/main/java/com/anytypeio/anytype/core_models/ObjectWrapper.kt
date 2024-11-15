@@ -50,7 +50,7 @@ sealed class ObjectWrapper {
 
         val layout: ObjectType.Layout?
             get() = when (val value = map[Relations.LAYOUT]) {
-                is Double -> ObjectType.Layout.values().singleOrNull { layout ->
+                is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
                     layout.code == value.toInt()
                 }
                 else -> null
@@ -68,7 +68,7 @@ sealed class ObjectWrapper {
 
         val fileMimeType: String? by default
 
-        val description: String? by default
+        val description: String? = getSingleValue(Relations.DESCRIPTION)
 
         val url: String? by default
 
@@ -156,7 +156,7 @@ sealed class ObjectWrapper {
     data class Bookmark(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val name: String? by default
-        val description: String? by default
+        val description: String? = getSingleValue(Relations.DESCRIPTION)
         val source: String? by default
         val iconEmoji: String? by default
         val iconImage: String? = getSingleValue(Relations.ICON_IMAGE)
@@ -174,7 +174,7 @@ sealed class ObjectWrapper {
         val uniqueKey: String by default
         val name: String? by default
         val sourceObject: Id? get() = getSingleValue(Relations.SOURCE_OBJECT)
-        val description: String? by default
+        val description: String? = getSingleValue(Relations.DESCRIPTION)
         val isArchived: Boolean? by default
         val iconEmoji: String? by default
         val isDeleted: Boolean? by default
@@ -348,7 +348,7 @@ sealed class ObjectWrapper {
         private val default = map.withDefault { null }
         val id: Id by default
         val name: String? by default
-        val description: String? by default
+        val description: String? = getSingleValue(Relations.DESCRIPTION)
         val fileExt: String? by default
         val fileMimeType: String? by default
         val sizeInBytes: Double? by default

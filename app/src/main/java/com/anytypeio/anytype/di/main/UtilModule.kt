@@ -13,23 +13,30 @@ import com.anytypeio.anytype.core_utils.tools.DefaultUrlValidator
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.DebugConfig
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.misc.ZoneProvider
+import com.anytypeio.anytype.domain.vault.GetVaultSettings
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
 import com.anytypeio.anytype.other.BasicLogger
 import com.anytypeio.anytype.other.DefaultDateTypeNameProvider
 import com.anytypeio.anytype.other.DefaultDebugConfig
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
+import com.anytypeio.anytype.presentation.widgets.collection.ZoneProviderImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import java.time.ZoneId
+import javax.inject.Named
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
 
 @Module(includes = [UtilModule.Bindings::class])
 object UtilModule {
@@ -55,8 +62,24 @@ object UtilModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideDateProvider(): DateProvider =
-        DateProviderImpl(defaultZoneId = ZoneId.systemDefault()
+    fun provideZoneId(): ZoneProvider = ZoneProviderImpl()
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideDateProvider(
+        zoneProvider: ZoneProvider,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        getVaultSettings: GetVaultSettings,
+        localeProvider: LocaleProvider,
+        logger: Logger
+    ): DateProvider =
+        DateProviderImpl(
+            zoneProvider = zoneProvider,
+            scope = scope,
+            getVaultSettings = getVaultSettings,
+            localeProvider = localeProvider,
+            logger = logger
         )
 
     @Module

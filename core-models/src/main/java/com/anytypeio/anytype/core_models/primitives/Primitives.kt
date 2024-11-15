@@ -26,4 +26,7 @@ value class TimeInSeconds(val time: Long) {
     val inMillis get() = time * 1000
 }
 
+@JvmInline
+value class AppDateFormat(val pattern: String)
+
 typealias Space = SpaceId

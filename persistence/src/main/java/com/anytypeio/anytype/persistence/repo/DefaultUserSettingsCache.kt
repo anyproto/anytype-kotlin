@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
+import com.anytypeio.anytype.core_models.primitives.AppDateFormat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.settings.VaultSettings
@@ -398,13 +399,18 @@ class DefaultUserSettingsCache(
             .map { prefs ->
                 val curr = prefs.preferences.getOrDefault(
                     key = account.id,
-                    defaultValue = VaultPreference(
-                        showIntroduceVault = true
-                    )
+                    defaultValue = initialVaultPreference()
                 )
+                val dateFormat = if(curr.dateFormat.isNullOrEmpty()) {
+                    null
+                } else {
+                    AppDateFormat(curr.dateFormat)
+                }
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
-                    showIntroduceVault = curr.showIntroduceVault
+                    showIntroduceVault = curr.showIntroduceVault,
+                    isRelativeDates = curr.isRelativeDates,
+                    dateFormat = dateFormat
                 )
             }
             .first()
@@ -416,13 +422,18 @@ class DefaultUserSettingsCache(
             .map { prefs ->
                 val curr = prefs.preferences.getOrDefault(
                     key = account.id,
-                    defaultValue = VaultPreference(
-                        showIntroduceVault = true
-                    )
+                    defaultValue = initialVaultPreference()
                 )
+                val dateFormat = if(curr.dateFormat.isNullOrEmpty()) {
+                    null
+                } else {
+                    AppDateFormat(curr.dateFormat)
+                }
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
-                    showIntroduceVault = curr.showIntroduceVault
+                    showIntroduceVault = curr.showIntroduceVault,
+                    isRelativeDates = curr.isRelativeDates,
+                    dateFormat = dateFormat
                 )
             }
     }
@@ -431,9 +442,7 @@ class DefaultUserSettingsCache(
         context.vaultPrefsStore.updateData { existingPreferences ->
             val curr = existingPreferences.preferences.getOrDefault(
                 key = account.id,
-                defaultValue = VaultPreference(
-                    showIntroduceVault = true
-                )
+                defaultValue = initialVaultPreference()
             )
             existingPreferences.copy(
                 preferences = existingPreferences.preferences + mapOf(
@@ -456,6 +465,14 @@ class DefaultUserSettingsCache(
                 )
             )
         }
+    }
+
+    private fun initialVaultPreference(): VaultPreference {
+        return VaultPreference(
+            showIntroduceVault = true,
+            isRelativeDates = true,
+            dateFormat = null
+        )
     }
 
     override suspend fun getAllContentSort(space: SpaceId): Pair<Id, Boolean>? {

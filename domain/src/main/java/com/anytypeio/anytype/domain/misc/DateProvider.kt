@@ -2,9 +2,8 @@ package com.anytypeio.anytype.domain.misc
 
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
-import java.text.DateFormat
-import java.time.ZoneId
-import java.util.Locale
+import java.text.DateFormat.MEDIUM
+import java.text.DateFormat.SHORT
 
 
 /**
@@ -20,15 +19,15 @@ interface DateProvider {
     fun getTimestampForWeekAheadAtStartOfDay(): TimeInSeconds
     fun getTimestampForWeekAgoAtStartOfDay(): TimeInSeconds
     fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis
-    fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis, zoneId: ZoneId): TimeInSeconds
-    fun formatToDateString(timestamp: Long, pattern: String, locale: Locale): String
+    fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis): TimeInSeconds
+    fun formatToDateString(timestamp: Long, pattern: String): String
     fun formatTimestampToDateAndTime(
         timestamp: TimeInMillis,
-        locale: Locale,
-        dateStyle: Int = DateFormat.MEDIUM,
-        timeStyle: Int = DateFormat.SHORT
+        dateStyle: Int = MEDIUM,
+        timeStyle: Int = SHORT
     ): Pair<String, String>
     fun isSameMinute(timestamp1: Long, timestamp2: Long): Boolean
+    fun formatDate(timestamp: Long, format: String): FormattedDate
 }
 
 interface DateTypeNameProvider {
@@ -43,4 +42,11 @@ enum class DateType {
     PREVIOUS_THIRTY_DAYS,
     OLDER,
     UNDEFINED
+}
+
+sealed class FormattedDate {
+    object Today : FormattedDate()
+    object Yesterday : FormattedDate()
+    object Tomorrow : FormattedDate()
+    data class Other(val formattedDate: String) : FormattedDate()
 }

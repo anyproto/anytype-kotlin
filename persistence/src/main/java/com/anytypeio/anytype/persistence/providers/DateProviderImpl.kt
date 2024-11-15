@@ -1,10 +1,11 @@
-package com.anytypeio.anytype.presentation.widgets.collection
+package com.anytypeio.anytype.persistence.providers
 
 import android.text.format.DateUtils
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -14,12 +15,12 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 import timber.log.Timber
 
 class DateProviderImpl @Inject constructor(
-    private val defaultZoneId: ZoneId
+    private val defaultZoneId: ZoneId,
+    private val localeProvider: LocaleProvider
 ) : DateProvider {
 
     override fun calculateDateType(date: TimeInSeconds): DateType {
@@ -132,8 +133,9 @@ class DateProviderImpl @Inject constructor(
         }
     }
 
-    override fun formatToDateString(timestamp: Long, pattern: String, locale: Locale): String {
+    override fun formatToDateString(timestamp: Long, pattern: String): String {
         try {
+            val locale = localeProvider.locale()
             val formatter = SimpleDateFormat(pattern, locale)
             return formatter.format(Date(timestamp))
         } catch (e: Exception) {
@@ -144,11 +146,11 @@ class DateProviderImpl @Inject constructor(
 
     override fun formatTimestampToDateAndTime(
         timestamp: TimeInMillis,
-        locale: Locale,
         dateStyle: Int,
         timeStyle: Int
     ): Pair<String, String> {
         return try {
+            val locale = localeProvider.locale()
             val datePattern = (DateFormat.getDateInstance(dateStyle, locale) as SimpleDateFormat).toPattern()
             val timePattern = (DateFormat.getTimeInstance(timeStyle, locale) as SimpleDateFormat).toPattern()
             val dateFormatter = SimpleDateFormat(datePattern, locale)

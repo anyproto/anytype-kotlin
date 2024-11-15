@@ -41,6 +41,14 @@ class DefaultUserSettingsCache(
     private val context: Context
 ) : UserSettingsCache {
 
+    //region Vault default settings
+    fun initialVaultSettings(): VaultPreference {
+        return VaultPreference(
+            showIntroduceVault = true
+        )
+    }
+    //endregion
+
     private val Context.spacePrefsStore: DataStore<SpacePreferences> by dataStore(
         fileName = SPACE_PREFERENCE_FILENAME,
         serializer = SpacePrefSerializer
@@ -398,9 +406,7 @@ class DefaultUserSettingsCache(
             .map { prefs ->
                 val curr = prefs.preferences.getOrDefault(
                     key = account.id,
-                    defaultValue = VaultPreference(
-                        showIntroduceVault = true
-                    )
+                    defaultValue = initialVaultSettings()
                 )
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
@@ -416,9 +422,7 @@ class DefaultUserSettingsCache(
             .map { prefs ->
                 val curr = prefs.preferences.getOrDefault(
                     key = account.id,
-                    defaultValue = VaultPreference(
-                        showIntroduceVault = true
-                    )
+                    defaultValue = initialVaultSettings()
                 )
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
@@ -431,9 +435,7 @@ class DefaultUserSettingsCache(
         context.vaultPrefsStore.updateData { existingPreferences ->
             val curr = existingPreferences.preferences.getOrDefault(
                 key = account.id,
-                defaultValue = VaultPreference(
-                    showIntroduceVault = true
-                )
+                defaultValue = initialVaultSettings()
             )
             existingPreferences.copy(
                 preferences = existingPreferences.preferences + mapOf(

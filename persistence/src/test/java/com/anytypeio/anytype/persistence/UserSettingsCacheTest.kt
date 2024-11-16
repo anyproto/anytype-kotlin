@@ -7,13 +7,19 @@ import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
+import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProviderImpl
 import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
@@ -30,12 +36,22 @@ class UserSettingsCacheTest {
         Context.MODE_PRIVATE
     )
 
+    @Mock
+    lateinit var dateFormatProvider: AppDefaultDateFormatProvider
+
+    @Before
+    fun setUp() {
+        MockitoAnnotations.openMocks(this)
+        Mockito.`when`(dateFormatProvider.provide()).thenReturn("dd/MM/yyyy")
+    }
+
     @Test
     fun `should save and return default wallpaper`() = runTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = MockDataFactory.randomUuid()
@@ -59,7 +75,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = MockDataFactory.randomUuid()
@@ -86,7 +103,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = ""
@@ -114,7 +132,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = MockDataFactory.randomUuid()
@@ -141,7 +160,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = MockDataFactory.randomUuid()
@@ -168,7 +188,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = MockDataFactory.randomUuid()
@@ -187,7 +208,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = SpaceId(MockDataFactory.randomUuid())
@@ -220,7 +242,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space1 = SpaceId(MockDataFactory.randomUuid())
@@ -277,7 +300,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = SpaceId(MockDataFactory.randomUuid())

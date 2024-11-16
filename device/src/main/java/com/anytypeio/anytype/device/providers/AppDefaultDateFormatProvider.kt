@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.persistence.providers
+package com.anytypeio.anytype.device.providers
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat

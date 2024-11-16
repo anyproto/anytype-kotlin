@@ -3,7 +3,7 @@ package com.anytypeio.anytype.di.main
 import android.content.Context
 import com.anytypeio.anytype.data.auth.other.DataDownloader
 import com.anytypeio.anytype.data.auth.other.Device
-import com.anytypeio.anytype.device.DefaultLocalProvider
+import com.anytypeio.anytype.device.providers.DefaultLocalProvider
 import com.anytypeio.anytype.device.SharedFileUploader
 import com.anytypeio.anytype.device.base.AndroidDevice
 import com.anytypeio.anytype.device.download.AndroidDeviceDownloader

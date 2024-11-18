@@ -1457,8 +1457,8 @@ En concreto,
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Se ha detectado un ID de red que no coincide. Comprueba tu configuración de red.</string>
     <string name="error_login_select_vault_error">Error al seleccionar el arca</string>
-    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
-    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
+    <string name="error_login_account_deleted_error">Esta cuenta se ha eliminado. Prueba con otra cuenta o crea una nueva.</string>
+    <string name="error_login_account_need_update_error">No se puede recuperar la cuenta. Por favor, actualiza Anytype a la versión más reciente.</string>
     <string name="global_search_related_to">"Relacionado con: "</string>
     <string name="global_search_no_related_objects_found">No se ha encontrado ningún objeto relacionado.</string>
     <string name="sort_empty_values_desc">Mostrar valores vacíos</string>

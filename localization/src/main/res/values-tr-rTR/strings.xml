@@ -29,7 +29,7 @@
     <string name="system">Sistem</string>
     <string name="settings">Ayarlar</string>
     <string name="have_you_back_up_your_recovery_phrase">Anahtarınızı yedeklediniz mi?</string>
-    <string name="you_will_need_to_sign_in">Bu bilgilere giriş yapmak için ihtiyacın olacak. Güvenli bir yerde tut. Eğer kaybedersen hesabına erişemeyeceksin.</string>
+    <string name="you_will_need_to_sign_in">Kasana erişmek için bu bilgilere ihtiyacın olacak. Güvenli bir yerde tut. Eğer kaybedersen hesabına erişemezsin.</string>
     <string name="about_help_and_community">Yardım &amp; Topluluk</string>
     <string name="about_what_is_new">Neler yeni?</string>
     <string name="about_anytype_community">Anytype Topluluğu</string>
@@ -582,7 +582,7 @@
     <string name="other_settings">Diğer ayarlar</string>
     <string name="your_page">Herkese açık sayfanız</string>
     <string name="updates">Güncellemeler</string>
-    <string name="recovery_phrase_text">Oturum açmak için buna ihtiyacınız olacak. Güvenli bir yerde saklayın. Eğer kaybederseniz kasanıza erişemezsiniz.</string>
+    <string name="recovery_phrase_text">Daha sonra oturum açmak için anahtarınıza ihtiyacınız olacak. Anahtarınızı güvenli bir yerde saklayın. Eğer kaybederseniz kasanıza erişemezsiniz.</string>
     <string name="back_up_your_recovery_phrase">Anahtarınızı yedekleyin</string>
     <string name="i_ve_written_it_down">Bir kenara yazdım</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
@@ -728,15 +728,15 @@
     <string name="shortcut_create_new_object_of_type">Yeni %1$s</string>
     <string name="close">Kapat</string>
     <string name="go_to_settings">Ayarlara git</string>
-    <string name="do_not_forget_mnemonic_phrase">Anahtarınızı almayı ve kaydetmeyi unutmayın.</string>
+    <string name="do_not_forget_mnemonic_phrase">Anahtarınızı kopyalamayı ve kaydetmeyi unutmayın.</string>
     <string name="you_can_always_find_mnemonic_in_settings">Bu ifadeyi her zaman kontrol paneli ekranındaki ayarlarda bulabilirsiniz.</string>
-    <string name="if_you_lose_recovery_phrase_warning">Anahtarı kaybederseniz ve oturumu kapatırsanız verilerinize bir daha asla erişemezsiniz. Verilerinizi kurtarmak için anahtarı Anytype dışında bir yere kaydedin.</string>
+    <string name="if_you_lose_recovery_phrase_warning">Anahtarı kaybederseniz ve oturumu kapatırsanız verilerinize bir daha asla erişemezsiniz. Verilerinizi kurtarmak için anahtarı Anytype dışında bir yere not edin.</string>
     <string name="card_size">Kart boyutu</string>
     <string name="clear_cache">Önbelleği temizle</string>
     <string name="clear_cache_title">Emin misiniz?</string>
     <string name="download_from_node">Anytype\'da depolanan tüm medya dosyaları mevcut cihazınızdan silinecektir. Bir yedekleme düğümünden veya başka bir cihazdan tekrar indirilebilirler.</string>
     <string name="new_profile">Yeni profil</string>
-    <string name="back_up_your_phrase">İfadeyi yedekle</string>
+    <string name="back_up_your_phrase">Yedekleme ifadesi</string>
     <string name="anytype_analytics">Anytype Analytics</string>
     <string name="anytype_analytics_msg">İnsanların Anytype\'ı nasıl kullandığını anlamak ürünümüzü geliştirmemize yardımcı olur. Anytype\'ın bu sürümü gizliliğinizi koruyan analiz kodunu içerir.\nBelgenin içeriğini kaydetmez. Ancak yine de Anytype\'ı nasıl kullandığınızı anlamamızı sağlar.\nE-posta listemize abone olun çünkü yakında devre dışı bırakmanıza olanak tanıyan yeni bir sürüm duyuracağız.</string>
     <string name="retry">Tekrar dene</string>
@@ -754,7 +754,7 @@
     <string name="swipe_to_choose">Seçmek için kaydırın</string>
     <string name="without_template">Şablonsuz</string>
     <string name="unsplash_generic_error">Unsplash\'ta görsel ararken hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Ayarlardan anahtarınızı almayı ve kaydetmeyi unutmayın.</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Ayarlardan anahtarınızı kopyalamayı ve kaydetmeyi unutmayın.</string>
     <string name="unlock_your_object_to_add_new_relation">Yeni ilişki eklemek için nesnenizin kilidini açın.</string>
     <string name="unlock_your_object_to_edit_relations">İlişkileri düzenlemek için nesnenizin kilidini açın.</string>
     <string name="fragment_relation_create_from_scratch_title">Bağıntı türünü seç</string>
@@ -1002,7 +1002,7 @@
     <string name="onboarding_mnemonic_read_more">Devamını oku</string>
     <string name="onboarding_key_additional_info">Bu anahtarı daha sonra Anytype ayarlarında bulabilirsiniz</string>
     <string name="onboarding_what_is_the_key">Anahtar nedir?</string>
-    <string name="onboarding_recovery_phrase_description">Kurtarma kelimeleriniz, bu cihazda sadece sizin için oluşturulan 12 rastgele kelimeden oluşur.</string>
+    <string name="onboarding_recovery_phrase_description">Kurtarma anahtarınız bu cihazda sadece sizin için oluşturulan 12 rastgele kelimeden oluşur.</string>
     <string name="onboarding_recovery_phrase_description_2">Bu kelimelerin kombinasyonunu bilen kişi kasanızın sahibidir. </string>
     <string name="onboarding_recovery_phrase_description_3">Şu anda dünyada bunu bilen tek kişi sizsiniz.</string>
     <string name="onboarding_recovery_phrase_description_4">Dünya üzerindeki tüm hesaplama kaynakları içeri girmek için yeterli değildir. Kaybederseniz, kurtarılamaz. Bu yüzden güvenli bir yerde saklayın!</string>

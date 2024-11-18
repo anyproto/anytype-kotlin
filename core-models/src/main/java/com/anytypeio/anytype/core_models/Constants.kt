@@ -6,7 +6,7 @@ const val EMPTY_QUERY = ""
 /**
  * The default date format pattern to use if retrieval fails.
  */
-const val DEFAULT_DATE_PATTERN = "dd/MM/yyyy"
+const val FALLBACK_DATE_PATTERN = "dd/MM/yyyy"
 
 /**
  * The default value for relative dates.

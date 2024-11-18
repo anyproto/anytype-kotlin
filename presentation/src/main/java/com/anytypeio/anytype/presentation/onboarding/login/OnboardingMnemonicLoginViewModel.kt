@@ -270,18 +270,10 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                             navigateToMigrationErrorScreen()
                         }
                         is AccountIsDeletedException -> {
-                            sideEffects.emit(
-                                value = SideEffect.Error.Unknown(
-                                    msg = "This account is deleted. Try using another account or create a new one."
-                                )
-                            )
+                            sideEffects.emit(value = SideEffect.Error.AccountDeletedError)
                         }
                         is NeedToUpdateApplicationException -> {
-                            sideEffects.emit(
-                                value = SideEffect.Error.Unknown(
-                                    msg = SplashViewModel.ERROR_NEED_UPDATE
-                                )
-                            )
+                            sideEffects.emit(value = SideEffect.Error.NeedUpdateError)
                         }
                         is LoginException.NetworkIdMismatch -> {
                             sideEffects.emit(SideEffect.Error.NetworkIdMismatch)
@@ -390,6 +382,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
             data object InvalidMnemonic : Error()
             data object NetworkIdMismatch: Error()
             data object SelectVaultError: Error()
+            data object AccountDeletedError: Error()
+            data object NeedUpdateError: Error()
             data class Unknown(val msg: String): SideEffect()
         }
         data object Exit: SideEffect()

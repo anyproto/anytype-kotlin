@@ -229,7 +229,6 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                             )
                         }
                         Timber.e(e, "Error while account loading")
-                        command.emit(Command.Exit)
                     }
                 },
                 fnR = {

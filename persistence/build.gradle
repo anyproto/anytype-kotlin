@@ -10,6 +10,7 @@ dependencies {
 
     implementation project(':data')
     implementation project(':core-models')
+    implementation project(':device')
 
     implementation libs.kotlin
     implementation libs.coroutinesAndroid

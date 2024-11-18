@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.device
+package com.anytypeio.anytype.device.providers
 
 import android.content.Context
 import androidx.core.os.ConfigurationCompat

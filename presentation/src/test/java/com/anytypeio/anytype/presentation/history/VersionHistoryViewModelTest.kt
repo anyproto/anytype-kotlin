@@ -27,7 +27,6 @@ import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel.Compan
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
-import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import java.time.ZoneId
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -40,7 +39,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.bytebuddy.utility.RandomString
 import org.junit.Before
-import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockedStatic
 import org.mockito.Mockito
@@ -85,7 +83,8 @@ class VersionHistoryViewModelTest {
     @Mock
     lateinit var objectSearch: SearchObjects
 
-    private val dateProvider: DateProvider = DateProviderImpl(ZoneId.systemDefault())
+    @Mock
+    lateinit var dateProvider: DateProvider
 
     @Mock
     lateinit var localeProvider: LocaleProvider
@@ -290,27 +289,26 @@ class VersionHistoryViewModelTest {
 
             val (date0, time0) = dateProvider.formatTimestampToDateAndTime(
                 timestamp = versions[0].timestamp.inMillis,
-                locale = locale
             )
             val (date1, time1) = dateProvider.formatTimestampToDateAndTime(
                 timestamp = versions[1].timestamp.inMillis,
-                locale = locale
+
             )
             val (date2, time2) = dateProvider.formatTimestampToDateAndTime(
                 timestamp = versions[2].timestamp.inMillis,
-                locale = locale
+
             )
             val (date3, time3) = dateProvider.formatTimestampToDateAndTime(
                 timestamp = versions[3].timestamp.inMillis,
-                locale = locale
+
             )
             val (date4, time4) = dateProvider.formatTimestampToDateAndTime(
                 timestamp = versions[4].timestamp.inMillis,
-                locale = locale
+
             )
             val (date6, time6) = dateProvider.formatTimestampToDateAndTime(
                 timestamp = versions[6].timestamp.inMillis,
-                locale = locale
+
             )
 
             val viewStateFlow = vm.viewState.testIn(backgroundScope)
@@ -325,7 +323,6 @@ class VersionHistoryViewModelTest {
                             title = VersionHistoryGroup.GroupTitle.Date(
                                 dateProvider.formatToDateString(
                                     timestamp = versionsNew[8].timestamp.inMillis,
-                                    locale = locale,
                                     pattern = GROUP_DATE_FORMAT_OTHER_YEAR
                                 )
                             ),
@@ -334,7 +331,7 @@ class VersionHistoryViewModelTest {
                             items = buildList {
                                 val versionsNew8Format = dateProvider.formatTimestampToDateAndTime(
                                     timestamp = versionsNew[8].timestamp.inMillis,
-                                    locale = locale
+
                                 )
                                 add(
                                     VersionHistoryGroup.Item(
@@ -350,7 +347,6 @@ class VersionHistoryViewModelTest {
                                 )
                                 val versionsNew7Format = dateProvider.formatTimestampToDateAndTime(
                                     timestamp = versionsNew[7].timestamp.inMillis,
-                                    locale = locale
                                 )
                                 add(
                                     VersionHistoryGroup.Item(
@@ -366,7 +362,6 @@ class VersionHistoryViewModelTest {
                                 )
                                 val versionsNew6Format = dateProvider.formatTimestampToDateAndTime(
                                     timestamp = versionsNew[6].timestamp.inMillis,
-                                    locale = locale
                                 )
                                 add(
                                     VersionHistoryGroup.Item(
@@ -382,7 +377,6 @@ class VersionHistoryViewModelTest {
                                 )
                                 val versionsNew4Format = dateProvider.formatTimestampToDateAndTime(
                                     timestamp = versionsNew[4].timestamp.inMillis,
-                                    locale = locale
                                 )
                                 add(
                                     VersionHistoryGroup.Item(
@@ -406,7 +400,6 @@ class VersionHistoryViewModelTest {
                             title = VersionHistoryGroup.GroupTitle.Date(dateProvider.formatToDateString(
                                 timestamp = versions[0].timestamp.inMillis,
                                 pattern = GROUP_DATE_FORMAT_OTHER_YEAR,
-                                locale = locale
                             )),
                             icons = listOf(ObjectIcon.None, ObjectIcon.None, ObjectIcon.None),
                             items = buildList {
@@ -467,7 +460,6 @@ class VersionHistoryViewModelTest {
                             title = VersionHistoryGroup.GroupTitle.Date(
                                 dateProvider.formatToDateString(
                                     timestamp = versions[4].timestamp.inMillis,
-                                    locale = locale,
                                     pattern = GROUP_DATE_FORMAT_OTHER_YEAR
                                 )
                             ),
@@ -546,7 +538,6 @@ class VersionHistoryViewModelTest {
             getVersions = getVersions,
             objectSearch = objectSearch,
             dateProvider = dateProvider,
-            localeProvider = localeProvider,
             vmParams = vmParams,
             urlBuilder = urlBuilder,
             renderer = renderer,
@@ -554,7 +545,6 @@ class VersionHistoryViewModelTest {
             showVersion = showVersion,
             setStateReducer = DefaultObjectStateReducer(),
             storeOfRelations = storeOfRelations,
-            coverImageHashProvider = coverImageHashProvider
         )
     }
 }

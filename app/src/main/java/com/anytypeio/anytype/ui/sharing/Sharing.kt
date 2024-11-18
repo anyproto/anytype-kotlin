@@ -244,7 +244,9 @@ fun AddToAnytypeScreen(
         val selected = spaces.firstOrNull { it.isSelected }
         if (selected != null) {
             CurrentSpaceSection(
-                name = selected.obj.name.orEmpty(),
+                name = selected.obj.name.orEmpty().ifEmpty {
+                    stringResource(R.string.untitled)
+                },
                 spaces = spaces,
                 onSelectSpaceClicked = onSelectSpaceClicked,
                 icon = selected.icon

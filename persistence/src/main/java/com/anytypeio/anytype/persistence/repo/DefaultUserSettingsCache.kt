@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import com.anytypeio.anytype.core_models.Account
+import com.anytypeio.anytype.core_models.DEFAULT_RELATIVE_DATES
+import com.anytypeio.anytype.core_models.DEFAULT_SHOW_INTRODUCE_VAULT
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
@@ -46,8 +48,8 @@ class DefaultUserSettingsCache(
     //region Vault default settings
     fun initialVaultSettings(): VaultPreference {
         return VaultPreference(
-            showIntroduceVault = true,
-            isRelativeDates = true,
+            showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
+            isRelativeDates = DEFAULT_RELATIVE_DATES,
             dateFormat = appDefaultDateFormatProvider.provide()
         )
     }
@@ -414,7 +416,9 @@ class DefaultUserSettingsCache(
                 )
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
-                    showIntroduceVault = curr.showIntroduceVault
+                    showIntroduceVault = curr.showIntroduceVault,
+                    isRelativeDates = curr.isRelativeDates,
+                    dateFormat = curr.dateFormat ?: appDefaultDateFormatProvider.provide()
                 )
             }
             .first()
@@ -430,7 +434,9 @@ class DefaultUserSettingsCache(
                 )
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
-                    showIntroduceVault = curr.showIntroduceVault
+                    showIntroduceVault = curr.showIntroduceVault,
+                    isRelativeDates = curr.isRelativeDates,
+                    dateFormat = curr.dateFormat ?: appDefaultDateFormatProvider.provide()
                 )
             }
     }

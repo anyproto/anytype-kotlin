@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.device.providers
 
+import com.anytypeio.anytype.core_models.DEFAULT_DATE_PATTERN
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -20,13 +21,6 @@ interface AppDefaultDateFormatProvider {
 
 class AppDefaultDateFormatProviderImpl : AppDefaultDateFormatProvider {
 
-    companion object {
-        /**
-         * The default date format pattern to use if retrieval fails.
-         */
-        private const val DEFAULT_DATE_PATTERN = "dd/MM/yyyy"
-    }
-
     /**
      * Provides the default date format pattern based on the current locale.
      *
@@ -44,7 +38,7 @@ class AppDefaultDateFormatProviderImpl : AppDefaultDateFormatProvider {
                 DEFAULT_DATE_PATTERN
             }
         } catch (e: Exception) {
-            Timber.e(e, "Error while getting date format for locale: %s", Locale.getDefault())
+            Timber.e(e, "Error while getting date format for locale")
             DEFAULT_DATE_PATTERN
         }
     }

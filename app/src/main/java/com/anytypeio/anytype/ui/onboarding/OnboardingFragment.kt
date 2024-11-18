@@ -399,6 +399,14 @@ class OnboardingFragment : Fragment() {
                         errorText.value = getString(R.string.error_login_select_vault_error)
                         isErrorDialogVisible.value = true
                     }
+                    is OnboardingMnemonicLoginViewModel.SideEffect.Error.AccountDeletedError -> {
+                        errorText.value = getString(R.string.error_login_account_deleted_error)
+                        isErrorDialogVisible.value = true
+                    }
+                    is OnboardingMnemonicLoginViewModel.SideEffect.Error.NeedUpdateError -> {
+                        errorText.value = getString(R.string.error_login_account_need_update_error)
+                        isErrorDialogVisible.value = true
+                    }
                 }
             }
         }

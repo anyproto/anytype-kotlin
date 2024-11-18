@@ -273,7 +273,7 @@ class SplashViewModel(
 
     private suspend fun proceedWithVaultNavigation(deeplink: String? = null) {
         val space = getLastOpenedSpace.async(Unit).getOrNull()
-        if (space != null) {
+        if (space != null && spaceManager.getState() != SpaceManager.State.NoSpace) {
             commands.emit(Command.NavigateToWidgets(
                 space = space.id,
                 deeplink = deeplink
@@ -288,7 +288,7 @@ class SplashViewModel(
             analytics = analytics,
             userProperty = UserProperty.AccountId(id)
         )
-        localeProvider.language()?.let { lang ->
+        localeProvider.language().let { lang ->
             viewModelScope.updateUserProperties(
                 analytics = analytics,
                 userProperty = UserProperty.InterfaceLanguage(lang)

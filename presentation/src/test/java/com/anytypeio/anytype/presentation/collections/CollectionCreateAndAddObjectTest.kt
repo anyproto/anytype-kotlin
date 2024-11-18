@@ -39,9 +39,6 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
     private lateinit var viewModel: ObjectSetViewModel
     private lateinit var mockObjectCollection: MockCollection
 
-    @Mock
-    lateinit var dateProvider: DateProvider
-
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
         .minPriority(Log.DEBUG)

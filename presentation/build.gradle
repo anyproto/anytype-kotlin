@@ -46,7 +46,6 @@ dependencies {
     implementation libs.urlcleaner
 
     implementation libs.amplitude
-    testImplementation project(':device')
 
     compileOnly libs.javaxInject
 

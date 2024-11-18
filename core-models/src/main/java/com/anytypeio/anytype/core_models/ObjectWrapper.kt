@@ -296,6 +296,19 @@ sealed class ObjectWrapper {
                 return value?.toInt() ?: 0
             }
 
+        val isLoading: Boolean
+            get() {
+                return spaceLocalStatus == SpaceStatus.LOADING
+                        && spaceAccountStatus != SpaceStatus.SPACE_REMOVING
+                        && spaceAccountStatus != SpaceStatus.SPACE_DELETED
+            }
+
+        val isActive: Boolean
+            get() {
+                return spaceLocalStatus == SpaceStatus.OK
+                        && spaceAccountStatus != SpaceStatus.SPACE_REMOVING
+                        && spaceAccountStatus != SpaceStatus.SPACE_DELETED
+            }
     }
 
     inline fun <reified T> getValue(relation: Key): T? {

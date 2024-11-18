@@ -303,6 +303,5 @@
 
     <color name="navigation_panel">#99FFFFFF</color>
     <color name="navigation_panel_icon">#66000000</color>
-    <color name="button_membership">#252525</color>
 
 </resources>

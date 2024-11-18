@@ -127,6 +127,5 @@
 
     <color name="navigation_panel">#BF000000</color>
     <color name="navigation_panel_icon">#66FFFFFF</color>
-    <color name="button_membership">#252525</color>
 
 </resources>

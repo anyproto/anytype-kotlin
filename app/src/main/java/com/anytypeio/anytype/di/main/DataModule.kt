@@ -50,6 +50,9 @@ import com.anytypeio.anytype.middleware.service.MiddlewareService
 import com.anytypeio.anytype.middleware.service.MiddlewareServiceImplementation
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
 import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
+import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
+import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProviderImpl
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.persistence.repo.DefaultDebugSettingsCache
 import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
@@ -280,10 +283,12 @@ object DataModule {
     @Singleton
     fun provideUserSettingsCache(
         @Named("default") prefs: SharedPreferences,
-        context: Context
+        context: Context,
+        appDefaultDateFormatProvider: AppDefaultDateFormatProvider
     ): UserSettingsCache = DefaultUserSettingsCache(
         prefs = prefs,
-        context = context
+        context = context,
+        appDefaultDateFormatProvider = appDefaultDateFormatProvider
     )
 
     @JvmStatic
@@ -333,6 +338,15 @@ object DataModule {
     fun provideFileProvider(
         context: Context
     ): UriFileProvider = DefaultUriFileProvider(context)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideAppDefaultDateFormatProvider(
+        localeProvider: LocaleProvider
+    ): AppDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl(
+        localeProvider = localeProvider
+    )
 
     @Module
     interface Bindings {

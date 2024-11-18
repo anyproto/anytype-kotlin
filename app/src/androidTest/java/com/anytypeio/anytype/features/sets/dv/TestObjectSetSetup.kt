@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.device.providers.DateProviderImpl
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -32,6 +33,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -71,16 +73,18 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import java.time.ZoneId
+import java.util.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 abstract class TestObjectSetSetup {
@@ -224,7 +228,10 @@ abstract class TestObjectSetSetup {
 
     private val delegator = Delegator.Default<Action>()
 
-    private val dateProvider = DateProviderImpl(ZoneId.systemDefault())
+    @Mock
+    lateinit var localeProvider : LocaleProvider
+
+    private val dateProvider = DateProviderImpl(ZoneId.systemDefault(), localeProvider)
 
     open fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -312,6 +319,8 @@ abstract class TestObjectSetSetup {
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             clearLastOpenedObject = clearLastOpenedObject
         )
+
+        Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
     }
 
     fun stubInterceptEvents() {

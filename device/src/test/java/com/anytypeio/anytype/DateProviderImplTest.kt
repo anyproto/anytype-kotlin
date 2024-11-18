@@ -1,13 +1,30 @@
-package com.anytypeio.anytype.presentation.widgets.collection
+package com.anytypeio.anytype
 
+import com.anytypeio.anytype.device.providers.DateProviderImpl
+import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import java.time.ZoneId
+import java.util.Locale
 import org.junit.Assert.*
-
+import org.junit.Before
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
 
 class DateProviderImplTest {
 
-    val dateProviderImpl = DateProviderImpl(ZoneId.systemDefault())
+    @Mock
+    lateinit var localeProvider: LocaleProvider
+
+    lateinit var dateProviderImpl: DateProvider
+
+    @Before
+    fun setUp() {
+        MockitoAnnotations.openMocks(this)
+        dateProviderImpl = DateProviderImpl(ZoneId.systemDefault(), localeProvider)
+        Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
+    }
 
     @Test
     fun adjustToStartOfDayInUserTimeZoneWithPastStart() {

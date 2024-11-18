@@ -21,7 +21,6 @@ import com.anytypeio.anytype.domain.history.GetVersions
 import com.anytypeio.anytype.domain.history.SetVersion
 import com.anytypeio.anytype.domain.history.ShowVersion
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -39,7 +38,6 @@ import com.anytypeio.anytype.presentation.history.VersionHistoryGroup.GroupTitle
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.getRelationFormat
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -50,7 +48,6 @@ import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,13 +64,11 @@ class VersionHistoryViewModel(
     private val getVersions: GetVersions,
     private val objectSearch: SearchObjects,
     private val dateProvider: DateProvider,
-    private val localeProvider: LocaleProvider,
     private val urlBuilder: UrlBuilder,
     private val showVersion: ShowVersion,
     private val setVersion: SetVersion,
     private val renderer: DefaultBlockViewRenderer,
     private val setStateReducer: ObjectStateReducer,
-    private val coverImageHashProvider: CoverImageHashProvider,
     private val storeOfRelations: StoreOfRelations
 ) : ViewModel(), BlockViewRenderer by renderer {
 
@@ -326,16 +321,13 @@ class VersionHistoryViewModel(
         spaceMembers: List<ObjectWrapper.Basic>,
     ): List<VersionHistoryGroup> {
 
-        val locale = localeProvider.locale()
-
         // Sort versions by timestamp (DESC) and group by day
         val versionsByDay = versions
             .sortedByDescending { it.timestamp.time }
             .groupBy { version ->
                 val formattedDate = dateProvider.formatToDateString(
                     timestamp = (version.timestamp.inMillis),
-                    pattern = GROUP_BY_DAY_FORMAT,
-                    locale = locale
+                    pattern = GROUP_BY_DAY_FORMAT
                 )
                 formattedDate
             }
@@ -361,13 +353,12 @@ class VersionHistoryViewModel(
                 spaceMemberVersions.lastOrNull()?.lastOrNull() ?: return@mapNotNull null
 
             val groupItems = spaceMemberVersions.toGroupItems(
-                spaceMembers = spaceMembers,
-                locale = locale
+                spaceMembers = spaceMembers
             )
 
             VersionHistoryGroup(
                 id = spaceMemberOldestVersion.id,
-                title = getGroupTitle(spaceMemberLatestVersion.timestamp, locale),
+                title = getGroupTitle(spaceMemberLatestVersion.timestamp),
                 icons = groupItems.distinctBy { it.spaceMember }.mapNotNull { it.icon },
                 items = groupItems
             )
@@ -428,7 +419,7 @@ class VersionHistoryViewModel(
         return groupedBySpaceMember
     }
 
-    private fun getGroupTitle(timestamp: TimeInSeconds, locale: Locale): GroupTitle {
+    private fun getGroupTitle(timestamp: TimeInSeconds): GroupTitle {
         val dateInstant = Instant.ofEpochSecond(timestamp.time)
         val givenDate = dateInstant.atZone(ZoneId.systemDefault()).toLocalDate()
         val currentDate = LocalDate.now()
@@ -453,8 +444,7 @@ class VersionHistoryViewModel(
                 GroupTitle.Date(
                     dateProvider.formatToDateString(
                         timestamp = timestamp.inMillis,
-                        pattern = pattern,
-                        locale = locale
+                        pattern = pattern
                     )
                 )
             }
@@ -462,8 +452,7 @@ class VersionHistoryViewModel(
     }
 
     private fun List<List<Version>>.toGroupItems(
-        spaceMembers: List<ObjectWrapper.Basic>,
-        locale: Locale
+        spaceMembers: List<ObjectWrapper.Basic>
     ): List<VersionHistoryGroup.Item> {
         return mapNotNull { versions ->
             val latestVersion = versions.firstOrNull() ?: return@mapNotNull null
@@ -474,8 +463,7 @@ class VersionHistoryViewModel(
             val icon = spaceMember.objectIcon(urlBuilder)
 
             val (latestVersionDate, latestVersionTime) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = latestVersion.timestamp.inMillis,
-                locale = locale
+                timestamp = latestVersion.timestamp.inMillis
             )
 
             VersionHistoryGroup.Item(

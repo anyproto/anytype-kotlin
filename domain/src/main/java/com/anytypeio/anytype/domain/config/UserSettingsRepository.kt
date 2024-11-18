@@ -50,4 +50,7 @@ interface UserSettingsRepository {
     suspend fun setAllContentSort(space: SpaceId, sort: Id, isAsc: Boolean)
 
     suspend fun clear()
+
+    suspend fun setRelativeDates(account: Account, enabled: Boolean)
+    suspend fun setDateFormat(account: Account, format: String)
 }

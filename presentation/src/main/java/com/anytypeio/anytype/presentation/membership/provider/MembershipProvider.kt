@@ -117,8 +117,7 @@ interface MembershipProvider {
         ): MembershipStatus {
             val formattedDateEnds = dateProvider.formatToDateString(
                 timestamp = membership.dateEnds,
-                pattern = DATE_FORMAT,
-                locale = localeProvider.locale()
+                pattern = DATE_FORMAT
             )
             return MembershipStatus(
                 activeTier = TierId(membership.tier),

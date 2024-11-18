@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.home
 
-import android.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -48,7 +47,6 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
-import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -408,7 +406,7 @@ class HomeScreenViewModel(
                     combine(
                         flows = buildList<Flow<WidgetView>> {
                             add(spaceWidgetView)
-                            if (featureToggles.isSpaceLevelChatEnabled) {
+                            if (featureToggles.isSpaceLevelChatWidgetEnabled) {
                                 add(spaceChatWidget.view)
                             }
                             add(allContentWidget.view)

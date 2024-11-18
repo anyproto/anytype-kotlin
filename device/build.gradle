@@ -8,6 +8,7 @@ dependencies {
     implementation project(':data')
     implementation project(':domain')
     implementation project(':localization')
+    implementation project(':core-models')
 
     implementation libs.kotlin
     implementation libs.coroutinesAndroid
@@ -19,6 +20,7 @@ dependencies {
     testImplementation libs.kotlinTest
     testImplementation libs.androidXTestCore
     testImplementation libs.robolectric
+    testImplementation libs.mockitoKotlin
 
     compileOnly libs.javaxInject
 }

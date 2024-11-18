@@ -117,4 +117,18 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
     override suspend fun setAllContentSort(space: SpaceId, sort: Id, isAsc: Boolean) {
         cache.setAllContentSort(space, sort, isAsc)
     }
+
+    override suspend fun setRelativeDates(
+        account: Account,
+        enabled: Boolean
+    ) {
+        cache.setRelativeDates(account, enabled)
+    }
+
+    override suspend fun setDateFormat(
+        account: Account,
+        format: String
+    ) {
+        cache.setDateFormat(account, format)
+    }
 }

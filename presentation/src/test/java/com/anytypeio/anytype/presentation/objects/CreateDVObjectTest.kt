@@ -15,7 +15,6 @@ import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.ext.DAYS_IN_MONTH
 import com.anytypeio.anytype.core_models.ext.DAYS_IN_WEEK
 import com.anytypeio.anytype.core_models.ext.SECONDS_IN_DAY
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
 import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
@@ -28,16 +27,12 @@ import net.bytebuddy.utility.RandomString
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
-
-    @Mock
-    lateinit var dateProvider: DateProvider
 
     private val timestamp = 1703775402L
     private val spaceId = "spaceId-${MockDataFactory.randomString()}"
@@ -54,6 +49,7 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
 
     @Before
     fun setup() = runTest {
+        //MockitoAnnotations.openMocks(this)
         dateProvider = mock(verboseLogging = true)
         storeOfRelations.merge(listOf(filterDate))
         dateProvider.stub {

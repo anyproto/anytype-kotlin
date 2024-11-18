@@ -271,6 +271,10 @@ class SplashViewModel(
         }
     }
 
+    /**
+     * Before navigating to widgets, make sure space was opened successfully during launchAccount
+     * @see [LaunchAccount] use-case
+     */
     private suspend fun proceedWithVaultNavigation(deeplink: String? = null) {
         val space = getLastOpenedSpace.async(Unit).getOrNull()
         if (space != null && spaceManager.getState() != SpaceManager.State.NoSpace) {

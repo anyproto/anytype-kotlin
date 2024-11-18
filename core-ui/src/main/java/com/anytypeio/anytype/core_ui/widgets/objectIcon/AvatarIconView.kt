@@ -30,7 +30,7 @@ fun AvatarIconView(
     icon: ObjectIcon.Profile.Avatar,
     isCircleShape: Boolean = true
 ) {
-    val iconParams = getAvatarIconParams(iconSize)
+    val (radius, fontSize) = getAvatarIconParams(iconSize)
 
     Box(
         modifier = modifier
@@ -39,7 +39,7 @@ fun AvatarIconView(
                 shape = if (isCircleShape) {
                     CircleShape
                 } else {
-                    RoundedCornerShape(iconParams.first.dp)
+                    RoundedCornerShape(radius)
                 },
                 color = colorResource(id = avatarBackgroundColor)
             ),
@@ -52,7 +52,7 @@ fun AvatarIconView(
                 .take(1)
                 .uppercase(),
             style = AvatarTitle,
-            fontSize = iconParams.second.sp,
+            fontSize = fontSize.sp,
             color = colorResource(id = avatarTextColor)
         )
     }
@@ -62,8 +62,8 @@ private fun getAvatarIconParams(size: Dp): Pair<Int, Int> {
     return when (size) {
         in 0.dp..16.dp -> 2 to 11
         in 17.dp..18.dp -> 2 to 12
-        in 19.dp..20.dp -> 2 to 13
-        in 21.dp..32.dp -> 4 to 20
+        in 19.dp..24.dp -> 2 to 13
+        in 25.dp..32.dp -> 4 to 20
         in 33.dp..40.dp -> 5 to 24
         in 41.dp..48.dp -> 6 to 28
         in 49.dp..64.dp -> 8 to 40

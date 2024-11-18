@@ -100,7 +100,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
-                if (featureToggles.isSpaceLevelChatEnabled) {
+                if (featureToggles.isNewSpaceHomeEnabled) {
                     val focus = LocalFocusManager.current
                     val component = componentManager().spaceLevelChatComponent
                     val spaceLevelChatViewModel = daggerViewModel {

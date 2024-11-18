@@ -48,11 +48,7 @@ class LaunchAccount @Inject constructor(
             configStorage.set(config = setup.config)
             val lastSessionSpace = settings.getCurrentSpace()
             if (lastSessionSpace != null) {
-                val result = spaceManager.set(lastSessionSpace.id)
-                if (result.isFailure) {
-                    // Falling back to the default space
-                    spaceManager.set(setup.config.space)
-                }
+                spaceManager.set(lastSessionSpace.id)
             }
             awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
             setup.config.analytics

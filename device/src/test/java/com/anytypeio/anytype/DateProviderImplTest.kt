@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.widgets.collection
+package com.anytypeio.anytype
 
 import com.anytypeio.anytype.device.providers.DateProviderImpl
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -7,18 +7,15 @@ import java.util.Locale
 import org.junit.Assert.*
 
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
 
 class DateProviderImplTest {
 
-    @Mock
+    @org.mockito.Mock
     lateinit var localeProvider: LocaleProvider
 
     init {
-        MockitoAnnotations.openMocks(this)
-        Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
+        org.mockito.MockitoAnnotations.openMocks(this)
+        org.mockito.Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
     }
 
     val dateProviderImpl = DateProviderImpl(ZoneId.systemDefault(), localeProvider)

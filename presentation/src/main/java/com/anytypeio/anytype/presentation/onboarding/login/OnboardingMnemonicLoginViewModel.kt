@@ -66,8 +66,6 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     val command = MutableSharedFlow<Command>(replay = 0)
 
-    val error by lazy { MutableStateFlow(NO_ERROR) }
-
     private var debugClickCount = 0
     private val _fiveClicks = MutableStateFlow(false)
 
@@ -216,14 +214,23 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         ) { result ->
             result.either(
                 fnL = { e ->
-                    if (e is AccountIsDeletedException) {
-                        error.value = "This account is deleted. Try using another account or create a new one."
-                    } else {
-                        error.value = "Error while account loading \n ${e.localizedMessage}"
+                    viewModelScope.launch {
+                        if (e is AccountIsDeletedException) {
+                            sideEffects.emit(
+                                value = SideEffect.Error.Unknown(
+                                    msg = "This account is deleted. Try using another account or create a new one."
+                                )
+                            )
+                        } else {
+                            sideEffects.emit(
+                                value = SideEffect.Error.Unknown(
+                                    msg = "Error while account loading \n ${e.localizedMessage}"
+                                )
+                            )
+                        }
+                        Timber.e(e, "Error while account loading")
+                        command.emit(Command.Exit)
                     }
-                    Timber.e(e, "Error while account loading")
-                    // TODO refact
-                    viewModelScope.launch { command.emit(Command.Exit) }
                 },
                 fnR = {
                     Timber.d("Account loading successfully finished")
@@ -263,10 +270,18 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                             navigateToMigrationErrorScreen()
                         }
                         is AccountIsDeletedException -> {
-                            error.value = "This account is deleted. Try using another account or create a new one."
+                            sideEffects.emit(
+                                value = SideEffect.Error.Unknown(
+                                    msg = "This account is deleted. Try using another account or create a new one."
+                                )
+                            )
                         }
                         is NeedToUpdateApplicationException -> {
-                            error.value = SplashViewModel.ERROR_NEED_UPDATE
+                            sideEffects.emit(
+                                value = SideEffect.Error.Unknown(
+                                    msg = SplashViewModel.ERROR_NEED_UPDATE
+                                )
+                            )
                         }
                         is LoginException.NetworkIdMismatch -> {
                             sideEffects.emit(SideEffect.Error.NetworkIdMismatch)
@@ -276,7 +291,11 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                         }
                         else -> {
                             val msg = e.message ?: "Unknown error"
-                            error.value = "${ERROR_MESSAGE}: $msg"
+                            sideEffects.emit(
+                                value = SideEffect.Error.Unknown(
+                                    msg = "${ERROR_MESSAGE}: $msg"
+                                )
+                            )
                         }
                     }
                 },

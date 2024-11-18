@@ -321,7 +321,7 @@ private fun RowScope.HeaderIcons(
                         modifier = Modifier
                             .size(28.dp)
                             .background(
-                                color = colorResource(id = R.color.background_primary),
+                                color = colorResource(id = R.color.background_secondary),
                                 shape = androidx.compose.foundation.shape.CircleShape
                             ),
                         contentAlignment = Alignment.Center
@@ -364,7 +364,7 @@ fun VersionHistoryAvatarTextStyle() = TextStyle(
 )
 @Preview(
     showBackground = true,
-    backgroundColor = 0x000000,
+    backgroundColor = 0xFF1F1F1F,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     name = "Dark Mode"
 )

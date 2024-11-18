@@ -139,7 +139,7 @@ class DateProviderImpl @Inject constructor(
             val formatter = SimpleDateFormat(pattern, locale)
             return formatter.format(Date(timestamp))
         } catch (e: Exception) {
-            //Timber.e(e,"Error formatting timestamp to date string")
+            Timber.e(e,"Error formatting timestamp to date string")
             return ""
         }
     }
@@ -160,7 +160,7 @@ class DateProviderImpl @Inject constructor(
             val timeString = timeFormatter.format(date)
             Pair(dateString, timeString)
         } catch (e: Exception) {
-            //Timber.e(e, "Error formatting timestamp to date and time string")
+            Timber.e(e, "Error formatting timestamp to date and time string")
             Pair("", "")
         }
     }

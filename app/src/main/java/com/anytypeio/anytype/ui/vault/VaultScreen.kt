@@ -370,8 +370,8 @@ fun LoadingSpaceCard() {
         Box(
             modifier = Modifier
                 .padding(start = 96.dp, bottom = 30.dp)
-                .height(12.dp)
-                .width(160.dp)
+                .height(8.dp)
+                .width(96.dp)
                 .align(Alignment.BottomStart)
                 .background(
                     color = colorResource(R.color.shape_primary)

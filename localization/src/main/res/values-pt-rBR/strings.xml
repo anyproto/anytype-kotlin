@@ -1454,6 +1454,8 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Incompatibilidade de ID de rede detectada. Verifique sua configuração de rede.</string>
     <string name="error_login_select_vault_error">Erro ao selecionar conta.</string>
+    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
+    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
     <string name="global_search_related_to">"Relacionado a: "</string>
     <string name="global_search_no_related_objects_found">Nenhum objeto relacionado encontrado</string>
     <string name="sort_empty_values_desc">Mostrar valores vazios</string>

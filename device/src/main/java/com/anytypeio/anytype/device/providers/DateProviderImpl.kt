@@ -1,61 +1,31 @@
-package com.anytypeio.anytype.presentation.widgets.collection
+package com.anytypeio.anytype.device.providers
 
 import android.text.format.DateUtils
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
-import com.anytypeio.anytype.core_models.primitives.AppDateFormat
-import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
-import com.anytypeio.anytype.domain.misc.FormattedDate
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.misc.ZoneProvider
-import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit.MINUTES
+import java.time.temporal.ChronoUnit
 import java.util.Date
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class DateProviderImpl @Inject constructor(
-    scope: CoroutineScope,
-    private val zoneProvider: ZoneProvider,
-    private val vaultSettings: ObserveVaultSettings,
-    private val localeProvider: LocaleProvider,
-    private val logger: Logger
+    private val defaultZoneId: ZoneId,
+    private val localeProvider: LocaleProvider
 ) : DateProvider {
-
-    val defaultZoneId get() = zoneProvider.zone()
-    var isRelativeDates: Boolean = false
-    var appDatePattern: AppDateFormat = "dd MMM yyyy"
-
-
-    init {
-        scope.launch {
-            logger.logInfo("DateProvider initialized")
-            vaultSettings.flow()
-                .catch {
-                    logger.logException(it, "Error while observing vault settings")
-                }
-                .collect {
-                    isRelativeDates = it.isRelativeDates
-                    appDatePattern = it.dateFormat
-                }
-        }
-    }
 
     override fun calculateDateType(date: TimeInSeconds): DateType {
         val dateInstant = Instant.ofEpochSecond(date)
-        val givenDate = dateInstant.atZone(zoneProvider.zone()).toLocalDate()
+        val givenDate = dateInstant.atZone(defaultZoneId).toLocalDate()
         val givenDateWithZeroTime = givenDate.atStartOfDay().toLocalDate()
 
         return when (givenDateWithZeroTime) {
@@ -118,13 +88,12 @@ class DateProviderImpl @Inject constructor(
         return weekAgoWithZeroTime.atStartOfDay(defaultZoneId).toEpochSecond()
     }
 
-    override fun getRelativeTimeSpanString(date: TimeInSeconds): CharSequence =
-        DateUtils.getRelativeTimeSpanString(
-            date,
-            System.currentTimeMillis(),
-            DateUtils.DAY_IN_MILLIS,
-            DateUtils.FORMAT_ABBREV_RELATIVE
-        )
+    override fun getRelativeTimeSpanString(date: TimeInSeconds): CharSequence = DateUtils.getRelativeTimeSpanString(
+        date,
+        System.currentTimeMillis(),
+        DateUtils.DAY_IN_MILLIS,
+        DateUtils.FORMAT_ABBREV_RELATIVE
+    )
 
     override fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis {
         val instant = Instant.ofEpochSecond(timestamp)
@@ -133,9 +102,7 @@ class DateProviderImpl @Inject constructor(
         return (startOfDay.toEpochSecond(ZoneOffset.UTC) * 1000)
     }
 
-    override fun adjustFromStartOfDayInUserTimeZoneToUTC(
-        timestamp: TimeInMillis
-    ): TimeInSeconds {
+    override fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis, zoneId: ZoneId): TimeInSeconds {
         // Convert the timestamp to an Instan
         val instant = Instant.ofEpochSecond(timestamp)
 
@@ -143,11 +110,11 @@ class DateProviderImpl @Inject constructor(
         val utcDateTime = instant.atZone(ZoneOffset.UTC)
 
         // Convert the UTC ZonedDateTime to the local time zone
-        val localDateTime = utcDateTime.withZoneSameInstant(defaultZoneId)
+        val localDateTime = utcDateTime.withZoneSameInstant(zoneId)
 
         // Get the local date and the start of the day in the local time zone
         val localDate = localDateTime.toLocalDate()
-        val startOfDay = localDate.atStartOfDay(defaultZoneId)
+        val startOfDay = localDate.atStartOfDay(zoneId)
 
         // Check if the UTC timestamp is at the boundary of the day in the local time zone
         return when {
@@ -155,12 +122,10 @@ class DateProviderImpl @Inject constructor(
                 // If the UTC timestamp is after the start of the day in the local time zone, return the start of the next day
                 startOfDay.plusDays(1).toEpochSecond()
             }
-
             utcDateTime.toLocalDate().isBefore(startOfDay.toLocalDate()) -> {
                 // If the UTC timestamp is before the start of the day in the local time zone, return the start of the previous day
                 startOfDay.minusDays(1).toEpochSecond()
             }
-
             else -> {
                 // Otherwise, return the start of the day
                 startOfDay.toEpochSecond()
@@ -170,10 +135,11 @@ class DateProviderImpl @Inject constructor(
 
     override fun formatToDateString(timestamp: Long, pattern: String): String {
         try {
-            val formatter = SimpleDateFormat(pattern, localeProvider.locale())
+            val locale = localeProvider.locale()
+            val formatter = SimpleDateFormat(pattern, locale)
             return formatter.format(Date(timestamp))
         } catch (e: Exception) {
-            Timber.e(e, "Error formatting timestamp to date string")
+            Timber.e(e,"Error formatting timestamp to date string")
             return ""
         }
     }
@@ -184,16 +150,11 @@ class DateProviderImpl @Inject constructor(
         timeStyle: Int
     ): Pair<String, String> {
         return try {
-            val datePattern = (DateFormat.getDateInstance(
-                dateStyle,
-                localeProvider.locale()
-            ) as SimpleDateFormat).toPattern()
-            val timePattern = (DateFormat.getTimeInstance(
-                timeStyle,
-                localeProvider.locale()
-            ) as SimpleDateFormat).toPattern()
-            val dateFormatter = SimpleDateFormat(datePattern, localeProvider.locale())
-            val timeFormatter = SimpleDateFormat(timePattern, localeProvider.locale())
+            val locale = localeProvider.locale()
+            val datePattern = (DateFormat.getDateInstance(dateStyle, locale) as SimpleDateFormat).toPattern()
+            val timePattern = (DateFormat.getTimeInstance(timeStyle, locale) as SimpleDateFormat).toPattern()
+            val dateFormatter = SimpleDateFormat(datePattern, locale)
+            val timeFormatter = SimpleDateFormat(timePattern, locale)
             val date = Date(timestamp)
             val dateString = dateFormatter.format(date)
             val timeString = timeFormatter.format(date)
@@ -208,32 +169,10 @@ class DateProviderImpl @Inject constructor(
         val dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp1), defaultZoneId)
         val dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp2), defaultZoneId)
 
-        val truncatedDateTime1 = dateTime1.truncatedTo(MINUTES)
-        val truncatedDateTime2 = dateTime2.truncatedTo(MINUTES)
+        val truncatedDateTime1 = dateTime1.truncatedTo(ChronoUnit.MINUTES)
+        val truncatedDateTime2 = dateTime2.truncatedTo(ChronoUnit.MINUTES)
 
         return truncatedDateTime1 == truncatedDateTime2
-    }
-
-    override fun formatDate(
-        timestamp: Long,
-        format: String
-    ): FormattedDate {
-        val date = Instant.ofEpochMilli(timestamp).atZone(defaultZoneId).toLocalDate()
-        val today = LocalDate.now()
-        return if (isRelativeDates) {
-            when (date) {
-                today -> FormattedDate.Today
-                today.minusDays(1) -> FormattedDate.Yesterday
-                today.plusDays(1) -> FormattedDate.Tomorrow
-                else -> {
-                    val formattedDate = date.format(DateTimeFormatter.ofPattern(format))
-                    FormattedDate.Other(formattedDate)
-                }
-            }
-        } else {
-            val formattedDate = date.format(DateTimeFormatter.ofPattern(format))
-            FormattedDate.Other(formattedDate)
-        }
     }
 }
 

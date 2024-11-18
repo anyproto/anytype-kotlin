@@ -5,17 +5,19 @@ import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import com.anytypeio.anytype.core_models.Account
+import com.anytypeio.anytype.core_models.DEFAULT_RELATIVE_DATES
+import com.anytypeio.anytype.core_models.DEFAULT_SHOW_INTRODUCE_VAULT
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
-import com.anytypeio.anytype.core_models.primitives.AppDateFormat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
+import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
 import com.anytypeio.anytype.persistence.AllContentSettings
 import com.anytypeio.anytype.persistence.GlobalSearchHistoryProto
 import com.anytypeio.anytype.persistence.SpacePreference
@@ -39,8 +41,19 @@ import kotlinx.coroutines.flow.map
 
 class DefaultUserSettingsCache(
     private val prefs: SharedPreferences,
-    private val context: Context
+    private val context: Context,
+    private val appDefaultDateFormatProvider: AppDefaultDateFormatProvider
 ) : UserSettingsCache {
+
+    //region Vault default settings
+    fun initialVaultSettings(): VaultPreference {
+        return VaultPreference(
+            showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
+            isRelativeDates = DEFAULT_RELATIVE_DATES,
+            dateFormat = appDefaultDateFormatProvider.provide()
+        )
+    }
+    //endregion
 
     private val Context.spacePrefsStore: DataStore<SpacePreferences> by dataStore(
         fileName = SPACE_PREFERENCE_FILENAME,
@@ -399,18 +412,13 @@ class DefaultUserSettingsCache(
             .map { prefs ->
                 val curr = prefs.preferences.getOrDefault(
                     key = account.id,
-                    defaultValue = initialVaultPreference()
+                    defaultValue = initialVaultSettings()
                 )
-                val dateFormat = if(curr.dateFormat.isNullOrEmpty()) {
-                    null
-                } else {
-                    AppDateFormat(curr.dateFormat)
-                }
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
                     showIntroduceVault = curr.showIntroduceVault,
                     isRelativeDates = curr.isRelativeDates,
-                    dateFormat = dateFormat
+                    dateFormat = curr.dateFormat ?: appDefaultDateFormatProvider.provide()
                 )
             }
             .first()
@@ -422,18 +430,13 @@ class DefaultUserSettingsCache(
             .map { prefs ->
                 val curr = prefs.preferences.getOrDefault(
                     key = account.id,
-                    defaultValue = initialVaultPreference()
+                    defaultValue = initialVaultSettings()
                 )
-                val dateFormat = if(curr.dateFormat.isNullOrEmpty()) {
-                    null
-                } else {
-                    AppDateFormat(curr.dateFormat)
-                }
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
                     showIntroduceVault = curr.showIntroduceVault,
                     isRelativeDates = curr.isRelativeDates,
-                    dateFormat = dateFormat
+                    dateFormat = curr.dateFormat ?: appDefaultDateFormatProvider.provide()
                 )
             }
     }
@@ -442,7 +445,7 @@ class DefaultUserSettingsCache(
         context.vaultPrefsStore.updateData { existingPreferences ->
             val curr = existingPreferences.preferences.getOrDefault(
                 key = account.id,
-                defaultValue = initialVaultPreference()
+                defaultValue = initialVaultSettings()
             )
             existingPreferences.copy(
                 preferences = existingPreferences.preferences + mapOf(
@@ -467,12 +470,39 @@ class DefaultUserSettingsCache(
         }
     }
 
-    private fun initialVaultPreference(): VaultPreference {
-        return VaultPreference(
-            showIntroduceVault = true,
-            isRelativeDates = true,
-            dateFormat = null
-        )
+    override suspend fun setRelativeDates(account: Account, enabled: Boolean) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        isRelativeDates = enabled
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun setDateFormat(
+        account: Account,
+        format: String
+    ) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        dateFormat = format
+                    )
+                )
+            )
+        }
     }
 
     override suspend fun getAllContentSort(space: SpaceId): Pair<Id, Boolean>? {

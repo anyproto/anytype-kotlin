@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_utils.tools.DefaultUrlValidator
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
+import com.anytypeio.anytype.device.providers.DateProviderImpl
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.DebugConfig
@@ -62,24 +63,12 @@ object UtilModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideZoneId(): ZoneProvider = ZoneProviderImpl()
-
-    @JvmStatic
-    @Provides
-    @Singleton
     fun provideDateProvider(
-        zoneProvider: ZoneProvider,
-        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
-        getVaultSettings: GetVaultSettings,
-        localeProvider: LocaleProvider,
-        logger: Logger
+        localeProvider: LocaleProvider
     ): DateProvider =
         DateProviderImpl(
-            zoneProvider = zoneProvider,
-            scope = scope,
-            getVaultSettings = getVaultSettings,
-            localeProvider = localeProvider,
-            logger = logger
+            defaultZoneId = ZoneId.systemDefault(),
+            localeProvider = localeProvider
         )
 
     @Module

@@ -98,8 +98,7 @@ class MembershipProviderTest {
                 whenever(
                     dateProvider.formatToDateString(
                         dateEnds,
-                        DATE_FORMAT,
-                        localeProvider.locale()
+                        DATE_FORMAT
                     )
                 ).thenReturn("01-01-1970")
                 val command = Command.Membership.GetTiers(

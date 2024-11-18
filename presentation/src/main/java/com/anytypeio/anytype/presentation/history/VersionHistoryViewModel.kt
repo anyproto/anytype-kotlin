@@ -21,7 +21,6 @@ import com.anytypeio.anytype.domain.history.GetVersions
 import com.anytypeio.anytype.domain.history.SetVersion
 import com.anytypeio.anytype.domain.history.ShowVersion
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -39,7 +38,6 @@ import com.anytypeio.anytype.presentation.history.VersionHistoryGroup.GroupTitle
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.getRelationFormat
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -50,7 +48,6 @@ import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

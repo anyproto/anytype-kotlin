@@ -3,17 +3,27 @@ package com.anytypeio.anytype.persistence
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
+import com.anytypeio.anytype.core_models.Account
+import com.anytypeio.anytype.core_models.DEFAULT_RELATIVE_DATES
+import com.anytypeio.anytype.core_models.DEFAULT_SHOW_INTRODUCE_VAULT
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.settings.VaultSettings
+import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
 import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
+import net.bytebuddy.utility.RandomString
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
@@ -30,12 +40,21 @@ class UserSettingsCacheTest {
         Context.MODE_PRIVATE
     )
 
+    @Mock
+    lateinit var dateFormatProvider: AppDefaultDateFormatProvider
+
+    @Before
+    fun setUp() {
+        MockitoAnnotations.openMocks(this)
+    }
+
     @Test
     fun `should save and return default wallpaper`() = runTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = MockDataFactory.randomUuid()
@@ -59,7 +78,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = MockDataFactory.randomUuid()
@@ -86,7 +106,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = ""
@@ -114,7 +135,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = MockDataFactory.randomUuid()
@@ -141,7 +163,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = MockDataFactory.randomUuid()
@@ -168,7 +191,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = MockDataFactory.randomUuid()
@@ -187,7 +211,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = SpaceId(MockDataFactory.randomUuid())
@@ -220,7 +245,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space1 = SpaceId(MockDataFactory.randomUuid())
@@ -277,7 +303,8 @@ class UserSettingsCacheTest {
 
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
-            context = ApplicationProvider.getApplicationContext()
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
         )
 
         val space = SpaceId(MockDataFactory.randomUuid())
@@ -312,6 +339,152 @@ class UserSettingsCacheTest {
         assertEquals(
             expected = null,
             actual = cache.getGlobalSearchHistory(space)
+        )
+    }
+
+    @Test
+    fun `should return default vault settings with default params`() = runTest {
+
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
+        )
+
+        val dateFormat = "MM/dd/yyyy - ${RandomString.make()}"
+
+        Mockito.`when`(dateFormatProvider.provide()).thenReturn(dateFormat)
+
+        val account = Account(
+            id = MockDataFactory.randomUuid(),
+        )
+
+        val vaultSettings = cache.getVaultSettings(account = account)
+
+        val expected = VaultSettings(
+            showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
+            dateFormat = dateFormat,
+            isRelativeDates = DEFAULT_RELATIVE_DATES
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = vaultSettings
+        )
+    }
+
+    @Test
+    fun `should return updated vault date format settings`() = runTest {
+
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
+        )
+
+        val dateFormat = "MM/dd/yyyy - ${RandomString.make()}"
+        val updatedDateFormat = "yyyy-MM-dd - ${RandomString.make()}"
+
+        Mockito.`when`(dateFormatProvider.provide()).thenReturn(dateFormat)
+
+        val account = Account(
+            id = MockDataFactory.randomUuid(),
+        )
+
+        cache.setDateFormat(
+            account = account,
+            format = updatedDateFormat
+        )
+
+        val vaultSettings = cache.getVaultSettings(account = account)
+
+        val expected = VaultSettings(
+            showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
+            dateFormat = updatedDateFormat,
+            isRelativeDates = DEFAULT_RELATIVE_DATES
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = vaultSettings
+        )
+    }
+
+    @Test
+    fun `should return updated vault relative dates settings`() = runTest {
+
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
+        )
+
+        val dateFormat = "MM/dd/yyyy - ${RandomString.make()}"
+
+        Mockito.`when`(dateFormatProvider.provide()).thenReturn(dateFormat)
+
+        val account = Account(
+            id = MockDataFactory.randomUuid(),
+        )
+
+        cache.setRelativeDates(
+            account = account,
+            enabled = false
+        )
+
+        val vaultSettings = cache.getVaultSettings(account = account)
+
+        val expected = VaultSettings(
+            showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
+            dateFormat = dateFormat,
+            isRelativeDates = false
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = vaultSettings
+        )
+    }
+
+    @Test
+    fun `should return updated vault relative dates settings and keep date format settings`() = runTest {
+
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
+        )
+
+        val dateFormat = "MM/dd/yyyy - ${RandomString.make()}"
+        val updatedDateFormat = "yyyy-MM-dd - ${RandomString.make()}"
+
+        Mockito.`when`(dateFormatProvider.provide()).thenReturn(dateFormat)
+
+        val account = Account(
+            id = MockDataFactory.randomUuid(),
+        )
+
+        cache.setDateFormat(
+            account = account,
+            format = updatedDateFormat
+        )
+
+        cache.setRelativeDates(
+            account = account,
+            enabled = false
+        )
+
+        val vaultSettings = cache.getVaultSettings(account = account)
+
+        val expected = VaultSettings(
+            showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
+            dateFormat = updatedDateFormat,
+            isRelativeDates = false
+        )
+
+        assertEquals(
+            expected = expected,
+            actual = vaultSettings
         )
     }
 }

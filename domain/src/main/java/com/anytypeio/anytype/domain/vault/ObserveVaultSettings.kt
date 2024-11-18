@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.domain.vault
 
+import com.anytypeio.anytype.core_models.FALLBACK_DATE_PATTERN
+import com.anytypeio.anytype.core_models.DEFAULT_RELATIVE_DATES
 import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -29,7 +31,8 @@ class ObserveVaultSettings @Inject constructor(
                         VaultSettings(
                             showIntroduceVault = false,
                             orderOfSpaces = emptyList(),
-                            isRelativeDates = false,
+                            isRelativeDates = DEFAULT_RELATIVE_DATES,
+                            dateFormat = FALLBACK_DATE_PATTERN
                         )
                     )
                 }

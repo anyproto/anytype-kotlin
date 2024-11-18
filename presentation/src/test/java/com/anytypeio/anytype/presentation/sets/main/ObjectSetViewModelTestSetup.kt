@@ -39,6 +39,8 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -84,9 +86,8 @@ import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import java.time.ZoneId
+import java.util.Locale
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -211,6 +212,12 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
+    @Mock
+    lateinit var localeProvider : LocaleProvider
+
+    @Mock
+    lateinit var dateProvider: DateProvider
+
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     lateinit var spaceConfig: Config
@@ -257,6 +264,7 @@ open class ObjectSetViewModelTestSetup {
         )
         dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer)
         storeOfObjectTypes = DefaultStoreOfObjectTypes()
+        Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
         return ObjectSetViewModel(
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
@@ -293,7 +301,7 @@ open class ObjectSetViewModelTestSetup {
             getObjectTypes = getObjectTypes,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            dateProvider = DateProviderImpl(ZoneId.systemDefault()),
+            dateProvider = dateProvider,
             vmParams = ObjectSetViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)

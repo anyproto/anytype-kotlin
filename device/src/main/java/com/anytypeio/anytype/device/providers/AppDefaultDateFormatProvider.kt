@@ -1,9 +1,10 @@
 package com.anytypeio.anytype.device.providers
 
 import com.anytypeio.anytype.core_models.DEFAULT_DATE_PATTERN
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Locale
+import javax.inject.Inject
 import timber.log.Timber
 
 /**
@@ -19,7 +20,9 @@ interface AppDefaultDateFormatProvider {
     fun provide(): String
 }
 
-class AppDefaultDateFormatProviderImpl : AppDefaultDateFormatProvider {
+class AppDefaultDateFormatProviderImpl @Inject constructor(
+    private val localeProvider: LocaleProvider
+) : AppDefaultDateFormatProvider {
 
     /**
      * Provides the default date format pattern based on the current locale.
@@ -29,7 +32,7 @@ class AppDefaultDateFormatProviderImpl : AppDefaultDateFormatProvider {
      */
     override fun provide(): String {
         return try {
-            val locale = Locale.getDefault()
+            val locale = localeProvider.locale()
             val dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, locale)
             if (dateFormat is SimpleDateFormat) {
                 dateFormat.toPattern()

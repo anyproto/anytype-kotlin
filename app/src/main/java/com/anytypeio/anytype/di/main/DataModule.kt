@@ -52,6 +52,7 @@ import com.anytypeio.anytype.persistence.db.AnytypeDatabase
 import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProviderImpl
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.persistence.repo.DefaultDebugSettingsCache
 import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
@@ -342,7 +343,10 @@ object DataModule {
     @Provides
     @Singleton
     fun provideAppDefaultDateFormatProvider(
-    ): AppDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl()
+        localeProvider: LocaleProvider
+    ): AppDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl(
+        localeProvider = localeProvider
+    )
 
     @Module
     interface Bindings {

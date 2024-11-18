@@ -100,87 +100,127 @@ class HomeScreenFragment : BaseComposeFragment(),
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
-                val focus = LocalFocusManager.current
-                val component = componentManager().spaceLevelChatComponent
-                val spaceLevelChatViewModel = daggerViewModel {
-                    component.get(
-                        key = space,
-                        param = DiscussionViewModel.Params.SpaceLevelChat(
-                            space = Space(space)
-                        )
-                    ).getViewModel()
-                }
-                val pagerState = rememberPagerState { 2 }
-                val coroutineScope = rememberCoroutineScope()
-                Box(
-                    Modifier.fillMaxSize()
-                ) {
-                    HomeScreenToolbar(
-                        onWidgetTabClicked = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(0)
-                            }
-                        },
-                        onChatTabClicked = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(1)
-                            }
-                        }
-                    )
-                    HorizontalPager(
-                        modifier = Modifier.padding(top = 64.dp),
-                        state = pagerState,
-                        userScrollEnabled = false
-                    ) { page ->
-                        if (page == 0) {
-                            focus.clearFocus(force = true)
-                            HomeScreen(
-                                modifier = Modifier,
-                                widgets = vm.views.collectAsState().value,
-                                mode = vm.mode.collectAsState().value,
-                                onExpand = { path -> vm.onExpand(path) },
-                                onCreateWidget = vm::onCreateWidgetClicked,
-                                onEditWidgets = vm::onEditWidgets,
-                                onExitEditMode = vm::onExitEditMode,
-                                onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                                    vm.onDropDownMenuAction(widget, action)
-                                },
-                                onWidgetObjectClicked = vm::onWidgetObjectClicked,
-                                onWidgetSourceClicked = vm::onWidgetSourceClicked,
-                                onChangeWidgetView = vm::onChangeCurrentWidgetView,
-                                onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
-                                onSearchClicked = vm::onSearchIconClicked,
-                                onCreateNewObjectClicked = throttledClick(
-                                    onClick = { vm.onCreateNewObjectClicked() }
-                                ),
-                                onCreateNewObjectLongClicked = throttledClick(
-                                    onClick = { vm.onCreateNewObjectLongClicked() }
-                                ),
-                                onBackClicked = throttledClick(
-                                    onClick = vm::onBackClicked
-                                ),
-                                onSpaceWidgetClicked = throttledClick(
-                                    onClick = vm::onSpaceSettingsClicked
-                                ),
-                                onBundledWidgetClicked = vm::onBundledWidgetClicked,
-                                onMove = vm::onMove,
-                                onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-                                onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
-                                onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
-                                onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
-                                onCreateDataViewObject = vm::onCreateDataViewObject,
-                                onBackLongClicked = vm::onBackLongClicked
+                if (featureToggles.isNewSpaceHomeEnabled) {
+                    val focus = LocalFocusManager.current
+                    val component = componentManager().spaceLevelChatComponent
+                    val spaceLevelChatViewModel = daggerViewModel {
+                        component.get(
+                            key = space,
+                            param = DiscussionViewModel.Params.SpaceLevelChat(
+                                space = Space(space)
                             )
-                        } else {
-                            DiscussionScreenWrapper(
-                                isSpaceLevelChat = true,
-                                vm = spaceLevelChatViewModel,
-                                onAttachClicked = {
-                                    // TODO
+                        ).getViewModel()
+                    }
+                    val pagerState = rememberPagerState { 2 }
+                    val coroutineScope = rememberCoroutineScope()
+                    Box(
+                        Modifier.fillMaxSize()
+                    ) {
+                        HomeScreenToolbar(
+                            onWidgetTabClicked = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(0)
                                 }
-                            )
+                            },
+                            onChatTabClicked = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(1)
+                                }
+                            }
+                        )
+                        HorizontalPager(
+                            modifier = Modifier.padding(top = 64.dp),
+                            state = pagerState,
+                            userScrollEnabled = false
+                        ) { page ->
+                            if (page == 0) {
+                                focus.clearFocus(force = true)
+                                HomeScreen(
+                                    modifier = Modifier,
+                                    widgets = vm.views.collectAsState().value,
+                                    mode = vm.mode.collectAsState().value,
+                                    onExpand = { path -> vm.onExpand(path) },
+                                    onCreateWidget = vm::onCreateWidgetClicked,
+                                    onEditWidgets = vm::onEditWidgets,
+                                    onExitEditMode = vm::onExitEditMode,
+                                    onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
+                                        vm.onDropDownMenuAction(widget, action)
+                                    },
+                                    onWidgetObjectClicked = vm::onWidgetObjectClicked,
+                                    onWidgetSourceClicked = vm::onWidgetSourceClicked,
+                                    onChangeWidgetView = vm::onChangeCurrentWidgetView,
+                                    onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
+                                    onSearchClicked = vm::onSearchIconClicked,
+                                    onCreateNewObjectClicked = throttledClick(
+                                        onClick = { vm.onCreateNewObjectClicked() }
+                                    ),
+                                    onCreateNewObjectLongClicked = throttledClick(
+                                        onClick = { vm.onCreateNewObjectLongClicked() }
+                                    ),
+                                    onBackClicked = throttledClick(
+                                        onClick = vm::onBackClicked
+                                    ),
+                                    onSpaceWidgetClicked = throttledClick(
+                                        onClick = vm::onSpaceSettingsClicked
+                                    ),
+                                    onBundledWidgetClicked = vm::onBundledWidgetClicked,
+                                    onMove = vm::onMove,
+                                    onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
+                                    onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
+                                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
+                                    onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
+                                    onCreateDataViewObject = vm::onCreateDataViewObject,
+                                    onBackLongClicked = vm::onBackLongClicked
+                                )
+                            } else {
+                                DiscussionScreenWrapper(
+                                    isSpaceLevelChat = true,
+                                    vm = spaceLevelChatViewModel,
+                                    onAttachClicked = {
+                                        // TODO
+                                    }
+                                )
+                            }
                         }
                     }
+                } else {
+                    HomeScreen(
+                        modifier = Modifier,
+                        widgets = vm.views.collectAsState().value,
+                        mode = vm.mode.collectAsState().value,
+                        onExpand = { path -> vm.onExpand(path) },
+                        onCreateWidget = vm::onCreateWidgetClicked,
+                        onEditWidgets = vm::onEditWidgets,
+                        onExitEditMode = vm::onExitEditMode,
+                        onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
+                            vm.onDropDownMenuAction(widget, action)
+                        },
+                        onWidgetObjectClicked = vm::onWidgetObjectClicked,
+                        onWidgetSourceClicked = vm::onWidgetSourceClicked,
+                        onChangeWidgetView = vm::onChangeCurrentWidgetView,
+                        onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
+                        onSearchClicked = vm::onSearchIconClicked,
+                        onCreateNewObjectClicked = throttledClick(
+                            onClick = { vm.onCreateNewObjectClicked() }
+                        ),
+                        onCreateNewObjectLongClicked = throttledClick(
+                            onClick = { vm.onCreateNewObjectLongClicked() }
+                        ),
+                        onBackClicked = throttledClick(
+                            onClick = vm::onBackClicked
+                        ),
+                        onSpaceWidgetClicked = throttledClick(
+                            onClick = vm::onSpaceSettingsClicked
+                        ),
+                        onBundledWidgetClicked = vm::onBundledWidgetClicked,
+                        onMove = vm::onMove,
+                        onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
+                        onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
+                        onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
+                        onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
+                        onCreateDataViewObject = vm::onCreateDataViewObject,
+                        onBackLongClicked = vm::onBackLongClicked
+                    )
                 }
             }
         }
@@ -442,10 +482,6 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
-    }
-
-    override fun onApplyWindowRootInsets(view: View) {
-        super.onApplyWindowRootInsets(view)
     }
 
     companion object {

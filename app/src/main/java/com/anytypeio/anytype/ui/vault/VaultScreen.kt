@@ -344,7 +344,10 @@ fun LoadingSpaceCard() {
             .fillMaxWidth()
             .height(96.dp)
             .padding(horizontal = 8.dp)
-            .background(color = colorResource(R.color.shape_tertiary))
+            .background(
+                color = colorResource(R.color.shape_tertiary),
+                shape = RoundedCornerShape(20.dp)
+            )
             .clip(RoundedCornerShape(20.dp))
     ) {
         Box(
@@ -353,7 +356,8 @@ fun LoadingSpaceCard() {
                 .size(64.dp)
                 .align(Alignment.CenterStart)
                 .background(
-                    color = colorResource(R.color.shape_primary)
+                    color = colorResource(R.color.shape_primary),
+                    shape = RoundedCornerShape(8.dp)
                 )
         )
 

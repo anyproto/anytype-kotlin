@@ -82,10 +82,7 @@ class VaultViewModel(
                 }
                 .combine(observeVaultSettings.flow()) { spaces, settings ->
                     spaces
-                        .filter { space ->
-                            space.spaceLocalStatus == SpaceStatus.OK
-                                    && !space.spaceAccountStatus.isDeletedOrRemoving()
-                        }
+                        .filter { space -> space.isActive }
                         .distinctBy { it.id }
                         .map { space ->
                             VaultSpaceView(

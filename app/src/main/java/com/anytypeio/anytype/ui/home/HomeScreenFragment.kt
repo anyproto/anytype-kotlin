@@ -178,6 +178,9 @@ class HomeScreenFragment : BaseComposeFragment(),
                                     vm = spaceLevelChatViewModel,
                                     onAttachClicked = {
                                         // TODO
+                                    },
+                                    onBackButtonClicked = {
+                                        findNavController().popBackStack()
                                     }
                                 )
                             }

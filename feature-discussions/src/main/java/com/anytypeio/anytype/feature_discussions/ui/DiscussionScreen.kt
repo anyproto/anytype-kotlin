@@ -229,16 +229,7 @@ fun DiscussionScreen(
         }
     }
     val scope = rememberCoroutineScope()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .then(
-                if (isSpaceLevelChat)
-                    Modifier
-                else
-                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
-            )
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         if (!isSpaceLevelChat) {
             TopDiscussionToolbar(
                 title = title,

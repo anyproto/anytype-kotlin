@@ -221,7 +221,7 @@
     <string name="more">More</string>
     <string name="done">Готово</string>
     <string name="select_scroll_and_move_blocks">To start, select blocks</string>
-    <string name="block_code_menu_title">Language</string>
+    <string name="block_code_plain_text">Plain text</string>
     <string name="undo">Повернути</string>
     <string name="redo">Redo</string>
     <string name="block_action_copy">Копіювати</string>

@@ -8,6 +8,11 @@ import com.anytypeio.anytype.domain.`object`.FetchObject
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 interface DeepLinkToObjectDelegate {
 
@@ -19,6 +24,12 @@ interface DeepLinkToObjectDelegate {
         space: SpaceId,
         switchSpaceIfObjectFound: Boolean = true
     ) : Result
+
+    fun onDeepLinkToObjectAwait(
+        obj: Id,
+        space: SpaceId,
+        switchSpaceIfObjectFound: Boolean = true
+    ) : Flow<Result>
 
     class Default @Inject constructor(
         private val spaceManager: SpaceManager,
@@ -59,6 +70,49 @@ interface DeepLinkToObjectDelegate {
                 }
             } else {
                 return Result.Error
+            }
+        }
+
+
+        override fun onDeepLinkToObjectAwait(
+            obj: Id,
+            space: SpaceId,
+            switchSpaceIfObjectFound: Boolean
+        ): Flow<Result> = flow {
+            val wrapper = fetchObject
+                .async(
+                    params = FetchObject.Params(
+                        obj = obj,
+                        space = space
+                    )
+                )
+                .getOrNull()
+
+            if (wrapper != null) {
+                emitAll(
+                    userPermissionProvider
+                        .observe(space = space)
+                        .filter { permission -> permission != null }
+                        .map { permission ->
+                            if (permission?.isAtLeastReader() == true) {
+                                if (switchSpaceIfObjectFound) {
+                                    val switchSpaceResult = spaceManager.set(space = space.id)
+                                    if (switchSpaceResult.isSuccess) {
+                                        saveCurrentSpace.async(SaveCurrentSpace.Params(space = space))
+                                        Result.Success(wrapper)
+                                    } else {
+                                        Result.Error
+                                    }
+                                } else {
+                                    Result.Success(wrapper)
+                                }
+                            } else {
+                                Result.Error
+                            }
+                        }
+                )
+            } else {
+                emit(Result.Error)
             }
         }
     }

@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
@@ -75,6 +76,9 @@ class ModifyStatusFilterTest {
     lateinit var analytics: Analytics
 
     @Mock
+    lateinit var dateProvider: DateProvider
+
+    @Mock
     lateinit var spaceManager: SpaceManager
 
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
@@ -108,7 +112,8 @@ class ModifyStatusFilterTest {
             analytics = analytics,
             storeOfRelations = storeOfRelations,
             objectSetDatabase = db,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            dateProvider = dateProvider
         )
     }
 

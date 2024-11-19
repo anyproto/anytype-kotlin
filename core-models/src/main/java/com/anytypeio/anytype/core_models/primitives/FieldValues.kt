@@ -1,32 +1,63 @@
 package com.anytypeio.anytype.core_models.primitives
 
-@JvmInline
-value class FieldDateValue(val value: Long) {
-    companion object {
-        // Represents an unchosen or "no date" state
-        val None = FieldDateValue(Long.MIN_VALUE)
-    }
 
-    val inMillis: Long
-        get() = if (this == None) 0L else value * 1000
+//sealed class Either<out R> {
+//    data object None : Either<Nothing>()
+//    data class Value<out R>(val v: R) : Either<R>()
+//
+//    fun get(none: () -> Any, value: (R) -> Any): Any =
+//        when (this) {
+//            is None -> none()
+//            is Value -> value(v)
+//        }
+//}
+//
+//sealed class Field {
+//
+//    abstract val value: Either<Value>
+//
+//    data class Text(
+//        override val value: Either<Value.Text>
+//    ) : Field()
+//
+//    data class Date(
+//        override val value: Either<Value.Date>
+//    ) : Field() {
+//    }
+//
+//    sealed class Value {
+//        data class Text(val value: String) : Value()
+//        data class Date(val value: Long) : Value()
+//    }
+//}
 
-    fun isNone(): Boolean = this == None
+sealed class Value<T> {
+    data class Single<T>(val value: T) : Value<T>()
+    data class Multiple<T>(val values: List<T>) : Value<T>()
 }
 
-sealed class FieldDate {
-    data class Chosen(val value: FieldDateValue) : FieldDate()
-    object None : FieldDate()
+sealed class Field<T>(open val value: Value<T>?) {
+    data class Text(override val value: Value<String>?) : Field<String>(value)
+    data class Date(override val value: Value<Long>?) : Field<Long>(value)
 }
 
-// Update DateParser to return FieldDate instead of FieldDateValue
 object DateParser {
-    fun parse(value: Any?): FieldDate {
-        val result: Long? = when (value) {
-            is String -> value.toLongOrNull()
-            is Double -> value.toLong()
-            is Long -> value
+    fun parse(value: Any?): Field.Date {
+        val result: Value<Long>? = when (value) {
+            is String -> value.toLongOrNull()?.let { Value.Single(it) }
+            is Number -> Value.Single(value.toLong())
+            is List<*> -> {
+                val longs = value.mapNotNull {
+                    when (it) {
+                        is String -> it.toLongOrNull()
+                        is Number -> it.toLong()
+                        else -> null
+                    }
+                }
+                if (longs.isNotEmpty()) Value.Multiple(longs) else null
+            }
             else -> null
         }
-        return if (result != null) FieldDate.Chosen(FieldDateValue(result)) else FieldDate.None
+        return Field.Date(value = result)
     }
 }

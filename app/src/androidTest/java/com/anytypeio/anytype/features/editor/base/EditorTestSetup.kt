@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -294,6 +295,9 @@ open class EditorTestSetup {
     @Mock
     lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
+    @Mock
+    lateinit var dateProvider: DateProvider
+
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     lateinit var addRelationToObject: AddRelationToObject
@@ -410,7 +414,8 @@ open class EditorTestSetup {
                 toggleStateHolder = ToggleStateHolder.Default(),
                 coverImageHashProvider = coverImageHashProvider,
                 storeOfRelations = storeOfRelations,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                dateProvider = dateProvider
             ),
             orchestrator = Orchestrator(
                 createBlock = createBlock,
@@ -496,7 +501,8 @@ open class EditorTestSetup {
             syncStatusProvider = spaceSyncAndP2PStatusProvider,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             clearLastOpenedObject = clearLastOpenedObject,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            dateProvider = dateProvider
         )
     }
 

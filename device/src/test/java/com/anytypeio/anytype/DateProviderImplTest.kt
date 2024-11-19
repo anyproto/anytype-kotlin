@@ -3,8 +3,10 @@ package com.anytypeio.anytype
 import com.anytypeio.anytype.device.providers.DateProviderImpl
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import java.time.ZoneId
 import java.util.Locale
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -17,12 +19,22 @@ class DateProviderImplTest {
     @Mock
     lateinit var localeProvider: LocaleProvider
 
+    @Mock
+    lateinit var observeVaultSettings: ObserveVaultSettings
+
     lateinit var dateProviderImpl: DateProvider
 
+    private val defaultZoneId get() = ZoneId.systemDefault()
+
     @Before
-    fun setUp() {
+    fun setUp() = runTest {
         MockitoAnnotations.openMocks(this)
-        dateProviderImpl = DateProviderImpl(ZoneId.systemDefault(), localeProvider)
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = defaultZoneId,
+            localeProvider = localeProvider,
+            vaultSettings = observeVaultSettings,
+            scope = backgroundScope
+        )
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
     }
 

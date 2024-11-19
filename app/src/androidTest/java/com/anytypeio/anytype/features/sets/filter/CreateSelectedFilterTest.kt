@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
@@ -73,6 +74,9 @@ class CreateSelectedFilterTest {
     @Mock
     lateinit var dispatchers: AppCoroutineDispatchers
 
+    @Mock
+    lateinit var dateProvider: DateProvider
+
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
     private lateinit var searchObjects: SearchObjects
     private lateinit var getOptions: GetOptions
@@ -104,7 +108,8 @@ class CreateSelectedFilterTest {
             storeOfRelations = storeOfRelations,
             objectSetDatabase = db,
             getOptions = getOptions,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            dateProvider = dateProvider
         )
     }
 

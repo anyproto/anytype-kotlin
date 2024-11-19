@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.toTimeSeconds
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -105,6 +106,9 @@ class ObjectRelationListTest {
 
     lateinit var urlBuilder: UrlBuilder
 
+    @Mock
+    lateinit var dateProvider: DateProvider
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -126,7 +130,8 @@ class ObjectRelationListTest {
             storeOfRelations = storeOfRelations,
             addRelationToObject = addRelationToObject,
             spaceManager = spaceManager,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            dateProvider = dateProvider
         )
     }
 

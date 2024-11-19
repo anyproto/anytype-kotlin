@@ -57,6 +57,7 @@ import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -79,6 +80,7 @@ import java.util.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
@@ -231,7 +233,15 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var localeProvider : LocaleProvider
 
-    private val dateProvider = DateProviderImpl(ZoneId.systemDefault(), localeProvider)
+    @Mock
+    lateinit var observeVaultSettings: ObserveVaultSettings
+
+    private val dateProvider = DateProviderImpl(
+        defaultZoneId = ZoneId.systemDefault(),
+        localeProvider = localeProvider,
+        vaultSettings = observeVaultSettings,
+        scope = TestScope()
+    )
 
     open fun setup() {
         MockitoAnnotations.openMocks(this)

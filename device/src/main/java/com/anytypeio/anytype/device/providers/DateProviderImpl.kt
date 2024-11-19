@@ -1,11 +1,14 @@
 package com.anytypeio.anytype.device.providers
 
 import android.text.format.DateUtils
+import com.anytypeio.anytype.core_models.FALLBACK_DATE_PATTERN
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -15,13 +18,29 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import java.util.Date
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class DateProviderImpl @Inject constructor(
     private val defaultZoneId: ZoneId,
-    private val localeProvider: LocaleProvider
+    private val localeProvider: LocaleProvider,
+    private val vaultSettings: ObserveVaultSettings,
+    scope: CoroutineScope
 ) : DateProvider {
+
+    private val defaultDateFormat = MutableStateFlow(FALLBACK_DATE_PATTERN)
+
+    init {
+        scope.launch {
+            vaultSettings.flow().collect { settings ->
+                defaultDateFormat.value = settings.dateFormat
+            }
+        }
+    }
 
     override fun calculateDateType(date: TimeInSeconds): DateType {
         val dateInstant = Instant.ofEpochSecond(date)
@@ -146,13 +165,13 @@ class DateProviderImpl @Inject constructor(
 
     override fun formatTimestampToDateAndTime(
         timestamp: TimeInMillis,
-        dateStyle: Int,
         timeStyle: Int
     ): Pair<String, String> {
         return try {
             val locale = localeProvider.locale()
-            val datePattern = (DateFormat.getDateInstance(dateStyle, locale) as SimpleDateFormat).toPattern()
-            val timePattern = (DateFormat.getTimeInstance(timeStyle, locale) as SimpleDateFormat).toPattern()
+            val datePattern = defaultDateFormat.value
+            val timePattern =
+                (DateFormat.getTimeInstance(timeStyle, locale) as SimpleDateFormat).toPattern()
             val dateFormatter = SimpleDateFormat(datePattern, locale)
             val timeFormatter = SimpleDateFormat(timePattern, locale)
             val date = Date(timestamp)
@@ -173,6 +192,33 @@ class DateProviderImpl @Inject constructor(
         val truncatedDateTime2 = dateTime2.truncatedTo(ChronoUnit.MINUTES)
 
         return truncatedDateTime1 == truncatedDateTime2
+    }
+
+    override fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate? {
+        if (dateInSeconds == null || dateInSeconds == 0L) return null
+
+        val zoneId = defaultZoneId
+        val dateInstant = Instant.ofEpochSecond(dateInSeconds)
+        val givenDate = dateInstant.atZone(zoneId).toLocalDate()
+        val today = LocalDate.now(zoneId)
+
+        val daysDifference = ChronoUnit.DAYS.between(today, givenDate)
+
+        return when (daysDifference) {
+            0L -> RelativeDate.Today(dateInSeconds)
+            1L -> RelativeDate.Tomorrow(dateInSeconds)
+            -1L -> RelativeDate.Yesterday(dateInSeconds)
+            else -> {
+                val timestampMillis = TimeUnit.SECONDS.toMillis(dateInSeconds)
+
+                val (dateString, timeString) = formatTimestampToDateAndTime(timestampMillis)
+                RelativeDate.Other(
+                    date = dateString,
+                    time = timeString,
+                    timestamp = dateInSeconds
+                )
+            }
+        }
     }
 }
 

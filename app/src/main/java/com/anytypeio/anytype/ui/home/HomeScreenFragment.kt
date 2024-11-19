@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
@@ -44,7 +45,9 @@ import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
+import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
@@ -101,6 +104,9 @@ class HomeScreenFragment : BaseComposeFragment(),
                 )
             ) {
                 if (featureToggles.isNewSpaceHomeEnabled) {
+                    val view = (vm.views.collectAsStateWithLifecycle().value.find {
+                        it is WidgetView.SpaceWidget.View
+                    } as? WidgetView.SpaceWidget.View)
                     val focus = LocalFocusManager.current
                     val component = componentManager().spaceLevelChatComponent
                     val spaceLevelChatViewModel = daggerViewModel {
@@ -117,6 +123,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                         Modifier.fillMaxSize()
                     ) {
                         HomeScreenToolbar(
+                            spaceIconView = view?.icon ?: SpaceIconView.Loading,
                             isChatActive = pagerState.targetPage == 1,
                             onWidgetTabClicked = {
                                 coroutineScope.launch {
@@ -127,7 +134,8 @@ class HomeScreenFragment : BaseComposeFragment(),
                                 coroutineScope.launch {
                                     pagerState.animateScrollToPage(1)
                                 }
-                            }
+                            },
+                            onSpaceIconClicked = vm::onSpaceSettingsClicked
                         )
                         HorizontalPager(
                             modifier = Modifier.padding(top = 64.dp),

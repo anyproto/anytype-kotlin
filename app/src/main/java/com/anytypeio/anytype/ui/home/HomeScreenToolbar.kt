@@ -16,14 +16,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.feature_discussions.R
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
 fun HomeScreenToolbar(
+    spaceIconView: SpaceIconView,
     isChatActive: Boolean,
     onWidgetTabClicked: () -> Unit,
-    onChatTabClicked: () -> Unit
+    onChatTabClicked: () -> Unit,
+    onSpaceIconClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -44,6 +48,15 @@ fun HomeScreenToolbar(
                     onWidgetTabClicked()
                 },
             contentDescription = "Widgets button"
+        )
+
+        SpaceIconView(
+            modifier = Modifier.align(Alignment.Center),
+            icon = spaceIconView,
+            onSpaceIconClick = {
+                onSpaceIconClicked()
+            },
+            mainSize = 40.dp
         )
 
         Image(
@@ -68,6 +81,8 @@ fun HomeScreenToolbarPreview() {
     HomeScreenToolbar(
         onWidgetTabClicked = {},
         onChatTabClicked = {},
-        isChatActive = false
+        isChatActive = false,
+        spaceIconView = SpaceIconView.Loading,
+        onSpaceIconClicked = {}
     )
 }

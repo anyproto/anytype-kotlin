@@ -142,6 +142,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -1316,17 +1317,18 @@ class HomeScreenViewModel(
             }
             is DeepLinkResolver.Action.DeepLinkToObject -> {
                 viewModelScope.launch {
-                    val result = onDeepLinkToObject(
+                    onDeepLinkToObjectAwait(
                         obj = deeplink.obj,
                         space = deeplink.space,
                         switchSpaceIfObjectFound = true
-                    )
-                    when(result) {
-                        is DeepLinkToObjectDelegate.Result.Error -> {
-                            commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
-                        }
-                        is DeepLinkToObjectDelegate.Result.Success -> {
-                            proceedWithNavigation(result.obj.navigation())
+                    ).collect { result ->
+                        when(result) {
+                            is DeepLinkToObjectDelegate.Result.Error -> {
+                                commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+                            }
+                            is DeepLinkToObjectDelegate.Result.Success -> {
+                                proceedWithNavigation(result.obj.navigation())
+                            }
                         }
                     }
                 }

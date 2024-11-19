@@ -1811,7 +1811,7 @@ message Rpc {
                 repeated string keys = 7;
                 bool returnMeta = 8; // add ResultMeta to each result
                 bool returnMetaRelationDetails = 9; // add relation option details to meta
-                bool returnHTMLHighlightsInsteadOfRanges = 10;
+                bool returnHTMLHighlightsInsteadOfRanges = 10; //DEPRECATED
             }
 
             message Response {

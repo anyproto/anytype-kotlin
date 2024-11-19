@@ -5,8 +5,8 @@ import android.widget.TextView
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterDateBinding
+import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
-import com.anytypeio.anytype.core_utils.ext.formatTimestamp
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.extension.hasValue
@@ -44,7 +44,10 @@ class FilterDateViewHolder(val binding: ItemDvViewerFilterDateBinding) :
                     R.string.dates_days_from,
                     value
                 )
-                DVFilterQuickOption.EXACT_DATE -> item.filterValue.value?.formatTimestamp(isMillis = false)
+                DVFilterQuickOption.EXACT_DATE -> {
+                    val relativeDate = item.relativeDate
+                    relativeDate?.getPrettyName(resources = resources)
+                }
                 else -> item.quickOption.toName()
             }
         } else {

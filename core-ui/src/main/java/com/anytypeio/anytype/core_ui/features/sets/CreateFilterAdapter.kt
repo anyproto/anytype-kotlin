@@ -13,8 +13,8 @@ import com.anytypeio.anytype.core_ui.databinding.ItemCreateFilterObjectBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemCreateFilterStatusBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemCreateFilterTagBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.extensions.light
-import com.anytypeio.anytype.core_utils.ext.formatTimestamp
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -175,7 +175,9 @@ class CreateFilterAdapter(
                 when (item.type) {
                     DVFilterQuickOption.EXACT_DATE -> {
                         tvDate.visible()
-                        tvDate.text = item.value.formatTimestamp(isMillis = false)
+                        tvDate.text = item.relativeDate?.getPrettyName(
+                            resources = itemView.resources
+                        )
                     }
                     DVFilterQuickOption.DAYS_AGO, DVFilterQuickOption.DAYS_AHEAD -> {
                         tvDate.visible()

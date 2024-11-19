@@ -54,6 +54,7 @@ import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.mapFileObjectToView
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.FavoritesView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.ObjectView
@@ -211,7 +212,10 @@ class CollectionViewModel(
     fun onStop() {
         launch {
             withContext(dispatchers.io) {
-                container.unsubscribe(listOf(subscription.id))
+                // N.B. Unsubscribing from BIN is managed by space home screen.
+                if (subscription.id != Subscriptions.SUBSCRIPTION_ARCHIVED) {
+                    container.unsubscribe(listOf(subscription.id))
+                }
             }
             jobs.cancel()
         }

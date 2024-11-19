@@ -23,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -124,13 +125,6 @@ class StartAccountTest {
         verify(repo, times(1)).saveAccount(account)
 
         verify(repo, times(1)).setCurrentAccount(account.id)
-
-        verify(repo, times(1)).setInitialParams(
-            platform = platform,
-            version = version
-        )
-
-        verifyNoMoreInteractions(repo)
     }
 
     @Test

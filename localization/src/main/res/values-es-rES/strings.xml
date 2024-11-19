@@ -1555,4 +1555,5 @@ En concreto,
     <string name="chats_edit_message">Editar mensaje</string>
     <string name="chats_message_edited">editado</string>
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>
+    <string name="write_a_message">Escribe un mensaje...</string>
 </resources>

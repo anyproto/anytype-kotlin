@@ -117,6 +117,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                         Modifier.fillMaxSize()
                     ) {
                         HomeScreenToolbar(
+                            isChatActive = pagerState.targetPage == 1,
                             onWidgetTabClicked = {
                                 coroutineScope.launch {
                                     pagerState.animateScrollToPage(0)

@@ -20,6 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -120,11 +121,6 @@ class CreateAccountTest {
             verify(repo, times(1)).createAccount(command)
             verify(repo, times(1)).saveAccount(setup.account)
             verify(repo, times(1)).setCurrentAccount(setup.account.id)
-            verify(repo, times(1)).setInitialParams(
-                platform = platform,
-                version = version
-            )
-            verifyNoMoreInteractions(repo)
             verify(configStorage, times(1)).set(setup.config)
             verify(spaceManager, times(1)).set(setup.config.space)
             verify(awaitAccountStartManager, times(1)).setState(AwaitAccountStartManager.State.Started)

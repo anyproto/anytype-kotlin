@@ -184,8 +184,6 @@ class ObjectSetViewModel(
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
 {
 
-    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
-
     val permission = MutableStateFlow<SpaceMemberPermissions?>(SpaceMemberPermissions.NO_PERMISSIONS)
 
     private val isOwnerOrEditor get() = permission.value?.isOwnerOrEditor() ==  true
@@ -387,36 +385,6 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun proceedWithObservingProfileIcon() {
-        viewModelScope.launch {
-            val config = spaceManager.getConfig(vmParams.space)
-            if (config != null) {
-                storelessSubscriptionContainer.subscribe(
-                    StoreSearchByIdsParams(
-                        space = SpaceId(config.techSpace),
-                        subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                        targets = listOf(config.profile),
-                        keys = listOf(
-                            Relations.ID,
-                            Relations.SPACE_ID,
-                            Relations.NAME,
-                            Relations.ICON_EMOJI,
-                            Relations.ICON_IMAGE,
-                            Relations.ICON_OPTION
-                        )
-                    )
-                ).map { result ->
-                    val obj = result.firstOrNull()
-                    obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
-                }.catch {
-                    Timber.e(it, "Error while observing space icon")
-                }.flowOn(dispatchers.io).collect { icon.value = it }
-            } else {
-                Timber.w("Config not found to get profile object id")
-            }
-        }
-    }
-
     private suspend fun proceedWithSettingUnsplashImage(
         action: Action.SetUnsplashImage
     ) {
@@ -452,7 +420,6 @@ class ObjectSetViewModel(
         }
         subscribeToEvents(ctx = vmParams.ctx)
         proceedWithOpeningCurrentObject(ctx = vmParams.ctx)
-        proceedWithObservingProfileIcon()
         proceedWithObservingSyncStatus()
     }
 

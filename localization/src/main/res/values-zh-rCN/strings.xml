@@ -1538,4 +1538,5 @@
     <string name="chats_edit_message">编辑消息</string>
     <string name="chats_message_edited">已编辑</string>
     <string name="chat_empty_state_message">还没有任何消息。\n成为第一个开始讨论的人。</string>
+    <string name="write_a_message">写一段话…</string>
 </resources>

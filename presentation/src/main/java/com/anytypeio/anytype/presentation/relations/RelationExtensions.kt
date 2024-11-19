@@ -295,4 +295,5 @@ fun ObjectRelationView.getRelationFormat(): RelationFormat = when (this) {
     is ObjectRelationView.ObjectType.Base -> RelationFormat.OBJECT
     is ObjectRelationView.ObjectType.Deleted -> RelationFormat.OBJECT
     is ObjectRelationView.Source -> RelationFormat.OBJECT
+    is ObjectRelationView.Date -> RelationFormat.DATE
 }

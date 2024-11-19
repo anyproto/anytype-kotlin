@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.buildFileViews
@@ -28,14 +29,16 @@ fun List<ObjectWrapper.Relation>.views(
     details: Block.Details,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
-    featured: List<Id> = emptyList()
+    featured: List<Id> = emptyList(),
+    dateProvider: DateProvider
 ): List<ObjectRelationView> = mapNotNull { relation ->
     relation.view(
         context = context,
         details = details,
         values = values,
         urlBuilder = urlBuilder,
-        isFeatured = featured.contains(relation.key)
+        isFeatured = featured.contains(relation.key),
+        dateProvider = dateProvider
     )
 }
 
@@ -44,7 +47,8 @@ fun ObjectWrapper.Relation.view(
     details: Block.Details,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
-    isFeatured: Boolean = false
+    isFeatured: Boolean = false,
+    dateProvider: DateProvider
 ): ObjectRelationView? {
     val relation = this
     val relationFormat = relation.relationFormat

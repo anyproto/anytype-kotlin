@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -97,7 +98,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val getNetworkMode: GetNetworkMode,
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val syncStatusProvider: SpaceSyncAndP2PStatusProvider
+    private val syncStatusProvider: SpaceSyncAndP2PStatusProvider,
+    private val dateProvider: DateProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -147,7 +149,8 @@ open class EditorViewModelFactory @Inject constructor(
             spaceSyncAndP2PStatusProvider = syncStatusProvider,
             getNetworkMode = getNetworkMode,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            dateProvider = dateProvider
         ) as T
     }
 }

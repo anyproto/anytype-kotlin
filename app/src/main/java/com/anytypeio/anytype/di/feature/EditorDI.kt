@@ -288,7 +288,8 @@ object EditorSessionModule {
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         syncStatusProvider: SpaceSyncAndP2PStatusProvider,
         getNetworkMode: GetNetworkMode,
-        clearLastOpenedObject: ClearLastOpenedObject
+        clearLastOpenedObject: ClearLastOpenedObject,
+        dateProvider: DateProvider
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -334,7 +335,8 @@ object EditorSessionModule {
         getNetworkMode = getNetworkMode,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         clearLastOpenedObject = clearLastOpenedObject,
-        syncStatusProvider = syncStatusProvider
+        syncStatusProvider = syncStatusProvider,
+        dateProvider = dateProvider
     )
 
     @JvmStatic

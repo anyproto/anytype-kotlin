@@ -139,7 +139,8 @@ class RelationListViewModel(
             details = details,
             values = objectDetails,
             urlBuilder = urlBuilder,
-            featured = objectWrapper.featuredRelations
+            featured = objectWrapper.featuredRelations,
+            dateProvider = dateProvider
         ).map { view ->
             Model.Item(
                 view = view,
@@ -163,7 +164,8 @@ class RelationListViewModel(
             context = ctx,
             details = details,
             values = objectDetails,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            dateProvider = dateProvider
         ).map { view ->
             Model.Item(
                 view = view,

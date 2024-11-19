@@ -13,7 +13,7 @@ import java.time.ZoneId
 interface DateProvider {
     fun getRelativeTimeSpanString(date: Long): CharSequence
     fun calculateDateType(date: TimeInSeconds): DateType
-    fun calculateRelativeDates(date: TimeInSeconds?): RelativeDate?
+    fun calculateRelativeDates(timeInSeconds: TimeInSeconds?): RelativeDate?
     fun getCurrentTimestampInSeconds(): TimeInSeconds
     fun getTimestampForTodayAtStartOfDay(): TimeInSeconds
     fun getTimestampForTomorrowAtStartOfDay(): TimeInSeconds

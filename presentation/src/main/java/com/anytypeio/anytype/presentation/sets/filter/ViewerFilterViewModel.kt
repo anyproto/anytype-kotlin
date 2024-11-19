@@ -7,6 +7,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.DataViewState
@@ -34,7 +35,8 @@ class ViewerFilterViewModel(
     private val urlBuilder: UrlBuilder,
     private val storeOfRelations: StoreOfRelations,
     private val db: ObjectSetDatabase,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val dateProvider: DateProvider
 ) : BaseListViewModel<FilterView>() {
 
     val screenState = MutableStateFlow(ScreenState.LIST)
@@ -66,7 +68,8 @@ class ViewerFilterViewModel(
                         storeOfRelations = storeOfRelations,
                         storeOfObjects = db.store,
                         screenState = screenState.value,
-                        urlBuilder = urlBuilder
+                        urlBuilder = urlBuilder,
+                        dateProvider = dateProvider
                     )
                 }
         }
@@ -217,7 +220,8 @@ class ViewerFilterViewModel(
         private val urlBuilder: UrlBuilder,
         private val analytics: Analytics,
         private val storeOfRelations: StoreOfRelations,
-        private val objectSetDatabase: ObjectSetDatabase
+        private val objectSetDatabase: ObjectSetDatabase,
+        private val dateProvider: DateProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -228,7 +232,8 @@ class ViewerFilterViewModel(
                 urlBuilder = urlBuilder,
                 analytics = analytics,
                 storeOfRelations = storeOfRelations,
-                db = objectSetDatabase
+                db = objectSetDatabase,
+                dateProvider = dateProvider
             ) as T
         }
     }

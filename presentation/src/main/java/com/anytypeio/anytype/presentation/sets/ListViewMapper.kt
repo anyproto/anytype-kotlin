@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -19,7 +20,8 @@ suspend fun DVViewer.buildListViews(
     relations: List<ObjectWrapper.Relation>,
     urlBuilder: UrlBuilder,
     store: ObjectStore,
-    objectOrderIds: List<Id>
+    objectOrderIds: List<Id>,
+    dateProvider: DateProvider
 ): List<Viewer.ListView.Item> {
     val items = objects.mapNotNull { id ->
         val obj = store.get(id)
@@ -37,7 +39,8 @@ suspend fun DVViewer.buildListViews(
                             relations = relations,
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
-                            storeOfObjects = store
+                            storeOfObjects = store,
+                            dateProvider = dateProvider
                         ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         icon = obj.objectIcon(urlBuilder),
@@ -57,7 +60,8 @@ suspend fun DVViewer.buildListViews(
                             relations = relations,
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
-                            storeOfObjects = store
+                            storeOfObjects = store,
+                            dateProvider = dateProvider
                         ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         done = obj.done ?: false,
@@ -76,7 +80,8 @@ suspend fun DVViewer.buildListViews(
                             relations = relations,
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
-                            storeOfObjects = store
+                            storeOfObjects = store,
+                            dateProvider = dateProvider
                         ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         icon = obj.objectIcon(urlBuilder),

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.Relations.NUMBER_DEFAULT_VALUE
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.const.DateConst
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.extension.hasValue
@@ -11,22 +12,21 @@ import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.*
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import java.sql.Date
-import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 fun List<ObjectWrapper.Relation>.views(
     details: Block.Details,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
-    featured: List<Id> = emptyList()
+    featured: List<Id> = emptyList(),
+    dateProvider: DateProvider
 ): List<ObjectRelationView> = mapNotNull { relation ->
     relation.view(
         details = details.details,
         values = values,
         urlBuilder = urlBuilder,
-        isFeatured = featured.contains(relation.key)
+        isFeatured = featured.contains(relation.key),
+        dateProvider = dateProvider
     )
 }
 
@@ -36,7 +36,8 @@ fun ObjectWrapper.Relation.view(
     details: Map<Id, Block.Fields>,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
-    isFeatured: Boolean = false
+    isFeatured: Boolean = false,
+    dateProvider: DateProvider
 ): ObjectRelationView {
     val relation = this
     return when (relation.format) {
@@ -72,27 +73,16 @@ fun ObjectWrapper.Relation.view(
             )
         }
         RelationFormat.DATE -> {
-            //TODO In DataView Relation Date uses DateFormat and TimeFormat
-            // so SimpleDateFormat can be different from what we have here
-            // see {SetsExtension:buildGridRow()}
-            val format = SimpleDateFormat(DateConst.DEFAULT_DATE_FORMAT, Locale.getDefault())
-            val value = values[relation.key]
-
-            val timeInSec = DateParser.parse(value)
-            val formattedDate = if (timeInSec != null) {
-                format.format(Date(TimeUnit.SECONDS.toMillis(timeInSec)))
-            } else {
-                null
-            }
-            ObjectRelationView.Default(
+            val timeInSec = DateParser.parse(value = values[relation.key])
+            val formattedDate = dateProvider.calculateRelativeDates(timeInSec)
+            ObjectRelationView.Date(
                 id = relation.id,
                 key = relation.key,
                 name = relation.name.orEmpty(),
-                value = formattedDate,
                 featured = isFeatured,
                 readOnly = relation.isReadonlyValue,
-                format = relation.format,
-                system = relation.key.isSystemKey()
+                system = relation.key.isSystemKey(),
+                relativeDate = formattedDate
             )
         }
         RelationFormat.STATUS -> {

@@ -88,27 +88,17 @@ fun ObjectWrapper.Relation.view(
             )
         }
         RelationFormat.DATE -> {
-            //TODO In DataView Relation Date uses DateFormat and TimeFormat
-            // so SimpleDateFormat can be different from what we have here
-            // see {SetsExtension:buildGridRow()}
-            val format = SimpleDateFormat(DateConst.DEFAULT_DATE_FORMAT, Locale.getDefault())
             val value = values[relation.key]
-
             val timeInSec = DateParser.parse(value)
-            val formattedDate = if (timeInSec != null) {
-                format.format(Date(TimeUnit.SECONDS.toMillis(timeInSec)))
-            } else {
-                null
-            }
-            ObjectRelationView.Default(
+            val relativeDate = dateProvider.calculateRelativeDates(timeInSec)
+            ObjectRelationView.Date(
                 id = relation.id,
                 key = relation.key,
                 name = relation.name.orEmpty(),
-                value = formattedDate,
                 featured = isFeatured,
-                format = relationFormat,
                 readOnly = relation.isReadonlyValue,
-                system = relation.key.isSystemKey()
+                system = relation.key.isSystemKey(),
+                relativeDate = relativeDate
             )
         }
         RelationFormat.STATUS -> {

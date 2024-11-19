@@ -126,7 +126,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -723,7 +722,8 @@ class ObjectSetViewModel(
                     objects = dataViewState.objects,
                     dataViewRelations = relations,
                     store = objectStore,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    dateProvider = dateProvider
                 )
 
                 when {
@@ -775,7 +775,8 @@ class ObjectSetViewModel(
                 dataViewRelations = relations,
                 store = objectStore,
                 objectOrderIds = objectOrderIds,
-                storeOfRelations = storeOfRelations
+                storeOfRelations = storeOfRelations,
+                dateProvider = dateProvider
             )
         }
     }

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.config.DebugSettings
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -571,6 +572,7 @@ suspend fun List<Id>.toGridRecordRows(
     columns: List<ColumnView>,
     builder: UrlBuilder,
     store: ObjectStore,
+    dateProvider: DateProvider
 ): List<Viewer.GridView.Row> {
     val rows = mutableListOf<Viewer.GridView.Row>()
     forEach { id ->
@@ -580,7 +582,8 @@ suspend fun List<Id>.toGridRecordRows(
                 showIcon = showIcon,
                 obj = record,
                 store = store,
-                builder = builder
+                builder = builder,
+                dateProvider = dateProvider
             )
             rows.add(row)
         } else {

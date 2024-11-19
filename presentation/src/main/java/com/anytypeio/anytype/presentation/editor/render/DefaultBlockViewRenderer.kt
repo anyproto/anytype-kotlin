@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.ext.textColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -50,7 +51,8 @@ class DefaultBlockViewRenderer @Inject constructor(
     private val toggleStateHolder: ToggleStateHolder,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val storeOfRelations: StoreOfRelations,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val dateProvider: DateProvider
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
     override suspend fun Map<Id, List<Block>>.render(
@@ -686,7 +688,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                             indent = indent,
                             details = details,
                             urlBuilder = urlBuilder,
-                            schema = blockDecorationScheme
+                            schema = blockDecorationScheme,
+                            dateProvider = dateProvider
                         )
                     )
                 }
@@ -696,7 +699,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     val featured = featured(
                         ctx = root.id,
                         block = block,
-                        details = details
+                        details = details,
+                        dateProvider = dateProvider,
                     )
 
                     if (featured.relations.isNotEmpty()) {
@@ -2065,7 +2069,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         indent: Int,
         details: Block.Details,
         urlBuilder: UrlBuilder,
-        schema: NestedDecorationData
+        schema: NestedDecorationData,
+        dateProvider: DateProvider
     ): BlockView.Relation {
         val relationKey = content.key
         if (relationKey.isNullOrEmpty()) {
@@ -2081,7 +2086,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 val view = relation.view(
                     details = details.details,
                     values = details.details[ctx]?.map ?: emptyMap(),
-                    urlBuilder = urlBuilder
+                    urlBuilder = urlBuilder,
+                    dateProvider = dateProvider
                 )
                 return BlockView.Relation.Related(
                     id = block.id,
@@ -2104,7 +2110,8 @@ class DefaultBlockViewRenderer @Inject constructor(
     private suspend fun featured(
         ctx: Id,
         block: Block,
-        details: Block.Details
+        details: Block.Details,
+        dateProvider: DateProvider
     ): BlockView.FeaturedRelation {
         val map = details.details[ctx]?.map ?: emptyMap()
         val obj = ObjectWrapper.Basic(map)
@@ -2113,6 +2120,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ctx = ctx,
             keys = featuredKeys,
             details = details,
+            dateProvider = dateProvider
 
         ).sortedByDescending { it.key == Relations.TYPE || it.key == Relations.GLOBAL_NAME || it.key == Relations.IDENTITY }
         return BlockView.FeaturedRelation(
@@ -2150,6 +2158,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         ctx: Id,
         keys: List<Key>,
         details: Block.Details,
+        dateProvider: DateProvider
     ): List<ObjectRelationView> = keys.mapNotNull { key ->
         when (key) {
             Relations.DESCRIPTION -> null
@@ -2179,7 +2188,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     details = details.details,
                     values = details.details[ctx]?.map ?: emptyMap(),
                     urlBuilder = urlBuilder,
-                    isFeatured = true
+                    isFeatured = true,
+                    dateProvider = dateProvider
                 )
             }
         }

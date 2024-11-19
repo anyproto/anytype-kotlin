@@ -65,7 +65,8 @@ import timber.log.Timber
 fun ObjectState.DataView.featuredRelations(
     ctx: Id,
     urlBuilder: UrlBuilder,
-    relations: List<ObjectWrapper.Relation>
+    relations: List<ObjectWrapper.Relation>,
+    dateProvider: DateProvider
 ): BlockView.FeaturedRelation? {
     val block = blocks.find { it.content is Block.Content.FeaturedRelations }
     if (block != null) {
@@ -77,7 +78,8 @@ fun ObjectState.DataView.featuredRelations(
                 keys = ids,
                 details = Block.Details(details),
                 relations = relations,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                dateProvider = dateProvider
             )
         )
         return BlockView.FeaturedRelation(
@@ -128,7 +130,8 @@ private fun ObjectState.DataView.mapFeaturedRelations(
     keys: List<String>,
     details: Block.Details,
     relations: List<ObjectWrapper.Relation>,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    dateProvider: DateProvider
 ): List<ObjectRelationView> = keys.mapNotNull { key ->
     when (key) {
         Relations.DESCRIPTION -> null
@@ -203,7 +206,8 @@ private fun ObjectState.DataView.mapFeaturedRelations(
                 details = details.details,
                 values = details.details[ctx]?.map ?: emptyMap(),
                 urlBuilder = urlBuilder,
-                isFeatured = true
+                isFeatured = true,
+                dateProvider = dateProvider
             )
         }
     }

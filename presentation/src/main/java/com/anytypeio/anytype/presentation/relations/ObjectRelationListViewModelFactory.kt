@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -30,7 +31,8 @@ class ObjectRelationListViewModelFactory(
     private val storeOfRelations: StoreOfRelations,
     private val addRelationToObject: AddRelationToObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val dateProvider: DateProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -48,7 +50,8 @@ class ObjectRelationListViewModelFactory(
             storeOfRelations = storeOfRelations,
             addRelationToObject = addRelationToObject,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            dateProvider = dateProvider
         ) as T
     }
 }

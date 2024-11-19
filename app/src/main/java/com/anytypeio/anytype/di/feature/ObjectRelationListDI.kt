@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -53,7 +54,8 @@ object ObjectRelationListModule {
         storeOfRelations: StoreOfRelations,
         addRelationToObject: AddRelationToObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        dateProvider: DateProvider
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
             lockedStateProvider = lockedStateProvider,
@@ -68,7 +70,8 @@ object ObjectRelationListModule {
             storeOfRelations = storeOfRelations,
             addRelationToObject = addRelationToObject,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            dateProvider = dateProvider
         )
     }
 

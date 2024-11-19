@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature.templates
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -69,6 +70,7 @@ interface TemplateBlankDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun storeOfRelations(): StoreOfRelations
     fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun dateProvider(): DateProvider
 }
 
 @Scope

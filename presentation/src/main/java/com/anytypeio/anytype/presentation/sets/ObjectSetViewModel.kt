@@ -250,7 +250,8 @@ class ObjectSetViewModel(
                     featured.value = state.featuredRelations(
                         ctx = vmParams.ctx,
                         urlBuilder = urlBuilder,
-                        relations = storeOfRelations.getAll()
+                        relations = storeOfRelations.getAll(),
+                        dateProvider = dateProvider
                     )
                     _header.value = state.header(
                         ctx = vmParams.ctx,

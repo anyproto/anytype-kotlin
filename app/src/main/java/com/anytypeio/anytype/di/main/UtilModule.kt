@@ -22,15 +22,12 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.misc.ZoneProvider
-import com.anytypeio.anytype.domain.vault.GetVaultSettings
+import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
 import com.anytypeio.anytype.other.BasicLogger
 import com.anytypeio.anytype.other.DefaultDateTypeNameProvider
 import com.anytypeio.anytype.other.DefaultDebugConfig
-import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
-import com.anytypeio.anytype.presentation.widgets.collection.ZoneProviderImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -64,12 +61,15 @@ object UtilModule {
     @Provides
     @Singleton
     fun provideDateProvider(
-        localeProvider: LocaleProvider
-    ): DateProvider =
-        DateProviderImpl(
-            defaultZoneId = ZoneId.systemDefault(),
-            localeProvider = localeProvider
-        )
+        localeProvider: LocaleProvider,
+        observeVaultSettings: ObserveVaultSettings,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
+    ): DateProvider = DateProviderImpl(
+        defaultZoneId = ZoneId.systemDefault(),
+        localeProvider = localeProvider,
+        vaultSettings = observeVaultSettings,
+        scope = scope
+    )
 
     @Module
     interface Bindings {

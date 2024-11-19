@@ -221,7 +221,7 @@
     <string name="more">Mehr</string>
     <string name="done">Fertig</string>
     <string name="select_scroll_and_move_blocks">Blöcke auswählen um zu starten</string>
-    <string name="block_code_menu_title">Sprache</string>
+    <string name="block_code_plain_text">Sprache</string>
     <string name="undo">Rückgängig</string>
     <string name="redo">Wiederholen</string>
     <string name="block_action_copy">Kopieren</string>

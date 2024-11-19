@@ -2,7 +2,6 @@ package com.anytypeio.anytype.library_syntax_highlighter
 
 import android.content.Context
 import android.graphics.Color
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive

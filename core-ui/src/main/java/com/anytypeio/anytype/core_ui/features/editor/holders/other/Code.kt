@@ -11,7 +11,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCodeSnippetBinding
 import com.anytypeio.anytype.core_ui.extensions.veryLight
@@ -22,9 +21,7 @@ import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewH
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.CodeTextInputWidget
-import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.imm
-import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
 import com.anytypeio.anytype.library_syntax_highlighter.Syntaxes
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -116,12 +113,13 @@ class Code(
             clicked(ListenerType.Code.SelectLanguage(item.id))
         }
 
-        if (!item.lang.isNullOrEmpty()) {
+        if (item.lang.isNullOrEmpty() || item.lang.equals("plain", ignoreCase = true)) {
+            content.setupSyntax(Syntaxes.PLAIN)
+           menu.setText(R.string.block_code_plain_text)
+
+        } else {
             content.setupSyntax(item.lang)
             menu.text = item.lang!!.capitalize()
-        } else {
-            content.setupSyntax(Syntaxes.GENERIC)
-            menu.setText(R.string.block_code_menu_title)
         }
     }
 
@@ -230,21 +228,6 @@ class Code(
                 content.context.resources.getColor(R.color.shape_tertiary, null)
             (binding.content.background as? ColorDrawable)?.color = defaultBackgroundColor
         }
-    }
-
-    fun enableBackspaceDetector(
-        onEmptyBlockBackspaceClicked: () -> Unit,
-        onNonEmptyBlockBackspaceClicked: () -> Unit
-    ) {
-        content.setOnKeyListener(
-            BackspaceKeyDetector {
-                if (content.text.toString().isEmpty()) {
-                    onEmptyBlockBackspaceClicked()
-                } else {
-                    onNonEmptyBlockBackspaceClicked()
-                }
-            }
-        )
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {

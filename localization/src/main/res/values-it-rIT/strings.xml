@@ -221,7 +221,7 @@
     <string name="more">Altro</string>
     <string name="done">Fatto</string>
     <string name="select_scroll_and_move_blocks">Per iniziare, seleziona blocchi</string>
-    <string name="block_code_menu_title">Lingua</string>
+    <string name="block_code_plain_text">Lingua</string>
     <string name="undo">Annulla</string>
     <string name="redo">Ripristina</string>
     <string name="block_action_copy">Copia</string>

@@ -170,6 +170,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PROFILE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_CHECKBOX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DATE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_FILE
@@ -732,6 +733,10 @@ class BlockAdapter(
             HOLDER_RELATION_DEFAULT -> {
                 val binding = ItemBlockRelationDefaultBinding.inflate(inflater, parent, false)
                 RelationBlockViewHolder.Default(binding).setup(this)
+            }
+            HOLDER_RELATION_DATE -> {
+                val binding = ItemBlockRelationDefaultBinding.inflate(inflater, parent, false)
+                RelationBlockViewHolder.Date(binding).setup(this)
             }
             HOLDER_RELATION_PLACEHOLDER -> {
                 RelationBlockViewHolder.Placeholder(
@@ -1538,6 +1543,11 @@ class BlockAdapter(
                 holder.bind(item = item)
             }
             is RelationBlockViewHolder.Default -> {
+                val item = (blocks[position] as BlockView.Relation.Related)
+                holder.bind(item = item.view)
+                holder.bindHolder(item)
+            }
+            is RelationBlockViewHolder.Date -> {
                 val item = (blocks[position] as BlockView.Relation.Related)
                 holder.bind(item = item.view)
                 holder.bindHolder(item)

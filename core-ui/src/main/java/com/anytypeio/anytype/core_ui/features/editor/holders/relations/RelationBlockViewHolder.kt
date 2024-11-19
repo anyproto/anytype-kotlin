@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDeletedBinding
 import com.anytypeio.anytype.core_ui.extensions.clearDrawable
+import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.extensions.setDrawable
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
@@ -473,6 +474,42 @@ sealed class RelationBlockViewHolder(
         }
     }
 
+    class Date(binding: ItemBlockRelationDefaultBinding) :
+        RelationBlockViewHolder(binding.root) {
+
+        private val tvTitle = binding.tvRelationTitle
+        private val tvValue = binding.tvRelationValue
+        override val content = binding.content
+        override val selected = binding.selected
+        override val relationName: TextView = tvTitle
+        override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
+
+        fun bind(item: ObjectRelationView) {
+            applyRelationName(item.name, item.readOnly)
+            applyRelationValue(item)
+        }
+
+        override fun indentize(item: BlockView.Indentable) {
+            indent(item, itemView)
+        }
+
+        override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+            super.applyContentDecorations(itemView, decorations)
+        }
+
+        override fun applyRelationValue(item: ObjectRelationView) {
+            val item = item as? ObjectRelationView.Date ?: return
+            val relativeDate = item.relativeDate
+            if (relativeDate != null) {
+                tvValue.text = relativeDate.getPrettyName(
+                    resources = itemView.resources
+                )
+            } else {
+                tvValue.text = null
+                tvValue.setHint(R.string.enter_date)
+            }
+        }
+    }
 
     private fun TextView.setReadOnly(isReadOnly: Boolean) {
         if (isReadOnly) {

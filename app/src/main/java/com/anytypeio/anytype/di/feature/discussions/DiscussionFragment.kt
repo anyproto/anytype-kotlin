@@ -75,6 +75,9 @@ class DiscussionFragment : BaseComposeFragment() {
                         vm = vm,
                         onAttachClicked = {
                             showBottomSheet = true
+                        },
+                        onBackButtonClicked = {
+                            // TODO
                         }
                     )
 

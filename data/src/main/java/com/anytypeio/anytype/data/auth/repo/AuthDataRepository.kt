@@ -18,11 +18,8 @@ class AuthDataRepository(
     private val debugConfig: DebugConfig
 ) : AuthRepository {
 
-    override suspend fun setMetrics(platform: String, version: String) {
-        factory.remote.setMetrics(
-            platform = platform,
-            version = version
-        )
+    override suspend fun setInitialParams(command: Command.SetInitialParams) {
+        factory.remote.setInitialParams(command = command)
     }
 
     override suspend fun selectAccount(

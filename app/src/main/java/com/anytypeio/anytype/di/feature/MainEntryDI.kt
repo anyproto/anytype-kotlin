@@ -15,7 +15,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
@@ -97,7 +97,7 @@ object MainEntryModule {
         authRepository: AuthRepository,
         pathProvider: PathProvider,
         configStorage: ConfigStorage,
-        metricsProvider: MetricsProvider,
+        initialParamsProvider: InitialParamsProvider,
         awaitAccountStartManager: AwaitAccountStartManager,
         spaceManager: SpaceManager,
         settingsRepository: UserSettingsRepository
@@ -105,7 +105,7 @@ object MainEntryModule {
         repository = authRepository,
         pathProvider = pathProvider,
         configStorage = configStorage,
-        metricsProvider = metricsProvider,
+        initialParamsProvider = initialParamsProvider,
         awaitAccountStartManager = awaitAccountStartManager,
         spaceManager = spaceManager,
         settings = settingsRepository

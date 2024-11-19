@@ -25,7 +25,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
@@ -77,7 +77,7 @@ object SplashModule {
         pathProvider: PathProvider,
         configStorage: ConfigStorage,
         spaceManager: SpaceManager,
-        metricsProvider: MetricsProvider,
+        initialParamsProvider: InitialParamsProvider,
         userSettings: UserSettingsRepository,
         awaitAccountStartManager: AwaitAccountStartManager
     ): LaunchAccount = LaunchAccount(
@@ -85,7 +85,7 @@ object SplashModule {
         pathProvider = pathProvider,
         configStorage = configStorage,
         spaceManager = spaceManager,
-        metricsProvider = metricsProvider,
+        initialParamsProvider = initialParamsProvider,
         settings = userSettings,
         awaitAccountStartManager = awaitAccountStartManager
     )
@@ -193,7 +193,7 @@ interface SplashDependencies : ComponentDependencies {
     fun userSettingsRepository(): UserSettingsRepository
     fun dispatchers(): AppCoroutineDispatchers
     fun crashReporter(): CrashReporter
-    fun metricsProvider(): MetricsProvider
+    fun metricsProvider(): InitialParamsProvider
     fun spaceManager(): SpaceManager
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
     fun localeProvider(): LocaleProvider

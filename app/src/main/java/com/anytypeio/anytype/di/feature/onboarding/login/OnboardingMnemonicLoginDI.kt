@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.debugging.DebugGoroutines
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -87,7 +87,7 @@ interface OnboardingMnemonicLoginDependencies : ComponentDependencies {
     fun pathProvider(): PathProvider
     fun crashReporter(): CrashReporter
     fun configStorage(): ConfigStorage
-    fun metricsProvider(): MetricsProvider
+    fun metricsProvider(): InitialParamsProvider
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
     fun localeProvider(): LocaleProvider
     fun awaitAccountStartManager(): AwaitAccountStartManager

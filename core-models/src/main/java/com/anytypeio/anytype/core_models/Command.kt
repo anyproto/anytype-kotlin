@@ -25,6 +25,14 @@ sealed class Command {
         val preferYamuxTransport: Boolean? = null
     ) : Command()
 
+    data class SetInitialParams(
+        val version: String,
+        val platform: String,
+        val workDir: String,
+        val defaultLogLevel: String
+    ) : Command()
+
+
     class UploadFile(
         val space: SpaceId,
         val path: String,
@@ -433,7 +441,14 @@ sealed class Command {
         val value: Any? = null
     )
 
-    data class ReplaceFilter(val ctx: Id, val dv: Id, val view: Id, val id: Id, val filter: DVFilter)
+    data class ReplaceFilter(
+        val ctx: Id,
+        val dv: Id,
+        val view: Id,
+        val id: Id,
+        val filter: DVFilter
+    )
+
     data class RemoveFilter(val ctx: Id, val dv: Id, val view: Id, val ids: List<Id>)
 
     data class AddSort(
@@ -493,10 +508,12 @@ sealed class Command {
             val name: String,
             val nameType: NameServiceNameType
         ) : Membership()
+
         data class ResolveName(
             val name: String,
             val nameType: NameServiceNameType
         ) : Membership()
+
         data class GetPaymentUrl(
             val tier: Int,
             val paymentMethod: MembershipPaymentMethod,
@@ -537,8 +554,8 @@ sealed class Command {
                 val dependencies: List<ObjectWrapper.Basic>
             ) {
                 sealed class Source {
-                    data class Relation(val key: Key): Source()
-                    data class Block(val id: Id): Source()
+                    data class Relation(val key: Key) : Source()
+                    data class Block(val id: Id) : Source()
                 }
             }
         }
@@ -578,34 +595,39 @@ sealed class Command {
         data class AddMessage(
             val chat: Id,
             val message: Chat.Message
-        ): ChatCommand()
+        ) : ChatCommand()
+
         data class DeleteMessage(
             val chat: Id,
             val msg: Id
-        ): ChatCommand()
+        ) : ChatCommand()
+
         data class EditMessage(
             val chat: Id,
             val message: Chat.Message
-        ): ChatCommand()
+        ) : ChatCommand()
+
         data class GetMessages(
             val chat: Id,
             val beforeMessageId: Id,
             val limit: Int
-        ): ChatCommand()
+        ) : ChatCommand()
+
         data class SubscribeLastMessages(
             val chat: Id,
             val limit: Int
-        ): ChatCommand() {
+        ) : ChatCommand() {
             data class Response(
                 val messages: List<Chat.Message>,
                 val messageCountBefore: Int
             )
         }
+
         data class ToggleMessageReaction(
             val chat: Id,
             val msg: Id,
             val emoji: String
-        ): ChatCommand()
+        ) : ChatCommand()
     }
 
     /**

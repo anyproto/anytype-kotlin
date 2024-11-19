@@ -221,7 +221,7 @@
     <string name="more">Mais</string>
     <string name="done">Concluído</string>
     <string name="select_scroll_and_move_blocks">Para iniciar, selecione os blocos</string>
-    <string name="block_code_menu_title">Idioma</string>
+    <string name="block_code_plain_text">Plain text</string>
     <string name="undo">Desfazer</string>
     <string name="redo">Refazer</string>
     <string name="block_action_copy">Copiar</string>

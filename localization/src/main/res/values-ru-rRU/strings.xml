@@ -1584,4 +1584,5 @@
     <string name="chats_edit_message">Редактировать сообщение</string>
     <string name="chats_message_edited">отредактировано</string>
     <string name="chat_empty_state_message">Пока нет сообщений. \nБудьте первыми, кто начнет обсуждение.</string>
+    <string name="write_a_message">Написать сообщение...</string>
 </resources>

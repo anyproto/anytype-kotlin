@@ -101,7 +101,8 @@ suspend fun List<ColumnView>.buildGridRow(
                                 relationKey = column.key,
                                 timeInSecs = DateParser.parse(value),
                                 dateFormat = column.getDateRelationFormat(),
-                                relativeDate = dateProvider.calculateRelativeDates(DateParser.parse(value))
+                                relativeDate = dateProvider.calculateRelativeDates(DateParser.parse(value)),
+                                isTimeIncluded = column.isDateIncludeTime == true
                             )
                         }
 

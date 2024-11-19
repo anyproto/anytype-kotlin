@@ -221,7 +221,7 @@
     <string name="more">Mer</string>
     <string name="done">Ferdig</string>
     <string name="select_scroll_and_move_blocks">To start, select blocks</string>
-    <string name="block_code_menu_title">Språk</string>
+    <string name="block_code_plain_text">Språk</string>
     <string name="undo">Angre</string>
     <string name="redo">Omgjør</string>
     <string name="block_action_copy">Kopier</string>

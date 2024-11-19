@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="13dp"
-                android:text="@string/block_code_menu_title" />
+                android:text="@string/block_code_plain_text" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"

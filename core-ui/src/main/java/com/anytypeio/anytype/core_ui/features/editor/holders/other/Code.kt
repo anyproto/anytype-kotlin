@@ -22,7 +22,6 @@ import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecoration
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.CodeTextInputWidget
 import com.anytypeio.anytype.core_utils.ext.imm
-import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
 import com.anytypeio.anytype.library_syntax_highlighter.Syntaxes
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -116,7 +115,7 @@ class Code(
 
         if (item.lang.isNullOrEmpty() || item.lang.equals("plain", ignoreCase = true)) {
             content.setupSyntax(Syntaxes.PLAIN)
-           menu.setText(R.string.block_code_menu_title)
+           menu.setText(R.string.block_code_plain_text)
 
         } else {
             content.setupSyntax(item.lang)

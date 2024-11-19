@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -52,7 +53,8 @@ object CreateFilterModule {
         objectSetDatabase: ObjectSetDatabase,
         analytics: Analytics,
         getOptions: GetOptions,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        dateProvider: DateProvider
     ): FilterViewModel.Factory = FilterViewModel.Factory(
         objectState = state,
         dispatcher = dispatcher,
@@ -64,6 +66,7 @@ object CreateFilterModule {
         objectSetDatabase = objectSetDatabase,
         analytics = analytics,
         getOptions = getOptions,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        dateProvider = dateProvider
     )
 }

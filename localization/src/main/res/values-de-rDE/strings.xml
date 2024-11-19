@@ -1555,4 +1555,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chats_edit_message">Nachricht bearbeiten</string>
     <string name="chats_message_edited">bearbeitet</string>
     <string name="chat_empty_state_message">Es gibt noch keine Nachrichten.\nSei der Erste, der eine Diskussion beginnt.</string>
+    <string name="write_a_message">Eine Nachricht schreiben...</string>
 </resources>

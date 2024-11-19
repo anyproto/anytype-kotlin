@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -356,7 +357,12 @@ fun LoadingSpaceCard() {
                 .size(64.dp)
                 .align(Alignment.CenterStart)
                 .background(
-                    color = colorResource(R.color.shape_primary),
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            colorResource(R.color.shape_primary),
+                            Color.Transparent,
+                        )
+                    ),
                     shape = RoundedCornerShape(8.dp)
                 )
         )
@@ -367,7 +373,12 @@ fun LoadingSpaceCard() {
                 .height(12.dp)
                 .width(160.dp)
                 .background(
-                    color = colorResource(R.color.shape_primary)
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            colorResource(R.color.shape_primary),
+                            Color.Transparent,
+                        )
+                    )
                 )
         )
 
@@ -378,7 +389,12 @@ fun LoadingSpaceCard() {
                 .width(96.dp)
                 .align(Alignment.BottomStart)
                 .background(
-                    color = colorResource(R.color.shape_primary)
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            colorResource(R.color.shape_primary),
+                            Color.Transparent,
+                        )
+                    )
                 )
         )
     }

@@ -1542,4 +1542,5 @@ Please provide specific details of your needs here.</string>
     <string name="chats_edit_message">Edit message</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
+    <string name="write_a_message">Tulis pesan …</string>
 </resources>

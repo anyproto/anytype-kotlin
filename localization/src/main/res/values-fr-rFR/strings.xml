@@ -221,7 +221,7 @@
     <string name="more">Plus</string>
     <string name="done">Terminé</string>
     <string name="select_scroll_and_move_blocks">Pour commencer, sélectionnez des blocs</string>
-    <string name="block_code_plain_text">Plain text</string>
+    <string name="block_code_plain_text">Texte brut</string>
     <string name="undo">Annuler</string>
     <string name="redo">Rétablir</string>
     <string name="block_action_copy">Copier</string>
@@ -1552,4 +1552,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chats_edit_message">Modifier le message</string>
     <string name="chats_message_edited">modifié</string>
     <string name="chat_empty_state_message">Il n\'y a pas encore de messages.\nSoyez le premier à lancer une discussion.</string>
+    <string name="write_a_message">Ecrire un message...</string>
 </resources>

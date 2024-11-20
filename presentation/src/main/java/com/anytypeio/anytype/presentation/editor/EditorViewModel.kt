@@ -83,7 +83,6 @@ import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -97,7 +96,7 @@ import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -334,7 +333,7 @@ class EditorViewModel(
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-    private val fieldsProvider : FieldsProvider
+    private val fieldParser : FieldParser
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -5261,7 +5260,7 @@ class EditorViewModel(
             values = objectDetails,
             urlBuilder = urlBuilder,
             featured = objectWrapper.featuredRelations,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
     }
 
@@ -5283,7 +5282,7 @@ class EditorViewModel(
             details = details,
             values = objectDetails,
             urlBuilder = urlBuilder,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
     }
 

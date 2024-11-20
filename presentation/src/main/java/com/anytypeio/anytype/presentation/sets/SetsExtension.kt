@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.sets.model.CellView
@@ -31,7 +31,7 @@ suspend fun List<ColumnView>.buildGridRow(
     obj: ObjectWrapper.Basic,
     builder: UrlBuilder,
     store: ObjectStore,
-    fieldsProvider: FieldsProvider
+    fieldParser: FieldParser
 ): Viewer.GridView.Row {
 
     val type = obj.type.firstOrNull()
@@ -94,7 +94,7 @@ suspend fun List<ColumnView>.buildGridRow(
                         }
 
                         ColumnView.Format.DATE -> {
-                            val fieldDate = fieldsProvider.toDate(any = obj.getValue<Any?>(column.key))
+                            val fieldDate = fieldParser.toDate(any = obj.getValue<Any?>(column.key))
                             CellView.Date(
                                 id = obj.id,
                                 relationKey = column.key,

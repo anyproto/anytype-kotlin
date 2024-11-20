@@ -33,7 +33,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -80,7 +80,7 @@ class ModifyInputValueFilterTest {
     lateinit var spaceManager: SpaceManager
 
     @Mock
-    lateinit var fieldsProvider: FieldsProvider
+    lateinit var fieldParser: FieldParser
 
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
     private lateinit var searchObjects: SearchObjects
@@ -113,7 +113,7 @@ class ModifyInputValueFilterTest {
             objectSetDatabase = db,
             getOptions = getOptions,
             spaceManager = spaceManager,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
     }
 

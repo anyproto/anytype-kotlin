@@ -26,7 +26,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
@@ -85,7 +85,7 @@ class ObjectSetViewModelFactory(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val clearLastOpenedObject: ClearLastOpenedObject,
-    private val fieldsProvider: FieldsProvider,
+    private val fieldParser: FieldParser,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -131,7 +131,7 @@ class ObjectSetViewModelFactory(
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             clearLastOpenedObject = clearLastOpenedObject,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         ) as T
     }
 }

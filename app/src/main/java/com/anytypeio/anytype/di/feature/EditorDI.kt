@@ -75,7 +75,7 @@ import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
@@ -289,7 +289,7 @@ object EditorSessionModule {
         syncStatusProvider: SpaceSyncAndP2PStatusProvider,
         getNetworkMode: GetNetworkMode,
         clearLastOpenedObject: ClearLastOpenedObject,
-        fieldsProvider: FieldsProvider
+        fieldParser: FieldParser
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -336,7 +336,7 @@ object EditorSessionModule {
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         clearLastOpenedObject = clearLastOpenedObject,
         syncStatusProvider = syncStatusProvider,
-        fieldsProvider = fieldsProvider
+        fieldParser = fieldParser
     )
 
     @JvmStatic
@@ -378,14 +378,14 @@ object EditorSessionModule {
         coverImageHashProvider: CoverImageHashProvider,
         storeOfRelations: StoreOfRelations,
         storeOfObjectTypes: StoreOfObjectTypes,
-        fieldsProvider: FieldsProvider
+        fieldParser: FieldParser
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
         toggleStateHolder = toggleStateHolder,
         coverImageHashProvider = coverImageHashProvider,
         storeOfRelations = storeOfRelations,
         storeOfObjectTypes = storeOfObjectTypes,
-        fieldsProvider = fieldsProvider
+        fieldParser = fieldParser
     )
 
     @JvmStatic

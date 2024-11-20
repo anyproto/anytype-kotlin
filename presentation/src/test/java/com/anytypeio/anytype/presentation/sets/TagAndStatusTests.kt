@@ -9,7 +9,7 @@ import com.anytypeio.anytype.core_models.StubRelationOptionObject
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -34,7 +34,7 @@ class TagAndStatusTests {
     lateinit var gateway: Gateway
 
     @Mock
-    lateinit var fieldsProvider: FieldsProvider
+    lateinit var fieldParser: FieldParser
 
     @Before
     fun setup() {
@@ -136,7 +136,7 @@ class TagAndStatusTests {
             builder = UrlBuilder(gateway),
             showIcon = false,
             store = store,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
 
         val expected = Viewer.GridView.Row(
@@ -271,7 +271,7 @@ class TagAndStatusTests {
             builder = UrlBuilder(gateway),
             showIcon = false,
             store = store,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
 
         val expected = Viewer.GridView.Row(

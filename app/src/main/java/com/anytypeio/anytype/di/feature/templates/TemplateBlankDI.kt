@@ -6,7 +6,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
@@ -72,7 +72,7 @@ interface TemplateBlankDependencies : ComponentDependencies {
     fun storeOfRelations(): StoreOfRelations
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun dateProvider(): DateProvider
-    fun fieldsProvider(): FieldsProvider
+    fun fieldsProvider(): FieldParser
 }
 
 @Scope

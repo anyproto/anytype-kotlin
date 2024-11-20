@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
@@ -32,7 +31,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -79,7 +78,7 @@ class ModifyTagFilterTest {
     lateinit var spaceManager: SpaceManager
 
     @Mock
-    lateinit var fieldsProvider: FieldsProvider
+    lateinit var fieldParser: FieldParser
 
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
     private lateinit var searchObjects: SearchObjects
@@ -113,7 +112,7 @@ class ModifyTagFilterTest {
             objectSetDatabase = db,
             getOptions = getOptions,
             spaceManager = spaceManager,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
     }
 

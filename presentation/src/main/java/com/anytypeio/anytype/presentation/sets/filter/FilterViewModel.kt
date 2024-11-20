@@ -20,12 +20,11 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -76,7 +75,7 @@ open class FilterViewModel(
     private val analytics: Analytics,
     private val getOptions: GetOptions,
     private val spaceManager: SpaceManager,
-    private val fieldsProvider: FieldsProvider
+    private val fieldParser: FieldParser
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Commands>()
@@ -100,7 +99,7 @@ open class FilterViewModel(
                     condition = condition?.condition,
                     index = filterIndex,
                     viewerId = viewerId,
-                    fieldsProvider = fieldsProvider
+                    fieldParser = fieldParser
                 )
             }
         }
@@ -138,7 +137,7 @@ open class FilterViewModel(
                                 condition = conditionState.value?.condition,
                                 index = filterIndex,
                                 viewerId = viewerId,
-                                fieldsProvider = fieldsProvider
+                                fieldParser = fieldParser
                             )
                         } else {
                             Timber.e("Couldn't find relation in StoreOfRelations by relationKey:[$relationKey]")
@@ -232,7 +231,7 @@ open class FilterViewModel(
         viewerId: Id,
         condition: Viewer.Filter.Condition?,
         index: Int?,
-        fieldsProvider: FieldsProvider
+        fieldParser: FieldParser
     ) {
         if (condition == null || !condition.hasValue()) {
             filterValueState.value = null
@@ -256,7 +255,7 @@ open class FilterViewModel(
                     relation = relation,
                     filter = null,
                     condition = condition,
-                    fieldsProvider = fieldsProvider
+                    fieldParser = fieldParser
                 )
             } else {
                 val filter = viewer.filters[index]
@@ -271,7 +270,7 @@ open class FilterViewModel(
                     relation = relation,
                     filter = filter,
                     condition = condition,
-                    fieldsProvider = fieldsProvider
+                    fieldParser = fieldParser
                 )
             }
         }
@@ -281,7 +280,7 @@ open class FilterViewModel(
         relation: ObjectWrapper.Relation,
         filter: DVFilter?,
         condition: Viewer.Filter.Condition,
-        fieldsProvider: FieldsProvider
+        fieldParser: FieldParser
     ): Unit = when (relation.format) {
         Relation.Format.DATE -> {
             val value = (filter?.value as? Double)?.toLong() ?: 0L
@@ -289,7 +288,7 @@ open class FilterViewModel(
                 quickOption = filter?.quickOption,
                 condition = condition.toDomain(),
                 value = value,
-                fieldsProvider = fieldsProvider
+                fieldParser = fieldParser
             )
         }
         Relation.Format.TAG -> {
@@ -936,7 +935,7 @@ open class FilterViewModel(
         private val getOptions: GetOptions,
         private val analytics: Analytics,
         private val spaceManager: SpaceManager,
-        private val fieldsProvider: FieldsProvider
+        private val fieldParser: FieldParser
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -952,7 +951,7 @@ open class FilterViewModel(
                 getOptions = getOptions,
                 analytics = analytics,
                 spaceManager = spaceManager,
-                fieldsProvider = fieldsProvider
+                fieldParser = fieldParser
             ) as T
         }
     }

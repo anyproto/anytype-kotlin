@@ -9,7 +9,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.buildFileViews
 import com.anytypeio.anytype.presentation.sets.buildRelationValueObjectViews
@@ -22,7 +22,7 @@ fun List<ObjectWrapper.Relation>.views(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     featured: List<Id> = emptyList(),
-    fieldsProvider: FieldsProvider
+    fieldParser: FieldParser
 ): List<ObjectRelationView> = mapNotNull { relation ->
     relation.view(
         context = context,
@@ -30,7 +30,7 @@ fun List<ObjectWrapper.Relation>.views(
         values = values,
         urlBuilder = urlBuilder,
         isFeatured = featured.contains(relation.key),
-        fieldsProvider = fieldsProvider
+        fieldParser = fieldParser
     )
 }
 
@@ -40,7 +40,7 @@ fun ObjectWrapper.Relation.view(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false,
-    fieldsProvider: FieldsProvider
+    fieldParser: FieldParser
 ): ObjectRelationView? {
     val relation = this
     val relationFormat = relation.relationFormat
@@ -80,7 +80,7 @@ fun ObjectWrapper.Relation.view(
             )
         }
         RelationFormat.DATE -> {
-            val fieldDate = fieldsProvider.toDate(any = values[relation.key])
+            val fieldDate = fieldParser.toDate(any = values[relation.key])
             ObjectRelationView.Date(
                 id = relation.id,
                 key = relation.key,

@@ -55,7 +55,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
@@ -179,7 +179,7 @@ class ObjectSetViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val clearLastOpenedObject: ClearLastOpenedObject,
-    private val fieldsProvider: FieldsProvider
+    private val fieldParser: FieldParser
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -252,7 +252,7 @@ class ObjectSetViewModel(
                         ctx = vmParams.ctx,
                         urlBuilder = urlBuilder,
                         relations = storeOfRelations.getAll(),
-                        fieldsProvider = fieldsProvider
+                        fieldParser = fieldParser
                     )
                     _header.value = state.header(
                         ctx = vmParams.ctx,
@@ -725,7 +725,7 @@ class ObjectSetViewModel(
                     dataViewRelations = relations,
                     store = objectStore,
                     storeOfRelations = storeOfRelations,
-                    fieldsProvider = fieldsProvider
+                    fieldParser = fieldParser
                 )
 
                 when {
@@ -778,7 +778,7 @@ class ObjectSetViewModel(
                 store = objectStore,
                 objectOrderIds = objectOrderIds,
                 storeOfRelations = storeOfRelations,
-                fieldsProvider = fieldsProvider
+                fieldParser = fieldParser
             )
         }
     }

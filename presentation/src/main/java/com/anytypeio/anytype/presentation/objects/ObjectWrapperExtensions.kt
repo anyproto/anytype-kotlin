@@ -10,7 +10,7 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.number.NumberParser
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.extension.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.FileView
@@ -25,7 +25,7 @@ suspend fun ObjectWrapper.Basic.values(
     settings: List<DVViewerRelation>,
     urlBuilder: UrlBuilder,
     storeOfObjects: ObjectStore,
-    fieldsProvider: FieldsProvider
+    fieldParser: FieldParser
 ): List<DefaultObjectRelationValueView> {
     val values = mutableListOf<DefaultObjectRelationValueView>()
     relations.forEach { relation ->
@@ -120,7 +120,7 @@ suspend fun ObjectWrapper.Basic.values(
             }
             RelationFormat.DATE -> {
                 val setting = settings.find { it.key == relation.key }
-                val fieldDate = fieldsProvider.toDate(any = map.getOrDefault(relation.key, null))
+                val fieldDate = fieldParser.toDate(any = map.getOrDefault(relation.key, null))
                 val value = if (fieldDate == null) {
                     DefaultObjectRelationValueView.Empty(
                         objectId = id,
@@ -229,14 +229,14 @@ suspend fun ObjectWrapper.Basic.relationsFilteredByHiddenAndDescription(
     settings: List<DVViewerRelation>,
     urlBuilder: UrlBuilder,
     storeOfObjects: ObjectStore,
-    fieldsProvider: FieldsProvider
+    fieldParser: FieldParser
 ): List<DefaultObjectRelationValueView> {
     return values(
         relations = relations.filter { it.isHidden != true && it.key != Relations.DESCRIPTION },
         settings = settings,
         urlBuilder = urlBuilder,
         storeOfObjects = storeOfObjects,
-        fieldsProvider = fieldsProvider
+        fieldParser = fieldParser
     )
 }
 

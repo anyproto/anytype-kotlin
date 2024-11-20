@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.Relations.NUMBER_DEFAULT_VALUE
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.*
@@ -18,14 +18,14 @@ fun List<ObjectWrapper.Relation>.views(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     featured: List<Id> = emptyList(),
-    fieldsProvider: FieldsProvider
+    fieldParser: FieldParser
 ): List<ObjectRelationView> = mapNotNull { relation ->
     relation.view(
         details = details.details,
         values = values,
         urlBuilder = urlBuilder,
         isFeatured = featured.contains(relation.key),
-        fieldsProvider = fieldsProvider
+        fieldParser = fieldParser
     )
 }
 
@@ -36,7 +36,7 @@ fun ObjectWrapper.Relation.view(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false,
-    fieldsProvider: FieldsProvider
+    fieldParser: FieldParser
 ): ObjectRelationView {
     val relation = this
     return when (relation.format) {
@@ -72,7 +72,7 @@ fun ObjectWrapper.Relation.view(
             )
         }
         RelationFormat.DATE -> {
-            val fieldDate = fieldsProvider.toDate(any = values[relation.key])
+            val fieldDate = fieldParser.toDate(any = values[relation.key])
             ObjectRelationView.Date(
                 id = relation.id,
                 key = relation.key,

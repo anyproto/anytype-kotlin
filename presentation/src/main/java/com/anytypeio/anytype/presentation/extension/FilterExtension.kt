@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.relations.toView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
@@ -61,7 +61,7 @@ suspend fun List<DVFilter>.toView(
     storeOfObjects: ObjectStore,
     screenState: ViewerFilterViewModel.ScreenState,
     urlBuilder: UrlBuilder,
-    fieldsProvider: FieldsProvider
+    fieldParser: FieldParser
 ): List<FilterView.Expression> = mapNotNull { filter ->
     val relation = storeOfRelations.getByKey(filter.relation)
     if (relation != null) {
@@ -70,7 +70,7 @@ suspend fun List<DVFilter>.toView(
             isInEditMode = screenState == ViewerFilterViewModel.ScreenState.EDIT,
             urlBuilder = urlBuilder,
             store = storeOfObjects,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
     } else {
         Timber.w("Could not found relation: ${filter.relation} for filter: $filter")

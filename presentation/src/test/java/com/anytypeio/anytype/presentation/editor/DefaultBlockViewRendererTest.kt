@@ -23,7 +23,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
@@ -97,7 +97,7 @@ class DefaultBlockViewRendererTest {
     lateinit var coverImageHashProvider: CoverImageHashProvider
 
     @Mock
-    lateinit var fieldsProvider: FieldsProvider
+    lateinit var fieldParser: FieldParser
 
     private lateinit var renderer: DefaultBlockViewRenderer
 
@@ -116,7 +116,7 @@ class DefaultBlockViewRendererTest {
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
             storeOfObjectTypes = storeOfObjectTypes,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
     }
 

@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.relationsFilteredByHiddenAndDescription
@@ -20,7 +20,7 @@ suspend fun DVViewer.buildListViews(
     urlBuilder: UrlBuilder,
     store: ObjectStore,
     objectOrderIds: List<Id>,
-    fieldsProvider: FieldsProvider
+    fieldParser: FieldParser
 ): List<Viewer.ListView.Item> {
     val items = objects.mapNotNull { id ->
         val obj = store.get(id)
@@ -39,7 +39,7 @@ suspend fun DVViewer.buildListViews(
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
                             storeOfObjects = store,
-                            fieldsProvider = fieldsProvider
+                            fieldParser = fieldParser
                         ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         icon = obj.objectIcon(urlBuilder),
@@ -60,7 +60,7 @@ suspend fun DVViewer.buildListViews(
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
                             storeOfObjects = store,
-                            fieldsProvider = fieldsProvider
+                            fieldParser = fieldParser
                         ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         done = obj.done ?: false,
@@ -80,7 +80,7 @@ suspend fun DVViewer.buildListViews(
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
                             storeOfObjects = store,
-                            fieldsProvider = fieldsProvider
+                            fieldParser = fieldParser
                         ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         icon = obj.objectIcon(urlBuilder),

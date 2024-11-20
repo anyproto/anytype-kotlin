@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.mapper.toDomain
@@ -68,7 +68,7 @@ class FilterViewModelInputFieldValueCreateTest {
     lateinit var spaceManager: SpaceManager
 
     @Mock
-    lateinit var fieldsProvider: FieldsProvider
+    lateinit var fieldParser: FieldParser
 
     private lateinit var viewModel: FilterViewModel
     private lateinit var urlBuilder: UrlBuilder
@@ -196,7 +196,7 @@ class FilterViewModelInputFieldValueCreateTest {
             objectSetDatabase = db,
             getOptions = getOptions,
             spaceManager = spaceManager,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
     }
 

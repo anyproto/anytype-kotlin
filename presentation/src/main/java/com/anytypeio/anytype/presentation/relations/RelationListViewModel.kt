@@ -19,7 +19,7 @@ import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -56,7 +56,7 @@ class RelationListViewModel(
     private val addRelationToObject: AddRelationToObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceManager: SpaceManager,
-    private val fieldsProvider: FieldsProvider
+    private val fieldParser: FieldParser
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val isEditMode = MutableStateFlow(false)
@@ -140,7 +140,7 @@ class RelationListViewModel(
             values = objectDetails,
             urlBuilder = urlBuilder,
             featured = objectWrapper.featuredRelations,
-            fieldsProvider = fieldsProvider,
+            fieldParser = fieldParser,
         ).map { view ->
             Model.Item(
                 view = view,
@@ -165,7 +165,7 @@ class RelationListViewModel(
             details = details,
             values = objectDetails,
             urlBuilder = urlBuilder,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         ).map { view ->
             Model.Item(
                 view = view,
@@ -495,7 +495,7 @@ class RelationListViewModel(
                 details = details,
                 values = values,
                 urlBuilder = urlBuilder,
-                fieldsProvider = fieldsProvider
+                fieldParser = fieldParser
             ).map { Model.Item(it) }
         }
     }

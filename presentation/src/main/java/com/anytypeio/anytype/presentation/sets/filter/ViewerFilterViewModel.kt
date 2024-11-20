@@ -9,7 +9,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
@@ -36,7 +36,7 @@ class ViewerFilterViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val db: ObjectSetDatabase,
     private val analytics: Analytics,
-    private val fieldsProvider: FieldsProvider
+    private val fieldParser: FieldParser
 ) : BaseListViewModel<FilterView>() {
 
     val screenState = MutableStateFlow(ScreenState.LIST)
@@ -69,7 +69,7 @@ class ViewerFilterViewModel(
                         storeOfObjects = db.store,
                         screenState = screenState.value,
                         urlBuilder = urlBuilder,
-                        fieldsProvider = fieldsProvider
+                        fieldParser = fieldParser
                     )
                 }
         }
@@ -221,7 +221,7 @@ class ViewerFilterViewModel(
         private val analytics: Analytics,
         private val storeOfRelations: StoreOfRelations,
         private val objectSetDatabase: ObjectSetDatabase,
-        private val fieldsProvider: FieldsProvider
+        private val fieldParser: FieldParser
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -233,7 +233,7 @@ class ViewerFilterViewModel(
                 analytics = analytics,
                 storeOfRelations = storeOfRelations,
                 db = objectSetDatabase,
-                fieldsProvider = fieldsProvider
+                fieldParser = fieldParser
             ) as T
         }
     }

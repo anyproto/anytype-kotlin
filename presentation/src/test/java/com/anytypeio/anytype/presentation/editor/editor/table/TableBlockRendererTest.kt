@@ -22,8 +22,7 @@ import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
-import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -92,7 +91,7 @@ class TableBlockRendererTest {
     private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
     @Mock
-    lateinit var fieldsProvider: FieldsProvider
+    lateinit var fieldParser: FieldParser
 
     @Before
     fun setup() {
@@ -103,7 +102,7 @@ class TableBlockRendererTest {
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
             storeOfObjectTypes = storeOfObjectTypes,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
     }
 

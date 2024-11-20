@@ -8,14 +8,14 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
 import javax.inject.Inject
 
-interface FieldsProvider {
+interface FieldParser {
     fun toDate(any: Any?): Field.Date?
 }
 
-class FieldsProviderImpl @Inject constructor(
+class FieldParserImpl @Inject constructor(
     private val dateProvider: DateProvider,
     private val logger: Logger
-) : FieldsProvider {
+) : FieldParser {
 
     override fun toDate(
         any: Any?

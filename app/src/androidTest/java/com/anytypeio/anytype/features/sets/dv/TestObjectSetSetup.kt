@@ -48,7 +48,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -237,7 +237,7 @@ abstract class TestObjectSetSetup {
     lateinit var observeVaultSettings: ObserveVaultSettings
 
     @Mock
-    lateinit var fieldsProvider: FieldsProvider
+    lateinit var fieldParser: FieldParser
 
     private val dateProvider = DateProviderImpl(
         defaultZoneId = ZoneId.systemDefault(),
@@ -331,7 +331,7 @@ abstract class TestObjectSetSetup {
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             clearLastOpenedObject = clearLastOpenedObject,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

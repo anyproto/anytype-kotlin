@@ -24,7 +24,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -107,7 +107,7 @@ class ObjectRelationListTest {
     lateinit var urlBuilder: UrlBuilder
 
     @Mock
-    lateinit var fieldsProvider: FieldsProvider
+    lateinit var fieldParser: FieldParser
 
     @Before
     fun setup() {
@@ -131,7 +131,7 @@ class ObjectRelationListTest {
             addRelationToObject = addRelationToObject,
             spaceManager = spaceManager,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            fieldsProvider = fieldsProvider
+            fieldParser = fieldParser
         )
     }
 

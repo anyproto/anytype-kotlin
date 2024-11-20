@@ -50,7 +50,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
@@ -234,7 +234,7 @@ object ObjectSetModule {
         clearLastOpenedObject: ClearLastOpenedObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-        fieldsProvider: FieldsProvider
+        fieldParser: FieldParser
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -277,7 +277,7 @@ object ObjectSetModule {
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
         clearLastOpenedObject = clearLastOpenedObject,
-        fieldsProvider = fieldsProvider
+        fieldParser = fieldParser
     )
 
     @JvmStatic

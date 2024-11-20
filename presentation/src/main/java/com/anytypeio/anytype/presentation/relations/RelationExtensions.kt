@@ -2,11 +2,10 @@ package com.anytypeio.anytype.presentation.relations
 
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.Relations.NUMBER_DEFAULT_VALUE
-import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.const.DateConst
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.*
@@ -19,14 +18,14 @@ fun List<ObjectWrapper.Relation>.views(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     featured: List<Id> = emptyList(),
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): List<ObjectRelationView> = mapNotNull { relation ->
     relation.view(
         details = details.details,
         values = values,
         urlBuilder = urlBuilder,
         isFeatured = featured.contains(relation.key),
-        dateProvider = dateProvider
+        fieldsProvider = fieldsProvider
     )
 }
 
@@ -37,7 +36,7 @@ fun ObjectWrapper.Relation.view(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): ObjectRelationView {
     val relation = this
     return when (relation.format) {
@@ -73,8 +72,7 @@ fun ObjectWrapper.Relation.view(
             )
         }
         RelationFormat.DATE -> {
-            val timeInSec = DateParser.parse(value = values[relation.key])
-            val formattedDate = dateProvider.calculateRelativeDates(timeInSec)
+            val fieldDate = fieldsProvider.toDate(any = values[relation.key])
             ObjectRelationView.Date(
                 id = relation.id,
                 key = relation.key,
@@ -82,7 +80,7 @@ fun ObjectWrapper.Relation.view(
                 featured = isFeatured,
                 readOnly = relation.isReadonlyValue,
                 system = relation.key.isSystemKey(),
-                relativeDate = formattedDate
+                relativeDate = fieldDate?.relativeDate
             )
         }
         RelationFormat.STATUS -> {

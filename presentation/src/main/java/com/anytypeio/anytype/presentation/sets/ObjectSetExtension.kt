@@ -39,10 +39,10 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
@@ -66,7 +66,7 @@ fun ObjectState.DataView.featuredRelations(
     ctx: Id,
     urlBuilder: UrlBuilder,
     relations: List<ObjectWrapper.Relation>,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): BlockView.FeaturedRelation? {
     val block = blocks.find { it.content is Block.Content.FeaturedRelations }
     if (block != null) {
@@ -79,7 +79,7 @@ fun ObjectState.DataView.featuredRelations(
                 details = Block.Details(details),
                 relations = relations,
                 urlBuilder = urlBuilder,
-                dateProvider = dateProvider
+                fieldsProvider = fieldsProvider
             )
         )
         return BlockView.FeaturedRelation(
@@ -131,7 +131,7 @@ private fun ObjectState.DataView.mapFeaturedRelations(
     details: Block.Details,
     relations: List<ObjectWrapper.Relation>,
     urlBuilder: UrlBuilder,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): List<ObjectRelationView> = keys.mapNotNull { key ->
     when (key) {
         Relations.DESCRIPTION -> null
@@ -207,7 +207,7 @@ private fun ObjectState.DataView.mapFeaturedRelations(
                 values = details.details[ctx]?.map ?: emptyMap(),
                 urlBuilder = urlBuilder,
                 isFeatured = true,
-                dateProvider = dateProvider
+                fieldsProvider = fieldsProvider
             )
         }
     }

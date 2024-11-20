@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -75,7 +76,7 @@ open class FilterViewModel(
     private val analytics: Analytics,
     private val getOptions: GetOptions,
     private val spaceManager: SpaceManager,
-    private val dateProvider: DateProvider
+    private val fieldsProvider: FieldsProvider
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Commands>()
@@ -99,7 +100,7 @@ open class FilterViewModel(
                     condition = condition?.condition,
                     index = filterIndex,
                     viewerId = viewerId,
-                    dateProvider = dateProvider
+                    fieldsProvider = fieldsProvider
                 )
             }
         }
@@ -137,7 +138,7 @@ open class FilterViewModel(
                                 condition = conditionState.value?.condition,
                                 index = filterIndex,
                                 viewerId = viewerId,
-                                dateProvider = dateProvider
+                                fieldsProvider = fieldsProvider
                             )
                         } else {
                             Timber.e("Couldn't find relation in StoreOfRelations by relationKey:[$relationKey]")
@@ -231,7 +232,7 @@ open class FilterViewModel(
         viewerId: Id,
         condition: Viewer.Filter.Condition?,
         index: Int?,
-        dateProvider: DateProvider
+        fieldsProvider: FieldsProvider
     ) {
         if (condition == null || !condition.hasValue()) {
             filterValueState.value = null
@@ -255,7 +256,7 @@ open class FilterViewModel(
                     relation = relation,
                     filter = null,
                     condition = condition,
-                    dateProvider = dateProvider
+                    fieldsProvider = fieldsProvider
                 )
             } else {
                 val filter = viewer.filters[index]
@@ -270,7 +271,7 @@ open class FilterViewModel(
                     relation = relation,
                     filter = filter,
                     condition = condition,
-                    dateProvider = dateProvider
+                    fieldsProvider = fieldsProvider
                 )
             }
         }
@@ -280,7 +281,7 @@ open class FilterViewModel(
         relation: ObjectWrapper.Relation,
         filter: DVFilter?,
         condition: Viewer.Filter.Condition,
-        dateProvider: DateProvider
+        fieldsProvider: FieldsProvider
     ): Unit = when (relation.format) {
         Relation.Format.DATE -> {
             val value = (filter?.value as? Double)?.toLong() ?: 0L
@@ -288,7 +289,7 @@ open class FilterViewModel(
                 quickOption = filter?.quickOption,
                 condition = condition.toDomain(),
                 value = value,
-                dateProvider = dateProvider
+                fieldsProvider = fieldsProvider
             )
         }
         Relation.Format.TAG -> {
@@ -935,7 +936,7 @@ open class FilterViewModel(
         private val getOptions: GetOptions,
         private val analytics: Analytics,
         private val spaceManager: SpaceManager,
-        private val dateProvider: DateProvider
+        private val fieldsProvider: FieldsProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -951,7 +952,7 @@ open class FilterViewModel(
                 getOptions = getOptions,
                 analytics = analytics,
                 spaceManager = spaceManager,
-                dateProvider = dateProvider
+                fieldsProvider = fieldsProvider
             ) as T
         }
     }

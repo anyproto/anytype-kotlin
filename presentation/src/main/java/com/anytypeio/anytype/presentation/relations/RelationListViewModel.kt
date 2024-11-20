@@ -16,10 +16,10 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -56,7 +56,7 @@ class RelationListViewModel(
     private val addRelationToObject: AddRelationToObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceManager: SpaceManager,
-    private val dateProvider: DateProvider
+    private val fieldsProvider: FieldsProvider
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val isEditMode = MutableStateFlow(false)
@@ -140,7 +140,7 @@ class RelationListViewModel(
             values = objectDetails,
             urlBuilder = urlBuilder,
             featured = objectWrapper.featuredRelations,
-            dateProvider = dateProvider
+            fieldsProvider = fieldsProvider,
         ).map { view ->
             Model.Item(
                 view = view,
@@ -165,7 +165,7 @@ class RelationListViewModel(
             details = details,
             values = objectDetails,
             urlBuilder = urlBuilder,
-            dateProvider = dateProvider
+            fieldsProvider = fieldsProvider
         ).map { view ->
             Model.Item(
                 view = view,
@@ -495,7 +495,7 @@ class RelationListViewModel(
                 details = details,
                 values = values,
                 urlBuilder = urlBuilder,
-                dateProvider = dateProvider
+                fieldsProvider = fieldsProvider
             ).map { Model.Item(it) }
         }
     }

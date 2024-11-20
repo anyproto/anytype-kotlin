@@ -97,6 +97,7 @@ import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -333,7 +334,7 @@ class EditorViewModel(
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-    private val dateProvider: DateProvider
+    private val fieldsProvider : FieldsProvider
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -5260,7 +5261,7 @@ class EditorViewModel(
             values = objectDetails,
             urlBuilder = urlBuilder,
             featured = objectWrapper.featuredRelations,
-            dateProvider = dateProvider
+            fieldsProvider = fieldsProvider
         )
     }
 
@@ -5282,7 +5283,7 @@ class EditorViewModel(
             details = details,
             values = objectDetails,
             urlBuilder = urlBuilder,
-            dateProvider = dateProvider
+            fieldsProvider = fieldsProvider
         )
     }
 

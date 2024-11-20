@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
@@ -572,7 +573,7 @@ suspend fun List<Id>.toGridRecordRows(
     columns: List<ColumnView>,
     builder: UrlBuilder,
     store: ObjectStore,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): List<Viewer.GridView.Row> {
     val rows = mutableListOf<Viewer.GridView.Row>()
     forEach { id ->
@@ -583,7 +584,7 @@ suspend fun List<Id>.toGridRecordRows(
                 obj = record,
                 store = store,
                 builder = builder,
-                dateProvider = dateProvider
+                fieldsProvider = fieldsProvider
             )
             rows.add(row)
         } else {

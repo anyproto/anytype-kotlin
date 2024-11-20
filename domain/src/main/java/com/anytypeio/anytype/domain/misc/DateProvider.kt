@@ -13,7 +13,6 @@ import java.time.ZoneId
 interface DateProvider {
     fun getRelativeTimeSpanString(date: Long): CharSequence
     fun calculateDateType(date: TimeInSeconds): DateType
-    fun calculateRelativeDates(timeInSeconds: TimeInSeconds?): RelativeDate?
     fun getCurrentTimestampInSeconds(): TimeInSeconds
     fun getTimestampForTodayAtStartOfDay(): TimeInSeconds
     fun getTimestampForTomorrowAtStartOfDay(): TimeInSeconds
@@ -27,6 +26,7 @@ interface DateProvider {
         timestamp: TimeInMillis,
         timeStyle: Int = DEFAULT_TIME_STYLE
     ): Pair<String, String>
+    fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate?
     fun isSameMinute(timestamp1: Long, timestamp2: Long): Boolean
 }
 

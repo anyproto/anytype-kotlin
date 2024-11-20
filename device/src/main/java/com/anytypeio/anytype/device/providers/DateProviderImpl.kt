@@ -107,12 +107,13 @@ class DateProviderImpl @Inject constructor(
         return weekAgoWithZeroTime.atStartOfDay(defaultZoneId).toEpochSecond()
     }
 
-    override fun getRelativeTimeSpanString(date: TimeInSeconds): CharSequence = DateUtils.getRelativeTimeSpanString(
-        date,
-        System.currentTimeMillis(),
-        DateUtils.DAY_IN_MILLIS,
-        DateUtils.FORMAT_ABBREV_RELATIVE
-    )
+    override fun getRelativeTimeSpanString(date: TimeInSeconds): CharSequence =
+        DateUtils.getRelativeTimeSpanString(
+            date,
+            System.currentTimeMillis(),
+            DateUtils.DAY_IN_MILLIS,
+            DateUtils.FORMAT_ABBREV_RELATIVE
+        )
 
     override fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis {
         val instant = Instant.ofEpochSecond(timestamp)
@@ -121,7 +122,10 @@ class DateProviderImpl @Inject constructor(
         return (startOfDay.toEpochSecond(ZoneOffset.UTC) * 1000)
     }
 
-    override fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis, zoneId: ZoneId): TimeInSeconds {
+    override fun adjustFromStartOfDayInUserTimeZoneToUTC(
+        timestamp: TimeInMillis,
+        zoneId: ZoneId
+    ): TimeInSeconds {
         // Convert the timestamp to an Instan
         val instant = Instant.ofEpochSecond(timestamp)
 
@@ -141,10 +145,12 @@ class DateProviderImpl @Inject constructor(
                 // If the UTC timestamp is after the start of the day in the local time zone, return the start of the next day
                 startOfDay.plusDays(1).toEpochSecond()
             }
+
             utcDateTime.toLocalDate().isBefore(startOfDay.toLocalDate()) -> {
                 // If the UTC timestamp is before the start of the day in the local time zone, return the start of the previous day
                 startOfDay.minusDays(1).toEpochSecond()
             }
+
             else -> {
                 // Otherwise, return the start of the day
                 startOfDay.toEpochSecond()
@@ -158,7 +164,7 @@ class DateProviderImpl @Inject constructor(
             val formatter = SimpleDateFormat(pattern, locale)
             return formatter.format(Date(timestamp))
         } catch (e: Exception) {
-            Timber.e(e,"Error formatting timestamp to date string")
+            Timber.e(e, "Error formatting timestamp to date string")
             return ""
         }
     }
@@ -195,8 +201,8 @@ class DateProviderImpl @Inject constructor(
     }
 
     override fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate? {
-        if (dateInSeconds == null || dateInSeconds == 0L) return null
 
+        if (dateInSeconds == null || dateInSeconds == 0L) return null
         val zoneId = defaultZoneId
         val dateInstant = Instant.ofEpochSecond(dateInSeconds)
         val givenDate = dateInstant.atZone(zoneId).toLocalDate()
@@ -205,17 +211,16 @@ class DateProviderImpl @Inject constructor(
         val daysDifference = ChronoUnit.DAYS.between(today, givenDate)
 
         return when (daysDifference) {
-            0L -> RelativeDate.Today(dateInSeconds)
-            1L -> RelativeDate.Tomorrow(dateInSeconds)
-            -1L -> RelativeDate.Yesterday(dateInSeconds)
+            0L -> RelativeDate.Today
+            1L -> RelativeDate.Tomorrow
+            -1L -> RelativeDate.Yesterday
             else -> {
                 val timestampMillis = TimeUnit.SECONDS.toMillis(dateInSeconds)
 
                 val (dateString, timeString) = formatTimestampToDateAndTime(timestampMillis)
                 RelativeDate.Other(
                     date = dateString,
-                    time = timeString,
-                    timestamp = dateInSeconds
+                    time = timeString
                 )
             }
         }

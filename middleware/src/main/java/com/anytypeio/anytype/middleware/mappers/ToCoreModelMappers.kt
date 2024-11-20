@@ -45,6 +45,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.SpaceUsage
+import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
@@ -62,7 +63,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncNetwork
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
+import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -1151,7 +1152,7 @@ fun Rpc.History.Version.toCoreModel(): Version {
         previousIds = previousIds,
         spaceMember = authorId,
         spaceMemberName = authorName,
-        timestamp = TimeInSeconds(time),
+        timestamp = TimestampInSeconds(time),
         groupId = groupId
     )
 }

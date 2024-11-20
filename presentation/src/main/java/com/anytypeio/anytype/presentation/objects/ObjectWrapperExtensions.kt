@@ -10,8 +10,7 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.number.NumberParser
-import com.anytypeio.anytype.core_models.ext.DateParser
-import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.presentation.extension.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.FileView
@@ -26,7 +25,7 @@ suspend fun ObjectWrapper.Basic.values(
     settings: List<DVViewerRelation>,
     urlBuilder: UrlBuilder,
     storeOfObjects: ObjectStore,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): List<DefaultObjectRelationValueView> {
     val values = mutableListOf<DefaultObjectRelationValueView>()
     relations.forEach { relation ->
@@ -121,11 +120,8 @@ suspend fun ObjectWrapper.Basic.values(
             }
             RelationFormat.DATE -> {
                 val setting = settings.find { it.key == relation.key }
-                val timeInSeconds = DateParser.parse(map.getOrDefault(relation.key, null))
-                val relativeDate = dateProvider.calculateRelativeDates(
-                    timeInSeconds = timeInSeconds
-                )
-                val value = if ( relativeDate == null) {
+                val fieldDate = fieldsProvider.toDate(any = map.getOrDefault(relation.key, null))
+                val value = if (fieldDate == null) {
                     DefaultObjectRelationValueView.Empty(
                         objectId = id,
                         relationKey = relation.key,
@@ -134,9 +130,9 @@ suspend fun ObjectWrapper.Basic.values(
                     DefaultObjectRelationValueView.Date(
                         objectId = id,
                         relationKey = relation.key,
-                        timeInMillis = timeInSeconds,
+                        timeInMillis = fieldDate.timestamp.inMillis,
                         isTimeIncluded = setting?.isDateIncludeTime == true,
-                        relativeDate = relativeDate
+                        relativeDate = fieldDate.relativeDate
                     )
                 }
                 values.add(value)
@@ -233,14 +229,14 @@ suspend fun ObjectWrapper.Basic.relationsFilteredByHiddenAndDescription(
     settings: List<DVViewerRelation>,
     urlBuilder: UrlBuilder,
     storeOfObjects: ObjectStore,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): List<DefaultObjectRelationValueView> {
     return values(
         relations = relations.filter { it.isHidden != true && it.key != Relations.DESCRIPTION },
         settings = settings,
         urlBuilder = urlBuilder,
         storeOfObjects = storeOfObjects,
-        dateProvider = dateProvider
+        fieldsProvider = fieldsProvider
     )
 }
 

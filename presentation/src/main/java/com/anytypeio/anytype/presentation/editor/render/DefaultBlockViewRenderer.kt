@@ -15,10 +15,10 @@ import com.anytypeio.anytype.core_models.ext.textColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
@@ -52,7 +52,7 @@ class DefaultBlockViewRenderer @Inject constructor(
     private val coverImageHashProvider: CoverImageHashProvider,
     private val storeOfRelations: StoreOfRelations,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val dateProvider: DateProvider
+    private val fieldsProvider: FieldsProvider
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
     override suspend fun Map<Id, List<Block>>.render(
@@ -689,7 +689,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             details = details,
                             urlBuilder = urlBuilder,
                             schema = blockDecorationScheme,
-                            dateProvider = dateProvider
+                            fieldsProvider = fieldsProvider,
                         )
                     )
                 }
@@ -700,7 +700,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         ctx = root.id,
                         block = block,
                         details = details,
-                        dateProvider = dateProvider,
+                        fieldsProvider = fieldsProvider,
                     )
 
                     if (featured.relations.isNotEmpty()) {
@@ -2070,7 +2070,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         details: Block.Details,
         urlBuilder: UrlBuilder,
         schema: NestedDecorationData,
-        dateProvider: DateProvider
+        fieldsProvider: FieldsProvider
     ): BlockView.Relation {
         val relationKey = content.key
         if (relationKey.isNullOrEmpty()) {
@@ -2087,7 +2087,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     details = details.details,
                     values = details.details[ctx]?.map ?: emptyMap(),
                     urlBuilder = urlBuilder,
-                    dateProvider = dateProvider
+                    fieldsProvider = fieldsProvider
                 )
                 return BlockView.Relation.Related(
                     id = block.id,
@@ -2111,7 +2111,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         ctx: Id,
         block: Block,
         details: Block.Details,
-        dateProvider: DateProvider
+        fieldsProvider: FieldsProvider,
     ): BlockView.FeaturedRelation {
         val map = details.details[ctx]?.map ?: emptyMap()
         val obj = ObjectWrapper.Basic(map)
@@ -2120,7 +2120,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ctx = ctx,
             keys = featuredKeys,
             details = details,
-            dateProvider = dateProvider
+            fieldsProvider = fieldsProvider
 
         ).sortedByDescending { it.key == Relations.TYPE || it.key == Relations.GLOBAL_NAME || it.key == Relations.IDENTITY }
         return BlockView.FeaturedRelation(
@@ -2158,7 +2158,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         ctx: Id,
         keys: List<Key>,
         details: Block.Details,
-        dateProvider: DateProvider
+        fieldsProvider: FieldsProvider
     ): List<ObjectRelationView> = keys.mapNotNull { key ->
         when (key) {
             Relations.DESCRIPTION -> null
@@ -2189,7 +2189,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     values = details.details[ctx]?.map ?: emptyMap(),
                     urlBuilder = urlBuilder,
                     isFeatured = true,
-                    dateProvider = dateProvider
+                    fieldsProvider = fieldsProvider
                 )
             }
         }

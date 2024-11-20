@@ -48,7 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
+import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
@@ -384,7 +384,7 @@ private fun SpaceListScreenPreview() {
                             spaceMemberName = "John Doe",
                             icon = ObjectIcon.Profile.Avatar("A"),
                             spaceMember = "1",
-                            timeStamp = TimeInSeconds(23423423L),
+                            timeStamp = TimestampInSeconds(23423423L),
                             versions = emptyList(),
                             dateFormatted = "Today",
 
@@ -395,7 +395,7 @@ private fun SpaceListScreenPreview() {
                             spaceMemberName = "Alice Doe",
                             icon = ObjectIcon.Profile.Avatar("B"),
                             spaceMember = "1",
-                            timeStamp = TimeInSeconds(23423423L),
+                            timeStamp = TimestampInSeconds(23423423L),
                             versions = emptyList(),
                             dateFormatted = "Today",
                         ),
@@ -405,7 +405,7 @@ private fun SpaceListScreenPreview() {
                             spaceMemberName = "Bob Doe",
                             icon = ObjectIcon.Profile.Avatar("C"),
                             spaceMember = "1",
-                            timeStamp = TimeInSeconds(23423423L),
+                            timeStamp = TimestampInSeconds(23423423L),
                             versions = emptyList(),
                             dateFormatted = "Today",
                         ),

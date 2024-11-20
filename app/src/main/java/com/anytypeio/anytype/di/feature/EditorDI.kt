@@ -55,7 +55,6 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -76,6 +75,7 @@ import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
@@ -289,7 +289,7 @@ object EditorSessionModule {
         syncStatusProvider: SpaceSyncAndP2PStatusProvider,
         getNetworkMode: GetNetworkMode,
         clearLastOpenedObject: ClearLastOpenedObject,
-        dateProvider: DateProvider
+        fieldsProvider: FieldsProvider
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -336,7 +336,7 @@ object EditorSessionModule {
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         clearLastOpenedObject = clearLastOpenedObject,
         syncStatusProvider = syncStatusProvider,
-        dateProvider = dateProvider
+        fieldsProvider = fieldsProvider
     )
 
     @JvmStatic
@@ -378,14 +378,14 @@ object EditorSessionModule {
         coverImageHashProvider: CoverImageHashProvider,
         storeOfRelations: StoreOfRelations,
         storeOfObjectTypes: StoreOfObjectTypes,
-        dateProvider: DateProvider
+        fieldsProvider: FieldsProvider
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
         toggleStateHolder = toggleStateHolder,
         coverImageHashProvider = coverImageHashProvider,
         storeOfRelations = storeOfRelations,
         storeOfObjectTypes = storeOfObjectTypes,
-        dateProvider = dateProvider
+        fieldsProvider = fieldsProvider
     )
 
     @JvmStatic

@@ -5,11 +5,10 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.relationsFilteredByHiddenAndDescription
 import com.anytypeio.anytype.presentation.objects.setTypeRelationIconsAsNone
@@ -21,7 +20,7 @@ suspend fun DVViewer.buildListViews(
     urlBuilder: UrlBuilder,
     store: ObjectStore,
     objectOrderIds: List<Id>,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): List<Viewer.ListView.Item> {
     val items = objects.mapNotNull { id ->
         val obj = store.get(id)
@@ -40,7 +39,7 @@ suspend fun DVViewer.buildListViews(
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
                             storeOfObjects = store,
-                            dateProvider = dateProvider
+                            fieldsProvider = fieldsProvider
                         ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         icon = obj.objectIcon(urlBuilder),
@@ -61,7 +60,7 @@ suspend fun DVViewer.buildListViews(
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
                             storeOfObjects = store,
-                            dateProvider = dateProvider
+                            fieldsProvider = fieldsProvider
                         ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         done = obj.done ?: false,
@@ -81,7 +80,7 @@ suspend fun DVViewer.buildListViews(
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
                             storeOfObjects = store,
-                            dateProvider = dateProvider
+                            fieldsProvider = fieldsProvider
                         ).setTypeRelationIconsAsNone(),
                         name = obj.getProperName(),
                         icon = obj.objectIcon(urlBuilder),

@@ -22,6 +22,8 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
+import com.anytypeio.anytype.domain.primitives.FieldsProviderImpl
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
@@ -70,6 +72,14 @@ object UtilModule {
         vaultSettings = observeVaultSettings,
         scope = scope
     )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideFieldsProvider(
+        dateProvider: DateProvider,
+        logger: Logger
+    ): FieldsProvider = FieldsProviderImpl(dateProvider, logger)
 
     @Module
     interface Bindings {

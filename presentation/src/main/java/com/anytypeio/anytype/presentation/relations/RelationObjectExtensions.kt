@@ -3,26 +3,18 @@ package com.anytypeio.anytype.presentation.relations
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
-import com.anytypeio.anytype.core_models.getSingleValue
-import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.buildFileViews
 import com.anytypeio.anytype.presentation.sets.buildRelationValueObjectViews
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
-import java.sql.Date
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 fun List<ObjectWrapper.Relation>.views(
     context: Id,
@@ -30,7 +22,7 @@ fun List<ObjectWrapper.Relation>.views(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     featured: List<Id> = emptyList(),
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): List<ObjectRelationView> = mapNotNull { relation ->
     relation.view(
         context = context,
@@ -38,7 +30,7 @@ fun List<ObjectWrapper.Relation>.views(
         values = values,
         urlBuilder = urlBuilder,
         isFeatured = featured.contains(relation.key),
-        dateProvider = dateProvider
+        fieldsProvider = fieldsProvider
     )
 }
 
@@ -48,7 +40,7 @@ fun ObjectWrapper.Relation.view(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): ObjectRelationView? {
     val relation = this
     val relationFormat = relation.relationFormat
@@ -88,9 +80,7 @@ fun ObjectWrapper.Relation.view(
             )
         }
         RelationFormat.DATE -> {
-            val value = values[relation.key]
-            val timeInSec = DateParser.parse(value)
-            val relativeDate = dateProvider.calculateRelativeDates(timeInSec)
+            val fieldDate = fieldsProvider.toDate(any = values[relation.key])
             ObjectRelationView.Date(
                 id = relation.id,
                 key = relation.key,
@@ -98,7 +88,7 @@ fun ObjectWrapper.Relation.view(
                 featured = isFeatured,
                 readOnly = relation.isReadonlyValue,
                 system = relation.key.isSystemKey(),
-                relativeDate = relativeDate
+                relativeDate = fieldDate?.relativeDate
             )
         }
         RelationFormat.STATUS -> {

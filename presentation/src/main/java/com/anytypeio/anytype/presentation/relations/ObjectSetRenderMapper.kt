@@ -31,7 +31,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.search.DataViewState
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
@@ -46,7 +46,6 @@ import com.anytypeio.anytype.presentation.mapper.toTextView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
 import com.anytypeio.anytype.presentation.sets.buildListViews
@@ -85,7 +84,7 @@ suspend fun DVViewer.render(
     store: ObjectStore,
     objectOrderIds: List<Id> = emptyList(),
     storeOfRelations: StoreOfRelations,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
@@ -95,7 +94,7 @@ suspend fun DVViewer.render(
                 builder = builder,
                 store = store,
                 objectOrderIds = objectOrderIds,
-                dateProvider = dateProvider
+                fieldsProvider = fieldsProvider
             )
         }
         DVViewerType.GALLERY -> {
@@ -109,7 +108,7 @@ suspend fun DVViewer.render(
                     objectStore = store,
                     objectOrderIds = objectOrderIds,
                     storeOfRelations = storeOfRelations,
-                    dateProvider = dateProvider
+                    fieldsProvider = fieldsProvider
                 ),
                 title = name,
                 largeCards = cardSize == DVViewerCardSize.LARGE
@@ -129,7 +128,7 @@ suspend fun DVViewer.render(
                     urlBuilder = builder,
                     store = store,
                     objectOrderIds = objectOrderIds,
-                    dateProvider = dateProvider
+                    fieldsProvider = fieldsProvider
                 ),
                 title = name
             )
@@ -142,7 +141,7 @@ suspend fun DVViewer.render(
                     builder = builder,
                     store = store,
                     objectOrderIds = objectOrderIds,
-                    dateProvider = dateProvider
+                    fieldsProvider = fieldsProvider
                 )
             } else {
                 Viewer.Unsupported(
@@ -169,7 +168,7 @@ private suspend fun DVViewer.buildGridView(
     builder: UrlBuilder,
     store: ObjectStore,
     objectOrderIds: List<Id>,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): Viewer {
     val vmap = viewerRelations.associateBy { it.key }
     val visibleRelations = dataViewRelations.filter { relation ->
@@ -187,7 +186,7 @@ private suspend fun DVViewer.buildGridView(
                 columns = columns,
                 builder = builder,
                 store = store,
-                dateProvider = dateProvider
+                fieldsProvider = fieldsProvider
             )
         )
     }
@@ -290,10 +289,11 @@ fun ObjectWrapper.Relation.toCreateFilterDateView(
     quickOption: DVFilterQuickOption?,
     condition: DVFilterCondition,
     value: Long,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ) = quickOptionOrderMap.getOrDefault(condition, quickOptionDefaultOrder)
     .map {
         val isSelected = quickOption.isSelected(it, value)
+        val fieldDate = fieldsProvider.toDate(any = value)
         CreateFilterView.Date(
             id = key,
             description = it.toName(),
@@ -301,9 +301,7 @@ fun ObjectWrapper.Relation.toCreateFilterDateView(
             condition = condition,
             value = if (isSelected) value else CreateFilterView.Date.NO_VALUE,
             isSelected = isSelected,
-            relativeDate = dateProvider.calculateRelativeDates(
-                timeInSeconds = value
-            )
+            relativeDate = fieldDate?.relativeDate
         )
     }
 
@@ -507,7 +505,7 @@ suspend fun DVFilter.toView(
     relation: ObjectWrapper.Relation,
     isInEditMode: Boolean,
     urlBuilder: UrlBuilder,
-    dateProvider: DateProvider
+    fieldsProvider: FieldsProvider
 ): FilterView.Expression = when (relation.format) {
     Relation.Format.SHORT_TEXT -> {
         FilterView.Expression.TextShort(
@@ -588,7 +586,7 @@ suspend fun DVFilter.toView(
         )
     }
     Relation.Format.DATE -> {
-        val timeInSeconds = DateParser.parse(value)
+        val fieldDate = fieldsProvider.toDate(any = value)
         FilterView.Expression.Date(
             id = id,
             relation = this.relation,
@@ -596,13 +594,11 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toDateView(),
             quickOption = quickOption,
-            filterValue = FilterValue.Date(timeInSeconds),
+            filterValue = FilterValue.Date(fieldDate?.timestamp?.time),
             format = relation.format.toView(),
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode,
-            relativeDate = dateProvider.calculateRelativeDates(
-                timeInSeconds = timeInSeconds
-            )
+            relativeDate = fieldDate?.relativeDate
         )
     }
     Relation.Format.STATUS -> {

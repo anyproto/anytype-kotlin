@@ -3,9 +3,9 @@ package com.anytypeio.anytype.di.feature;
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -43,7 +43,7 @@ object ViewerFilterModule {
         analytics: Analytics,
         storeOfRelations: StoreOfRelations,
         db: ObjectSetDatabase,
-        dateProvider: DateProvider
+        fieldsProvider: FieldsProvider
     ): ViewerFilterViewModel.Factory = ViewerFilterViewModel.Factory(
         state = state,
         dispatcher = dispatcher,
@@ -52,7 +52,7 @@ object ViewerFilterModule {
         analytics = analytics,
         storeOfRelations = storeOfRelations,
         objectSetDatabase = db,
-        dateProvider = dateProvider
+        fieldsProvider = fieldsProvider
     )
 }
 

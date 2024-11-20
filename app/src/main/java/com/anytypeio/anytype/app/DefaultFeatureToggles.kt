@@ -30,5 +30,5 @@ class DefaultFeatureToggles @Inject constructor(
         get() = false
 
     override val isNewSpaceHomeEnabled: Boolean
-        get() = true
+        get() = false
 }

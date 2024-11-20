@@ -31,7 +31,7 @@ class FieldsProviderImpl @Inject constructor(
     }
 
     private fun calculateFieldDate(value: Value.Single<Long>?): Field.Date? {
-        val dateInSeconds = value?.param ?: return null
+        val dateInSeconds = value?.single ?: return null
         val relativeDate = dateProvider.calculateRelativeDates(dateInSeconds)
         if (relativeDate == null) {
             return null

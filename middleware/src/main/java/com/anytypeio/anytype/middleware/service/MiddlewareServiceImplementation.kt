@@ -2424,4 +2424,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun objectDateByTimestamp(request: Rpc.Object.DateByTimestamp.Request): Rpc.Object.DateByTimestamp.Response {
+        val encoded = Service.objectDateByTimestamp(
+            Rpc.Object.DateByTimestamp.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.DateByTimestamp.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.DateByTimestamp.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

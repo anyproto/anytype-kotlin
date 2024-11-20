@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -235,6 +236,10 @@ class HomeScreenFragment : BaseComposeFragment(),
                     )
                 }
             }
+
+            BackHandler {
+                vm.onBackClicked()
+            }
         }
     }
 
@@ -273,6 +278,8 @@ class HomeScreenFragment : BaseComposeFragment(),
             Timber.d("Deeplink  from fragment args")
             vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromFragmentArgs))
             arguments?.putString(DEEP_LINK_KEY, null)
+        } else {
+            vm.onResume(null)
         }
     }
 

@@ -301,9 +301,9 @@ fun RelativeDate.getPrettyName(
 ): String = when (this) {
     is RelativeDate.Other -> {
         if (isTimeIncluded) {
-            "$date $time"
+            "$formattedDate $formattedTime"
         } else {
-            date
+            formattedDate
         }
     }
     is RelativeDate.Today -> resources.getString(R.string.today)

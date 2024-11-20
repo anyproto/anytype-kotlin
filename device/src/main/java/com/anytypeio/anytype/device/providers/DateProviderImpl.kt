@@ -219,8 +219,8 @@ class DateProviderImpl @Inject constructor(
 
                 val (dateString, timeString) = formatTimestampToDateAndTime(timestampMillis)
                 RelativeDate.Other(
-                    date = dateString,
-                    time = timeString
+                    formattedDate = dateString,
+                    formattedTime = timeString
                 )
             }
         }

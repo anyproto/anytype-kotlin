@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -78,7 +79,7 @@ class ModifyTagFilterTest {
     lateinit var spaceManager: SpaceManager
 
     @Mock
-    lateinit var dateProvider: DateProvider
+    lateinit var fieldsProvider: FieldsProvider
 
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
     private lateinit var searchObjects: SearchObjects
@@ -112,7 +113,7 @@ class ModifyTagFilterTest {
             objectSetDatabase = db,
             getOptions = getOptions,
             spaceManager = spaceManager,
-            dateProvider = dateProvider
+            fieldsProvider = fieldsProvider
         )
     }
 

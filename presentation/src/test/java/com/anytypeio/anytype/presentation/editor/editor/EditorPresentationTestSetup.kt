@@ -77,6 +77,7 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -238,6 +239,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var move: MoveOld
+
+    @Mock
+    lateinit var fieldsProvider: FieldsProvider
 
     @Mock
     lateinit var turnIntoDocument: TurnIntoDocument
@@ -465,7 +469,7 @@ open class EditorPresentationTestSetup {
                 coverImageHashProvider = coverImageHashProvider,
                 storeOfRelations = storeOfRelations,
                 storeOfObjectTypes = storeOfObjectTypes,
-                dateProvider = dateProvider
+                fieldsProvider = fieldsProvider
             ),
             orchestrator = orchestrator,
             analytics = analytics,
@@ -505,7 +509,7 @@ open class EditorPresentationTestSetup {
             clearLastOpenedObject = clearLastOpenedObject,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             getNetworkMode = getNetworkMode,
-            dateProvider = dateProvider
+            fieldsProvider = fieldsProvider
         )
     }
 

@@ -31,7 +31,7 @@ sealed class CellView {
         val timeInSecs: Long? = null,
         override val dateFormat: String,
         val relativeDate: RelativeDate?,
-        val isTimeIncluded: Boolean
+        val isTimeIncluded: Boolean = false
     ) : CellView(), DateFormat
 
     data class Number(

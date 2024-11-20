@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -46,6 +47,9 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
         .showTimestamp(false)
         .onlyLogWhenTestFails(false)
         .build()
+
+//    @Mock
+//    lateinit var fieldsProvider: FieldsProvider
 
     @Before
     fun setup() {
@@ -119,7 +123,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            fieldsProvider = fieldsProvider
         )
         stubNetworkMode()
         stubObservePermissions()

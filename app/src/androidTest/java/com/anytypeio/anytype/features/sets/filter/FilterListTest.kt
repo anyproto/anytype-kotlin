@@ -18,10 +18,10 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -66,7 +66,7 @@ class FilterListTest {
     lateinit var dispatchers: AppCoroutineDispatchers
 
     @Mock
-    lateinit var dateProvider: DateProvider
+    lateinit var fieldsProvider: FieldsProvider
 
     lateinit var updateDataViewViewer: UpdateDataViewViewer
     lateinit var searchObjects: SearchObjects
@@ -93,7 +93,7 @@ class FilterListTest {
             analytics = analytics,
             storeOfRelations = storeOfRelations,
             objectSetDatabase = db,
-            dateProvider = dateProvider
+            fieldsProvider = fieldsProvider
         )
     }
 

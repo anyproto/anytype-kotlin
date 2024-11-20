@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -90,6 +91,9 @@ class TableBlockRendererTest {
 
     private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
+    @Mock
+    lateinit var fieldsProvider: FieldsProvider
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -98,7 +102,8 @@ class TableBlockRendererTest {
             toggleStateHolder = toggleStateHolder,
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            fieldsProvider = fieldsProvider
         )
     }
 

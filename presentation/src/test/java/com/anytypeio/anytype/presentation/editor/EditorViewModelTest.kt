@@ -86,6 +86,7 @@ import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.primitives.FieldsProvider
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -364,6 +365,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+
+    @Mock
+    lateinit var fieldsProvider: FieldsProvider
 
     lateinit var vm: EditorViewModel
 
@@ -3934,7 +3938,7 @@ open class EditorViewModelTest {
                 coverImageHashProvider = coverImageHashProvider,
                 storeOfRelations = storeOfRelations,
                 storeOfObjectTypes = storeOfObjectTypes,
-                dateProvider = dateProvider
+                fieldsProvider = fieldsProvider
             ),
             orchestrator = orchestrator,
             analytics = analytics,
@@ -3974,7 +3978,7 @@ open class EditorViewModelTest {
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             clearLastOpenedObject = clearLastOpenedObject,
             getNetworkMode = getNetworkMode,
-            dateProvider = dateProvider
+            fieldsProvider = fieldsProvider
         )
     }
 

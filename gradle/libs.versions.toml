@@ -3,12 +3,12 @@ middlewareVersion = "v0.37.0"
 kotlinVersion = '2.0.21'
 kspVersion = "2.0.21-1.0.25"
 
-androidxCoreVersion = "1.15.0"
+androidxCoreVersion = "1.13.1"
 
-androidxComposeVersion = '1.7.5'
-composeMaterial3Version = '1.3.1'
-composeMaterialVersion = '1.7.5'
-composeConstraintLayoutVersion = '1.1.0'
+androidxComposeVersion = '1.7.4'
+composeMaterial3Version = '1.3.0'
+composeMaterialVersion = '1.7.4'
+composeConstraintLayoutVersion = '1.0.1'
 
 dokkaVersion = '1.9.20'
 
@@ -16,7 +16,7 @@ activityComposeVersion = '1.9.3'
 composeReorderableVersion = 'e9ef693f63'
 accompanistVersion = "0.34.0"
 appcompatVersion = '1.7.0'
-fragmentVersion = "1.8.5"
+fragmentVersion = "1.8.4"
 exoplayerVersion = "2.19.1"
 wireVersion = "4.9.8"
 glideVersion = "4.14.2"
@@ -32,13 +32,13 @@ androidxTestCoreVersion = '1.6.1'
 androidxCoreTestingVersion = '2.2.0'
 androidxSecurityCryptoVersion = '1.0.0'
 androidxPreferenceVersion = '1.2.1'
-constraintLayoutVersion = '2.2.0'
+constraintLayoutVersion = '2.1.4'
 recyclerviewVersion = '1.3.2'
 emojiCompatVersion = '1.1.0'
-lifecycleVersion = '2.8.7'
-lifecycleRuntimeComposeVersion = '2.8.7'
-navigationVersion = '2.8.4'
-navigationComposeVersion = '2.8.4'
+lifecycleVersion = '2.8.6'
+lifecycleRuntimeComposeVersion = '2.8.6'
+navigationVersion = '2.8.3'
+navigationComposeVersion = '2.8.3'
 shimmerLayoutVersion = '0.5.0'
 photoViewVersion = '2.3.0'
 daggerVersion = '2.51'
@@ -64,7 +64,7 @@ coilComposeVersion = '2.6.0'
 sentryVersion = '7.13.0'
 
 composeQrCodeVersion = '1.0.1'
-fragmentComposeVersion = "1.8.5"
+fragmentComposeVersion = "1.8.4"
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }

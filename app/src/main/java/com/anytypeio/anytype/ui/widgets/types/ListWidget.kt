@@ -162,7 +162,7 @@ fun CompactListWidgetList(
                 ListWidgetObjectIcon(
                     iconSize = 18.dp,
                     icon = element.objectIcon,
-                    modifier = Modifier.align(Alignment.CenterVertically).padding(start = 8.dp, end = 4.dp),
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(start = 0.dp, end = 4.dp),
                     onTaskIconClicked = { isChecked ->
                         onObjectCheckboxClicked(element.obj.id, isChecked)
                     }

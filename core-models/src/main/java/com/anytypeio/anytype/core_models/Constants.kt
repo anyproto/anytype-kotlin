@@ -23,4 +23,4 @@ const val DEFAULT_SHOW_INTRODUCE_VAULT = true
 /**
  * The default value for showing the time
  */
-const val DEFAULT_TIME_STYLE = DateFormat.SHORT
+const val DEFAULT_TIME_STYLE = DateFormat.DEFAULT

@@ -75,6 +75,7 @@ import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
@@ -287,7 +288,8 @@ object EditorSessionModule {
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         syncStatusProvider: SpaceSyncAndP2PStatusProvider,
         getNetworkMode: GetNetworkMode,
-        clearLastOpenedObject: ClearLastOpenedObject
+        clearLastOpenedObject: ClearLastOpenedObject,
+        fieldParser: FieldParser
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -333,7 +335,8 @@ object EditorSessionModule {
         getNetworkMode = getNetworkMode,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         clearLastOpenedObject = clearLastOpenedObject,
-        syncStatusProvider = syncStatusProvider
+        syncStatusProvider = syncStatusProvider,
+        fieldParser = fieldParser
     )
 
     @JvmStatic
@@ -374,13 +377,15 @@ object EditorSessionModule {
         toggleStateHolder: ToggleStateHolder,
         coverImageHashProvider: CoverImageHashProvider,
         storeOfRelations: StoreOfRelations,
-        storeOfObjectTypes: StoreOfObjectTypes
+        storeOfObjectTypes: StoreOfObjectTypes,
+        fieldParser: FieldParser
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
         toggleStateHolder = toggleStateHolder,
         coverImageHashProvider = coverImageHashProvider,
         storeOfRelations = storeOfRelations,
-        storeOfObjectTypes = storeOfObjectTypes
+        storeOfObjectTypes = storeOfObjectTypes,
+        fieldParser = fieldParser
     )
 
     @JvmStatic

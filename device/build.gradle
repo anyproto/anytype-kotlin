@@ -21,6 +21,8 @@ dependencies {
     testImplementation libs.androidXTestCore
     testImplementation libs.robolectric
     testImplementation libs.mockitoKotlin
+    testImplementation libs.coroutineTesting
+    testImplementation libs.turbine
 
     compileOnly libs.javaxInject
 }

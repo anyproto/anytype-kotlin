@@ -1,37 +1,23 @@
 package com.anytypeio.anytype.presentation.collections
 
 import android.util.Log
-import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
-import com.anytypeio.anytype.test_utils.MockDataFactory
-import kotlin.test.assertIs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
-import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verifyBlocking
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
@@ -46,6 +32,9 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
         .showTimestamp(false)
         .onlyLogWhenTestFails(false)
         .build()
+
+//    @Mock
+//    lateinit var fieldsProvider: FieldsProvider
 
     @Before
     fun setup() {
@@ -119,7 +108,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            fieldParser = fieldParser
         )
         stubNetworkMode()
         stubObservePermissions()

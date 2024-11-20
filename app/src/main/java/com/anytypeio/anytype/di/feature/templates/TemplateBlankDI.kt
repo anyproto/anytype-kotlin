@@ -2,9 +2,11 @@ package com.anytypeio.anytype.di.feature.templates
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
@@ -69,6 +71,8 @@ interface TemplateBlankDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun storeOfRelations(): StoreOfRelations
     fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun dateProvider(): DateProvider
+    fun fieldsProvider(): FieldParser
 }
 
 @Scope

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets.model
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_utils.ui.ViewType
 
 sealed class FilterView : ViewType {
@@ -141,7 +142,8 @@ sealed class FilterView : ViewType {
             override val filterValue: FilterValue.Date,
             override val format: ColumnView.Format,
             override val isValueRequired: Boolean,
-            override val isInEditMode: Boolean
+            override val isInEditMode: Boolean,
+            val relativeDate: RelativeDate?
         ) : Expression(), ViewType {
             override fun getViewType(): Int = HOLDER_DATE
         }

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.relations
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.presentation.sets.model.FileView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -20,6 +21,18 @@ sealed class ObjectRelationView : DefaultObjectDiffIdentifier {
     abstract val readOnly: Boolean
 
     override val identifier: String get() = id
+
+    data class Date(
+        override val id: Id,
+        override val key: Key,
+        override val name: String,
+        override val value: String? = null,
+        override val featured: Boolean = false,
+        override val system: Boolean,
+        override val readOnly: Boolean = false,
+        val relativeDate: RelativeDate?,
+        val isTimeIncluded: Boolean = false
+    ) : ObjectRelationView()
 
     data class Default(
         override val id: Id,

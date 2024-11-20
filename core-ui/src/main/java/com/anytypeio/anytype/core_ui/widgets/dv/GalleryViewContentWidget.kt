@@ -17,8 +17,8 @@ import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.extensions.light
-import com.anytypeio.anytype.core_utils.ext.formatTimestamp
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -158,9 +158,9 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                         isSingleLine = true
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
-                        text = relation.timeInMillis?.formatTimestamp(
-                            isMillis = true,
-                            format = relation.dateFormat
+                        text = relation.relativeDate?.getPrettyName(
+                            isTimeIncluded = relation.isTimeIncluded,
+                            resources = resources
                         )
                     }
                     addView(view)

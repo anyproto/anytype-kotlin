@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -73,6 +74,9 @@ class CreateSelectedFilterTest {
     @Mock
     lateinit var dispatchers: AppCoroutineDispatchers
 
+    @Mock
+    lateinit var fieldParser: FieldParser
+
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
     private lateinit var searchObjects: SearchObjects
     private lateinit var getOptions: GetOptions
@@ -104,7 +108,8 @@ class CreateSelectedFilterTest {
             storeOfRelations = storeOfRelations,
             objectSetDatabase = db,
             getOptions = getOptions,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            fieldParser = fieldParser
         )
     }
 

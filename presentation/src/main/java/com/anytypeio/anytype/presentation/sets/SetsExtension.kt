@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
-import com.anytypeio.anytype.core_models.ext.DateParser
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.sets.model.CellView
@@ -30,7 +30,8 @@ suspend fun List<ColumnView>.buildGridRow(
     showIcon: Boolean,
     obj: ObjectWrapper.Basic,
     builder: UrlBuilder,
-    store: ObjectStore
+    store: ObjectStore,
+    fieldParser: FieldParser
 ): Viewer.GridView.Row {
 
     val type = obj.type.firstOrNull()
@@ -93,12 +94,14 @@ suspend fun List<ColumnView>.buildGridRow(
                         }
 
                         ColumnView.Format.DATE -> {
-                            val value = obj.getValue<Any?>(column.key)
+                            val fieldDate = fieldParser.toDate(any = obj.getValue<Any?>(column.key))
                             CellView.Date(
                                 id = obj.id,
                                 relationKey = column.key,
-                                timeInSecs = DateParser.parse(value),
-                                dateFormat = column.getDateRelationFormat()
+                                timeInSecs = fieldDate?.timestamp?.time,
+                                dateFormat = column.getDateRelationFormat(),
+                                relativeDate = fieldDate?.relativeDate,
+                                isTimeIncluded = column.isDateIncludeTime == true
                             )
                         }
 

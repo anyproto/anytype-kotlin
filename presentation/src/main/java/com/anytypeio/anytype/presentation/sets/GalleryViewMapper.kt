@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -31,7 +32,8 @@ suspend fun DVViewer.buildGalleryViews(
     urlBuilder: UrlBuilder,
     objectStore: ObjectStore,
     objectOrderIds: List<Id>,
-    storeOfRelations: StoreOfRelations
+    storeOfRelations: StoreOfRelations,
+    fieldParser: FieldParser
 ): List<Viewer.GalleryView.Item> {
 
     val filteredRelations = viewerRelations.mapNotNull { setting ->
@@ -58,7 +60,8 @@ suspend fun DVViewer.buildGalleryViews(
                     store = objectStore,
                     filteredRelations = filteredRelations,
                     isLargeSize = true,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    fieldParser = fieldParser
                 )
             } else {
                 obj.mapToDefaultItem(
@@ -66,7 +69,8 @@ suspend fun DVViewer.buildGalleryViews(
                     urlBuilder = urlBuilder,
                     viewerRelations = viewerRelations,
                     store = objectStore,
-                    filteredRelations = filteredRelations
+                    filteredRelations = filteredRelations,
+                    fieldParser = fieldParser
                 )
             }
         }
@@ -78,7 +82,8 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
     urlBuilder: UrlBuilder,
     viewerRelations: List<DVViewerRelation>,
     store: ObjectStore,
-    filteredRelations: List<ObjectWrapper.Relation>
+    filteredRelations: List<ObjectWrapper.Relation>,
+    fieldParser: FieldParser
 ): Viewer.GalleryView.Item {
     val obj = this
     return Viewer.GalleryView.Item.Default(
@@ -87,7 +92,8 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
             relations = filteredRelations,
             urlBuilder = urlBuilder,
             settings = viewerRelations,
-            storeOfObjects = store
+            storeOfObjects = store,
+            fieldParser = fieldParser
         ).setTypeRelationIconsAsNone(),
         hideIcon = hideIcon,
         name = obj.getProperName(),
@@ -102,7 +108,8 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
     store: ObjectStore,
     filteredRelations: List<ObjectWrapper.Relation>,
     isLargeSize: Boolean,
-    storeOfRelations: StoreOfRelations
+    storeOfRelations: StoreOfRelations,
+    fieldParser: FieldParser
 ): Viewer.GalleryView.Item {
     val obj = this
 
@@ -123,7 +130,8 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
             relations = filteredRelations,
             urlBuilder = urlBuilder,
             settings = dvViewer.viewerRelations,
-            storeOfObjects = store
+            storeOfObjects = store,
+            fieldParser = fieldParser
         ).setTypeRelationIconsAsNone(),
         hideIcon = dvViewer.hideIcon,
         name = obj.getProperName(),

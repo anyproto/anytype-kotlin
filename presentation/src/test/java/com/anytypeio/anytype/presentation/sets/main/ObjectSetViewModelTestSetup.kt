@@ -56,6 +56,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -216,6 +217,9 @@ open class ObjectSetViewModelTestSetup {
     lateinit var localeProvider : LocaleProvider
 
     @Mock
+    lateinit var fieldParser: FieldParser
+
+    @Mock
     lateinit var dateProvider: DateProvider
 
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
@@ -309,7 +313,8 @@ open class ObjectSetViewModelTestSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            fieldParser = fieldParser
         )
     }
 

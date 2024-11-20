@@ -80,6 +80,7 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -294,6 +295,9 @@ open class EditorTestSetup {
     @Mock
     lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
+    @Mock
+    lateinit var fieldParser: FieldParser
+
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     lateinit var addRelationToObject: AddRelationToObject
@@ -410,7 +414,8 @@ open class EditorTestSetup {
                 toggleStateHolder = ToggleStateHolder.Default(),
                 coverImageHashProvider = coverImageHashProvider,
                 storeOfRelations = storeOfRelations,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                fieldParser = fieldParser
             ),
             orchestrator = Orchestrator(
                 createBlock = createBlock,
@@ -496,7 +501,8 @@ open class EditorTestSetup {
             syncStatusProvider = spaceSyncAndP2PStatusProvider,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             clearLastOpenedObject = clearLastOpenedObject,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            fieldParser = fieldParser
         )
     }
 

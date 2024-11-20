@@ -56,6 +56,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -76,6 +77,7 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -239,6 +241,9 @@ open class EditorPresentationTestSetup {
     lateinit var move: MoveOld
 
     @Mock
+    lateinit var fieldParser: FieldParser
+
+    @Mock
     lateinit var turnIntoDocument: TurnIntoDocument
 
     @Mock
@@ -373,6 +378,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
+    @Mock
+    lateinit var dateProvider: DateProvider
+
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
@@ -460,7 +468,8 @@ open class EditorPresentationTestSetup {
                 toggleStateHolder = ToggleStateHolder.Default(),
                 coverImageHashProvider = coverImageHashProvider,
                 storeOfRelations = storeOfRelations,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                fieldParser = fieldParser
             ),
             orchestrator = orchestrator,
             analytics = analytics,
@@ -499,7 +508,8 @@ open class EditorPresentationTestSetup {
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             clearLastOpenedObject = clearLastOpenedObject,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            fieldParser = fieldParser
         )
     }
 

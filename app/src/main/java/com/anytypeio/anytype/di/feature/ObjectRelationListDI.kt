@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -53,7 +54,8 @@ object ObjectRelationListModule {
         storeOfRelations: StoreOfRelations,
         addRelationToObject: AddRelationToObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        fieldParser: FieldParser
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
             lockedStateProvider = lockedStateProvider,
@@ -68,7 +70,8 @@ object ObjectRelationListModule {
             storeOfRelations = storeOfRelations,
             addRelationToObject = addRelationToObject,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            fieldParser = fieldParser
         )
     }
 

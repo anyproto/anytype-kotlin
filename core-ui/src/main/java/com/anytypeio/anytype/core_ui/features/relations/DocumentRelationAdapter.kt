@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationCheckboxBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationDateBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationDefaultBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationObjectBinding
@@ -131,6 +132,22 @@ class DocumentRelationAdapter(
             R.layout.item_relation_list_section -> {
                 SectionViewHolder(view = inflater.inflate(viewType, parent, false))
             }
+            R.layout.item_relation_list_relation_date -> {
+                val binding =
+                    ItemRelationListRelationDateBinding.inflate(inflater, parent, false)
+                ListRelationViewHolder.Date(binding = binding).apply {
+                    binding.featuredRelationCheckbox.visible()
+                    itemView.setOnClickListener {
+                        relationClicked(bindingAdapterPosition)
+                    }
+                    binding.featuredRelationCheckbox.setOnClickListener {
+                        checkboxClicked(bindingAdapterPosition)
+                    }
+                    binding.ivActionDelete.setOnClickListener {
+                        deleteClicked(bindingAdapterPosition)
+                    }
+                }
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -224,6 +241,12 @@ class DocumentRelationAdapter(
                 check(view is ObjectRelationView.Default)
                 holder.bind(view)
             }
+            is ListRelationViewHolder.Date -> {
+                check(item is RelationListViewModel.Model.Item)
+                val view = item.view
+                check(view is ObjectRelationView.Date)
+                holder.bind(view)
+            }
             is SectionViewHolder -> {
                 check(item is RelationListViewModel.Model.Section)
                 holder.bind(item)
@@ -249,6 +272,7 @@ class DocumentRelationAdapter(
                 is ObjectRelationView.Status -> R.layout.item_relation_list_relation_status
                 is ObjectRelationView.Tags -> R.layout.item_relation_list_relation_tag
                 is ObjectRelationView.File -> R.layout.item_relation_list_relation_file
+                is ObjectRelationView.Date -> R.layout.item_relation_list_relation_date
                 else -> R.layout.item_relation_list_relation_default
             }
         }

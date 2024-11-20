@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
@@ -571,6 +572,7 @@ suspend fun List<Id>.toGridRecordRows(
     columns: List<ColumnView>,
     builder: UrlBuilder,
     store: ObjectStore,
+    fieldParser: FieldParser
 ): List<Viewer.GridView.Row> {
     val rows = mutableListOf<Viewer.GridView.Row>()
     forEach { id ->
@@ -580,7 +582,8 @@ suspend fun List<Id>.toGridRecordRows(
                 showIcon = showIcon,
                 obj = record,
                 store = store,
-                builder = builder
+                builder = builder,
+                fieldParser = fieldParser
             )
             rows.add(row)
         } else {

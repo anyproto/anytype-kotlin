@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets.filter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 sealed class CreateFilterView {
@@ -36,7 +37,8 @@ sealed class CreateFilterView {
         val type: DVFilterQuickOption,
         val condition: DVFilterCondition,
         val value: Long,
-        override val isSelected: Boolean
+        override val isSelected: Boolean,
+        val relativeDate: RelativeDate?
     ) : CreateFilterView() {
         override val text: String
             get() = description

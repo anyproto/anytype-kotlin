@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -97,7 +98,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val getNetworkMode: GetNetworkMode,
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val syncStatusProvider: SpaceSyncAndP2PStatusProvider
+    private val syncStatusProvider: SpaceSyncAndP2PStatusProvider,
+    private val fieldParser : FieldParser
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -147,7 +149,8 @@ open class EditorViewModelFactory @Inject constructor(
             spaceSyncAndP2PStatusProvider = syncStatusProvider,
             getNetworkMode = getNetworkMode,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            fieldParser = fieldParser
         ) as T
     }
 }

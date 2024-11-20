@@ -14,7 +14,7 @@ import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
+import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.history.GetVersions
@@ -419,7 +419,7 @@ class VersionHistoryViewModel(
         return groupedBySpaceMember
     }
 
-    private fun getGroupTitle(timestamp: TimeInSeconds): GroupTitle {
+    private fun getGroupTitle(timestamp: TimestampInSeconds): GroupTitle {
         val dateInstant = Instant.ofEpochSecond(timestamp.time)
         val givenDate = dateInstant.atZone(ZoneId.systemDefault()).toLocalDate()
         val currentDate = LocalDate.now()
@@ -693,7 +693,7 @@ data class VersionHistoryGroup(
         val spaceMemberName: String,
         val dateFormatted: String,
         val timeFormatted: String,
-        val timeStamp: TimeInSeconds,
+        val timeStamp: TimestampInSeconds,
         val icon: ObjectIcon?,
         val versions: List<Version>
     )

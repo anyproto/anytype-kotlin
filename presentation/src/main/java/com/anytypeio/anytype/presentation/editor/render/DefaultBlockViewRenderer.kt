@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
@@ -50,7 +51,8 @@ class DefaultBlockViewRenderer @Inject constructor(
     private val toggleStateHolder: ToggleStateHolder,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val storeOfRelations: StoreOfRelations,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val fieldParser: FieldParser
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
     override suspend fun Map<Id, List<Block>>.render(
@@ -686,7 +688,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                             indent = indent,
                             details = details,
                             urlBuilder = urlBuilder,
-                            schema = blockDecorationScheme
+                            schema = blockDecorationScheme,
+                            fieldParser = fieldParser,
                         )
                     )
                 }
@@ -696,7 +699,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     val featured = featured(
                         ctx = root.id,
                         block = block,
-                        details = details
+                        details = details,
+                        fieldParser = fieldParser,
                     )
 
                     if (featured.relations.isNotEmpty()) {
@@ -2065,7 +2069,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         indent: Int,
         details: Block.Details,
         urlBuilder: UrlBuilder,
-        schema: NestedDecorationData
+        schema: NestedDecorationData,
+        fieldParser: FieldParser
     ): BlockView.Relation {
         val relationKey = content.key
         if (relationKey.isNullOrEmpty()) {
@@ -2081,24 +2086,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                 val view = relation.view(
                     details = details.details,
                     values = details.details[ctx]?.map ?: emptyMap(),
-                    urlBuilder = urlBuilder
+                    urlBuilder = urlBuilder,
+                    fieldParser = fieldParser
                 )
-                return if (view != null) {
-                    BlockView.Relation.Related(
-                        id = block.id,
-                        view = view,
-                        indent = indent,
-                        background = block.parseThemeBackgroundColor(),
-                        decorations = schema.toBlockViewDecoration(block)
-                    )
-                } else {
-                    BlockView.Relation.Deleted(
-                        id = block.id,
-                        indent = indent,
-                        decorations = schema.toBlockViewDecoration(block),
-                        background = block.parseThemeBackgroundColor()
-                    )
-                }
+                return BlockView.Relation.Related(
+                    id = block.id,
+                    view = view,
+                    indent = indent,
+                    background = block.parseThemeBackgroundColor(),
+                    decorations = schema.toBlockViewDecoration(block)
+                )
             } else {
                 return BlockView.Relation.Deleted(
                     id = block.id,
@@ -2113,7 +2110,8 @@ class DefaultBlockViewRenderer @Inject constructor(
     private suspend fun featured(
         ctx: Id,
         block: Block,
-        details: Block.Details
+        details: Block.Details,
+        fieldParser: FieldParser,
     ): BlockView.FeaturedRelation {
         val map = details.details[ctx]?.map ?: emptyMap()
         val obj = ObjectWrapper.Basic(map)
@@ -2122,6 +2120,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ctx = ctx,
             keys = featuredKeys,
             details = details,
+            fieldParser = fieldParser
 
         ).sortedByDescending { it.key == Relations.TYPE || it.key == Relations.GLOBAL_NAME || it.key == Relations.IDENTITY }
         return BlockView.FeaturedRelation(
@@ -2159,6 +2158,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         ctx: Id,
         keys: List<Key>,
         details: Block.Details,
+        fieldParser: FieldParser
     ): List<ObjectRelationView> = keys.mapNotNull { key ->
         when (key) {
             Relations.DESCRIPTION -> null
@@ -2188,7 +2188,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     details = details.details,
                     values = details.details[ctx]?.map ?: emptyMap(),
                     urlBuilder = urlBuilder,
-                    isFeatured = true
+                    isFeatured = true,
+                    fieldParser = fieldParser
                 )
             }
         }

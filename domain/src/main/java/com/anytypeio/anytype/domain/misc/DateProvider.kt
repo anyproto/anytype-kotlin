@@ -1,8 +1,9 @@
 package com.anytypeio.anytype.domain.misc
 
+import com.anytypeio.anytype.core_models.DEFAULT_TIME_STYLE
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
-import java.text.DateFormat
 import java.time.ZoneId
 
 
@@ -23,9 +24,9 @@ interface DateProvider {
     fun formatToDateString(timestamp: Long, pattern: String): String
     fun formatTimestampToDateAndTime(
         timestamp: TimeInMillis,
-        dateStyle: Int = DateFormat.MEDIUM,
-        timeStyle: Int = DateFormat.SHORT
+        timeStyle: Int = DEFAULT_TIME_STYLE
     ): Pair<String, String>
+    fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate?
     fun isSameMinute(timestamp1: Long, timestamp2: Long): Boolean
 }
 

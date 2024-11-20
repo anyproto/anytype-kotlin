@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -54,7 +55,8 @@ class RelationListViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val addRelationToObject: AddRelationToObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val fieldParser: FieldParser
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val isEditMode = MutableStateFlow(false)
@@ -137,7 +139,8 @@ class RelationListViewModel(
             details = details,
             values = objectDetails,
             urlBuilder = urlBuilder,
-            featured = objectWrapper.featuredRelations
+            featured = objectWrapper.featuredRelations,
+            fieldParser = fieldParser,
         ).map { view ->
             Model.Item(
                 view = view,
@@ -161,7 +164,8 @@ class RelationListViewModel(
             context = ctx,
             details = details,
             values = objectDetails,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            fieldParser = fieldParser
         ).map { view ->
             Model.Item(
                 view = view,
@@ -490,7 +494,8 @@ class RelationListViewModel(
             views.value = relations.views(
                 details = details,
                 values = values,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                fieldParser = fieldParser
             ).map { Model.Item(it) }
         }
     }

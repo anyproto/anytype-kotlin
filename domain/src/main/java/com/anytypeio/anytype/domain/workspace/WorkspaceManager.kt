@@ -26,6 +26,7 @@ interface SpaceManager {
     fun observe() : Flow<Config>
     fun observe(space: SpaceId): Flow<Config>
     fun state(): Flow<State>
+    fun getState(): State
 
     fun clear()
 
@@ -98,6 +99,20 @@ interface SpaceManager {
                     } else {
                         State.Space.Idle(SpaceId(space))
                     }
+                }
+            }
+        }
+
+        override fun getState(): State {
+            val space = currentSpace.value
+            return if (space == NO_SPACE) {
+                State.NoSpace
+            } else {
+                val config = info[space]
+                if (config != null) {
+                    State.Space.Active(config)
+                } else {
+                    State.Space.Idle(SpaceId(space))
                 }
             }
         }

@@ -82,10 +82,7 @@ class VaultViewModel(
                 }
                 .combine(observeVaultSettings.flow()) { spaces, settings ->
                     spaces
-                        .filter { space ->
-                            space.spaceLocalStatus == SpaceStatus.OK
-                                    && !space.spaceAccountStatus.isDeletedOrRemoving()
-                        }
+                        .filter { space -> space.isActive }
                         .distinctBy { it.id }
                         .map { space ->
                             VaultSpaceView(
@@ -202,17 +199,18 @@ class VaultViewModel(
                     }
                 }
                 is DeepLinkResolver.Action.DeepLinkToObject -> {
-                    val result = onDeepLinkToObject(
+                    onDeepLinkToObjectAwait(
                         obj = deeplink.obj,
                         space = deeplink.space,
                         switchSpaceIfObjectFound = true
-                    )
-                    when(result) {
-                        is DeepLinkToObjectDelegate.Result.Error -> {
-                            commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
-                        }
-                        is DeepLinkToObjectDelegate.Result.Success -> {
-                            proceedWithNavigation(result.obj.navigation())
+                    ).collect { result ->
+                        when(result) {
+                            is DeepLinkToObjectDelegate.Result.Error -> {
+                                commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+                            }
+                            is DeepLinkToObjectDelegate.Result.Success -> {
+                                proceedWithNavigation(result.obj.navigation())
+                            }
                         }
                     }
                 }

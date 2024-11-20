@@ -124,7 +124,8 @@ fun DiscussionScreenWrapper(
     isSpaceLevelChat: Boolean = false,
     vm: DiscussionViewModel,
     // TODO move to view model
-    onAttachClicked: () -> Unit
+    onAttachClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit
 ) {
     NavHost(
         navController = rememberNavController(),
@@ -168,7 +169,8 @@ fun DiscussionScreenWrapper(
                     onEditMessage = vm::onRequestEditMessageClicked,
                     onAttachmentClicked = vm::onAttachmentClicked,
                     isInEditMessageMode = vm.chatBoxMode.collectAsState().value is ChatBoxMode.EditMessage,
-                    onExitEditMessageMode = vm::onExitEditMessageMode
+                    onExitEditMessageMode = vm::onExitEditMessageMode,
+                    onBackButtonClicked = onBackButtonClicked
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -201,6 +203,7 @@ fun DiscussionScreen(
     onMessageSent: (String) -> Unit,
     onTitleChanged: (String) -> Unit,
     onAttachClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit,
     onClearAttachmentClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (DiscussionView.Message) -> Unit,
@@ -226,16 +229,7 @@ fun DiscussionScreen(
         }
     }
     val scope = rememberCoroutineScope()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .then(
-                if (isSpaceLevelChat)
-                    Modifier
-                else
-                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
-            )
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         if (!isSpaceLevelChat) {
             TopDiscussionToolbar(
                 title = title,
@@ -294,10 +288,6 @@ fun DiscussionScreen(
                 enabled = jumpToBottomButtonEnabled
             )
         }
-        Divider(
-            paddingStart = 0.dp,
-            paddingEnd = 0.dp
-        )
         attachments.forEach {
             Box {
                 Attachment(
@@ -357,7 +347,8 @@ fun DiscussionScreen(
             },
             clearText = {
                 textState = TextFieldValue()
-            }
+            },
+            onBackButtonClicked = onBackButtonClicked
         )
     }
 }
@@ -406,7 +397,7 @@ private fun DiscussionTitle(
 }
 
 @Composable
-private fun ChatBox(
+private fun OldChatBox(
     chatBoxFocusRequester: FocusRequester,
     textState: TextFieldValue,
     onMessageSent: (String) -> Unit = {},
@@ -489,6 +480,96 @@ private fun ChatBox(
 }
 
 @Composable
+private fun ChatBox(
+    onBackButtonClicked: () -> Unit,
+    chatBoxFocusRequester: FocusRequester,
+    textState: TextFieldValue,
+    onMessageSent: (String) -> Unit = {},
+    onAttachClicked: () -> Unit = {},
+    resetScroll: () -> Unit = {},
+    isTitleFocused: Boolean,
+    attachments: List<GlobalSearchItemView>,
+    clearText: () -> Unit,
+    updateValue: (TextFieldValue) -> Unit
+) {
+
+    val scope = rememberCoroutineScope()
+
+    val focus = LocalFocusManager.current
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 56.dp)
+            .padding(
+                start = 12.dp,
+                end = 12.dp,
+                bottom = 20.dp
+            )
+            .background(
+                color = colorResource(R.color.navigation_panel),
+                shape = RoundedCornerShape(16.dp)
+            )
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 4.dp, vertical = 8.dp)
+                .clip(CircleShape)
+                .align(Alignment.Bottom)
+                .clickable {
+                    scope.launch {
+                        focus.clearFocus(force = true)
+                        onBackButtonClicked()
+                    }
+                }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_nav_panel_back),
+                contentDescription = "Back button",
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(horizontal = 4.dp, vertical = 4.dp)
+            )
+        }
+        ChatBoxUserInput(
+            textState = textState,
+            onMessageSent = {
+                onMessageSent(it)
+                clearText()
+                resetScroll()
+            },
+            onTextChanged = { value ->
+                updateValue(value)
+            },
+            modifier = Modifier
+                .weight(1f)
+                .align(Alignment.Bottom)
+                .focusRequester(chatBoxFocusRequester)
+        )
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 4.dp, vertical = 8.dp)
+                .clip(CircleShape)
+                .align(Alignment.Bottom)
+                .clickable {
+                    scope.launch {
+                        focus.clearFocus(force = true)
+                        onAttachClicked()
+                    }
+                }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_nav_panel_plus),
+                contentDescription = "Plus button",
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(horizontal = 4.dp, vertical = 4.dp)
+            )
+        }
+    }
+}
+
+@Composable
 fun EditMessageToolbar(
     onExitClicked: () -> Unit
 ) {
@@ -564,9 +645,9 @@ private fun ChatBoxUserInput(
         decorationBox = @Composable { innerTextField ->
             DefaultHintDecorationBox(
                 text = textState.text,
-                hint = "Write a message",
+                hint = stringResource(R.string.write_a_message),
                 innerTextField = innerTextField,
-                textStyle = BodyRegular
+                textStyle = BodyRegular.copy(color = colorResource(R.color.text_tertiary))
             )
         }
     )

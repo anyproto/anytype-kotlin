@@ -221,7 +221,7 @@
     <string name="more">Ещё</string>
     <string name="done">Готово</string>
     <string name="select_scroll_and_move_blocks">Чтобы начать, выберите блоки</string>
-    <string name="block_code_menu_title">Язык</string>
+    <string name="block_code_plain_text">Язык</string>
     <string name="undo">Отменить</string>
     <string name="redo">Повторить</string>
     <string name="block_action_copy">Копировать</string>
@@ -1480,6 +1480,8 @@
     <string name="membership_error_button_text_dismiss">Ок</string>
     <string name="error_login_network_id_mismatch">Обнаружено несоответствие сетевого идентификатора. Пожалуйста, проверьте конфигурацию вашей сети.</string>
     <string name="error_login_select_vault_error">Ошибка при выборе хранилища для аутентификации</string>
+    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
+    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
     <string name="global_search_related_to">"Относится к: "</string>
     <string name="global_search_no_related_objects_found">Связанных объектов не найдено</string>
     <string name="sort_empty_values_desc">Показать пустые значения</string>

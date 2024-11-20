@@ -134,7 +134,7 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
 
     override fun setupSyntax(lang: String?) {
         runCatching {
-            if (lang == null) {
+            if (lang == null || lang.equals("plain", ignoreCase = true)) {
                 rules.clear()
                 clearHighlights()
             } else {

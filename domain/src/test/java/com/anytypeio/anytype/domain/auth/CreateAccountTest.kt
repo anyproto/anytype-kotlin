@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -40,7 +41,7 @@ class CreateAccountTest {
     lateinit var dispatchers: AppCoroutineDispatchers
 
     @Mock
-    lateinit var metricsProvider: MetricsProvider
+    lateinit var initialParamsProvider: InitialParamsProvider
 
     @Mock
     lateinit var awaitAccountStartManager: AwaitAccountStartManager
@@ -63,7 +64,7 @@ class CreateAccountTest {
         createAccount = CreateAccount(
             repository = repo,
             configStorage = configStorage,
-            metricsProvider = metricsProvider,
+            initialParamsProvider = initialParamsProvider,
             dispatcher = dispatchers,
             awaitAccountStartManager = awaitAccountStartManager,
             spaceManager = spaceManager
@@ -120,18 +121,13 @@ class CreateAccountTest {
             verify(repo, times(1)).createAccount(command)
             verify(repo, times(1)).saveAccount(setup.account)
             verify(repo, times(1)).setCurrentAccount(setup.account.id)
-            verify(repo, times(1)).setMetrics(
-                platform = platform,
-                version = version
-            )
-            verifyNoMoreInteractions(repo)
             verify(configStorage, times(1)).set(setup.config)
             verify(spaceManager, times(1)).set(setup.config.space)
             verify(awaitAccountStartManager, times(1)).setState(AwaitAccountStartManager.State.Started)
         }
 
     private fun stubMetricsProvider(version: String, platform: String) {
-        metricsProvider.stub {
+        initialParamsProvider.stub {
             onBlocking {
                 getVersion()
             } doReturn version

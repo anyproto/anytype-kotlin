@@ -68,7 +68,7 @@ fun LocalStorageScreen(
                 style = Title1,
                 color = colorResource(id = R.color.text_primary)
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = stringResource(id = R.string.in_order_to_save),
                 style = BodyCalloutRegular,

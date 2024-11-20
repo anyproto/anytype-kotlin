@@ -221,7 +221,7 @@
     <string name="more">Mer</string>
     <string name="done">Ferdig</string>
     <string name="select_scroll_and_move_blocks">To start, select blocks</string>
-    <string name="block_code_menu_title">Språk</string>
+    <string name="block_code_plain_text">Språk</string>
     <string name="undo">Angre</string>
     <string name="redo">Omgjør</string>
     <string name="block_action_copy">Kopier</string>
@@ -1457,6 +1457,8 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
     <string name="error_login_select_vault_error">Select vault error.</string>
+    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
+    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
     <string name="global_search_related_to">"Related to: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
     <string name="sort_empty_values_desc">Show empty values</string>

@@ -221,7 +221,7 @@
     <string name="more">Meer</string>
     <string name="done">Gereed</string>
     <string name="select_scroll_and_move_blocks">Selecteer blokken om te starten</string>
-    <string name="block_code_menu_title">Taal</string>
+    <string name="block_code_plain_text">Taal</string>
     <string name="undo">Ongedaan maken</string>
     <string name="redo">Voer opnieuw uit</string>
     <string name="block_action_copy">Kopieer</string>
@@ -1457,6 +1457,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Verkeerde netwerk-ID gedetecteerd. Controleer alsjeblieft jouw netwerkconfiguratie.</string>
     <string name="error_login_select_vault_error">Fout met het selecteren van kluis.</string>
+    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
+    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
     <string name="global_search_related_to">"Gerelateerd aan: "</string>
     <string name="global_search_no_related_objects_found">Geen gerelateerde objecten gevonden</string>
     <string name="sort_empty_values_desc">Toon lege waarden</string>

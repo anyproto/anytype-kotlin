@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import javax.inject.Inject
 
 /**
@@ -16,15 +16,12 @@ import javax.inject.Inject
 class SelectAccount @Inject constructor(
     private val repository: AuthRepository,
     private val configStorage: ConfigStorage,
-    private val metricsProvider: MetricsProvider,
+    private val initialParamsProvider: InitialParamsProvider,
     private val awaitAccountStartManager: AwaitAccountStartManager
 ) : BaseUseCase<StartAccountResult, SelectAccount.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        repository.setMetrics(
-            version = metricsProvider.getVersion(),
-            platform = metricsProvider.getPlatform()
-        )
+        repository.setInitialParams(initialParamsProvider.toCommand())
 
         val networkMode = repository.getNetworkMode()
 

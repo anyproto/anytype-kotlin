@@ -78,7 +78,7 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
         throw UnsupportedOperationException()
     }
 
-    override suspend fun setMetrics(platform: String, version: String) {
+    override suspend fun setInitialParams(command: Command.SetInitialParams) {
         throw UnsupportedOperationException()
     }
 

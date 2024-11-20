@@ -301,4 +301,7 @@
     <color name="tag_background_tint">#D6F5F3</color>
     <color name="tag_text_color">#0CBBAE</color>
 
+    <color name="navigation_panel">#99FFFFFF</color>
+    <color name="navigation_panel_icon">#66000000</color>
+
 </resources>

@@ -16,7 +16,7 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
@@ -61,14 +61,14 @@ object OnboardingSoulCreationModule {
     fun provideCreateAccountUseCase(
         authRepository: AuthRepository,
         configStorage: ConfigStorage,
-        metricsProvider: MetricsProvider,
+        initialParamsProvider: InitialParamsProvider,
         awaitAccountStartManager: AwaitAccountStartManager,
         spaceManager: SpaceManager,
         dispatchers: AppCoroutineDispatchers
     ): CreateAccount = CreateAccount(
         repository = authRepository,
         configStorage = configStorage,
-        metricsProvider = metricsProvider,
+        initialParamsProvider = initialParamsProvider,
         dispatcher = dispatchers,
         awaitAccountStartManager = awaitAccountStartManager,
         spaceManager = spaceManager
@@ -111,7 +111,7 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun userSettings(): UserSettingsRepository
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
     fun pathProvider(): PathProvider
-    fun metricsProvider(): MetricsProvider
+    fun metricsProvider(): InitialParamsProvider
     fun crashReporter(): CrashReporter
     fun spaceManager(): SpaceManager
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher

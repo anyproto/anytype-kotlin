@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -42,7 +43,7 @@ class StartAccountTest {
     lateinit var configStorage: ConfigStorage
 
     @Mock
-    lateinit var metricsProvider: MetricsProvider
+    lateinit var initialParamsProvider: InitialParamsProvider
 
     @Mock
     lateinit var awaitAccountStartManager: AwaitAccountStartManager
@@ -60,7 +61,7 @@ class StartAccountTest {
         selectAccount = SelectAccount(
             repository = repo,
             configStorage = configStorage,
-            metricsProvider = metricsProvider,
+            initialParamsProvider = initialParamsProvider,
             awaitAccountStartManager = awaitAccountStartManager
         )
     }
@@ -124,13 +125,6 @@ class StartAccountTest {
         verify(repo, times(1)).saveAccount(account)
 
         verify(repo, times(1)).setCurrentAccount(account.id)
-
-        verify(repo, times(1)).setMetrics(
-            platform = platform,
-            version = version
-        )
-
-        verifyNoMoreInteractions(repo)
     }
 
     @Test
@@ -360,7 +354,7 @@ class StartAccountTest {
     }
 
     private fun stubMetricsProvider(version: String, platform: String) {
-        metricsProvider.stub {
+        initialParamsProvider.stub {
             onBlocking {
                 getVersion()
             } doReturn version

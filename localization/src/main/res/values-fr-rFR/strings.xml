@@ -221,7 +221,7 @@
     <string name="more">Plus</string>
     <string name="done">Terminé</string>
     <string name="select_scroll_and_move_blocks">Pour commencer, sélectionnez des blocs</string>
-    <string name="block_code_menu_title">Langue</string>
+    <string name="block_code_plain_text">Langue</string>
     <string name="undo">Annuler</string>
     <string name="redo">Rétablir</string>
     <string name="block_action_copy">Copier</string>
@@ -1454,6 +1454,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">L\'identifiant réseau ne correspond pas. Veuillez vérifier votre configuration réseau.</string>
     <string name="error_login_select_vault_error">Erreur de sélection du coffre.</string>
+    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
+    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
     <string name="global_search_related_to">"Associé à : "</string>
     <string name="global_search_no_related_objects_found">Aucun objet associé trouvé</string>
     <string name="sort_empty_values_desc">Afficher les valeurs vides</string>

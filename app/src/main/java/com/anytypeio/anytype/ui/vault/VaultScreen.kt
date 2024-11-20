@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -47,6 +50,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
@@ -130,18 +134,22 @@ fun VaultScreen(
                    Spacer(modifier = Modifier.height(4.dp))
                }
                DraggableItem(dragDropState = dragDropState, index = idx) {
-                   VaultSpaceCard(
-                       title = item.space.name.orEmpty(),
-                       subtitle = when (item.space.spaceAccessType) {
-                           SpaceAccessType.PRIVATE -> stringResource(id = R.string.space_type_private_space)
-                           SpaceAccessType.DEFAULT -> stringResource(id = R.string.space_type_default_space)
-                           SpaceAccessType.SHARED -> stringResource(id = R.string.space_type_shared_space)
-                           else -> EMPTY_STRING_VALUE
-                       },
-                       wallpaper = item.wallpaper,
-                       onCardClicked = { onSpaceClicked(item) },
-                       icon = item.icon
-                   )
+                   if (item.space.isLoading) {
+                       LoadingSpaceCard()
+                   } else {
+                       VaultSpaceCard(
+                           title = item.space.name.orEmpty(),
+                           subtitle = when (item.space.spaceAccessType) {
+                               SpaceAccessType.PRIVATE -> stringResource(id = R.string.space_type_private_space)
+                               SpaceAccessType.DEFAULT -> stringResource(id = R.string.space_type_default_space)
+                               SpaceAccessType.SHARED -> stringResource(id = R.string.space_type_shared_space)
+                               else -> EMPTY_STRING_VALUE
+                           },
+                           wallpaper = item.wallpaper,
+                           onCardClicked = { onSpaceClicked(item) },
+                           icon = item.icon
+                       )
+                   }
                }
                if (idx == spaces.lastIndex && spaces.size < SelectSpaceViewModel.MAX_SPACE_COUNT) {
                    VaultSpaceAddCard(
@@ -328,6 +336,74 @@ fun VaultSpaceAddCard(
             contentDescription = "Plus icon"
         )
     }
+}
+
+@Composable
+fun LoadingSpaceCard() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(96.dp)
+            .padding(horizontal = 8.dp)
+            .background(
+                color = colorResource(R.color.shape_tertiary),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .clip(RoundedCornerShape(20.dp))
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .size(64.dp)
+                .align(Alignment.CenterStart)
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            colorResource(R.color.shape_primary),
+                            Color.Transparent,
+                        )
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                )
+        )
+
+        Box(
+            modifier = Modifier
+                .padding(start = 96.dp, top = 30.dp)
+                .height(12.dp)
+                .width(160.dp)
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            colorResource(R.color.shape_primary),
+                            Color.Transparent,
+                        )
+                    )
+                )
+        )
+
+        Box(
+            modifier = Modifier
+                .padding(start = 96.dp, bottom = 30.dp)
+                .height(8.dp)
+                .width(96.dp)
+                .align(Alignment.BottomStart)
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            colorResource(R.color.shape_primary),
+                            Color.Transparent,
+                        )
+                    )
+                )
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun LoadingSpaceCardPreview() {
+    LoadingSpaceCard()
 }
 
 @Composable

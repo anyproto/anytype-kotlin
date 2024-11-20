@@ -125,4 +125,7 @@
 
     <color name="home_screen_toolbar_button">#F2222222</color>
 
+    <color name="navigation_panel">#BF000000</color>
+    <color name="navigation_panel_icon">#66FFFFFF</color>
+
 </resources>

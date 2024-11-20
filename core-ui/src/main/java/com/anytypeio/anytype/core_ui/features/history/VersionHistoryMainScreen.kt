@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.features.history
 
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,12 +41,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -56,7 +52,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
-import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.history.ListState
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup
@@ -319,11 +314,7 @@ private fun RowScope.HeaderIcons(
                     val icon = icons[idx]
                     Box(
                         modifier = Modifier
-                            .size(28.dp)
-                            .background(
-                                color = colorResource(id = R.color.background_primary),
-                                shape = androidx.compose.foundation.shape.CircleShape
-                            ),
+                            .size(28.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         ListWidgetObjectIcon(
@@ -348,14 +339,6 @@ private fun RowScope.HeaderIcons(
     }
 }
 
-@Composable
-fun VersionHistoryAvatarTextStyle() = TextStyle(
-    fontFamily = fontInterRegular,
-    fontWeight = FontWeight.W600,
-    lineHeight = 23.sp,
-    color = colorResource(id = R.color.glyph_active)
-)
-
 @Preview(
     showBackground = true,
     backgroundColor = 0xFFFFFF,
@@ -364,7 +347,7 @@ fun VersionHistoryAvatarTextStyle() = TextStyle(
 )
 @Preview(
     showBackground = true,
-    backgroundColor = 0x000000,
+    backgroundColor = 0xFF1F1F1F,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     name = "Dark Mode"
 )

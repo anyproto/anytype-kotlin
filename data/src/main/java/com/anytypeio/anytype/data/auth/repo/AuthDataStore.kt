@@ -38,7 +38,7 @@ interface AuthDataStore {
     suspend fun setCurrentAccount(id: String)
 
     suspend fun getVersion(): String
-    suspend fun setMetrics(platform: String, version: String)
+    suspend fun setInitialParams(command: Command.SetInitialParams)
 
     suspend fun getNetworkMode(): NetworkModeConfig
     suspend fun setNetworkMode(modeConfig: NetworkModeConfig)

@@ -221,7 +221,7 @@
     <string name="more">更多</string>
     <string name="done">完成</string>
     <string name="select_scroll_and_move_blocks">選取區塊以開始</string>
-    <string name="block_code_menu_title">語言</string>
+    <string name="block_code_plain_text">語言</string>
     <string name="undo">撤銷</string>
     <string name="redo">重做</string>
     <string name="block_action_copy">複製</string>
@@ -1447,6 +1447,8 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_dismiss">好的</string>
     <string name="error_login_network_id_mismatch">Network ID 配對失敗，請件查您的網路設定</string>
     <string name="error_login_select_vault_error">Select vault error.</string>
+    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
+    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
     <string name="global_search_related_to">"關聯到： "</string>
     <string name="global_search_no_related_objects_found">找不到關聯的物件</string>
     <string name="sort_empty_values_desc">顯示空值</string>

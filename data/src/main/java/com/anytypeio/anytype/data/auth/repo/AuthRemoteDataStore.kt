@@ -78,11 +78,8 @@ class AuthRemoteDataStore(
 
     override suspend fun getVersion(): String = authRemote.getVersion()
 
-    override suspend fun setMetrics(platform: String, version: String) {
-        authRemote.setMetrics(
-            platform = platform,
-            version = version
-        )
+    override suspend fun setInitialParams(command: Command.SetInitialParams) {
+        authRemote.setInitialParams(command)
     }
 
     override suspend fun getNetworkMode(): NetworkModeConfig {

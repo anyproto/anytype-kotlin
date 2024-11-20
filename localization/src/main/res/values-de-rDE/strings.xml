@@ -221,7 +221,7 @@
     <string name="more">Mehr</string>
     <string name="done">Fertig</string>
     <string name="select_scroll_and_move_blocks">Blöcke auswählen um zu starten</string>
-    <string name="block_code_menu_title">Sprache</string>
+    <string name="block_code_plain_text">Sprache</string>
     <string name="undo">Rückgängig</string>
     <string name="redo">Wiederholen</string>
     <string name="block_action_copy">Kopieren</string>
@@ -1457,6 +1457,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="membership_error_button_text_dismiss">OK</string>
     <string name="error_login_network_id_mismatch">Netzwerk-ID stimmt nicht überein. Bitte überprüfe deine Netzwerkkonfiguration.</string>
     <string name="error_login_select_vault_error">Fehler beim Auswählen des Tresors.</string>
+    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
+    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
     <string name="global_search_related_to">"Zugehörig zu: "</string>
     <string name="global_search_no_related_objects_found">Keine zugehörigen Objekte gefunden</string>
     <string name="sort_empty_values_desc">Leere Werte anzeigen</string>

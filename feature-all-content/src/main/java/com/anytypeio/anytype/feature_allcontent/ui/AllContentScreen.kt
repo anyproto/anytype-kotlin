@@ -849,6 +849,7 @@ fun SwipeToDismissListItems(
             } else {
                 false
             }
+            return@rememberSwipeToDismissBoxState true
         },
         positionalThreshold = { it * .5f }
     )

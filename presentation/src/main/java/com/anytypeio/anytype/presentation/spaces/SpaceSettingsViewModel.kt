@@ -33,7 +33,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.multiplayer.isSharingLimitReached
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
 import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
@@ -96,10 +95,10 @@ class SpaceSettingsViewModel(
                     .map { wrapper ->
                         wrapper.getValue<Double?>(Relations.SHARED_SPACES_LIMIT)?.toInt() ?: 0
                          },
-                spaceViewContainer.sharedSpaceCount(userPermissionProvider.all())
-            ) { spaceView, permission, sharedSpaceLimit: Int, sharedSpaceCount: Int ->
+                spaceViewContainer.sharedSpaceCount(userPermissionProvider.all()),
+                activeSpaceMemberSubscriptionContainer.observe(params.space),
+            ) { spaceView, permission, sharedSpaceLimit: Int, sharedSpaceCount: Int, store ->
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
-                val store = activeSpaceMemberSubscriptionContainer.get(params.space)
                 val requests: Int = if (store is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     store.members.count { it.status == ParticipantStatus.JOINING }
                 } else {

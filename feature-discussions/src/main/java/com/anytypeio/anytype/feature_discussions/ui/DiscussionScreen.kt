@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -229,14 +231,16 @@ fun DiscussionScreen(
         }
     }
     val scope = rememberCoroutineScope()
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
         if (!isSpaceLevelChat) {
             TopDiscussionToolbar(
                 title = title,
                 isHeaderVisible = isHeaderVisible
             )
         }
-        Box(modifier = Modifier.weight(1.0f)) {
+        Box(modifier = Modifier.weight(1f)) {
             Messages(
                 isSpaceLevelChat = isSpaceLevelChat,
                 modifier = Modifier.fillMaxSize(),
@@ -331,6 +335,7 @@ fun DiscussionScreen(
         }
 
         ChatBox(
+            modifier = Modifier.imePadding().navigationBarsPadding(),
             chatBoxFocusRequester = chatBoxFocusRequester,
             textState = textState,
             onMessageSent = onMessageSent,
@@ -481,6 +486,7 @@ private fun OldChatBox(
 
 @Composable
 private fun ChatBox(
+    modifier: Modifier = Modifier,
     onBackButtonClicked: () -> Unit,
     chatBoxFocusRequester: FocusRequester,
     textState: TextFieldValue,
@@ -498,7 +504,7 @@ private fun ChatBox(
     val focus = LocalFocusManager.current
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 56.dp)
             .padding(
@@ -704,7 +710,6 @@ fun Messages(
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
         reverseLayout = true,
         state = scrollState,
     ) {
@@ -716,7 +721,7 @@ fun Messages(
                 Spacer(modifier = Modifier.height(36.dp))
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 8.dp, vertical = 6.dp)
                     .animateItem()
             ) {
                 if (!msg.isUserAuthor) {

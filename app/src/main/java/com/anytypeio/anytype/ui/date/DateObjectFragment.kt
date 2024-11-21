@@ -120,7 +120,7 @@ class DateObjectFragment : BaseComposeFragment() {
                     uiSheetState = vm.uiSheetState.collectAsStateWithLifecycle().value,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
-                    uiHeaderActions = {},
+                    uiHeaderActions = vm::onHeaderActions,
                     uiBottomMenuActions = {},
                     uiTopToolbarActions = vm::onTopToolbarActions,
                     uiVerticalListActions = {},

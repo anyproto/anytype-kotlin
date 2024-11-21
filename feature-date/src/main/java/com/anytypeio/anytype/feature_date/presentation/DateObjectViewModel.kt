@@ -1,10 +1,14 @@
 package com.anytypeio.anytype.feature_date.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -14,6 +18,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
@@ -61,7 +66,8 @@ class DateObjectViewModel(
     private val relationListWithValue: RelationListWithValue,
     private val storeOfRelations: StoreOfRelations,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val storelessSubscriptionContainer: StorelessSubscriptionContainer
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val objectDateByTimestamp: ObjectDateByTimestamp
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiTopToolbarState =
@@ -89,6 +95,8 @@ class DateObjectViewModel(
     private var shouldScrollToTopItems = false
 
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
+
+    private var dateObjectDetails: Struct? = null
 
     init {
         Timber.d("Init DateObjectViewModel, date object id: [${vmParams.objectId}], space: [${vmParams.spaceId}]")
@@ -170,6 +178,7 @@ class DateObjectViewModel(
         viewModelScope.launch {
             getObject.async(params).fold(
                 onSuccess = { obj ->
+                    dateObjectDetails = obj.details
                     uiTopToolbarState.value = DateObjectTopToolbarState.Content(
                         syncStatus = SpaceSyncStatus.SYNCING
                     )
@@ -314,9 +323,61 @@ class DateObjectViewModel(
     }
 
     fun onNextDayClicked() {
+
     }
 
     fun onPreviousDayClicked() {
+    }
+
+    fun onHeaderActions(action: DateObjectHeaderState.Action) {
+        when (action) {
+            DateObjectHeaderState.Action.Next -> {
+                val timestamp = dateObjectDetails?.getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
+                if (timestamp == null) {
+                    Timber.e("Error getting timestamp")
+                    return
+                }
+                val params = ObjectDateByTimestamp.Params(
+                    space = vmParams.spaceId,
+                    timestamp = timestamp.plus(86400)
+                )
+                viewModelScope.launch {
+                    objectDateByTimestamp.async(params).fold(
+                        onSuccess = { dateObject ->
+                            val id = dateObject?.getSingleValue<String>(Relations.ID)
+                            if ((id != null)) {
+                                commands.emit(Command.NavigateToDateObject(id, vmParams.spaceId))
+                            }
+                            Timber.d("Got date object: $dateObject")
+                        },
+                        onFailure = { e -> Timber.e("Error getting date object") }
+                    )
+                }
+            }
+            DateObjectHeaderState.Action.Previous -> {
+                val timestamp = dateObjectDetails?.getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
+                if (timestamp == null) {
+                    Timber.e("Error getting timestamp")
+                    return
+                }
+                val params = ObjectDateByTimestamp.Params(
+                    space = vmParams.spaceId,
+                    timestamp = timestamp.minus(86400)
+                )
+                viewModelScope.launch {
+                    objectDateByTimestamp.async(params).fold(
+                        onSuccess = { dateObject ->
+                            val id = dateObject?.getSingleValue<String>(Relations.ID)
+                            if ((id != null)) {
+                                commands.emit(Command.NavigateToDateObject(id, vmParams.spaceId))
+                            }
+                            Timber.d("Got date object: $dateObject")
+                        },
+                        onFailure = { e -> Timber.e("Error getting date object") }
+                    )
+                }
+            }
+        }
     }
 
     fun onTopToolbarActions(action: DateObjectTopToolbarState.Action) {

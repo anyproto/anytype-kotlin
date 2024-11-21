@@ -19,7 +19,6 @@ class ObjectDateByTimestamp @Inject constructor(
             space = params.space,
             timestamp = params.timestamp
         )
-        throw Exception("This is a test exception")
         return repo.objectDateByTimestamp(command)
     }
 

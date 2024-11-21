@@ -221,7 +221,7 @@
     <string name="more">Altro</string>
     <string name="done">Fatto</string>
     <string name="select_scroll_and_move_blocks">Per iniziare, seleziona blocchi</string>
-    <string name="block_code_plain_text">Plain text</string>
+    <string name="block_code_plain_text">Testo normale</string>
     <string name="undo">Annulla</string>
     <string name="redo">Ripristina</string>
     <string name="block_action_copy">Copia</string>
@@ -1458,8 +1458,8 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Rilevata una mancata corrispondenza con l\'ID di rete. Verifica la configurazione della rete.</string>
     <string name="error_login_select_vault_error">Errore nella selezione della cassaforte.</string>
-    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
-    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
+    <string name="error_login_account_deleted_error">Questo account è stato eliminato. Provare ad usare un altro account o crearne uno nuovo.</string>
+    <string name="error_login_account_need_update_error">Impossibile recuperare l\'account. Si prega di aggiornare Anytype all\'ultima versione.</string>
     <string name="global_search_related_to">"Correlato a: "</string>
     <string name="global_search_no_related_objects_found">Nessun oggetto correlato trovato</string>
     <string name="sort_empty_values_desc">Mostra valori vuoti</string>

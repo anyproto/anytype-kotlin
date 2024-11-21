@@ -146,13 +146,13 @@ private fun SelectSpaceSpaceItem(
             modifier = Modifier
                 .size(96.dp)
                 .align(Alignment.CenterHorizontally)
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(12.dp))
                 .then(
                     if (item.view.isSelected)
                         Modifier.border(
                             width = if (item.view.isSelected) 2.dp else 0.dp,
                             color = Color.White,
-                            shape = RoundedCornerShape(4.dp)
+                            shape = RoundedCornerShape(12.dp)
                         )
                     else
                         Modifier

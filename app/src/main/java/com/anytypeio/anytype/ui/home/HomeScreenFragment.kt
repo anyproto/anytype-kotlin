@@ -8,6 +8,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -139,7 +140,9 @@ class HomeScreenFragment : BaseComposeFragment(),
                             onSpaceIconClicked = vm::onSpaceSettingsClicked
                         )
                         HorizontalPager(
-                            modifier = Modifier.padding(top = 64.dp),
+                            modifier = Modifier
+                                .systemBarsPadding()
+                                .padding(top = 64.dp),
                             state = pagerState,
                             userScrollEnabled = false
                         ) { page ->
@@ -501,6 +504,10 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        // Do not apply window insets on fragment container.
     }
 
     companion object {

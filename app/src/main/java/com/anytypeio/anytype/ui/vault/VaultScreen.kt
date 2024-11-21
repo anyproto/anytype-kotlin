@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -245,7 +244,7 @@ fun VaultSpaceCard(
 
                     is Wallpaper.Gradient -> {
                         Modifier.background(
-                            brush = Brush.horizontalGradient(
+                            brush = Brush.verticalGradient(
                                 colors = gradient(
                                     gradient = wallpaper.code,
                                     alpha = 0.3f
@@ -257,7 +256,7 @@ fun VaultSpaceCard(
 
                     is Wallpaper.Default -> {
                         Modifier.background(
-                            brush = Brush.horizontalGradient(
+                            brush = Brush.verticalGradient(
                                 colors = gradient(
                                     gradient = CoverGradient.SKY,
                                     alpha = 0.3f

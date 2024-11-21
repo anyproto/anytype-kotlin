@@ -774,30 +774,34 @@ fun Messages(
         }
         if (messages.isEmpty()) {
             item {
-                Column(
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 170.dp)
+                        .fillParentMaxSize()
                 ) {
-                    AlertIcon(
-                        icon = AlertConfig.Icon(
-                            gradient = GRADIENT_TYPE_BLUE,
-                            icon = R.drawable.ic_alert_message
-                        )
-                    )
-                    Text(
-                        text = stringResource(R.string.chat_empty_state_message),
-                        style = Caption1Regular,
-                        color = colorResource(id = R.color.text_secondary),
-                        textAlign = TextAlign.Center,
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                start = 20.dp,
-                                end = 20.dp,
-                                top = 12.dp
+                            .align(Alignment.CenterStart)
+                    ) {
+                        AlertIcon(
+                            icon = AlertConfig.Icon(
+                                gradient = GRADIENT_TYPE_BLUE,
+                                icon = R.drawable.ic_alert_message
                             )
-                    )
+                        )
+                        Text(
+                            text = stringResource(R.string.chat_empty_state_message),
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_secondary),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    start = 20.dp,
+                                    end = 20.dp,
+                                    top = 12.dp
+                                )
+                        )
+                    }
                 }
             }
         }

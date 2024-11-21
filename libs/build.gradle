@@ -9,7 +9,7 @@ afterEvaluate {
                 artifact(file('lib.aar'))
                 groupId 'io.anyproto'
                 artifactId 'anytype-heart-android'
-                version = 'ce35477fc783699a70e2e4d4cefe6595bf48c5d1'
+                version = '0.99'
             }
         }
     }

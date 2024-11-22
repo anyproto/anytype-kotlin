@@ -50,11 +50,21 @@ class AndroidApplication : Application(), HasComponentDependencies {
         ComponentManager(main, this)
     }
 
+
+    object SignalHandler {
+        init {
+            System.loadLibrary("signal_handler")
+        }
+
+        external fun initSignalHandler()
+    }
+
     override fun onCreate() {
         if (BuildConfig.ENABLE_STRICT_MODE) {
             enableStrictMode()
         }
         super.onCreate()
+        SignalHandler.initSignalHandler()
         main.inject(this)
         setupAnalytics()
         setupTimber()

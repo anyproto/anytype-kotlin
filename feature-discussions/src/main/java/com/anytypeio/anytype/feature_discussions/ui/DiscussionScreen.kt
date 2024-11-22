@@ -63,6 +63,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -76,11 +78,13 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -92,6 +96,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
@@ -164,7 +169,7 @@ fun DiscussionScreenWrapper(
                     onReacted = vm::onReacted,
                     onCopyMessage = { msg ->
                         clipboard.setText(
-                            AnnotatedString(text = msg.content)
+                            AnnotatedString(text = msg.content.joinToString())
                         )
                     },
                     onDeleteMessage = vm::onDeleteMessage,
@@ -258,8 +263,8 @@ fun DiscussionScreen(
                 onEditMessage = { msg ->
                     onEditMessage(msg).also {
                         textState = TextFieldValue(
-                            msg.content,
-                            selection = TextRange(msg.content.length)
+                            msg.content.joinToString(),
+                            selection = TextRange(msg.content.joinToString().length)
                         )
                         chatBoxFocusRequester.requestFocus()
                     }
@@ -873,7 +878,7 @@ val userMessageBubbleColor = Color(0x66000000)
 fun Bubble(
     modifier: Modifier = Modifier,
     name: String,
-    msg: String,
+    msg: List<Pair<String, List<Block.Content.Text.Mark>>>,
     timestamp: Long,
     attachments: List<Chat.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
@@ -939,7 +944,9 @@ fun Bubble(
                     bottom = 0.dp
                 ),
                 text = buildAnnotatedString {
-                    append(msg)
+                    msg.forEach { (part, styles) ->
+                        append(part)
+                    }
                     withStyle(
                         style = SpanStyle(
                             color = if (isUserAuthor)
@@ -964,7 +971,30 @@ fun Bubble(
                     end = 16.dp,
                     bottom = 0.dp
                 ),
-                text = msg,
+                text = buildAnnotatedString {
+                    msg.forEach { (part, styles) ->
+
+                        val isBold: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.BOLD }
+                        val isItalic: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.ITALIC }
+                        val isStrike = styles.any { it.type == Block.Content.Text.Mark.Type.STRIKETHROUGH }
+                        val underline = styles.any { it.type == Block.Content.Text.Mark.Type.UNDERLINE }
+                        val isLink = styles.any { it.type == Block.Content.Text.Mark.Type.LINK }
+
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = if (isBold) FontWeight.Bold else null,
+                                fontStyle = if (isItalic) FontStyle.Italic else null,
+                                textDecoration = if (underline || isLink)
+                                    TextDecoration.Underline
+                                else if (isStrike)
+                                    TextDecoration.LineThrough
+                                else null,
+                            )
+                        ) {
+                            append(part)
+                        }
+                    }
+                },
                 style = BodyRegular,
                 color = if (isUserAuthor)
                     colorResource(id = R.color.text_white)

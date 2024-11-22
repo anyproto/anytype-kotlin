@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.text.splitBy
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
@@ -121,7 +122,9 @@ class DiscussionViewModel @Inject constructor(
                     DiscussionView.Message(
                         id = msg.id,
                         timestamp = msg.createdAt * 1000,
-                        content = msg.content?.text.orEmpty(),
+                        content = msg.content?.text.orEmpty().splitBy(
+                            msg.content?.marks.orEmpty()
+                        ),
                         author = member?.name ?: msg.creator.takeLast(5),
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,

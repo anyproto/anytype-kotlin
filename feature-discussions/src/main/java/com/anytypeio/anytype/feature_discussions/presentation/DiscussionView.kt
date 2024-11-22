@@ -1,12 +1,13 @@
 package com.anytypeio.anytype.feature_discussions.presentation
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.chats.Chat
 
 sealed interface DiscussionView {
     data class Message(
         val id: String,
-        val content: String,
+        val content: List<Pair<String, List<Block.Content.Text.Mark>>> = emptyList(),
         val author: String,
         val timestamp: Long,
         val attachments: List<Chat.Message.Attachment> = emptyList(),

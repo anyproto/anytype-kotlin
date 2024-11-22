@@ -19,19 +19,25 @@ fun DiscussionPreview() {
         messages = listOf(
             DiscussionView.Message(
                 id = "1",
-                content = stringResource(id = R.string.default_text_placeholder),
+                content = listOf(
+                    stringResource(id = R.string.default_text_placeholder) to emptyList()
+                ),
                 author = "Walter",
                 timestamp = System.currentTimeMillis()
             ),
             DiscussionView.Message(
                 id = "2",
-                content = stringResource(id = R.string.default_text_placeholder),
+                content = listOf(
+                    stringResource(id = R.string.default_text_placeholder) to emptyList()
+                ),
                 author = "Leo",
                 timestamp = System.currentTimeMillis()
             ),
             DiscussionView.Message(
                 id = "3",
-                content = stringResource(id = R.string.default_text_placeholder),
+                content = listOf(
+                    stringResource(id = R.string.default_text_placeholder) to emptyList()
+                ),
                 author = "Gilbert",
                 timestamp = System.currentTimeMillis()
             )
@@ -59,7 +65,9 @@ fun DiscussionScreenPreview() {
                 add(
                     DiscussionView.Message(
                         id = idx.toString(),
-                        content = stringResource(id = R.string.default_text_placeholder),
+                        content = listOf(
+                            stringResource(id = R.string.default_text_placeholder) to emptyList()
+                        ),
                         author = "User ${idx.inc()}",
                         timestamp =
                         System.currentTimeMillis()
@@ -92,7 +100,9 @@ fun DiscussionScreenPreview() {
 fun BubblePreview() {
     Bubble(
         name = "Leo Marx",
-        msg = stringResource(id = R.string.default_text_placeholder),
+        msg = listOf(
+            stringResource(id = R.string.default_text_placeholder) to emptyList()
+        ),
         timestamp = System.currentTimeMillis(),
         onReacted = {},
         onDeleteMessage = {},
@@ -108,7 +118,9 @@ fun BubblePreview() {
 fun BubbleEditedPreview() {
     Bubble(
         name = "Leo Marx",
-        msg = stringResource(id = R.string.default_text_placeholder),
+        msg = listOf(
+            stringResource(id = R.string.default_text_placeholder) to emptyList()
+        ),
         isEdited = true,
         timestamp = System.currentTimeMillis(),
         onReacted = {},
@@ -125,7 +137,9 @@ fun BubbleEditedPreview() {
 fun BubbleWithAttachmentPreview() {
     Bubble(
         name = "Leo Marx",
-        msg = stringResource(id = R.string.default_text_placeholder),
+        msg = listOf(
+            stringResource(id = R.string.default_text_placeholder) to emptyList()
+        ),
         timestamp = System.currentTimeMillis(),
         onReacted = {},
         onDeleteMessage = {},

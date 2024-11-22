@@ -1556,4 +1556,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Write a message...</string>
+    <string name="chat_attachment_object">Object</string>
+    <string name="chat_attachment_file">Bestand</string>
+    <string name="chat_attachment_media">Media</string>
+    <string name="chat_attachment_upload">Upload</string>
 </resources>

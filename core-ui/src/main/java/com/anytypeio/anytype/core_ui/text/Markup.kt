@@ -2,7 +2,7 @@ package com.anytypeio.anytype.core_ui.text
 
 import com.anytypeio.anytype.core_models.Block
 
-fun String.splitBy(
+fun String.splitByMarks(
     marks: List<Block.Content.Text.Mark>
 ) : List<Pair<String, List<Block.Content.Text.Mark>>> {
 

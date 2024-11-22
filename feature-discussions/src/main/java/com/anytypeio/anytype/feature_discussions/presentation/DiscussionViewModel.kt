@@ -7,8 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
-import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.text.splitBy
+import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
@@ -126,7 +125,7 @@ class DiscussionViewModel @Inject constructor(
                         timestamp = msg.createdAt * 1000,
                         content = content?.text
                             .orEmpty()
-                            .splitBy(marks = content?.marks.orEmpty())
+                            .splitByMarks(marks = content?.marks.orEmpty())
                             .map { (part, styles) ->
                                 DiscussionView.Message.Content.Part(
                                     part = part,

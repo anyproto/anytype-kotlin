@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,9 +26,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -63,8 +60,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -99,12 +94,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
-import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
@@ -127,7 +120,6 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 
 @Composable
@@ -888,7 +880,7 @@ val userMessageBubbleColor = Color(0x66000000)
 fun Bubble(
     modifier: Modifier = Modifier,
     name: String,
-    msg: List<Pair<String, List<Block.Content.Text.Mark>>>,
+    msg: List<DiscussionView.Message.Content.Part>,
     timestamp: Long,
     attachments: List<Chat.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
@@ -954,44 +946,37 @@ fun Bubble(
                 bottom = 0.dp
             ),
             text = buildAnnotatedString {
-                msg.forEach { (part, styles) ->
-
-                    val isBold: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.BOLD }
-                    val isItalic: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.ITALIC }
-                    val isStrike = styles.any { it.type == Block.Content.Text.Mark.Type.STRIKETHROUGH }
-                    val underline = styles.any { it.type == Block.Content.Text.Mark.Type.UNDERLINE }
-                    val isLink = styles.find { it.type == Block.Content.Text.Mark.Type.LINK }
-
-                    if (isLink != null && isLink.param != null) {
+                msg.forEach { part ->
+                    if (part.link != null && part.link.param != null) {
                         withLink(
                             LinkAnnotation.Clickable(
                                 tag = "link",
                                 styles = TextLinkStyles(
                                     style = SpanStyle(
-                                        fontWeight = if (isBold) FontWeight.Bold else null,
-                                        fontStyle = if (isItalic) FontStyle.Italic else null,
+                                        fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                        fontStyle = if (part.isItalic) FontStyle.Italic else null,
                                         textDecoration = TextDecoration.Underline
                                     )
                                 )
                             ) {
-                                onMarkupLinkClicked(isLink.param.orEmpty())
+                                onMarkupLinkClicked(part.link.param.orEmpty())
                             }
                         ) {
-                            append(part)
+                            append(part.part)
                         }
                     } else {
                         withStyle(
                             style = SpanStyle(
-                                fontWeight = if (isBold) FontWeight.Bold else null,
-                                fontStyle = if (isItalic) FontStyle.Italic else null,
-                                textDecoration = if (underline)
+                                fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                textDecoration = if (part.underline)
                                     TextDecoration.Underline
-                                else if (isStrike)
+                                else if (part.isStrike)
                                     TextDecoration.LineThrough
                                 else null,
                             )
                         ) {
-                            append(part)
+                            append(part.part)
                         }
                     }
 

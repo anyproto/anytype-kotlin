@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.chats.Chat
 sealed interface DiscussionView {
     data class Message(
         val id: String,
-        val content: List<Pair<String, List<Block.Content.Text.Mark>>> = emptyList(),
+        val content: List<Content.Part>,
         val author: String,
         val timestamp: Long,
         val attachments: List<Chat.Message.Attachment> = emptyList(),
@@ -16,6 +16,20 @@ sealed interface DiscussionView {
         val isEdited: Boolean = false,
         val avatar: Avatar = Avatar.Initials()
     ) : DiscussionView {
+
+        interface Content {
+            data class Part(
+                val part: String,
+                val styles: List<Block.Content.Text.Mark>
+            ) : Content {
+                val isBold: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.BOLD }
+                val isItalic: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.ITALIC }
+                val isStrike = styles.any { it.type == Block.Content.Text.Mark.Type.STRIKETHROUGH }
+                val underline = styles.any { it.type == Block.Content.Text.Mark.Type.UNDERLINE }
+                val link = styles.find { it.type == Block.Content.Text.Mark.Type.LINK }
+            }
+        }
+
         data class Reaction(
             val emoji: String,
             val count: Int,

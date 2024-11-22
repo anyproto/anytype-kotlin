@@ -115,16 +115,24 @@ class DiscussionViewModel @Inject constructor(
                             is Store.Data -> type.members.find { member ->
                                 member.identity == msg.creator
                             }
-
                             is Store.Empty -> null
                         }
                     }
+
+                    val content = msg.content
+
                     DiscussionView.Message(
                         id = msg.id,
                         timestamp = msg.createdAt * 1000,
-                        content = msg.content?.text.orEmpty().splitBy(
-                            msg.content?.marks.orEmpty()
-                        ),
+                        content = content?.text
+                            .orEmpty()
+                            .splitBy(marks = content?.marks.orEmpty())
+                            .map { (part, styles) ->
+                                DiscussionView.Message.Content.Part(
+                                    part = part,
+                                    styles = styles
+                                )
+                            },
                         author = member?.name ?: msg.creator.takeLast(5),
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,

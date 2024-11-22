@@ -287,7 +287,7 @@ fun DiscussionScreen(
 
             GoToBottomButton(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
+                    .align(Alignment.BottomCenter)
                     .padding(end = 12.dp),
                 onGoToBottomClicked = {
                     scope.launch {
@@ -1275,12 +1275,7 @@ fun GoToBottomButton(
                 .offset(x = 0.dp, y = -bottomOffset)
                 .size(48.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .border(
-                    width = 1.dp,
-                    color = colorResource(id = R.color.shape_primary),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .background(color = colorResource(id = R.color.background_primary))
+                .background(color = colorResource(id = R.color.navigation_panel))
                 .clickable {
                     onGoToBottomClicked()
                 }

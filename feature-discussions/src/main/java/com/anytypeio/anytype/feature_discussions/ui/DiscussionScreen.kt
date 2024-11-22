@@ -74,7 +74,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -86,6 +88,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -124,6 +127,7 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 @Composable
@@ -132,7 +136,8 @@ fun DiscussionScreenWrapper(
     vm: DiscussionViewModel,
     // TODO move to view model
     onAttachClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit
+    onBackButtonClicked: () -> Unit,
+    onMarkupLinkClicked: (String) -> Unit
 ) {
     NavHost(
         navController = rememberNavController(),
@@ -177,7 +182,8 @@ fun DiscussionScreenWrapper(
                     onAttachmentClicked = vm::onAttachmentClicked,
                     isInEditMessageMode = vm.chatBoxMode.collectAsState().value is ChatBoxMode.EditMessage,
                     onExitEditMessageMode = vm::onExitEditMessageMode,
-                    onBackButtonClicked = onBackButtonClicked
+                    onBackButtonClicked = onBackButtonClicked,
+                    onMarkupLinkClicked = onMarkupLinkClicked
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -217,7 +223,8 @@ fun DiscussionScreen(
     onCopyMessage: (DiscussionView.Message) -> Unit,
     onEditMessage: (DiscussionView.Message) -> Unit,
     onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
-    onExitEditMessageMode: () -> Unit
+    onExitEditMessageMode: () -> Unit,
+    onMarkupLinkClicked: (String) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -268,7 +275,8 @@ fun DiscussionScreen(
                         )
                         chatBoxFocusRequester.requestFocus()
                     }
-                }
+                },
+                onMarkupLinkClicked = onMarkupLinkClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -711,7 +719,8 @@ fun Messages(
     onDeleteMessage: (DiscussionView.Message) -> Unit,
     onCopyMessage: (DiscussionView.Message) -> Unit,
     onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
-    onEditMessage: (DiscussionView.Message) -> Unit
+    onEditMessage: (DiscussionView.Message) -> Unit,
+    onMarkupLinkClicked: (String) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -760,7 +769,8 @@ fun Messages(
                     onAttachmentClicked = onAttachmentClicked,
                     onEditMessage = {
                         onEditMessage(msg)
-                    }
+                    },
+                    onMarkupLinkClicked = onMarkupLinkClicked
                 )
                 if (msg.isUserAuthor) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -888,7 +898,8 @@ fun Bubble(
     onDeleteMessage: () -> Unit,
     onCopyMessage: () -> Unit,
     onEditMessage: () -> Unit,
-    onAttachmentClicked: (Chat.Message.Attachment) -> Unit
+    onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
+    onMarkupLinkClicked: (String) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
@@ -935,56 +946,45 @@ fun Bubble(
                 maxLines = 1
             )
         }
-        if (isEdited) {
-            Text(
-                modifier = Modifier.padding(
-                    top = 0.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 0.dp
-                ),
-                text = buildAnnotatedString {
-                    msg.forEach { (part, styles) ->
-                        append(part)
-                    }
-                    withStyle(
-                        style = SpanStyle(
-                            color = if (isUserAuthor)
-                                colorResource(id = R.color.text_white)
-                            else
-                                colorResource(id = R.color.text_primary),
-                        )
-                    ) {
-                        append(
-                            " (${stringResource(R.string.chats_message_edited)})"
-                        )
-                    }
-                },
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary)
-            )
-        } else {
-            Text(
-                modifier = Modifier.padding(
-                    top = 0.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 0.dp
-                ),
-                text = buildAnnotatedString {
-                    msg.forEach { (part, styles) ->
+        Text(
+            modifier = Modifier.padding(
+                top = 0.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 0.dp
+            ),
+            text = buildAnnotatedString {
+                msg.forEach { (part, styles) ->
 
-                        val isBold: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.BOLD }
-                        val isItalic: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.ITALIC }
-                        val isStrike = styles.any { it.type == Block.Content.Text.Mark.Type.STRIKETHROUGH }
-                        val underline = styles.any { it.type == Block.Content.Text.Mark.Type.UNDERLINE }
-                        val isLink = styles.any { it.type == Block.Content.Text.Mark.Type.LINK }
+                    val isBold: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.BOLD }
+                    val isItalic: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.ITALIC }
+                    val isStrike = styles.any { it.type == Block.Content.Text.Mark.Type.STRIKETHROUGH }
+                    val underline = styles.any { it.type == Block.Content.Text.Mark.Type.UNDERLINE }
+                    val isLink = styles.find { it.type == Block.Content.Text.Mark.Type.LINK }
 
+                    if (isLink != null && isLink.param != null) {
+                        withLink(
+                            LinkAnnotation.Clickable(
+                                tag = "link",
+                                styles = TextLinkStyles(
+                                    style = SpanStyle(
+                                        fontWeight = if (isBold) FontWeight.Bold else null,
+                                        fontStyle = if (isItalic) FontStyle.Italic else null,
+                                        textDecoration = TextDecoration.Underline
+                                    )
+                                )
+                            ) {
+                                onMarkupLinkClicked(isLink.param.orEmpty())
+                            }
+                        ) {
+                            append(part)
+                        }
+                    } else {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = if (isBold) FontWeight.Bold else null,
                                 fontStyle = if (isItalic) FontStyle.Italic else null,
-                                textDecoration = if (underline || isLink)
+                                textDecoration = if (underline)
                                     TextDecoration.Underline
                                 else if (isStrike)
                                     TextDecoration.LineThrough
@@ -994,14 +994,29 @@ fun Bubble(
                             append(part)
                         }
                     }
-                },
-                style = BodyRegular,
-                color = if (isUserAuthor)
-                    colorResource(id = R.color.text_white)
-                else
-                    colorResource(id = R.color.text_primary),
-            )
-        }
+
+                    if (isEdited) {
+                        withStyle(
+                            style = SpanStyle(
+                                color = if (isUserAuthor)
+                                    colorResource(id = R.color.text_white)
+                                else
+                                    colorResource(id = R.color.text_primary),
+                            )
+                        ) {
+                            append(
+                                " (${stringResource(R.string.chats_message_edited)})"
+                            )
+                        }
+                    }
+                }
+            },
+            style = BodyRegular,
+            color = if (isUserAuthor)
+                colorResource(id = R.color.text_white)
+            else
+                colorResource(id = R.color.text_primary),
+        )
         attachments.forEach { attachment ->
             Attachment(
                 modifier = Modifier.padding(

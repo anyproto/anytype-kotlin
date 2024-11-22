@@ -50,7 +50,10 @@ fun DiscussionPreview() {
         onDeleteMessage = {},
         onCopyMessage = {},
         onAttachmentClicked = {},
-        onEditMessage = {}
+        onEditMessage = {},
+        onMarkupLinkClicked = {
+
+        }
     )
 }
 
@@ -90,7 +93,8 @@ fun DiscussionScreenPreview() {
         onEditMessage = {},
         onExitEditMessageMode = {},
         isSpaceLevelChat = true,
-        onBackButtonClicked = {}
+        onBackButtonClicked = {},
+        onMarkupLinkClicked = {}
     )
 }
 
@@ -108,7 +112,8 @@ fun BubblePreview() {
         onDeleteMessage = {},
         onCopyMessage = {},
         onAttachmentClicked = {},
-        onEditMessage = {}
+        onEditMessage = {},
+        onMarkupLinkClicked = {}
     )
 }
 
@@ -127,7 +132,8 @@ fun BubbleEditedPreview() {
         onDeleteMessage = {},
         onCopyMessage = {},
         onAttachmentClicked = {},
-        onEditMessage = {}
+        onEditMessage = {},
+        onMarkupLinkClicked = {}
     )
 }
 
@@ -153,6 +159,7 @@ fun BubbleWithAttachmentPreview() {
             )
         },
         onAttachmentClicked = {},
-        onEditMessage = {}
+        onEditMessage = {},
+        onMarkupLinkClicked = {}
     )
 }

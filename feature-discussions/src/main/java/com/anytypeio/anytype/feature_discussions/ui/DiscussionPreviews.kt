@@ -20,7 +20,9 @@ fun DiscussionPreview() {
             DiscussionView.Message(
                 id = "1",
                 content = listOf(
-                    stringResource(id = R.string.default_text_placeholder) to emptyList()
+                    DiscussionView.Message.Content.Part(
+                        part = stringResource(id = R.string.default_text_placeholder)
+                    )
                 ),
                 author = "Walter",
                 timestamp = System.currentTimeMillis()
@@ -28,7 +30,9 @@ fun DiscussionPreview() {
             DiscussionView.Message(
                 id = "2",
                 content = listOf(
-                    stringResource(id = R.string.default_text_placeholder) to emptyList()
+                    DiscussionView.Message.Content.Part(
+                        part = stringResource(id = R.string.default_text_placeholder)
+                    )
                 ),
                 author = "Leo",
                 timestamp = System.currentTimeMillis()
@@ -36,7 +40,9 @@ fun DiscussionPreview() {
             DiscussionView.Message(
                 id = "3",
                 content = listOf(
-                    stringResource(id = R.string.default_text_placeholder) to emptyList()
+                    DiscussionView.Message.Content.Part(
+                        part = stringResource(id = R.string.default_text_placeholder)
+                    )
                 ),
                 author = "Gilbert",
                 timestamp = System.currentTimeMillis()
@@ -69,7 +75,9 @@ fun DiscussionScreenPreview() {
                     DiscussionView.Message(
                         id = idx.toString(),
                         content = listOf(
-                            stringResource(id = R.string.default_text_placeholder) to emptyList()
+                            DiscussionView.Message.Content.Part(
+                                part = stringResource(id = R.string.default_text_placeholder)
+                            )
                         ),
                         author = "User ${idx.inc()}",
                         timestamp =
@@ -105,7 +113,9 @@ fun BubblePreview() {
     Bubble(
         name = "Leo Marx",
         msg = listOf(
-            stringResource(id = R.string.default_text_placeholder) to emptyList()
+            DiscussionView.Message.Content.Part(
+                part = stringResource(id = R.string.default_text_placeholder)
+            )
         ),
         timestamp = System.currentTimeMillis(),
         onReacted = {},
@@ -124,7 +134,9 @@ fun BubbleEditedPreview() {
     Bubble(
         name = "Leo Marx",
         msg = listOf(
-            stringResource(id = R.string.default_text_placeholder) to emptyList()
+            DiscussionView.Message.Content.Part(
+                part = stringResource(id = R.string.default_text_placeholder)
+            )
         ),
         isEdited = true,
         timestamp = System.currentTimeMillis(),
@@ -144,7 +156,9 @@ fun BubbleWithAttachmentPreview() {
     Bubble(
         name = "Leo Marx",
         msg = listOf(
-            stringResource(id = R.string.default_text_placeholder) to emptyList()
+            DiscussionView.Message.Content.Part(
+                part = stringResource(id = R.string.default_text_placeholder)
+            )
         ),
         timestamp = System.currentTimeMillis(),
         onReacted = {},

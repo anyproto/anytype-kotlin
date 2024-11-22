@@ -20,7 +20,7 @@ sealed interface DiscussionView {
         interface Content {
             data class Part(
                 val part: String,
-                val styles: List<Block.Content.Text.Mark>
+                val styles: List<Block.Content.Text.Mark> = emptyList()
             ) : Content {
                 val isBold: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.BOLD }
                 val isItalic: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.ITALIC }

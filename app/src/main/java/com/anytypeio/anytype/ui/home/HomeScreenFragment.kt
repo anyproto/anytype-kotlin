@@ -252,7 +252,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                             )
                         }
                     }
-
                 } else {
                     HomeScreen(
                         modifier = Modifier,

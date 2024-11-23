@@ -105,8 +105,8 @@ fun GlobalSearchScreen(
     state: GlobalSearchViewModel.ViewState,
     onQueryChanged: (String) -> Unit,
     onObjectClicked: (GlobalSearchItemView) -> Unit,
-    onShowRelatedClicked: (GlobalSearchItemView) -> Unit,
-    onClearRelatedClicked: () -> Unit,
+    onShowRelatedClicked: (GlobalSearchItemView) -> Unit = {},
+    onClearRelatedClicked: () -> Unit = {},
     focusOnStart: Boolean = true
 ) {
 

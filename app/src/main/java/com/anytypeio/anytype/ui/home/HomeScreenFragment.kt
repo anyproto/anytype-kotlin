@@ -37,6 +37,8 @@ import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.SystemAction
+import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -194,6 +196,11 @@ class HomeScreenFragment : BaseComposeFragment(),
                                     },
                                     onBackButtonClicked = {
                                         findNavController().popBackStack()
+                                    },
+                                    onMarkupLinkClicked = {
+                                        proceedWithAction(
+                                            SystemAction.OpenUrl(it)
+                                        )
                                     }
                                 )
                             }

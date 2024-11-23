@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,9 +26,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -72,16 +69,21 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -127,7 +129,8 @@ fun DiscussionScreenWrapper(
     vm: DiscussionViewModel,
     // TODO move to view model
     onAttachClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit
+    onBackButtonClicked: () -> Unit,
+    onMarkupLinkClicked: (String) -> Unit
 ) {
     NavHost(
         navController = rememberNavController(),
@@ -164,7 +167,7 @@ fun DiscussionScreenWrapper(
                     onReacted = vm::onReacted,
                     onCopyMessage = { msg ->
                         clipboard.setText(
-                            AnnotatedString(text = msg.content)
+                            AnnotatedString(text = msg.content.joinToString())
                         )
                     },
                     onDeleteMessage = vm::onDeleteMessage,
@@ -172,7 +175,8 @@ fun DiscussionScreenWrapper(
                     onAttachmentClicked = vm::onAttachmentClicked,
                     isInEditMessageMode = vm.chatBoxMode.collectAsState().value is ChatBoxMode.EditMessage,
                     onExitEditMessageMode = vm::onExitEditMessageMode,
-                    onBackButtonClicked = onBackButtonClicked
+                    onBackButtonClicked = onBackButtonClicked,
+                    onMarkupLinkClicked = onMarkupLinkClicked
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -212,7 +216,8 @@ fun DiscussionScreen(
     onCopyMessage: (DiscussionView.Message) -> Unit,
     onEditMessage: (DiscussionView.Message) -> Unit,
     onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
-    onExitEditMessageMode: () -> Unit
+    onExitEditMessageMode: () -> Unit,
+    onMarkupLinkClicked: (String) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -258,12 +263,13 @@ fun DiscussionScreen(
                 onEditMessage = { msg ->
                     onEditMessage(msg).also {
                         textState = TextFieldValue(
-                            msg.content,
-                            selection = TextRange(msg.content.length)
+                            msg.content.joinToString(),
+                            selection = TextRange(msg.content.joinToString().length)
                         )
                         chatBoxFocusRequester.requestFocus()
                     }
-                }
+                },
+                onMarkupLinkClicked = onMarkupLinkClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -282,7 +288,7 @@ fun DiscussionScreen(
 
             GoToBottomButton(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
+                    .align(Alignment.BottomCenter)
                     .padding(end = 12.dp),
                 onGoToBottomClicked = {
                     scope.launch {
@@ -790,7 +796,8 @@ fun Messages(
     onDeleteMessage: (DiscussionView.Message) -> Unit,
     onCopyMessage: (DiscussionView.Message) -> Unit,
     onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
-    onEditMessage: (DiscussionView.Message) -> Unit
+    onEditMessage: (DiscussionView.Message) -> Unit,
+    onMarkupLinkClicked: (String) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -839,7 +846,8 @@ fun Messages(
                     onAttachmentClicked = onAttachmentClicked,
                     onEditMessage = {
                         onEditMessage(msg)
-                    }
+                    },
+                    onMarkupLinkClicked = onMarkupLinkClicked
                 )
                 if (msg.isUserAuthor) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -957,7 +965,7 @@ val userMessageBubbleColor = Color(0x66000000)
 fun Bubble(
     modifier: Modifier = Modifier,
     name: String,
-    msg: String,
+    msg: List<DiscussionView.Message.Content.Part>,
     timestamp: Long,
     attachments: List<Chat.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
@@ -967,7 +975,8 @@ fun Bubble(
     onDeleteMessage: () -> Unit,
     onCopyMessage: () -> Unit,
     onEditMessage: () -> Unit,
-    onAttachmentClicked: (Chat.Message.Attachment) -> Unit
+    onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
+    onMarkupLinkClicked: (String) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
@@ -1014,48 +1023,70 @@ fun Bubble(
                 maxLines = 1
             )
         }
-        if (isEdited) {
-            Text(
-                modifier = Modifier.padding(
-                    top = 0.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 0.dp
-                ),
-                text = buildAnnotatedString {
-                    append(msg)
-                    withStyle(
-                        style = SpanStyle(
-                            color = if (isUserAuthor)
-                                colorResource(id = R.color.text_white)
-                            else
-                                colorResource(id = R.color.text_primary),
-                        )
-                    ) {
-                        append(
-                            " (${stringResource(R.string.chats_message_edited)})"
-                        )
+        Text(
+            modifier = Modifier.padding(
+                top = 0.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 0.dp
+            ),
+            text = buildAnnotatedString {
+                msg.forEach { part ->
+                    if (part.link != null && part.link.param != null) {
+                        withLink(
+                            LinkAnnotation.Clickable(
+                                tag = "link",
+                                styles = TextLinkStyles(
+                                    style = SpanStyle(
+                                        fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                        fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                        textDecoration = TextDecoration.Underline
+                                    )
+                                )
+                            ) {
+                                onMarkupLinkClicked(part.link.param.orEmpty())
+                            }
+                        ) {
+                            append(part.part)
+                        }
+                    } else {
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                textDecoration = if (part.underline)
+                                    TextDecoration.Underline
+                                else if (part.isStrike)
+                                    TextDecoration.LineThrough
+                                else null,
+                            )
+                        ) {
+                            append(part.part)
+                        }
                     }
-                },
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary)
-            )
-        } else {
-            Text(
-                modifier = Modifier.padding(
-                    top = 0.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 0.dp
-                ),
-                text = msg,
-                style = BodyRegular,
-                color = if (isUserAuthor)
-                    colorResource(id = R.color.text_white)
-                else
-                    colorResource(id = R.color.text_primary),
-            )
-        }
+
+                    if (isEdited) {
+                        withStyle(
+                            style = SpanStyle(
+                                color = if (isUserAuthor)
+                                    colorResource(id = R.color.text_white)
+                                else
+                                    colorResource(id = R.color.text_primary),
+                            )
+                        ) {
+                            append(
+                                " (${stringResource(R.string.chats_message_edited)})"
+                            )
+                        }
+                    }
+                }
+            },
+            style = BodyRegular,
+            color = if (isUserAuthor)
+                colorResource(id = R.color.text_white)
+            else
+                colorResource(id = R.color.text_primary),
+        )
         attachments.forEach { attachment ->
             Attachment(
                 modifier = Modifier.padding(
@@ -1329,12 +1360,7 @@ fun GoToBottomButton(
                 .offset(x = 0.dp, y = -bottomOffset)
                 .size(48.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .border(
-                    width = 1.dp,
-                    color = colorResource(id = R.color.shape_primary),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .background(color = colorResource(id = R.color.background_primary))
+                .background(color = colorResource(id = R.color.navigation_panel))
                 .clickable {
                     onGoToBottomClicked()
                 }

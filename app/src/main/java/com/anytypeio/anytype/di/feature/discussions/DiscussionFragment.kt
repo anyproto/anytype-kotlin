@@ -78,6 +78,9 @@ class DiscussionFragment : BaseComposeFragment() {
                         },
                         onBackButtonClicked = {
                             // TODO
+                        },
+                        onMarkupLinkClicked = {
+
                         }
                     )
 

@@ -340,7 +340,9 @@ fun DiscussionScreen(
         }
 
         ChatBox(
-            modifier = Modifier.imePadding().navigationBarsPadding(),
+            modifier = Modifier
+                .imePadding()
+                .navigationBarsPadding(),
             chatBoxFocusRequester = chatBoxFocusRequester,
             textState = textState,
             onMessageSent = onMessageSent,
@@ -504,6 +506,8 @@ private fun ChatBox(
     updateValue: (TextFieldValue) -> Unit
 ) {
 
+    var showDropdownMenu by remember { mutableStateOf(false) }
+
     val scope = rememberCoroutineScope()
 
     val focus = LocalFocusManager.current
@@ -565,7 +569,7 @@ private fun ChatBox(
                 .clickable {
                     scope.launch {
                         focus.clearFocus(force = true)
-                        onAttachClicked()
+                        showDropdownMenu = true
                     }
                 }
         ) {
@@ -576,6 +580,86 @@ private fun ChatBox(
                     .align(Alignment.Center)
                     .padding(horizontal = 4.dp, vertical = 4.dp)
             )
+            MaterialTheme(
+                shapes = MaterialTheme.shapes.copy(
+                    medium = RoundedCornerShape(
+                        12.dp
+                    )
+                ),
+                colors = MaterialTheme.colors.copy(
+                    surface = colorResource(id = R.color.background_secondary)
+                )
+            ) {
+                DropdownMenu(
+                    offset = DpOffset(8.dp, 40.dp),
+                    expanded = showDropdownMenu,
+                    onDismissRequest = {
+                        showDropdownMenu = false
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .defaultMinSize(
+                            minWidth = 252.dp
+                        )
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_attachment_object),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                        }
+                    )
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_attachment_media),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                        }
+                    )
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_attachment_file),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                        }
+                    )
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_attachment_upload),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                        }
+                    )
+                }
+            }
         }
     }
 }

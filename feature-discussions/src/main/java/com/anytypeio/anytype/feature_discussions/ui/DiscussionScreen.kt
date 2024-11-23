@@ -176,7 +176,19 @@ fun DiscussionScreenWrapper(
                     isInEditMessageMode = vm.chatBoxMode.collectAsState().value is ChatBoxMode.EditMessage,
                     onExitEditMessageMode = vm::onExitEditMessageMode,
                     onBackButtonClicked = onBackButtonClicked,
-                    onMarkupLinkClicked = onMarkupLinkClicked
+                    onMarkupLinkClicked = onMarkupLinkClicked,
+                    onAttachObjectClicked = {
+
+                    },
+                    onAttachMediaClicked = {
+
+                    },
+                    onAttachFileClicked = {
+
+                    },
+                    onUploadAttachmentClicked = {
+
+                    }
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -217,7 +229,11 @@ fun DiscussionScreen(
     onEditMessage: (DiscussionView.Message) -> Unit,
     onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
     onExitEditMessageMode: () -> Unit,
-    onMarkupLinkClicked: (String) -> Unit
+    onMarkupLinkClicked: (String) -> Unit,
+    onAttachObjectClicked: () -> Unit,
+    onAttachMediaClicked: () -> Unit,
+    onAttachFileClicked: () -> Unit,
+    onUploadAttachmentClicked: () -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -361,7 +377,11 @@ fun DiscussionScreen(
             clearText = {
                 textState = TextFieldValue()
             },
-            onBackButtonClicked = onBackButtonClicked
+            onBackButtonClicked = onBackButtonClicked,
+            onAttachFileClicked = onAttachFileClicked,
+            onAttachMediaClicked = onAttachMediaClicked,
+            onUploadAttachmentClicked = onUploadAttachmentClicked,
+            onAttachObjectClicked = onAttachObjectClicked
         )
     }
 }
@@ -504,7 +524,11 @@ private fun ChatBox(
     isTitleFocused: Boolean,
     attachments: List<GlobalSearchItemView>,
     clearText: () -> Unit,
-    updateValue: (TextFieldValue) -> Unit
+    updateValue: (TextFieldValue) -> Unit,
+    onAttachObjectClicked: () -> Unit,
+    onAttachMediaClicked: () -> Unit,
+    onAttachFileClicked: () -> Unit,
+    onUploadAttachmentClicked: () -> Unit
 ) {
 
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -612,6 +636,7 @@ private fun ChatBox(
                         },
                         onClick = {
                             showDropdownMenu = false
+                            onAttachObjectClicked()
                         }
                     )
                     Divider(
@@ -627,6 +652,7 @@ private fun ChatBox(
                         },
                         onClick = {
                             showDropdownMenu = false
+                            onAttachMediaClicked()
                         }
                     )
                     Divider(
@@ -642,6 +668,7 @@ private fun ChatBox(
                         },
                         onClick = {
                             showDropdownMenu = false
+                            onAttachFileClicked()
                         }
                     )
                     Divider(
@@ -657,6 +684,7 @@ private fun ChatBox(
                         },
                         onClick = {
                             showDropdownMenu = false
+                            onUploadAttachmentClicked()
                         }
                     )
                 }

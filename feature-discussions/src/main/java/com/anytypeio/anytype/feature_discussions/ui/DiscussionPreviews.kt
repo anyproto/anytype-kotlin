@@ -102,7 +102,11 @@ fun DiscussionScreenPreview() {
         onExitEditMessageMode = {},
         isSpaceLevelChat = true,
         onBackButtonClicked = {},
-        onMarkupLinkClicked = {}
+        onMarkupLinkClicked = {},
+        onAttachFileClicked = {},
+        onUploadAttachmentClicked = {},
+        onAttachMediaClicked = {},
+        onAttachObjectClicked = {}
     )
 }
 

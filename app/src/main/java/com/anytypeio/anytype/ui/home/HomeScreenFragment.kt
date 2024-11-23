@@ -125,6 +125,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     val view = (vm.views.collectAsStateWithLifecycle().value.find {
                         it is WidgetView.SpaceWidget.View
                     } as? WidgetView.SpaceWidget.View)
+
                     val focus = LocalFocusManager.current
 
                     val component = componentManager().spaceLevelChatComponent
@@ -138,6 +139,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     }
                     val pagerState = rememberPagerState { 2 }
                     val coroutineScope = rememberCoroutineScope()
+
                     Box(
                         Modifier.fillMaxSize()
                     ) {

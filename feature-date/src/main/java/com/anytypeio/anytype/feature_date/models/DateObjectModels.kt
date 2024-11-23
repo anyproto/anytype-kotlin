@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_date.models
 
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -72,7 +73,10 @@ sealed class UiHorizontalListItem {
     ) : UiHorizontalListItem()
 
     data class Item(
-        override val id: String, val key: RelationKey, val title: String
+        override val id: String,
+        val key: RelationKey,
+        val title: String,
+        val relationFormat: RelationFormat
     ) : UiHorizontalListItem()
 }
 

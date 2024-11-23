@@ -207,6 +207,12 @@ private fun MainContent(
         modifier = contentModifier,
         contentAlignment = Alignment.TopCenter
     ) {
+        if (uiContentState is UiContentState.Empty) {
+            EmptyState()
+        }
+        if (uiContentState is UiContentState.Error) {
+            ErrorState(message = uiContentState.message)
+        }
         DateLayoutVerticalListScreen(
             state = uiVerticalListState,
             uiContentState = uiContentState,

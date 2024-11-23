@@ -49,7 +49,7 @@ fun ErrorState(message: String) {
 
 @Composable
 fun EmptyState() {
-    val title = stringResource(R.string.allContent_empty_state_title)
+    val title = stringResource(R.string.date_layout_empty_items)
     Box(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.ime)
@@ -58,19 +58,12 @@ fun EmptyState() {
     ) {
         Text(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
             text = title,
             color = colorResource(id = R.color.text_primary),
             style = UXBody,
             textAlign = TextAlign.Center
         )
-//        Text(
-//            modifier = Modifier
-//                .fillMaxWidth(),
-//            text = description,
-//            color = colorResource(id = R.color.text_secondary),
-//            style = UXBody,
-//            textAlign = TextAlign.Center
-//        )
     }
 }

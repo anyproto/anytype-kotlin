@@ -1824,5 +1824,6 @@ Please provide specific details of your needs here.</string>
     <string name="write_a_message">Write a message...</string>
 
     <string name="date_layout_mentioned_in">Mentioned in</string>
+    <string name="date_layout_empty_items">There is nothing here for this date yet</string>
 
 </resources>

@@ -43,6 +43,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
@@ -167,12 +168,14 @@ fun DateLayoutHorizontalListScreenPreview() {
                 UiHorizontalListItem.Item(
                     id = "1",
                     title = "Today",
-                    key = RelationKey("1")
+                    key = RelationKey("1"),
+                    relationFormat = RelationFormat.DATE
                 ),
                 UiHorizontalListItem.Item(
                     id = "2",
                     title = "Tomorrow",
-                    key = RelationKey("2")
+                    key = RelationKey("2"),
+                    relationFormat = RelationFormat.DATE
                 )
             ),
             selectedRelationKey = RelationKey("1")
@@ -244,28 +247,6 @@ fun DateLayoutVerticalListScreen(
             .fillMaxSize(),
         state = lazyListState
     ) {
-        if (uiContentState is UiContentState.Empty) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    EmptyState()
-                }
-            }
-        }
-        if (uiContentState is UiContentState.Error) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    ErrorState(uiContentState.message)
-                }
-            }
-        }
         items(
             count = items.size,
             key = { index -> items[index].id },

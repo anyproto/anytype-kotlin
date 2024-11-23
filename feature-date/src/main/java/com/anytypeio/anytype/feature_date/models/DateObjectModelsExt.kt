@@ -25,7 +25,8 @@ suspend fun List<RelationListWithValueItem>.toUiHorizontalListItems(
                 UiHorizontalListItem.Item(
                     id = item.key.key,
                     key = item.key,
-                    title = relation.name.orEmpty()
+                    title = relation.name.orEmpty(),
+                    relationFormat = relation.format
                 )
             } else {
                 Timber.e("Relation ${item.key.key} not found in the relation store")

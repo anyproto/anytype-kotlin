@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
@@ -125,15 +126,40 @@ fun DateLayoutHorizontalListScreen(
                     }
 
                     is UiHorizontalListItem.Item -> {
-                        Text(
-                            modifier = Modifier
-                                .padding(horizontal = 12.dp)
-                                .wrapContentSize()
-                                .align(Alignment.Center),
-                            text = item.title,
-                            color = colorResource(R.color.text_primary),
-                            style = PreviewTitle2Medium
-                        )
+                        if (item.key.key == Relations.MENTIONS) {
+                            Row(
+                                modifier = Modifier
+                                    .fillParentMaxHeight()
+                                    .wrapContentWidth()
+                                    .padding(horizontal = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Image(
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                        .size(24.dp),
+                                    painter = painterResource(R.drawable.ic_mention_24),
+                                    contentDescription = "Mentioned in"
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentSize(),
+                                    text = stringResource(R.string.date_layout_mentioned_in),
+                                    color = colorResource(R.color.text_primary),
+                                    style = PreviewTitle2Medium
+                                )
+                            }
+                        } else {
+                            Text(
+                                modifier = Modifier
+                                    .padding(horizontal = 12.dp)
+                                    .wrapContentSize()
+                                    .align(Alignment.Center),
+                                text = item.title,
+                                color = colorResource(R.color.text_primary),
+                                style = PreviewTitle2Medium
+                            )
+                        }
                     }
                     is UiHorizontalListItem.Loading.Item -> {
                         ShimmerEffect(
@@ -165,6 +191,12 @@ fun DateLayoutHorizontalListScreenPreview() {
         state = DateObjectHorizontalListState(
             items = listOf(
                 UiHorizontalListItem.Settings(),
+                UiHorizontalListItem.Item(
+                    id = "0",
+                    title = "Today",
+                    key = RelationKey(Relations.MENTIONS),
+                    relationFormat = RelationFormat.DATE
+                ),
                 UiHorizontalListItem.Item(
                     id = "1",
                     title = "Today",

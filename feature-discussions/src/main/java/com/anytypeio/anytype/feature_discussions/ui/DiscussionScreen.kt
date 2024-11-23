@@ -128,9 +128,9 @@ fun DiscussionScreenWrapper(
     isSpaceLevelChat: Boolean = false,
     vm: DiscussionViewModel,
     // TODO move to view model
-    onAttachClicked: () -> Unit,
+    onAttachObjectClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
-    onMarkupLinkClicked: (String) -> Unit
+    onMarkupLinkClicked: (String) -> Unit,
 ) {
     NavHost(
         navController = rememberNavController(),
@@ -161,7 +161,7 @@ fun DiscussionScreenWrapper(
                     attachments = vm.attachments.collectAsState().value,
                     onMessageSent = vm::onMessageSent,
                     onTitleChanged = vm::onTitleChanged,
-                    onAttachClicked = onAttachClicked,
+                    onAttachClicked = onAttachObjectClicked,
                     onClearAttachmentClicked = vm::onClearAttachmentClicked,
                     lazyListState = lazyListState,
                     onReacted = vm::onReacted,
@@ -177,9 +177,7 @@ fun DiscussionScreenWrapper(
                     onExitEditMessageMode = vm::onExitEditMessageMode,
                     onBackButtonClicked = onBackButtonClicked,
                     onMarkupLinkClicked = onMarkupLinkClicked,
-                    onAttachObjectClicked = {
-
-                    },
+                    onAttachObjectClicked = onAttachObjectClicked,
                     onAttachMediaClicked = {
 
                     },
@@ -314,38 +312,6 @@ fun DiscussionScreen(
                 enabled = jumpToBottomButtonEnabled
             )
         }
-        attachments.forEach {
-            Box {
-                Attachment(
-                    modifier = Modifier.padding(
-                        top = 12.dp,
-                        start = 16.dp,
-                        end = 16.dp
-                    ),
-                    title = it.title,
-                    type = it.type,
-                    icon = it.icon,
-                    onAttachmentClicked = {
-                        // TODO
-                    }
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.ic_clear_18),
-                    contentDescription = "Close icon",
-                    modifier = Modifier
-                        .align(
-                            Alignment.TopEnd
-                        )
-                        .padding(
-                            top = 6.dp,
-                            end = 10.dp
-                        )
-                        .noRippleClickable {
-                            onClearAttachmentClicked()
-                        }
-                )
-            }
-        }
         if (isInEditMessageMode) {
             EditMessageToolbar(
                 onExitClicked = {
@@ -381,7 +347,8 @@ fun DiscussionScreen(
             onAttachFileClicked = onAttachFileClicked,
             onAttachMediaClicked = onAttachMediaClicked,
             onUploadAttachmentClicked = onUploadAttachmentClicked,
-            onAttachObjectClicked = onAttachObjectClicked
+            onAttachObjectClicked = onAttachObjectClicked,
+            onClearAttachmentClicked = onClearAttachmentClicked
         )
     }
 }
@@ -528,7 +495,8 @@ private fun ChatBox(
     onAttachObjectClicked: () -> Unit,
     onAttachMediaClicked: () -> Unit,
     onAttachFileClicked: () -> Unit,
-    onUploadAttachmentClicked: () -> Unit
+    onUploadAttachmentClicked: () -> Unit,
+    onClearAttachmentClicked: () -> Unit
 ) {
 
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -537,7 +505,7 @@ private fun ChatBox(
 
     val focus = LocalFocusManager.current
 
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 56.dp)
@@ -551,142 +519,177 @@ private fun ChatBox(
                 shape = RoundedCornerShape(16.dp)
             )
     ) {
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 4.dp, vertical = 8.dp)
-                .clip(CircleShape)
-                .align(Alignment.Bottom)
-                .clickable {
-                    scope.launch {
-                        focus.clearFocus(force = true)
-                        onBackButtonClicked()
+        attachments.forEach {
+            Box {
+                Attachment(
+                    modifier = Modifier.padding(
+                        top = 12.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    ),
+                    title = it.title,
+                    type = it.type,
+                    icon = it.icon,
+                    onAttachmentClicked = {
+                        // TODO
                     }
-                }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_back),
-                contentDescription = "Back button",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 4.dp, vertical = 4.dp)
-            )
-        }
-        ChatBoxUserInput(
-            textState = textState,
-            onMessageSent = {
-                onMessageSent(it)
-                clearText()
-                resetScroll()
-            },
-            onTextChanged = { value ->
-                updateValue(value)
-            },
-            modifier = Modifier
-                .weight(1f)
-                .align(Alignment.Bottom)
-                .focusRequester(chatBoxFocusRequester)
-        )
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 4.dp, vertical = 8.dp)
-                .clip(CircleShape)
-                .align(Alignment.Bottom)
-                .clickable {
-                    scope.launch {
-                        focus.clearFocus(force = true)
-                        showDropdownMenu = true
-                    }
-                }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_plus),
-                contentDescription = "Plus button",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 4.dp, vertical = 4.dp)
-            )
-            MaterialTheme(
-                shapes = MaterialTheme.shapes.copy(
-                    medium = RoundedCornerShape(
-                        12.dp
-                    )
-                ),
-                colors = MaterialTheme.colors.copy(
-                    surface = colorResource(id = R.color.background_secondary)
                 )
-            ) {
-                DropdownMenu(
-                    offset = DpOffset(8.dp, 40.dp),
-                    expanded = showDropdownMenu,
-                    onDismissRequest = {
-                        showDropdownMenu = false
-                    },
+                Image(
+                    painter = painterResource(id = R.drawable.ic_clear_18),
+                    contentDescription = "Close icon",
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .defaultMinSize(
-                            minWidth = 252.dp
+                        .align(
+                            Alignment.TopEnd
                         )
+                        .padding(
+                            top = 6.dp,
+                            end = 10.dp
+                        )
+                        .noRippleClickable {
+                            onClearAttachmentClicked()
+                        }
+                )
+            }
+        }
+        Row(
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp, vertical = 8.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.Bottom)
+                    .clickable {
+                        scope.launch {
+                            focus.clearFocus(force = true)
+                            onBackButtonClicked()
+                        }
+                    }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_nav_panel_back),
+                    contentDescription = "Back button",
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                )
+            }
+            ChatBoxUserInput(
+                textState = textState,
+                onMessageSent = {
+                    onMessageSent(it)
+                    clearText()
+                    resetScroll()
+                },
+                onTextChanged = { value ->
+                    updateValue(value)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.Bottom)
+                    .focusRequester(chatBoxFocusRequester)
+            )
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp, vertical = 8.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.Bottom)
+                    .clickable {
+                        scope.launch {
+                            focus.clearFocus(force = true)
+                            showDropdownMenu = true
+                        }
+                    }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_nav_panel_plus),
+                    contentDescription = "Plus button",
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                )
+                MaterialTheme(
+                    shapes = MaterialTheme.shapes.copy(
+                        medium = RoundedCornerShape(
+                            12.dp
+                        )
+                    ),
+                    colors = MaterialTheme.colors.copy(
+                        surface = colorResource(id = R.color.background_secondary)
+                    )
                 ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chat_attachment_object),
-                                color = colorResource(id = R.color.text_primary)
-                            )
-                        },
-                        onClick = {
+                    DropdownMenu(
+                        offset = DpOffset(8.dp, 40.dp),
+                        expanded = showDropdownMenu,
+                        onDismissRequest = {
                             showDropdownMenu = false
-                            onAttachObjectClicked()
-                        }
-                    )
-                    Divider(
-                        paddingStart = 0.dp,
-                        paddingEnd = 0.dp
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chat_attachment_media),
-                                color = colorResource(id = R.color.text_primary)
-                            )
                         },
-                        onClick = {
-                            showDropdownMenu = false
-                            onAttachMediaClicked()
-                        }
-                    )
-                    Divider(
-                        paddingStart = 0.dp,
-                        paddingEnd = 0.dp
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chat_attachment_file),
-                                color = colorResource(id = R.color.text_primary)
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .defaultMinSize(
+                                minWidth = 252.dp
                             )
-                        },
-                        onClick = {
-                            showDropdownMenu = false
-                            onAttachFileClicked()
-                        }
-                    )
-                    Divider(
-                        paddingStart = 0.dp,
-                        paddingEnd = 0.dp
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chat_attachment_upload),
-                                color = colorResource(id = R.color.text_primary)
-                            )
-                        },
-                        onClick = {
-                            showDropdownMenu = false
-                            onUploadAttachmentClicked()
-                        }
-                    )
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chat_attachment_object),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                showDropdownMenu = false
+                                onAttachObjectClicked()
+                            }
+                        )
+                        Divider(
+                            paddingStart = 0.dp,
+                            paddingEnd = 0.dp
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chat_attachment_media),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                showDropdownMenu = false
+                                onAttachMediaClicked()
+                            }
+                        )
+                        Divider(
+                            paddingStart = 0.dp,
+                            paddingEnd = 0.dp
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chat_attachment_file),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                showDropdownMenu = false
+                                onAttachFileClicked()
+                            }
+                        )
+                        Divider(
+                            paddingStart = 0.dp,
+                            paddingEnd = 0.dp
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chat_attachment_upload),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                showDropdownMenu = false
+                                onUploadAttachmentClicked()
+                            }
+                        )
+                    }
                 }
             }
         }

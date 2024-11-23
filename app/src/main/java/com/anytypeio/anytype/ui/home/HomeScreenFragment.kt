@@ -16,6 +16,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -167,43 +168,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                         ) { page ->
                             if (page == 0) {
                                 focus.clearFocus(force = true)
-                                HomeScreen(
-                                    modifier = Modifier,
-                                    widgets = vm.views.collectAsState().value,
-                                    mode = vm.mode.collectAsState().value,
-                                    onExpand = { path -> vm.onExpand(path) },
-                                    onCreateWidget = vm::onCreateWidgetClicked,
-                                    onEditWidgets = vm::onEditWidgets,
-                                    onExitEditMode = vm::onExitEditMode,
-                                    onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                                        vm.onDropDownMenuAction(widget, action)
-                                    },
-                                    onWidgetObjectClicked = vm::onWidgetObjectClicked,
-                                    onWidgetSourceClicked = vm::onWidgetSourceClicked,
-                                    onChangeWidgetView = vm::onChangeCurrentWidgetView,
-                                    onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
-                                    onSearchClicked = vm::onSearchIconClicked,
-                                    onCreateNewObjectClicked = throttledClick(
-                                        onClick = { vm.onCreateNewObjectClicked() }
-                                    ),
-                                    onCreateNewObjectLongClicked = throttledClick(
-                                        onClick = { vm.onCreateNewObjectLongClicked() }
-                                    ),
-                                    onBackClicked = throttledClick(
-                                        onClick = vm::onBackClicked
-                                    ),
-                                    onSpaceWidgetClicked = throttledClick(
-                                        onClick = vm::onSpaceSettingsClicked
-                                    ),
-                                    onBundledWidgetClicked = vm::onBundledWidgetClicked,
-                                    onMove = vm::onMove,
-                                    onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-                                    onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
-                                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
-                                    onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
-                                    onCreateDataViewObject = vm::onCreateDataViewObject,
-                                    onBackLongClicked = vm::onBackLongClicked
-                                )
+                                PageWithWidgets()
                             } else {
                                 DiscussionScreenWrapper(
                                     isSpaceLevelChat = true,
@@ -253,43 +218,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                         }
                     }
                 } else {
-                    HomeScreen(
-                        modifier = Modifier,
-                        widgets = vm.views.collectAsState().value,
-                        mode = vm.mode.collectAsState().value,
-                        onExpand = { path -> vm.onExpand(path) },
-                        onCreateWidget = vm::onCreateWidgetClicked,
-                        onEditWidgets = vm::onEditWidgets,
-                        onExitEditMode = vm::onExitEditMode,
-                        onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                            vm.onDropDownMenuAction(widget, action)
-                        },
-                        onWidgetObjectClicked = vm::onWidgetObjectClicked,
-                        onWidgetSourceClicked = vm::onWidgetSourceClicked,
-                        onChangeWidgetView = vm::onChangeCurrentWidgetView,
-                        onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
-                        onSearchClicked = vm::onSearchIconClicked,
-                        onCreateNewObjectClicked = throttledClick(
-                            onClick = { vm.onCreateNewObjectClicked() }
-                        ),
-                        onCreateNewObjectLongClicked = throttledClick(
-                            onClick = { vm.onCreateNewObjectLongClicked() }
-                        ),
-                        onBackClicked = throttledClick(
-                            onClick = vm::onBackClicked
-                        ),
-                        onSpaceWidgetClicked = throttledClick(
-                            onClick = vm::onSpaceSettingsClicked
-                        ),
-                        onBundledWidgetClicked = vm::onBundledWidgetClicked,
-                        onMove = vm::onMove,
-                        onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-                        onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
-                        onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
-                        onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
-                        onCreateDataViewObject = vm::onCreateDataViewObject,
-                        onBackLongClicked = vm::onBackLongClicked
-                    )
+                    PageWithWidgets()
                 }
             }
 
@@ -297,6 +226,47 @@ class HomeScreenFragment : BaseComposeFragment(),
                 vm.onBackClicked()
             }
         }
+    }
+
+    @Composable
+    fun PageWithWidgets() {
+        HomeScreen(
+            modifier = Modifier,
+            widgets = vm.views.collectAsState().value,
+            mode = vm.mode.collectAsState().value,
+            onExpand = { path -> vm.onExpand(path) },
+            onCreateWidget = vm::onCreateWidgetClicked,
+            onEditWidgets = vm::onEditWidgets,
+            onExitEditMode = vm::onExitEditMode,
+            onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
+                vm.onDropDownMenuAction(widget, action)
+            },
+            onWidgetObjectClicked = vm::onWidgetObjectClicked,
+            onWidgetSourceClicked = vm::onWidgetSourceClicked,
+            onChangeWidgetView = vm::onChangeCurrentWidgetView,
+            onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
+            onSearchClicked = vm::onSearchIconClicked,
+            onCreateNewObjectClicked = throttledClick(
+                onClick = { vm.onCreateNewObjectClicked() }
+            ),
+            onCreateNewObjectLongClicked = throttledClick(
+                onClick = { vm.onCreateNewObjectLongClicked() }
+            ),
+            onBackClicked = throttledClick(
+                onClick = vm::onBackClicked
+            ),
+            onSpaceWidgetClicked = throttledClick(
+                onClick = vm::onSpaceSettingsClicked
+            ),
+            onBundledWidgetClicked = vm::onBundledWidgetClicked,
+            onMove = vm::onMove,
+            onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
+            onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
+            onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
+            onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
+            onCreateDataViewObject = vm::onCreateDataViewObject,
+            onBackLongClicked = vm::onBackLongClicked
+        )
     }
 
     override fun onStart() {

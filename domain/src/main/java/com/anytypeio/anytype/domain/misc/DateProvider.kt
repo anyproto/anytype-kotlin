@@ -20,7 +20,7 @@ interface DateProvider {
     fun getTimestampForWeekAheadAtStartOfDay(): TimeInSeconds
     fun getTimestampForWeekAgoAtStartOfDay(): TimeInSeconds
     fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis
-    fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis, zoneId: ZoneId): TimeInSeconds
+    fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis): TimeInSeconds
     fun formatToDateString(timestamp: Long, pattern: String): String
     fun formatTimestampToDateAndTime(
         timestamp: TimeInMillis,

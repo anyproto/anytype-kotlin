@@ -123,8 +123,7 @@ class DateProviderImpl @Inject constructor(
     }
 
     override fun adjustFromStartOfDayInUserTimeZoneToUTC(
-        timestamp: TimeInMillis,
-        zoneId: ZoneId
+        timestamp: TimeInMillis
     ): TimeInSeconds {
         // Convert the timestamp to an Instan
         val instant = Instant.ofEpochSecond(timestamp)
@@ -133,11 +132,11 @@ class DateProviderImpl @Inject constructor(
         val utcDateTime = instant.atZone(ZoneOffset.UTC)
 
         // Convert the UTC ZonedDateTime to the local time zone
-        val localDateTime = utcDateTime.withZoneSameInstant(zoneId)
+        val localDateTime = utcDateTime.withZoneSameInstant(defaultZoneId)
 
         // Get the local date and the start of the day in the local time zone
         val localDate = localDateTime.toLocalDate()
-        val startOfDay = localDate.atStartOfDay(zoneId)
+        val startOfDay = localDate.atStartOfDay(defaultZoneId)
 
         // Check if the UTC timestamp is at the boundary of the day in the local time zone
         return when {

@@ -221,7 +221,7 @@
     <string name="more">更多</string>
     <string name="done">完成</string>
     <string name="select_scroll_and_move_blocks">要开始, 请选择块</string>
-    <string name="block_code_plain_text">Plain text</string>
+    <string name="block_code_plain_text">纯文本</string>
     <string name="undo">撤消</string>
     <string name="redo">重做</string>
     <string name="block_action_copy">拷贝</string>
@@ -1247,7 +1247,7 @@
     <string name="payments_card_text_1">共创愿景</string>
     <string name="payments_card_description_1">作为尊贵的会员，你的声音很重要！参与独家活动，制定战略选择，并影响我们的路线图。</string>
     <string name="payments_card_text_2">解锁会员福利</string>
-    <string name="payments_card_description_2">会员可以享受更高的备份存储和同步空间，可邀请多位访客在共享空间中进行协作，以及 Anytype 网络上独有的身份。</string>
+    <string name="payments_card_description_2">会员可以享受更高的备份存储和同步空间，可以邀请多位访客协作共享空间，并拥有 Anytype 网络上的独特身份。</string>
     <string name="payments_card_text_3">支持数字独立性</string>
     <string name="payments_card_description_3">您的贡献支持我们这个团队并支持我们“由用户拥有的、安全和协作的数字环境”的愿景。</string>
     <string name="payments_card_text_4">对连接的投资</string>
@@ -1275,7 +1275,7 @@
     <string name="payments_current_label">当前</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">选择您独有的名字</string>
-    <string name="payments_tier_details_name_subtitle">这是您在 Anytype 网络上独有的名字，正在确认您的会员资格。它将作为您的个人域名，且不能更改。</string>
+    <string name="payments_tier_details_name_subtitle">这是您在 Anytype 网络上的独特名称，用于确认您的会员身份。它是您的个人域名，且无法更改。</string>
     <string name="payments_tier_details_name_hint">我自己</string>
     <string name="payments_tier_details_name_min">最少 7 个字符</string>
     <string name="payments_tier_details_name_error">此名称已被占用</string>
@@ -1539,4 +1539,8 @@
     <string name="chats_message_edited">已编辑</string>
     <string name="chat_empty_state_message">还没有任何消息。\n成为第一个开始讨论的人。</string>
     <string name="write_a_message">写一段话…</string>
+    <string name="chat_attachment_object">对象</string>
+    <string name="chat_attachment_file">文件</string>
+    <string name="chat_attachment_media">媒体</string>
+    <string name="chat_attachment_upload">上传</string>
 </resources>

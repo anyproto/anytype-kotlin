@@ -221,7 +221,7 @@
     <string name="more">Ещё</string>
     <string name="done">Готово</string>
     <string name="select_scroll_and_move_blocks">Чтобы начать, выберите блоки</string>
-    <string name="block_code_plain_text">Plain text</string>
+    <string name="block_code_plain_text">Обычный текст</string>
     <string name="undo">Отменить</string>
     <string name="redo">Повторить</string>
     <string name="block_action_copy">Копировать</string>
@@ -1160,7 +1160,7 @@
     <string name="multiplayer_upgrade_button_request">✦ Обновите, чтобы добавить больше участников</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Обновите, чтобы добавить больше пространств</string>
     <string name="multiplayer_members">Участники</string>
-    <string name="multiplayer_leave_request">Запрос на выход</string>
+    <string name="multiplayer_leave_request">Оставить запрос</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>
     <string name="multiplayer_approve_request">Утверждено</string>
     <string name="multiplayer_view_request">Посмотреть запрос</string>
@@ -1480,8 +1480,8 @@
     <string name="membership_error_button_text_dismiss">Ок</string>
     <string name="error_login_network_id_mismatch">Обнаружено несоответствие сетевого идентификатора. Пожалуйста, проверьте конфигурацию вашей сети.</string>
     <string name="error_login_select_vault_error">Ошибка при выборе хранилища для аутентификации</string>
-    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
-    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
+    <string name="error_login_account_deleted_error">Эта учетная запись удалена. Попробуйте другой аккаунт или создайте новую.</string>
+    <string name="error_login_account_need_update_error">Не удается получить учетную запись. Пожалуйста, обновите Anytype до последней версии.</string>
     <string name="global_search_related_to">"Относится к: "</string>
     <string name="global_search_no_related_objects_found">Связанных объектов не найдено</string>
     <string name="sort_empty_values_desc">Показать пустые значения</string>
@@ -1585,4 +1585,8 @@
     <string name="chats_message_edited">отредактировано</string>
     <string name="chat_empty_state_message">Пока нет сообщений. \nБудьте первыми, кто начнет обсуждение.</string>
     <string name="write_a_message">Написать сообщение...</string>
+    <string name="chat_attachment_object">Объект</string>
+    <string name="chat_attachment_file">Файл</string>
+    <string name="chat_attachment_media">Медиа-файлы</string>
+    <string name="chat_attachment_upload">Загрузить</string>
 </resources>

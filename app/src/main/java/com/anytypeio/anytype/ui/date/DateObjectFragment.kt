@@ -1,12 +1,13 @@
 package com.anytypeio.anytype.ui.date
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
@@ -20,15 +21,20 @@ import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
+import com.anytypeio.anytype.core_ui.views.BaseTwoButtonsDarkThemeAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.feature_date.models.UiErrorState
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModelFactory
 import com.anytypeio.anytype.feature_date.ui.DateObjectScreen
-import com.anytypeio.anytype.ui.search.GlobalSearchFragment
+import com.anytypeio.anytype.payments.viewmodel.MembershipErrorState
+import com.anytypeio.anytype.payments.viewmodel.TierAction
+import com.anytypeio.anytype.payments.viewmodel.TierAction.*
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
@@ -51,6 +57,7 @@ class DateObjectFragment : BaseComposeFragment() {
     ) = content {
         MaterialTheme {
             DateLayoutScreenWrapper()
+            ErrorScreen()
         }
     }
 
@@ -126,7 +133,39 @@ class DateObjectFragment : BaseComposeFragment() {
                     uiVerticalListActions = {},
                     uiHorizontalListActions = vm::onHorizontalItemClicked,
                     onUpdateLimitSearch = vm::updateLimit,
-                    onCalendarDateSelected = vm::onCalendarDateSelected
+                    onCalendarDateSelected = vm::onCalendarDateSelected,
+                    uiCalendarState = vm.uiCalendarState.collectAsStateWithLifecycle().value,
+                    onTodayClicked = vm::onTodayClicked,
+                    onTomorrowClicked = vm::onTomorrowClicked,
+                    onDismissCalendar = vm::onDismissCalendar,
+                    showCalendar = vm.showCalendar.collectAsStateWithLifecycle().value,
+                )
+            }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ErrorScreen() {
+        val errorStateScreen = vm.errorState.collectAsStateWithLifecycle()
+        when (val state = errorStateScreen.value) {
+            UiErrorState.Hidden -> {
+                // Do nothing
+            }
+            is UiErrorState.Show -> {
+                val message = when (val r = state.reason) {
+                    is UiErrorState.Reason.YearOutOfRange ->
+                        stringResource(
+                            id = R.string.date_layout_alert_date_out_of_range,
+                            r.min,
+                            r.max
+                        )
+                }
+                BaseAlertDialog(
+                    dialogText = message,
+                    buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                    onButtonClick = vm::hideError,
+                    onDismissRequest = vm::hideError
                 )
             }
         }
@@ -145,11 +184,7 @@ class DateObjectFragment : BaseComposeFragment() {
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-            // Do nothing.
-        } else {
-            super.onApplyWindowRootInsets(view)
-        }
+        // Do nothing. TODO add ime padding.
     }
 
     companion object DateLayoutNavigation {

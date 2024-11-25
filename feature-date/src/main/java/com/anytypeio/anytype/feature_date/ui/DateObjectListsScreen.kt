@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -68,6 +69,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DateLayoutHorizontalListScreen(
     state: DateObjectHorizontalListState,
+    lazyHorizontalListState: LazyListState,
     action: (UiHorizontalListItem) -> Unit
 ) {
 
@@ -75,6 +77,7 @@ fun DateLayoutHorizontalListScreen(
     items.swapList(state.items)
 
     LazyRow(
+        state = lazyHorizontalListState,
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 24.dp)
@@ -187,6 +190,7 @@ fun DateLayoutHorizontalListScreen(
 @Composable
 @DefaultPreviews
 fun DateLayoutHorizontalListScreenPreview() {
+    val lazyHorizontalListState = rememberLazyListState()
     DateLayoutHorizontalListScreen(
         state = DateObjectHorizontalListState(
             items = listOf(
@@ -212,16 +216,19 @@ fun DateLayoutHorizontalListScreenPreview() {
             ),
             selectedRelationKey = RelationKey("1")
         ),
-        action = {}
+        action = {},
+        lazyHorizontalListState = lazyHorizontalListState
     )
 }
 
 @Composable
 @DefaultPreviews
 fun DateLayoutHorizontalListScreenLoadingPreview() {
+    val lazyHorizontalListState = rememberLazyListState()
     DateLayoutHorizontalListScreen(
         state = DateObjectHorizontalListState.loadingState(),
-        action = {}
+        action = {},
+        lazyHorizontalListState = lazyHorizontalListState
     )
 }
 

@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -27,7 +27,10 @@ import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -40,7 +43,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -49,21 +51,70 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.feature_date.R
-import com.anytypeio.anytype.feature_date.models.DateObjectHeaderState
 import com.anytypeio.anytype.feature_date.models.DateObjectSheetState
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HorizontalItemsModalScreen(
+    onDismiss: () -> Unit,
+    lazyHorizontalListState: LazyListState,
+    scope: CoroutineScope,
+    uiSheetState: DateObjectSheetState,
+    uiHorizontalListActions: (UiHorizontalListItem) -> Unit,
+) {
+
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    ModalBottomSheet(
+        dragHandle = {
+            Column {
+                Spacer(modifier = Modifier.height(6.dp))
+                Dragger()
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+        },
+        scrimColor = colorResource(id = R.color.modal_screen_outside_background),
+        containerColor = colorResource(id = R.color.background_secondary),
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        sheetState = bottomSheetState,
+        onDismissRequest = onDismiss,
+        content = {
+            when (uiSheetState) {
+                is DateObjectSheetState.Content -> {
+                    DateObjectSheetScreen(
+                        uiSheetState = uiSheetState,
+                        uiHorizontalListActions = { item, index ->
+                            onDismiss()
+                            scope.launch {
+                                lazyHorizontalListState.animateScrollToItem(index = index)
+                            }
+                            uiHorizontalListActions(item)
+                        },
+                        onQueryChange = {}
+                    )
+                }
+                DateObjectSheetState.Empty -> {}
+            }
+        },
+    )
+}
 
 
 @Composable
 fun ColumnScope.DateObjectSheetScreen(
     uiSheetState: DateObjectSheetState.Content,
-    uiHeaderActions: (DateObjectHeaderState.Action) -> Unit,
+    uiHorizontalListActions: (UiHorizontalListItem, Int) -> Unit,
     onQueryChange: (String) -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -78,15 +129,18 @@ fun ColumnScope.DateObjectSheetScreen(
         items(
             count = uiSheetState.items.size,
             key = { index -> uiSheetState.items[index].id },
-            itemContent = {
-                when (val item = uiSheetState.items[it]) {
+            itemContent = { index ->
+                when (val item = uiSheetState.items[index]) {
                     is UiHorizontalListItem.Item -> {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp)
-                                .height(52.dp),
-                            contentAlignment = Alignment.CenterStart
+                                .height(52.dp)
+                                .noRippleThrottledClickable{
+                                    uiHorizontalListActions(item, index)
+                                },
+                            contentAlignment = Alignment.CenterStart,
                         ) {
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
@@ -99,9 +153,9 @@ fun ColumnScope.DateObjectSheetScreen(
                         }
                         Divider()
                     }
-                    is UiHorizontalListItem.Settings -> {}
-                    is UiHorizontalListItem.Loading.Item -> TODO()
-                    is UiHorizontalListItem.Loading.Settings -> TODO()
+                    else -> {
+                        //do nothing
+                    }
                 }
             }
         )
@@ -228,8 +282,8 @@ private fun DateObjectSearchBarPreview() {
             uiSheetState = DateObjectSheetState.Content(
                 items = StubHorizontalItems
             ),
-            uiHeaderActions = {},
-            onQueryChange = {}
+            onQueryChange = {},
+            uiHorizontalListActions = {_, _ ->}
         )
     }
 }

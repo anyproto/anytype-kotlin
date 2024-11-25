@@ -3,13 +3,12 @@ package com.anytypeio.anytype.feature_date.presentation
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.TimeInSeconds
-import com.anytypeio.anytype.core_models.primitives.RelationKey
-import kotlin.text.toDouble
 
 fun filtersForSearch(
     relation: DateObjectViewModel.ActiveRelation,
@@ -28,6 +27,7 @@ fun filtersForSearch(
                 timestamp = timestamp
             )
         )
+        add(buildLayoutFilter())
     }
     return filters
 }
@@ -67,6 +67,12 @@ private fun buildSpaceIdFilter(spaces: List<Id>): DVFilter = DVFilter(
     value = spaces
 )
 
+private fun buildLayoutFilter(): DVFilter = DVFilter(
+    relation = Relations.LAYOUT,
+    condition = DVFilterCondition.IN,
+    value = SUPPORTED_LAYOUTS.map { it.code.toDouble() }
+)
+
 private fun buildDeletedFilter(): List<DVFilter> {
     return listOf(
         DVFilter(
@@ -91,3 +97,23 @@ private fun buildDeletedFilter(): List<DVFilter> {
         )
     )
 }
+
+private val SUPPORTED_LAYOUTS = listOf(
+    ObjectType.Layout.SET,
+    ObjectType.Layout.COLLECTION,
+
+    ObjectType.Layout.TODO,
+    ObjectType.Layout.NOTE,
+    ObjectType.Layout.BASIC,
+    ObjectType.Layout.PROFILE,
+
+    ObjectType.Layout.PARTICIPANT,
+    ObjectType.Layout.BOOKMARK,
+    ObjectType.Layout.DATE,
+
+    ObjectType.Layout.FILE,
+    ObjectType.Layout.IMAGE,
+    ObjectType.Layout.VIDEO,
+    ObjectType.Layout.AUDIO,
+    ObjectType.Layout.PDF
+)

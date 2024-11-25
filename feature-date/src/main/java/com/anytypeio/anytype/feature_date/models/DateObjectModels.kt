@@ -2,6 +2,7 @@ package com.anytypeio.anytype.feature_date.models
 
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -144,7 +145,20 @@ sealed class DateObjectSheetState {
     data class Content(
         val items: List<UiHorizontalListItem>
     ) : DateObjectSheetState()
+}
+
+sealed class UiCalendarState {
+    data object Empty : UiCalendarState()
     data class Calendar(
-        val selectedDate: Long?
-    ) : DateObjectSheetState()
+        val timeInMillis: TimeInMillis?
+    ) : UiCalendarState()
+}
+
+sealed class UiErrorState {
+    data object Hidden : UiErrorState()
+    data class Show(val reason: Reason) : UiErrorState()
+
+    sealed class Reason {
+        data class YearOutOfRange(val min: Int, val max: Int) : Reason()
+    }
 }

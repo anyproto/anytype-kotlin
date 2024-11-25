@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_date.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.DATE_PICKER_YEAR_RANGE
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
@@ -10,6 +11,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
@@ -18,6 +20,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
@@ -25,6 +28,7 @@ import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
+import com.anytypeio.anytype.feature_date.models.UiCalendarState
 import com.anytypeio.anytype.feature_date.models.DateObjectBottomMenu
 import com.anytypeio.anytype.feature_date.models.DateObjectHeaderState
 import com.anytypeio.anytype.feature_date.models.DateObjectHorizontalListState
@@ -32,6 +36,8 @@ import com.anytypeio.anytype.feature_date.models.DateObjectSheetState
 import com.anytypeio.anytype.feature_date.models.DateObjectTopToolbarState
 import com.anytypeio.anytype.feature_date.models.DateObjectVerticalListState
 import com.anytypeio.anytype.feature_date.models.UiContentState
+import com.anytypeio.anytype.feature_date.models.UiErrorState
+import com.anytypeio.anytype.feature_date.models.UiErrorState.Reason
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
 import com.anytypeio.anytype.feature_date.models.UiVerticalListItem
 import com.anytypeio.anytype.feature_date.models.toUiHorizontalListItems
@@ -71,7 +77,8 @@ class DateObjectViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val objectDateByTimestamp: ObjectDateByTimestamp
+    private val objectDateByTimestamp: ObjectDateByTimestamp,
+    private val dateProvider: DateProvider
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiTopToolbarState =
@@ -83,8 +90,11 @@ class DateObjectViewModel(
     val uiVerticalListState =
         MutableStateFlow<DateObjectVerticalListState>(DateObjectVerticalListState.empty())
     val uiSheetState = MutableStateFlow<DateObjectSheetState>(DateObjectSheetState.Empty)
+    val uiCalendarState = MutableStateFlow<UiCalendarState>(UiCalendarState.Empty)
     val commands = MutableSharedFlow<Command>()
     val uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
+    val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
+    val showCalendar = MutableStateFlow(false)
 
     private val _dateObjId = MutableStateFlow<Id?>(null)
     val dateObjId: StateFlow<Id?> = _dateObjId
@@ -146,16 +156,29 @@ class DateObjectViewModel(
         resetLimit()
     }
 
+    private fun proceedWithReopenDateObjectByTimestamp(timestamp: TimeInSeconds) {
+        proceedWithGettingDateByTimestamp(
+            timestamp = timestamp
+        ) { dateObject ->
+            val id = dateObject?.getSingleValue<String>(Relations.ID)
+            if (id != null) {
+                reopenDateObject(id)
+            } else {
+                Timber.e("GettingDateByTimestamp error, object has no id")
+            }
+        }
+    }
+
     private fun reopenDateObject(dateObjectId: Id) {
         Timber.d("Reopen date object: $dateObjectId")
         canPaginate.value = false
         resetLimit()
         shouldScrollToTopItems = true
         //uiHeaderState.value = DateObjectHeaderState.Loading
-        //uiHorizontalListState.value = DateObjectHorizontalListState.loadingState()
-        //uiVerticalListState.value = DateObjectVerticalListState.loadingState()
+        uiHorizontalListState.value = DateObjectHorizontalListState.empty()
+        uiVerticalListState.value = DateObjectVerticalListState.empty()
         uiSheetState.value = DateObjectSheetState.Empty
-        uiContentState.value = UiContentState.Empty
+//        uiContentState.value = UiContentState.Empty
         _dateObjDetails.value = null
         _activeRelation.value = null
         _dateObjId.value = dateObjectId
@@ -187,8 +210,10 @@ class DateObjectViewModel(
                     relationListWithValue.async(params).fold(
                         onSuccess = { result ->
                             Timber.d("RelationListWithValue Success: $result")
-                            val items = result.toUiHorizontalListItems(storeOfRelations)
+                            val items =
+                                result.toUiHorizontalListItems(storeOfRelations = storeOfRelations)
                             initHorizontalListState(items)
+                            initSheetState(items)
                         },
                         onFailure = { e -> Timber.e(e, "RelationListWithValue Error") }
                     )
@@ -209,19 +234,21 @@ class DateObjectViewModel(
                     getObject.async(params).fold(
                         onSuccess = { obj ->
                             Timber.d("GetObject Success, obj:[$obj]")
+                            val timestampInSeconds = obj.details[objId]?.getSingleValue<Double>(
+                                Relations.TIMESTAMP
+                            )?.toLong() ?: 0
                             _dateObjDetails.value = DateObjectDetails(
                                 id = obj.root,
-                                timestamp = obj.details[objId]?.getSingleValue<Double>(
-                                    Relations.TIMESTAMP
-                                )?.toLong() ?: 0
+                                timestamp = timestampInSeconds
                             )
                             uiTopToolbarState.value = DateObjectTopToolbarState.Content(
                                 syncStatus = SpaceSyncStatus.SYNCING
                             )
-                            val root = ObjectWrapper.Basic(obj.details[objId].orEmpty())
-                            //todo should be formatted with dateProvider by timestamp
+                            val (formattedDate, _) = dateProvider.formatTimestampToDateAndTime(
+                                timestamp = timestampInSeconds * 1000,
+                            )
                             uiHeaderState.value = DateObjectHeaderState.Content(
-                                title = root.name.orEmpty()
+                                title = formattedDate
                             )
                         },
                         onFailure = { e -> Timber.e(e, "GetObject Error") }
@@ -433,22 +460,45 @@ class DateObjectViewModel(
             DateObjectHeaderState.Action.Previous -> -86400
         }
 
-        proceedWithGettingDateByTimestamp(
-            timestamp = timestamp + offset
-        ) { dateObject ->
-            val id = dateObject?.getSingleValue<String>(Relations.ID)
-            if (id != null) {
-                reopenDateObject(id)
-            } else {
-                Timber.e("GettingDateByTimestamp error, object has no id")
-            }
+        val newTimestamp = timestamp + offset
+
+        val isValid = dateProvider.isTimestampWithinYearRange(
+            timeStampInMillis = newTimestamp * 1000,
+            yearRange = DATE_PICKER_YEAR_RANGE
+        )
+
+        if (isValid) {
+            proceedWithReopenDateObjectByTimestamp(
+                timestamp = newTimestamp
+            )
+        } else {
+            showDateOutOfRangeError()
         }
     }
 
     fun onTopToolbarActions(action: DateObjectTopToolbarState.Action) {
         when (action) {
             DateObjectTopToolbarState.Action.Calendar -> {
-                uiSheetState.value = DateObjectSheetState.Calendar(selectedDate = null)
+                val timestamp = _dateObjDetails.value?.timestamp
+                if (timestamp == null) {
+                    uiCalendarState.value = UiCalendarState.Calendar(
+                        timeInMillis = null
+                    )
+                } else {
+                    val timeInMillis = dateProvider.adjustToStartOfDayInUserTimeZone(timestamp)
+                    val isValid = dateProvider.isTimestampWithinYearRange(
+                        timeStampInMillis = timeInMillis,
+                        yearRange = DATE_PICKER_YEAR_RANGE
+                    )
+                    if (isValid) {
+                        uiCalendarState.value = UiCalendarState.Calendar(
+                            timeInMillis = timeInMillis
+                        )
+                        showCalendar.value = true
+                    } else {
+                        showDateOutOfRangeError()
+                    }
+                }
             }
 
             DateObjectTopToolbarState.Action.SyncStatus -> TODO()
@@ -457,18 +507,33 @@ class DateObjectViewModel(
 
     fun onSyncStatusClicked() {}
 
-    fun onCalendarDateSelected(selectedDate: Long?) {
-        //TODO get proper Id from timestamp
-        Timber.d("Selected date: $selectedDate")
-        viewModelScope.launch {
-            unsubscribe()
-            commands.emit(
-                Command.NavigateToDateObject(
-                    objectId = "_date_2025-04-22",
-                    space = vmParams.spaceId
-                )
-            )
-        }
+    fun onCalendarDateSelected(selectedDate: TimeInMillis?) {
+        Timber.d("Selected date in millis: $selectedDate")
+        if (selectedDate == null) return
+        val newTimeInSeconds = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(
+            timestamp = (selectedDate / 1000),
+        )
+        proceedWithReopenDateObjectByTimestamp(
+            timestamp = newTimeInSeconds
+        )
+    }
+
+    fun onTodayClicked() {
+        val timestamp = dateProvider.getTimestampForTodayAtStartOfDay()
+        proceedWithReopenDateObjectByTimestamp(
+            timestamp = timestamp
+        )
+    }
+
+    fun onTomorrowClicked() {
+        val timestamp = dateProvider.getTimestampForTomorrowAtStartOfDay()
+        proceedWithReopenDateObjectByTimestamp(
+            timestamp = timestamp
+        )
+    }
+
+    fun onDismissCalendar() {
+        showCalendar.value = false
     }
     //endregion
 
@@ -503,10 +568,31 @@ class DateObjectViewModel(
         )
     }
 
+    private fun initSheetState(items: List<UiHorizontalListItem.Item>) {
+        uiSheetState.value = DateObjectSheetState.Content(items)
+    }
+
     private fun handleError(e: Throwable) {
         uiContentState.value = UiContentState.Error(
             message = e.message ?: "An error occurred while loading data."
         )
+    }
+
+    fun hideError() {
+        errorState.value = UiErrorState.Hidden
+    }
+
+    fun showDateOutOfRangeError() {
+        viewModelScope.launch {
+            errorState.emit(
+                UiErrorState.Show(
+                    Reason.YearOutOfRange(
+                        min = DATE_PICKER_YEAR_RANGE.first,
+                        max = DATE_PICKER_YEAR_RANGE.last
+                    )
+                )
+            )
+        }
     }
     //endregion
 

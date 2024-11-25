@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.DEFAULT_TIME_STYLE
 import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
-import java.time.ZoneId
+import java.time.LocalDate
 
 
 /**
@@ -28,6 +28,8 @@ interface DateProvider {
     ): Pair<String, String>
     fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate?
     fun isSameMinute(timestamp1: Long, timestamp2: Long): Boolean
+    fun getLocalDateOfTime(epochMilli: Long): LocalDate
+    fun isTimestampWithinYearRange(timeStampInMillis: Long, yearRange: IntRange): Boolean
 }
 
 interface DateTypeNameProvider {

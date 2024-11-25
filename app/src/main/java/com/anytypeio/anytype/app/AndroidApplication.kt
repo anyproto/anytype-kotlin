@@ -125,9 +125,9 @@ class AndroidApplication : Application(), HasComponentDependencies {
 
     object SignalHandler {
         init {
-            System.loadLibrary("signal_handler")
+            System.loadLibrary(SIGNAL_HANDLER_LIB_NAME)
         }
-
         external fun initSignalHandler()
+        const val SIGNAL_HANDLER_LIB_NAME = "signal_handler"
     }
 }

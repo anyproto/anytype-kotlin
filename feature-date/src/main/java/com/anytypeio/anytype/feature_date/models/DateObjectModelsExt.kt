@@ -21,16 +21,16 @@ suspend fun List<RelationListWithValueItem>.toUiHorizontalListItems(
         .sortedByDescending { it.key.key == Relations.MENTIONS }
         .mapNotNull { item ->
             val relation = storeOfRelations.getByKey(item.key.key)
-            if (relation != null) {
-                UiHorizontalListItem.Item(
-                    id = item.key.key,
-                    key = item.key,
-                    title = relation.name.orEmpty()
-                )
-            } else {
-                Timber.e("Relation ${item.key.key} not found in the relation store")
-                null
+            if (relation == null || relation.isHidden == true || relation.key == Relations.LINKS || relation.key == Relations.BACKLINKS) {
+                Timber.e("Relation ${item.key.key} not found in the relation store || relation is hidden || relation is LINKS or BACKLINKS")
+                return@mapNotNull null
             }
+            UiHorizontalListItem.Item(
+                id = item.key.key,
+                key = item.key,
+                title = relation.name.orEmpty(),
+                relationFormat = relation.format
+            )
         }
 }
 

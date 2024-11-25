@@ -2829,6 +2829,18 @@ class Middleware @Inject constructor(
         return response.path
     }
 
+    @Throws(Exception::class)
+    fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct? {
+        val request = Rpc.Object.DateByTimestamp.Request(
+            timestamp = command.timestamp,
+            spaceId = command.space.id
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectDateByTimestamp(request) }
+        logResponseIfDebug(response, time)
+        return response.details
+    }
+
     private fun logRequestIfDebug(request: Any) {
         if (BuildConfig.DEBUG) {
             logger.logRequest(request).also {

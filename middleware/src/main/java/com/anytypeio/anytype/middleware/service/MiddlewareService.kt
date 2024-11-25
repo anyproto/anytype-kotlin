@@ -156,6 +156,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun createTemplateFromObject(request: Rpc.Template.CreateFromObject.Request): Rpc.Template.CreateFromObject.Response
 
+    @Throws(Exception::class)
+    fun objectDateByTimestamp(request: Rpc.Object.DateByTimestamp.Request): Rpc.Object.DateByTimestamp.Response
+
     //endregion
 
     //region OBJECT'S RELATIONS command

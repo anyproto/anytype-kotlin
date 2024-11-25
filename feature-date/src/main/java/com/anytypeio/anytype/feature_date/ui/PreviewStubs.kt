@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_date.ui
 
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
@@ -48,26 +49,31 @@ val StubHorizontalItems = listOf(
     UiHorizontalListItem.Item(
         "Item 1",
         title = "Title1",
-        key = RelationKey("key1")
+        key = RelationKey("key1"),
+        relationFormat = RelationFormat.DATE
     ),
     UiHorizontalListItem.Item(
         "Item 2",
         title = "Title2",
-        key = RelationKey("key2")
+        key = RelationKey("key2"),
+        relationFormat = RelationFormat.DATE
     ),
     UiHorizontalListItem.Item(
         "Item 3",
         title = "Title3",
-        key = RelationKey("key3")
+        key = RelationKey("key3"),
+        relationFormat = RelationFormat.DATE
     ),
     UiHorizontalListItem.Item(
         "Item 4",
         title = "Title4",
-        key = RelationKey("key4")
+        key = RelationKey("key4"),
+        relationFormat = RelationFormat.DATE
     ),
     UiHorizontalListItem.Item(
         "Item 5",
         title = "Title5",
-        key = RelationKey("key5")
+        key = RelationKey("key5"),
+        relationFormat = RelationFormat.DATE
     ),
 )

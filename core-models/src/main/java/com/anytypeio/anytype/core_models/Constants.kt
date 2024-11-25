@@ -24,3 +24,8 @@ const val DEFAULT_SHOW_INTRODUCE_VAULT = true
  * The default value for showing the time
  */
 const val DEFAULT_TIME_STYLE = DateFormat.DEFAULT
+
+/**
+ * The date range for the date picker.
+ */
+val DATE_PICKER_YEAR_RANGE = IntRange(0, 3000)

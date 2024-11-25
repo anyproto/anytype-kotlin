@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,6 +44,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
@@ -66,6 +69,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DateLayoutHorizontalListScreen(
     state: DateObjectHorizontalListState,
+    lazyHorizontalListState: LazyListState,
     action: (UiHorizontalListItem) -> Unit
 ) {
 
@@ -73,6 +77,7 @@ fun DateLayoutHorizontalListScreen(
     items.swapList(state.items)
 
     LazyRow(
+        state = lazyHorizontalListState,
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 24.dp)
@@ -124,15 +129,40 @@ fun DateLayoutHorizontalListScreen(
                     }
 
                     is UiHorizontalListItem.Item -> {
-                        Text(
-                            modifier = Modifier
-                                .padding(horizontal = 12.dp)
-                                .wrapContentSize()
-                                .align(Alignment.Center),
-                            text = item.title,
-                            color = colorResource(R.color.text_primary),
-                            style = PreviewTitle2Medium
-                        )
+                        if (item.key.key == Relations.MENTIONS) {
+                            Row(
+                                modifier = Modifier
+                                    .fillParentMaxHeight()
+                                    .wrapContentWidth()
+                                    .padding(horizontal = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Image(
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                        .size(24.dp),
+                                    painter = painterResource(R.drawable.ic_mention_24),
+                                    contentDescription = "Mentioned in"
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentSize(),
+                                    text = stringResource(R.string.date_layout_mentioned_in),
+                                    color = colorResource(R.color.text_primary),
+                                    style = PreviewTitle2Medium
+                                )
+                            }
+                        } else {
+                            Text(
+                                modifier = Modifier
+                                    .padding(horizontal = 12.dp)
+                                    .wrapContentSize()
+                                    .align(Alignment.Center),
+                                text = item.title,
+                                color = colorResource(R.color.text_primary),
+                                style = PreviewTitle2Medium
+                            )
+                        }
                     }
                     is UiHorizontalListItem.Loading.Item -> {
                         ShimmerEffect(
@@ -160,33 +190,45 @@ fun DateLayoutHorizontalListScreen(
 @Composable
 @DefaultPreviews
 fun DateLayoutHorizontalListScreenPreview() {
+    val lazyHorizontalListState = rememberLazyListState()
     DateLayoutHorizontalListScreen(
         state = DateObjectHorizontalListState(
             items = listOf(
                 UiHorizontalListItem.Settings(),
                 UiHorizontalListItem.Item(
+                    id = "0",
+                    title = "Today",
+                    key = RelationKey(Relations.MENTIONS),
+                    relationFormat = RelationFormat.DATE
+                ),
+                UiHorizontalListItem.Item(
                     id = "1",
                     title = "Today",
-                    key = RelationKey("1")
+                    key = RelationKey("1"),
+                    relationFormat = RelationFormat.DATE
                 ),
                 UiHorizontalListItem.Item(
                     id = "2",
                     title = "Tomorrow",
-                    key = RelationKey("2")
+                    key = RelationKey("2"),
+                    relationFormat = RelationFormat.DATE
                 )
             ),
             selectedRelationKey = RelationKey("1")
         ),
-        action = {}
+        action = {},
+        lazyHorizontalListState = lazyHorizontalListState
     )
 }
 
 @Composable
 @DefaultPreviews
 fun DateLayoutHorizontalListScreenLoadingPreview() {
+    val lazyHorizontalListState = rememberLazyListState()
     DateLayoutHorizontalListScreen(
         state = DateObjectHorizontalListState.loadingState(),
-        action = {}
+        action = {},
+        lazyHorizontalListState = lazyHorizontalListState
     )
 }
 
@@ -244,28 +286,6 @@ fun DateLayoutVerticalListScreen(
             .fillMaxSize(),
         state = lazyListState
     ) {
-        if (uiContentState is UiContentState.Empty) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    EmptyState()
-                }
-            }
-        }
-        if (uiContentState is UiContentState.Error) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    ErrorState(uiContentState.message)
-                }
-            }
-        }
         items(
             count = items.size,
             key = { index -> items[index].id },

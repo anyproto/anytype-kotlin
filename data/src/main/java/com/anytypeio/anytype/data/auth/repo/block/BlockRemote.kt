@@ -210,6 +210,8 @@ interface BlockRemote {
         details: Struct
     ): Payload
 
+    suspend fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct?
+
     suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload
 
     suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload

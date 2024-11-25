@@ -482,6 +482,8 @@ sealed class Command {
 
     data class RelationListWithValue(val space: SpaceId, val value: Any?)
 
+    data class ObjectDateByTimestamp(val space: SpaceId, val timestamp: Long)
+
     data class SendJoinSpaceRequest(
         val space: SpaceId,
         val network: Id?,

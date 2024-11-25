@@ -11,11 +11,13 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -130,6 +132,14 @@ object DateObjectModule {
         dispatchers: AppCoroutineDispatchers
     ): SetObjectDetails = SetObjectDetails(repository, dispatchers)
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDateByTimestamp(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): ObjectDateByTimestamp = ObjectDateByTimestamp(repository, dispatchers)
+
     @Module
     interface Declarations {
         @PerScreen
@@ -154,4 +164,5 @@ interface DateObjectDependencies : ComponentDependencies {
     fun config(): ConfigStorage
     fun userPermissionProvider(): UserPermissionProvider
     fun provideStoreOfRelations(): StoreOfRelations
+    fun provideDateProvider(): DateProvider
 }

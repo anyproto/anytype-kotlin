@@ -123,8 +123,7 @@ class DateProviderImpl @Inject constructor(
     }
 
     override fun adjustFromStartOfDayInUserTimeZoneToUTC(
-        timestamp: TimeInMillis,
-        zoneId: ZoneId
+        timestamp: TimeInMillis
     ): TimeInSeconds {
         // Convert the timestamp to an Instan
         val instant = Instant.ofEpochSecond(timestamp)
@@ -133,11 +132,11 @@ class DateProviderImpl @Inject constructor(
         val utcDateTime = instant.atZone(ZoneOffset.UTC)
 
         // Convert the UTC ZonedDateTime to the local time zone
-        val localDateTime = utcDateTime.withZoneSameInstant(zoneId)
+        val localDateTime = utcDateTime.withZoneSameInstant(defaultZoneId)
 
         // Get the local date and the start of the day in the local time zone
         val localDate = localDateTime.toLocalDate()
-        val startOfDay = localDate.atStartOfDay(zoneId)
+        val startOfDay = localDate.atStartOfDay(defaultZoneId)
 
         // Check if the UTC timestamp is at the boundary of the day in the local time zone
         return when {
@@ -173,6 +172,7 @@ class DateProviderImpl @Inject constructor(
         timestamp: TimeInMillis,
         timeStyle: Int
     ): Pair<String, String> {
+        Timber.d("Formatting timestamp [$timestamp] to date and time")
         return try {
             val locale = localeProvider.locale()
             val datePattern = defaultDateFormat.value
@@ -224,6 +224,25 @@ class DateProviderImpl @Inject constructor(
                 )
             }
         }
+    }
+
+    override fun getLocalDateOfTime(epochMilli: Long): LocalDate {
+        val instant = Instant.ofEpochMilli(epochMilli)
+        return instant.atZone(defaultZoneId).toLocalDate()
+    }
+
+    override fun isTimestampWithinYearRange(timeStampInMillis: Long, yearRange: IntRange): Boolean {
+        // Convert the timestamp in milliseconds to an Instant object
+        val instant = Instant.ofEpochMilli(timeStampInMillis)
+
+        // Convert the Instant to a LocalDate object in default time zone
+        val date = instant.atZone(defaultZoneId).toLocalDate()
+
+        // Extract the year from the LocalDate object
+        val year = date.year
+
+        // Check if the year is within the desired range
+        return year in yearRange.first()..yearRange.last()
     }
 }
 

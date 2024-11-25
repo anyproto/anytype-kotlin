@@ -16,18 +16,17 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -70,16 +69,21 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -124,8 +128,9 @@ fun DiscussionScreenWrapper(
     isSpaceLevelChat: Boolean = false,
     vm: DiscussionViewModel,
     // TODO move to view model
-    onAttachClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit
+    onAttachObjectClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit,
+    onMarkupLinkClicked: (String) -> Unit,
 ) {
     NavHost(
         navController = rememberNavController(),
@@ -156,13 +161,13 @@ fun DiscussionScreenWrapper(
                     attachments = vm.attachments.collectAsState().value,
                     onMessageSent = vm::onMessageSent,
                     onTitleChanged = vm::onTitleChanged,
-                    onAttachClicked = onAttachClicked,
+                    onAttachClicked = onAttachObjectClicked,
                     onClearAttachmentClicked = vm::onClearAttachmentClicked,
                     lazyListState = lazyListState,
                     onReacted = vm::onReacted,
                     onCopyMessage = { msg ->
                         clipboard.setText(
-                            AnnotatedString(text = msg.content)
+                            AnnotatedString(text = msg.content.joinToString())
                         )
                     },
                     onDeleteMessage = vm::onDeleteMessage,
@@ -170,7 +175,18 @@ fun DiscussionScreenWrapper(
                     onAttachmentClicked = vm::onAttachmentClicked,
                     isInEditMessageMode = vm.chatBoxMode.collectAsState().value is ChatBoxMode.EditMessage,
                     onExitEditMessageMode = vm::onExitEditMessageMode,
-                    onBackButtonClicked = onBackButtonClicked
+                    onBackButtonClicked = onBackButtonClicked,
+                    onMarkupLinkClicked = onMarkupLinkClicked,
+                    onAttachObjectClicked = onAttachObjectClicked,
+                    onAttachMediaClicked = {
+
+                    },
+                    onAttachFileClicked = {
+
+                    },
+                    onUploadAttachmentClicked = {
+
+                    }
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -210,7 +226,12 @@ fun DiscussionScreen(
     onCopyMessage: (DiscussionView.Message) -> Unit,
     onEditMessage: (DiscussionView.Message) -> Unit,
     onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
-    onExitEditMessageMode: () -> Unit
+    onExitEditMessageMode: () -> Unit,
+    onMarkupLinkClicked: (String) -> Unit,
+    onAttachObjectClicked: () -> Unit,
+    onAttachMediaClicked: () -> Unit,
+    onAttachFileClicked: () -> Unit,
+    onUploadAttachmentClicked: () -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -229,14 +250,16 @@ fun DiscussionScreen(
         }
     }
     val scope = rememberCoroutineScope()
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
         if (!isSpaceLevelChat) {
             TopDiscussionToolbar(
                 title = title,
                 isHeaderVisible = isHeaderVisible
             )
         }
-        Box(modifier = Modifier.weight(1.0f)) {
+        Box(modifier = Modifier.weight(1f)) {
             Messages(
                 isSpaceLevelChat = isSpaceLevelChat,
                 modifier = Modifier.fillMaxSize(),
@@ -254,12 +277,13 @@ fun DiscussionScreen(
                 onEditMessage = { msg ->
                     onEditMessage(msg).also {
                         textState = TextFieldValue(
-                            msg.content,
-                            selection = TextRange(msg.content.length)
+                            msg.content.joinToString(),
+                            selection = TextRange(msg.content.joinToString().length)
                         )
                         chatBoxFocusRequester.requestFocus()
                     }
-                }
+                },
+                onMarkupLinkClicked = onMarkupLinkClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -278,7 +302,7 @@ fun DiscussionScreen(
 
             GoToBottomButton(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
+                    .align(Alignment.BottomCenter)
                     .padding(end = 12.dp),
                 onGoToBottomClicked = {
                     scope.launch {
@@ -287,38 +311,6 @@ fun DiscussionScreen(
                 },
                 enabled = jumpToBottomButtonEnabled
             )
-        }
-        attachments.forEach {
-            Box {
-                Attachment(
-                    modifier = Modifier.padding(
-                        top = 12.dp,
-                        start = 16.dp,
-                        end = 16.dp
-                    ),
-                    title = it.title,
-                    type = it.type,
-                    icon = it.icon,
-                    onAttachmentClicked = {
-                        // TODO
-                    }
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.ic_clear_18),
-                    contentDescription = "Close icon",
-                    modifier = Modifier
-                        .align(
-                            Alignment.TopEnd
-                        )
-                        .padding(
-                            top = 6.dp,
-                            end = 10.dp
-                        )
-                        .noRippleClickable {
-                            onClearAttachmentClicked()
-                        }
-                )
-            }
         }
         if (isInEditMessageMode) {
             EditMessageToolbar(
@@ -331,6 +323,9 @@ fun DiscussionScreen(
         }
 
         ChatBox(
+            modifier = Modifier
+                .imePadding()
+                .navigationBarsPadding(),
             chatBoxFocusRequester = chatBoxFocusRequester,
             textState = textState,
             onMessageSent = onMessageSent,
@@ -348,7 +343,12 @@ fun DiscussionScreen(
             clearText = {
                 textState = TextFieldValue()
             },
-            onBackButtonClicked = onBackButtonClicked
+            onBackButtonClicked = onBackButtonClicked,
+            onAttachFileClicked = onAttachFileClicked,
+            onAttachMediaClicked = onAttachMediaClicked,
+            onUploadAttachmentClicked = onUploadAttachmentClicked,
+            onAttachObjectClicked = onAttachObjectClicked,
+            onClearAttachmentClicked = onClearAttachmentClicked
         )
     }
 }
@@ -481,6 +481,7 @@ private fun OldChatBox(
 
 @Composable
 private fun ChatBox(
+    modifier: Modifier = Modifier,
     onBackButtonClicked: () -> Unit,
     chatBoxFocusRequester: FocusRequester,
     textState: TextFieldValue,
@@ -490,15 +491,22 @@ private fun ChatBox(
     isTitleFocused: Boolean,
     attachments: List<GlobalSearchItemView>,
     clearText: () -> Unit,
-    updateValue: (TextFieldValue) -> Unit
+    updateValue: (TextFieldValue) -> Unit,
+    onAttachObjectClicked: () -> Unit,
+    onAttachMediaClicked: () -> Unit,
+    onAttachFileClicked: () -> Unit,
+    onUploadAttachmentClicked: () -> Unit,
+    onClearAttachmentClicked: () -> Unit
 ) {
+
+    var showDropdownMenu by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
     val focus = LocalFocusManager.current
 
-    Row(
-        modifier = Modifier
+    Column(
+        modifier = modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 56.dp)
             .padding(
@@ -511,60 +519,179 @@ private fun ChatBox(
                 shape = RoundedCornerShape(16.dp)
             )
     ) {
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 4.dp, vertical = 8.dp)
-                .clip(CircleShape)
-                .align(Alignment.Bottom)
-                .clickable {
-                    scope.launch {
-                        focus.clearFocus(force = true)
-                        onBackButtonClicked()
+        attachments.forEach {
+            Box {
+                Attachment(
+                    modifier = Modifier.padding(
+                        top = 12.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    ),
+                    title = it.title,
+                    type = it.type,
+                    icon = it.icon,
+                    onAttachmentClicked = {
+                        // TODO
                     }
-                }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_back),
-                contentDescription = "Back button",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 4.dp, vertical = 4.dp)
-            )
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_clear_18),
+                    contentDescription = "Close icon",
+                    modifier = Modifier
+                        .align(
+                            Alignment.TopEnd
+                        )
+                        .padding(
+                            top = 6.dp,
+                            end = 10.dp
+                        )
+                        .noRippleClickable {
+                            onClearAttachmentClicked()
+                        }
+                )
+            }
         }
-        ChatBoxUserInput(
-            textState = textState,
-            onMessageSent = {
-                onMessageSent(it)
-                clearText()
-                resetScroll()
-            },
-            onTextChanged = { value ->
-                updateValue(value)
-            },
-            modifier = Modifier
-                .weight(1f)
-                .align(Alignment.Bottom)
-                .focusRequester(chatBoxFocusRequester)
-        )
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 4.dp, vertical = 8.dp)
-                .clip(CircleShape)
-                .align(Alignment.Bottom)
-                .clickable {
-                    scope.launch {
-                        focus.clearFocus(force = true)
-                        onAttachClicked()
+        Row(
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp, vertical = 8.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.Bottom)
+                    .clickable {
+                        scope.launch {
+                            focus.clearFocus(force = true)
+                            onBackButtonClicked()
+                        }
+                    }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_nav_panel_back),
+                    contentDescription = "Back button",
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                )
+            }
+            ChatBoxUserInput(
+                textState = textState,
+                onMessageSent = {
+                    onMessageSent(it)
+                    clearText()
+                    resetScroll()
+                },
+                onTextChanged = { value ->
+                    updateValue(value)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.Bottom)
+                    .focusRequester(chatBoxFocusRequester)
+            )
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp, vertical = 8.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.Bottom)
+                    .clickable {
+                        scope.launch {
+                            focus.clearFocus(force = true)
+                            showDropdownMenu = true
+                        }
+                    }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_nav_panel_plus),
+                    contentDescription = "Plus button",
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                )
+                MaterialTheme(
+                    shapes = MaterialTheme.shapes.copy(
+                        medium = RoundedCornerShape(
+                            12.dp
+                        )
+                    ),
+                    colors = MaterialTheme.colors.copy(
+                        surface = colorResource(id = R.color.background_secondary)
+                    )
+                ) {
+                    DropdownMenu(
+                        offset = DpOffset(8.dp, 40.dp),
+                        expanded = showDropdownMenu,
+                        onDismissRequest = {
+                            showDropdownMenu = false
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .defaultMinSize(
+                                minWidth = 252.dp
+                            )
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chat_attachment_object),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                showDropdownMenu = false
+                                onAttachObjectClicked()
+                            }
+                        )
+                        Divider(
+                            paddingStart = 0.dp,
+                            paddingEnd = 0.dp
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chat_attachment_media),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                showDropdownMenu = false
+                                onAttachMediaClicked()
+                            }
+                        )
+                        Divider(
+                            paddingStart = 0.dp,
+                            paddingEnd = 0.dp
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chat_attachment_file),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                showDropdownMenu = false
+                                onAttachFileClicked()
+                            }
+                        )
+                        Divider(
+                            paddingStart = 0.dp,
+                            paddingEnd = 0.dp
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chat_attachment_upload),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                showDropdownMenu = false
+                                onUploadAttachmentClicked()
+                            }
+                        )
                     }
                 }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_plus),
-                contentDescription = "Plus button",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 4.dp, vertical = 4.dp)
-            )
+            }
         }
     }
 }
@@ -700,11 +827,11 @@ fun Messages(
     onDeleteMessage: (DiscussionView.Message) -> Unit,
     onCopyMessage: (DiscussionView.Message) -> Unit,
     onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
-    onEditMessage: (DiscussionView.Message) -> Unit
+    onEditMessage: (DiscussionView.Message) -> Unit,
+    onMarkupLinkClicked: (String) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
         reverseLayout = true,
         state = scrollState,
     ) {
@@ -716,7 +843,7 @@ fun Messages(
                 Spacer(modifier = Modifier.height(36.dp))
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 8.dp, vertical = 6.dp)
                     .animateItem()
             ) {
                 if (!msg.isUserAuthor) {
@@ -750,7 +877,8 @@ fun Messages(
                     onAttachmentClicked = onAttachmentClicked,
                     onEditMessage = {
                         onEditMessage(msg)
-                    }
+                    },
+                    onMarkupLinkClicked = onMarkupLinkClicked
                 )
                 if (msg.isUserAuthor) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -769,30 +897,34 @@ fun Messages(
         }
         if (messages.isEmpty()) {
             item {
-                Column(
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 170.dp)
+                        .fillParentMaxSize()
                 ) {
-                    AlertIcon(
-                        icon = AlertConfig.Icon(
-                            gradient = GRADIENT_TYPE_BLUE,
-                            icon = R.drawable.ic_alert_message
-                        )
-                    )
-                    Text(
-                        text = stringResource(R.string.chat_empty_state_message),
-                        style = Caption1Regular,
-                        color = colorResource(id = R.color.text_secondary),
-                        textAlign = TextAlign.Center,
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                start = 20.dp,
-                                end = 20.dp,
-                                top = 12.dp
+                            .align(Alignment.CenterStart)
+                    ) {
+                        AlertIcon(
+                            icon = AlertConfig.Icon(
+                                gradient = GRADIENT_TYPE_BLUE,
+                                icon = R.drawable.ic_alert_message
                             )
-                    )
+                        )
+                        Text(
+                            text = stringResource(R.string.chat_empty_state_message),
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_secondary),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    start = 20.dp,
+                                    end = 20.dp,
+                                    top = 12.dp
+                                )
+                        )
+                    }
                 }
             }
         }
@@ -864,7 +996,7 @@ val userMessageBubbleColor = Color(0x66000000)
 fun Bubble(
     modifier: Modifier = Modifier,
     name: String,
-    msg: String,
+    msg: List<DiscussionView.Message.Content.Part>,
     timestamp: Long,
     attachments: List<Chat.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
@@ -874,7 +1006,8 @@ fun Bubble(
     onDeleteMessage: () -> Unit,
     onCopyMessage: () -> Unit,
     onEditMessage: () -> Unit,
-    onAttachmentClicked: (Chat.Message.Attachment) -> Unit
+    onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
+    onMarkupLinkClicked: (String) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
@@ -921,48 +1054,70 @@ fun Bubble(
                 maxLines = 1
             )
         }
-        if (isEdited) {
-            Text(
-                modifier = Modifier.padding(
-                    top = 0.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 0.dp
-                ),
-                text = buildAnnotatedString {
-                    append(msg)
-                    withStyle(
-                        style = SpanStyle(
-                            color = if (isUserAuthor)
-                                colorResource(id = R.color.text_white)
-                            else
-                                colorResource(id = R.color.text_primary),
-                        )
-                    ) {
-                        append(
-                            " (${stringResource(R.string.chats_message_edited)})"
-                        )
+        Text(
+            modifier = Modifier.padding(
+                top = 0.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 0.dp
+            ),
+            text = buildAnnotatedString {
+                msg.forEach { part ->
+                    if (part.link != null && part.link.param != null) {
+                        withLink(
+                            LinkAnnotation.Clickable(
+                                tag = "link",
+                                styles = TextLinkStyles(
+                                    style = SpanStyle(
+                                        fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                        fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                        textDecoration = TextDecoration.Underline
+                                    )
+                                )
+                            ) {
+                                onMarkupLinkClicked(part.link.param.orEmpty())
+                            }
+                        ) {
+                            append(part.part)
+                        }
+                    } else {
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                textDecoration = if (part.underline)
+                                    TextDecoration.Underline
+                                else if (part.isStrike)
+                                    TextDecoration.LineThrough
+                                else null,
+                            )
+                        ) {
+                            append(part.part)
+                        }
                     }
-                },
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary)
-            )
-        } else {
-            Text(
-                modifier = Modifier.padding(
-                    top = 0.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 0.dp
-                ),
-                text = msg,
-                style = BodyRegular,
-                color = if (isUserAuthor)
-                    colorResource(id = R.color.text_white)
-                else
-                    colorResource(id = R.color.text_primary),
-            )
-        }
+
+                    if (isEdited) {
+                        withStyle(
+                            style = SpanStyle(
+                                color = if (isUserAuthor)
+                                    colorResource(id = R.color.text_white)
+                                else
+                                    colorResource(id = R.color.text_primary),
+                            )
+                        ) {
+                            append(
+                                " (${stringResource(R.string.chats_message_edited)})"
+                            )
+                        }
+                    }
+                }
+            },
+            style = BodyRegular,
+            color = if (isUserAuthor)
+                colorResource(id = R.color.text_white)
+            else
+                colorResource(id = R.color.text_primary),
+        )
         attachments.forEach { attachment ->
             Attachment(
                 modifier = Modifier.padding(
@@ -1236,12 +1391,7 @@ fun GoToBottomButton(
                 .offset(x = 0.dp, y = -bottomOffset)
                 .size(48.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .border(
-                    width = 1.dp,
-                    color = colorResource(id = R.color.shape_primary),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .background(color = colorResource(id = R.color.background_primary))
+                .background(color = colorResource(id = R.color.navigation_panel))
                 .clickable {
                     onGoToBottomClicked()
                 }

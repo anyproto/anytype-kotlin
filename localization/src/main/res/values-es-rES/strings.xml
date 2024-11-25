@@ -221,7 +221,7 @@
     <string name="more">Más</string>
     <string name="done">Listo</string>
     <string name="select_scroll_and_move_blocks">Para empezar, selecciona bloques</string>
-    <string name="block_code_plain_text">Idioma</string>
+    <string name="block_code_plain_text">Texto simple</string>
     <string name="undo">Deshacer</string>
     <string name="redo">Rehacer</string>
     <string name="block_action_copy">Copiar</string>
@@ -1555,4 +1555,5 @@ En concreto,
     <string name="chats_edit_message">Editar mensaje</string>
     <string name="chats_message_edited">editado</string>
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>
+    <string name="write_a_message">Escribe un mensaje...</string>
 </resources>

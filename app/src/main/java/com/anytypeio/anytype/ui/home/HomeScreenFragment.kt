@@ -4,15 +4,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
@@ -31,10 +41,13 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.SystemAction
+import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -45,6 +58,7 @@ import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
+import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
@@ -59,6 +73,7 @@ import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListene
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
+import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
@@ -89,6 +104,7 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -104,10 +120,15 @@ class HomeScreenFragment : BaseComposeFragment(),
                 )
             ) {
                 if (featureToggles.isNewSpaceHomeEnabled) {
+                    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+                    var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
+
                     val view = (vm.views.collectAsStateWithLifecycle().value.find {
                         it is WidgetView.SpaceWidget.View
                     } as? WidgetView.SpaceWidget.View)
+
                     val focus = LocalFocusManager.current
+
                     val component = componentManager().spaceLevelChatComponent
                     val spaceLevelChatViewModel = daggerViewModel {
                         component.get(
@@ -119,6 +140,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     }
                     val pagerState = rememberPagerState { 2 }
                     val coroutineScope = rememberCoroutineScope()
+
                     Box(
                         Modifier.fillMaxSize()
                     ) {
@@ -138,104 +160,113 @@ class HomeScreenFragment : BaseComposeFragment(),
                             onSpaceIconClicked = vm::onSpaceSettingsClicked
                         )
                         HorizontalPager(
-                            modifier = Modifier.padding(top = 64.dp),
+                            modifier = Modifier
+                                .systemBarsPadding()
+                                .padding(top = 64.dp),
                             state = pagerState,
                             userScrollEnabled = false
                         ) { page ->
                             if (page == 0) {
                                 focus.clearFocus(force = true)
-                                HomeScreen(
-                                    modifier = Modifier,
-                                    widgets = vm.views.collectAsState().value,
-                                    mode = vm.mode.collectAsState().value,
-                                    onExpand = { path -> vm.onExpand(path) },
-                                    onCreateWidget = vm::onCreateWidgetClicked,
-                                    onEditWidgets = vm::onEditWidgets,
-                                    onExitEditMode = vm::onExitEditMode,
-                                    onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                                        vm.onDropDownMenuAction(widget, action)
-                                    },
-                                    onWidgetObjectClicked = vm::onWidgetObjectClicked,
-                                    onWidgetSourceClicked = vm::onWidgetSourceClicked,
-                                    onChangeWidgetView = vm::onChangeCurrentWidgetView,
-                                    onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
-                                    onSearchClicked = vm::onSearchIconClicked,
-                                    onCreateNewObjectClicked = throttledClick(
-                                        onClick = { vm.onCreateNewObjectClicked() }
-                                    ),
-                                    onCreateNewObjectLongClicked = throttledClick(
-                                        onClick = { vm.onCreateNewObjectLongClicked() }
-                                    ),
-                                    onBackClicked = throttledClick(
-                                        onClick = vm::onBackClicked
-                                    ),
-                                    onSpaceWidgetClicked = throttledClick(
-                                        onClick = vm::onSpaceSettingsClicked
-                                    ),
-                                    onBundledWidgetClicked = vm::onBundledWidgetClicked,
-                                    onMove = vm::onMove,
-                                    onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-                                    onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
-                                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
-                                    onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
-                                    onCreateDataViewObject = vm::onCreateDataViewObject,
-                                    onBackLongClicked = vm::onBackLongClicked
-                                )
+                                PageWithWidgets()
                             } else {
                                 DiscussionScreenWrapper(
                                     isSpaceLevelChat = true,
                                     vm = spaceLevelChatViewModel,
-                                    onAttachClicked = {
-                                        // TODO
+                                    onAttachObjectClicked = {
+                                        showGlobalSearchBottomSheet = true
                                     },
                                     onBackButtonClicked = {
                                         findNavController().popBackStack()
+                                    },
+                                    onMarkupLinkClicked = {
+                                        proceedWithAction(SystemAction.OpenUrl(it))
                                     }
                                 )
                             }
                         }
                     }
+                    if (showGlobalSearchBottomSheet) {
+                        ModalBottomSheet(
+                            onDismissRequest = {
+                                showGlobalSearchBottomSheet = false
+                            },
+                            sheetState = sheetState,
+                            containerColor = colorResource(id = R.color.background_secondary),
+                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                            dragHandle = null
+                        ) {
+                            val component = componentManager().globalSearchComponent
+                            val searchViewModel = daggerViewModel {
+                                component
+                                    .get(GlobalSearchViewModel.VmParams(space = SpaceId(space)))
+                                    .getViewModel()
+                            }
+                            GlobalSearchScreen(
+                                modifier = Modifier.padding(top = 12.dp),
+                                state = searchViewModel.state
+                                    .collectAsStateWithLifecycle()
+                                    .value
+                                ,
+                                onQueryChanged = searchViewModel::onQueryChanged,
+                                onObjectClicked = {
+                                    spaceLevelChatViewModel.onAttachObject(it)
+                                    showGlobalSearchBottomSheet = false
+                                },
+                                focusOnStart = false
+                            )
+                        }
+                    }
                 } else {
-                    HomeScreen(
-                        modifier = Modifier,
-                        widgets = vm.views.collectAsState().value,
-                        mode = vm.mode.collectAsState().value,
-                        onExpand = { path -> vm.onExpand(path) },
-                        onCreateWidget = vm::onCreateWidgetClicked,
-                        onEditWidgets = vm::onEditWidgets,
-                        onExitEditMode = vm::onExitEditMode,
-                        onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                            vm.onDropDownMenuAction(widget, action)
-                        },
-                        onWidgetObjectClicked = vm::onWidgetObjectClicked,
-                        onWidgetSourceClicked = vm::onWidgetSourceClicked,
-                        onChangeWidgetView = vm::onChangeCurrentWidgetView,
-                        onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
-                        onSearchClicked = vm::onSearchIconClicked,
-                        onCreateNewObjectClicked = throttledClick(
-                            onClick = { vm.onCreateNewObjectClicked() }
-                        ),
-                        onCreateNewObjectLongClicked = throttledClick(
-                            onClick = { vm.onCreateNewObjectLongClicked() }
-                        ),
-                        onBackClicked = throttledClick(
-                            onClick = vm::onBackClicked
-                        ),
-                        onSpaceWidgetClicked = throttledClick(
-                            onClick = vm::onSpaceSettingsClicked
-                        ),
-                        onBundledWidgetClicked = vm::onBundledWidgetClicked,
-                        onMove = vm::onMove,
-                        onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-                        onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
-                        onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
-                        onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
-                        onCreateDataViewObject = vm::onCreateDataViewObject,
-                        onBackLongClicked = vm::onBackLongClicked
-                    )
+                    PageWithWidgets()
                 }
             }
+
+            BackHandler {
+                vm.onBackClicked()
+            }
         }
+    }
+
+    @Composable
+    fun PageWithWidgets() {
+        HomeScreen(
+            modifier = Modifier,
+            widgets = vm.views.collectAsState().value,
+            mode = vm.mode.collectAsState().value,
+            onExpand = { path -> vm.onExpand(path) },
+            onCreateWidget = vm::onCreateWidgetClicked,
+            onEditWidgets = vm::onEditWidgets,
+            onExitEditMode = vm::onExitEditMode,
+            onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
+                vm.onDropDownMenuAction(widget, action)
+            },
+            onWidgetObjectClicked = vm::onWidgetObjectClicked,
+            onWidgetSourceClicked = vm::onWidgetSourceClicked,
+            onChangeWidgetView = vm::onChangeCurrentWidgetView,
+            onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
+            onSearchClicked = vm::onSearchIconClicked,
+            onCreateNewObjectClicked = throttledClick(
+                onClick = { vm.onCreateNewObjectClicked() }
+            ),
+            onCreateNewObjectLongClicked = throttledClick(
+                onClick = { vm.onCreateNewObjectLongClicked() }
+            ),
+            onBackClicked = throttledClick(
+                onClick = vm::onBackClicked
+            ),
+            onSpaceWidgetClicked = throttledClick(
+                onClick = vm::onSpaceSettingsClicked
+            ),
+            onBundledWidgetClicked = vm::onBundledWidgetClicked,
+            onMove = vm::onMove,
+            onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
+            onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
+            onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
+            onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
+            onCreateDataViewObject = vm::onCreateDataViewObject,
+            onBackLongClicked = vm::onBackLongClicked
+        )
     }
 
     override fun onStart() {
@@ -273,6 +304,8 @@ class HomeScreenFragment : BaseComposeFragment(),
             Timber.d("Deeplink  from fragment args")
             vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromFragmentArgs))
             arguments?.putString(DEEP_LINK_KEY, null)
+        } else {
+            vm.onResume(null)
         }
     }
 
@@ -504,6 +537,10 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        // Do not apply window insets on fragment container.
     }
 
     companion object {

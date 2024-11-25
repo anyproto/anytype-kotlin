@@ -7,6 +7,6 @@
       android:pathData="M20,25L11,16L20,7"
       android:strokeWidth="1.5"
       android:fillColor="@color/transparent_black"
-      android:strokeColor="@color/navigation_panel_icon"
+      android:strokeColor="@color/glyph_active"
       android:strokeLineCap="round"/>
 </vector>

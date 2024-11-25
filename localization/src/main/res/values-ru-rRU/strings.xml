@@ -221,7 +221,7 @@
     <string name="more">Ещё</string>
     <string name="done">Готово</string>
     <string name="select_scroll_and_move_blocks">Чтобы начать, выберите блоки</string>
-    <string name="block_code_plain_text">Язык</string>
+    <string name="block_code_plain_text">Plain text</string>
     <string name="undo">Отменить</string>
     <string name="redo">Повторить</string>
     <string name="block_action_copy">Копировать</string>
@@ -1160,7 +1160,7 @@
     <string name="multiplayer_upgrade_button_request">✦ Обновите, чтобы добавить больше участников</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Обновите, чтобы добавить больше пространств</string>
     <string name="multiplayer_members">Участники</string>
-    <string name="multiplayer_leave_request">Оставить запрос</string>
+    <string name="multiplayer_leave_request">Запрос на выход</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>
     <string name="multiplayer_approve_request">Утверждено</string>
     <string name="multiplayer_view_request">Посмотреть запрос</string>
@@ -1584,4 +1584,5 @@
     <string name="chats_edit_message">Редактировать сообщение</string>
     <string name="chats_message_edited">отредактировано</string>
     <string name="chat_empty_state_message">Пока нет сообщений. \nБудьте первыми, кто начнет обсуждение.</string>
+    <string name="write_a_message">Написать сообщение...</string>
 </resources>

@@ -142,7 +142,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -1733,30 +1732,33 @@ class HomeScreenViewModel(
 
     fun onBackClicked() {
         viewModelScope.launch {
-            openWidgetObjectsHistory.forEach { (obj, space) ->
-                closeObject
-                    .async(
-                        CloseBlock.Params(
-                            target = obj,
-                            space = space
+            if (spaceManager.getState() is SpaceManager.State.Space) {
+                // Proceed with releasing resources before exiting
+                openWidgetObjectsHistory.forEach { (obj, space) ->
+                    closeObject
+                        .async(
+                            CloseBlock.Params(
+                                target = obj,
+                                space = space
+                            )
                         )
-                    )
-                    .onSuccess {
-                        Timber.d("Closed object from widget object session history: $obj")
-                    }
-                    .onFailure {
-                        Timber.e(it, "Error while closing object from history")
-                    }
-            }
-            spaceManager.clear()
-            clearLastOpenedSpace.async(Unit).fold(
-                onSuccess = {
-                    Timber.d("Cleared last opened space before opening vault")
-                },
-                onFailure = {
-                    Timber.e(it, "Error while clearing last opened space before opening vault")
+                        .onSuccess {
+                            Timber.d("Closed object from widget object session history: $obj")
+                        }
+                        .onFailure {
+                            Timber.e(it, "Error while closing object from history")
+                        }
                 }
-            )
+                spaceManager.clear()
+                clearLastOpenedSpace.async(Unit).fold(
+                    onSuccess = {
+                        Timber.d("Cleared last opened space before opening vault")
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while clearing last opened space before opening vault")
+                    }
+                )
+            }
             commands.emit(Command.OpenVault)
         }
     }

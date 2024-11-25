@@ -146,9 +146,14 @@ private suspend fun getCoverContainer(
     val coverRelationKey = dvViewer.coverRelationKey
     return when (coverRelationKey) {
         Relations.PAGE_COVER -> {
-            BasicObjectCoverWrapper(obj).getCover(
-                urlBuilder = urlBuilder,
-                coverImageHashProvider = coverImageHashProvider)
+            if (obj.layout == ObjectType.Layout.IMAGE) {
+                CoverContainer(coverImage = urlBuilder.large(obj.id))
+            } else {
+                BasicObjectCoverWrapper(obj).getCover(
+                    urlBuilder = urlBuilder,
+                    coverImageHashProvider = coverImageHashProvider
+                )
+            }
         }
         else -> {
             getCoverFromRelationOrLayout(

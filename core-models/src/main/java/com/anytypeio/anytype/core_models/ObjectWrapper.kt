@@ -31,7 +31,7 @@ sealed class ObjectWrapper {
         val iconImage: String? = getSingleValue(Relations.ICON_IMAGE)
         val iconOption: Double? by default
 
-        val coverId: String? by default
+        val coverId: String? = getSingleValue(Relations.COVER_ID)
 
         val coverType: CoverType
             get() = when (val value = map[Relations.COVER_TYPE]) {

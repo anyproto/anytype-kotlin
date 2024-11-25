@@ -194,7 +194,13 @@ class CollectionViewModel(
             filters = ObjectSearchConstants.filterTypes(),
             keys = ObjectSearchConstants.defaultKeysObjectType
         )
-        return getObjectTypes.asFlow(params).stateIn(viewModelScope)
+        return getObjectTypes
+            .asFlow(params)
+            .catch { e ->
+                Timber.e(e, "Error while getting object types for fullscreen widgets")
+                emit(emptyList())
+            }
+            .stateIn(viewModelScope)
     }
 
     @FlowPreview

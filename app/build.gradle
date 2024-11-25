@@ -53,6 +53,19 @@ android {
         buildConfigField "boolean", "LOG_EDITOR_CONTROL_PANEL", localProperties.getProperty("LOG_EDITOR_CONTROL_PANEL", "false")
         buildConfigField "boolean", "ENABLE_STRICT_MODE", "false"
         resValue "string", "SENTRY_DSN", config.sentryApiKey
+        externalNativeBuild {
+            cmake {
+                // Specify any cpp flags if needed
+                cppFlags "-std=c++11"
+            }
+       }
+    }
+    
+    externalNativeBuild {
+        cmake {
+            // Provide the path to your CMakeLists.txt file
+            path "src/main/cpp/CMakeLists.txt"
+        }
     }
 
     packagingOptions {

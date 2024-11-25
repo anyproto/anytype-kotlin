@@ -161,7 +161,7 @@ dependencies {
     implementation project(':data')
     implementation project(':device')
     implementation project(':persistence')
-    implementation project(':middleware')nd
+    implementation project(':middleware')
     implementation project(':presentation')
     implementation project(':clipboard')
     implementation project(':core-utils')

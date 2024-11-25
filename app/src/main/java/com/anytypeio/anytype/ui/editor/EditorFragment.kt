@@ -1048,14 +1048,18 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenObjectRelationScreen.Value.Text -> {
                     hideKeyboard()
-                    val fr = RelationTextValueFragment.new(
-                        ctx = command.ctx,
-                        relationKey = command.relationKey,
-                        objectId = command.target,
-                        isLocked = command.isReadOnlyValue,
-                        space = command.space
-                    )
-                    fr.showChildFragment()
+                    runCatching {
+                        val fr = RelationTextValueFragment.new(
+                            ctx = command.ctx,
+                            relationKey = command.relationKey,
+                            objectId = command.target,
+                            isLocked = command.isReadOnlyValue,
+                            space = command.space
+                        )
+                        fr.showChildFragment()
+                    }.onFailure {
+                        Timber.e(it, "Error while opening relation text value from editor")
+                    }
                 }
                 is Command.OpenObjectRelationScreen.Value.Date -> {
                     hideKeyboard()

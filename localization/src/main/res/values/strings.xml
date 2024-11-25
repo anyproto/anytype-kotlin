@@ -1825,4 +1825,9 @@ Please provide specific details of your needs here.</string>
 
     <string name="date_layout_mentioned_in">Mentioned in</string>
 
+    <string name="chat_attachment_object">Object</string>
+    <string name="chat_attachment_file">File</string>
+    <string name="chat_attachment_media">Media</string>
+    <string name="chat_attachment_upload">Upload</string>
+
 </resources>

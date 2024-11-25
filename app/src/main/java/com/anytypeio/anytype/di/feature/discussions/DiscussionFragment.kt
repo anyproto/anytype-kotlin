@@ -35,7 +35,6 @@ import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
-import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -73,11 +72,14 @@ class DiscussionFragment : BaseComposeFragment() {
 
                     DiscussionScreenWrapper(
                         vm = vm,
-                        onAttachClicked = {
+                        onAttachObjectClicked = {
                             showBottomSheet = true
                         },
                         onBackButtonClicked = {
                             // TODO
+                        },
+                        onMarkupLinkClicked = {
+
                         }
                     )
 

@@ -221,7 +221,7 @@
     <string name="more">更多</string>
     <string name="done">完成</string>
     <string name="select_scroll_and_move_blocks">選取區塊以開始</string>
-    <string name="block_code_plain_text">語言</string>
+    <string name="block_code_plain_text">Plain text</string>
     <string name="undo">撤銷</string>
     <string name="redo">重做</string>
     <string name="block_action_copy">複製</string>
@@ -1542,4 +1542,5 @@ Please provide specific details of your needs here.</string>
     <string name="chats_edit_message">Edit message</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
+    <string name="write_a_message">Write a message...</string>
 </resources>

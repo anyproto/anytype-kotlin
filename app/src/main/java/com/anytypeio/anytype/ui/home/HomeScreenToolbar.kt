@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ fun HomeScreenToolbar(
 ) {
     Box(
         modifier = Modifier
+            .systemBarsPadding()
             .fillMaxWidth()
             .height(64.dp)
             .padding(horizontal = 20.dp)

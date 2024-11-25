@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -163,4 +164,5 @@ interface DateObjectDependencies : ComponentDependencies {
     fun config(): ConfigStorage
     fun userPermissionProvider(): UserPermissionProvider
     fun provideStoreOfRelations(): StoreOfRelations
+    fun provideDateProvider(): DateProvider
 }

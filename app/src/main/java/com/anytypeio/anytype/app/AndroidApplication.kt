@@ -51,20 +51,12 @@ class AndroidApplication : Application(), HasComponentDependencies {
     }
 
 
-    object SignalHandler {
-        init {
-            System.loadLibrary("signal_handler")
-        }
-
-        external fun initSignalHandler()
-    }
-
     override fun onCreate() {
         if (BuildConfig.ENABLE_STRICT_MODE) {
             enableStrictMode()
         }
         super.onCreate()
-        SignalHandler.initSignalHandler()
+        setupSignalHandler()
         main.inject(this)
         setupAnalytics()
         setupTimber()
@@ -121,10 +113,21 @@ class AndroidApplication : Application(), HasComponentDependencies {
         notificationManager.createNotificationChannel(notificationChannel)
     }
 
+    private fun setupSignalHandler() {
+        SignalHandler.initSignalHandler()
+    }
 
     companion object {
         const val NOTIFICATION_CHANNEL_ID = "anytype_notification_channel"
         const val NOTIFICATION_CHANNEL_NAME = "Local Anytype notifications"
         const val NOTIFICATION_CHANNEL_DESCRIPTION = "Important notifications from Anytype, including collaboration events in multiplayer mode"
+    }
+
+    object SignalHandler {
+        init {
+            System.loadLibrary("signal_handler")
+        }
+
+        external fun initSignalHandler()
     }
 }

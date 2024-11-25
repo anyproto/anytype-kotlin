@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.DATE_PICKER_YEAR_RANGE
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -37,12 +38,11 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.sets.DateValueView
 
-val DATE_RANGE = IntRange(0, 3000)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerContent(
     state: DateValueView,
+    showHeader: Boolean = true,
     onDateSelected: (Long?) -> Unit,
     onClear: () -> Unit,
     onTodayClicked: () -> Unit,
@@ -56,7 +56,7 @@ fun DatePickerContent(
                 return state.isEditable
             }
         },
-        yearRange = DATE_RANGE
+        yearRange = DATE_PICKER_YEAR_RANGE
     )
 
     val isFirstLoad = remember { mutableStateOf(true) }
@@ -78,7 +78,11 @@ fun DatePickerContent(
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
     ) {
-        Header(state = state, onClear = onClear)
+        CalendarDragger()
+
+        if (showHeader) {
+            Header(state = state, onClear = onClear)
+        }
 
         val todayContentColor = if (state.isEditable) {
             colorResource(id = R.color.glyph_accent)
@@ -144,17 +148,18 @@ fun DatePickerContent(
 }
 
 @Composable
-private fun Header(state: DateValueView, onClear: () -> Unit) {
-
-    // Dragger at the top, centered
+private fun CalendarDragger(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
     ) {
         Dragger(modifier = Modifier.align(Alignment.Center))
     }
+}
 
+@Composable
+private fun Header(state: DateValueView, onClear: () -> Unit) {
     // Main content box
     Box(
         modifier = Modifier

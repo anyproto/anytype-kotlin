@@ -73,12 +73,23 @@ sealed class UiHorizontalListItem {
         override val id: String = "UiHorizontalListItem-Settings-Id"
     ) : UiHorizontalListItem()
 
-    data class Item(
-        override val id: String,
-        val key: RelationKey,
-        val title: String,
-        val relationFormat: RelationFormat
-    ) : UiHorizontalListItem()
+    sealed class Item : UiHorizontalListItem() {
+        abstract val key: RelationKey
+        abstract val relationFormat: RelationFormat
+        data class Default(
+            override val id: String,
+            val title: String,
+            override val key: RelationKey,
+            override val relationFormat: RelationFormat
+        ) : Item()
+
+        data class Mention(
+            override val id: String,
+            val title: String,
+            override val key: RelationKey,
+            override val relationFormat: RelationFormat
+        ) : Item()
+    }
 }
 
 data class DateObjectVerticalListState(

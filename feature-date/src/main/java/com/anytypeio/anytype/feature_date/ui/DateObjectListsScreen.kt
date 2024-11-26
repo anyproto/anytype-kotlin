@@ -44,8 +44,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
@@ -128,41 +126,40 @@ fun DateLayoutHorizontalListScreen(
                         )
                     }
 
-                    is UiHorizontalListItem.Item -> {
-                        if (item.key.key == Relations.MENTIONS) {
-                            Row(
+                    is UiHorizontalListItem.Item.Mention -> {
+                        Row(
+                            modifier = Modifier
+                                .fillParentMaxHeight()
+                                .wrapContentWidth()
+                                .padding(horizontal = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
                                 modifier = Modifier
-                                    .fillParentMaxHeight()
-                                    .wrapContentWidth()
-                                    .padding(horizontal = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Image(
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                        .size(24.dp),
-                                    painter = painterResource(R.drawable.ic_mention_24),
-                                    contentDescription = "Mentioned in"
-                                )
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentSize(),
-                                    text = stringResource(R.string.date_layout_mentioned_in),
-                                    color = colorResource(R.color.text_primary),
-                                    style = PreviewTitle2Medium
-                                )
-                            }
-                        } else {
+                                    .padding(end = 6.dp)
+                                    .size(24.dp),
+                                painter = painterResource(R.drawable.ic_mention_24),
+                                contentDescription = "Mentioned in"
+                            )
                             Text(
                                 modifier = Modifier
-                                    .padding(horizontal = 12.dp)
-                                    .wrapContentSize()
-                                    .align(Alignment.Center),
-                                text = item.title,
+                                    .wrapContentSize(),
+                                text = stringResource(R.string.date_layout_mentioned_in),
                                 color = colorResource(R.color.text_primary),
                                 style = PreviewTitle2Medium
                             )
                         }
+                    }
+                    is UiHorizontalListItem.Item.Default -> {
+                        Text(
+                            modifier = Modifier
+                                .padding(horizontal = 12.dp)
+                                .wrapContentSize()
+                                .align(Alignment.Center),
+                            text = item.title,
+                            color = colorResource(R.color.text_primary),
+                            style = PreviewTitle2Medium
+                        )
                     }
                     is UiHorizontalListItem.Loading.Item -> {
                         ShimmerEffect(
@@ -193,27 +190,7 @@ fun DateLayoutHorizontalListScreenPreview() {
     val lazyHorizontalListState = rememberLazyListState()
     DateLayoutHorizontalListScreen(
         state = DateObjectHorizontalListState(
-            items = listOf(
-                UiHorizontalListItem.Settings(),
-                UiHorizontalListItem.Item(
-                    id = "0",
-                    title = "Today",
-                    key = RelationKey(Relations.MENTIONS),
-                    relationFormat = RelationFormat.DATE
-                ),
-                UiHorizontalListItem.Item(
-                    id = "1",
-                    title = "Today",
-                    key = RelationKey("1"),
-                    relationFormat = RelationFormat.DATE
-                ),
-                UiHorizontalListItem.Item(
-                    id = "2",
-                    title = "Tomorrow",
-                    key = RelationKey("2"),
-                    relationFormat = RelationFormat.DATE
-                )
-            ),
+            items = StubHorizontalItems,
             selectedRelationKey = RelationKey("1")
         ),
         action = {},
@@ -300,7 +277,7 @@ fun DateLayoutVerticalListScreen(
             when (item) {
                 is UiVerticalListItem.Item -> {
                     ListItem(
-                        modifier = Modifier.clickable { uiVerticalListActions(item) },
+                        modifier = Modifier.noRippleThrottledClickable { uiVerticalListActions(item) },
                         item = item
                     )
                 }

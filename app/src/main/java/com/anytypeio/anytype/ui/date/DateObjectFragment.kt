@@ -20,9 +20,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
-import com.anytypeio.anytype.core_ui.views.BaseTwoButtonsDarkThemeAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -32,15 +32,16 @@ import com.anytypeio.anytype.feature_date.models.UiErrorState
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModelFactory
 import com.anytypeio.anytype.feature_date.ui.DateObjectScreen
-import com.anytypeio.anytype.payments.viewmodel.MembershipErrorState
-import com.anytypeio.anytype.payments.viewmodel.TierAction
-import com.anytypeio.anytype.payments.viewmodel.TierAction.*
+import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
+import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
 import timber.log.Timber
 
-class DateObjectFragment : BaseComposeFragment() {
+class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     @Inject
     lateinit var factory: DateObjectViewModelFactory
 
@@ -66,18 +67,66 @@ class DateObjectFragment : BaseComposeFragment() {
         subscribe(vm.commands) { command ->
             Timber.d("Received command: $command")
             when (command) {
-                DateObjectViewModel.Command.Back -> TODO()
-                DateObjectViewModel.Command.ExitToVault -> TODO()
-                is DateObjectViewModel.Command.NavigateToBin -> TODO()
-                is DateObjectViewModel.Command.NavigateToEditor -> TODO()
-                is DateObjectViewModel.Command.NavigateToSetOrCollection -> TODO()
-                is DateObjectViewModel.Command.OpenChat -> TODO()
-                DateObjectViewModel.Command.OpenGlobalSearch -> TODO()
+                DateObjectViewModel.Command.Back -> {
+                    runCatching {
+                        findNavController().popBackStack()
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while exiting back from all content")
+                    }
+                }
+                DateObjectViewModel.Command.ExitToVault -> {
+                    runCatching {
+                        findNavController().navigate(R.id.actionOpenVault)
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while exiting to vault from all content")
+                    }
+                }
+                is DateObjectViewModel.Command.NavigateToEditor -> {
+                    runCatching {
+                        navigation().openDocument(
+                            target = command.id,
+                            space = command.space
+                        )
+                    }.onFailure {
+                        toast("Failed to open document")
+                        Timber.e(it, "Failed to open document from all content")
+                    }
+                }
+                is DateObjectViewModel.Command.NavigateToSetOrCollection -> {
+                    runCatching {
+                        navigation().openObjectSet(
+                            target = command.id,
+                            space = command.space,
+                        )
+                    }.onFailure {
+                        toast("Failed to open object set")
+                        Timber.e(it, "Failed to open object set from all content")
+                    }
+                }
+                is DateObjectViewModel.Command.OpenChat -> {
+                    runCatching {
+                        navigation().openChat(
+                            target = command.target,
+                            space = command.space
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Failed to open a chat from all content")
+                    }
+                }
+                DateObjectViewModel.Command.OpenGlobalSearch -> {
+                    runCatching {
+                        findNavController().navigate(
+                            resId = R.id.globalSearchScreen,
+                            args = GlobalSearchFragment.args(
+                                space = space
+                            )
+                        )
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while opening global search screen from all content")
+                    }
+                }
                 is DateObjectViewModel.Command.SendToast.Error -> TODO()
                 is DateObjectViewModel.Command.SendToast.ObjectArchived -> TODO()
-                is DateObjectViewModel.Command.SendToast.RelationRemoved -> TODO()
-                is DateObjectViewModel.Command.SendToast.TypeRemoved -> TODO()
-                is DateObjectViewModel.Command.SendToast.UnexpectedLayout -> TODO()
                 is DateObjectViewModel.Command.NavigateToDateObject -> {
                     runCatching {
                         findNavController().navigate(
@@ -94,8 +143,27 @@ class DateObjectFragment : BaseComposeFragment() {
                         Timber.e(it, "Failed to navigate to date object")
                     }
                 }
+
+                DateObjectViewModel.Command.ExitToSpaceWidgets -> {
+                    runCatching {
+                        findNavController().navigate(R.id.actionExitToSpaceWidgets)
+                    }.onFailure {
+                        Timber.e(it, "Error while opening space switcher from all-content screen")
+                    }
+                }
+                is DateObjectViewModel.Command.SendToast.UnexpectedLayout -> {
+                    toast("Unexpected layout")
+                }
+                DateObjectViewModel.Command.TypeSelectionScreen -> {
+                    val dialog = ObjectTypeSelectionFragment.new(space = space)
+                    dialog.show(childFragmentManager, null)
+                }
             }
         }
+    }
+
+    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
+        vm.onCreateObjectOfTypeClicked(objType = objType)
     }
 
     override fun onStart() {
@@ -128,9 +196,9 @@ class DateObjectFragment : BaseComposeFragment() {
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     uiHeaderActions = vm::onHeaderActions,
-                    uiBottomMenuActions = {},
+                    uiBottomMenuActions = vm::onBottomMenuAction,
                     uiTopToolbarActions = vm::onTopToolbarActions,
-                    uiVerticalListActions = {},
+                    uiVerticalListActions = vm::onItemClicked,
                     uiHorizontalListActions = vm::onHorizontalItemClicked,
                     onUpdateLimitSearch = vm::updateLimit,
                     onCalendarDateSelected = vm::onCalendarDateSelected,

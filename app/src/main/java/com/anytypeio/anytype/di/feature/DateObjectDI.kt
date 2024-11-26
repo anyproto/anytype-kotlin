@@ -167,4 +167,5 @@ interface DateObjectDependencies : ComponentDependencies {
     fun provideStoreOfRelations(): StoreOfRelations
     fun provideDateProvider(): DateProvider
     fun provideSpaceSyncAndP2PStatusProvider(): SpaceSyncAndP2PStatusProvider
+    fun provideUserSettingsRepository(): UserSettingsRepository
 }

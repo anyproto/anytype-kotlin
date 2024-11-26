@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -51,12 +54,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.feature_date.R
 import com.anytypeio.anytype.feature_date.models.DateObjectSheetState
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
@@ -104,6 +109,7 @@ fun HorizontalItemsModalScreen(
                         onQueryChange = {}
                     )
                 }
+
                 DateObjectSheetState.Empty -> {}
             }
         },
@@ -131,13 +137,13 @@ fun ColumnScope.DateObjectSheetScreen(
             key = { index -> uiSheetState.items[index].id },
             itemContent = { index ->
                 when (val item = uiSheetState.items[index]) {
-                    is UiHorizontalListItem.Item -> {
+                    is UiHorizontalListItem.Item.Default -> {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp)
                                 .height(52.dp)
-                                .noRippleThrottledClickable{
+                                .noRippleThrottledClickable {
                                     uiHorizontalListActions(item, index)
                                 },
                             contentAlignment = Alignment.CenterStart,
@@ -153,6 +159,43 @@ fun ColumnScope.DateObjectSheetScreen(
                         }
                         Divider()
                     }
+
+                    is UiHorizontalListItem.Item.Mention -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
+                                .height(52.dp)
+                                .noRippleThrottledClickable {
+                                    uiHorizontalListActions(item, index)
+                                },
+                            contentAlignment = Alignment.CenterStart,
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillParentMaxHeight()
+                                    .wrapContentWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Image(
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                        .size(24.dp),
+                                    painter = painterResource(R.drawable.ic_mention_24),
+                                    contentDescription = "Mentioned in"
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentSize(),
+                                    text = stringResource(R.string.date_layout_mentioned_in),
+                                    color = colorResource(R.color.text_primary),
+                                    style = BodyRegular
+                                )
+                            }
+                        }
+                        Divider()
+                    }
+
                     else -> {
                         //do nothing
                     }
@@ -283,7 +326,7 @@ private fun DateObjectSearchBarPreview() {
                 items = StubHorizontalItems
             ),
             onQueryChange = {},
-            uiHorizontalListActions = {_, _ ->}
+            uiHorizontalListActions = { _, _ -> }
         )
     }
 }

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_date.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.DATE_PICKER_YEAR_RANGE
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.feature_date.models.UiCalendarState
 import com.anytypeio.anytype.feature_date.models.DateObjectBottomMenu
@@ -49,7 +51,12 @@ import com.anytypeio.anytype.feature_date.models.UiVerticalListItem
 import com.anytypeio.anytype.feature_date.models.toUiHorizontalListItems
 import com.anytypeio.anytype.feature_date.models.toUiVerticalListItem
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentResult
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentScreen
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.relations.values
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
@@ -88,7 +95,8 @@ class DateObjectViewModel(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val objectDateByTimestamp: ObjectDateByTimestamp,
     private val dateProvider: DateProvider,
-    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
+    private val createObject: CreateObject
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiTopToolbarState =
@@ -580,6 +588,135 @@ class DateObjectViewModel(
     fun onDismissCalendar() {
         showCalendar.value = false
     }
+
+    fun onBottomMenuAction(action: DateObjectBottomMenu.Action) {
+        when (action) {
+            DateObjectBottomMenu.Action.AddDoc -> {
+                proceedWithCreateDoc()
+            }
+            DateObjectBottomMenu.Action.Back -> {
+                viewModelScope.launch {
+                    commands.emit(Command.Back)
+                }
+            }
+            DateObjectBottomMenu.Action.BackLong -> {
+                viewModelScope.launch {
+                    commands.emit(Command.ExitToSpaceWidgets)
+                }
+            }
+            DateObjectBottomMenu.Action.CreateObjectLong -> {
+                viewModelScope.launch {
+                    commands.emit(Command.TypeSelectionScreen)
+                }
+            }
+            DateObjectBottomMenu.Action.GlobalSearch -> {
+                viewModelScope.launch {
+                    commands.emit(Command.OpenGlobalSearch)
+                }
+            }
+        }
+    }
+
+    private fun proceedWithCreateDoc(
+        objType: ObjectWrapper.Type? = null
+    ) {
+        val startTime = System.currentTimeMillis()
+        val params = objType?.uniqueKey.getCreateObjectParams(
+            space = vmParams.spaceId,
+            objType?.defaultTemplateId
+        )
+        viewModelScope.launch {
+            createObject.async(params).fold(
+                onSuccess = { result ->
+                    proceedWithNavigation(
+                        navigation = result.obj.navigation()
+                    )
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        route = EventsDictionary.Routes.objDate,
+                        startTime = startTime,
+                        objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
+                        view = EventsDictionary.View.viewHome,
+                        spaceParams = provideParams(space = vmParams.spaceId.id)
+                    )
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new object") }
+            )
+        }
+    }
+
+    private fun proceedWithNavigation(navigation: OpenObjectNavigation) {
+        viewModelScope.launch {
+            when (navigation) {
+                is OpenObjectNavigation.OpenDataView -> {
+                    commands.emit(
+                        Command.NavigateToSetOrCollection(
+                            id = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
+
+                is OpenObjectNavigation.OpenEditor -> {
+                    commands.emit(
+                        Command.NavigateToEditor(
+                            id = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
+
+                is OpenObjectNavigation.UnexpectedLayoutError -> {
+                    Timber.e("Unexpected layout: ${navigation.layout}")
+                    commands.emit(Command.SendToast.UnexpectedLayout(navigation.layout?.name.orEmpty()))
+                }
+                is OpenObjectNavigation.OpenDiscussion -> {
+                    commands.emit(
+                        Command.OpenChat(
+                            target = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
+                OpenObjectNavigation.NonValidObject -> {
+                    Timber.e("Object id is missing")
+                }
+                is OpenObjectNavigation.OpenDataObject -> {
+                    commands.emit(
+                        Command.NavigateToEditor(
+                            id = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun onItemClicked(item: UiVerticalListItem) {
+        Timber.d("onItemClicked: ${item.id}")
+        when (item) {
+            is UiVerticalListItem.Item -> {
+                val layout = item.layout ?: return
+                proceedWithNavigation(
+                    navigation = layout.navigation(
+                        target = item.id,
+                        space = vmParams.spaceId.id
+                    )
+                )
+                viewModelScope.launch {
+                    //sendAnalyticsAllContentResult(analytics = analytics)
+                }
+            }
+            is UiVerticalListItem.Loading -> {
+                Timber.d("Loading item clicked")
+            }
+        }
+    }
+
+    fun onCreateObjectOfTypeClicked(objType: ObjectWrapper.Type) {
+        proceedWithCreateDoc(objType)
+    }
     //endregion
 
     //region Ui State
@@ -651,14 +788,13 @@ class DateObjectViewModel(
         data class OpenChat(val target: Id, val space: Id) : Command()
         data class NavigateToEditor(val id: Id, val space: Id) : Command()
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
-        data class NavigateToBin(val space: Id) : Command()
         data class NavigateToDateObject(val objectId: Id, val space: SpaceId) : Command()
+        data object TypeSelectionScreen : Command()
+        data object ExitToSpaceWidgets : Command()
         sealed class SendToast : Command() {
             data class Error(val message: String) : SendToast()
-            data class RelationRemoved(val name: String) : SendToast()
-            data class TypeRemoved(val name: String) : SendToast()
-            data class UnexpectedLayout(val layout: String) : SendToast()
             data class ObjectArchived(val name: String) : SendToast()
+            data class UnexpectedLayout(val layout: String) : SendToast()
         }
 
         data object OpenGlobalSearch : Command()

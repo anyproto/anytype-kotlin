@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel.VmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -30,7 +31,8 @@ class DateObjectViewModelFactory @Inject constructor(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val objectDateByTimestamp: ObjectDateByTimestamp,
     private val dateProvider: DateProvider,
-    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
+    private val createObject: CreateObject
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -48,6 +50,7 @@ class DateObjectViewModelFactory @Inject constructor(
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             objectDateByTimestamp = objectDateByTimestamp,
             dateProvider = dateProvider,
-            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
+            createObject = createObject
         ) as T
 }

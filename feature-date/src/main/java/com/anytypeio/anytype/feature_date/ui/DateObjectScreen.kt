@@ -33,8 +33,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
+import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_date.R
 import com.anytypeio.anytype.feature_date.models.UiCalendarState
@@ -47,6 +51,7 @@ import com.anytypeio.anytype.feature_date.models.DateObjectVerticalListState
 import com.anytypeio.anytype.feature_date.models.UiContentState
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
 import com.anytypeio.anytype.feature_date.models.UiVerticalListItem
+import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +63,7 @@ fun DateObjectScreen(
     uiVerticalListState: DateObjectVerticalListState,
     uiDateObjectBottomMenu: DateObjectBottomMenu,
     uiSheetState: DateObjectSheetState,
+    uiSyncStatusState: SyncStatusWidgetState,
     uiCalendarState: UiCalendarState,
     uiHeaderActions: (DateObjectHeaderState.Action) -> Unit,
     uiTopToolbarActions: (DateObjectTopToolbarState.Action) -> Unit,
@@ -124,7 +130,17 @@ fun DateObjectScreen(
                         .fillMaxWidth()
                         .height(48.dp),
                     state = uiTopToolbarState,
-                    action = uiTopToolbarActions
+                    action = { action ->
+                        when (action) {
+                            DateObjectTopToolbarState.Action.Calendar -> {}
+                            DateObjectTopToolbarState.Action.SyncStatus -> {
+                                scope.launch {
+                                    scaffoldState.bottomSheetState.expand()
+                                }
+                            }
+                        }
+                        uiTopToolbarActions(action)
+                    }
                 )
                 Spacer(
                     modifier = Modifier.height(24.dp)
@@ -167,11 +183,12 @@ fun DateObjectScreen(
         sheetTonalElevation = 0.dp,
         sheetShadowElevation = 10.dp,
         sheetContent = {
-            Column {
-                Text("Sheet content")
-                Spacer(modifier = Modifier.height(16.dp))
-                Dragger()
-            }
+            SpaceSyncStatusScreen(
+                uiState = uiSyncStatusState,
+                onDismiss = {},
+                scope = scope,
+                onUpdateAppClick = {}
+            )
         },
         sheetDragHandle = null
     )

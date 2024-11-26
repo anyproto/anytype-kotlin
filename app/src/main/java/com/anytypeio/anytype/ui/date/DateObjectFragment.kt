@@ -139,6 +139,7 @@ class DateObjectFragment : BaseComposeFragment() {
                     onTomorrowClicked = vm::onTomorrowClicked,
                     onDismissCalendar = vm::onDismissCalendar,
                     showCalendar = vm.showCalendar.collectAsStateWithLifecycle().value,
+                    uiSyncStatusState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                 )
             }
         }

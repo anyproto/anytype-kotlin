@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -165,4 +166,5 @@ interface DateObjectDependencies : ComponentDependencies {
     fun userPermissionProvider(): UserPermissionProvider
     fun provideStoreOfRelations(): StoreOfRelations
     fun provideDateProvider(): DateProvider
+    fun provideSpaceSyncAndP2PStatusProvider(): SpaceSyncAndP2PStatusProvider
 }

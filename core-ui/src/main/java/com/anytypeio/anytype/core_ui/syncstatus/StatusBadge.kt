@@ -29,7 +29,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 @Composable
 fun StatusBadge(
     status: SpaceSyncAndP2PStatusState?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.size(20.dp)
 ) {
     when (status) {
         is SpaceSyncAndP2PStatusState.Error -> {
@@ -160,7 +160,6 @@ fun StatusBadgePreview() {
                 syncingObjectsCounter = 2
             ),
             p2PStatusUpdate = P2PStatusUpdate.Initial
-        ),
-        modifier = Modifier.size(48.dp)
+        )
     )
 }

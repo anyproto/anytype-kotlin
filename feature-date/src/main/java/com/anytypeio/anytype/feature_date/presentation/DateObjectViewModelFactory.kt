@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_date.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -28,7 +29,8 @@ class DateObjectViewModelFactory @Inject constructor(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val objectDateByTimestamp: ObjectDateByTimestamp,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -45,6 +47,7 @@ class DateObjectViewModelFactory @Inject constructor(
             storeOfObjectTypes = storeOfObjectTypes,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             objectDateByTimestamp = objectDateByTimestamp,
-            dateProvider = dateProvider
+            dateProvider = dateProvider,
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
         ) as T
 }

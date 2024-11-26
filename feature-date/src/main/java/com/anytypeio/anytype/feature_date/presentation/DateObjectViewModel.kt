@@ -14,10 +14,16 @@ import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.getSingleValue
+import com.anytypeio.anytype.core_models.multiplayer.P2PStatusUpdate
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncNetwork
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -44,7 +50,10 @@ import com.anytypeio.anytype.feature_date.models.toUiHorizontalListItems
 import com.anytypeio.anytype.feature_date.models.toUiVerticalListItem
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentScreen
+import com.anytypeio.anytype.presentation.relations.values
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
+import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
+import com.anytypeio.anytype.presentation.sync.updateStatus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -78,7 +87,8 @@ class DateObjectViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val objectDateByTimestamp: ObjectDateByTimestamp,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiTopToolbarState =
@@ -95,6 +105,7 @@ class DateObjectViewModel(
     val uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
     val showCalendar = MutableStateFlow(false)
+    val syncStatusWidget = MutableStateFlow<SyncStatusWidgetState>(SyncStatusWidgetState.Hidden)
 
     private val _dateObjId = MutableStateFlow<Id?>(null)
     val dateObjId: StateFlow<Id?> = _dateObjId
@@ -123,6 +134,7 @@ class DateObjectViewModel(
         proceedWithObservingPermissions()
         proceedWithGettingDateObject()
         proceedWithGettingDateObjectRelationList()
+        proceedWithObservingSyncStatus()
         _dateObjId.value = vmParams.objectId
     }
 
@@ -197,6 +209,30 @@ class DateObjectViewModel(
         }
     }
 
+    private fun proceedWithObservingSyncStatus() {
+        viewModelScope.launch {
+            spaceSyncAndP2PStatusProvider
+                .observe()
+                .catch {
+                    Timber.e(it, "Error while observing sync status")
+                }
+                .collect { syncAndP2pState ->
+                    Timber.d("Sync status: $syncAndP2pState")
+                    val uiTopToolbarStateValue = uiTopToolbarState.value
+                    uiTopToolbarState.value = when (uiTopToolbarStateValue) {
+                        is DateObjectTopToolbarState.Content -> {
+                            uiTopToolbarStateValue.copy(
+                                status = syncAndP2pState
+                            )
+                        }
+
+                        DateObjectTopToolbarState.Empty -> uiTopToolbarStateValue
+                    }
+                    syncStatusWidget.value = syncStatusWidget.value.updateStatus(syncAndP2pState)
+                }
+        }
+    }
+
     private fun proceedWithGettingDateObjectRelationList() {
         viewModelScope.launch {
             _dateObjId
@@ -242,7 +278,16 @@ class DateObjectViewModel(
                                 timestamp = timestampInSeconds
                             )
                             uiTopToolbarState.value = DateObjectTopToolbarState.Content(
-                                syncStatus = SpaceSyncStatus.SYNCING
+                                status = SpaceSyncAndP2PStatusState.Success(
+                                    spaceSyncUpdate = SpaceSyncUpdate.Update(
+                                        id = "fdsfsd",
+                                        status = SpaceSyncStatus.SYNCING,
+                                        network = SpaceSyncNetwork.ANYTYPE,
+                                        error = SpaceSyncError.NULL,
+                                        syncingObjectsCounter = 0
+                                    ),
+                                    p2PStatusUpdate = P2PStatusUpdate.Initial
+                                )
                             )
                             val (formattedDate, _) = dateProvider.formatTimestampToDateAndTime(
                                 timestamp = timestampInSeconds * 1000,
@@ -501,11 +546,11 @@ class DateObjectViewModel(
                 }
             }
 
-            DateObjectTopToolbarState.Action.SyncStatus -> TODO()
+            DateObjectTopToolbarState.Action.SyncStatus -> {
+                Timber.d("onSyncStatusClicked")
+            }
         }
     }
-
-    fun onSyncStatusClicked() {}
 
     fun onCalendarDateSelected(selectedDate: TimeInMillis?) {
         Timber.d("Selected date in millis: $selectedDate")

@@ -3,7 +3,7 @@ package com.anytypeio.anytype.feature_date.models
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.TimeInMillis
-import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem.Loading
@@ -12,7 +12,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 sealed class DateObjectTopToolbarState {
 
     data object Empty : DateObjectTopToolbarState()
-    data class Content(val syncStatus: SpaceSyncStatus) : DateObjectTopToolbarState()
+    data class Content(val status: SpaceSyncAndP2PStatusState?) : DateObjectTopToolbarState()
 
     sealed class Action {
         data object SyncStatus : Action()

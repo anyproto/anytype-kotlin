@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -306,14 +307,21 @@ class DiscussionViewModel @Inject constructor(
     }
 
     fun onAttachmentClicked(attachment: DiscussionView.Message.Attachment) {
+        Timber.d("onAttachmentClicked")
         viewModelScope.launch {
-//            // TODO naive implementation. Currently used for debugging.
-//            navigation.emit(
-//                OpenObjectNavigation.OpenEditor(
-//                    target = attachment.target,
-//                    space = vmParams.space.id
-//                )
-//            )
+            when(attachment) {
+                is DiscussionView.Message.Attachment.Image -> {
+                    // Do nothing.
+                }
+                is DiscussionView.Message.Attachment.Link -> {
+                    val wrapper = attachment.wrapper
+                    if (wrapper != null) {
+                        navigation.emit(wrapper.navigation())
+                    } else {
+                        Timber.w("Wrapper is not found in attachment")
+                    }
+                }
+            }
         }
     }
 

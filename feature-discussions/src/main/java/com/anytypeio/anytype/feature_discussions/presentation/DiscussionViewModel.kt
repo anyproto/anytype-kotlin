@@ -145,7 +145,18 @@ class DiscussionViewModel @Inject constructor(
                                 isSelected = ids.contains(account)
                             )
                         },
-                        attachments = msg.attachments,
+                        attachments = msg.attachments.map { attachment ->
+                            when(attachment.type) {
+                                Chat.Message.Attachment.Type.Image -> DiscussionView.Message.Attachment.Image(
+                                    target = attachment.target,
+                                    url = urlBuilder.large(path = attachment.target)
+                                )
+                               else -> DiscussionView.Message.Attachment.Image(
+                                   target = attachment.target,
+                                   url = urlBuilder.large(path = attachment.target)
+                               )
+                            }
+                        },
                         avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
                             DiscussionView.Message.Avatar.Image(
                                 urlBuilder.thumbnail(member.iconImage!!)
@@ -277,15 +288,15 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    fun onAttachmentClicked(attachment: Chat.Message.Attachment) {
+    fun onAttachmentClicked(attachment: DiscussionView.Message.Attachment) {
         viewModelScope.launch {
-            // TODO naive implementation. Currently used for debugging.
-            navigation.emit(
-                OpenObjectNavigation.OpenEditor(
-                    target = attachment.target,
-                    space = vmParams.space.id
-                )
-            )
+//            // TODO naive implementation. Currently used for debugging.
+//            navigation.emit(
+//                OpenObjectNavigation.OpenEditor(
+//                    target = attachment.target,
+//                    space = vmParams.space.id
+//                )
+//            )
         }
     }
 

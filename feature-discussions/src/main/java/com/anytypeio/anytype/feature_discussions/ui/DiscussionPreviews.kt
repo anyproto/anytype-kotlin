@@ -191,9 +191,8 @@ fun BubbleWithAttachmentPreview() {
         onCopyMessage = {},
         attachments = buildList {
             add(
-                Chat.Message.Attachment(
-                    target = "Walter Benjamin",
-                    type = Chat.Message.Attachment.Type.Image
+                DiscussionView.Message.Attachment.Link(
+                    target = "ID",
                 )
             )
         },

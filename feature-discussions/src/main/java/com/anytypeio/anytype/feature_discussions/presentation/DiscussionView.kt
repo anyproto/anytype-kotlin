@@ -2,6 +2,7 @@ package com.anytypeio.anytype.feature_discussions.presentation
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
 
 sealed interface DiscussionView {
@@ -10,7 +11,7 @@ sealed interface DiscussionView {
         val content: Content,
         val author: String,
         val timestamp: Long,
-        val attachments: List<Chat.Message.Attachment> = emptyList(),
+        val attachments: List<Attachment> = emptyList(),
         val reactions: List<Reaction> = emptyList(),
         val isUserAuthor: Boolean = false,
         val isEdited: Boolean = false,
@@ -28,6 +29,17 @@ sealed interface DiscussionView {
                 val underline = styles.any { it.type == Block.Content.Text.Mark.Type.UNDERLINE }
                 val link = styles.find { it.type == Block.Content.Text.Mark.Type.LINK }
             }
+        }
+
+        sealed class Attachment {
+            data class Image(
+                val target: Id,
+                val url: String
+            ): Attachment()
+
+            data class Link(
+                val target: Id
+            ): Attachment()
         }
 
         data class Reaction(

@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.feature_date.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,45 +17,60 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncNetwork
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
+import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.syncstatus.StatusBadge
 import com.anytypeio.anytype.feature_date.R
-import com.anytypeio.anytype.feature_date.models.DateObjectTopToolbarState
-
+import com.anytypeio.anytype.feature_date.ui.models.DateEvent
+import com.anytypeio.anytype.feature_date.viewmodel.UiCalendarIconState
+import com.anytypeio.anytype.feature_date.viewmodel.UiSyncStatusBadgeState
 
 @Composable
-fun DateObjectTopToolbar(
+fun TopToolbarScreen(
     modifier: Modifier,
-    state: DateObjectTopToolbarState,
-    action: (DateObjectTopToolbarState.Action) -> Unit
+    uiCalendarIconState: UiCalendarIconState,
+    uiSyncStatusBadgeState: UiSyncStatusBadgeState,
+    onDateEvent: (DateEvent) -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
     ) {
-        if (state is DateObjectTopToolbarState.Content) {
+        if (uiSyncStatusBadgeState is UiSyncStatusBadgeState.Visible) {
+            val s = uiSyncStatusBadgeState.status
+
             Box(
                 modifier = Modifier
                     .size(48.dp)
                     .noRippleThrottledClickable {
-                        action(DateObjectTopToolbarState.Action.SyncStatus)
+                        onDateEvent(
+                            DateEvent.TopToolbar.OnSyncStatusClick(
+                                status = uiSyncStatusBadgeState.status
+                            )
+                        )
                     },
             ) {
                 StatusBadge(
-                    status = state.status,
+                    status = uiSyncStatusBadgeState.status,
                     modifier = Modifier
                         .size(20.dp)
                         .align(Alignment.Center)
                 )
             }
+        }
+        if (uiCalendarIconState is UiCalendarIconState.Visible) {
             Image(
                 modifier = Modifier
                     .size(48.dp)
                     .align(Alignment.CenterEnd)
-                    .clickable {
-                        action(DateObjectTopToolbarState.Action.Calendar)
+                    .noRippleThrottledClickable {
+                        onDateEvent(
+                            DateEvent.TopToolbar.OnCalendarClick(
+                                timestampInSeconds = uiCalendarIconState.timestampInSeconds
+                            )
+                        )
                     },
                 contentDescription = null,
                 painter = painterResource(id = R.drawable.ic_calendar_24),
@@ -68,7 +82,7 @@ fun DateObjectTopToolbar(
 
 @Composable
 @DefaultPreviews
-fun DateLayoutTopToolbarPreview() {
+fun TopToolbarPreview() {
     val spaceSyncUpdate = SpaceSyncUpdate.Update(
         id = "1",
         status = SpaceSyncStatus.SYNCING,
@@ -76,14 +90,17 @@ fun DateLayoutTopToolbarPreview() {
         error = SpaceSyncError.NULL,
         syncingObjectsCounter = 2
     )
-    DateObjectTopToolbar(
+    TopToolbarScreen(
         modifier = Modifier.fillMaxWidth(),
-        state = DateObjectTopToolbarState.Content(
-            SpaceSyncAndP2PStatusState.Success(
+        uiCalendarIconState = UiCalendarIconState.Visible(
+            timestampInSeconds = TimestampInSeconds(3232L)
+        ),
+        uiSyncStatusBadgeState = UiSyncStatusBadgeState.Visible(
+            status = SpaceSyncAndP2PStatusState.Success(
                 spaceSyncUpdate = spaceSyncUpdate,
                 p2PStatusUpdate = P2PStatusUpdate.Initial
             )
         ),
-        action = {}
+        onDateEvent = {}
     )
 }

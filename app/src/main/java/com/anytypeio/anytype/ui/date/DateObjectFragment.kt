@@ -28,10 +28,12 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_date.models.UiErrorState
-import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel
-import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModelFactory
-import com.anytypeio.anytype.feature_date.ui.DateObjectScreen
+import com.anytypeio.anytype.feature_date.viewmodel.UiErrorState
+import com.anytypeio.anytype.feature_date.viewmodel.DateViewModel
+import com.anytypeio.anytype.feature_date.viewmodel.DateVMFactory
+import com.anytypeio.anytype.feature_date.ui.DateMainScreen
+import com.anytypeio.anytype.feature_date.viewmodel.DateEffect
+import com.anytypeio.anytype.feature_date.viewmodel.DateVmParams
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
@@ -43,9 +45,9 @@ import timber.log.Timber
 
 class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     @Inject
-    lateinit var factory: DateObjectViewModelFactory
+    lateinit var factory: DateVMFactory
 
-    private val vm by viewModels<DateObjectViewModel> { factory }
+    private val vm by viewModels<DateViewModel> { factory }
     private lateinit var navComposeController: NavHostController
 
     private val space get() = argString(ARG_SPACE)
@@ -64,56 +66,56 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        subscribe(vm.commands) { command ->
-            Timber.d("Received command: $command")
-            when (command) {
-                DateObjectViewModel.Command.Back -> {
+        subscribe(vm.effects) { effect ->
+            Timber.d("Received date effect: $effect")
+            when (effect) {
+                DateEffect.Back -> {
                     runCatching {
                         findNavController().popBackStack()
                     }.onFailure { e ->
                         Timber.e(e, "Error while exiting back from all content")
                     }
                 }
-                DateObjectViewModel.Command.ExitToVault -> {
+                DateEffect.ExitToVault -> {
                     runCatching {
                         findNavController().navigate(R.id.actionOpenVault)
                     }.onFailure { e ->
                         Timber.e(e, "Error while exiting to vault from all content")
                     }
                 }
-                is DateObjectViewModel.Command.NavigateToEditor -> {
+                is DateEffect.NavigateToEditor -> {
                     runCatching {
                         navigation().openDocument(
-                            target = command.id,
-                            space = command.space
+                            target = effect.id,
+                            space = effect.space.id
                         )
                     }.onFailure {
                         toast("Failed to open document")
                         Timber.e(it, "Failed to open document from all content")
                     }
                 }
-                is DateObjectViewModel.Command.NavigateToSetOrCollection -> {
+                is DateEffect.NavigateToSetOrCollection -> {
                     runCatching {
                         navigation().openObjectSet(
-                            target = command.id,
-                            space = command.space,
+                            target = effect.id,
+                            space = effect.space.id
                         )
                     }.onFailure {
                         toast("Failed to open object set")
                         Timber.e(it, "Failed to open object set from all content")
                     }
                 }
-                is DateObjectViewModel.Command.OpenChat -> {
+                is DateEffect.OpenChat -> {
                     runCatching {
                         navigation().openChat(
-                            target = command.target,
-                            space = command.space
+                            target = effect.target,
+                            space = effect.space.id
                         )
                     }.onFailure {
                         Timber.e(it, "Failed to open a chat from all content")
                     }
                 }
-                DateObjectViewModel.Command.OpenGlobalSearch -> {
+                DateEffect.OpenGlobalSearch -> {
                     runCatching {
                         findNavController().navigate(
                             resId = R.id.globalSearchScreen,
@@ -125,15 +127,15 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         Timber.e(e, "Error while opening global search screen from all content")
                     }
                 }
-                is DateObjectViewModel.Command.SendToast.Error -> TODO()
-                is DateObjectViewModel.Command.SendToast.ObjectArchived -> TODO()
-                is DateObjectViewModel.Command.NavigateToDateObject -> {
+                is DateEffect.SendToast.Error -> TODO()
+                is DateEffect.SendToast.ObjectArchived -> TODO()
+                is DateEffect.NavigateToDateObject -> {
                     runCatching {
                         findNavController().navigate(
                             resId = R.id.dateObjectScreen,
                             args = args(
-                                objectId = command.objectId,
-                                space = command.space.id
+                                objectId = effect.objectId,
+                                space = effect.space.id
                             ),
                             navOptions = navOptions {
                                 launchSingleTop = true
@@ -144,17 +146,17 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     }
                 }
 
-                DateObjectViewModel.Command.ExitToSpaceWidgets -> {
+                DateEffect.ExitToSpaceWidgets -> {
                     runCatching {
                         findNavController().navigate(R.id.actionExitToSpaceWidgets)
                     }.onFailure {
                         Timber.e(it, "Error while opening space switcher from all-content screen")
                     }
                 }
-                is DateObjectViewModel.Command.SendToast.UnexpectedLayout -> {
+                is DateEffect.SendToast.UnexpectedLayout -> {
                     toast("Unexpected layout")
                 }
-                DateObjectViewModel.Command.TypeSelectionScreen -> {
+                DateEffect.TypeSelectionScreen -> {
                     val dialog = ObjectTypeSelectionFragment.new(space = space)
                     dialog.show(childFragmentManager, null)
                 }
@@ -186,28 +188,19 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
             startDestination = DATE_MAIN
         ) {
             composable(route = DATE_MAIN) {
-                DateObjectScreen(
-                    uiTopToolbarState = vm.uiTopToolbarState.collectAsStateWithLifecycle().value,
+                DateMainScreen(
+                    uiCalendarIconState = vm.uiCalendarIconState.collectAsStateWithLifecycle().value,
+                    uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
                     uiHeaderState = vm.uiHeaderState.collectAsStateWithLifecycle().value,
-                    uiHorizontalListState = vm.uiHorizontalListState.collectAsStateWithLifecycle().value,
-                    uiVerticalListState = vm.uiVerticalListState.collectAsStateWithLifecycle().value,
-                    uiDateObjectBottomMenu = vm.uiBottomMenu.collectAsStateWithLifecycle().value,
-                    uiSheetState = vm.uiSheetState.collectAsStateWithLifecycle().value,
+                    uiFieldsState = vm.uiFieldsState.collectAsStateWithLifecycle().value,
+                    uiObjectsListState = vm.uiObjectsListState.collectAsStateWithLifecycle().value,
+                    uiNavigationWidget = vm.uiNavigationWidget.collectAsStateWithLifecycle().value,
+                    uiFieldsSheetState = vm.uiFieldsSheetState.collectAsStateWithLifecycle().value,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
-                    uiHeaderActions = vm::onHeaderActions,
-                    uiBottomMenuActions = vm::onBottomMenuAction,
-                    uiTopToolbarActions = vm::onTopToolbarActions,
-                    uiVerticalListActions = vm::onItemClicked,
-                    uiHorizontalListActions = vm::onHorizontalItemClicked,
-                    onUpdateLimitSearch = vm::updateLimit,
-                    onCalendarDateSelected = vm::onCalendarDateSelected,
                     uiCalendarState = vm.uiCalendarState.collectAsStateWithLifecycle().value,
-                    onTodayClicked = vm::onTodayClicked,
-                    onTomorrowClicked = vm::onTomorrowClicked,
-                    onDismissCalendar = vm::onDismissCalendar,
-                    showCalendar = vm.showCalendar.collectAsStateWithLifecycle().value,
-                    uiSyncStatusState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
+                    uiSyncStatusState = vm.uiSyncStatusWidgetState.collectAsStateWithLifecycle().value,
+                    onDateEvent = vm::onDateEvent
                 )
             }
         }
@@ -229,6 +222,9 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                             r.min,
                             r.max
                         )
+                    is UiErrorState.Reason.ErrorGettingFields -> r.msg
+                    is UiErrorState.Reason.ErrorGettingObjects -> r.msg
+                    is UiErrorState.Reason.Other -> r.msg
                 }
                 BaseAlertDialog(
                     dialogText = message,
@@ -241,7 +237,7 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     }
 
     override fun injectDependencies() {
-        val params = DateObjectViewModel.VmParams(
+        val params = DateVmParams(
             spaceId = SpaceId(space),
             objectId = objectId
         )

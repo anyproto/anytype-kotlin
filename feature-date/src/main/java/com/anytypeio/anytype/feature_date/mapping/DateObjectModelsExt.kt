@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_date.models
+package com.anytypeio.anytype.feature_date.mapping
 
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
@@ -9,14 +9,16 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem
+import com.anytypeio.anytype.feature_date.viewmodel.UiObjectsListItem
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
 import timber.log.Timber
 
-suspend fun List<RelationListWithValueItem>.toUiHorizontalListItems(
+suspend fun List<RelationListWithValueItem>.toUiFieldsItem(
     storeOfRelations: StoreOfRelations
-): List<UiHorizontalListItem.Item> {
+): List<UiFieldsItem.Item> {
     return this
         .sortedByDescending { it.key.key == Relations.MENTIONS }
         .mapNotNull { item ->
@@ -34,14 +36,14 @@ suspend fun List<RelationListWithValueItem>.toUiHorizontalListItems(
                 return@mapNotNull null
             }
             if (relation.key == Relations.MENTIONS) {
-                UiHorizontalListItem.Item.Mention(
+                UiFieldsItem.Item.Mention(
                     id = item.key.key,
                     key = item.key,
                     title = relation.name.orEmpty(),
                     relationFormat = relation.format
                 )
             } else {
-                UiHorizontalListItem.Item.Default(
+                UiFieldsItem.Item.Default(
                     id = item.key.key,
                     key = item.key,
                     title = relation.name.orEmpty(),
@@ -51,16 +53,16 @@ suspend fun List<RelationListWithValueItem>.toUiHorizontalListItems(
         }
 }
 
-fun ObjectWrapper.Basic.toUiVerticalListItem(
+fun ObjectWrapper.Basic.toUiObjectsListItem(
     space: SpaceId,
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>
-): UiVerticalListItem {
+): UiObjectsListItem {
     val obj = this
     val typeUrl = obj.getProperType()
     val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
     val layout = obj.layout ?: ObjectType.Layout.BASIC
-    return UiVerticalListItem.Item(
+    return UiObjectsListItem.Item(
         id = obj.id,
         space = space,
         name = obj.getProperName(),

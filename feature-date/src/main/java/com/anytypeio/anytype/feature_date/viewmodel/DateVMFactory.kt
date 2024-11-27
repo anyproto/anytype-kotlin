@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_date.presentation
+package com.anytypeio.anytype.feature_date.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -14,12 +14,11 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
-import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel.VmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import javax.inject.Inject
 
-class DateObjectViewModelFactory @Inject constructor(
-    private val vmParams: VmParams,
+class DateVMFactory @Inject constructor(
+    private val vmParams: DateVmParams,
     private val getObject: GetObject,
     private val analytics: Analytics,
     private val urlBuilder: UrlBuilder,
@@ -37,7 +36,7 @@ class DateObjectViewModelFactory @Inject constructor(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        DateObjectViewModel(
+        DateViewModel(
             vmParams = vmParams,
             getObject = getObject,
             analytics = analytics,

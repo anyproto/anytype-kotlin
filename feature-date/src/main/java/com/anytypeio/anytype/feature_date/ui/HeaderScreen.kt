@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.feature_date.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,15 +20,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.feature_date.R
-import com.anytypeio.anytype.feature_date.models.DateObjectHeaderState
+import com.anytypeio.anytype.feature_date.viewmodel.UiHeaderState
+import com.anytypeio.anytype.feature_date.ui.models.DateEvent
 
 @Composable
-fun DateObjectHeader(
+fun HeaderScreen(
     modifier: Modifier,
-    state: DateObjectHeaderState,
-    action: (DateObjectHeaderState.Action) -> Unit
+    uiState: UiHeaderState,
+    onDateEvent: (DateEvent) -> Unit
 ) {
     Row(
         modifier = modifier
@@ -39,18 +40,18 @@ fun DateObjectHeader(
                 .height(48.dp)
                 .width(52.dp)
                 .rotate(180f)
-                .clickable {
-                    action(DateObjectHeaderState.Action.Previous)
+                .noRippleThrottledClickable {
+                    onDateEvent(DateEvent.Header.OnPreviousClick)
                 },
             contentDescription = "Previous day",
             painter = painterResource(id = R.drawable.ic_arrow_disclosure_18),
             contentScale = ContentScale.None
         )
-        when (state) {
-            is DateObjectHeaderState.Content -> {
+        when (uiState) {
+            is UiHeaderState.Content -> {
                 Text(
                     textAlign = TextAlign.Center,
-                    text = state.title,
+                    text = uiState.title,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
@@ -62,7 +63,7 @@ fun DateObjectHeader(
                 )
             }
 
-            DateObjectHeaderState.Loading -> {
+            UiHeaderState.Loading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -78,7 +79,7 @@ fun DateObjectHeader(
                 }
             }
 
-            DateObjectHeaderState.Empty -> {
+            UiHeaderState.Empty -> {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -98,8 +99,8 @@ fun DateObjectHeader(
             modifier = Modifier
                 .height(48.dp)
                 .width(52.dp)
-                .clickable {
-                    action(DateObjectHeaderState.Action.Next)
+                .noRippleThrottledClickable {
+                    onDateEvent(DateEvent.Header.OnNextClick)
                 },
             contentDescription = "Next day",
             painter = painterResource(id = R.drawable.ic_arrow_disclosure_18),
@@ -111,19 +112,19 @@ fun DateObjectHeader(
 @Composable
 @DefaultPreviews
 fun DateLayoutHeaderEmptyPreview() {
-    val state = DateObjectHeaderState.Empty
-    DateObjectHeader(
+    val state = UiHeaderState.Empty
+    HeaderScreen(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp), state = state
+            .height(48.dp), uiState = state
     ) {}
 }
 
 @Composable
 @DefaultPreviews
 fun DateLayoutHeaderLoadingPreview() {
-    val state = DateObjectHeaderState.Loading
-    DateObjectHeader(
+    val state = UiHeaderState.Loading
+    HeaderScreen(
         Modifier
             .fillMaxWidth()
             .height(48.dp), state
@@ -133,8 +134,8 @@ fun DateLayoutHeaderLoadingPreview() {
 @Composable
 @DefaultPreviews
 fun DateLayoutHeaderPreview() {
-    val state = DateObjectHeaderState.Content("Tue, 12 Oct")
-    DateObjectHeader(
+    val state = UiHeaderState.Content("Tue, 12 Oct")
+    HeaderScreen(
         Modifier
             .fillMaxWidth()
             .height(48.dp), state

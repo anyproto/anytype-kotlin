@@ -8,19 +8,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.relations.DatePickerContent
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.feature_date.R
-import com.anytypeio.anytype.feature_date.models.UiCalendarState
+import com.anytypeio.anytype.feature_date.viewmodel.UiCalendarState
+import com.anytypeio.anytype.feature_date.ui.models.DateEvent
 import com.anytypeio.anytype.presentation.sets.DateValueView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
-    onDismiss: () -> Unit,
-    uiCalendarState: UiCalendarState,
-    onCalendarDateSelected: (Long?) -> Unit,
-    onTodayClicked: () -> Unit,
-    onTomorrowClicked: () -> Unit
+    uiState: UiCalendarState,
+    onDateEvent: (DateEvent) -> Unit
 ) {
 
     val bottomSheetState = rememberModalBottomSheetState(
@@ -32,32 +29,20 @@ fun CalendarScreen(
         containerColor = colorResource(id = R.color.background_secondary),
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetState = bottomSheetState,
-        onDismissRequest = onDismiss,
+        onDismissRequest = { onDateEvent(DateEvent.Calendar.OnCalendarDismiss) },
         content = {
-            when (uiCalendarState) {
+            when (uiState) {
                 is UiCalendarState.Calendar -> {
                     DatePickerContent(
-                        state = DateValueView(
-                            timeInMillis = uiCalendarState.timeInMillis
-                        ),
-                        onDateSelected = {
-                            onDismiss()
-                            onCalendarDateSelected(it)
-                        },
+                        state = DateValueView(timeInMillis = uiState.timeInMillis),
                         showHeader = false,
-                        onClear = {},
-                        onTodayClicked = {
-                            onDismiss()
-                            onTodayClicked()
-                        },
-                        onTomorrowClicked = {
-                            onDismiss()
-                            onTomorrowClicked()
-                        }
+                        onDateSelected = { onDateEvent(DateEvent.Calendar.OnCalendarDateSelected(it)) },
+                        onTodayClicked = { onDateEvent(DateEvent.Calendar.OnTodayClick) },
+                        onTomorrowClicked = { onDateEvent(DateEvent.Calendar.OnTomorrowClick) }
                     )
                 }
 
-                UiCalendarState.Empty -> {}
+                UiCalendarState.Hidden -> {}
             }
         },
     )

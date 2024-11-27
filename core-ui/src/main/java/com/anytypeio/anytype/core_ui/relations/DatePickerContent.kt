@@ -44,7 +44,7 @@ fun DatePickerContent(
     state: DateValueView,
     showHeader: Boolean = true,
     onDateSelected: (Long?) -> Unit,
-    onClear: () -> Unit,
+    onClear: () -> Unit = {},
     onTodayClicked: () -> Unit,
     onTomorrowClicked: () -> Unit
 ) {

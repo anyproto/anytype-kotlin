@@ -123,10 +123,10 @@ class DateProviderImpl @Inject constructor(
     }
 
     override fun adjustFromStartOfDayInUserTimeZoneToUTC(
-        timestamp: TimeInMillis
+        timeInMillis: TimeInMillis
     ): TimeInSeconds {
-        // Convert the timestamp to an Instan
-        val instant = Instant.ofEpochSecond(timestamp)
+        // Convert the timestamp to an Instant
+        val instant = Instant.ofEpochMilli(timeInMillis)
 
         // Convert the Instant to a ZonedDateTime in UTC
         val utcDateTime = instant.atZone(ZoneOffset.UTC)

@@ -101,7 +101,8 @@ import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetSourceComponen
 import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetTypeComponent
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
-import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel
+import com.anytypeio.anytype.feature_date.viewmodel.DateViewModel
+import com.anytypeio.anytype.feature_date.viewmodel.DateVmParams
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -338,7 +339,7 @@ class ComponentManager(
             .create(params, findComponentDependencies())
     }
 
-    val dateObjectComponent = ComponentWithParams { params:DateObjectViewModel.VmParams  ->
+    val dateObjectComponent = ComponentWithParams { params: DateVmParams  ->
         DaggerDateObjectComponent
             .factory()
             .create(params, findComponentDependencies())

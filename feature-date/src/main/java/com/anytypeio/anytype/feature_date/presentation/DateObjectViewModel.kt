@@ -472,7 +472,7 @@ class DateObjectViewModel(
                     shouldScrollToTopItems = true
                     resetLimit()
                     canPaginate.value = false
-                    uiContentState.value = UiContentState.Empty
+                    uiContentState.value = UiContentState.Idle()
                     uiVerticalListState.value = DateObjectVerticalListState.loadingState()
                     restartSubscription.value++
                     updateHorizontalListState(selectedItem = item)
@@ -480,7 +480,7 @@ class DateObjectViewModel(
                     shouldScrollToTopItems = true
                     resetLimit()
                     canPaginate.value = false
-                    uiContentState.value = UiContentState.Empty
+                    uiContentState.value = UiContentState.Idle()
                     _activeRelation.value = ActiveRelation(
                         key = item.key,
                         format = item.relationFormat

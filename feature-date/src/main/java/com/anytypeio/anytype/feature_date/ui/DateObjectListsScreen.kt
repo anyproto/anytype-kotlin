@@ -351,7 +351,7 @@ private fun ListItem(
                 }
                 if (!createdBy.isNullOrBlank()) {
                     Text(
-                        text = " • $createdBy",
+                        text = "${stringResource(R.string.date_layout_item_created_by)} • $createdBy",
                         style = Relations3,
                         color = colorResource(id = R.color.text_secondary),
                         maxLines = 1,

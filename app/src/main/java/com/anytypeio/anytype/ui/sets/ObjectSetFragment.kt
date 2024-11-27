@@ -1005,24 +1005,32 @@ open class ObjectSetFragment :
                 )
             }
             is ObjectSetCommand.Modal.EditGridTextCell -> {
-                val fr = RelationTextValueFragment.new(
-                    ctx = ctx,
-                    objectId = command.recordId,
-                    flow = RelationTextValueFragment.FLOW_DATAVIEW,
-                    relationKey = command.relationKey,
-                    space = command.space
-                )
-                fr.showChildFragment(EMPTY_TAG)
+                runCatching {
+                    val fr = RelationTextValueFragment.new(
+                        ctx = ctx,
+                        objectId = command.recordId,
+                        flow = RelationTextValueFragment.FLOW_DATAVIEW,
+                        relationKey = command.relationKey,
+                        space = command.space
+                    )
+                    fr.showChildFragment(EMPTY_TAG)
+                }.onFailure {
+                    Timber.e(it, "Error while opening relation text value for grid cell")
+                }
             }
             is ObjectSetCommand.Modal.EditIntrinsicTextRelation -> {
-                val fr = RelationTextValueFragment.new(
-                    ctx = ctx,
-                    objectId = ctx,
-                    flow = RelationTextValueFragment.FLOW_SET_OR_COLLECTION,
-                    relationKey = command.relation,
-                    space = command.space
-                )
-                fr.showChildFragment(EMPTY_TAG)
+                runCatching {
+                    val fr = RelationTextValueFragment.new(
+                        ctx = ctx,
+                        objectId = ctx,
+                        flow = RelationTextValueFragment.FLOW_SET_OR_COLLECTION,
+                        relationKey = command.relation,
+                        space = command.space
+                    )
+                    fr.showChildFragment(EMPTY_TAG)
+                }.onFailure {
+                    Timber.e(it, "Error while opening relation text value in set")
+                }
             }
             is ObjectSetCommand.Modal.EditObjectRelationValue -> {
                 findNavController().safeNavigate(

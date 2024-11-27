@@ -1,18 +1,28 @@
 package com.anytypeio.anytype.domain.chats
 
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
+import kotlin.collections.isNotEmpty
+import kotlin.collections.toList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 
 class ChatContainer @Inject constructor(
@@ -20,8 +30,53 @@ class ChatContainer @Inject constructor(
     private val channel: ChatEventChannel,
     private val logger: Logger
 ) {
-
     private val payloads = MutableSharedFlow<List<Event.Command.Chats>>()
+
+    private val attachments = MutableSharedFlow<Set<Id>>(replay = 0)
+
+    fun fetchAttachments(space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
+        return attachments
+            .distinctUntilChanged()
+            .map { ids ->
+                if (ids.isNotEmpty()) {
+                    repo.searchObjects(
+                        sorts = emptyList(),
+                        limit = 0,
+                        filters = buildList {
+                            DVFilter(
+                                relation = Relations.ID,
+                                value = ids.toList(),
+                                condition = DVFilterCondition.IN
+                            )
+                        },
+                        keys = emptyList(),
+                        space = space
+                    ).mapNotNull {
+                        val wrapper = ObjectWrapper.Basic(it)
+                        if (wrapper.isValid) wrapper else null
+                    }
+                } else {
+                    emptyList()
+                }
+            }
+            .distinctUntilChanged()
+            .map { wrappers -> wrappers.associate { it.id to it } }
+    }
+
+    fun watchWhileTrackingAttachments(chat: Id): Flow<List<Chat.Message>> {
+        return watch(chat)
+            .onEach { messages ->
+                val ids = messages
+                    .map { msg ->
+                        msg.attachments.map {
+                            it.target
+                        }
+                    }
+                    .flatten()
+                    .toSet()
+                attachments.emit(ids)
+            }
+    }
 
     fun watch(chat: Id): Flow<List<Chat.Message>> = flow {
         val initial = repo.subscribeLastChatMessages(

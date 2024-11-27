@@ -121,6 +121,8 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.UXCommand
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import kotlinx.coroutines.launch
 
 
@@ -991,6 +993,7 @@ private fun ChatUserAvatar(
 val defaultBubbleColor = Color(0x99FFFFFF)
 val userMessageBubbleColor = Color(0x66000000)
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Bubble(
     modifier: Modifier = Modifier,
@@ -1120,9 +1123,13 @@ fun Bubble(
         attachments.forEach { attachment ->
             when(attachment) {
                 is DiscussionView.Message.Attachment.Image -> {
-                    Image(
-                        painter = rememberAsyncImagePainter(attachment.url),
-                        contentDescription = "Image from attachment"
+                    GlideImage(
+                        model = attachment.url,
+                        contentDescription = "Attachment image",
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clip(shape = RoundedCornerShape(16.dp))
                     )
                 }
                 is DiscussionView.Message.Attachment.Link -> {
@@ -1132,8 +1139,8 @@ fun Bubble(
                             end = 16.dp,
                             top = 8.dp
                         ),
-                        title = attachment.target,
-                        type = "Link",
+                        title = attachment.wrapper?.name.orEmpty(),
+                        type = attachment.wrapper?.type?.firstOrNull().orEmpty(),
                         icon = ObjectIcon.None,
                         onAttachmentClicked = {
                             onAttachmentClicked(attachment)

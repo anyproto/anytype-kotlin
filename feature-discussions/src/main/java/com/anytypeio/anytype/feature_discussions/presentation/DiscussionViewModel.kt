@@ -3,11 +3,13 @@ package com.anytypeio.anytype.feature_discussions.presentation
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.text.splitByMarks
+import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
@@ -30,7 +32,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -105,10 +106,9 @@ class DiscussionViewModel @Inject constructor(
         chat: Id
     ) {
         chatContainer
-            .watch(chat = chat)
-            .onEach { Timber.d("Got new update: $it") }
-            .collect {
-                messages.value = it.map { msg ->
+            .watchWhileTrackingAttachments(chat = chat)
+            .withLatestFrom(chatContainer.fetchAttachments(vmParams.space)) { result, dependencies ->
+                result.map { msg ->
                     val member = members.get().let { type ->
                         when (type) {
                             is Store.Data -> type.members.find { member ->
@@ -149,12 +149,26 @@ class DiscussionViewModel @Inject constructor(
                             when(attachment.type) {
                                 Chat.Message.Attachment.Type.Image -> DiscussionView.Message.Attachment.Image(
                                     target = attachment.target,
-                                    url = urlBuilder.large(path = attachment.target)
+                                    url = urlBuilder.medium(path = attachment.target)
                                 )
-                               else -> DiscussionView.Message.Attachment.Image(
-                                   target = attachment.target,
-                                   url = urlBuilder.large(path = attachment.target)
-                               )
+                                else -> {
+                                    val wrapper = dependencies[attachment.target]
+                                    if (wrapper?.layout == ObjectType.Layout.IMAGE) {
+                                        DiscussionView.Message.Attachment.Image(
+                                            target = attachment.target,
+                                            url = urlBuilder.large(path = attachment.target)
+                                        )
+                                    } else {
+                                        DiscussionView.Message.Attachment.Link(
+                                            target = attachment.target,
+                                            wrapper = wrapper
+                                        )
+                                    }
+                                }
+                            }
+                        }.also {
+                            if (it.isNotEmpty()) {
+                                Timber.d("Chat attachments: $it")
                             }
                         },
                         avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
@@ -166,6 +180,9 @@ class DiscussionViewModel @Inject constructor(
                         }
                     )
                 }.reversed()
+            }
+            .collect { result ->
+                messages.value = result
             }
     }
 

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_discussions.presentation
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
 
 sealed interface DiscussionView {
@@ -38,7 +39,8 @@ sealed interface DiscussionView {
             ): Attachment()
 
             data class Link(
-                val target: Id
+                val target: Id,
+                val wrapper: ObjectWrapper.Basic?
             ): Attachment()
         }
 

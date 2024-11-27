@@ -1,7 +1,8 @@
-package com.anytypeio.anytype.feature_date.presentation
+package com.anytypeio.anytype.feature_date.viewmodel
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
@@ -10,37 +11,50 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.TimeInSeconds
 
-fun filtersForSearch(
-    relation: DateObjectViewModel.ActiveRelation,
-    dateObjectId: Id,
+fun filtersAndSortsForSearch(
+    dateId: Id,
+    field: ActiveField,
     timestamp: TimeInSeconds,
     spaces: List<Id>
-): List<DVFilter> {
+): Pair<List<DVFilter>, List<DVSort>> {
     val filters = buildList {
         addAll(buildDeletedFilter())
         add(buildSpaceIdFilter(spaces))
         add(buildTemplateFilter())
         add(
-            buildRelationKeyFilter(
-                dateObjectId = dateObjectId,
-                relation = relation,
+            buildFieldFilter(
+                dateObjectId = dateId,
+                field = field,
                 timestamp = timestamp
             )
         )
         add(buildLayoutFilter())
     }
-    return filters
+    return filters to buildSorts(field)
 }
 
-private fun buildRelationKeyFilter(
+private fun buildSorts(
+    field: ActiveField,
+): List<DVSort> {
+    return listOf(
+        DVSort(
+            relationKey = field.key.key,
+            type = field.sort,
+            relationFormat = RelationFormat.DATE
+        )
+    )
+}
+
+private fun buildFieldFilter(
     dateObjectId: Id,
-    relation: DateObjectViewModel.ActiveRelation,
+    field: ActiveField,
     timestamp: TimeInSeconds
-): DVFilter =
-    when (relation.format) {
+): DVFilter {
+    val fieldKey = field.key.key
+    return when (field.format) {
         Relation.Format.DATE -> {
             DVFilter(
-                relation = relation.key.key,
+                relation = fieldKey,
                 condition = DVFilterCondition.EQUAL,
                 value = timestamp.toDouble(),
                 relationFormat = RelationFormat.DATE
@@ -48,12 +62,13 @@ private fun buildRelationKeyFilter(
         }
         else -> {
             DVFilter(
-                relation = relation.key.key,
+                relation = fieldKey,
                 condition = DVFilterCondition.IN,
                 value = dateObjectId
             )
         }
     }
+}
 
 private fun buildTemplateFilter(): DVFilter = DVFilter(
     relation = Relations.TYPE_UNIQUE_KEY,

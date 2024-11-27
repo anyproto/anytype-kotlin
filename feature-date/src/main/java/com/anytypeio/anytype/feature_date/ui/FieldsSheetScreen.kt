@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -58,19 +61,20 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.feature_date.R
-import com.anytypeio.anytype.feature_date.models.DateObjectSheetState
-import com.anytypeio.anytype.feature_date.models.UiHorizontalListItem
+import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsSheetState
+import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem
+import com.anytypeio.anytype.feature_date.ui.models.DateEvent
+import com.anytypeio.anytype.feature_date.ui.models.StubHorizontalItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HorizontalItemsModalScreen(
-    onDismiss: () -> Unit,
-    lazyHorizontalListState: LazyListState,
+fun FieldsSheetScreen(
     scope: CoroutineScope,
-    uiSheetState: DateObjectSheetState,
-    uiHorizontalListActions: (UiHorizontalListItem) -> Unit,
+    uiState: UiFieldsSheetState,
+    lazyListState: LazyListState,
+    onDateEvent: (DateEvent) -> Unit
 ) {
 
     val bottomSheetState = rememberModalBottomSheetState(
@@ -88,23 +92,24 @@ fun HorizontalItemsModalScreen(
         containerColor = colorResource(id = R.color.background_secondary),
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetState = bottomSheetState,
-        onDismissRequest = onDismiss,
+        onDismissRequest = {
+            onDateEvent(DateEvent.FieldsSheet.OnSheetDismiss)
+        },
         content = {
-            when (uiSheetState) {
-                is DateObjectSheetState.Content -> {
+            when (uiState) {
+                is UiFieldsSheetState.Content -> {
                     DateObjectSheetScreen(
-                        uiSheetState = uiSheetState,
-                        uiHorizontalListActions = { item, index ->
-                            onDismiss()
+                        uiSheetState = uiState,
+                        onClick = { item, index ->
                             scope.launch {
-                                lazyHorizontalListState.animateScrollToItem(index = index)
+                                lazyListState.animateScrollToItem(index = index)
                             }
-                            uiHorizontalListActions(item)
-                        },
-                        onQueryChange = {}
+                            onDateEvent(DateEvent.FieldsSheet.OnFieldClick(item))
+                        }
                     )
                 }
-                DateObjectSheetState.Empty -> {}
+
+                UiFieldsSheetState.Hidden -> {}
             }
         },
     )
@@ -112,14 +117,13 @@ fun HorizontalItemsModalScreen(
 
 
 @Composable
-fun ColumnScope.DateObjectSheetScreen(
-    uiSheetState: DateObjectSheetState.Content,
-    uiHorizontalListActions: (UiHorizontalListItem, Int) -> Unit,
-    onQueryChange: (String) -> Unit,
-) {
+private fun ColumnScope.DateObjectSheetScreen(
+    uiSheetState: UiFieldsSheetState.Content,
+    onClick: (UiFieldsItem, Int) -> Unit)
+{
     val listState = rememberLazyListState()
     Spacer(Modifier.height(10.dp))
-    DateObjectSearchBar { }
+    SearchBar { }
     Spacer(Modifier.height(10.dp))
     Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
     LazyColumn(
@@ -131,14 +135,14 @@ fun ColumnScope.DateObjectSheetScreen(
             key = { index -> uiSheetState.items[index].id },
             itemContent = { index ->
                 when (val item = uiSheetState.items[index]) {
-                    is UiHorizontalListItem.Item -> {
+                    is UiFieldsItem.Item.Default -> {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp)
                                 .height(52.dp)
-                                .noRippleThrottledClickable{
-                                    uiHorizontalListActions(item, index)
+                                .noRippleThrottledClickable {
+                                    onClick(item, index)
                                 },
                             contentAlignment = Alignment.CenterStart,
                         ) {
@@ -153,6 +157,43 @@ fun ColumnScope.DateObjectSheetScreen(
                         }
                         Divider()
                     }
+
+                    is UiFieldsItem.Item.Mention -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
+                                .height(52.dp)
+                                .noRippleThrottledClickable {
+                                    onClick(item, index)
+                                },
+                            contentAlignment = Alignment.CenterStart,
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillParentMaxHeight()
+                                    .wrapContentWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Image(
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                        .size(24.dp),
+                                    painter = painterResource(R.drawable.ic_mention_24),
+                                    contentDescription = "Mentioned in"
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentSize(),
+                                    text = stringResource(R.string.date_layout_mentioned_in),
+                                    color = colorResource(R.color.text_primary),
+                                    style = BodyRegular
+                                )
+                            }
+                        }
+                        Divider()
+                    }
+
                     else -> {
                         //do nothing
                     }
@@ -166,7 +207,7 @@ fun ColumnScope.DateObjectSheetScreen(
 //region SearchBar
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DateObjectSearchBar(onQueryChanged: (String) -> Unit) {
+private fun SearchBar(onDateEvent: (DateEvent) -> Unit) {
 
     val interactionSource = remember { MutableInteractionSource() }
     val focus = LocalFocusManager.current
@@ -216,7 +257,7 @@ fun DateObjectSearchBar(onQueryChanged: (String) -> Unit) {
                 ),
                 onValueChange = { input ->
                     query = input.also {
-                        onQueryChanged(input.text)
+                        onDateEvent(DateEvent.FieldsSheet.OnSearchQueryChanged(input.text))
                     }
                 },
                 singleLine = true,
@@ -266,7 +307,7 @@ fun DateObjectSearchBar(onQueryChanged: (String) -> Unit) {
                     .padding(end = 9.dp)
                     .noRippleClickable {
                         query = TextFieldValue().also {
-                            onQueryChanged("")
+                            onDateEvent(DateEvent.FieldsSheet.OnSearchQueryChanged(""))
                         }
                     }
             )
@@ -276,14 +317,13 @@ fun DateObjectSearchBar(onQueryChanged: (String) -> Unit) {
 
 @DefaultPreviews
 @Composable
-private fun DateObjectSearchBarPreview() {
+private fun SearchBarPreview() {
     Column {
         DateObjectSheetScreen(
-            uiSheetState = DateObjectSheetState.Content(
+            uiSheetState = UiFieldsSheetState.Content(
                 items = StubHorizontalItems
             ),
-            onQueryChange = {},
-            uiHorizontalListActions = {_, _ ->}
+            onClick = { _, _ -> }
         )
     }
 }

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -24,8 +25,8 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
-import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModel
-import com.anytypeio.anytype.feature_date.presentation.DateObjectViewModelFactory
+import com.anytypeio.anytype.feature_date.viewmodel.DateVMFactory
+import com.anytypeio.anytype.feature_date.viewmodel.DateVmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import dagger.Binds
@@ -46,7 +47,7 @@ interface DateObjectComponent {
     @Component.Factory
     interface Factory {
         fun create(
-            @BindsInstance vmParams: DateObjectViewModel.VmParams,
+            @BindsInstance vmParams: DateVmParams,
             dependencies: DateObjectDependencies
         ): DateObjectComponent
     }
@@ -145,7 +146,7 @@ object DateObjectModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: DateObjectViewModelFactory
+            factory: DateVMFactory
         ): ViewModelProvider.Factory
 
     }
@@ -165,4 +166,6 @@ interface DateObjectDependencies : ComponentDependencies {
     fun userPermissionProvider(): UserPermissionProvider
     fun provideStoreOfRelations(): StoreOfRelations
     fun provideDateProvider(): DateProvider
+    fun provideSpaceSyncAndP2PStatusProvider(): SpaceSyncAndP2PStatusProvider
+    fun provideUserSettingsRepository(): UserSettingsRepository
 }

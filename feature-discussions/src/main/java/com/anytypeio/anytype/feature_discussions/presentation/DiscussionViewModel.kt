@@ -123,15 +123,18 @@ class DiscussionViewModel @Inject constructor(
                     DiscussionView.Message(
                         id = msg.id,
                         timestamp = msg.createdAt * 1000,
-                        content = content?.text
-                            .orEmpty()
-                            .splitByMarks(marks = content?.marks.orEmpty())
-                            .map { (part, styles) ->
-                                DiscussionView.Message.Content.Part(
-                                    part = part,
-                                    styles = styles
-                                )
-                            },
+                        content = DiscussionView.Message.Content(
+                            msg = content?.text.orEmpty(),
+                            parts = content?.text
+                                .orEmpty()
+                                .splitByMarks(marks = content?.marks.orEmpty())
+                                .map { (part, styles) ->
+                                    DiscussionView.Message.Content.Part(
+                                        part = part,
+                                        styles = styles
+                                    )
+                                }
+                        ),
                         author = member?.name ?: msg.creator.takeLast(5),
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,

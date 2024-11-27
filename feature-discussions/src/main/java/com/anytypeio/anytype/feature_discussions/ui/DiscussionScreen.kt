@@ -166,9 +166,7 @@ fun DiscussionScreenWrapper(
                     lazyListState = lazyListState,
                     onReacted = vm::onReacted,
                     onCopyMessage = { msg ->
-                        clipboard.setText(
-                            AnnotatedString(text = msg.content.joinToString())
-                        )
+                        clipboard.setText(AnnotatedString(text = msg.content.msg))
                     },
                     onDeleteMessage = vm::onDeleteMessage,
                     onEditMessage = vm::onRequestEditMessageClicked,
@@ -277,8 +275,8 @@ fun DiscussionScreen(
                 onEditMessage = { msg ->
                     onEditMessage(msg).also {
                         textState = TextFieldValue(
-                            msg.content.joinToString(),
-                            selection = TextRange(msg.content.joinToString().length)
+                            msg.content.msg,
+                            selection = TextRange(msg.content.msg.length)
                         )
                         chatBoxFocusRequester.requestFocus()
                     }
@@ -859,7 +857,7 @@ fun Messages(
                 Bubble(
                     modifier = Modifier.weight(1.0f),
                     name = msg.author,
-                    msg = msg.content,
+                    content = msg.content,
                     timestamp = msg.timestamp,
                     attachments = msg.attachments,
                     isUserAuthor = msg.isUserAuthor,
@@ -996,7 +994,7 @@ val userMessageBubbleColor = Color(0x66000000)
 fun Bubble(
     modifier: Modifier = Modifier,
     name: String,
-    msg: List<DiscussionView.Message.Content.Part>,
+    content: DiscussionView.Message.Content,
     timestamp: Long,
     attachments: List<Chat.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
@@ -1062,7 +1060,7 @@ fun Bubble(
                 bottom = 0.dp
             ),
             text = buildAnnotatedString {
-                msg.forEach { part ->
+                content.parts.forEach { part ->
                     if (part.link != null && part.link.param != null) {
                         withLink(
                             LinkAnnotation.Clickable(

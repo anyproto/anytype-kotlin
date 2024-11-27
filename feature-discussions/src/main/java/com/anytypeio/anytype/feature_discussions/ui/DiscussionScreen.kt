@@ -1424,7 +1424,7 @@ fun ReactionList(
                         color = if (reaction.isSelected)
                             colorResource(id = R.color.palette_very_light_orange)
                         else
-                            colorResource(id = R.color.background_highlighted),
+                            colorResource(id = R.color.shape_transparent_primary),
                         shape = RoundedCornerShape(100.dp)
                     )
                     .clip(RoundedCornerShape(100.dp))
@@ -1463,7 +1463,10 @@ fun ReactionList(
                         .padding(
                             end = 12.dp
                         ),
-                    color = colorResource(id = R.color.text_primary)
+                    color = if (reaction.isSelected)
+                        colorResource(id = R.color.text_primary)
+                    else
+                        colorResource(id = R.color.text_white)
                 )
             }
         }

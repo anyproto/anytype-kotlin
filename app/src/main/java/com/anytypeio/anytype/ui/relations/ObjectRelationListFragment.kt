@@ -41,6 +41,7 @@ import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
+import timber.log.Timber
 
 open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelationListBinding>(),
     RelationTextValueFragment.TextValueEditReceiver,
@@ -118,18 +119,22 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
     private fun execute(command: Command) {
         when (command) {
             is Command.EditTextRelationValue -> {
-                val fr = RelationTextValueFragment.new(
-                    ctx = ctx,
-                    relationKey = command.relationKey,
-                    objectId = command.target,
-                    isLocked = command.isLocked,
-                    flow = if (isSetFlow)
-                        RelationTextValueFragment.FLOW_DATAVIEW
-                    else
-                        RelationTextValueFragment.FLOW_DEFAULT,
-                    space = space
-                )
-                fr.showChildFragment()
+                runCatching {
+                    val fr = RelationTextValueFragment.new(
+                        ctx = ctx,
+                        relationKey = command.relationKey,
+                        objectId = command.target,
+                        isLocked = command.isLocked,
+                        flow = if (isSetFlow)
+                            RelationTextValueFragment.FLOW_DATAVIEW
+                        else
+                            RelationTextValueFragment.FLOW_DEFAULT,
+                        space = space
+                    )
+                    fr.showChildFragment()
+                }.onFailure {
+                    Timber.e(it, "Error while opening relation text value from relation list")
+                }
             }
             is Command.EditDateRelationValue -> {
                 val fr = RelationDateValueFragment.new(

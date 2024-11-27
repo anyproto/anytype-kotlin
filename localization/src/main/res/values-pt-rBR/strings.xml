@@ -1553,4 +1553,8 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Escreva uma mensagem...</string>
+    <string name="chat_attachment_object">Objeto</string>
+    <string name="chat_attachment_file">Arquivo</string>
+    <string name="chat_attachment_media">Mídias</string>
+    <string name="chat_attachment_upload">Fazer upload</string>
 </resources>

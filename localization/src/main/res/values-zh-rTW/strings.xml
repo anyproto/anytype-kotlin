@@ -1543,4 +1543,8 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Write a message...</string>
+    <string name="chat_attachment_object">物件</string>
+    <string name="chat_attachment_file">檔案</string>
+    <string name="chat_attachment_media">媒體</string>
+    <string name="chat_attachment_upload">上傳</string>
 </resources>

@@ -1389,7 +1389,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_email_code_wrong">Code is wrong</string>
     <string name="membership_email_code_success">Code is correct</string>
     <string name="membership_email_membership_not_found">Membership non trovata</string>
-    <string name="membership_email_membership_already_active">Membership già attiva</string>
+    <string name="membership_email_membership_already_active">Abbonamento già attivo</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Si è verificato un errore sconosciuto. Ti preghiamo di riprovare più tardi.</string>
     <string name="notifications_alert_error_bad_input">Rilevato un inserimento non valido. Per favore controlla i tuoi dati e riprova.</string>
@@ -1557,4 +1557,8 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">modificato</string>
     <string name="chat_empty_state_message">Non ci sono ancora messaggi.\nSii il primo ad avviare una discussione.</string>
     <string name="write_a_message">Scrivi un messaggio...</string>
+    <string name="chat_attachment_object">Oggetto</string>
+    <string name="chat_attachment_file">File</string>
+    <string name="chat_attachment_media">Multimedia</string>
+    <string name="chat_attachment_upload">Carica</string>
 </resources>

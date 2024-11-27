@@ -34,6 +34,7 @@ class ChatContainer @Inject constructor(
 
     private val attachments = MutableSharedFlow<Set<Id>>(replay = 0)
 
+    @Deprecated("Naive implementation. Add caching logic - maybe store for wrappers")
     fun fetchAttachments(space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
         return attachments
             .distinctUntilChanged()

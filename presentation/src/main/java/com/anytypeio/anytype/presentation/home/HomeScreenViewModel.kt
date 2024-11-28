@@ -571,7 +571,8 @@ class HomeScreenViewModel(
                 state.obj.blocks.parseWidgets(
                     root = state.obj.root,
                     details = state.obj.details,
-                    config = state.config
+                    config = state.config,
+                    dateProvider = dateProvider
                 ).also {
                     widgetActiveViewStateHolder.init(state.obj.blocks.parseActiveViews())
                 }

@@ -3,10 +3,13 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.getSingleValue
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts.isSupportedForWidgets
 
 sealed class Widget {
@@ -61,7 +64,7 @@ sealed class Widget {
         abstract val id: Id
         abstract val type: Id?
 
-        data class Default(val obj: ObjectWrapper.Basic) : Source() {
+        data class Default(val obj: ObjectWrapper.Basic, val dateTitle: String? = null) : Source() {
             override val id: Id = obj.id
             override val type: Id? = obj.type.firstOrNull()
         }
@@ -117,7 +120,8 @@ fun List<Block>.parseActiveViews() : WidgetToActiveView {
 fun List<Block>.parseWidgets(
     root: Id,
     details: Map<Id, Struct>,
-    config: Config
+    config: Config,
+    dateProvider: DateProvider
 ): List<Widget> = buildList {
     val map = asMap()
     val widgets = map[root] ?: emptyList()
@@ -133,9 +137,26 @@ fun List<Block>.parseWidgets(
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {
-                        Widget.Source.Default(
-                            ObjectWrapper.Basic(raw)
-                        )
+                        val obj = ObjectWrapper.Basic(raw)
+                        if (obj.layout == ObjectType.Layout.DATE) {
+                            val timestampInSeconds =
+                                obj.getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
+                            if (timestampInSeconds != null) {
+                                val (formattedDate, _) = dateProvider.formatTimestampToDateAndTime(
+                                    timestamp = timestampInSeconds * 1000,
+                                )
+                                Widget.Source.Default(
+                                    obj = obj,
+                                    dateTitle = formattedDate
+                                )
+                            } else {
+                                Widget.Source.Default(
+                                    obj = obj
+                                )
+                            }
+                        } else {
+                            Widget.Source.Default(obj)
+                        }
                     }
                     val hasValidSource = when(source) {
                         is Widget.Source.Bundled -> true

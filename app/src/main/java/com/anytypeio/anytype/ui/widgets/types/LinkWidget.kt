@@ -92,7 +92,7 @@ fun LinkWidgetCard(
             Text(
                 text = when (val source = item.source) {
                     is Widget.Source.Default -> {
-                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                        source.dateTitle ?: source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
                     }
                     is Widget.Source.Bundled -> { stringResource(id = source.res()) }
                 },

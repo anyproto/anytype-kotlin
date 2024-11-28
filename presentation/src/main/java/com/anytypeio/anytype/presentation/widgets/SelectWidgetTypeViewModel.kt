@@ -43,74 +43,117 @@ class SelectWidgetTypeViewModel(
         sourceLayout: Int,
         source: Id
     ) {
-        Timber.d("onStart for existing widget")
-        if (BundledWidgetSourceIds.ids.contains(source)) {
-            if (source == BundledWidgetSourceIds.FAVORITE
-                || source == BundledWidgetSourceIds.RECENT
-                || source == BundledWidgetSourceIds.RECENT_LOCAL
-            ) {
-                views.value = listOf(
-                    WidgetTypeView.CompactList().setIsSelected(currentType),
-                    WidgetTypeView.List().setIsSelected(currentType),
-                    WidgetTypeView.Tree().setIsSelected(currentType),
+        Timber.d("onStartForExistingWidget,  currentType:[$currentType], sourceLayout:[$sourceLayout], source:[$source]")
+
+        views.value = when {
+            // Check if the source is a bundled widget
+            BundledWidgetSourceIds.ids.contains(source) -> {
+                // Determine if the source requires additional widget types
+                val isExtendedSource = source in setOf(
+                    BundledWidgetSourceIds.FAVORITE,
+                    BundledWidgetSourceIds.RECENT,
+                    BundledWidgetSourceIds.RECENT_LOCAL
                 )
-            } else {
-                views.value = listOf(
-                    WidgetTypeView.CompactList().setIsSelected(currentType),
-                    WidgetTypeView.List().setIsSelected(currentType)
+
+                // Base widget types for bundled sources
+                val baseWidgets = listOf(
+                    WidgetTypeView.CompactList(),
+                    WidgetTypeView.List()
                 )
+
+                // Add Tree widget type if it's an extended source
+                val widgetList = if (isExtendedSource) {
+                    baseWidgets + WidgetTypeView.Tree()
+                } else {
+                    baseWidgets
+                }
+
+                // Set the selected state
+                widgetList.map { it.setIsSelected(currentType) }
             }
-        } else {
-            val objectLayout = ObjectType.Layout.entries.find { it.code == sourceLayout }
-            if (objectLayout.isDataView()) {
-                views.value = listOf(
-                    WidgetTypeView.View().setIsSelected(currentType),
-                    WidgetTypeView.Link().setIsSelected(currentType)
-                )
-            } else if (objectLayout == ObjectType.Layout.PARTICIPANT) {
-                views.value = listOf(
-                    WidgetTypeView.Link().setIsSelected(currentType)
-                )
-            } else {
-                views.value = views.value.map { view -> view.setIsSelected(currentType) }
+
+            // Handle non-bundled widget sources
+            else -> {
+                // Find the corresponding ObjectType.Layout based on sourceLayout
+                val objectLayout = ObjectType.Layout.entries.find { it.code == sourceLayout }
+
+                when {
+                    // If the layout is a data view, provide View and Link widgets
+                    objectLayout?.isDataView() == true -> listOf(
+                        WidgetTypeView.View(),
+                        WidgetTypeView.Link()
+                    )
+
+                    // If the layout is PARTICIPANT, provide only the Link widget
+                    objectLayout == ObjectType.Layout.PARTICIPANT -> listOf(
+                        WidgetTypeView.Link()
+                    )
+
+                    // If the layout is DATE, provide only the Link widget
+                    objectLayout == ObjectType.Layout.DATE -> listOf(
+                        WidgetTypeView.Link()
+                    )
+
+                    // For other layouts, update existing views with the selected state
+                    else -> views.value
+                }.map { it.setIsSelected(currentType) }
             }
         }
     }
 
     fun onStartForNewWidget(layout: Int, source: Id) {
-        Timber.d("onStart for new widget")
-        if (BundledWidgetSourceIds.ids.contains(source)) {
-            if (source == BundledWidgetSourceIds.FAVORITE
-                || source == BundledWidgetSourceIds.RECENT
-                || source == BundledWidgetSourceIds.RECENT_LOCAL
-            ) {
-                views.value = listOf(
-                    WidgetTypeView.CompactList(isSelected = false),
-                    WidgetTypeView.List(isSelected = false),
-                    WidgetTypeView.Tree(isSelected = false),
+        Timber.d("onStartForNewWidget, layout:[$layout], source:[$source]")
+
+        views.value = when {
+            // Check if the source is a bundled widget
+            BundledWidgetSourceIds.ids.contains(source) -> {
+                // Determine if the source requires additional widget types
+                val isExtendedSource = source in setOf(
+                    BundledWidgetSourceIds.FAVORITE,
+                    BundledWidgetSourceIds.RECENT,
+                    BundledWidgetSourceIds.RECENT_LOCAL
                 )
-            } else {
-                views.value = listOf(
+
+                // Base widget types for bundled sources
+                val baseWidgets = listOf(
                     WidgetTypeView.CompactList(isSelected = false),
-                    WidgetTypeView.List(isSelected = false),
+                    WidgetTypeView.List(isSelected = false)
                 )
+
+                // Add Tree widget type if it's an extended source
+                val widgetList = if (isExtendedSource) {
+                    baseWidgets + WidgetTypeView.Tree(isSelected = false)
+                } else {
+                    baseWidgets
+                }
+
+                widgetList
             }
-        } else {
-            val objectLayout = ObjectType.Layout.entries.find { it.code == layout }
-            if (objectLayout.isDataView()) {
-                views.value = listOf(
-                    WidgetTypeView.View(isSelected = false),
-                    WidgetTypeView.Link(isSelected = false)
-                )
-            } else if (objectLayout == ObjectType.Layout.PARTICIPANT) {
-                views.value = listOf(
-                    WidgetTypeView.Link(isSelected = true)
-                )
-            } else {
-                views.value = listOf(
-                    WidgetTypeView.Tree(isSelected = false),
-                    WidgetTypeView.Link(isSelected = false)
-                )
+
+            // Handle non-bundled widget sources
+            else -> {
+                // Find the corresponding ObjectType.Layout based on layout
+                val objectLayout = ObjectType.Layout.entries.find { it.code == layout }
+
+                when {
+                    // If the layout is a data view, provide View and Link widgets
+                    objectLayout?.isDataView() == true -> listOf(
+                        WidgetTypeView.View(isSelected = false),
+                        WidgetTypeView.Link(isSelected = false)
+                    )
+
+                    // If the layout is PARTICIPANT or DATE, provide only the Link widget (selected)
+                    objectLayout == ObjectType.Layout.PARTICIPANT ||
+                            objectLayout == ObjectType.Layout.DATE -> listOf(
+                        WidgetTypeView.Link(isSelected = true)
+                    )
+
+                    // For other layouts, provide Tree and Link widgets (not selected)
+                    else -> listOf(
+                        WidgetTypeView.Tree(isSelected = false),
+                        WidgetTypeView.Link(isSelected = false)
+                    )
+                }
             }
         }
     }
@@ -170,7 +213,8 @@ class SelectWidgetTypeViewModel(
         target: Id?,
         view: WidgetTypeView
     ) {
-        if (!view.isSelected) {
+        Timber.d("onWidgetTypeClicked, source:[$source], target:[$target], view:[$view]")
+        //if (!view.isSelected) {
             viewModelScope.launch {
                 widgetDispatcher.send(
                     WidgetDispatchEvent.TypePicked(
@@ -187,7 +231,7 @@ class SelectWidgetTypeViewModel(
                 )
                 isDismissed.value = true
             }
-        }
+        //}
     }
 
     class Factory(

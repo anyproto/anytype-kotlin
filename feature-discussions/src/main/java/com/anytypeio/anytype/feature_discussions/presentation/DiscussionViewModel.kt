@@ -3,11 +3,13 @@ package com.anytypeio.anytype.feature_discussions.presentation
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.text.splitByMarks
+import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
@@ -25,12 +27,12 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -105,10 +107,9 @@ class DiscussionViewModel @Inject constructor(
         chat: Id
     ) {
         chatContainer
-            .watch(chat = chat)
-            .onEach { Timber.d("Got new update: $it") }
-            .collect {
-                messages.value = it.map { msg ->
+            .watchWhileTrackingAttachments(chat = chat)
+            .withLatestFrom(chatContainer.fetchAttachments(vmParams.space)) { result, dependencies ->
+                result.map { msg ->
                     val member = members.get().let { type ->
                         when (type) {
                             is Store.Data -> type.members.find { member ->
@@ -123,15 +124,18 @@ class DiscussionViewModel @Inject constructor(
                     DiscussionView.Message(
                         id = msg.id,
                         timestamp = msg.createdAt * 1000,
-                        content = content?.text
-                            .orEmpty()
-                            .splitByMarks(marks = content?.marks.orEmpty())
-                            .map { (part, styles) ->
-                                DiscussionView.Message.Content.Part(
-                                    part = part,
-                                    styles = styles
-                                )
-                            },
+                        content = DiscussionView.Message.Content(
+                            msg = content?.text.orEmpty(),
+                            parts = content?.text
+                                .orEmpty()
+                                .splitByMarks(marks = content?.marks.orEmpty())
+                                .map { (part, styles) ->
+                                    DiscussionView.Message.Content.Part(
+                                        part = part,
+                                        styles = styles
+                                    )
+                                }
+                        ),
                         author = member?.name ?: msg.creator.takeLast(5),
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,
@@ -142,7 +146,32 @@ class DiscussionViewModel @Inject constructor(
                                 isSelected = ids.contains(account)
                             )
                         },
-                        attachments = msg.attachments,
+                        attachments = msg.attachments.map { attachment ->
+                            when(attachment.type) {
+                                Chat.Message.Attachment.Type.Image -> DiscussionView.Message.Attachment.Image(
+                                    target = attachment.target,
+                                    url = urlBuilder.medium(path = attachment.target)
+                                )
+                                else -> {
+                                    val wrapper = dependencies[attachment.target]
+                                    if (wrapper?.layout == ObjectType.Layout.IMAGE) {
+                                        DiscussionView.Message.Attachment.Image(
+                                            target = attachment.target,
+                                            url = urlBuilder.large(path = attachment.target)
+                                        )
+                                    } else {
+                                        DiscussionView.Message.Attachment.Link(
+                                            target = attachment.target,
+                                            wrapper = wrapper
+                                        )
+                                    }
+                                }
+                            }
+                        }.also {
+                            if (it.isNotEmpty()) {
+                                Timber.d("Chat attachments: $it")
+                            }
+                        },
                         avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
                             DiscussionView.Message.Avatar.Image(
                                 urlBuilder.thumbnail(member.iconImage!!)
@@ -152,6 +181,9 @@ class DiscussionViewModel @Inject constructor(
                         }
                     )
                 }.reversed()
+            }
+            .collect { result ->
+                messages.value = result
             }
     }
 
@@ -274,15 +306,22 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    fun onAttachmentClicked(attachment: Chat.Message.Attachment) {
+    fun onAttachmentClicked(attachment: DiscussionView.Message.Attachment) {
+        Timber.d("onAttachmentClicked")
         viewModelScope.launch {
-            // TODO naive implementation. Currently used for debugging.
-            navigation.emit(
-                OpenObjectNavigation.OpenEditor(
-                    target = attachment.target,
-                    space = vmParams.space.id
-                )
-            )
+            when(attachment) {
+                is DiscussionView.Message.Attachment.Image -> {
+                    // Do nothing.
+                }
+                is DiscussionView.Message.Attachment.Link -> {
+                    val wrapper = attachment.wrapper
+                    if (wrapper != null) {
+                        navigation.emit(wrapper.navigation())
+                    } else {
+                        Timber.w("Wrapper is not found in attachment")
+                    }
+                }
+            }
         }
     }
 

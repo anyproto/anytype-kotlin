@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.asMap
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts.isSupportedForWidgets
 
 sealed class Widget {
 
@@ -95,15 +95,9 @@ sealed class Widget {
     }
 }
 
-fun Widget.hasValidLayout() : Boolean {
-    return when (val widgetSource = source) {
-        is Widget.Source.Default -> {
-            widgetSource.obj.layout != null && SupportedLayouts.layouts.contains(widgetSource.obj.layout)
-        }
-        is Widget.Source.Bundled -> {
-            true
-        }
-    }
+fun Widget.hasValidLayout(): Boolean = when (val widgetSource = source) {
+    is Widget.Source.Default -> isSupportedForWidgets(widgetSource.obj.layout)
+    is Widget.Source.Bundled -> true
 }
 
 fun List<Block>.parseActiveViews() : WidgetToActiveView {

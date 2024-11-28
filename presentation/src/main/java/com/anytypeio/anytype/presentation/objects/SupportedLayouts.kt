@@ -56,14 +56,24 @@ object SupportedLayouts {
         ObjectType.Layout.BOOKMARK
     )
 
+    val dateLayouts = listOf(
+        ObjectType.Layout.DATE
+    )
+
     val addAsLinkToLayouts = editorLayouts + listOf(
         ObjectType.Layout.COLLECTION
     )
 
-    val globalSearchLayouts = createObjectLayouts + fileLayouts
+    val globalSearchLayouts = createObjectLayouts + fileLayouts + dateLayouts
+
+    val widgetsLayouts = layouts + dateLayouts
 
     fun isSupported(layout: ObjectType.Layout?) : Boolean {
         return layouts.contains(layout)
+    }
+
+    fun isSupportedForWidgets(layout: ObjectType.Layout?) : Boolean {
+        return widgetsLayouts.contains(layout)
     }
 
     fun isEditorOrFileLayout(layout: ObjectType.Layout?) : Boolean {

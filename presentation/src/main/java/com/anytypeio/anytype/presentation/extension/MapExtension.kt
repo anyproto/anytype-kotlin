@@ -4,6 +4,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 const val MAX_SNIPPET_SIZE = 30
@@ -23,6 +25,18 @@ fun Map<Id, Block.Fields>.getProperObjectName(id: Id?): String? {
         this[id]?.snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
     } else {
         this[id]?.name
+    }
+}
+
+fun ObjectWrapper.Basic.getProperDateName(dateProvider: DateProvider): String {
+    val timestampInSeconds = getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
+    if (timestampInSeconds != null) {
+        val (formattedDate, _) = dateProvider.formatTimestampToDateAndTime(
+            timestamp = timestampInSeconds * 1000,
+        )
+        return formattedDate
+    } else {
+        return ""
     }
 }
 

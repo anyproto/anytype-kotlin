@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -58,7 +59,8 @@ class ObjectValueViewModel(
     private val objectListIsArchived: SetObjectListIsArchived,
     private val duplicateObject: DuplicateObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val dateProvider: DateProvider
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<ObjectValueViewState>(ObjectValueViewState.Loading())
@@ -227,7 +229,8 @@ class ObjectValueViewModel(
         ObjectValueItem.Object(
             view = obj.toView(
                 urlBuilder = urlBuilder,
-                objectTypes = storeOfObjectTypes.getAll()
+                objectTypes = storeOfObjectTypes.getAll(),
+                dateProvider = dateProvider
             ),
             isSelected = isSelected,
             number = number,

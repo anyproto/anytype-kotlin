@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -32,7 +33,8 @@ class ObjectValueViewModelFactory @Inject constructor(
     private val objectListIsArchived: SetObjectListIsArchived,
     private val duplicateObject: DuplicateObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val dateProvider: DateProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -51,6 +53,7 @@ class ObjectValueViewModelFactory @Inject constructor(
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        dateProvider = dateProvider
     ) as T
 }

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -48,6 +49,7 @@ interface SelectWidgetSourceDependencies : ComponentDependencies {
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun analyticsHelper(): AnalyticSpaceHelperDelegate
     fun searchObjects(): SearchObjects
+    fun dateProvider(): DateProvider
 }
 
 @Module
@@ -63,7 +65,8 @@ object SelectWidgetSourceModule {
         searchObjects: SearchObjects,
         getObjectTypes: GetObjectTypes,
         dispatcher: Dispatcher<WidgetDispatchEvent>,
-        analyticsHelper: AnalyticSpaceHelperDelegate
+        analyticsHelper: AnalyticSpaceHelperDelegate,
+        dateProvider: DateProvider
     ): SelectWidgetSourceViewModel.Factory = SelectWidgetSourceViewModel.Factory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
@@ -71,6 +74,7 @@ object SelectWidgetSourceModule {
         analytics = analytics,
         getObjectTypes = getObjectTypes,
         dispatcher = dispatcher,
-        analyticSpaceHelperDelegate = analyticsHelper
+        analyticSpaceHelperDelegate = analyticsHelper,
+        dateProvider = dateProvider
     )
 }

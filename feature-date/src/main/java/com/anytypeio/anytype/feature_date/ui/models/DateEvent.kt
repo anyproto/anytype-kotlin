@@ -43,7 +43,10 @@ sealed class DateEvent {
         data object OnLoadMore : ObjectsList()
     }
 
-    data class OnFieldClick(val item: UiFieldsItem) : DateEvent()
+    sealed class FieldsList : DateEvent() {
+        data class OnFieldClick(val item: UiFieldsItem) : FieldsList()
+        data object OnScrolledToItemDismiss : FieldsList()
+    }
 
     sealed class SyncStatusWidget : DateEvent() {
         data object OnSyncStatusDismiss : SyncStatusWidget()

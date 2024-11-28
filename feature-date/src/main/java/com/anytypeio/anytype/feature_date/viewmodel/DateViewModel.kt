@@ -38,19 +38,28 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
+import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel.Companion.DEFAULT_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
+import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -105,6 +114,18 @@ class DateViewModel(
     private var _itemsLimit = DEFAULT_SEARCH_LIMIT
     private val restartSubscription = MutableStateFlow(0L)
 
+    /**
+     * Search query
+     */
+    private val userInput = MutableStateFlow("")
+
+    @OptIn(FlowPreview::class)
+    private val searchQuery = userInput
+        .take(1)
+        .onCompletion {
+            emitAll(userInput.drop(1).debounce(DEFAULT_DEBOUNCE_DURATION).distinctUntilChanged())
+        }
+
     private var shouldScrollToTopItems = false
 
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
@@ -118,6 +139,7 @@ class DateViewModel(
         proceedWithGettingDateObject()
         proceedWithGettingDateObjectRelationList()
         proceedWithObservingSyncStatus()
+        setupSearchStateFlow()
         _dateId.value = vmParams.objectId
     }
 
@@ -175,6 +197,25 @@ class DateViewModel(
         uiFieldsSheetState.value = UiFieldsSheetState.Hidden
         _activeField.value = null
         _dateId.value = dateObjectId
+    }
+
+    private fun setupSearchStateFlow() {
+        viewModelScope.launch {
+            searchQuery.collectLatest { query ->
+                if (uiFieldsSheetState.value is UiFieldsSheetState.Hidden) return@collectLatest
+                val items = uiFieldsState.value.items
+                if (items.isEmpty()) return@collectLatest
+                val filteredItems = if (query.isBlank()) {
+                    items
+                } else {
+                    items.filterIsInstance<UiFieldsItem.Item>()
+                        .filter { it.title.contains(query, ignoreCase = true) }
+                }
+                uiFieldsSheetState.value = UiFieldsSheetState.Visible(
+                    items = filteredItems
+                )
+            }
+        }
     }
 
     //region Initialization
@@ -429,7 +470,7 @@ class DateViewModel(
     //endregion
 
     //region Ui Actions
-    private fun onFieldsEvent(item: UiFieldsItem) {
+    private fun onFieldsEvent(item: UiFieldsItem, needToScroll: Boolean = false) {
         when (item) {
             is UiFieldsItem.Item -> {
                 if (_activeField.value?.key == item.key) {
@@ -448,7 +489,7 @@ class DateViewModel(
                     uiContentState.value = Idle()
                     uiObjectsListState.value = UiObjectsListState.Empty
                     restartSubscription.value++
-                    updateHorizontalListState(selectedItem = item)
+                    updateHorizontalListState(selectedItem = item, needToScroll = needToScroll)
                 } else {
                     shouldScrollToTopItems = true
                     resetLimit()
@@ -459,13 +500,13 @@ class DateViewModel(
                         format = item.relationFormat
                     )
                     restartSubscription.value++
-                    updateHorizontalListState(selectedItem = item)
+                    updateHorizontalListState(selectedItem = item, needToScroll = needToScroll)
                 }
             }
 
             is UiFieldsItem.Settings -> {
                 val items = uiFieldsState.value.items
-                uiFieldsSheetState.value = UiFieldsSheetState.Content(
+                uiFieldsSheetState.value = UiFieldsSheetState.Visible(
                     items = items.filterIsInstance<UiFieldsItem.Item>()
                 )
             }
@@ -608,10 +649,21 @@ class DateViewModel(
             is DateEvent.TopToolbar -> onTopToolbarEvent(event)
             is DateEvent.Header -> onHeaderEvent(event)
             is DateEvent.FieldsSheet -> onFieldsSheetEvent(event)
-            is DateEvent.OnFieldClick -> onFieldsEvent(event.item)
+            is DateEvent.FieldsList -> onFieldsListEvent(event)
             is DateEvent.NavigationWidget -> onNavigationWidgetEvent(event)
             is DateEvent.ObjectsList -> onObjectsListEvent(event)
             is DateEvent.SyncStatusWidget -> onSyncStatusWidgetEvent(event)
+        }
+    }
+
+    private fun onFieldsListEvent(event: DateEvent.FieldsList) {
+        when (event) {
+            DateEvent.FieldsList.OnScrolledToItemDismiss -> {
+                uiFieldsState.value = uiFieldsState.value.copy(
+                    needToScrollTo = false
+                )
+            }
+            is DateEvent.FieldsList.OnFieldClick -> onFieldsEvent(event.item)
         }
     }
 
@@ -704,11 +756,12 @@ class DateViewModel(
         when (event) {
             is DateEvent.FieldsSheet.OnFieldClick -> {
                 uiFieldsSheetState.value = UiFieldsSheetState.Hidden
-                onFieldsEvent(event.item)
+                onFieldsEvent(event.item, needToScroll = true)
             }
 
             is DateEvent.FieldsSheet.OnSearchQueryChanged -> {
-
+                Timber.d("Search query: ${event.query}")
+                userInput.value = event.query
             }
 
             DateEvent.FieldsSheet.OnSheetDismiss -> {
@@ -775,9 +828,10 @@ class DateViewModel(
         }
     }
 
-    private fun updateHorizontalListState(selectedItem: UiFieldsItem.Item) {
+    private fun updateHorizontalListState(selectedItem: UiFieldsItem.Item, needToScroll: Boolean = false) {
         uiFieldsState.value = uiFieldsState.value.copy(
-            selectedRelationKey = selectedItem.key
+            selectedRelationKey = selectedItem.key,
+            needToScrollTo = needToScroll
         )
     }
 

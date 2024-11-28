@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -65,15 +64,11 @@ import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsSheetState
 import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem
 import com.anytypeio.anytype.feature_date.ui.models.DateEvent
 import com.anytypeio.anytype.feature_date.ui.models.StubHorizontalItems
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FieldsSheetScreen(
-    scope: CoroutineScope,
     uiState: UiFieldsSheetState,
-    lazyListState: LazyListState,
     onDateEvent: (DateEvent) -> Unit
 ) {
 
@@ -97,15 +92,10 @@ fun FieldsSheetScreen(
         },
         content = {
             when (uiState) {
-                is UiFieldsSheetState.Content -> {
+                is UiFieldsSheetState.Visible -> {
                     DateObjectSheetScreen(
                         uiSheetState = uiState,
-                        onClick = { item, index ->
-                            scope.launch {
-                                lazyListState.animateScrollToItem(index = index)
-                            }
-                            onDateEvent(DateEvent.FieldsSheet.OnFieldClick(item))
-                        }
+                        onDateEvent = onDateEvent
                     )
                 }
 
@@ -118,12 +108,12 @@ fun FieldsSheetScreen(
 
 @Composable
 private fun ColumnScope.DateObjectSheetScreen(
-    uiSheetState: UiFieldsSheetState.Content,
-    onClick: (UiFieldsItem, Int) -> Unit)
-{
+    uiSheetState: UiFieldsSheetState.Visible,
+    onDateEvent: (DateEvent) -> Unit
+) {
     val listState = rememberLazyListState()
     Spacer(Modifier.height(10.dp))
-    SearchBar { }
+    SearchBar(onDateEvent = onDateEvent)
     Spacer(Modifier.height(10.dp))
     Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
     LazyColumn(
@@ -142,7 +132,7 @@ private fun ColumnScope.DateObjectSheetScreen(
                                 .padding(horizontal = 20.dp)
                                 .height(52.dp)
                                 .noRippleThrottledClickable {
-                                    onClick(item, index)
+                                    onDateEvent(DateEvent.FieldsSheet.OnFieldClick(item))
                                 },
                             contentAlignment = Alignment.CenterStart,
                         ) {
@@ -165,7 +155,7 @@ private fun ColumnScope.DateObjectSheetScreen(
                                 .padding(horizontal = 20.dp)
                                 .height(52.dp)
                                 .noRippleThrottledClickable {
-                                    onClick(item, index)
+                                    onDateEvent(DateEvent.FieldsSheet.OnFieldClick(item))
                                 },
                             contentAlignment = Alignment.CenterStart,
                         ) {
@@ -320,10 +310,10 @@ private fun SearchBar(onDateEvent: (DateEvent) -> Unit) {
 private fun SearchBarPreview() {
     Column {
         DateObjectSheetScreen(
-            uiSheetState = UiFieldsSheetState.Content(
+            uiSheetState = UiFieldsSheetState.Visible(
                 items = StubHorizontalItems
             ),
-            onClick = { _, _ -> }
+            onDateEvent = {}
         )
     }
 }

@@ -14,12 +14,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,15 +44,28 @@ import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsState
 @Composable
 fun FieldsScreen(
     uiState: UiFieldsState,
-    lazyListState: LazyListState,
     onDateEvent: (DateEvent) -> Unit
 ) {
+
+    val lazyFieldsListState = rememberLazyListState()
 
     val items = remember { mutableStateListOf<UiFieldsItem>() }
     items.swapList(uiState.items)
 
+    // Effect to scroll to the selected item when needToScrollTo and selectedRelationKey are set
+    LaunchedEffect(uiState.needToScrollTo, uiState.selectedRelationKey) {
+        if (uiState.needToScrollTo && uiState.selectedRelationKey != null) {
+            val relationKey = uiState.selectedRelationKey
+            val index = items.indexOfFirst { it.id == relationKey.key }
+            if (index != -1) {
+                lazyFieldsListState.animateScrollToItem(index)
+                onDateEvent(DateEvent.FieldsList.OnScrolledToItemDismiss)
+            }
+        }
+    }
+
     LazyRow(
-        state = lazyListState,
+        state = lazyFieldsListState,
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 24.dp)
@@ -88,7 +101,7 @@ fun FieldsScreen(
                         shape = RoundedCornerShape(size = 10.dp)
                     )
                     .noRippleThrottledClickable {
-                        onDateEvent(DateEvent.OnFieldClick(item))
+                        onDateEvent(DateEvent.FieldsList.OnFieldClick(item))
                     }
             ) {
                 when (item) {
@@ -167,24 +180,20 @@ fun FieldsScreen(
 @Composable
 @DefaultPreviews
 fun FieldsScreenPreview() {
-    val lazyListState = rememberLazyListState()
     FieldsScreen(
         uiState = UiFieldsState(
             items = StubHorizontalItems,
             selectedRelationKey = RelationKey("1")
         ),
-        onDateEvent = {},
-        lazyListState = lazyListState
+        onDateEvent = {}
     )
 }
 
 @Composable
 @DefaultPreviews
 fun LoadingPreview() {
-    val lazyListState = rememberLazyListState()
     FieldsScreen(
         uiState = UiFieldsState.LoadingState,
-        onDateEvent = {},
-        lazyListState = lazyListState
+        onDateEvent = {}
     )
 }

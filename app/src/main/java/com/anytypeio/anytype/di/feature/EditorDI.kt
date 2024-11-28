@@ -55,6 +55,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -289,7 +290,8 @@ object EditorSessionModule {
         syncStatusProvider: SpaceSyncAndP2PStatusProvider,
         getNetworkMode: GetNetworkMode,
         clearLastOpenedObject: ClearLastOpenedObject,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        dateProvider: DateProvider
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -336,7 +338,8 @@ object EditorSessionModule {
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         clearLastOpenedObject = clearLastOpenedObject,
         syncStatusProvider = syncStatusProvider,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        dateProvider = dateProvider
     )
 
     @JvmStatic

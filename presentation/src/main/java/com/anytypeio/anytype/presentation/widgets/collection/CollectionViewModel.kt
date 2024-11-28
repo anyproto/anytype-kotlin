@@ -325,7 +325,7 @@ class CollectionViewModel(
             }
 
             val views = filteredResults
-                .toViews(urlBuilder = urlBuilder, objectTypes = types)
+                .toViews(urlBuilder = urlBuilder, objectTypes = types, dateProvider = dateProvider)
                 .map { ObjectView(it) }
                 .tryAddSections()
 
@@ -407,7 +407,7 @@ class CollectionViewModel(
         return objs.toOrder(favs).filter { obj ->
             obj.getProperName().lowercase().contains(query.lowercase(), true)
         }
-            .toViews(urlBuilder, types)
+            .toViews(urlBuilder, types, dateProvider)
             .map { FavoritesView(it, favs[it.id]?.blockId ?: "") }
     }
 

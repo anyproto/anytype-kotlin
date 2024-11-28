@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -40,6 +41,7 @@ interface LinkToObjectDependencies: ComponentDependencies {
     fun searchObjects(): SearchObjects
     fun analytics(): Analytics
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
+    fun dateProvider(): DateProvider
 
 }
 
@@ -55,13 +57,15 @@ object LinkToObjectModule {
         getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
         analytics: Analytics,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        dateProvider: DateProvider
     ): LinkToObjectViewModelFactory = LinkToObjectViewModelFactory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
         getObjectTypes = getObjectTypes,
         searchObjects = searchObjects,
         analytics = analytics,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        dateProvider = dateProvider
     )
 }

@@ -83,6 +83,7 @@ import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -333,7 +334,8 @@ class EditorViewModel(
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-    private val fieldParser : FieldParser
+    private val fieldParser : FieldParser,
+    private val dateProvider: DateProvider
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -6237,7 +6239,8 @@ class EditorViewModel(
                         val objects = result
                             .toViews(
                                 urlBuilder = urlBuilder,
-                                objectTypes = storeOfObjectTypes.getAll()
+                                objectTypes = storeOfObjectTypes.getAll(),
+                                dateProvider = dateProvider
                             )
                             .filter {
                                 SupportedLayouts.layouts.contains(it.layout)

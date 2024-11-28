@@ -7,7 +7,9 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.extension.getProperDateName
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -17,22 +19,29 @@ import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
 
 fun List<ObjectWrapper.Basic>.toViews(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    objectTypes: List<ObjectWrapper.Type>,
+    dateProvider: DateProvider
 ): List<DefaultObjectView> = map { obj ->
-    obj.toView(urlBuilder, objectTypes)
+    obj.toView(urlBuilder, objectTypes, dateProvider)
 }
 
 fun ObjectWrapper.Basic.toView(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    objectTypes: List<ObjectWrapper.Type>,
+    dateProvider: DateProvider
 ): DefaultObjectView {
     val obj = this
     val typeUrl = obj.getProperType()
     val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
     val layout = obj.getProperLayout()
+    val name = if(layout == ObjectType.Layout.DATE) {
+        obj.getProperDateName(dateProvider)
+    } else {
+        obj.getProperName()
+    }
     return DefaultObjectView(
         id = obj.id,
-        name = obj.getProperName(),
+        name = name,
         description = obj.description,
         type = typeUrl,
         typeName = objectTypes.firstOrNull { type ->

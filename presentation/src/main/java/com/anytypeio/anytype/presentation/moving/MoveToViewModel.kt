@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -39,7 +40,8 @@ class MoveToViewModel(
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val dateProvider: DateProvider
 ) : ViewModel(), TextInputDialogBottomBehaviorApplier.OnDialogCancelListener,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
@@ -64,7 +66,8 @@ class MoveToViewModel(
                     Resultat.success(
                         listOfObjects.getOrThrow().toViews(
                             urlBuilder = urlBuilder,
-                            objectTypes = listOfTypes.getOrThrow()
+                            objectTypes = listOfTypes.getOrThrow(),
+                            dateProvider = dateProvider
                         )
                     )
                 }

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -34,14 +35,16 @@ class SelectWidgetSourceViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<WidgetDispatchEvent>,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    dateProvider: DateProvider
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
     searchObjects = searchObjects,
     getObjectTypes = getObjectTypes,
     analytics = analytics,
-    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+    dateProvider = dateProvider
 ) {
 
     val isDismissed = MutableStateFlow(false)
@@ -259,7 +262,8 @@ class SelectWidgetSourceViewModel(
         private val getObjectTypes: GetObjectTypes,
         private val analytics: Analytics,
         private val dispatcher: Dispatcher<WidgetDispatchEvent>,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val dateProvider: DateProvider
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -271,7 +275,8 @@ class SelectWidgetSourceViewModel(
                 analytics = analytics,
                 getObjectTypes = getObjectTypes,
                 dispatcher = dispatcher,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                dateProvider = dateProvider
             ) as T
         }
     }

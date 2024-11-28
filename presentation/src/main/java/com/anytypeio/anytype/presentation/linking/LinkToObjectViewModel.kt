@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -23,14 +24,16 @@ class LinkToObjectViewModel(
     searchObjects: SearchObjects,
     getObjectTypes: GetObjectTypes,
     analytics: Analytics,
-    analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    dateProvider: DateProvider
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
     getObjectTypes = getObjectTypes,
     searchObjects = searchObjects,
     analytics = analytics,
-    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+    dateProvider = dateProvider
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)

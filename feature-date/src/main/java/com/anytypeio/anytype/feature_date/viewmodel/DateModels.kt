@@ -50,7 +50,8 @@ sealed class UiSyncStatusWidgetState {
 
 data class UiFieldsState(
     val items: List<UiFieldsItem>,
-    val selectedRelationKey: RelationKey? = null
+    val selectedRelationKey: RelationKey? = null,
+    val needToScrollTo: Boolean = false
 ) {
     companion object {
 
@@ -85,19 +86,20 @@ sealed class UiFieldsItem {
     sealed class Item : UiFieldsItem() {
         abstract val key: RelationKey
         abstract val relationFormat: RelationFormat
+        abstract val title: String
 
         data class Default(
             override val id: String,
             override val key: RelationKey,
             override val relationFormat: RelationFormat,
-            val title: String
+            override val title: String
         ) : Item()
 
         data class Mention(
             override val id: String,
             override val key: RelationKey,
             override val relationFormat: RelationFormat,
-            val title: String
+            override val title: String
         ) : Item()
     }
 }
@@ -152,7 +154,7 @@ sealed class UiContentState {
 
 sealed class UiFieldsSheetState {
     data object Hidden : UiFieldsSheetState()
-    data class Content(
+    data class Visible(
         val items: List<UiFieldsItem>
     ) : UiFieldsSheetState()
 }

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -57,7 +56,6 @@ fun DateMainScreen(
 ) {
 
     val scope = rememberCoroutineScope()
-    val lazyFieldsListState = rememberLazyListState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -95,7 +93,6 @@ fun DateMainScreen(
                     onDateEvent = onDateEvent
                 )
                 FieldsScreen(
-                    lazyListState = lazyFieldsListState,
                     uiState = uiFieldsState,
                     onDateEvent = onDateEvent
                 )
@@ -152,7 +149,7 @@ fun DateMainScreen(
             }
         }
     )
-    if (uiSyncStatusState is UiSyncStatusWidgetState.Visible){
+    if (uiSyncStatusState is UiSyncStatusWidgetState.Visible) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
@@ -165,10 +162,8 @@ fun DateMainScreen(
             )
         }
     }
-    if (uiFieldsSheetState is UiFieldsSheetState.Content) {
+    if (uiFieldsSheetState is UiFieldsSheetState.Visible) {
         FieldsSheetScreen(
-            lazyListState = lazyFieldsListState,
-            scope = scope,
             uiState = uiFieldsSheetState,
             onDateEvent = onDateEvent
         )

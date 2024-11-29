@@ -237,6 +237,10 @@ import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.*
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
+import com.anytypeio.anytype.presentation.navigation.NewObject
+import com.anytypeio.anytype.presentation.navigation.SectionDates
+import com.anytypeio.anytype.presentation.navigation.SectionObjects
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
@@ -6130,15 +6134,17 @@ class EditorViewModel(
         }
     }
 
-    fun onMentionSuggestClick(mention: DefaultObjectView, mentionTrigger: String, pos: Int) {
+    fun onMentionSuggestClick(mention: DefaultSearchItem, mentionTrigger: String, pos: Int) {
         Timber.d("onMentionSuggestClick, mention:[$mention] mentionTrigger:[$mentionTrigger]")
-        viewModelScope.sendAnalyticsSearchResultEvent(
-            analytics = analytics,
-            pos = pos,
-            length = mentionTrigger.length - 1,
-            spaceParams = provideParams(vmParams.space.id)
-        )
-        onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
+        if (mention is DefaultObjectView)  {
+            viewModelScope.sendAnalyticsSearchResultEvent(
+                analytics = analytics,
+                pos = pos,
+                length = mentionTrigger.length - 1,
+                spaceParams = provideParams(vmParams.space.id)
+            )
+            onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
+        }
     }
 
     fun onCreateMentionInText(id: Id, name: String, mentionTrigger: String) {
@@ -6242,10 +6248,11 @@ class EditorViewModel(
                                 objectTypes = storeOfObjectTypes.getAll(),
                                 dateProvider = dateProvider
                             )
+
                         controlPanelInteractor.onEvent(
                             ControlPanelMachine.Event.Mentions.OnResult(
-                                objects,
-                                filter
+                                mentions = createSectionedList(objects),
+                                text = filter
                             )
                         )
                     },
@@ -6253,6 +6260,34 @@ class EditorViewModel(
                 )
             }
         }
+    }
+
+    fun createSectionedList(items: List<DefaultObjectView>): List<DefaultSearchItem> {
+        // Partition the list into dates and others
+        val (dateItems, otherItems) = items.partition { it.layout == ObjectType.Layout.DATE }
+
+        // Initialize the result list
+        val sectionedList = mutableListOf<DefaultSearchItem>()
+
+        // Add "Dates" section if dateItems is not empty
+        if (dateItems.isNotEmpty()) {
+            sectionedList.add(SectionDates)
+            dateItems.forEach { item ->
+                sectionedList.add(item)
+            }
+        }
+
+        // Add "Objects" section if otherItems is not empty
+        if (otherItems.isNotEmpty()) {
+            sectionedList.add(SectionObjects)
+            otherItems.forEach { item ->
+                sectionedList.add(item)
+            }
+        }
+
+        sectionedList.add(NewObject)
+
+        return sectionedList
     }
 
     fun onDragAndDrop(

@@ -93,6 +93,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
@@ -120,6 +121,8 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.UXCommand
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import kotlinx.coroutines.launch
 
 
@@ -166,9 +169,7 @@ fun DiscussionScreenWrapper(
                     lazyListState = lazyListState,
                     onReacted = vm::onReacted,
                     onCopyMessage = { msg ->
-                        clipboard.setText(
-                            AnnotatedString(text = msg.content.joinToString())
-                        )
+                        clipboard.setText(AnnotatedString(text = msg.content.msg))
                     },
                     onDeleteMessage = vm::onDeleteMessage,
                     onEditMessage = vm::onRequestEditMessageClicked,
@@ -225,7 +226,7 @@ fun DiscussionScreen(
     onDeleteMessage: (DiscussionView.Message) -> Unit,
     onCopyMessage: (DiscussionView.Message) -> Unit,
     onEditMessage: (DiscussionView.Message) -> Unit,
-    onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
+    onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     onExitEditMessageMode: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onAttachObjectClicked: () -> Unit,
@@ -277,8 +278,8 @@ fun DiscussionScreen(
                 onEditMessage = { msg ->
                     onEditMessage(msg).also {
                         textState = TextFieldValue(
-                            msg.content.joinToString(),
-                            selection = TextRange(msg.content.joinToString().length)
+                            msg.content.msg,
+                            selection = TextRange(msg.content.msg.length)
                         )
                         chatBoxFocusRequester.requestFocus()
                     }
@@ -521,7 +522,7 @@ private fun ChatBox(
     ) {
         attachments.forEach {
             Box {
-                Attachment(
+                AttachedObject(
                     modifier = Modifier.padding(
                         top = 12.dp,
                         start = 16.dp,
@@ -826,7 +827,7 @@ fun Messages(
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (DiscussionView.Message) -> Unit,
     onCopyMessage: (DiscussionView.Message) -> Unit,
-    onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
+    onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     onEditMessage: (DiscussionView.Message) -> Unit,
     onMarkupLinkClicked: (String) -> Unit
 ) {
@@ -859,7 +860,7 @@ fun Messages(
                 Bubble(
                     modifier = Modifier.weight(1.0f),
                     name = msg.author,
-                    msg = msg.content,
+                    content = msg.content,
                     timestamp = msg.timestamp,
                     attachments = msg.attachments,
                     isUserAuthor = msg.isUserAuthor,
@@ -992,13 +993,14 @@ private fun ChatUserAvatar(
 val defaultBubbleColor = Color(0x99FFFFFF)
 val userMessageBubbleColor = Color(0x66000000)
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Bubble(
     modifier: Modifier = Modifier,
     name: String,
-    msg: List<DiscussionView.Message.Content.Part>,
+    content: DiscussionView.Message.Content,
     timestamp: Long,
-    attachments: List<Chat.Message.Attachment> = emptyList(),
+    attachments: List<DiscussionView.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
     isEdited: Boolean = false,
     reactions: List<DiscussionView.Message.Reaction> = emptyList(),
@@ -1006,7 +1008,7 @@ fun Bubble(
     onDeleteMessage: () -> Unit,
     onCopyMessage: () -> Unit,
     onEditMessage: () -> Unit,
-    onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
+    onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     onMarkupLinkClicked: (String) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -1062,7 +1064,7 @@ fun Bubble(
                 bottom = 0.dp
             ),
             text = buildAnnotatedString {
-                msg.forEach { part ->
+                content.parts.forEach { part ->
                     if (part.link != null && part.link.param != null) {
                         withLink(
                             LinkAnnotation.Clickable(
@@ -1119,19 +1121,33 @@ fun Bubble(
                 colorResource(id = R.color.text_primary),
         )
         attachments.forEach { attachment ->
-            Attachment(
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 8.dp
-                ),
-                title = attachment.target,
-                type = attachment.type.toString(),
-                icon = ObjectIcon.None,
-                onAttachmentClicked = {
-                    onAttachmentClicked(attachment)
+            when(attachment) {
+                is DiscussionView.Message.Attachment.Image -> {
+                    GlideImage(
+                        model = attachment.url,
+                        contentDescription = "Attachment image",
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clip(shape = RoundedCornerShape(16.dp))
+                    )
                 }
-            )
+                is DiscussionView.Message.Attachment.Link -> {
+                    AttachedObject(
+                        modifier = Modifier.padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 8.dp
+                        ),
+                        title = attachment.wrapper?.name.orEmpty(),
+                        type = attachment.wrapper?.type?.firstOrNull().orEmpty(),
+                        icon = ObjectIcon.None,
+                        onAttachmentClicked = {
+                            onAttachmentClicked(attachment)
+                        }
+                    )
+                }
+            }
         }
         if (reactions.isNotEmpty()) {
             ReactionList(
@@ -1298,7 +1314,7 @@ fun TopDiscussionToolbar(
 }
 
 @Composable
-fun Attachment(
+fun AttachedObject(
     modifier: Modifier,
     title: String,
     type: String,
@@ -1426,7 +1442,7 @@ fun ReactionList(
                         color = if (reaction.isSelected)
                             colorResource(id = R.color.palette_very_light_orange)
                         else
-                            colorResource(id = R.color.background_highlighted),
+                            colorResource(id = R.color.shape_transparent_primary),
                         shape = RoundedCornerShape(100.dp)
                     )
                     .clip(RoundedCornerShape(100.dp))
@@ -1465,7 +1481,10 @@ fun ReactionList(
                         .padding(
                             end = 12.dp
                         ),
-                    color = colorResource(id = R.color.text_primary)
+                    color = if (reaction.isSelected)
+                        colorResource(id = R.color.text_primary)
+                    else
+                        colorResource(id = R.color.text_white)
                 )
             }
         }
@@ -1524,7 +1543,7 @@ fun TopDiscussionToolbarPreview() {
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
 fun AttachmentPreview() {
-    Attachment(
+    AttachedObject(
         modifier = Modifier,
         icon = ObjectIcon.None,
         type = "Project",

@@ -291,7 +291,7 @@
     <string name="enter_value">Skriv inn verdi</string>
     <string name="ityem_relations">Relasjoner</string>
     <string name="add_sort">Legg til sortering</string>
-    <string name="apply">Bruk</string>
+    <string name="apply">Apply</string>
     <string name="add_filter">Legg til et filter</string>
     <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">Ukjent antall objekter</string>

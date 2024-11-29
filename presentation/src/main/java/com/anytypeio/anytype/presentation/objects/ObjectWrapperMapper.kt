@@ -34,23 +34,23 @@ fun ObjectWrapper.Basic.toView(
     val typeUrl = obj.getProperType()
     val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
     val layout = obj.getProperLayout()
-    val name = if (layout == ObjectType.Layout.DATE) {
-        obj.getProperDateName(dateProvider)
+    val (name, typeName) = if (layout == ObjectType.Layout.DATE) {
+        obj.getProperDateName(dateProvider) to null
     } else {
-        obj.getProperName()
+        obj.getProperName() to objectTypes.firstOrNull { type ->
+            if (isProfile) {
+                type.uniqueKey == ObjectTypeUniqueKeys.PROFILE
+            } else {
+                type.id == typeUrl
+            }
+        }?.name
     }
     return DefaultObjectView(
         id = obj.id,
         name = name,
         description = obj.description,
         type = typeUrl,
-        typeName = objectTypes.firstOrNull { type ->
-            if (isProfile) {
-                type.uniqueKey == ObjectTypeUniqueKeys.PROFILE
-            } else {
-                type.id == typeUrl
-            }
-        }?.name,
+        typeName = typeName,
         layout = layout,
         icon = obj.objectIcon(urlBuilder),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,

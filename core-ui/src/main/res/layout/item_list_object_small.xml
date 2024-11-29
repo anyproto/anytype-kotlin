@@ -21,32 +21,34 @@
         app:imageCornerRadius="@dimen/list_item_object_image_corner_radius"
         app:initialTextSize="@dimen/list_item_object_half_initials_size" />
 
-    <TextView
-        android:id="@+id/tvTitle"
-        style="@style/ObjectListItemTitle"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/list_item_object_half_title_margin_start"
-        android:layout_marginTop="@dimen/list_item_object_half_title_margin_top"
-        android:layout_marginEnd="@dimen/list_item_object_half_title_margin_end"
-        android:hint="@string/untitled"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:ellipsize="end"
-        tools:text="Is your feature request related to a problem? Please describe." />
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvSubtitle"
-        style="@style/ObjectListItemSubtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/list_item_object_half_subtitle_margin_start"
-        android:layout_marginTop="@dimen/list_item_object_half_subtitle_margin_top"
-        android:layout_marginEnd="@dimen/list_item_object_half_subtitle_margin_end"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:singleLine="true"
-        tools:text="Task" />
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/ObjectListItemTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/untitled"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            tools:text="Is your feature request related to a problem? Please describe." />
+        <TextView
+            android:id="@+id/tvSubtitle"
+            style="@style/ObjectListItemSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            tools:text="Task" />
+
+    </LinearLayout>
 
     <View
         android:id="@+id/view"

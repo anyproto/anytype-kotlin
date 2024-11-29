@@ -11,6 +11,8 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemListObjectBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSearchNewObjectBinding
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.setOnThrottleClickListener
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
@@ -129,7 +131,12 @@ class ObjectItemViewHolder(view: View) : ObjectViewHolder(view) {
 
         fun bind(link: DefaultObjectView) {
             title.text = link.name
-            subtitle.text = link.typeName
+            if (link.typeName != null) {
+                subtitle.visible()
+                subtitle.text = link.typeName
+            } else {
+                subtitle.gone()
+            }
             icon.setIcon(link.icon)
         }
     }

@@ -144,14 +144,18 @@ class DragAndDropDelegate {
                     is Code -> TextInputDragShadow(vh.content.id, vh.itemView, event)
                     else -> DefaultEditorDragShadow(vh.itemView, event)
                 }
-                vh.itemView.startDragAndDrop(
-                    dragData,
-                    shadow,
-                    null,
-                    0
-                )
-                blockAdapter.selectDraggedViewHolder(dndTargetPos)
-                blockAdapter.notifyItemChanged(dndTargetPos)
+                try {
+                    vh.itemView.startDragAndDrop(
+                        dragData,
+                        shadow,
+                        null,
+                        0
+                    )
+                    blockAdapter.selectDraggedViewHolder(dndTargetPos)
+                    blockAdapter.notifyItemChanged(dndTargetPos)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to start drag and drop")
+                }
             }
         } else {
             val pos = vh.bindingAdapterPosition

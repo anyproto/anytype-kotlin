@@ -7,13 +7,13 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.presentation.number.NumberParser
-import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.presentation.extension.MAX_SNIPPET_SIZE
+import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.FileView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -351,7 +351,9 @@ suspend fun ObjectWrapper.Basic.objects(
     }
     ids.forEach { id ->
         val wrapper = storeOfObjects.get(id) ?: return@forEach
-        result.add(wrapper.toObjectView(urlBuilder))
+        if (wrapper.isValid) {
+            result.add(wrapper.toObjectView(urlBuilder))
+        }
     }
     return result
 }

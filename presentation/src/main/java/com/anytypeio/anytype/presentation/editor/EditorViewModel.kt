@@ -6263,13 +6263,11 @@ class EditorViewModel(
     }
 
     fun createSectionedList(items: List<DefaultObjectView>): List<DefaultSearchItem> {
-        // Partition the list into dates and others
+
         val (dateItems, otherItems) = items.partition { it.layout == ObjectType.Layout.DATE }
 
-        // Initialize the result list
         val sectionedList = mutableListOf<DefaultSearchItem>()
 
-        // Add "Dates" section if dateItems is not empty
         if (dateItems.isNotEmpty()) {
             sectionedList.add(SectionDates)
             dateItems.forEach { item ->
@@ -6277,7 +6275,6 @@ class EditorViewModel(
             }
         }
 
-        // Add "Objects" section if otherItems is not empty
         if (otherItems.isNotEmpty()) {
             sectionedList.add(SectionObjects)
             otherItems.forEach { item ->

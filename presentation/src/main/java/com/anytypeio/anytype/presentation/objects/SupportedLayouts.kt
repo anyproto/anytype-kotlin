@@ -60,7 +60,11 @@ object SupportedLayouts {
         ObjectType.Layout.COLLECTION
     )
 
-    val globalSearchLayouts = createObjectLayouts + fileLayouts
+    val dateLayouts = listOf(
+        ObjectType.Layout.DATE
+    )
+
+    val globalSearchLayouts = createObjectLayouts + fileLayouts + dateLayouts
 
     fun isSupported(layout: ObjectType.Layout?) : Boolean {
         return layouts.contains(layout)

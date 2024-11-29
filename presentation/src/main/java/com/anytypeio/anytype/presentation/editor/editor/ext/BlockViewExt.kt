@@ -381,7 +381,7 @@ fun List<BlockView>.enterSAM(
         )
         else -> view.also {
             if(view !is BlockView.Permission) {
-                Timber.w("Attempts to enter SAM for block which does not support read / write mode")
+                Timber.w("Attempts to enter SAM for block which does not support read / write mode : ${view.getViewType()}")
             }
         }
     }

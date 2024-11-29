@@ -6242,10 +6242,6 @@ class EditorViewModel(
                                 objectTypes = storeOfObjectTypes.getAll(),
                                 dateProvider = dateProvider
                             )
-                            .filter {
-                                SupportedLayouts.layouts.contains(it.layout)
-                                        && it.type != ObjectTypeIds.TEMPLATE
-                            }
                         controlPanelInteractor.onEvent(
                             ControlPanelMachine.Event.Mentions.OnResult(
                                 objects,

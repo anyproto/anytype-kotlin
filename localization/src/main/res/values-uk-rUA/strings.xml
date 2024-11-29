@@ -293,7 +293,7 @@
     <string name="enter_value">Введіть значення</string>
     <string name="ityem_relations">Відносини</string>
     <string name="add_sort">Add a sort</string>
-    <string name="apply">Застосувати</string>
+    <string name="apply">Apply</string>
     <string name="add_filter">Add a filter</string>
     <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">Unknown number of objects</string>

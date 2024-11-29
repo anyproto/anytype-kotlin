@@ -291,7 +291,7 @@
     <string name="enter_value">Wert eingeben</string>
     <string name="ityem_relations">Verknüpfungen</string>
     <string name="add_sort">Sortierung hinzufügen</string>
-    <string name="apply">Anwenden</string>
+    <string name="apply">Apply</string>
     <string name="add_filter">Filter hinzufügen</string>
     <string name="relation_format_tag">Mehrfachauswahl</string>
     <string name="unknown_number_of_objects">Unbekannte Anzahl von Objekten</string>

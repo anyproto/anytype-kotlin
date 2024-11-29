@@ -2,9 +2,9 @@ package com.anytypeio.anytype.presentation.editor.editor.styling
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import timber.log.Timber
 
@@ -13,7 +13,7 @@ fun Editor.Mode.getIds(): List<Id>? = when (this) {
     is Editor.Mode.Styling.Single -> listOf(target)
     is  Editor.Mode.Table -> targets.toList()
     else -> {
-        Timber.e("Couldn't get ids of selected blocks, wrong Editor Mode : $this")
+        Timber.w("Couldn't get ids of selected blocks, wrong Editor Mode : $this")
         null
     }
 }

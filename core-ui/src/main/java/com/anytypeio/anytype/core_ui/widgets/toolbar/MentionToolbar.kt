@@ -8,7 +8,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetMentionMenuBinding
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.MentionAdapter
 import com.anytypeio.anytype.core_utils.ui.NpaLinearLayoutManager
-import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 
 class MentionToolbar @JvmOverloads constructor(
     context: Context,
@@ -16,11 +16,10 @@ class MentionToolbar @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    private var mentionClick: ((DefaultObjectView, String, Int) -> Unit)? = null
+    private var mentionClick: ((DefaultSearchItem, String, Int) -> Unit)? = null
     private var newPageClick: ((String) -> Unit)? = null
     private val mentionAdapter by lazy {
         MentionAdapter(
-            data = arrayListOf(),
             onClicked = { objectView, filter, pos ->
                 mentionClick?.invoke(objectView, filter, pos)
             },
@@ -39,7 +38,7 @@ class MentionToolbar @JvmOverloads constructor(
     }
 
     fun setupClicks(
-        mentionClick: (DefaultObjectView, String, Int) -> Unit,
+        mentionClick: (DefaultSearchItem, String, Int) -> Unit,
         newPageClick: (String) -> Unit
     ) {
         this.mentionClick = mentionClick
@@ -54,8 +53,8 @@ class MentionToolbar @JvmOverloads constructor(
         }
     }
 
-    fun addItems(items: List<DefaultObjectView>) {
-        mentionAdapter.setData(items)
+    fun addItems(items: List<DefaultSearchItem>) {
+        mentionAdapter.submitList(items)
     }
 
     fun updateFilter(filter: String) {

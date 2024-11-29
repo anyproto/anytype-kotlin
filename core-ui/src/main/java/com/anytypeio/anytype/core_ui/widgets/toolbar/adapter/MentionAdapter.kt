@@ -2,43 +2,39 @@ package com.anytypeio.anytype.core_ui.widgets.toolbar.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemMentionNewPageBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemMentionSectionDateBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemMentionSectionObjectsBinding
+import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter.Differ
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter.ObjectItemViewHolder
+import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter.ObjectViewHolder
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_PREFIX
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
+import com.anytypeio.anytype.presentation.navigation.NewObject
+import com.anytypeio.anytype.presentation.navigation.SectionDates
+import com.anytypeio.anytype.presentation.navigation.SectionObjects
 
 class MentionAdapter(
-    private var data: ArrayList<DefaultObjectView>,
     private var mentionFilter: String = "",
-    private val onClicked: (DefaultObjectView, String, Int) -> Unit,
-    private val newClicked: (String) -> Unit
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    fun setData(mentions: List<DefaultObjectView>) {
-        if (mentions.isEmpty()) {
-            data.clear()
-            notifyDataSetChanged()
-        } else {
-            data.clear()
-            data.addAll(mentions)
-            notifyDataSetChanged()
-        }
-    }
+    private val onClicked: (DefaultSearchItem, String, Int) -> Unit,
+    private val newClicked: (String) -> Unit,
+    private val onCurrentListChanged: (Int, Int) -> Unit = { prevSize, newSize -> },
+) : ListAdapter<DefaultSearchItem, ObjectViewHolder>(Differ) {
 
     fun updateFilter(filter: String) {
         mentionFilter = filter
     }
 
     fun clear() {
+        submitList(emptyList())
         mentionFilter = ""
-        val size = data.size
-        data.clear()
-        notifyItemRangeRemoved(0, size + 1)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ObjectViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_NEW_PAGE -> NewPageViewHolder(
@@ -55,23 +51,41 @@ class MentionAdapter(
                     itemView.setOnClickListener {
                         val pos = bindingAdapterPosition
                         if (pos != RecyclerView.NO_POSITION) {
-                            onClicked(data[pos], mentionFilter, pos)
+                            val item = getItem(pos)
+                            onClicked(item, mentionFilter, pos)
                         }
                     }
                 }
+            TYPE_SECTION_DATES -> SectionDatesViewHolder(
+                binding = ItemMentionSectionDateBinding.inflate(inflater, parent, false)
+            )
+            TYPE_SECTION_OBJECTS -> SectionObjectsViewHolder(
+                binding = ItemMentionSectionObjectsBinding.inflate(inflater, parent, false)
+            )
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
 
-    override fun getItemCount(): Int = data.size + 1
-
-    override fun getItemViewType(position: Int): Int {
-        return if (position > data.lastIndex) TYPE_NEW_PAGE else TYPE_MENTION
+    override fun onCurrentListChanged(
+        previousList: MutableList<DefaultSearchItem>,
+        currentList: MutableList<DefaultSearchItem>
+    ) {
+        super.onCurrentListChanged(previousList, currentList)
+        onCurrentListChanged(previousList.size, currentList.size)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is ObjectItemViewHolder) {
-            holder.bind(data[position])
+    override fun getItemViewType(position: Int): Int = when (val item = getItem(position)) {
+        is DefaultObjectView -> TYPE_MENTION
+        is SectionDates -> TYPE_SECTION_DATES
+        is SectionObjects -> TYPE_SECTION_OBJECTS
+        is NewObject -> TYPE_NEW_PAGE
+        else -> throw IllegalStateException("Unexpected item type: ${item.javaClass.name}")
+    }
+
+    override fun onBindViewHolder(holder: ObjectViewHolder, position: Int) {
+        val item = getItem(position)
+        if (holder is ObjectItemViewHolder && item is DefaultObjectView) {
+            holder.bind(item)
         }
         if (holder is NewPageViewHolder) {
             holder.bind(filter = mentionFilter.removePrefix(MENTION_PREFIX))
@@ -79,7 +93,7 @@ class MentionAdapter(
     }
 
     class NewPageViewHolder(binding: ItemMentionNewPageBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+        ObjectViewHolder(binding.root) {
 
         private val tvTitle = binding.text
 
@@ -92,11 +106,18 @@ class MentionAdapter(
                     "${res.getString(R.string.mention_suggester_create_object)} \"$filter\""
             }
         }
-
     }
+
+    class SectionDatesViewHolder(binding: ItemMentionSectionDateBinding) :
+        ObjectViewHolder(binding.root)
+
+    class SectionObjectsViewHolder(binding: ItemMentionSectionObjectsBinding) :
+        ObjectViewHolder(binding.root)
 
     companion object {
         const val TYPE_NEW_PAGE = 1
         const val TYPE_MENTION = 2
+        const val TYPE_SECTION_DATES = 3
+        const val TYPE_SECTION_OBJECTS = 4
     }
 }

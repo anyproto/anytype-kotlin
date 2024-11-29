@@ -34,7 +34,7 @@ fun ObjectWrapper.Basic.toView(
     val typeUrl = obj.getProperType()
     val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
     val layout = obj.getProperLayout()
-    val name = if(layout == ObjectType.Layout.DATE) {
+    val name = if (layout == ObjectType.Layout.DATE) {
         obj.getProperDateName(dateProvider)
     } else {
         obj.getProperName()

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarStat
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.editor.markup.MarkupStyleDescriptor
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 
 /**
@@ -207,7 +208,7 @@ data class ControlPanelState(
             val mentionFilter: String?,
             val cursorCoordinate: Int?,
             val updateList: Boolean = false,
-            val mentions: List<DefaultObjectView> = emptyList()
+            val mentions: List<DefaultSearchItem> = emptyList()
         ) : Toolbar() {
             companion object {
                 fun reset(): MentionToolbar = MentionToolbar(

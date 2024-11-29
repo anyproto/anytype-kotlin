@@ -291,7 +291,7 @@
     <string name="enter_value">Saisir une valeur</string>
     <string name="ityem_relations">Relations</string>
     <string name="add_sort">Ajouter un tri</string>
-    <string name="apply">Apply</string>
+    <string name="apply">Appliquer</string>
     <string name="add_filter">Ajouter un filtre</string>
     <string name="relation_format_tag">Sélection multiple</string>
     <string name="unknown_number_of_objects">Nombre d\'objets inconnu</string>

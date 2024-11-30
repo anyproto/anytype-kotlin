@@ -1547,4 +1547,5 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_file">Berkas</string>
     <string name="chat_attachment_media">Media</string>
     <string name="chat_attachment_upload">Unggah</string>
+    <string name="chats_reply">Balas</string>
 </resources>

@@ -289,6 +289,7 @@ class DiscussionViewModel @Inject constructor(
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
+                    chatBoxMode.value = ChatBoxMode.Default
                 }
             }
         }

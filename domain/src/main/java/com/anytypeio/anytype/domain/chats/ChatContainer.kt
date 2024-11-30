@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
@@ -33,6 +34,7 @@ class ChatContainer @Inject constructor(
     private val payloads = MutableSharedFlow<List<Event.Command.Chats>>()
 
     private val attachments = MutableSharedFlow<Set<Id>>(replay = 0)
+    private val replies = MutableSharedFlow<Set<Id>>(replay = 0)
 
     @Deprecated("Naive implementation. Add caching logic - maybe store for wrappers")
     fun fetchAttachments(space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
@@ -64,18 +66,39 @@ class ChatContainer @Inject constructor(
             .map { wrappers -> wrappers.associate { it.id to it } }
     }
 
+    @Deprecated("Naive implementation. Add caching logic")
+    fun fetchReplies(chat: Id) : Flow<Map<Id, Chat.Message>> {
+        return replies
+            .distinctUntilChanged()
+            .map { ids ->
+                if (ids.isNotEmpty()) {
+                    repo.getChatMessagesByIds(
+                        command = Command.ChatCommand.GetMessagesByIds(
+                            chat = chat,
+                            messages = ids.toList()
+                        )
+                    )
+                } else {
+                    emptyList()
+                }
+            }
+            .distinctUntilChanged()
+            .map { messages -> messages.associate { it.id to it } }
+    }
+
     fun watchWhileTrackingAttachments(chat: Id): Flow<List<Chat.Message>> {
         return watch(chat)
             .onEach { messages ->
-                val ids = messages
-                    .map { msg ->
-                        msg.attachments.map {
-                            it.target
-                        }
+                val repliesIds = mutableSetOf<Id>()
+                val attachmentsIds = mutableSetOf<Id>()
+                messages.forEach { msg ->
+                    attachmentsIds.addAll(msg.attachments.map { it.target })
+                    if (!msg.replyToMessageId.isNullOrEmpty()) {
+                        repliesIds.add(msg.replyToMessageId.orEmpty())
                     }
-                    .flatten()
-                    .toSet()
-                attachments.emit(ids)
+                }
+                attachments.emit(attachmentsIds)
+                replies.emit(repliesIds)
             }
     }
 

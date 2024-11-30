@@ -934,7 +934,8 @@ fun Messages(
                     onMarkupLinkClicked = onMarkupLinkClicked,
                     onReply = {
                         onReplyMessage(msg)
-                    }
+                    },
+                    reply = msg.reply
                 )
                 if (msg.isUserAuthor) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -1053,6 +1054,7 @@ val userMessageBubbleColor = Color(0x66000000)
 fun Bubble(
     modifier: Modifier = Modifier,
     name: String,
+    reply: DiscussionView.Message.Reply? = null,
     content: DiscussionView.Message.Content,
     timestamp: Long,
     attachments: List<DiscussionView.Message.Attachment> = emptyList(),
@@ -1076,13 +1078,54 @@ fun Bubble(
                     userMessageBubbleColor
                 else
                     defaultBubbleColor,
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(20.dp)
             )
-            .clip(RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(20.dp))
             .clickable {
                 showDropdownMenu = !showDropdownMenu
             }
     ) {
+        if (reply != null) {
+            Box(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth()
+                    .height(54.dp)
+                    .background(
+                        color = colorResource(R.color.navigation_panel_icon),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            ) {
+                Text(
+                    text = reply.author,
+                    modifier = Modifier.padding(
+                        start = 12.dp,
+                        top = 8.dp,
+                        end = 12.dp
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = if (isUserAuthor)
+                        colorResource(id = R.color.text_white)
+                    else
+                        colorResource(id = R.color.text_primary),
+                )
+                Text(
+                    modifier = Modifier.padding(
+                        start = 12.dp,
+                        top = 26.dp,
+                        end = 12.dp
+                    ),
+                    text = reply.text,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = if (isUserAuthor)
+                        colorResource(id = R.color.text_white)
+                    else
+                        colorResource(id = R.color.text_primary),
+                )
+            }
+        }
         Row(
             modifier = Modifier.padding(
                 start = 16.dp,

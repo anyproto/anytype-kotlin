@@ -108,9 +108,13 @@ class DiscussionViewModel @Inject constructor(
     ) {
         chatContainer
             .watchWhileTrackingAttachments(chat = chat)
-            .withLatestFrom(chatContainer.fetchAttachments(vmParams.space)) { result, dependencies ->
+            .withLatestFrom(
+                chatContainer.fetchAttachments(vmParams.space),
+                chatContainer.fetchReplies(chat = chat)
+            ) { result, dependencies, replies ->
                 result.map { msg ->
-                    val member = members.get().let { type ->
+                    val allMembers = members.get()
+                    val member = allMembers.let { type ->
                         when (type) {
                             is Store.Data -> type.members.find { member ->
                                 member.identity == msg.creator
@@ -120,6 +124,30 @@ class DiscussionViewModel @Inject constructor(
                     }
 
                     val content = msg.content
+
+                    val replyToId = msg.replyToMessageId
+
+                    val reply = if (replyToId.isNullOrEmpty()) {
+                        null
+                    } else {
+                        val msg = replies[replyToId]
+                        if (msg != null) {
+                            DiscussionView.Message.Reply(
+                                msg = msg.id,
+                                text = msg.content?.text.orEmpty(),
+                                author = allMembers.let { type ->
+                                    when (type) {
+                                        is Store.Data -> type.members.find { member ->
+                                            member.identity == msg.creator
+                                        }?.name.orEmpty()
+                                        is Store.Empty -> ""
+                                    }
+                                }
+                            )
+                        } else {
+                            null
+                        }
+                    }
 
                     DiscussionView.Message(
                         id = msg.id,
@@ -136,6 +164,7 @@ class DiscussionViewModel @Inject constructor(
                                     )
                                 }
                         ),
+                        reply = reply,
                         author = member?.name ?: msg.creator.takeLast(5),
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,

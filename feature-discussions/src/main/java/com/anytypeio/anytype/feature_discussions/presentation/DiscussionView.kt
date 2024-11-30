@@ -16,7 +16,8 @@ sealed interface DiscussionView {
         val reactions: List<Reaction> = emptyList(),
         val isUserAuthor: Boolean = false,
         val isEdited: Boolean = false,
-        val avatar: Avatar = Avatar.Initials()
+        val avatar: Avatar = Avatar.Initials(),
+        val reply: Reply? = null
     ) : DiscussionView {
 
         data class Content(val msg: String, val parts: List<Part>) {
@@ -31,6 +32,12 @@ sealed interface DiscussionView {
                 val link = styles.find { it.type == Block.Content.Text.Mark.Type.LINK }
             }
         }
+
+        data class Reply(
+            val msg: Id,
+            val text: String,
+            val author: String
+        )
 
         sealed class Attachment {
             data class Image(

@@ -2745,6 +2745,18 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun chatGetMessagesByIds(command: Command.ChatCommand.GetMessagesByIds) : List<Chat.Message> {
+        val request = Rpc.Chat.GetMessagesByIds.Request(
+            chatObjectId = command.chat,
+            messageIds = command.messages
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatGetMessagesByIds(request) }
+        logResponseIfDebug(response, time)
+        return response.messages.map { it.core() }
+    }
+
+    @Throws
     fun chatDeleteMessage(command: Command.ChatCommand.DeleteMessage) {
         val request = Rpc.Chat.DeleteMessage.Request(
             chatObjectId = command.chat,

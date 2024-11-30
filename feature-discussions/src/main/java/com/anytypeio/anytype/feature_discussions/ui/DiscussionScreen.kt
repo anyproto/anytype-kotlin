@@ -93,10 +93,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -158,6 +156,7 @@ fun DiscussionScreenWrapper(
                 val clipboard = LocalClipboardManager.current
                 val lazyListState = rememberLazyListState()
                 DiscussionScreen(
+                    chatBoxMode = vm.chatBoxMode.collectAsState().value,
                     isSpaceLevelChat = isSpaceLevelChat,
                     title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
@@ -187,7 +186,9 @@ fun DiscussionScreenWrapper(
                     },
                     onUploadAttachmentClicked = {
 
-                    }
+                    },
+                    onReplyMessage = vm::onReplyMessage,
+                    onClearReplyClicked = vm::onClearReplyClicked
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -211,6 +212,7 @@ fun DiscussionScreenWrapper(
  */
 @Composable
 fun DiscussionScreen(
+    chatBoxMode: ChatBoxMode,
     isSpaceLevelChat: Boolean,
     isInEditMessageMode: Boolean = false,
     lazyListState: LazyListState,
@@ -222,10 +224,12 @@ fun DiscussionScreen(
     onAttachClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onClearAttachmentClicked: () -> Unit,
+    onClearReplyClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (DiscussionView.Message) -> Unit,
     onCopyMessage: (DiscussionView.Message) -> Unit,
     onEditMessage: (DiscussionView.Message) -> Unit,
+    onReplyMessage: (DiscussionView.Message) -> Unit,
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     onExitEditMessageMode: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
@@ -284,6 +288,7 @@ fun DiscussionScreen(
                         chatBoxFocusRequester.requestFocus()
                     }
                 },
+                onReplyMessage = onReplyMessage,
                 onMarkupLinkClicked = onMarkupLinkClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
@@ -324,6 +329,7 @@ fun DiscussionScreen(
         }
 
         ChatBox(
+            mode = chatBoxMode,
             modifier = Modifier
                 .imePadding()
                 .navigationBarsPadding(),
@@ -349,7 +355,8 @@ fun DiscussionScreen(
             onAttachMediaClicked = onAttachMediaClicked,
             onUploadAttachmentClicked = onUploadAttachmentClicked,
             onAttachObjectClicked = onAttachObjectClicked,
-            onClearAttachmentClicked = onClearAttachmentClicked
+            onClearAttachmentClicked = onClearAttachmentClicked,
+            onClearReplyClicked = onClearReplyClicked
         )
     }
 }
@@ -482,6 +489,7 @@ private fun OldChatBox(
 
 @Composable
 private fun ChatBox(
+    mode: ChatBoxMode = ChatBoxMode.Default,
     modifier: Modifier = Modifier,
     onBackButtonClicked: () -> Unit,
     chatBoxFocusRequester: FocusRequester,
@@ -497,7 +505,8 @@ private fun ChatBox(
     onAttachMediaClicked: () -> Unit,
     onAttachFileClicked: () -> Unit,
     onUploadAttachmentClicked: () -> Unit,
-    onClearAttachmentClicked: () -> Unit
+    onClearAttachmentClicked: () -> Unit,
+    onClearReplyClicked: () -> Unit
 ) {
 
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -552,8 +561,57 @@ private fun ChatBox(
                 )
             }
         }
-        Row(
-        ) {
+        when(mode) {
+            is ChatBoxMode.Default -> {
+
+            }
+            is ChatBoxMode.EditMessage -> {
+
+            }
+            is ChatBoxMode.Reply -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp)
+                ) {
+                    Text(
+                        text = "Reply to ${mode.author}",
+                        modifier = Modifier.padding(
+                            start = 12.dp,
+                            top = 8.dp,
+                            end = 44.dp
+                        ),
+                        style = Caption1Medium,
+                        color = colorResource(R.color.text_primary),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = mode.text,
+                        modifier = Modifier.padding(
+                            start = 12.dp,
+                            top = 28.dp,
+                            end = 44.dp
+                        ),
+                        style = Caption1Regular,
+                        color = colorResource(R.color.text_primary),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.ic_chat_close_chat_box_reply),
+                        contentDescription = "Clear reply to icon",
+                        modifier = Modifier
+                            .padding(end = 12.dp)
+                            .align(Alignment.CenterEnd)
+                            .clickable {
+                                onClearReplyClicked()
+                            }
+                    )
+                }
+            }
+        }
+        Row {
             Box(
                 modifier = Modifier
                     .padding(horizontal = 4.dp, vertical = 8.dp)
@@ -829,6 +887,7 @@ fun Messages(
     onCopyMessage: (DiscussionView.Message) -> Unit,
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     onEditMessage: (DiscussionView.Message) -> Unit,
+    onReplyMessage: (DiscussionView.Message) -> Unit,
     onMarkupLinkClicked: (String) -> Unit
 ) {
     LazyColumn(
@@ -879,7 +938,11 @@ fun Messages(
                     onEditMessage = {
                         onEditMessage(msg)
                     },
-                    onMarkupLinkClicked = onMarkupLinkClicked
+                    onMarkupLinkClicked = onMarkupLinkClicked,
+                    onReply = {
+                        onReplyMessage(msg)
+                    },
+                    reply = msg.reply
                 )
                 if (msg.isUserAuthor) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -998,6 +1061,7 @@ val userMessageBubbleColor = Color(0x66000000)
 fun Bubble(
     modifier: Modifier = Modifier,
     name: String,
+    reply: DiscussionView.Message.Reply? = null,
     content: DiscussionView.Message.Content,
     timestamp: Long,
     attachments: List<DiscussionView.Message.Attachment> = emptyList(),
@@ -1008,6 +1072,7 @@ fun Bubble(
     onDeleteMessage: () -> Unit,
     onCopyMessage: () -> Unit,
     onEditMessage: () -> Unit,
+    onReply: () -> Unit,
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     onMarkupLinkClicked: (String) -> Unit
 ) {
@@ -1020,13 +1085,54 @@ fun Bubble(
                     userMessageBubbleColor
                 else
                     defaultBubbleColor,
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(20.dp)
             )
-            .clip(RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(20.dp))
             .clickable {
                 showDropdownMenu = !showDropdownMenu
             }
     ) {
+        if (reply != null) {
+            Box(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth()
+                    .height(54.dp)
+                    .background(
+                        color = colorResource(R.color.navigation_panel_icon),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            ) {
+                Text(
+                    text = reply.author,
+                    modifier = Modifier.padding(
+                        start = 12.dp,
+                        top = 8.dp,
+                        end = 12.dp
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = if (isUserAuthor)
+                        colorResource(id = R.color.text_white)
+                    else
+                        colorResource(id = R.color.text_primary),
+                )
+                Text(
+                    modifier = Modifier.padding(
+                        start = 12.dp,
+                        top = 26.dp,
+                        end = 12.dp
+                    ),
+                    text = reply.text,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = if (isUserAuthor)
+                        colorResource(id = R.color.text_white)
+                    else
+                        colorResource(id = R.color.text_primary),
+                )
+            }
+        }
         Row(
             modifier = Modifier.padding(
                 start = 16.dp,
@@ -1100,12 +1206,7 @@ fun Bubble(
 
                     if (isEdited) {
                         withStyle(
-                            style = SpanStyle(
-                                color = if (isUserAuthor)
-                                    colorResource(id = R.color.text_white)
-                                else
-                                    colorResource(id = R.color.text_primary),
-                            )
+                            style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
                         ) {
                             append(
                                 " (${stringResource(R.string.chats_message_edited)})"
@@ -1219,6 +1320,18 @@ fun Bubble(
                     },
                     onClick = {
                         // Do nothing.
+                    }
+                )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.chats_reply),
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    onClick = {
+                        onReply()
+                        showDropdownMenu = false
                     }
                 )
                 DropdownMenuItem(

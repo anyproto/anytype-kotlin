@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
@@ -21,7 +20,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
@@ -30,8 +28,7 @@ import kotlinx.coroutines.flow.scan
 class ChatContainer @Inject constructor(
     private val repo: BlockRepository,
     private val channel: ChatEventChannel,
-    private val logger: Logger,
-    private val dispatchers: AppCoroutineDispatchers
+    private val logger: Logger
 ) {
     private val payloads = MutableSharedFlow<List<Event.Command.Chats>>()
 

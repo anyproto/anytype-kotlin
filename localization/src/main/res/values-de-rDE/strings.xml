@@ -1560,4 +1560,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_attachment_file">Datei</string>
     <string name="chat_attachment_media">Medien</string>
     <string name="chat_attachment_upload">Hochladen</string>
+    <string name="chats_reply">Antworten</string>
 </resources>

@@ -215,7 +215,6 @@ class DiscussionViewModel @Inject constructor(
                         Timber.e(it, "Error while adding message")
                     }
                 }
-
                 is ChatBoxMode.EditMessage -> {
                     editChatMessage.async(
                         params = Command.ChatCommand.EditMessage(
@@ -232,6 +231,30 @@ class DiscussionViewModel @Inject constructor(
                         Timber.e(it, "Error while adding message")
                     }.onSuccess {
                         chatBoxMode.value = ChatBoxMode.Default
+                    }
+                }
+                is ChatBoxMode.Reply -> {
+                    addChatMessage.async(
+                        params = Command.ChatCommand.AddMessage(
+                            chat = chat,
+                            message = Chat.Message.new(
+                                text = msg,
+                                replyToMessageId = mode.msg,
+                                attachments = attachments.value.map { a ->
+                                    Chat.Message.Attachment(
+                                        target = a.id,
+                                        type = Chat.Message.Attachment.Type.Link
+                                    )
+                                }
+                            )
+                        )
+                    ).onSuccess { (id, payload) ->
+                        attachments.value = emptyList()
+                        chatContainer.onPayload(payload)
+                        delay(JUMP_TO_BOTTOM_DELAY)
+                        commands.emit(UXCommand.JumpToBottom)
+                    }.onFailure {
+                        Timber.e(it, "Error while adding message")
                     }
                 }
             }
@@ -292,6 +315,16 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
+    fun onReplyMessage(msg: DiscussionView.Message) {
+        viewModelScope.launch {
+            chatBoxMode.value = ChatBoxMode.Reply(
+                msg = msg.id,
+                text = msg.content.msg,
+                author = msg.author
+            )
+        }
+    }
+
     fun onDeleteMessage(msg: DiscussionView.Message) {
         Timber.d("onDeleteMessageClicked")
         viewModelScope.launch {
@@ -339,6 +372,11 @@ class DiscussionViewModel @Inject constructor(
     sealed class ChatBoxMode {
         data object Default : ChatBoxMode()
         data class EditMessage(val msg: Id) : ChatBoxMode()
+        data class Reply(
+            val msg: Id,
+            val text: String,
+            val author: String
+        ): ChatBoxMode()
     }
 
     sealed class Params {

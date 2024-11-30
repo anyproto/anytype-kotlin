@@ -594,7 +594,7 @@ sealed class Command {
     sealed class ChatCommand {
         data class AddMessage(
             val chat: Id,
-            val message: Chat.Message
+            val message: Chat.Message,
         ) : ChatCommand()
 
         data class DeleteMessage(

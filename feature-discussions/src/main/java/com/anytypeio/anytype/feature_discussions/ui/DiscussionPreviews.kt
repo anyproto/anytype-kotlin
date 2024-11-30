@@ -8,6 +8,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -66,9 +67,8 @@ fun DiscussionPreview() {
         onCopyMessage = {},
         onAttachmentClicked = {},
         onEditMessage = {},
-        onMarkupLinkClicked = {
-
-        }
+        onMarkupLinkClicked = {},
+        onReplyMessage = {}
     )
 }
 
@@ -118,7 +118,9 @@ fun DiscussionScreenPreview() {
         onAttachFileClicked = {},
         onUploadAttachmentClicked = {},
         onAttachMediaClicked = {},
-        onAttachObjectClicked = {}
+        onAttachObjectClicked = {},
+        onReplyMessage = {},
+        chatBoxMode = DiscussionViewModel.ChatBoxMode.Default
     )
 }
 
@@ -142,7 +144,8 @@ fun BubblePreview() {
         onCopyMessage = {},
         onAttachmentClicked = {},
         onEditMessage = {},
-        onMarkupLinkClicked = {}
+        onMarkupLinkClicked = {},
+        onReply = {}
     )
 }
 
@@ -167,7 +170,8 @@ fun BubbleEditedPreview() {
         onCopyMessage = {},
         onAttachmentClicked = {},
         onEditMessage = {},
-        onMarkupLinkClicked = {}
+        onMarkupLinkClicked = {},
+        onReply = {}
     )
 }
 
@@ -199,6 +203,7 @@ fun BubbleWithAttachmentPreview() {
         },
         onAttachmentClicked = {},
         onEditMessage = {},
-        onMarkupLinkClicked = {}
+        onMarkupLinkClicked = {},
+        onReply = {}
     )
 }

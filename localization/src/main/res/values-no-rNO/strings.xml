@@ -1560,4 +1560,5 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_file">Fil</string>
     <string name="chat_attachment_media">Media</string>
     <string name="chat_attachment_upload">Last opp</string>
+    <string name="chats_reply">Reply</string>
 </resources>

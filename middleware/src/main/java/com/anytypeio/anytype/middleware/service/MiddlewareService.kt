@@ -593,6 +593,7 @@ interface MiddlewareService {
     fun chatAddMessage(request: Rpc.Chat.AddMessage.Request): Rpc.Chat.AddMessage.Response
     fun chatEditMessage(request:  Rpc.Chat.EditMessageContent.Request): Rpc.Chat.EditMessageContent.Response
     fun chatGetMessages(request: Rpc.Chat.GetMessages.Request): Rpc.Chat.GetMessages.Response
+    fun chatGetMessagesByIds(request: Rpc.Chat.GetMessagesByIds.Request): Rpc.Chat.GetMessagesByIds.Response
     fun chatDeleteMessage(request: Rpc.Chat.DeleteMessage.Request): Rpc.Chat.DeleteMessage.Response
     fun chatSubscribeLastMessages(request: Rpc.Chat.SubscribeLastMessages.Request): Rpc.Chat.SubscribeLastMessages.Response
     fun chatToggleMessageReaction(request: Rpc.Chat.ToggleMessageReaction.Request): Rpc.Chat.ToggleMessageReaction.Response

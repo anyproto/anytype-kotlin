@@ -2358,6 +2358,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun chatGetMessagesByIds(request: Rpc.Chat.GetMessagesByIds.Request): Rpc.Chat.GetMessagesByIds.Response {
+        val encoded = Service.chatGetMessagesByIds(
+            Rpc.Chat.GetMessagesByIds.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.GetMessagesByIds.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.GetMessagesByIds.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun chatSubscribeLastMessages(request: Rpc.Chat.SubscribeLastMessages.Request): Rpc.Chat.SubscribeLastMessages.Response {
         val encoded = Service.chatSubscribeLastMessages(
             Rpc.Chat.SubscribeLastMessages.Request.ADAPTER.encode(request)

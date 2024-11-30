@@ -324,6 +324,12 @@ class DiscussionViewModel @Inject constructor(
         attachments.value = emptyList()
     }
 
+    fun onClearReplyClicked() {
+        viewModelScope.launch {
+            chatBoxMode.value = ChatBoxMode.Default
+        }
+    }
+
     fun onReacted(msg: Id, reaction: String) {
         Timber.d("onReacted")
         viewModelScope.launch {

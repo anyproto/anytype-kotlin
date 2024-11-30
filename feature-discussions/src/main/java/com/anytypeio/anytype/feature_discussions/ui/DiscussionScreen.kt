@@ -187,7 +187,8 @@ fun DiscussionScreenWrapper(
                     onUploadAttachmentClicked = {
 
                     },
-                    onReplyMessage = vm::onReplyMessage
+                    onReplyMessage = vm::onReplyMessage,
+                    onClearReplyClicked = vm::onClearReplyClicked
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -223,6 +224,7 @@ fun DiscussionScreen(
     onAttachClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onClearAttachmentClicked: () -> Unit,
+    onClearReplyClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (DiscussionView.Message) -> Unit,
     onCopyMessage: (DiscussionView.Message) -> Unit,
@@ -353,7 +355,8 @@ fun DiscussionScreen(
             onAttachMediaClicked = onAttachMediaClicked,
             onUploadAttachmentClicked = onUploadAttachmentClicked,
             onAttachObjectClicked = onAttachObjectClicked,
-            onClearAttachmentClicked = onClearAttachmentClicked
+            onClearAttachmentClicked = onClearAttachmentClicked,
+            onClearReplyClicked = onClearReplyClicked
         )
     }
 }
@@ -502,7 +505,8 @@ private fun ChatBox(
     onAttachMediaClicked: () -> Unit,
     onAttachFileClicked: () -> Unit,
     onUploadAttachmentClicked: () -> Unit,
-    onClearAttachmentClicked: () -> Unit
+    onClearAttachmentClicked: () -> Unit,
+    onClearReplyClicked: () -> Unit
 ) {
 
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -597,9 +601,12 @@ private fun ChatBox(
                     Image(
                         painter = painterResource(R.drawable.ic_chat_close_chat_box_reply),
                         contentDescription = "Clear reply to icon",
-                        modifier = Modifier.padding(
-                            end = 12.dp
-                        ).align(Alignment.CenterEnd)
+                        modifier = Modifier
+                            .padding(end = 12.dp)
+                            .align(Alignment.CenterEnd)
+                            .clickable {
+                                onClearReplyClicked()
+                            }
                     )
                 }
             }

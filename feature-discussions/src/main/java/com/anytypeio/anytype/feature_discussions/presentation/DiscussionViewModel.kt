@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
@@ -33,6 +34,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -48,7 +50,8 @@ class DiscussionViewModel @Inject constructor(
     private val members: ActiveSpaceMemberSubscriptionContainer,
     private val getAccount: GetAccount,
     private val urlBuilder: UrlBuilder,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val dispatchers: AppCoroutineDispatchers
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -211,6 +214,7 @@ class DiscussionViewModel @Inject constructor(
                     )
                 }.reversed()
             }
+//            .flowOn(dispatchers.io)
             .collect { result ->
                 messages.value = result
             }

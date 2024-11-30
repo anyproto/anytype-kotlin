@@ -613,6 +613,11 @@ sealed class Command {
             val limit: Int
         ) : ChatCommand()
 
+        data class GetMessagesByIds(
+            val chat: Id,
+            val messages: List<Id>
+        ) : ChatCommand()
+
         data class SubscribeLastMessages(
             val chat: Id,
             val limit: Int

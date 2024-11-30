@@ -1038,6 +1038,10 @@ class BlockMiddleware(
         return middleware.chatGetMessages(command)
     }
 
+    override suspend fun getChatMessagesByIds(command: Command.ChatCommand.GetMessagesByIds): List<Chat.Message> {
+        return middleware.chatGetMessagesByIds(command)
+    }
+
     override suspend fun subscribeLastChatMessages(
         command: Command.ChatCommand.SubscribeLastMessages
     ): Command.ChatCommand.SubscribeLastMessages.Response {

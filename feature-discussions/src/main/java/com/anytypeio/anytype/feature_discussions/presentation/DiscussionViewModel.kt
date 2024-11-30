@@ -105,6 +105,7 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
+    // TODO move to IO thread.
     private suspend fun proceedWithObservingChatMessages(
         account: Id,
         chat: Id

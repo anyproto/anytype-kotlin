@@ -1199,12 +1199,7 @@ fun Bubble(
 
                     if (isEdited) {
                         withStyle(
-                            style = SpanStyle(
-                                color = if (isUserAuthor)
-                                    colorResource(id = R.color.text_white)
-                                else
-                                    colorResource(id = R.color.text_primary),
-                            )
+                            style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
                         ) {
                             append(
                                 " (${stringResource(R.string.chats_message_edited)})"

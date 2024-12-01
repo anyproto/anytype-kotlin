@@ -17,6 +17,7 @@ import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.NewObject
 import com.anytypeio.anytype.presentation.navigation.SectionDates
 import com.anytypeio.anytype.presentation.navigation.SectionObjects
+import com.anytypeio.anytype.presentation.navigation.SelectDateItem
 
 class MentionAdapter(
     private var mentionFilter: String = "",
@@ -44,7 +45,7 @@ class MentionAdapter(
                     newClicked(mentionFilter)
                 }
             }
-            TYPE_MENTION ->
+            TYPE_MENTION, TYPE_SELECT_DATE ->
                 ObjectItemViewHolder(
                     view = inflater.inflate(R.layout.item_list_object_small, parent, false)
                 ).apply {
@@ -79,6 +80,7 @@ class MentionAdapter(
         is SectionDates -> TYPE_SECTION_DATES
         is SectionObjects -> TYPE_SECTION_OBJECTS
         is NewObject -> TYPE_NEW_PAGE
+        is SelectDateItem -> TYPE_SELECT_DATE
         else -> throw IllegalStateException("Unexpected item type: ${item.javaClass.name}")
     }
 
@@ -90,8 +92,10 @@ class MentionAdapter(
         if (holder is NewPageViewHolder) {
             holder.bind(filter = mentionFilter.removePrefix(MENTION_PREFIX))
         }
+        if (holder is ObjectItemViewHolder && item is SelectDateItem) {
+            holder.bindSelectDateItem()
+        }
     }
-
     class NewPageViewHolder(binding: ItemMentionNewPageBinding) :
         ObjectViewHolder(binding.root) {
 
@@ -119,5 +123,6 @@ class MentionAdapter(
         const val TYPE_MENTION = 2
         const val TYPE_SECTION_DATES = 3
         const val TYPE_SECTION_OBJECTS = 4
+        const val TYPE_SELECT_DATE = 5
     }
 }

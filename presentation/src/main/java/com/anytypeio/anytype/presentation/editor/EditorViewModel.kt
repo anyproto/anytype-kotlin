@@ -241,6 +241,7 @@ import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.NewObject
 import com.anytypeio.anytype.presentation.navigation.SectionDates
 import com.anytypeio.anytype.presentation.navigation.SectionObjects
+import com.anytypeio.anytype.presentation.navigation.SelectDateItem
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
@@ -6273,6 +6274,7 @@ class EditorViewModel(
             dateItems.forEach { item ->
                 sectionedList.add(item)
             }
+            sectionedList.add(SelectDateItem)
         }
 
         if (otherItems.isNotEmpty()) {

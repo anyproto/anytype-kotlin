@@ -9,6 +9,7 @@ interface DefaultSearchItem
 data object NewObject: DefaultSearchItem
 
 data object SectionDates: DefaultSearchItem
+data object SelectDateItem: DefaultSearchItem
 data object SectionObjects: DefaultSearchItem
 
 data class DefaultObjectView(

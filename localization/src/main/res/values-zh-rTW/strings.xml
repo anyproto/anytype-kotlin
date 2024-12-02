@@ -1547,4 +1547,5 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_file">檔案</string>
     <string name="chat_attachment_media">媒體</string>
     <string name="chat_attachment_upload">上傳</string>
+    <string name="chats_reply">Reply</string>
 </resources>

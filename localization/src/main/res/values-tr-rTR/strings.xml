@@ -1560,4 +1560,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_attachment_file">Dosya</string>
     <string name="chat_attachment_media">Medya</string>
     <string name="chat_attachment_upload">Yükle</string>
+    <string name="chats_reply">Yanıtla</string>
 </resources>

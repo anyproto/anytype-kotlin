@@ -1586,4 +1586,5 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_file">Файл</string>
     <string name="chat_attachment_media">Медіа</string>
     <string name="chat_attachment_upload">Завантажити</string>
+    <string name="chats_reply">Reply</string>
 </resources>

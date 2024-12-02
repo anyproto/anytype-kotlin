@@ -7,9 +7,11 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -295,14 +297,14 @@ fun Struct.buildRelationValueObjectViews(
     val objects = mutableListOf<ObjectView>()
     val value = this.getOrDefault(relationKey, null)
     if (value is Id) {
-        val wrapper = ObjectWrapper.Basic(details[value]?.map ?: emptyMap())
-        if (!wrapper.isEmpty()) {
+        val wrapper = ObjectWrapper.Basic(details[value]?.map.orEmpty())
+        if (wrapper.isValid) {
             objects.add(wrapper.toObjectView(urlBuilder = builder))
         }
     } else if (value is List<*>) {
         value.typeOf<Id>().forEach { id ->
-            val wrapper = ObjectWrapper.Basic(details[id]?.map ?: emptyMap())
-            if (!wrapper.isEmpty()) {
+            val wrapper = ObjectWrapper.Basic(details[id]?.map.orEmpty())
+            if (wrapper.isValid) {
                 objects.add(wrapper.toObjectView(urlBuilder = builder))
             }
         }

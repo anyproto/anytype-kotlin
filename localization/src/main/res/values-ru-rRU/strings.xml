@@ -1589,4 +1589,5 @@
     <string name="chat_attachment_file">Файл</string>
     <string name="chat_attachment_media">Медиа-файлы</string>
     <string name="chat_attachment_upload">Загрузить</string>
+    <string name="chats_reply">Ответить</string>
 </resources>

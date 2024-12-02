@@ -598,7 +598,7 @@ sealed class Command {
     sealed class ChatCommand {
         data class AddMessage(
             val chat: Id,
-            val message: Chat.Message
+            val message: Chat.Message,
         ) : ChatCommand()
 
         data class DeleteMessage(
@@ -615,6 +615,11 @@ sealed class Command {
             val chat: Id,
             val beforeMessageId: Id,
             val limit: Int
+        ) : ChatCommand()
+
+        data class GetMessagesByIds(
+            val chat: Id,
+            val messages: List<Id>
         ) : ChatCommand()
 
         data class SubscribeLastMessages(

@@ -1561,4 +1561,5 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_file">File</string>
     <string name="chat_attachment_media">Multimedia</string>
     <string name="chat_attachment_upload">Carica</string>
+    <string name="chats_reply">Rispondi</string>
 </resources>

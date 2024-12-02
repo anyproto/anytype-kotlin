@@ -455,6 +455,7 @@ interface BlockRemote {
     suspend fun editChatMessage(command: Command.ChatCommand.EditMessage)
     suspend fun deleteChatMessage(command: Command.ChatCommand.DeleteMessage)
     suspend fun getChatMessages(command: Command.ChatCommand.GetMessages): List<Chat.Message>
+    suspend fun getChatMessagesByIds(command: Command.ChatCommand.GetMessagesByIds): List<Chat.Message>
     suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastMessages): Command.ChatCommand.SubscribeLastMessages.Response
     suspend fun toggleChatMessageReaction(command: Command.ChatCommand.ToggleMessageReaction)
     suspend fun unsubscribeChat(chat: Id)

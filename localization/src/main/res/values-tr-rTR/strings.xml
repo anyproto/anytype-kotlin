@@ -291,7 +291,7 @@
     <string name="enter_value">Değeri gir</string>
     <string name="ityem_relations">İlişkiler</string>
     <string name="add_sort">Bir sıralama ekleyin</string>
-    <string name="apply">Apply</string>
+    <string name="apply">Uygula</string>
     <string name="add_filter">Bir filtre ekleyin </string>
     <string name="relation_format_tag">Çoklu seçim</string>
     <string name="unknown_number_of_objects">Bilinmeyen sayıda nesne</string>
@@ -1560,4 +1560,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_attachment_file">Dosya</string>
     <string name="chat_attachment_media">Medya</string>
     <string name="chat_attachment_upload">Yükle</string>
+    <string name="chats_reply">Yanıtla</string>
 </resources>

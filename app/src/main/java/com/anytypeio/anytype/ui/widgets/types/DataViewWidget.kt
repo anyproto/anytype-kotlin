@@ -310,7 +310,7 @@ fun GalleryWidgetCard(
                                         }
                                 ) {
                                     Text(
-                                        text = "Показать все объекты",
+                                        text = stringResource(id = R.string.widget_view_see_all_objects),
                                         style = Caption1Medium,
                                         color = colorResource(id = R.color.glyph_active),
                                         modifier = Modifier

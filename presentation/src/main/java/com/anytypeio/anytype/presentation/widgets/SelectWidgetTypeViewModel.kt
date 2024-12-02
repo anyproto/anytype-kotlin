@@ -49,23 +49,23 @@ class SelectWidgetTypeViewModel(
             // Check if the source is a bundled widget
             BundledWidgetSourceIds.ids.contains(source) -> {
                 // Determine if the source requires additional widget types
-                val isExtendedSource = source in setOf(
+                val supportTreeLayout = source in setOf(
                     BundledWidgetSourceIds.FAVORITE,
                     BundledWidgetSourceIds.RECENT,
                     BundledWidgetSourceIds.RECENT_LOCAL
                 )
 
                 // Base widget types for bundled sources
-                val baseWidgets = listOf(
+                val defaultWidgetTypes = listOf(
                     WidgetTypeView.CompactList(),
                     WidgetTypeView.List()
                 )
 
                 // Add Tree widget type if it's an extended source
-                val widgetList = if (isExtendedSource) {
-                    baseWidgets + WidgetTypeView.Tree()
+                val widgetList = if (supportTreeLayout) {
+                    defaultWidgetTypes + WidgetTypeView.Tree()
                 } else {
-                    baseWidgets
+                    defaultWidgetTypes
                 }
 
                 // Set the selected state
@@ -108,7 +108,7 @@ class SelectWidgetTypeViewModel(
             // Check if the source is a bundled widget
             BundledWidgetSourceIds.ids.contains(source) -> {
                 // Determine if the source requires additional widget types
-                val isExtendedSource = source in setOf(
+                val supportTreeLayout = source in setOf(
                     BundledWidgetSourceIds.FAVORITE,
                     BundledWidgetSourceIds.RECENT,
                     BundledWidgetSourceIds.RECENT_LOCAL
@@ -121,7 +121,7 @@ class SelectWidgetTypeViewModel(
                 )
 
                 // Add Tree widget type if it's an extended source
-                val widgetList = if (isExtendedSource) {
+                val widgetList = if (supportTreeLayout) {
                     baseWidgets + WidgetTypeView.Tree(isSelected = false)
                 } else {
                     baseWidgets

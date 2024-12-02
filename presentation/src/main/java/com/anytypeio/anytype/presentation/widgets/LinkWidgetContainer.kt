@@ -13,7 +13,7 @@ class LinkWidgetContainer(
             name = when(val source = widget.source) {
                 is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                 is Widget.Source.Default -> WidgetView.Name.Default(
-                    name = source.obj.getWidgetObjectName()
+                    prettyPrintName = source.obj.getWidgetObjectName()
                 )
             }
         )

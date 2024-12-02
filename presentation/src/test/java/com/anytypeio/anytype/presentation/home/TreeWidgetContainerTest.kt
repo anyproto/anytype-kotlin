@@ -311,7 +311,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = false),
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    name = sourceLinks[0].getWidgetObjectName()
+                                    prettyPrintName = sourceLinks[0].getWidgetObjectName()
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -322,7 +322,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    name = sourceLinks[1].getWidgetObjectName()
+                                    prettyPrintName = sourceLinks[1].getWidgetObjectName()
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -333,7 +333,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    name = sourceLinks[2].getWidgetObjectName()
+                                    prettyPrintName = sourceLinks[2].getWidgetObjectName()
                                 )
                             )
                         ),
@@ -357,7 +357,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = true),
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    name = sourceLinks[0].getWidgetObjectName()
+                                    prettyPrintName = sourceLinks[0].getWidgetObjectName()
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -368,7 +368,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    name = linkA1.getWidgetObjectName()
+                                    prettyPrintName = linkA1.getWidgetObjectName()
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -379,7 +379,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    name = linkA2.getWidgetObjectName()
+                                    prettyPrintName = linkA2.getWidgetObjectName()
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -390,7 +390,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    name = linkA3.getWidgetObjectName()
+                                    prettyPrintName = linkA3.getWidgetObjectName()
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -401,7 +401,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    name = sourceLinks[1].getWidgetObjectName()
+                                    prettyPrintName = sourceLinks[1].getWidgetObjectName()
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -412,7 +412,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    name = sourceLinks[2].getWidgetObjectName()
+                                    prettyPrintName = sourceLinks[2].getWidgetObjectName()
                                 )
                             )
                         ),

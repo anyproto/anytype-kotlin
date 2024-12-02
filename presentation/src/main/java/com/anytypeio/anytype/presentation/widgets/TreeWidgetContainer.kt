@@ -274,7 +274,7 @@ class TreeWidgetContainer(
                         indent = level,
                         path = path + link,
                         name = WidgetView.Name.Default(
-                            name = obj.getWidgetObjectName()
+                            prettyPrintName = obj.getWidgetObjectName()
                         )
                     )
                 )

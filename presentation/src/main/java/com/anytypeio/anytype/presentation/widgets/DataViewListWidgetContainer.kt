@@ -243,7 +243,7 @@ class DataViewListWidgetContainer(
                             null
                         },
                         name = WidgetView.Name.Default(
-                            name = obj.getWidgetObjectName()
+                            prettyPrintName = obj.getWidgetObjectName()
                         )
                     )
                 },
@@ -275,7 +275,7 @@ class DataViewListWidgetContainer(
                         obj = obj,
                         objectIcon = obj.objectIcon(builder = urlBuilder),
                         name = WidgetView.Name.Default(
-                            name = obj.getWidgetObjectName()
+                            prettyPrintName = obj.getWidgetObjectName()
                         )
                     )
                 },

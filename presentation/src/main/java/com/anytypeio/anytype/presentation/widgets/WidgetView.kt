@@ -14,7 +14,7 @@ sealed class WidgetView {
 
     sealed interface Name {
         data class Bundled(val source: Widget.Source.Bundled): Name
-        data class Default(val name: String?): Name
+        data class Default(val prettyPrintName: String?): Name
     }
 
     interface Element {
@@ -29,6 +29,7 @@ sealed class WidgetView {
     data class Tree(
         override val id: Id,
         override val isLoading: Boolean = false,
+        val name: Name,
         val source: Widget.Source,
         val elements: List<Element> = emptyList(),
         val isExpanded: Boolean = false,

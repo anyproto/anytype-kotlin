@@ -663,7 +663,7 @@ fun GalleryWidgetItemCardPreview() {
                 )
             ),
             name = WidgetView.Name.Default(
-                name = "Stephen Bann"
+                prettyPrintName = "Stephen Bann"
             )
         ),
         onItemClicked = {}

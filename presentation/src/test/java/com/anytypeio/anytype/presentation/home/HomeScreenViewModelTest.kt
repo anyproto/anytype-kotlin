@@ -25,7 +25,6 @@ import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -626,7 +625,7 @@ class HomeScreenViewModelTest {
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + firstLink.id,
                                     name = WidgetView.Name.Default(
-                                        name = firstLink.getWidgetObjectName()
+                                        prettyPrintName = firstLink.getWidgetObjectName()
                                     )
                                 ),
                                 WidgetView.Tree.Element(
@@ -637,7 +636,7 @@ class HomeScreenViewModelTest {
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + secondLink.id,
                                     name = WidgetView.Name.Default(
-                                        name = secondLink.getWidgetObjectName()
+                                        prettyPrintName = secondLink.getWidgetObjectName()
                                     )
                                 )
                             ),
@@ -1091,7 +1090,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + firstLink.id,
                                         name = WidgetView.Name.Default(
-                                            name = firstLink.getWidgetObjectName()
+                                            prettyPrintName = firstLink.getWidgetObjectName()
                                         )
                                     ),
                                     WidgetView.Tree.Element(
@@ -1102,7 +1101,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + secondLink.id,
                                         name = WidgetView.Name.Default(
-                                            name = secondLink.getWidgetObjectName()
+                                            prettyPrintName = secondLink.getWidgetObjectName()
                                         )
                                     )
                                 ),
@@ -1122,7 +1121,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + firstLink.id,
                                         name = WidgetView.Name.Default(
-                                            name = firstLink.getWidgetObjectName()
+                                            prettyPrintName = firstLink.getWidgetObjectName()
                                         )
                                     ),
                                     WidgetView.Tree.Element(
@@ -1133,7 +1132,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + secondLink.id,
                                         name = WidgetView.Name.Default(
-                                            name = secondLink.getWidgetObjectName()
+                                            prettyPrintName = secondLink.getWidgetObjectName()
                                         )
                                     )
                                 ),
@@ -1153,7 +1152,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + firstLink.id,
                                         name = WidgetView.Name.Default(
-                                            name = firstLink.getWidgetObjectName()
+                                            prettyPrintName = firstLink.getWidgetObjectName()
                                         )
                                     ),
                                     WidgetView.Tree.Element(
@@ -1164,7 +1163,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + secondLink.id,
                                         name = WidgetView.Name.Default(
-                                            name = secondLink.getWidgetObjectName()
+                                            prettyPrintName = secondLink.getWidgetObjectName()
                                         )
                                     )
                                 ),

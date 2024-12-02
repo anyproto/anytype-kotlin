@@ -634,15 +634,24 @@ class HomeScreenViewModel(
                 .withLatestFrom(spaceManager.observe()) { dispatch, config ->
                     when (dispatch) {
                         is WidgetDispatchEvent.SourcePicked.Default -> {
-                            commands.emit(
-                                Command.SelectWidgetType(
+                            if (dispatch.sourceLayout == ObjectType.Layout.DATE.code) {
+                                proceedWithCreatingWidget(
                                     ctx = config.widgets,
                                     source = dispatch.source,
-                                    layout = dispatch.sourceLayout,
-                                    target = dispatch.target,
-                                    isInEditMode = isInEditMode()
+                                    type = Command.ChangeWidgetType.TYPE_LINK,
+                                    target = dispatch.target
                                 )
-                            )
+                            } else {
+                                commands.emit(
+                                    Command.SelectWidgetType(
+                                        ctx = config.widgets,
+                                        source = dispatch.source,
+                                        layout = dispatch.sourceLayout,
+                                        target = dispatch.target,
+                                        isInEditMode = isInEditMode()
+                                    )
+                                )
+                            }
                         }
                         is WidgetDispatchEvent.SourcePicked.Bundled -> {
                             commands.emit(

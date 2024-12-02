@@ -89,12 +89,15 @@ fun LinkWidgetCard(
                 .fillMaxWidth()
                 .height(40.dp)
         ) {
+
             Text(
-                text = when (val source = item.source) {
-                    is Widget.Source.Default -> {
-                        source.dateTitle ?: source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                text = when(val name = item.name) {
+                    is WidgetView.Name.Bundled -> {
+                        stringResource(id = name.source.res())
                     }
-                    is Widget.Source.Bundled -> { stringResource(id = source.res()) }
+                    is WidgetView.Name.Default -> {
+                        name.name ?: stringResource(id = R.string.untitled)
+                    }
                 },
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

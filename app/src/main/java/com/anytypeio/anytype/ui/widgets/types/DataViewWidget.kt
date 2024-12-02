@@ -661,6 +661,9 @@ fun GalleryWidgetItemCardPreview() {
                 map = mapOf(
                     Relations.NAME to "Stephen Bann"
                 )
+            ),
+            name = WidgetView.Name.Default(
+                name = "Stephen Bann"
             )
         ),
         onItemClicked = {}

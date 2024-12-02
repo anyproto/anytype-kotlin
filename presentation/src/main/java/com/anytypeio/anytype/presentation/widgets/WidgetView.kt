@@ -12,9 +12,15 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 sealed class WidgetView {
 
+    sealed interface Name {
+        data class Bundled(val source: Widget.Source.Bundled): Name
+        data class Default(val name: String?): Name
+    }
+
     interface Element {
         val objectIcon: ObjectIcon
         val obj: ObjectWrapper.Basic
+        val name: Name
     }
 
     abstract val id: Id
@@ -28,12 +34,17 @@ sealed class WidgetView {
         val isExpanded: Boolean = false,
         val isEditable: Boolean = true
     ) : WidgetView(), Draggable {
+        /**
+         * @property [obj] is deprecated
+         */
         data class Element(
+            val id: Id,
+            val obj: ObjectWrapper.Basic,
             val elementIcon: ElementIcon,
             val objectIcon: ObjectIcon = ObjectIcon.None,
             val indent: Indent,
-            val obj: ObjectWrapper.Basic,
-            val path: String
+            val path: String,
+            val name: Name.Default
         )
 
         sealed class ElementIcon {
@@ -47,6 +58,7 @@ sealed class WidgetView {
     data class Link(
         override val id: Id,
         override val isLoading: Boolean = false,
+        val name: Name,
         val source: Widget.Source,
     ) : WidgetView(), Draggable
 
@@ -67,6 +79,7 @@ sealed class WidgetView {
         data class Element(
             override val objectIcon: ObjectIcon,
             override val obj: ObjectWrapper.Basic,
+            override val name: Name,
             val cover: CoverView? = null
         ) : WidgetView.Element
     }
@@ -94,7 +107,8 @@ sealed class WidgetView {
     ) : WidgetView(), Draggable {
         data class Element(
             override val objectIcon: ObjectIcon,
-            override val obj: ObjectWrapper.Basic
+            override val obj: ObjectWrapper.Basic,
+            override val name: Name
         ) : WidgetView.Element
         sealed class Type {
             data object Recent : Type()
@@ -155,6 +169,7 @@ sealed class DropDownMenuAction {
     data object EmptyBin: DropDownMenuAction()
 }
 
+// TODO extend to support date object name or consider creating another object
 fun ObjectWrapper.Basic.getWidgetObjectName(): String? {
     return if (layout == ObjectType.Layout.NOTE) {
         snippet?.trim()?.ifEmpty { null }

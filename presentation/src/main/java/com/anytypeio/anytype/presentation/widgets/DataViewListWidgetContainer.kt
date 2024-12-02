@@ -241,7 +241,10 @@ class DataViewListWidgetContainer(
                             )
                         } else {
                             null
-                        }
+                        },
+                        name = WidgetView.Name.Default(
+                            name = obj.getWidgetObjectName()
+                        )
                     )
                 },
                 isExpanded = true,
@@ -270,11 +273,15 @@ class DataViewListWidgetContainer(
                 elements = objects.map { obj ->
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
-                        objectIcon = obj.objectIcon(builder = urlBuilder)
+                        objectIcon = obj.objectIcon(builder = urlBuilder),
+                        name = WidgetView.Name.Default(
+                            name = obj.getWidgetObjectName()
+                        )
                     )
                 },
                 isExpanded = true,
-                isCompact = isCompact
+                isCompact = isCompact,
+
             )
         }
     }

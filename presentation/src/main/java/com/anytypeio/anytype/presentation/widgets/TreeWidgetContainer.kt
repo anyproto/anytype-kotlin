@@ -260,6 +260,8 @@ class TreeWidgetContainer(
                 val isExpandable = level < MAX_INDENT
                 add(
                     WidgetView.Tree.Element(
+                        id = obj.id,
+                        obj = obj,
                         elementIcon = resolveObjectIcon(
                             obj = obj,
                             isExpandable = isExpandable,
@@ -270,8 +272,10 @@ class TreeWidgetContainer(
                             builder = urlBuilder
                         ),
                         indent = level,
-                        obj = obj,
-                        path = path + link
+                        path = path + link,
+                        name = WidgetView.Name.Default(
+                            name = obj.getWidgetObjectName()
+                        )
                     )
                 )
                 if (isExpandable && expanded.contains(currentLinkPath)) {

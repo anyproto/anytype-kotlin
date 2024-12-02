@@ -223,12 +223,12 @@ private fun TreeWidgetTreeItems(
                     icon = element.objectIcon,
                     modifier = Modifier.align(Alignment.CenterVertically).padding(start = 8.dp, end = 4.dp),
                     onTaskIconClicked = { isChecked ->
-                        onObjectCheckboxClicked(element.obj.id, isChecked)
+                        onObjectCheckboxClicked(element.id, isChecked)
                     }
                 )
             }
             Text(
-                text = element.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled),
+                text = element.name.name ?: stringResource(id = R.string.untitled),
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .fillMaxWidth(),

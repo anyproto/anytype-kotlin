@@ -64,7 +64,9 @@ sealed class Widget {
         abstract val id: Id
         abstract val type: Id?
 
-        data class Default(val obj: ObjectWrapper.Basic, val dateTitle: String? = null) : Source() {
+        data class Default(
+            val obj: ObjectWrapper.Basic
+        ) : Source() {
             override val id: Id = obj.id
             override val type: Id? = obj.type.firstOrNull()
         }
@@ -137,26 +139,7 @@ fun List<Block>.parseWidgets(
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {
-                        val obj = ObjectWrapper.Basic(raw)
-                        if (obj.layout == ObjectType.Layout.DATE) {
-                            val timestampInSeconds =
-                                obj.getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
-                            if (timestampInSeconds != null) {
-                                val (formattedDate, _) = dateProvider.formatTimestampToDateAndTime(
-                                    timestamp = timestampInSeconds * 1000,
-                                )
-                                Widget.Source.Default(
-                                    obj = obj,
-                                    dateTitle = formattedDate
-                                )
-                            } else {
-                                Widget.Source.Default(
-                                    obj = obj
-                                )
-                            }
-                        } else {
-                            Widget.Source.Default(obj)
-                        }
+                        Widget.Source.Default(ObjectWrapper.Basic(raw))
                     }
                     val hasValidSource = when(source) {
                         is Widget.Source.Bundled -> true

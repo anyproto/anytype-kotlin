@@ -47,9 +47,6 @@ class TreeWidgetContainerTest {
     lateinit var gateway: Gateway
 
     @Mock
-    lateinit var spaceGradientProvider: SpaceGradientProvider
-
-    @Mock
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
 
     @Mock
@@ -302,6 +299,9 @@ class TreeWidgetContainerTest {
                     expected = WidgetView.Tree(
                         id = widget.id,
                         source = widget.source,
+                        name = WidgetView.Name.Default(
+                            (widget.source as Widget.Source.Default).obj.getWidgetObjectName()
+                        ),
                         elements = listOf(
                             WidgetView.Tree.Element(
                                 id = sourceLinks[0].id,
@@ -348,6 +348,9 @@ class TreeWidgetContainerTest {
                     expected = WidgetView.Tree(
                         id = widget.id,
                         source = widget.source,
+                        name = WidgetView.Name.Default(
+                            (widget.source as Widget.Source.Default).obj.getWidgetObjectName()
+                        ),
                         elements = listOf(
                             WidgetView.Tree.Element(
                                 indent = 0,

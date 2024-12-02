@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -506,7 +507,10 @@ class HomeScreenViewModelTest {
                             id = widgetBlock.id,
                             source = Widget.Source.Default(sourceObject),
                             elements = emptyList(),
-                            isExpanded = true
+                            isExpanded = true,
+                            name = WidgetView.Name.Default(
+                                prettyPrintName = sourceObject.getWidgetObjectName()
+                            )
                         )
                     )
                     addAll(HomeScreenViewModel.actions)
@@ -615,6 +619,9 @@ class HomeScreenViewModelTest {
                     add(
                         WidgetView.Tree(
                             id = widgetBlock.id,
+                            name = WidgetView.Name.Default(
+                                prettyPrintName = sourceObject.getWidgetObjectName()
+                            ),
                             source = Widget.Source.Default(sourceObject),
                             elements = listOf(
                                 WidgetView.Tree.Element(
@@ -742,6 +749,9 @@ class HomeScreenViewModelTest {
                     add(
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
+                            name = WidgetView.Name.Default(
+                                prettyPrintName = sourceObject.getWidgetObjectName()
+                            ),
                             source = Widget.Source.Default(sourceObject),
                             elements = emptyList(),
                             isExpanded = true,
@@ -848,6 +858,9 @@ class HomeScreenViewModelTest {
                     add(
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
+                            name = WidgetView.Name.Default(
+                                prettyPrintName = sourceObject.getWidgetObjectName()
+                            ),
                             source = Widget.Source.Default(sourceObject),
                             elements = emptyList(),
                             isExpanded = true,
@@ -1081,6 +1094,9 @@ class HomeScreenViewModelTest {
                             WidgetView.Tree(
                                 id = favoriteWidgetBlock.id,
                                 source = Widget.Source.Bundled.Favorites,
+                                name = WidgetView.Name.Bundled(
+                                    Widget.Source.Bundled.Favorites,
+                                ),
                                 elements = listOf(
                                     WidgetView.Tree.Element(
                                         id = firstLink.id,
@@ -1111,6 +1127,9 @@ class HomeScreenViewModelTest {
                         add(
                             WidgetView.Tree(
                                 id = recentWidgetBlock.id,
+                                name = WidgetView.Name.Bundled(
+                                    Widget.Source.Bundled.Recent,
+                                ),
                                 source = Widget.Source.Bundled.Recent,
                                 elements = listOf(
                                     WidgetView.Tree.Element(
@@ -1143,6 +1162,9 @@ class HomeScreenViewModelTest {
                             WidgetView.Tree(
                                 id = setsWidgetBlock.id,
                                 source = Widget.Source.Bundled.Sets,
+                                name = WidgetView.Name.Bundled(
+                                    Widget.Source.Bundled.Sets,
+                                ),
                                 elements = listOf(
                                     WidgetView.Tree.Element(
                                         id = firstLink.id,

@@ -1217,10 +1217,10 @@
     <string name="multiplayer_toast_share_limit_reached">Deellimiet bereikt</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink naar jouw object</string>
     <string name="multiplayer_deeplink_to_your_object_error">Deze deeplink werkt niet. Object kan worden verwijderd of er kunnen problemen zijn met toegang tot de ruimte.</string>
-    <string name="multiplayer_collaborate_on_spaces">Aan ruimtes samenwerken</string>
+    <string name="multiplayer_collaborate_on_spaces">Werk samen aan ruimten</string>
     <string name="multiplayer_collaborate_step_1">1. Tik op de ruimte widget om toegang te krijgen tot instellingen</string>
     <string name="multiplayer_collaborate_step_2">2. Open delen sectie</string>
-    <string name="multiplayer_collaborate_step_3">3. Genereer een uitnodigingskoppeling en deel deze</string>
+    <string name="multiplayer_collaborate_step_3">3. Genereer een uitnodigingslink en deel deze</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d lid</item>
         <item quantity="other">%1$d leden</item>
@@ -1234,8 +1234,8 @@
     <string name="multiplayer_space_status_joining">Aan het aansluiten</string>
     <string name="multiplayer_space_status_active">Actief</string>
     <string name="multiplayer_space_status_removing">Verwijderd</string>
-    <string name="multiplayer_cancel_join_request">Deelnameverzoek annuleren</string>
-    <string name="multiplayer_cancel_join_request_msg">Je zult het deelnameverzoek opnieuw moeten sturen</string>
+    <string name="multiplayer_cancel_join_request">Annuleer deelnameverzoek</string>
+    <string name="multiplayer_cancel_join_request_msg">Je moet het deelnameverzoek opnieuw sturen</string>
     <string name="multiplayer_do_not_cancel_join_request">Annuleer niet</string>
     <string name="multiplayer_error_invite_not_found">De uitnodiging bestaat niet. Zorg er alsjeblieft voor dat jouw apparaten worden gesynchroniseerd.</string>
     <string name="multiplayer_error_invite_bad_content">De uitnodigingslink kon niet worden doorgezet. Het zou fouten in het formaat of ongeldige gegevens kunnen bevatten.</string>
@@ -1243,26 +1243,26 @@
     <string name="multiplayer_error_limit_reached">Limiet bereikt voor deze ruimte. Upgrade alsjeblieft jouw lidmaatschap of neem contact op met ondersteuning voor hulp.</string>
     <string name="multiplayer_error_not_shareable">Het lijkt erop dat de ruimte niet meer wordt gedeeld. Zorg er alsjeblieft voor dat jouw apparaten zijn gesynchroniseerd.</string>
     <string name="multiplayer_error_request_failed">Oeps! De aanvraag is mislukt. Controleer jouw internetverbinding en probeer het opnieuw.</string>
-    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Deze koppeling lijkt niet te werken</string>
-    <string name="multiplayer_invite_link_space_not_found">Deze uitnodigingskoppeling is niet langer geldig omdat de ruimte niet werd gevonden.</string>
+    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Deze link lijkt niet te werken</string>
+    <string name="multiplayer_invite_link_space_not_found">Deze uitnodigingslink is niet langer geldig omdat de ruimte niet werd gevonden.</string>
     <string name="multiplayer_invite_link_request_already_sent">Verzoek verzonden</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Lidmaatschap</string>
     <string name="payments_subheader">Deelnemen aan het Anytype netwerk betekent bijdragen aan het verhaal</string>
     <string name="payments_card_text_1">Maak samen de visie</string>
-    <string name="payments_card_description_1">Als een gewaardeerd lid doet jouw mening er te! Neem deel aan exclusieve evenementen, vorm strategische keuzes en beïnvloed onze routekaart.</string>
+    <string name="payments_card_description_1">Als een gewaardeerd lid doet jouw mening er toe! Neem deel aan exclusieve evenementen, vorm strategische keuzes en beïnvloed onze routekaart.</string>
     <string name="payments_card_text_2">Ontgrendel ledenvoordelen</string>
-    <string name="payments_card_description_2">Leden genieten van meer backup opslagcapaciteit &amp; synchronisatie limieten, uitnodigingen voor meerdere gasten om samen te werken in gedeelde ruimten, en een unieke identiteit op het Anytype Network.</string>
+    <string name="payments_card_description_2">Leden genieten van meer back-up opslagcapaciteit &amp; synchronisatie limieten, uitnodigingen voor meerdere gasten om samen te werken in gedeelde ruimten, en een unieke identiteit op het Anytype netwerk.</string>
     <string name="payments_card_text_3">Ondersteun digitale onafhankelijkheid </string>
-    <string name="payments_card_description_3">Jouw bijdrage steunt ons team en ondersteunt onze visie op een gebruiker-geëigende , veilige en gezamenlijke digitale omgeving.</string>
+    <string name="payments_card_description_3">Jouw bijdrage ondersteunt ons team en onderschrijft onze visie op een digitaal netwerk dat eigendom is van de gebruiker en veilig en collaboratief is.</string>
     <string name="payments_card_text_4">Investeer in verbinding</string>
-    <string name="payments_card_description_4">De waarde van ons netwerk overschrijdt de som van zijn onderdelen. Jouw lidmaatschap houdt de infrastructuur in stand voor de groei die aan dit netwerk ten grondslag ligt.</string>
+    <string name="payments_card_description_4">De waarde van ons netwerk overschrijdt de som der delen. Jouw lidmaatschap houdt de infrastructuur in stand voor de groei die aan dit netwerk ten grondslag ligt.</string>
     <string name="payments_tier_explorer">Verkenner</string>
     <string name="payments_tier_explorer_description">Duik in het netwerk en geniet van de spanning van één-op-één samenwerking</string>
     <string name="payments_tier_builder">Bouwer</string>
     <string name="payments_tier_builder_description">Ontgrendel de magie van de samenwerking tussen meerdere partijen en geniet van de hoogwaardige ondersteuning</string>
-    <string name="payments_tier_cocreator">Co-creator</string>
+    <string name="payments_tier_cocreator">Medemaker</string>
     <string name="payments_tier_cocreator_description">Ondersteun ons avontuur en ontgrendel exclusieve toegang en voordelen</string>
     <string name="payments_tier_custom">Aangepast</string>
     <string name="payments_tier_custom_description">Lidmaatschap afgestemd op jouw specifieke behoeften en voorkeuren</string>
@@ -1271,7 +1271,7 @@
     <string name="payments_button_contact">Contacteer</string>
     <string name="payments_button_info">Meer informatie</string>
     <string name="payments_button_submit">Verstuur</string>
-    <string name="payments_button_pay">Betalen met kaart</string>
+    <string name="payments_button_pay">Betaal met kaart</string>
     <string name="payments_button_change_email">Wijzig e-mailadres</string>
     <string name="payments_member_link">Lidmaatschap niveaus details</string>
     <string name="payments_privacy_link">Privacybeleid</string>
@@ -1281,32 +1281,32 @@
     <string name="payments_current_label">Huidige</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Kies jouw unieke naam</string>
-    <string name="payments_tier_details_name_subtitle">Dit is jouw unieke naam op het Anyty-netwerk, en bevestigt jouw lidmaatschap. Het fungeert als jouw persoonlijke domein en kan niet worden gewijzigd.</string>
+    <string name="payments_tier_details_name_subtitle">Dit is jouw unieke naam op het Anytype netwerk, en bevestigt jouw lidmaatschap. Het dient als jouw persoonlijke domein en kan niet worden gewijzigd.</string>
     <string name="payments_tier_details_name_hint">Mijzelf</string>
     <string name="payments_tier_details_name_min">Minimaal 7 tekens</string>
     <string name="payments_tier_details_name_error">Deze naam is al in gebruik!</string>
     <string name="payments_tier_details_name_validated">Deze naam [%1$s] ligt voor het oprapen!</string>
-    <string name="payments_tier_details_name_validating">Naam aan het valideren</string>
+    <string name="payments_tier_details_name_validating">Naam valideren</string>
     <string name="payments_tier_details_free_forever">Voor altijd</string>
     <string name="payments_tier_details_valid_until">Geldig tot %1$s</string>
     <string name="payments_tier_details_info_explorer">Duik in het netwerk en geniet van de spanning van één-op-één samenwerking</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB aan netwerkruimte</item>
-        <item>10 één-op-één ruimtes</item>
-        <item>Tot 10 gedeelde ruimtes in alleen-lezen modus</item>
+        <item>10 één-op-één ruimten</item>
+        <item>Tot 10 gedeelde ruimten in alleen-lezen modus</item>
     </string-array>
     <string name="payments_tier_details_info_builder">Ontgrendel de magie van de samenwerking tussen meerdere partijen en geniet van de hoogwaardige ondersteuning</string>
     <string-array name="payments_benefits_builder">
         <item>Unieke naam (van 7 tekens)</item>
         <item>128 GB aan netwerkruimte</item>
-        <item>10 gast medwerker accounts</item>
+        <item>10 gastmedewerker accounts</item>
         <item>Voorkeursondersteuning</item>
     </string-array>
     <string name="payments_tier_details_info_cocreator">Ondersteun ons avontuur en ontgrendel exclusieve toegang en voordelen</string>
     <string-array name="payments_benefits_cocreator">
         <item>Unieke naam (van 5 tekens)</item>
         <item>256 GB aan netwerkruimte</item>
-        <item>25 gast medewerker accounts</item>
+        <item>25 gastmedewerker accounts</item>
         <item>Chat met het team</item>
         <item>Uniek verzamelstuk</item>
     </string-array>
@@ -1326,8 +1326,8 @@
     <string name="payments_tier_current_paid_by_google">Google abonnement</string>
     <string name="payments_tier_current_button">Beheer betaling</string>
     <string name="membership_manage_tier_desktop">Je kunt het abonnement op het desktopplatform beheren</string>
-    <string name="membership_manage_tier_ios">Je kunt het abonnement op iOS beheren.</string>
-    <string name="membership_manage_tier_another_account">Je kunt het abonnement op een ander Googleaccount beheren.</string>
+    <string name="membership_manage_tier_ios">Je kunt het abonnement op het iOS platform beheren.</string>
+    <string name="membership_manage_tier_another_account">Je kunt het abonnement op een ander Google account beheren.</string>
     <string name="payments_tier_current_change_email_button">Wijzig e-mailadres</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Voer de code in die naar jouw e-mailadres is verstuurd</string>
@@ -1339,23 +1339,23 @@
     <string name="payments_welcome_button">Ga verder</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
-    <string name="membership_support_subject">Lidmaatschapsscherm foutmelding - %1$s</string>
-    <string name="membership_support_body">        Hi Anytype Support Team,\n\n
+    <string name="membership_support_subject">Lidmaatschap scherm foutmelding - %1$s</string>
+    <string name="membership_support_body">        Hoi Anytype ondersteuningsteam,\n\n
 
-        I encountered an error on the Membership Screen in the app. Below are the details:\n
+        Ik heb een fout aangetroffen op het ledenscherm in de app. Hieronder staan ​​de details:\n
 
-        - Error Message: %1$s\n
-        - Description:      \n
-        - Date and Time: %2$s\n
-        - Device Model: %3$s\n
-        - Operating System: %4$s\n
-        - App Version: %5$s\n
+        - Foutmelding: %1$s\n
+        - Beschrijving:      \n
+        - Datum en tijd: %2$s\n
+        - Apparaatmodel: %3$s\n
+        - Besturingssysteem: %4$s\n
+        - App-versie: %5$s\n
 
-        Additional Comments:\n\n
+        Aanvullende opmerkingen:\n\n
 
-        Thank you for your assistance in resolving this issue.\n\n
+        Bedankt voor jullie hulp bij het oplossen van dit probleem.\n\n
 
-        Best regards,       \n
+        Met vriendelijke groet,       \n
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
     <string name="payments_email_subject">Upgrade %1$s</string>
@@ -1379,10 +1379,10 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="membership_any_name_not_reserved">Deze naam kan niet worden gereserveerd</string>
     <string name="membership_any_name_null_error">Lege fout</string>
     <string name="membership_any_name_unknown">Onbekende foutmelding</string>
-    <string name="membership_email_wrong_format">E-mailadres heeft een verkeerd formaat</string>
+    <string name="membership_email_wrong_format">E-mailbericht heeft een verkeerde opmaak</string>
     <string name="membership_email_already_verified">E-mailadres is al geverifieerd</string>
-    <string name="membership_email_already_sent">E-mail is al verzonden, probeer het opnieuw na 1 minuut</string>
-    <string name="membership_email_failed_to_send">E-mail kon niet worden verzonden</string>
+    <string name="membership_email_already_sent">E-mailbericht is al verzonden, probeer het opnieuw na 1 minuut</string>
+    <string name="membership_email_failed_to_send">E-mailbericht kon niet worden verzonden</string>
     <string name="membership_email_membership_already_exists">Lidmaatschap bestaat al</string>
     <string name="membership_email_code_expired">De code is verlopen</string>
     <string name="membership_email_code_wrong">De code is verkeerd</string>
@@ -1393,17 +1393,17 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notifications_alert_error_unknown">Er heeft zich een onbekende fout voorgedaan. Probeer het later opnieuw.</string>
     <string name="notifications_alert_error_bad_input">Ongeldige invoer gedetecteerd. Controleer jouw gegevens en probeer het opnieuw.</string>
     <string name="notifications_alert_error_internal">Er is een interne fout opgetreden. Ons team is op de hoogte gebracht.</string>
-    <string name="notifications_alert_error_no_objects_to_import">Geen items gevonden om te importeren. Selecteer geldige objecten om te importeren.</string>
+    <string name="notifications_alert_error_no_objects_to_import">Geen items gevonden om te importeren. Selecteer alsjeblieft geldige objecten om te importeren.</string>
     <string name="notifications_alert_error_import_canceled">Het importeerproces is geannuleerd door de gebruiker.</string>
-    <string name="notifications_alert_error_limit_exceeded">De importeerlimiet voor rijen of relaties is overschreden. Verminder het aantal en probeer het opnieuw.</string>
+    <string name="notifications_alert_error_limit_exceeded">De importeerlimiet voor rijen of relaties is overschreden. Verminder alsjeblieft de hoeveelheid en probeer het opnieuw.</string>
     <string name="notifications_alert_error_file_load">Er is een fout opgetreden bij het laden van het bestand. Controleer het bestand en probeer het opnieuw.</string>
     <string name="notifications_alert_error_insufficient_permissions">Je hebt niet de benodigde rechten om deze actie uit te voeren. Controleer jouw machtigingen en probeer het opnieuw.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Gemaakt door</string>
     <string name="gallery_experience_install">Installeer</string>
     <string name="gallery_experience_install_new">Installeer in nieuwe ruimte</string>
-    <string name="gallery_experience_alert_title_success">Experience werd geïnstalleerd</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" werd geïnstalleerd in een nieuwe ruimte. Je kunt het nu openen en gebruiken.</string>
+    <string name="gallery_experience_alert_title_success">Experience is geïnstalleerd</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" is geïnstalleerd in een nieuwe ruimte. Je kunt het nu openen en gebruiken.</string>
     <string name="gallery_experience_alert_title_error">Oeps!</string>
     <string name="gallery_experience_alert_button_space">Open ruimte</string>
     <string name="gallery_experience_alert_button_error">Sluit</string>
@@ -1411,7 +1411,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notifications_prompt_get_notified">Ontvang een melding</string>
     <string name="notifications_prompt_secondary_button_text">Niet nu</string>
     <string name="notifications_prompt_description">Schakel alsjeblieft meldingen in om op de hoogte te blijven van verzoeken om aan ruimte deel te nemen of deze te verlaten.</string>
-    <string name="notifications_prompt_primary_button_text">Activeer</string>
+    <string name="notifications_prompt_primary_button_text">Schakel in</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Maak bladwijzer aan vanaf klembord</string>
     <string name="error_unexpected_layout">Fout: onverwachte lay-out</string>
     <string name="error_non_valid_object">Fout: object-ID ontbreekt</string>
@@ -1426,17 +1426,17 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="membership_agree_terms">Gebruikersvoorwaarden</string>
     <string name="membership_agree_middle">en</string>
     <string name="membership_agree_privacy">Privacybeleid</string>
-    <string name="membership_support_already_acquired">Je hebt al een Lidmaatschap met een ander Anytype account verkregen.</string>
-    <string name="membership_support_different_subscription">Een abonnement met een ander ID gevonden</string>
+    <string name="membership_support_already_acquired">Je hebt al een lidmaatschap met een ander Anytype account verkregen.</string>
+    <string name="membership_support_different_subscription">Een abonnement met een andere ID gevonden</string>
     <string name="membership_support_more_then_one_subscription">Meer dan één abonnement gevonden</string>
-    <string name="multiplayer_space_join_request_participants_error">Fout met deelnemer ruimte</string>
+    <string name="multiplayer_space_join_request_participants_error">Fout met ruimte van deelnemer</string>
     <string name="multiplayer_space_join_request_new_member_error">Fout met lidmaatschapsverzoek</string>
     <string name="multiplayer_space_join_request_current_user_error">Fout met huidige gebruikersstatus</string>
     <string name="multiplayer_space_join_request_membership_status_error">Fout met huidige lidmaatschapsstatus</string>
     <string name="membership_upgrade_title">Lidmaatschap upgrade</string>
     <string name="membership_upgrade_description">Contacteer ons voor extra opslagruimte, ruimte bewerkers of meer gedeelde ruimten. Het team van Anytype zal details en voorwaarden geven die zijn afgestemd op jouw behoeften.</string>
     <string name="membership_upgrade_button">Contacteer Anytype team</string>
-    <string name="membership_space_settings_share_limit">Je hebt de limiet bereikt van %1$d ruimtes die kunnen worden gedeeld</string>
+    <string name="membership_space_settings_share_limit">Je hebt de limiet bereikt van %1$d ruimten die kunnen worden gedeeld</string>
     <plurals name="period_years">
         <item quantity="one">jaar</item>
         <item quantity="other">%d jaren</item>
@@ -1471,24 +1471,24 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="sync_status_self_host">Self Host</string>
     <string name="sync_status_self_host_synced">Gesynchroniseerd</string>
     <plurals name="sync_status_self_host_syncing">
-        <item quantity="one">%1$d item synchroniseren</item>
-        <item quantity="other">%1$d items synchroniseren...</item>
+        <item quantity="one">%1$d onderdeel synchroniseren</item>
+        <item quantity="other">%1$d onderdelen synchroniseren...</item>
     </plurals>
     <string name="sync_status_p2p">P2P Connection</string>
     <plurals name="sync_status_p2p_devices">
         <item quantity="one">%1$d apparaat verbonden</item>
-        <item quantity="other">%1$d apparaat verbonden</item>
+        <item quantity="other">%1$d apparaten verbonden</item>
     </plurals>
     <string name="sync_status_p2p_disabled">Connection not possible</string>
-    <string name="sync_status_p2p_restricted">Beperkt. Controleer de apparaatinstellingen.</string>
+    <string name="sync_status_p2p_restricted">Verhinderd. Controleer de apparaatinstellingen.</string>
     <string name="sync_status_p2p_not_connected">Not connected</string>
     <string name="sync_status_anytype_network">Anytype Network</string>
     <string name="sync_status_anytype_end_to_end">End-to-end encrypted</string>
     <plurals name="sync_status_network_items">
-        <item quantity="one">%1$d item synchroniseren...</item>
-        <item quantity="other">%1$d items synchroniseren...</item>
+        <item quantity="one">%1$d onderdeel synchroniseren...</item>
+        <item quantity="other">%1$d onderdelen synchroniseren...</item>
     </plurals>
-    <string name="sync_status_anytype_network_connecting">Netwerk wordt verbonden</string>
+    <string name="sync_status_anytype_network_connecting">Netwerk verbinden...</string>
     <string name="sync_status_anytype_network_no_connecting">Geen verbinding</string>
     <string name="sync_status_anytype_sync_slow">Sync might be slow. Update the app.</string>
     <string name="sync_status_storage_limit_exceed">Storage limit reached</string>
@@ -1497,8 +1497,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="sync_status_unrecognized">Unrecognized error</string>
     <string name="version_history_title">Versiegeschiedenis</string>
     <string name="version_history_error_no_versions">Geen versies gevonden</string>
-    <string name="version_history_error_get_version">Fout bij ophalen versiegeschiedenis</string>
-    <string name="version_history_error_get_members">Fout bij ophalen deelnemers</string>
+    <string name="version_history_error_get_version">Fout bij ophalen van versiegeschiedenis</string>
+    <string name="version_history_error_get_members">Fout bij ophalen van deelnemers</string>
     <string name="new_object">Nieuw object</string>
     <string name="vault_my_spaces">My Spaces</string>
     <string name="all_content_title_all_content">All Objects</string>

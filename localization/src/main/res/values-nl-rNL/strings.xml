@@ -805,7 +805,7 @@
     <string name="exiting_please_wait">Aan het afsluiten... een ogenblik geduld</string>
     <string name="loading_please_wait">Aan het laden... even geduld a.j.b.</string>
     <string name="personal">Standaard</string>
-    <string name="create_space">Maak een ruimte aan</string>
+    <string name="create_space">Maak een ruimte</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
     <string name="type">Type</string>
     <string name="space_info">Ruimte informatie</string>
@@ -902,7 +902,7 @@
     <string name="slash_widget_actions_copy">Kopieer</string>
     <string name="slash_widget_actions_paste">Plak</string>
     <string name="slash_widget_actions_link_to">Voeg link toe</string>
-    <string name="slash_widget_actions_link_to_subtitle">Maak link naar een ander object aan</string>
+    <string name="slash_widget_actions_link_to_subtitle">Maak link naar een ander object</string>
     <string name="slash_widget_actions_move">Verplaats</string>
     <string name="slash_widget_actions_moveto">Verplaats naar</string>
     <string name="slash_widget_actions_clean_style">Wis stijl</string>
@@ -1099,7 +1099,7 @@
     <string name="any_object_creation_menu_set_as_default">Stel in als standaard</string>
     <string name="any_object_creation_menu_move_left">Verplaats naar links</string>
     <string name="any_object_creation_menu_move_right">Verplaats naar rechts</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Maak object aan vanaf klembord</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Maak object vanaf klembord</string>
     <string name="block_media_error">Er ging iets fout, probeer het alsjeblieft nogmaals</string>
     <string name="relation_value_create_new">Maak \"%1$s\" aan</string>
     <string name="option_widget_create">Maak optie</string>
@@ -1178,7 +1178,7 @@
     <string name="multiplayer_manage">Beheer</string>
     <string name="multiplayer_leave_space">Verlaat ruimte</string>
     <string name="multiplayer_leave_space_warning_subtitle">Deze ruimte wordt verwijderd van jouw apparaten en je zult er dan geen toegang meer toe hebben</string>
-    <string name="multiplayer_generate_invite_link_description">Maak uitnodigingslink aan om ruimte te delen en nieuwe leden toe te voegen</string>
+    <string name="multiplayer_generate_invite_link_description">Maak uitnodigingslink om ruimte te delen en nieuwe leden toe te voegen</string>
     <string name="multiplayer_generate_invite_link">Genereer uitnodigingslink</string>
     <string name="multiplayer_show_qr_code">Toon QR-code</string>
     <string name="multiplayer_how_to_share_space">Hoe deel je een ruimte?</string>

@@ -122,8 +122,7 @@ fun List<Block>.parseActiveViews() : WidgetToActiveView {
 fun List<Block>.parseWidgets(
     root: Id,
     details: Map<Id, Struct>,
-    config: Config,
-    dateProvider: DateProvider
+    config: Config
 ): List<Widget> = buildList {
     val map = asMap()
     val widgets = map[root] ?: emptyList()

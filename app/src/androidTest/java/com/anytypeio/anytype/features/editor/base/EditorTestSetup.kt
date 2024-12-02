@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -148,6 +149,9 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var documentFileShareDownloader: DocumentFileShareDownloader
+
+    @Mock
+    lateinit var dateProvider: DateProvider
 
     @Mock
     lateinit var openPage: OpenPage
@@ -502,7 +506,8 @@ open class EditorTestSetup {
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             clearLastOpenedObject = clearLastOpenedObject,
             getNetworkMode = getNetworkMode,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            dateProvider = dateProvider
         )
     }
 

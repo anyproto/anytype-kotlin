@@ -169,7 +169,7 @@ sealed class DropDownMenuAction {
     data object EmptyBin: DropDownMenuAction()
 }
 
-// TODO extend to support date object name or consider creating another object
+// TODO extend to support date object name or consider creating another extension function
 fun ObjectWrapper.Basic.getWidgetObjectName(): String? {
     return if (layout == ObjectType.Layout.NOTE) {
         snippet?.trim()?.ifEmpty { null }

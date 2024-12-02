@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.middleware.interactor
 
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
+import timber.log.Timber
 
 interface MiddlewareProtobufLogger {
 

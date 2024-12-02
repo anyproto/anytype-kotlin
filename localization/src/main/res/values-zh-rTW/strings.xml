@@ -290,7 +290,7 @@
     <string name="enter_value">輸入值</string>
     <string name="ityem_relations">關聯</string>
     <string name="add_sort">新增排序</string>
-    <string name="apply">套用</string>
+    <string name="apply">Apply</string>
     <string name="add_filter">新增篩選條件</string>
     <string name="relation_format_tag">選取多個</string>
     <string name="unknown_number_of_objects">未知數量的物件</string>
@@ -1547,4 +1547,5 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_file">檔案</string>
     <string name="chat_attachment_media">媒體</string>
     <string name="chat_attachment_upload">上傳</string>
+    <string name="chats_reply">Reply</string>
 </resources>

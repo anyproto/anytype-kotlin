@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,11 +59,13 @@ import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -215,6 +218,27 @@ class HomeScreenFragment : BaseComposeFragment(),
                                 },
                                 focusOnStart = false
                             )
+                        }
+                    }
+                    LaunchedEffect(Unit) {
+                        // TODO refact navigation here. or reuse nav command from home screen view model
+                        spaceLevelChatViewModel.navigation.collect { nav ->
+                            when(nav) {
+                                is OpenObjectNavigation.OpenEditor -> {
+                                    runCatching {
+                                        findNavController().navigate(
+                                            R.id.objectNavigation,
+                                            EditorFragment.args(
+                                                ctx = nav.target,
+                                                space = nav.space
+                                            )
+                                        )
+                                    }.onFailure {
+                                        Timber.w("Error while opening editor from chat.")
+                                    }
+                                }
+                                else -> toast("TODO")
+                            }
                         }
                     }
                 } else {

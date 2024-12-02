@@ -3,12 +3,15 @@ package com.anytypeio.anytype.feature_discussions.presentation
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.text.splitByMarks
+import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
@@ -25,12 +28,13 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -46,7 +50,8 @@ class DiscussionViewModel @Inject constructor(
     private val members: ActiveSpaceMemberSubscriptionContainer,
     private val getAccount: GetAccount,
     private val urlBuilder: UrlBuilder,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val dispatchers: AppCoroutineDispatchers
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -100,16 +105,20 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
+    // TODO move to IO thread.
     private suspend fun proceedWithObservingChatMessages(
         account: Id,
         chat: Id
     ) {
         chatContainer
-            .watch(chat = chat)
-            .onEach { Timber.d("Got new update: $it") }
-            .collect {
-                messages.value = it.map { msg ->
-                    val member = members.get().let { type ->
+            .watchWhileTrackingAttachments(chat = chat)
+            .withLatestFrom(
+                chatContainer.fetchAttachments(vmParams.space),
+                chatContainer.fetchReplies(chat = chat)
+            ) { result, dependencies, replies ->
+                result.map { msg ->
+                    val allMembers = members.get()
+                    val member = allMembers.let { type ->
                         when (type) {
                             is Store.Data -> type.members.find { member ->
                                 member.identity == msg.creator
@@ -120,18 +129,46 @@ class DiscussionViewModel @Inject constructor(
 
                     val content = msg.content
 
+                    val replyToId = msg.replyToMessageId
+
+                    val reply = if (replyToId.isNullOrEmpty()) {
+                        null
+                    } else {
+                        val msg = replies[replyToId]
+                        if (msg != null) {
+                            DiscussionView.Message.Reply(
+                                msg = msg.id,
+                                text = msg.content?.text.orEmpty(),
+                                author = allMembers.let { type ->
+                                    when (type) {
+                                        is Store.Data -> type.members.find { member ->
+                                            member.identity == msg.creator
+                                        }?.name.orEmpty()
+                                        is Store.Empty -> ""
+                                    }
+                                }
+                            )
+                        } else {
+                            null
+                        }
+                    }
+
                     DiscussionView.Message(
                         id = msg.id,
                         timestamp = msg.createdAt * 1000,
-                        content = content?.text
-                            .orEmpty()
-                            .splitByMarks(marks = content?.marks.orEmpty())
-                            .map { (part, styles) ->
-                                DiscussionView.Message.Content.Part(
-                                    part = part,
-                                    styles = styles
-                                )
-                            },
+                        content = DiscussionView.Message.Content(
+                            msg = content?.text.orEmpty(),
+                            parts = content?.text
+                                .orEmpty()
+                                .splitByMarks(marks = content?.marks.orEmpty())
+                                .map { (part, styles) ->
+                                    DiscussionView.Message.Content.Part(
+                                        part = part,
+                                        styles = styles
+                                    )
+                                }
+                        ),
+                        reply = reply,
                         author = member?.name ?: msg.creator.takeLast(5),
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,
@@ -142,7 +179,32 @@ class DiscussionViewModel @Inject constructor(
                                 isSelected = ids.contains(account)
                             )
                         },
-                        attachments = msg.attachments,
+                        attachments = msg.attachments.map { attachment ->
+                            when(attachment.type) {
+                                Chat.Message.Attachment.Type.Image -> DiscussionView.Message.Attachment.Image(
+                                    target = attachment.target,
+                                    url = urlBuilder.medium(path = attachment.target)
+                                )
+                                else -> {
+                                    val wrapper = dependencies[attachment.target]
+                                    if (wrapper?.layout == ObjectType.Layout.IMAGE) {
+                                        DiscussionView.Message.Attachment.Image(
+                                            target = attachment.target,
+                                            url = urlBuilder.large(path = attachment.target)
+                                        )
+                                    } else {
+                                        DiscussionView.Message.Attachment.Link(
+                                            target = attachment.target,
+                                            wrapper = wrapper
+                                        )
+                                    }
+                                }
+                            }
+                        }.also {
+                            if (it.isNotEmpty()) {
+                                Timber.d("Chat attachments: $it")
+                            }
+                        },
                         avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
                             DiscussionView.Message.Avatar.Image(
                                 urlBuilder.thumbnail(member.iconImage!!)
@@ -152,6 +214,10 @@ class DiscussionViewModel @Inject constructor(
                         }
                     )
                 }.reversed()
+            }
+//            .flowOn(dispatchers.io)
+            .collect { result ->
+                messages.value = result
             }
     }
 
@@ -183,7 +249,6 @@ class DiscussionViewModel @Inject constructor(
                         Timber.e(it, "Error while adding message")
                     }
                 }
-
                 is ChatBoxMode.EditMessage -> {
                     editChatMessage.async(
                         params = Command.ChatCommand.EditMessage(
@@ -201,6 +266,31 @@ class DiscussionViewModel @Inject constructor(
                     }.onSuccess {
                         chatBoxMode.value = ChatBoxMode.Default
                     }
+                }
+                is ChatBoxMode.Reply -> {
+                    addChatMessage.async(
+                        params = Command.ChatCommand.AddMessage(
+                            chat = chat,
+                            message = Chat.Message.new(
+                                text = msg,
+                                replyToMessageId = mode.msg,
+                                attachments = attachments.value.map { a ->
+                                    Chat.Message.Attachment(
+                                        target = a.id,
+                                        type = Chat.Message.Attachment.Type.Link
+                                    )
+                                }
+                            )
+                        )
+                    ).onSuccess { (id, payload) ->
+                        attachments.value = emptyList()
+                        chatContainer.onPayload(payload)
+                        delay(JUMP_TO_BOTTOM_DELAY)
+                        commands.emit(UXCommand.JumpToBottom)
+                    }.onFailure {
+                        Timber.e(it, "Error while adding message")
+                    }
+                    chatBoxMode.value = ChatBoxMode.Default
                 }
             }
         }
@@ -240,6 +330,12 @@ class DiscussionViewModel @Inject constructor(
         attachments.value = emptyList()
     }
 
+    fun onClearReplyClicked() {
+        viewModelScope.launch {
+            chatBoxMode.value = ChatBoxMode.Default
+        }
+    }
+
     fun onReacted(msg: Id, reaction: String) {
         Timber.d("onReacted")
         viewModelScope.launch {
@@ -260,6 +356,16 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
+    fun onReplyMessage(msg: DiscussionView.Message) {
+        viewModelScope.launch {
+            chatBoxMode.value = ChatBoxMode.Reply(
+                msg = msg.id,
+                text = msg.content.msg,
+                author = msg.author
+            )
+        }
+    }
+
     fun onDeleteMessage(msg: DiscussionView.Message) {
         Timber.d("onDeleteMessageClicked")
         viewModelScope.launch {
@@ -274,15 +380,22 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    fun onAttachmentClicked(attachment: Chat.Message.Attachment) {
+    fun onAttachmentClicked(attachment: DiscussionView.Message.Attachment) {
+        Timber.d("onAttachmentClicked")
         viewModelScope.launch {
-            // TODO naive implementation. Currently used for debugging.
-            navigation.emit(
-                OpenObjectNavigation.OpenEditor(
-                    target = attachment.target,
-                    space = vmParams.space.id
-                )
-            )
+            when(attachment) {
+                is DiscussionView.Message.Attachment.Image -> {
+                    // Do nothing.
+                }
+                is DiscussionView.Message.Attachment.Link -> {
+                    val wrapper = attachment.wrapper
+                    if (wrapper != null) {
+                        navigation.emit(wrapper.navigation())
+                    } else {
+                        Timber.w("Wrapper is not found in attachment")
+                    }
+                }
+            }
         }
     }
 
@@ -300,6 +413,11 @@ class DiscussionViewModel @Inject constructor(
     sealed class ChatBoxMode {
         data object Default : ChatBoxMode()
         data class EditMessage(val msg: Id) : ChatBoxMode()
+        data class Reply(
+            val msg: Id,
+            val text: String,
+            val author: String
+        ): ChatBoxMode()
     }
 
     sealed class Params {

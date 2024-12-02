@@ -1560,4 +1560,5 @@ En concreto,
     <string name="chat_attachment_file">Archivo</string>
     <string name="chat_attachment_media">Medios</string>
     <string name="chat_attachment_upload">Cargar</string>
+    <string name="chats_reply">Responder</string>
 </resources>

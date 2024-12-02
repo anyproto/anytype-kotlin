@@ -8,6 +8,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -19,9 +20,12 @@ fun DiscussionPreview() {
         messages = listOf(
             DiscussionView.Message(
                 id = "1",
-                content = listOf(
-                    DiscussionView.Message.Content.Part(
-                        part = stringResource(id = R.string.default_text_placeholder)
+                content = DiscussionView.Message.Content(
+                    msg = stringResource(id = R.string.default_text_placeholder),
+                    parts = listOf(
+                        DiscussionView.Message.Content.Part(
+                            part = stringResource(id = R.string.default_text_placeholder)
+                        )
                     )
                 ),
                 author = "Walter",
@@ -29,9 +33,12 @@ fun DiscussionPreview() {
             ),
             DiscussionView.Message(
                 id = "2",
-                content = listOf(
-                    DiscussionView.Message.Content.Part(
-                        part = stringResource(id = R.string.default_text_placeholder)
+                content = DiscussionView.Message.Content(
+                    msg = stringResource(id = R.string.default_text_placeholder),
+                    parts = listOf(
+                        DiscussionView.Message.Content.Part(
+                            part = stringResource(id = R.string.default_text_placeholder)
+                        )
                     )
                 ),
                 author = "Leo",
@@ -39,9 +46,12 @@ fun DiscussionPreview() {
             ),
             DiscussionView.Message(
                 id = "3",
-                content = listOf(
-                    DiscussionView.Message.Content.Part(
-                        part = stringResource(id = R.string.default_text_placeholder)
+                content = DiscussionView.Message.Content(
+                    msg = stringResource(id = R.string.default_text_placeholder),
+                    parts = listOf(
+                        DiscussionView.Message.Content.Part(
+                            part = stringResource(id = R.string.default_text_placeholder)
+                        )
                     )
                 ),
                 author = "Gilbert",
@@ -57,9 +67,8 @@ fun DiscussionPreview() {
         onCopyMessage = {},
         onAttachmentClicked = {},
         onEditMessage = {},
-        onMarkupLinkClicked = {
-
-        }
+        onMarkupLinkClicked = {},
+        onReplyMessage = {}
     )
 }
 
@@ -74,9 +83,12 @@ fun DiscussionScreenPreview() {
                 add(
                     DiscussionView.Message(
                         id = idx.toString(),
-                        content = listOf(
-                            DiscussionView.Message.Content.Part(
-                                part = stringResource(id = R.string.default_text_placeholder)
+                        content = DiscussionView.Message.Content(
+                            msg = stringResource(id = R.string.default_text_placeholder),
+                            parts = listOf(
+                                DiscussionView.Message.Content.Part(
+                                    part = stringResource(id = R.string.default_text_placeholder)
+                                )
                             )
                         ),
                         author = "User ${idx.inc()}",
@@ -106,7 +118,10 @@ fun DiscussionScreenPreview() {
         onAttachFileClicked = {},
         onUploadAttachmentClicked = {},
         onAttachMediaClicked = {},
-        onAttachObjectClicked = {}
+        onAttachObjectClicked = {},
+        onReplyMessage = {},
+        chatBoxMode = DiscussionViewModel.ChatBoxMode.Default,
+        onClearReplyClicked = {}
     )
 }
 
@@ -116,9 +131,12 @@ fun DiscussionScreenPreview() {
 fun BubblePreview() {
     Bubble(
         name = "Leo Marx",
-        msg = listOf(
-            DiscussionView.Message.Content.Part(
-                part = stringResource(id = R.string.default_text_placeholder)
+        content = DiscussionView.Message.Content(
+            msg = stringResource(id = R.string.default_text_placeholder),
+            parts = listOf(
+                DiscussionView.Message.Content.Part(
+                    part = stringResource(id = R.string.default_text_placeholder)
+                )
             )
         ),
         timestamp = System.currentTimeMillis(),
@@ -127,7 +145,8 @@ fun BubblePreview() {
         onCopyMessage = {},
         onAttachmentClicked = {},
         onEditMessage = {},
-        onMarkupLinkClicked = {}
+        onMarkupLinkClicked = {},
+        onReply = {}
     )
 }
 
@@ -137,9 +156,12 @@ fun BubblePreview() {
 fun BubbleEditedPreview() {
     Bubble(
         name = "Leo Marx",
-        msg = listOf(
-            DiscussionView.Message.Content.Part(
-                part = stringResource(id = R.string.default_text_placeholder)
+        content = DiscussionView.Message.Content(
+            msg = stringResource(id = R.string.default_text_placeholder),
+            parts = listOf(
+                DiscussionView.Message.Content.Part(
+                    part = stringResource(id = R.string.default_text_placeholder)
+                )
             )
         ),
         isEdited = true,
@@ -149,7 +171,8 @@ fun BubbleEditedPreview() {
         onCopyMessage = {},
         onAttachmentClicked = {},
         onEditMessage = {},
-        onMarkupLinkClicked = {}
+        onMarkupLinkClicked = {},
+        onReply = {}
     )
 }
 
@@ -159,9 +182,12 @@ fun BubbleEditedPreview() {
 fun BubbleWithAttachmentPreview() {
     Bubble(
         name = "Leo Marx",
-        msg = listOf(
-            DiscussionView.Message.Content.Part(
-                part = stringResource(id = R.string.default_text_placeholder)
+        content = DiscussionView.Message.Content(
+            msg = stringResource(id = R.string.default_text_placeholder),
+            parts = listOf(
+                DiscussionView.Message.Content.Part(
+                    part = stringResource(id = R.string.default_text_placeholder)
+                )
             )
         ),
         timestamp = System.currentTimeMillis(),
@@ -170,14 +196,15 @@ fun BubbleWithAttachmentPreview() {
         onCopyMessage = {},
         attachments = buildList {
             add(
-                Chat.Message.Attachment(
-                    target = "Walter Benjamin",
-                    type = Chat.Message.Attachment.Type.Image
+                DiscussionView.Message.Attachment.Link(
+                    target = "ID",
+                    wrapper = null
                 )
             )
         },
         onAttachmentClicked = {},
         onEditMessage = {},
-        onMarkupLinkClicked = {}
+        onMarkupLinkClicked = {},
+        onReply = {}
     )
 }

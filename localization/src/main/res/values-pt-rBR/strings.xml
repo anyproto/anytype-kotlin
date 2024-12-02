@@ -291,7 +291,7 @@
     <string name="enter_value">Inserir valor</string>
     <string name="ityem_relations">Relações</string>
     <string name="add_sort">Adicionar ordenação</string>
-    <string name="apply">Aplicar</string>
+    <string name="apply">Apply</string>
     <string name="add_filter">Adicionar um filtro</string>
     <string name="relation_format_tag">Selecionar vários</string>
     <string name="unknown_number_of_objects">Número desconhecido de objetos</string>
@@ -1557,4 +1557,5 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="chat_attachment_file">Arquivo</string>
     <string name="chat_attachment_media">Mídias</string>
     <string name="chat_attachment_upload">Fazer upload</string>
+    <string name="chats_reply">Reply</string>
 </resources>

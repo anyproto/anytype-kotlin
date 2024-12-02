@@ -171,13 +171,14 @@ private fun ObjectState.DataView.mapFeaturedRelations(
             val sourceMap = source?.let { details.details[it]?.map }
 
             val isSourceMapValid = !sourceMap.isNullOrEmpty()
-            val wrapper = if (isSourceMapValid) ObjectWrapper.Basic(sourceMap!!) else null
+            val wrapper = if (isSourceMapValid) ObjectWrapper.Basic(sourceMap) else null
 
+            val isValid = wrapper?.isValid == true
             val isDeleted = wrapper?.isDeleted == true
-            val isReadOnly = wrapper?.relationReadonlyValue ?: false
+            val isReadOnly = wrapper?.relationReadonlyValue == true
 
-            val sources = if (!isDeleted && isSourceMapValid) {
-                listOf(wrapper!!.toObjectViewDefault(urlBuilder = urlBuilder))
+            val sources = if (isValid && !isDeleted) {
+                listOf(wrapper.toObjectViewDefault(urlBuilder = urlBuilder))
             } else {
                 emptyList()
             }

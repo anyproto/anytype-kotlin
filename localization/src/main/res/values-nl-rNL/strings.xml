@@ -291,7 +291,7 @@
     <string name="enter_value">Voer waarde in</string>
     <string name="ityem_relations">Relaties</string>
     <string name="add_sort">Voeg een sortering toe</string>
-    <string name="apply">Pas toe</string>
+    <string name="apply">Apply</string>
     <string name="add_filter">Voeg een filter toe</string>
     <string name="relation_format_tag">Meervoudige selectie</string>
     <string name="unknown_number_of_objects">Onbekend aantal objecten</string>
@@ -1560,4 +1560,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chat_attachment_file">Bestand</string>
     <string name="chat_attachment_media">Media</string>
     <string name="chat_attachment_upload">Upload</string>
+    <string name="chats_reply">Reply</string>
 </resources>

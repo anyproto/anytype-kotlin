@@ -290,7 +290,7 @@
     <string name="enter_value">输入值</string>
     <string name="ityem_relations">关联</string>
     <string name="add_sort">添加排序</string>
-    <string name="apply">应用</string>
+    <string name="apply">Apply</string>
     <string name="add_filter">添加筛选</string>
     <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">未知数量的对象</string>
@@ -1543,4 +1543,5 @@
     <string name="chat_attachment_file">文件</string>
     <string name="chat_attachment_media">媒体</string>
     <string name="chat_attachment_upload">上传</string>
+    <string name="chats_reply">Reply</string>
 </resources>

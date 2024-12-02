@@ -202,6 +202,8 @@ class SelectWidgetTypeViewModel(
                     )
                 }
             }
+        } else {
+            isDismissed.value = true
         }
     }
 

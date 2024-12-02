@@ -55,7 +55,7 @@ fun ObjectWrapper.Basic.toView(
         icon = obj.objectIcon(urlBuilder),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
         lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
-        isFavorite = obj.isFavorite ?: false,
+        isFavorite = obj.isFavorite == true,
         space = requireNotNull(obj.spaceId)
     )
 }

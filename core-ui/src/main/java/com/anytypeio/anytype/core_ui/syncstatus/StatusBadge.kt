@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.core_ui.R
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatusUpdate
@@ -57,7 +58,8 @@ fun StatusBadge(
                                 Image(
                                     painter = painterResource(R.drawable.ic_synced_10),
                                     contentDescription = "Synced",
-                                    modifier = modifier
+                                    modifier = modifier.size(8.dp),
+                                    contentScale = ContentScale.Inside
                                 )
                             }
 
@@ -154,7 +156,7 @@ fun StatusBadgePreview() {
         status = SpaceSyncAndP2PStatusState.Success(
             spaceSyncUpdate = SpaceSyncUpdate.Update(
                 id = "1",
-                status = SpaceSyncStatus.SYNCING,
+                status = SpaceSyncStatus.SYNCED,
                 network = SpaceSyncNetwork.ANYTYPE,
                 error = SpaceSyncError.NULL,
                 syncingObjectsCounter = 2

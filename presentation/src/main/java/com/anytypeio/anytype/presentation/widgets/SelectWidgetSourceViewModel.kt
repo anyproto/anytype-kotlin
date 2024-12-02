@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
@@ -206,6 +207,9 @@ class SelectWidgetSourceViewModel(
                             isForNewWidget = true,
                             isInEditMode = curr.isInEditMode
                         )
+                    }
+                    if (view.layout == ObjectType.Layout.DATE) {
+                        isDismissed.value = true
                     }
                 }
             }

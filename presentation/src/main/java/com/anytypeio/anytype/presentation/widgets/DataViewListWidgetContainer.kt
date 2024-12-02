@@ -66,7 +66,13 @@ class DataViewListWidgetContainer(
                                 elements = emptyList(),
                                 isExpanded = !isCollapsed,
                                 isCompact = widget.isCompact,
-                                isLoading = true
+                                isLoading = true,
+                                name = when(val source = widget.source) {
+                                    is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
+                                    is Widget.Source.Default ->  WidgetView.Name.Default(
+                                        prettyPrintName = source.obj.getWidgetObjectName()
+                                    )
+                                }
                             )
                         }
                         is Widget.View -> {
@@ -76,7 +82,10 @@ class DataViewListWidgetContainer(
                                 tabs = emptyList(),
                                 elements = emptyList(),
                                 isExpanded = !isCollapsed,
-                                isLoading = true
+                                isLoading = true,
+                                name =  WidgetView.Name.Default(
+                                    prettyPrintName = widget.source.obj.getWidgetObjectName()
+                                )
                             )
                         }
                         is Widget.Link, is Widget.Tree -> {
@@ -112,7 +121,13 @@ class DataViewListWidgetContainer(
                                     tabs = emptyList(),
                                     elements = emptyList(),
                                     isExpanded = false,
-                                    isCompact = isCompact
+                                    isCompact = isCompact,
+                                    name = when(val source = widget.source) {
+                                        is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
+                                        is Widget.Source.Default ->  WidgetView.Name.Default(
+                                            prettyPrintName = source.obj.getWidgetObjectName()
+                                        )
+                                    }
                                 )
                             )
                         }
@@ -123,7 +138,10 @@ class DataViewListWidgetContainer(
                                     source = widget.source,
                                     tabs = emptyList(),
                                     elements = emptyList(),
-                                    isExpanded = false
+                                    isExpanded = false,
+                                    name =  WidgetView.Name.Default(
+                                        prettyPrintName = source.obj.getWidgetObjectName()
+                                    )
                                 )
                             )
                         }
@@ -249,7 +267,13 @@ class DataViewListWidgetContainer(
                 },
                 isExpanded = true,
                 showIcon = withIcon,
-                showCover = withCover
+                showCover = withCover,
+                name = when(val source = widget.source) {
+                    is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
+                    is Widget.Source.Default -> WidgetView.Name.Default(
+                        prettyPrintName = source.obj.getWidgetObjectName()
+                    )
+                }
             )
         }
     }
@@ -281,7 +305,12 @@ class DataViewListWidgetContainer(
                 },
                 isExpanded = true,
                 isCompact = isCompact,
-
+                name = when(val source = widget.source) {
+                    is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
+                    is Widget.Source.Default ->  WidgetView.Name.Default(
+                        prettyPrintName = source.obj.getWidgetObjectName()
+                    )
+                }
             )
         }
     }
@@ -294,7 +323,13 @@ class DataViewListWidgetContainer(
                 tabs = emptyList(),
                 elements = emptyList(),
                 isExpanded = true,
-                isCompact = (widget as? Widget.List)?.isCompact ?: false
+                isCompact = (widget as? Widget.List)?.isCompact ?: false,
+                name = when(val source = widget.source) {
+                    is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
+                    is Widget.Source.Default ->  WidgetView.Name.Default(
+                        prettyPrintName = source.obj.getWidgetObjectName()
+                    )
+                }
             )
             is Widget.View -> WidgetView.Gallery(
                 id = widget.id,
@@ -302,7 +337,10 @@ class DataViewListWidgetContainer(
                 tabs = emptyList(),
                 elements = emptyList(),
                 isExpanded = true,
-                view = null
+                view = null,
+                name =  WidgetView.Name.Default(
+                    prettyPrintName = widget.source.obj.getWidgetObjectName()
+                )
             )
             is Widget.Link, is Widget.Tree -> {
                 throw IllegalStateException("Incompatible widget type.")

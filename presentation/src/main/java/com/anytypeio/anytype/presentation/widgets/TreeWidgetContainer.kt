@@ -52,7 +52,13 @@ class TreeWidgetContainer(
                         source = widget.source,
                         isExpanded = !isCollapsed,
                         elements = emptyList(),
-                        isLoading = true
+                        isLoading = true,
+                        name = when(val source = widget.source) {
+                            is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
+                            is Widget.Source.Default -> WidgetView.Name.Default(
+                                prettyPrintName = source.obj.getWidgetObjectName()
+                            )
+                        }
                     )
                     if (isCollapsed) {
                         emit(loadingStateView)
@@ -113,7 +119,8 @@ class TreeWidgetContainer(
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
                             data = data,
                             rootLimit = rootLevelLimit
-                        )
+                        ),
+                        name = WidgetView.Name.Bundled(source = source)
                     )
                 }
             }
@@ -152,6 +159,9 @@ class TreeWidgetContainer(
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
                             data = data,
                             rootLimit = WidgetConfig.NO_LIMIT
+                        ),
+                        name = WidgetView.Name.Default(
+                            prettyPrintName = source.obj.getWidgetObjectName()
                         )
                     )
                 }

@@ -20,7 +20,7 @@ sealed class WidgetView {
     interface Element {
         val objectIcon: ObjectIcon
         val obj: ObjectWrapper.Basic
-        val name: Name
+        val name: Name.Default
     }
 
     abstract val id: Id
@@ -70,8 +70,9 @@ sealed class WidgetView {
         val tabs: List<Tab>,
         val elements: List<Element>,
         val isExpanded: Boolean,
-        val isCompact: Boolean = false
-    ) : WidgetView(), Draggable {
+        val isCompact: Boolean = false,
+        val name: Name
+        ) : WidgetView(), Draggable {
         data class Tab(
             val id: Id,
             val name: String,
@@ -80,7 +81,7 @@ sealed class WidgetView {
         data class Element(
             override val objectIcon: ObjectIcon,
             override val obj: ObjectWrapper.Basic,
-            override val name: Name,
+            override val name: Name.Default,
             val cover: CoverView? = null
         ) : WidgetView.Element
     }
@@ -89,6 +90,7 @@ sealed class WidgetView {
         override val id: Id,
         override val isLoading: Boolean = false,
         val view: Id? = null,
+        val name: Name,
         val source: Widget.Source,
         val tabs: List<SetOfObjects.Tab>,
         val elements: List<SetOfObjects.Element>,
@@ -109,7 +111,7 @@ sealed class WidgetView {
         data class Element(
             override val objectIcon: ObjectIcon,
             override val obj: ObjectWrapper.Basic,
-            override val name: Name
+            override val name: Name.Default
         ) : WidgetView.Element
         sealed class Type {
             data object Recent : Type()

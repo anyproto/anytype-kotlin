@@ -216,7 +216,7 @@ class SelectWidgetTypeViewModel(
         view: WidgetTypeView
     ) {
         Timber.d("onWidgetTypeClicked, source:[$source], target:[$target], view:[$view]")
-        //if (!view.isSelected) {
+        if (!view.isSelected) {
             viewModelScope.launch {
                 widgetDispatcher.send(
                     WidgetDispatchEvent.TypePicked(
@@ -233,7 +233,7 @@ class SelectWidgetTypeViewModel(
                 )
                 isDismissed.value = true
             }
-        //}
+        }
     }
 
     class Factory(

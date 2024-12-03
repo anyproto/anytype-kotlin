@@ -89,7 +89,6 @@ class DiscussionViewModel @Inject constructor(
                         }
                     )
                 }
-
                 is Params.SpaceLevelChat -> {
                     val targetSpaceView = spaceViews.get(vmParams.space)
                     val spaceLevelChat = targetSpaceView?.getValue<Id>(Relations.CHAT_ID)

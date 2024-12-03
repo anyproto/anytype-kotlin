@@ -1,8 +1,16 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -288,7 +296,10 @@ fun DiscussionScreen(
                         chatBoxFocusRequester.requestFocus()
                     }
                 },
-                onReplyMessage = onReplyMessage,
+                onReplyMessage = {
+                    onReplyMessage(it)
+                    chatBoxFocusRequester.requestFocus()
+                },
                 onMarkupLinkClicked = onMarkupLinkClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
@@ -751,6 +762,31 @@ private fun ChatBox(
                     }
                 }
             }
+            AnimatedVisibility(
+                visible = attachments.isNotEmpty() || textState.text.isNotEmpty(),
+                exit = fadeOut() + scaleOut(),
+                enter = fadeIn() + scaleIn()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp, vertical = 8.dp)
+                        .clip(CircleShape)
+                        .align(Alignment.Bottom)
+                        .clickable {
+                            onMessageSent(textState.text)
+                            clearText()
+                            resetScroll()
+                        }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_send_message),
+                        contentDescription = "Send message button",
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(horizontal = 4.dp, vertical = 4.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -890,6 +926,7 @@ fun Messages(
     onReplyMessage: (DiscussionView.Message) -> Unit,
     onMarkupLinkClicked: (String) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     LazyColumn(
         modifier = modifier,
         reverseLayout = true,
@@ -942,7 +979,16 @@ fun Messages(
                     onReply = {
                         onReplyMessage(msg)
                     },
-                    reply = msg.reply
+                    reply = msg.reply,
+                    onScrollToReplyClicked = { reply ->
+                        // Naive implementation
+                        val idx = messages.indexOfFirst { it.id ==  reply.msg }
+                        if (idx != -1) {
+                            scope.launch {
+                                scrollState.animateScrollToItem(index = idx)
+                            }
+                        }
+                    }
                 )
                 if (msg.isUserAuthor) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -1074,7 +1120,8 @@ fun Bubble(
     onEditMessage: () -> Unit,
     onReply: () -> Unit,
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
-    onMarkupLinkClicked: (String) -> Unit
+    onMarkupLinkClicked: (String) -> Unit,
+    onScrollToReplyClicked: (DiscussionView.Message.Reply) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
@@ -1102,6 +1149,9 @@ fun Bubble(
                         color = colorResource(R.color.navigation_panel_icon),
                         shape = RoundedCornerShape(16.dp)
                     )
+                    .clickable {
+                        onScrollToReplyClicked(reply)
+                    }
             ) {
                 Text(
                     text = reply.author,
@@ -1112,10 +1162,7 @@ fun Bubble(
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (isUserAuthor)
-                        colorResource(id = R.color.text_white)
-                    else
-                        colorResource(id = R.color.text_primary),
+                    color = colorResource(id = R.color.text_white)
                 )
                 Text(
                     modifier = Modifier.padding(
@@ -1126,10 +1173,7 @@ fun Bubble(
                     text = reply.text,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (isUserAuthor)
-                        colorResource(id = R.color.text_white)
-                    else
-                        colorResource(id = R.color.text_primary),
+                    color = colorResource(id = R.color.text_white),
                 )
             }
         }
@@ -1203,15 +1247,14 @@ fun Bubble(
                             append(part.part)
                         }
                     }
-
-                    if (isEdited) {
-                        withStyle(
-                            style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
-                        ) {
-                            append(
-                                " (${stringResource(R.string.chats_message_edited)})"
-                            )
-                        }
+                }
+                if (isEdited) {
+                    withStyle(
+                        style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
+                    ) {
+                        append(
+                            " (${stringResource(R.string.chats_message_edited)})"
+                        )
                     }
                 }
             },

@@ -17,11 +17,11 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getDescriptionOrSnippet
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
 
 //region STATE
@@ -228,20 +228,12 @@ fun RestoreAllContentState.Response.Success.mapToSort(): AllContentSort {
     }
 }
 
-fun List<ObjectWrapper.Basic>.toUiContentItems(
-    space: SpaceId,
-    urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
-    isOwnerOrEditor: Boolean
-): List<UiContentItem.Item> {
-    return map { it.toAllContentItem(space, urlBuilder, objectTypes, isOwnerOrEditor) }
-}
-
 fun ObjectWrapper.Basic.toAllContentItem(
     space: SpaceId,
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>,
-    isOwnerOrEditor: Boolean
+    isOwnerOrEditor: Boolean,
+    fieldParser: FieldParser
 ): UiContentItem.Item {
     val obj = this
     val typeUrl = obj.getProperType()
@@ -250,7 +242,7 @@ fun ObjectWrapper.Basic.toAllContentItem(
     return UiContentItem.Item(
         id = obj.id,
         space = space,
-        name = obj.getProperName(),
+        name = fieldParser.getObjectName(obj),
         description = getDescriptionOrSnippet(),
         type = typeUrl,
         typeName = objectTypes.firstOrNull { type ->
@@ -280,7 +272,6 @@ fun ObjectWrapper.Basic.toAllContentType(
     isOwnerOrEditor: Boolean
 ): UiContentItem.Type {
     val obj = this
-    val layout = layout ?: ObjectType.Layout.BASIC
     return UiContentItem.Type(
         id = obj.id,
         name = obj.name.orEmpty(),

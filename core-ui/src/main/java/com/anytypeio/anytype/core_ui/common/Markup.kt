@@ -469,6 +469,29 @@ fun Editable.proceedWithSettingMentionSpan(
             )
             if (!mark.isArchived) setClickableSpan(click, mark)
         }
+
+        is Markup.Mark.Mention.Date -> {
+            val placeholder =
+                ContextCompat.getDrawable(
+                    context,
+                    R.drawable.ic_obj_date_20
+                )
+            setSpan(
+                MentionSpan(
+                    onImageResourceReady = onImageReady,
+                    context = context,
+                    imageSize = mentionImageSize,
+                    imagePadding = mentionImagePadding,
+                    param = mark.param,
+                    placeholder = placeholder,
+                    isArchived = false
+                ),
+                mark.from,
+                mark.to,
+                Markup.MENTION_SPANNABLE_FLAG
+            )
+            setClickableSpan(click, mark)
+        }
     }
 }
 

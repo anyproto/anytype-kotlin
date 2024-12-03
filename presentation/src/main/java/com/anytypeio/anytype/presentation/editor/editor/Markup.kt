@@ -103,6 +103,12 @@ interface Markup {
                 override val param: String
             ) : Mention()
 
+            data class Date(
+                override val from: Int,
+                override val to: Int,
+                override val param: String,
+            ) : Mention()
+
             sealed class Profile : Mention() {
                 abstract val isArchived: Boolean
                 data class WithImage(

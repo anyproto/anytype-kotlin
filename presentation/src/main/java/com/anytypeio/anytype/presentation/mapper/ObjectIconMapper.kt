@@ -33,7 +33,7 @@ fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
     }
 
     if (layout == ObjectType.Layout.TODO) {
-        return taskIcon(isChecked = done ?: false)
+        return taskIcon(isChecked = done == true)
     }
 
     return layout.emptyType()
@@ -48,6 +48,7 @@ fun ObjectType.Layout?.emptyType(): ObjectIcon.Empty {
         ObjectType.Layout.OBJECT_TYPE -> ObjectIcon.Empty.ObjectType
         ObjectType.Layout.BOOKMARK -> ObjectIcon.Empty.Bookmark
         ObjectType.Layout.CHAT, ObjectType.Layout.CHAT_DERIVED -> ObjectIcon.Empty.Discussion
+        ObjectType.Layout.DATE -> ObjectIcon.Empty.Date
         else -> ObjectIcon.Empty.Page
     }
 }
@@ -82,6 +83,8 @@ fun ObjectType.Layout.icon(
             iconImage = image,
             builder = builder
         )
+
+        ObjectType.Layout.DATE -> emptyType()
 
         else -> null
     }

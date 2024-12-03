@@ -75,6 +75,7 @@
     <dimen name="mention_span_initials_size_header_one">19sp</dimen>
 
     <dimen name="mention_suggester_item_height">56dp</dimen>
+    <dimen name="mention_section_item_height">36dp</dimen>
     <dimen name="mention_list_padding_top">4dp</dimen>
     <dimen name="mention_list_padding_bottom">5dp</dimen>
     <dimen name="mention_divider_height">1dp</dimen>

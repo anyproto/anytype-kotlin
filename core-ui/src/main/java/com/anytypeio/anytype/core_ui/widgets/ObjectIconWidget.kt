@@ -362,12 +362,13 @@ class ObjectIconWidget @JvmOverloads constructor(
     }
 
     private fun ObjectIcon.Empty.setEmptyIcon() {
-        val drawable = when (this) {
-            ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link
-            ObjectIcon.Empty.Discussion -> R.drawable.ic_empty_state_chat
-            ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list
-            ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type
-            ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page
+        val (drawable, containerBackground) = when (this) {
+            ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link to true
+            ObjectIcon.Empty.Discussion -> R.drawable.ic_empty_state_chat to true
+            ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list to true
+            ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type to true
+            ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page to true
+            ObjectIcon.Empty.Date -> R.drawable.ic_obj_date_24 to false
         }
         val icon = context.drawable(drawable)
         with(binding) {
@@ -377,7 +378,12 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivImage.invisible()
             ivBookmark.setImageDrawable(null)
             ivBookmark.gone()
-            emojiContainer.visible()
+            if (containerBackground) {
+                emojiContainer.visible()
+            } else {
+                emojiContainer.visible()
+                emojiContainer.setBackgroundResource(0)
+            }
         }
     }
 

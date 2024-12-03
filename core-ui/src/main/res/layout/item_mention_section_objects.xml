@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/mention_section_item_height">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TextView.ContentStyle.Relations.2"
+        android:textColor="@color/text_secondary"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingBottom="4dp"
+        android:layout_gravity="start|bottom"
+        android:text="@string/mention_section_objects" />
+
+</FrameLayout>

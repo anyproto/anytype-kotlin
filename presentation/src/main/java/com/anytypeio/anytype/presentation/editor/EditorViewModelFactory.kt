@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -101,7 +102,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val syncStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser : FieldParser,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val objectDateByTimestamp: ObjectDateByTimestamp
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -153,7 +155,8 @@ open class EditorViewModelFactory @Inject constructor(
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             clearLastOpenedObject = clearLastOpenedObject,
             fieldParser = fieldParser,
-            dateProvider = dateProvider
+            dateProvider = dateProvider,
+            objectDateByTimestamp = objectDateByTimestamp
         ) as T
     }
 }

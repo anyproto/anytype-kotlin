@@ -20,6 +20,7 @@ import com.anytypeio.anytype.presentation.editor.editor.styling.getSupportedMark
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.extension.style
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -215,7 +216,7 @@ sealed class ControlPanelMachine {
         sealed class Mentions : Event() {
             data class OnStart(val cursorCoordinate: Int, val mentionFrom: Int) : Mentions()
             data class OnQuery(val text: String) : Mentions()
-            data class OnResult(val mentions: List<DefaultObjectView>, val text: String) :
+            data class OnResult(val mentions: List<DefaultSearchItem>, val text: String) :
                 Mentions()
 
             object OnMentionClicked : Mentions()

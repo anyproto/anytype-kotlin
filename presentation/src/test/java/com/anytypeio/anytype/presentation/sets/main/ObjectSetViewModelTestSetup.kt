@@ -268,7 +268,7 @@ open class ObjectSetViewModelTestSetup {
         )
         dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer)
         storeOfObjectTypes = DefaultStoreOfObjectTypes()
-        Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
+        stubLocalProvider()
         return ObjectSetViewModel(
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
@@ -569,5 +569,12 @@ open class ObjectSetViewModelTestSetup {
     fun stubAnalyticSpaceHelperDelegate() {
         Mockito.`when`(analyticSpaceHelperDelegate.provideParams(defaultSpace))
             .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
+    }
+
+    fun stubLocalProvider() {
+        localeProvider.stub {
+            on { locale() } doReturn Locale.getDefault()
+            on { language() } doReturn "en"
+        }
     }
 }

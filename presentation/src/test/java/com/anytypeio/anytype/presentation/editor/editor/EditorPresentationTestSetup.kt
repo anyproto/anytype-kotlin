@@ -66,6 +66,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -215,6 +216,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var copy: Copy
+
+    @Mock
+    lateinit var objectDateByTimestamp: ObjectDateByTimestamp
 
     @Mock
     lateinit var undo: Undo
@@ -510,7 +514,8 @@ open class EditorPresentationTestSetup {
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             getNetworkMode = getNetworkMode,
             fieldParser = fieldParser,
-            dateProvider = dateProvider
+            dateProvider = dateProvider,
+            objectDateByTimestamp = objectDateByTimestamp
         )
     }
 

@@ -72,6 +72,13 @@ fun Block.Content.Text.Mark.createMentionMarkup(
             urlBuilder = urlBuilder,
             isArchived = isArchived
         )
+        ObjectType.Layout.DATE -> {
+            Markup.Mark.Mention.Date(
+                from = range.first,
+                to = range.last,
+                param = p,
+            )
+        }
         ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> {
             if (image.isNullOrBlank()) {
                 Markup.Mark.Mention.Profile.WithInitials(

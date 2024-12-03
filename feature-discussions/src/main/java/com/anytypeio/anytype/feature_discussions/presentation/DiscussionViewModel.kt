@@ -407,7 +407,6 @@ class DiscussionViewModel @Inject constructor(
     sealed class UXCommand {
         data object JumpToBottom : UXCommand()
         data class SetChatBoxInput(val input: String) : UXCommand()
-        data object Focus: UXCommand()
     }
 
     sealed class ChatBoxMode {

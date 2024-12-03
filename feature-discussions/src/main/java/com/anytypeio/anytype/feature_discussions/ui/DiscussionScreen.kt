@@ -207,9 +207,6 @@ fun DiscussionScreenWrapper(
                             is UXCommand.SetChatBoxInput -> {
                                 // TODO
                             }
-                            is UXCommand.Focus -> {
-
-                            }
                         }
                     }
                 }

@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -35,7 +36,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFromFavor
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
@@ -61,7 +61,8 @@ abstract class ObjectMenuViewModelBase(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val payloadDelegator: PayloadDelegator,
     private val setObjectListIsFavorite: SetObjectListIsFavorite,
-    private val setObjectIsArchived: SetObjectListIsArchived
+    private val setObjectIsArchived: SetObjectListIsArchived,
+    private val fieldParser: FieldParser
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     protected val jobs = mutableListOf<Job>()
@@ -301,7 +302,7 @@ abstract class ObjectMenuViewModelBase(
                         Command.OpenSnackbar(
                             id = addTo,
                             currentObjectName = fromName,
-                            targetObjectName = obj.getProperName(),
+                            targetObjectName = fieldParser.getObjectName(obj),
                             icon = obj.objectIcon(urlBuilder),
                             space = space
                         )

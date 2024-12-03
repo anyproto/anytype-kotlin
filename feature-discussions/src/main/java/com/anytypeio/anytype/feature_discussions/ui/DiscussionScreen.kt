@@ -1,8 +1,16 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -121,7 +129,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -756,6 +763,31 @@ private fun ChatBox(
                             }
                         )
                     }
+                }
+            }
+            AnimatedVisibility(
+                visible = attachments.isNotEmpty() || textState.text.isNotEmpty(),
+                exit = fadeOut() + scaleOut(),
+                enter = fadeIn() + scaleIn()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp, vertical = 8.dp)
+                        .clip(CircleShape)
+                        .align(Alignment.Bottom)
+                        .clickable {
+                            onMessageSent(textState.text)
+                            clearText()
+                            resetScroll()
+                        }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_send_message),
+                        contentDescription = "Send message button",
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(horizontal = 4.dp, vertical = 4.dp)
+                    )
                 }
             }
         }

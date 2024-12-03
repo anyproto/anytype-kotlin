@@ -121,6 +121,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -198,6 +199,9 @@ fun DiscussionScreenWrapper(
                             }
                             is UXCommand.SetChatBoxInput -> {
                                 // TODO
+                            }
+                            is UXCommand.Focus -> {
+
                             }
                         }
                     }
@@ -288,7 +292,10 @@ fun DiscussionScreen(
                         chatBoxFocusRequester.requestFocus()
                     }
                 },
-                onReplyMessage = onReplyMessage,
+                onReplyMessage = {
+                    onReplyMessage(it)
+                    chatBoxFocusRequester.requestFocus()
+                },
                 onMarkupLinkClicked = onMarkupLinkClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
@@ -890,6 +897,7 @@ fun Messages(
     onReplyMessage: (DiscussionView.Message) -> Unit,
     onMarkupLinkClicked: (String) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     LazyColumn(
         modifier = modifier,
         reverseLayout = true,
@@ -942,7 +950,16 @@ fun Messages(
                     onReply = {
                         onReplyMessage(msg)
                     },
-                    reply = msg.reply
+                    reply = msg.reply,
+                    onScrollToReplyClicked = { reply ->
+                        // Naive implementation
+                        val idx = messages.indexOfFirst { it.id ==  reply.msg }
+                        if (idx != -1) {
+                            scope.launch {
+                                scrollState.animateScrollToItem(index = idx)
+                            }
+                        }
+                    }
                 )
                 if (msg.isUserAuthor) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -1074,7 +1091,8 @@ fun Bubble(
     onEditMessage: () -> Unit,
     onReply: () -> Unit,
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
-    onMarkupLinkClicked: (String) -> Unit
+    onMarkupLinkClicked: (String) -> Unit,
+    onScrollToReplyClicked: (DiscussionView.Message.Reply) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
@@ -1102,6 +1120,9 @@ fun Bubble(
                         color = colorResource(R.color.navigation_panel_icon),
                         shape = RoundedCornerShape(16.dp)
                     )
+                    .clickable {
+                        onScrollToReplyClicked(reply)
+                    }
             ) {
                 Text(
                     text = reply.author,
@@ -1203,15 +1224,14 @@ fun Bubble(
                             append(part.part)
                         }
                     }
-
-                    if (isEdited) {
-                        withStyle(
-                            style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
-                        ) {
-                            append(
-                                " (${stringResource(R.string.chats_message_edited)})"
-                            )
-                        }
+                }
+                if (isEdited) {
+                    withStyle(
+                        style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
+                    ) {
+                        append(
+                            " (${stringResource(R.string.chats_message_edited)})"
+                        )
                     }
                 }
             },

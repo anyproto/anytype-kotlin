@@ -89,7 +89,6 @@ class DiscussionViewModel @Inject constructor(
                         }
                     )
                 }
-
                 is Params.SpaceLevelChat -> {
                     val targetSpaceView = spaceViews.get(vmParams.space)
                     val spaceLevelChat = targetSpaceView?.getValue<Id>(Relations.CHAT_ID)
@@ -408,6 +407,7 @@ class DiscussionViewModel @Inject constructor(
     sealed class UXCommand {
         data object JumpToBottom : UXCommand()
         data class SetChatBoxInput(val input: String) : UXCommand()
+        data object Focus: UXCommand()
     }
 
     sealed class ChatBoxMode {

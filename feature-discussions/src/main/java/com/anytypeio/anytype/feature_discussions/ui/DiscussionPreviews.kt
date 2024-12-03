@@ -146,7 +146,8 @@ fun BubblePreview() {
         onAttachmentClicked = {},
         onEditMessage = {},
         onMarkupLinkClicked = {},
-        onReply = {}
+        onReply = {},
+        onScrollToReplyClicked = {}
     )
 }
 
@@ -172,7 +173,8 @@ fun BubbleEditedPreview() {
         onAttachmentClicked = {},
         onEditMessage = {},
         onMarkupLinkClicked = {},
-        onReply = {}
+        onReply = {},
+        onScrollToReplyClicked = {}
     )
 }
 
@@ -205,6 +207,7 @@ fun BubbleWithAttachmentPreview() {
         onAttachmentClicked = {},
         onEditMessage = {},
         onMarkupLinkClicked = {},
-        onReply = {}
+        onReply = {},
+        onScrollToReplyClicked = {}
     )
 }

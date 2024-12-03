@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
@@ -39,6 +40,8 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.common.TypedViewState
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel.ErrorView
+import com.anytypeio.anytype.presentation.spaces.Command
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.notifications.NotificationPermissionPromptDialog
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -266,6 +269,18 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                     is MultiplayerError.Generic.SpaceIsDeleted -> {
                         toast(resources.getString(R.string.multiplayer_error_space_is_deleted))
                     }
+                }
+            }
+            is RequestJoinSpaceViewModel.Command.SwitchToSpace -> {
+                runCatching {
+                    findNavController().popBackStack(R.id.vaultScreen, false)
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        HomeScreenFragment.args(
+                            space = command.space.id,
+                            deeplink = null
+                        )
+                    )
                 }
             }
         }

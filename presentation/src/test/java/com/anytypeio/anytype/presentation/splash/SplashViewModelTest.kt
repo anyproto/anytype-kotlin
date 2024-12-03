@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import java.util.Locale
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -100,6 +101,7 @@ class SplashViewModelTest {
     }
 
     private fun initViewModel() {
+        stubLocalProvider()
         vm = SplashViewModel(
             checkAuthorizationStatus = checkAuthorizationStatus,
             launchAccount = launchAccount,
@@ -215,5 +217,12 @@ class SplashViewModelTest {
     private fun stubAnalyticSpaceHelperDelegate() {
         Mockito.`when`(analyticSpaceHelperDelegate.provideParams(""))
             .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
+    }
+
+    fun stubLocalProvider() {
+        localeProvider.stub {
+            on { locale() } doReturn Locale.getDefault()
+            on { language() } doReturn "en"
+        }
     }
 }

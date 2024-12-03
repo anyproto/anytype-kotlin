@@ -70,6 +70,7 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -280,6 +281,9 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var fileLimitsEventChannel: FileLimitsEventChannel
+
+    @Mock
+    lateinit var objectDateByTimestamp: ObjectDateByTimestamp
 
     @Mock
     lateinit var spaceManager: SpaceManager
@@ -507,7 +511,8 @@ open class EditorTestSetup {
             clearLastOpenedObject = clearLastOpenedObject,
             getNetworkMode = getNetworkMode,
             fieldParser = fieldParser,
-            dateProvider = dateProvider
+            dateProvider = dateProvider,
+            objectDateByTimestamp = objectDateByTimestamp,
         )
     }
 

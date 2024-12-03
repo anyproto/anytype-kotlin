@@ -14,7 +14,7 @@
     <string name="debug_sync_report">Debug Sync Rapport</string>
     <string name="debug">Debug</string>
     <string name="account">Kluis</string>
-    <string name="reset_account">Kluis opnieuw instellen</string>
+    <string name="reset_account">Reset kluis</string>
     <string name="delete_account">Verwijder kluis</string>
     <string name="space_debug">Debug ruimte</string>
     <string name="data">Gegevens</string>
@@ -42,8 +42,8 @@
     <string name="about_meta_info_for_copy">Apparaat: %1$s\nAndroid versie: %2$d\nApp versie: %3$s\nBuild nummer: %4$d\nbibliotheek versie: %5$s\nAccount:\u00A0ID:\u00A0%6$s\nApparaat\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruimte</string>
     <string name="space_name">Naam ruimte</string>
-    <string name="default_space">Startruimte</string>
-    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
+    <string name="default_space">Toegangsruimte</string>
+    <string name="space_settings_apply_random_gradient">Pas willekeurige effen kleur toe</string>
     <string name="space_settings_apply_upload_image">Upload afbeelding</string>
     <string name="delete_space">Verwijder ruimte</string>
     <string name="you_can_store">Je kunt maximaal %1$s van je bestanden gratis opslaan op onze versleutelde back-up node. Als de limiet is bereikt, zullen bestanden alleen lokaal worden opgeslagen.</string>
@@ -59,7 +59,7 @@
     <string name="account_name">Naam</string>
     <string name="space_settings">Ruimte instellingen</string>
     <string name="data_management">Gegevensbeheer</string>
-    <string name="deleted_account_danger_zone_msg">Zodra je een verzoek hebt ingediend om jouw kluis te verwijderen, heb je 30 dagen om dit verzoek te annuleren. Na 30 dagen worden jouw versleutelde kluisgegevens permanent verwijderd uit de back-up node, je kunt je dan niet meer inloggen in Anytype op nieuwe apparaten.</string>
+    <string name="deleted_account_danger_zone_msg">Zodra je een verzoek hebt ingediend om jouw kluis te verwijderen, heb je 30 dagen om dit verzoek te annuleren. Na 30 dagen worden jouw versleutelde kluisgegevens permanent verwijderd uit de back-up node, je kunt dan niet meer inloggen in Anytype op nieuwe apparaten.</string>
     <string name="danger_zone">Gevarenzone</string>
     <string name="snackbar_template_add">Nieuw sjabloon is toegevoegd aan het type</string>
     <string name="settings_membership">Lidmaatschap</string>
@@ -72,7 +72,7 @@
     <string name="option_text_header_two">Koptekst 2</string>
     <string name="option_text_header_three">Koptekst 3</string>
     <string name="option_text_highlighted">Gemarkeerd</string>
-    <string name="option_list_checkbox">Selectievak</string>
+    <string name="option_list_checkbox">Selectievakje</string>
     <string name="option_list_bulleted_list">Lijst met opsommingstekens</string>
     <string name="option_list_numbered_list">Genummerde lijst</string>
     <string name="option_list_toggle_list">Vouw lijst in/uit</string>
@@ -139,7 +139,7 @@
     <string name="detail_multiple">Meervoudige selectie</string>
     <string name="detail_date">Datum</string>
     <string name="detail_file">Bestand &amp; Media</string>
-    <string name="detail_checkbox">Selectievak</string>
+    <string name="detail_checkbox">Selectievakje</string>
     <string name="detail_url">URL</string>
     <string name="detail_phone">Telefoon</string>
     <string name="add_new">Voeg nieuwe toe</string>
@@ -158,17 +158,17 @@
     <string name="hint_profile_title">Naam Achternaam</string>
     <string name="hint_header_one">Titel</string>
     <string name="hint_quote">Citeer</string>
-    <string name="hint_header_two">Kop</string>
-    <string name="hint_header_three">Subkop</string>
-    <string name="hint_checkbox">Selectievak</string>
+    <string name="hint_header_two">Koptekst</string>
+    <string name="hint_header_three">Subkoptekst</string>
+    <string name="hint_checkbox">Selectievakje</string>
     <string name="hint_upload_video">Upload een video</string>
     <string name="hint_upload_image">Upload een afbeelding</string>
     <string name="hint_upload_file">Upload een bestand</string>
     <string name="hint_upload_audio">Upload audio</string>
     <string name="hint_add_a_web_bookmark">Voeg bladwijzer toe</string>
-    <string name="hint_bullet">Item van opsommingslijst</string>
-    <string name="hint_numbered_list">Item van genummerde lijst</string>
-    <string name="hint_toggle">Open/sluit blok</string>
+    <string name="hint_bullet">Onderdeel van lijst met opsommingstekens</string>
+    <string name="hint_numbered_list">Onderdeel van genummerde lijst</string>
+    <string name="hint_toggle">Vouw blok uit</string>
     <string name="hint_paste_link">Plak link</string>
     <string name="empty_tap_to_create_new_block">Leeg. Tik om een nieuw blok aan te maken</string>
     <string name="untitled">Naamloos</string>
@@ -182,13 +182,13 @@
     <string name="error_while_loading_picture">Fout tijdens het laden van de afbeelding</string>
     <string name="block_with_a_picture">Blok met een afbeelding</string>
     <string name="tap_here_to_insert_a_bookmark_url">Tik hier om een bladwijzer URL toe te voegen</string>
-    <string name="archive">Archiveren</string>
+    <string name="archive">Archiveer</string>
     <string name="add_block_option_icon">Add block option icon</string>
     <string name="bookmark_error_menu_button">Bookmark error menu button</string>
     <string name="bookmark_error">Er is iets verkeerd gegaan, probeer het opnieuw</string>
     <string name="deleted_type">Verwijderd type</string>
     <string name="deleted_type_in_set">Type: verwijderd</string>
-    <string name="menu_item_bold">Vet</string>
+    <string name="menu_item_bold">Vetgedrukt</string>
     <string name="menu_item_italic">Cursief</string>
     <string name="menu_item_strike">Haal door</string>
     <string name="menu_item_code">Code</string>
@@ -221,7 +221,7 @@
     <string name="more">Meer</string>
     <string name="done">Gereed</string>
     <string name="select_scroll_and_move_blocks">Selecteer blokken om te starten</string>
-    <string name="block_code_plain_text">Plain text</string>
+    <string name="block_code_plain_text">Platte tekst</string>
     <string name="undo">Ongedaan maken</string>
     <string name="redo">Voer opnieuw uit</string>
     <string name="block_action_copy">Kopieer</string>
@@ -246,9 +246,9 @@
     <string name="link_to">Link naar</string>
     <string name="make_template">Maak sjabloon</string>
     <string name="linked_to">Gekoppeld aan</string>
-    <string name="remove_link">Link verwijderen</string>
-    <string name="mention_suggester_new_page">Maak nieuw object aan</string>
-    <string name="mention_suggester_create_object">Maak object aan</string>
+    <string name="remove_link">Verwijder link</string>
+    <string name="mention_suggester_new_page">Maak nieuw object</string>
+    <string name="mention_suggester_create_object">Maak object</string>
     <string name="your_search_query">Zoeken</string>
     <string name="syncing">Aan het synchroniseren…</string>
     <string name="choose_a_object_type_for_this_set">Kies een object type voor deze set</string>
@@ -270,7 +270,7 @@
     <string name="sync_status_toast_syncing">Gegevens downloaden of uploaden naar een node</string>
     <string name="sync_status_toast_synced">Back-up gemaakt op Anytype netwerk</string>
     <string name="sync_status_toast_synced_staging">Back-up gemaakt op Anytype staging</string>
-    <string name="sync_status_toast_synced_local">Alleen lokaal</string>
+    <string name="sync_status_toast_synced_local">Local-only</string>
     <string name="sync_status_toast_synced_self_hosted">Back-up gemaakt op zelfgehost netwerk</string>
     <string name="sync_status_toast_failed">Synchroniseren mislukt, opnieuw aan het proberen…</string>
     <string name="sync_status_toast_incompatible">Versie verouderd. Update Anytype alsjeblieft</string>
@@ -280,7 +280,7 @@
     <string name="relation_format_date">Datum</string>
     <string name="relation_format_status">Selecteer</string>
     <string name="relation_format_file">Bestand &amp; Media</string>
-    <string name="relation_format_checkbox">Selectievak</string>
+    <string name="relation_format_checkbox">Selectievakje</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">E-mailadres</string>
     <string name="relation_format_phone">Telefoon</string>
@@ -291,7 +291,7 @@
     <string name="enter_value">Voer waarde in</string>
     <string name="ityem_relations">Relaties</string>
     <string name="add_sort">Voeg een sortering toe</string>
-    <string name="apply">Apply</string>
+    <string name="apply">Pas toe</string>
     <string name="add_filter">Voeg een filter toe</string>
     <string name="relation_format_tag">Meervoudige selectie</string>
     <string name="unknown_number_of_objects">Onbekend aantal objecten</string>
@@ -329,11 +329,11 @@
     <string name="dv_filter_checkbox_checked">aangevinkt</string>
     <string name="dv_filter_checkbox_not_checked"> niet aangevinkt</string>
     <string name="paste_or_type_a_url">Plak of type een URL</string>
-    <string name="callout">Tekstkader</string>
+    <string name="callout">Toelichting</string>
     <string name="highlight">Markeer</string>
     <string name="title">Titel</string>
-    <string name="heading">Kop</string>
-    <string name="subheading">Subkop</string>
+    <string name="heading">Koptekst</string>
+    <string name="subheading">Subkoptekst</string>
     <string name="create_from_scratch">Maak aan vanuit niets</string>
     <string name="create_relation_with_name">Maak relatie \"%1$s\" aan</string>
     <string name="name_is_required">Naam is vereist</string>
@@ -370,7 +370,7 @@
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Niet ondersteund blok</string>
     <string name="new_relation">Nieuwe relatie</string>
-    <string name="copy_link">Link kopiëren</string>
+    <string name="copy_link">Kopieer link</string>
     <string name="edit_link">Bewerk link</string>
     <string name="unlink">Verwijder link</string>
     <string name="choose_layout_type">Kies type lay-out</string>
@@ -395,8 +395,8 @@
     <string name="deleted_object">Verwijderd object</string>
     <string name="open_set">Open set</string>
     <string name="deleted">Verwijderd</string>
-    <string name="paste_link_or_search">Link plakken of objecten zoeken</string>
-    <string name="paste_from_clipboard">Plakken vanaf klembord</string>
+    <string name="paste_link_or_search">Plak link of zoek objecten</string>
+    <string name="paste_from_clipboard">Plak vanaf klembord</string>
     <string name="create_object_with_name">Maak object \"%1$s\" aan</string>
     <string name="layout_basic_name">Basis</string>
     <string name="layout_basic_description">Standaard layout voor canvas blokken</string>
@@ -416,7 +416,7 @@
     <string name="description_content">Voorvertoning inhoud</string>
     <string name="none">Geen</string>
     <string name="small">Klein</string>
-    <string name="medium">Medium</string>
+    <string name="medium">Gemiddeld</string>
     <string name="visible">Zichtbaar</string>
     <string name="card">Kaart</string>
     <string name="inline">In lijn</string>
@@ -496,14 +496,14 @@
     <string name="sets_of_objects">Sets van objecten uit je werkruimte</string>
     <string name="content_description_customize_view_button">Customize-view button</string>
     <string name="collection_no_items_title">Geen objecten</string>
-    <string name="collection_no_items_description">Maak eerst object  aan om door te gaan</string>
-    <string name="collection_no_items_button">Maak object aan</string>
+    <string name="collection_no_items_description">Maak eerst object om door te gaan</string>
+    <string name="collection_no_items_button">Maak object</string>
     <string name="set_no_query_title">Geen zoekopdracht geselecteerd</string>
     <string name="set_no_query_description">Voeg zoekopdracht toe om objecten te verzamelen met vergelijkbare types en relaties in een live omgeving</string>
     <string name="set_no_query_button">Selecteer zoekopdracht</string>
     <string name="set_no_items_title">Geen objecten</string>
-    <string name="set_no_items_description">Maak eerst object  aan om door te gaan</string>
-    <string name="set_no_items_button">Maak object aan</string>
+    <string name="set_no_items_description">Maak eerst object om door te gaan</string>
+    <string name="set_no_items_button">Maak object</string>
     <string name="set_collection_view_not_present">Weergave is niet aanwezig in set of collectie, maak het object alsjeblieft opnieuw</string>
     <string name="menu_turn_to_collection">Zet set om naar collectie</string>
     <string name="menu_change_query">Verander zoekopdracht</string>
@@ -525,7 +525,7 @@
     <string name="menu_type_open_set">Open set van %1$s</string>
     <string name="menu_type_create_set">Maak set aan van %1$s</string>
     <string name="toast_active_view_delete">De huidige weergave kan niet worden verwijderd</string>
-    <string name="type_templates_widget_title">Maak object aan</string>
+    <string name="type_templates_widget_title">Maak object</string>
     <string name="view_layout_widget_title">Opmaak</string>
     <string name="view_layout_cover_widget_title">Omslag</string>
     <string name="blank">Leeg</string>
@@ -551,8 +551,8 @@
     <string name="enter_invitation_hint">Uitnodigingscode</string>
     <string name="enter_invitation_text">Als je er geen hebt, ga dan naar anytype.io en schrijf je in op de wachtlijst. We nodigen mensen uit op volgorde van inschrijven.</string>
     <string name="start_login_text">Met Anytype kun je notities en documenten schrijven, taken beheren, bestanden delen en belangrijke inhoud van het web opslaan.</string>
-    <string name="login">Aanmelden</string>
-    <string name="sign_up">Registreren</string>
+    <string name="login">Meld aan</string>
+    <string name="sign_up">Registreer</string>
     <string name="type_your_recovery_phrase">of typ jouw sleutel</string>
     <string name="login_with_recovery_phrase">Meld je aan met jouw sleutel</string>
     <string name="or_scan_qr_code">Scan QR-code</string>
@@ -582,11 +582,11 @@
     <string name="other_settings">Andere instellingen</string>
     <string name="your_page">Jouw openbare pagina</string>
     <string name="updates">Updates</string>
-    <string name="recovery_phrase_text">Je zult dit nodig hebben om aan te melden. Bewaar dit op een veilige plek. Als je dit verliest, heb je niet langer toegang tot jouw kluis.</string>
+    <string name="recovery_phrase_text">Je hebt dit nodig om je aan te melden. Bewaar dit op een veilige plek. Als je dit verliest, heb je niet langer toegang tot jouw kluis.</string>
     <string name="back_up_your_recovery_phrase">Maak een back-up van jouw sleutel</string>
     <string name="i_ve_written_it_down">ik heb het opgeschreven</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
-    <string name="show_and_copy_mnemonic">Laat herstelzin zien en kopieer</string>
+    <string name="show_and_copy_mnemonic">Toon en kopieer herstelzin</string>
     <string name="greet">Hey %1$s</string>
     <string name="greet_user">Hey gebruiker</string>
     <string name="enter_your_code">Voer jouw uitnodigingscode in</string>
@@ -633,7 +633,7 @@
     <string name="link">Link</string>
     <string name="move_into_this_page">Verplaats naar deze pagina</string>
     <string name="move_into">Verplaats naar</string>
-    <string name="fetching_your_account">Jouw kluis wordt opgehaald...</string>
+    <string name="fetching_your_account">Jouw kluis ophalen...</string>
     <string name="search_on_page">Zoek op pagina</string>
     <string name="object_view_type">Object weergave type</string>
     <string name="object_type_name">Object type naam</string>
@@ -805,7 +805,7 @@
     <string name="exiting_please_wait">Aan het afsluiten... een ogenblik geduld</string>
     <string name="loading_please_wait">Aan het laden... even geduld a.j.b.</string>
     <string name="personal">Standaard</string>
-    <string name="create_space">Maak een ruimte aan</string>
+    <string name="create_space">Maak een ruimte</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
     <string name="type">Type</string>
     <string name="space_info">Ruimte informatie</string>
@@ -822,7 +822,7 @@
     <string name="anytype_update_alert_description">Een deel van je gegevens werd beheerd door een nieuwere versie van Anytype. Update de app alsjeblieft om met al je documenten en de nieuwe functies te werken.</string>
     <string name="anytype_update_alert_title">Het is tijd om te updaten</string>
     <string name="space_type_default">Invoer</string>
-    <string name="space_type_default_space">Startruimte</string>
+    <string name="space_type_default_space">Toegangsruimte</string>
     <string name="space_type_private">Persoonlijk</string>
     <string name="space_type_private_space">Privé ruimte</string>
     <string name="space_type_shared">Gedeeld</string>
@@ -841,8 +841,8 @@
     <string name="synced_files">Gesynchroniseerde bestanden</string>
     <string name="log_in">Inloggen</string>
     <string name="create_object_section_library">Anytype bibliotheek</string>
-    <string name="bin_empty_title">Your trash is empty.</string>
-    <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
+    <string name="bin_empty_title">Jouw prullenmand is leeg.</string>
+    <string name="bin_empty_subtitle">Het lijkt erop dat je alles netjes en georganiseerd hebt!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Stijl</string>
     <string name="slash_widget_main_media">Media</string>
@@ -858,23 +858,23 @@
     <string name="slash_widget_style_text_subtitle">Begin met schrijven</string>
     <string name="slash_widget_style_title">Titel</string>
     <string name="slash_widget_style_title_subtitle">Grote sectie koptekst</string>
-    <string name="slash_widget_style_heading">Kop</string>
+    <string name="slash_widget_style_heading">Koptekst</string>
     <string name="slash_widget_style_heading_subtitle">Begin met schrijven</string>
-    <string name="slash_widget_style_subheading">Subkop</string>
+    <string name="slash_widget_style_subheading">Subkoptekst</string>
     <string name="slash_widget_style_subheading_subtitle">Begin met schrijven</string>
     <string name="slash_widget_style_highlighted">Gemarkeerd</string>
     <string name="slash_widget_style_highlighted_subtitle">Kleine sectie koptekst</string>
-    <string name="slash_widget_style_callout">Tekstkader</string>
+    <string name="slash_widget_style_callout">Toelichting</string>
     <string name="slash_widget_style_callout_subtitle">Omrande tekst met icoon</string>
-    <string name="slash_widget_style_checkbox">Selectievak</string>
+    <string name="slash_widget_style_checkbox">Selectievakje</string>
     <string name="slash_widget_style_checkbox_subtitle">Maak en volg taken met een to-do lijst</string>
-    <string name="slash_widget_style_bulleted">Opsomming</string>
+    <string name="slash_widget_style_bulleted">Opsommingslijst</string>
     <string name="slash_widget_style_bulleted_subtitle">Begin met schrijven</string>
     <string name="slash_widget_style_numbered">Genummerde lijst</string>
     <string name="slash_widget_style_numbered_subtitle">Lijst met nummering</string>
-    <string name="slash_widget_style_toggle">In-/uitvouwen</string>
+    <string name="slash_widget_style_toggle">Vouw uit</string>
     <string name="slash_widget_style_toggle_subtitle">Verberg en toon de inhoud binnenin</string>
-    <string name="slash_widget_style_bold">Vet</string>
+    <string name="slash_widget_style_bold">Vetgedrukt</string>
     <string name="slash_widget_style_italic">Cursief</string>
     <string name="slash_widget_style_strikethrough">Doorhalen</string>
     <string name="slash_widget_style_code">Code</string>
@@ -902,7 +902,7 @@
     <string name="slash_widget_actions_copy">Kopieer</string>
     <string name="slash_widget_actions_paste">Plak</string>
     <string name="slash_widget_actions_link_to">Voeg link toe</string>
-    <string name="slash_widget_actions_link_to_subtitle">Maak link naar een ander object aan</string>
+    <string name="slash_widget_actions_link_to_subtitle">Maak link naar een ander object</string>
     <string name="slash_widget_actions_move">Verplaats</string>
     <string name="slash_widget_actions_moveto">Verplaats naar</string>
     <string name="slash_widget_actions_clean_style">Wis stijl</string>
@@ -931,14 +931,14 @@
     <string name="widget_type">Widget type</string>
     <string name="widget_add_below">Voeg onder toe</string>
     <string name="widget_type_tree">Boomstructuur</string>
-    <string name="widget_type_tree_description">Widget with a hierarchical structure</string>
+    <string name="widget_type_tree_description">Widget met een hiërarchische structuur</string>
     <string name="widget_type_link">Link</string>
-    <string name="widget_type_link_description">Compact widget view</string>
-    <string name="widget_type_list_description">Widget with a list view</string>
-    <string name="widget_type_compact_list_description">Widget with a compact list view</string>
+    <string name="widget_type_link_description">Compacte widget weergave</string>
+    <string name="widget_type_list_description">Widget met een lijstweergave</string>
+    <string name="widget_type_compact_list_description">Widget met een compacte lijstweergave</string>
     <string name="widget_type_list">Lijst</string>
     <string name="widget_type_view">Weergave</string>
-    <string name="widget_type_view_description">Widget with a Set or Collection layout</string>
+    <string name="widget_type_view_description">Widget met een set of collectie lay-out</string>
     <string name="widget_type_compact_list">Compacte lijst</string>
     <string name="widget_change_source">Wijzig bron</string>
     <string name="widget_change_type">Wijzig type</string>
@@ -973,7 +973,7 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">de alles-app</string>
     <string name="onboarding_auth_subtitle">voor degenen \ndievertrouwen &amp; autonomie \nvieren</string>
-    <string name="onboarding_auth_description">Creëer &amp; werk samen in jouw ruimten. Versleuteld, offline &amp;  open.</string>
+    <string name="onboarding_auth_description">Maak &amp; werk samen in jouw ruimten. Versleuteld, offline &amp;  open.</string>
     <string name="onboarding_terms_and_policy_prefix">"Door verder te gaan, ga je akkoord met "</string>
     <string name="onboarding_terms_and_policy_terms">Voorwaarden\u00A0van\u00A0gebruik</string>
     <string name="onboarding_terms_and_policy_infix">" en "</string>
@@ -981,7 +981,7 @@
     <string name="onboarding_new_vault_button_text">Nieuwe kluis</string>
     <string name="onboarding_enter_my_vault">Get my Key</string>
     <string name="onboarding_have_key_button_text">Ik heb een sleutel</string>
-    <string name="onboarding_get_my_key_button_text">Verkrijg mijn sleutel</string>
+    <string name="onboarding_get_my_key_button_text">Haal mijn sleutel</string>
     <string name="onboarding_invite_code_title">Voer jouw uitnodigingscode in</string>
     <string name="onboarding_invite_code_description">Als je er geen hebt, ga dan naar anytype.io\nen schrijf je in op de wachtlijst.</string>
     <string name="onboarding_void_title">Dit is jouw ruimte</string>
@@ -995,7 +995,7 @@
     <string name="onboarding_soul_creation_description">Alleen zichtbaar voor mensen met wie je iets deelt. Er is geen centraal register van deze namen.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype identiteit</string>
     <string name="onboarding_soul_creation">Jouw identiteit aan het aanmaken…</string>
-    <string name="onboarding_type_your_key">Type jouw herstelzin</string>
+    <string name="onboarding_type_your_key">Typ jouw herstelzin</string>
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De Void binnengaan</string>
     <string name="onboarding_your_key_can_t_be_empty">Jouw sleutel kan niet leeg zijn</string>
@@ -1067,13 +1067,13 @@
     <string name="relation_origin_imported_object">Geïmporteerd object</string>
     <string name="relation_origin_web_clipper">Webclipper</string>
     <string name="relation_origin_mobile_sharing_extension">Mobiel delen extensie</string>
-    <string name="relation_origin_use_case">Gebruikssituatie</string>
+    <string name="relation_origin_use_case">Gebruikerstoepassing</string>
     <string name="relation_origin_library_installed">Bibliotheek geïnstalleerd</string>
     <string name="relation_origin_bookmark">Bladwijzer</string>
     <!--endregion-->
     <plurals name="backlinks_count">
-        <item quantity="one">%d backlink</item>
-        <item quantity="other">%d backlinks</item>
+        <item quantity="one">%d teruglink</item>
+        <item quantity="other">%d teruglinks</item>
     </plurals>
     <plurals name="links_from_count">
         <item quantity="one">%d links</item>
@@ -1099,12 +1099,12 @@
     <string name="any_object_creation_menu_set_as_default">Stel in als standaard</string>
     <string name="any_object_creation_menu_move_left">Verplaats naar links</string>
     <string name="any_object_creation_menu_move_right">Verplaats naar rechts</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Maak object aan vanaf klembord</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Maak object vanaf klembord</string>
     <string name="block_media_error">Er ging iets fout, probeer het alsjeblieft nogmaals</string>
     <string name="relation_value_create_new">Maak \"%1$s\" aan</string>
-    <string name="option_widget_create">Maak optie aan</string>
+    <string name="option_widget_create">Maak optie</string>
     <string name="option_widget_edit">Bewerk optie</string>
-    <string name="options_empty_description">Niets gevonden. Maak een eerste optie aan om te starten.</string>
+    <string name="options_empty_description">Niets gevonden. Maak een eerste optie om te starten.</string>
     <string name="options_empty_title">Geen opties</string>
     <string name="options_empty_not_editable">De relatie is leeg</string>
     <string name="options_delete_title">Weet je het zeker?</string>
@@ -1115,7 +1115,7 @@
     <string name="object_values_delete_title">Weet je het zeker?</string>
     <string name="object_values_delete_description">Het object zal naar de prullenbak worden verplaatst.</string>
     <string name="hint_enter_name">Voer naam... in</string>
-    <string name="create_object">Maak object aan</string>
+    <string name="create_object">Maak object</string>
     <string name="msg_query_cannot_be_changed">Deze zoekopdracht kan alleen op het bureaublad worden gewijzigd</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Ongeldige sleutel</string>
@@ -1168,7 +1168,7 @@
     <string name="multiplayer_remove_member">Verwijder lid</string>
     <string name="multiplayer_remove_member_warning_text">%1$s zal worden verwijderd uit de ruimte</string>
     <string name="multiplayer_request_sent_toast">Verzoek verzonden</string>
-    <string name="multiplayer_space_stop_sharing">Stop met delen</string>
+    <string name="multiplayer_space_stop_sharing">Stop delen</string>
     <string name="multiplayer_space_stop_sharing_space">Stop met delen van de ruimte</string>
     <string name="multiplayer_space_stop_sharing_space_description">Leden zullen niet langer synchroniseren met deze ruimte en de deellink zal worden gedeactiveerd.</string>
     <string name="multiplayer_more_info">Meer informatie</string>
@@ -1177,8 +1177,8 @@
     <string name="multiplayer_share">Deel</string>
     <string name="multiplayer_manage">Beheer</string>
     <string name="multiplayer_leave_space">Verlaat ruimte</string>
-    <string name="multiplayer_leave_space_warning_subtitle">Deze ruimte zal worden verwijderd van jouw apparaten en je zult er dan geen toegang meer toe hebben</string>
-    <string name="multiplayer_generate_invite_link_description">Maak uitnodigingslink aan om ruimte te delen en nieuwe leden toe te voegen</string>
+    <string name="multiplayer_leave_space_warning_subtitle">Deze ruimte wordt verwijderd van jouw apparaten en je zult er dan geen toegang meer toe hebben</string>
+    <string name="multiplayer_generate_invite_link_description">Maak uitnodigingslink om ruimte te delen en nieuwe leden toe te voegen</string>
     <string name="multiplayer_generate_invite_link">Genereer uitnodigingslink</string>
     <string name="multiplayer_show_qr_code">Toon QR-code</string>
     <string name="multiplayer_how_to_share_space">Hoe deel je een ruimte?</string>
@@ -1196,7 +1196,7 @@
     <string name="multiplayer_open_space">Open ruimte</string>
     <string name="multiplayer_error_space_deleted">Ruimte verwijderd</string>
     <string name="multiplayer_error_space_not_found">Ruimte niet gevonden</string>
-    <string name="multiplayer_read_only_access_error">Alleen-lezen toegang. Neem contact op met de eigenaar van de ruimte voor wijzigingen.</string>
+    <string name="multiplayer_read_only_access_error">Alleen-lezen toegang. Contacteer de eigenaar van de ruimte voor wijzigingen.</string>
     <string name="multiplayer_notification_member_user_sends_join_request">%1$s heeft verzocht om aan de ruimte %2$s deel te nemen.</string>
     <string name="multiplayer_notification_member_user_sends_leave_request">%1$s heeft verzocht om de ruimte %2$s te verlaten.</string>
     <string name="multiplayer_notification_new_join_request">Nieuw deelnameverzoek</string>
@@ -1217,10 +1217,10 @@
     <string name="multiplayer_toast_share_limit_reached">Deellimiet bereikt</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink naar jouw object</string>
     <string name="multiplayer_deeplink_to_your_object_error">Deze deeplink werkt niet. Object kan worden verwijderd of er kunnen problemen zijn met toegang tot de ruimte.</string>
-    <string name="multiplayer_collaborate_on_spaces">Aan ruimtes samenwerken</string>
+    <string name="multiplayer_collaborate_on_spaces">Werk samen aan ruimten</string>
     <string name="multiplayer_collaborate_step_1">1. Tik op de ruimte widget om toegang te krijgen tot instellingen</string>
     <string name="multiplayer_collaborate_step_2">2. Open delen sectie</string>
-    <string name="multiplayer_collaborate_step_3">3. Genereer een uitnodigingskoppeling en deel deze</string>
+    <string name="multiplayer_collaborate_step_3">3. Genereer een uitnodigingslink en deel deze</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d lid</item>
         <item quantity="other">%1$d leden</item>
@@ -1234,8 +1234,8 @@
     <string name="multiplayer_space_status_joining">Aan het aansluiten</string>
     <string name="multiplayer_space_status_active">Actief</string>
     <string name="multiplayer_space_status_removing">Verwijderd</string>
-    <string name="multiplayer_cancel_join_request">Deelnameverzoek annuleren</string>
-    <string name="multiplayer_cancel_join_request_msg">Je zult het deelnameverzoek opnieuw moeten sturen</string>
+    <string name="multiplayer_cancel_join_request">Annuleer deelnameverzoek</string>
+    <string name="multiplayer_cancel_join_request_msg">Je moet het deelnameverzoek opnieuw sturen</string>
     <string name="multiplayer_do_not_cancel_join_request">Annuleer niet</string>
     <string name="multiplayer_error_invite_not_found">De uitnodiging bestaat niet. Zorg er alsjeblieft voor dat jouw apparaten worden gesynchroniseerd.</string>
     <string name="multiplayer_error_invite_bad_content">De uitnodigingslink kon niet worden doorgezet. Het zou fouten in het formaat of ongeldige gegevens kunnen bevatten.</string>
@@ -1243,26 +1243,26 @@
     <string name="multiplayer_error_limit_reached">Limiet bereikt voor deze ruimte. Upgrade alsjeblieft jouw lidmaatschap of neem contact op met ondersteuning voor hulp.</string>
     <string name="multiplayer_error_not_shareable">Het lijkt erop dat de ruimte niet meer wordt gedeeld. Zorg er alsjeblieft voor dat jouw apparaten zijn gesynchroniseerd.</string>
     <string name="multiplayer_error_request_failed">Oeps! De aanvraag is mislukt. Controleer jouw internetverbinding en probeer het opnieuw.</string>
-    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Deze koppeling lijkt niet te werken</string>
-    <string name="multiplayer_invite_link_space_not_found">Deze uitnodigingskoppeling is niet langer geldig omdat de ruimte niet werd gevonden.</string>
+    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Deze link lijkt niet te werken</string>
+    <string name="multiplayer_invite_link_space_not_found">Deze uitnodigingslink is niet langer geldig omdat de ruimte niet werd gevonden.</string>
     <string name="multiplayer_invite_link_request_already_sent">Verzoek verzonden</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Lidmaatschap</string>
     <string name="payments_subheader">Deelnemen aan het Anytype netwerk betekent bijdragen aan het verhaal</string>
     <string name="payments_card_text_1">Maak samen de visie</string>
-    <string name="payments_card_description_1">Als een gewaardeerd lid doet jouw mening er te! Neem deel aan exclusieve evenementen, vorm strategische keuzes en beïnvloed onze routekaart.</string>
+    <string name="payments_card_description_1">Als een gewaardeerd lid doet jouw mening er toe! Neem deel aan exclusieve evenementen, vorm strategische keuzes en beïnvloed onze routekaart.</string>
     <string name="payments_card_text_2">Ontgrendel ledenvoordelen</string>
-    <string name="payments_card_description_2">Leden genieten van meer backup opslagcapaciteit &amp; synchronisatie limieten, uitnodigingen voor meerdere gasten om samen te werken in gedeelde ruimten, en een unieke identiteit op het Anytype Network.</string>
+    <string name="payments_card_description_2">Leden genieten van meer back-up opslagcapaciteit &amp; synchronisatie limieten, uitnodigingen voor meerdere gasten om samen te werken in gedeelde ruimten, en een unieke identiteit op het Anytype netwerk.</string>
     <string name="payments_card_text_3">Ondersteun digitale onafhankelijkheid </string>
-    <string name="payments_card_description_3">Jouw bijdrage steunt ons team en ondersteunt onze visie op een gebruiker-geëigende , veilige en gezamenlijke digitale omgeving.</string>
+    <string name="payments_card_description_3">Jouw bijdrage ondersteunt ons team en onderschrijft onze visie op een digitaal netwerk dat eigendom is van de gebruiker en veilig en collaboratief is.</string>
     <string name="payments_card_text_4">Investeer in verbinding</string>
-    <string name="payments_card_description_4">De waarde van ons netwerk overschrijdt de som van zijn onderdelen. Jouw lidmaatschap houdt de infrastructuur in stand voor de groei die aan dit netwerk ten grondslag ligt.</string>
+    <string name="payments_card_description_4">De waarde van ons netwerk overschrijdt de som der delen. Jouw lidmaatschap houdt de infrastructuur in stand voor de groei die aan dit netwerk ten grondslag ligt.</string>
     <string name="payments_tier_explorer">Verkenner</string>
     <string name="payments_tier_explorer_description">Duik in het netwerk en geniet van de spanning van één-op-één samenwerking</string>
     <string name="payments_tier_builder">Bouwer</string>
     <string name="payments_tier_builder_description">Ontgrendel de magie van de samenwerking tussen meerdere partijen en geniet van de hoogwaardige ondersteuning</string>
-    <string name="payments_tier_cocreator">Co-creator</string>
+    <string name="payments_tier_cocreator">Medemaker</string>
     <string name="payments_tier_cocreator_description">Ondersteun ons avontuur en ontgrendel exclusieve toegang en voordelen</string>
     <string name="payments_tier_custom">Aangepast</string>
     <string name="payments_tier_custom_description">Lidmaatschap afgestemd op jouw specifieke behoeften en voorkeuren</string>
@@ -1271,7 +1271,7 @@
     <string name="payments_button_contact">Contacteer</string>
     <string name="payments_button_info">Meer informatie</string>
     <string name="payments_button_submit">Verstuur</string>
-    <string name="payments_button_pay">Betalen met kaart</string>
+    <string name="payments_button_pay">Betaal met kaart</string>
     <string name="payments_button_change_email">Wijzig e-mailadres</string>
     <string name="payments_member_link">Lidmaatschap niveaus details</string>
     <string name="payments_privacy_link">Privacybeleid</string>
@@ -1281,32 +1281,32 @@
     <string name="payments_current_label">Huidige</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Kies jouw unieke naam</string>
-    <string name="payments_tier_details_name_subtitle">Dit is jouw unieke naam op het Anyty-netwerk, en bevestigt jouw lidmaatschap. Het fungeert als jouw persoonlijke domein en kan niet worden gewijzigd.</string>
+    <string name="payments_tier_details_name_subtitle">Dit is jouw unieke naam op het Anytype netwerk, en bevestigt jouw lidmaatschap. Het dient als jouw persoonlijke domein en kan niet worden gewijzigd.</string>
     <string name="payments_tier_details_name_hint">Mijzelf</string>
     <string name="payments_tier_details_name_min">Minimaal 7 tekens</string>
     <string name="payments_tier_details_name_error">Deze naam is al in gebruik!</string>
     <string name="payments_tier_details_name_validated">Deze naam [%1$s] ligt voor het oprapen!</string>
-    <string name="payments_tier_details_name_validating">Naam aan het valideren</string>
+    <string name="payments_tier_details_name_validating">Naam valideren</string>
     <string name="payments_tier_details_free_forever">Voor altijd</string>
     <string name="payments_tier_details_valid_until">Geldig tot %1$s</string>
     <string name="payments_tier_details_info_explorer">Duik in het netwerk en geniet van de spanning van één-op-één samenwerking</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB aan netwerkruimte</item>
-        <item>10 één-op-één ruimtes</item>
-        <item>Tot 10 gedeelde ruimtes in alleen-lezen modus</item>
+        <item>10 één-op-één ruimten</item>
+        <item>Tot 10 gedeelde ruimten in alleen-lezen modus</item>
     </string-array>
     <string name="payments_tier_details_info_builder">Ontgrendel de magie van de samenwerking tussen meerdere partijen en geniet van de hoogwaardige ondersteuning</string>
     <string-array name="payments_benefits_builder">
         <item>Unieke naam (van 7 tekens)</item>
         <item>128 GB aan netwerkruimte</item>
-        <item>10 gast medwerker accounts</item>
+        <item>10 gastmedewerker accounts</item>
         <item>Voorkeursondersteuning</item>
     </string-array>
     <string name="payments_tier_details_info_cocreator">Ondersteun ons avontuur en ontgrendel exclusieve toegang en voordelen</string>
     <string-array name="payments_benefits_cocreator">
         <item>Unieke naam (van 5 tekens)</item>
         <item>256 GB aan netwerkruimte</item>
-        <item>25 gast medewerker accounts</item>
+        <item>25 gastmedewerker accounts</item>
         <item>Chat met het team</item>
         <item>Uniek verzamelstuk</item>
     </string-array>
@@ -1326,8 +1326,8 @@
     <string name="payments_tier_current_paid_by_google">Google abonnement</string>
     <string name="payments_tier_current_button">Beheer betaling</string>
     <string name="membership_manage_tier_desktop">Je kunt het abonnement op het desktopplatform beheren</string>
-    <string name="membership_manage_tier_ios">Je kunt het abonnement op iOS beheren.</string>
-    <string name="membership_manage_tier_another_account">Je kunt het abonnement op een ander Googleaccount beheren.</string>
+    <string name="membership_manage_tier_ios">Je kunt het abonnement op het iOS platform beheren.</string>
+    <string name="membership_manage_tier_another_account">Je kunt het abonnement op een ander Google account beheren.</string>
     <string name="payments_tier_current_change_email_button">Wijzig e-mailadres</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Voer de code in die naar jouw e-mailadres is verstuurd</string>
@@ -1339,23 +1339,23 @@
     <string name="payments_welcome_button">Ga verder</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
-    <string name="membership_support_subject">Lidmaatschapsscherm foutmelding - %1$s</string>
-    <string name="membership_support_body">        Hi Anytype Support Team,\n\n
+    <string name="membership_support_subject">Lidmaatschap scherm foutmelding - %1$s</string>
+    <string name="membership_support_body">        Hoi Anytype ondersteuningsteam,\n\n
 
-        I encountered an error on the Membership Screen in the app. Below are the details:\n
+        Ik heb een fout aangetroffen op het ledenscherm in de app. Hieronder staan ​​de details:\n
 
-        - Error Message: %1$s\n
-        - Description:      \n
-        - Date and Time: %2$s\n
-        - Device Model: %3$s\n
-        - Operating System: %4$s\n
-        - App Version: %5$s\n
+        - Foutmelding: %1$s\n
+        - Beschrijving:      \n
+        - Datum en tijd: %2$s\n
+        - Apparaatmodel: %3$s\n
+        - Besturingssysteem: %4$s\n
+        - App-versie: %5$s\n
 
-        Additional Comments:\n\n
+        Aanvullende opmerkingen:\n\n
 
-        Thank you for your assistance in resolving this issue.\n\n
+        Bedankt voor jullie hulp bij het oplossen van dit probleem.\n\n
 
-        Best regards,       \n
+        Met vriendelijke groet,       \n
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
     <string name="payments_email_subject">Upgrade %1$s</string>
@@ -1379,10 +1379,10 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="membership_any_name_not_reserved">Deze naam kan niet worden gereserveerd</string>
     <string name="membership_any_name_null_error">Lege fout</string>
     <string name="membership_any_name_unknown">Onbekende foutmelding</string>
-    <string name="membership_email_wrong_format">E-mailadres heeft een verkeerd formaat</string>
+    <string name="membership_email_wrong_format">E-mailbericht heeft een verkeerde opmaak</string>
     <string name="membership_email_already_verified">E-mailadres is al geverifieerd</string>
-    <string name="membership_email_already_sent">E-mail is al verzonden, probeer het opnieuw na 1 minuut</string>
-    <string name="membership_email_failed_to_send">E-mail kon niet worden verzonden</string>
+    <string name="membership_email_already_sent">E-mailbericht is al verzonden, probeer het opnieuw na 1 minuut</string>
+    <string name="membership_email_failed_to_send">E-mailbericht kon niet worden verzonden</string>
     <string name="membership_email_membership_already_exists">Lidmaatschap bestaat al</string>
     <string name="membership_email_code_expired">De code is verlopen</string>
     <string name="membership_email_code_wrong">De code is verkeerd</string>
@@ -1393,17 +1393,17 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notifications_alert_error_unknown">Er heeft zich een onbekende fout voorgedaan. Probeer het later opnieuw.</string>
     <string name="notifications_alert_error_bad_input">Ongeldige invoer gedetecteerd. Controleer jouw gegevens en probeer het opnieuw.</string>
     <string name="notifications_alert_error_internal">Er is een interne fout opgetreden. Ons team is op de hoogte gebracht.</string>
-    <string name="notifications_alert_error_no_objects_to_import">Geen items gevonden om te importeren. Selecteer geldige objecten om te importeren.</string>
+    <string name="notifications_alert_error_no_objects_to_import">Geen items gevonden om te importeren. Selecteer alsjeblieft geldige objecten om te importeren.</string>
     <string name="notifications_alert_error_import_canceled">Het importeerproces is geannuleerd door de gebruiker.</string>
-    <string name="notifications_alert_error_limit_exceeded">De importeerlimiet voor rijen of relaties is overschreden. Verminder het aantal en probeer het opnieuw.</string>
+    <string name="notifications_alert_error_limit_exceeded">De importeerlimiet voor rijen of relaties is overschreden. Verminder alsjeblieft de hoeveelheid en probeer het opnieuw.</string>
     <string name="notifications_alert_error_file_load">Er is een fout opgetreden bij het laden van het bestand. Controleer het bestand en probeer het opnieuw.</string>
     <string name="notifications_alert_error_insufficient_permissions">Je hebt niet de benodigde rechten om deze actie uit te voeren. Controleer jouw machtigingen en probeer het opnieuw.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Gemaakt door</string>
     <string name="gallery_experience_install">Installeer</string>
     <string name="gallery_experience_install_new">Installeer in nieuwe ruimte</string>
-    <string name="gallery_experience_alert_title_success">Experience werd geïnstalleerd</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" werd geïnstalleerd in een nieuwe ruimte. Je kunt het nu openen en gebruiken.</string>
+    <string name="gallery_experience_alert_title_success">Experience is geïnstalleerd</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" is geïnstalleerd in een nieuwe ruimte. Je kunt het nu openen en gebruiken.</string>
     <string name="gallery_experience_alert_title_error">Oeps!</string>
     <string name="gallery_experience_alert_button_space">Open ruimte</string>
     <string name="gallery_experience_alert_button_error">Sluit</string>
@@ -1411,10 +1411,10 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notifications_prompt_get_notified">Ontvang een melding</string>
     <string name="notifications_prompt_secondary_button_text">Niet nu</string>
     <string name="notifications_prompt_description">Schakel alsjeblieft meldingen in om op de hoogte te blijven van verzoeken om aan ruimte deel te nemen of deze te verlaten.</string>
-    <string name="notifications_prompt_primary_button_text">Activeer</string>
+    <string name="notifications_prompt_primary_button_text">Schakel in</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Maak bladwijzer aan vanaf klembord</string>
     <string name="error_unexpected_layout">Fout: onverwachte lay-out</string>
-    <string name="error_non_valid_object">Error: object ID is missing</string>
+    <string name="error_non_valid_object">Fout: object-ID ontbreekt</string>
     <string name="membership_price_pending">In behandeling...</string>
     <string name="per_period">per %1$s</string>
     <string name="free_for">Gratis voor %1$s</string>
@@ -1426,17 +1426,17 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="membership_agree_terms">Gebruikersvoorwaarden</string>
     <string name="membership_agree_middle">en</string>
     <string name="membership_agree_privacy">Privacybeleid</string>
-    <string name="membership_support_already_acquired">Je hebt al een Lidmaatschap met een ander Anytype account verkregen.</string>
-    <string name="membership_support_different_subscription">Een abonnement met een ander ID gevonden</string>
+    <string name="membership_support_already_acquired">Je hebt al een lidmaatschap met een ander Anytype account verkregen.</string>
+    <string name="membership_support_different_subscription">Een abonnement met een andere ID gevonden</string>
     <string name="membership_support_more_then_one_subscription">Meer dan één abonnement gevonden</string>
-    <string name="multiplayer_space_join_request_participants_error">Fout met deelnemer ruimte</string>
+    <string name="multiplayer_space_join_request_participants_error">Fout met ruimte van deelnemer</string>
     <string name="multiplayer_space_join_request_new_member_error">Fout met lidmaatschapsverzoek</string>
     <string name="multiplayer_space_join_request_current_user_error">Fout met huidige gebruikersstatus</string>
     <string name="multiplayer_space_join_request_membership_status_error">Fout met huidige lidmaatschapsstatus</string>
     <string name="membership_upgrade_title">Lidmaatschap upgrade</string>
     <string name="membership_upgrade_description">Contacteer ons voor extra opslagruimte, ruimte bewerkers of meer gedeelde ruimten. Het team van Anytype zal details en voorwaarden geven die zijn afgestemd op jouw behoeften.</string>
     <string name="membership_upgrade_button">Contacteer Anytype team</string>
-    <string name="membership_space_settings_share_limit">Je hebt de limiet bereikt van %1$d ruimtes die kunnen worden gedeeld</string>
+    <string name="membership_space_settings_share_limit">Je hebt de limiet bereikt van %1$d ruimten die kunnen worden gedeeld</string>
     <plurals name="period_years">
         <item quantity="one">jaar</item>
         <item quantity="other">%d jaren</item>
@@ -1457,8 +1457,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Verkeerde netwerk-ID gedetecteerd. Controleer alsjeblieft jouw netwerkconfiguratie.</string>
     <string name="error_login_select_vault_error">Fout met het selecteren van kluis.</string>
-    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
-    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
+    <string name="error_login_account_deleted_error">Dit account is verwijderd. Probeer een ander account te gebruiken of maak een nieuwe aan.</string>
+    <string name="error_login_account_need_update_error">Kan account niet ophalen. Update Anytype alsjeblieft naar de laatste versie.</string>
     <string name="global_search_related_to">"Gerelateerd aan: "</string>
     <string name="global_search_no_related_objects_found">Geen gerelateerde objecten gevonden</string>
     <string name="sort_empty_values_desc">Toon lege waarden</string>
@@ -1466,99 +1466,99 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="sort_empty_values_top">Bovenaan</string>
     <string name="widget_view_see_all_objects">Toon alle objecten</string>
     <string name="sync_status_get_error">Fout bij ophalen synchronisatiestatus</string>
-    <string name="sync_status_local_only_title">Local Only</string>
-    <string name="sync_status_data_backup">Data backup is disabled</string>
-    <string name="sync_status_self_host">Self Host</string>
+    <string name="sync_status_local_only_title">Local-only</string>
+    <string name="sync_status_data_backup">Gegevens back-up is uitgeschakeld</string>
+    <string name="sync_status_self_host">Zelf hosten</string>
     <string name="sync_status_self_host_synced">Gesynchroniseerd</string>
     <plurals name="sync_status_self_host_syncing">
-        <item quantity="one">%1$d item syncing</item>
-        <item quantity="other">%1$d items syncing...</item>
+        <item quantity="one">%1$d onderdeel synchroniseren</item>
+        <item quantity="other">%1$d onderdelen synchroniseren...</item>
     </plurals>
-    <string name="sync_status_p2p">P2P Connection</string>
+    <string name="sync_status_p2p">P2P-verbinding</string>
     <plurals name="sync_status_p2p_devices">
         <item quantity="one">%1$d apparaat verbonden</item>
-        <item quantity="other">%1$d apparaat verbonden</item>
+        <item quantity="other">%1$d apparaten verbonden</item>
     </plurals>
-    <string name="sync_status_p2p_disabled">Connection not possible</string>
-    <string name="sync_status_p2p_restricted">Beperkt. Controleer de apparaatinstellingen.</string>
-    <string name="sync_status_p2p_not_connected">Not connected</string>
-    <string name="sync_status_anytype_network">Anytype Network</string>
-    <string name="sync_status_anytype_end_to_end">End-to-end encrypted</string>
+    <string name="sync_status_p2p_disabled">Verbinding niet mogelijk</string>
+    <string name="sync_status_p2p_restricted">Verhinderd. Controleer de apparaatinstellingen.</string>
+    <string name="sync_status_p2p_not_connected">Niet verbonden</string>
+    <string name="sync_status_anytype_network">Anytype netwerk</string>
+    <string name="sync_status_anytype_end_to_end">End-to-end versleuteld</string>
     <plurals name="sync_status_network_items">
-        <item quantity="one">%1$d item syncing...</item>
-        <item quantity="other">%1$d items syncing...</item>
+        <item quantity="one">%1$d onderdeel synchroniseren...</item>
+        <item quantity="other">%1$d onderdelen synchroniseren...</item>
     </plurals>
-    <string name="sync_status_anytype_network_connecting">Netwerk wordt verbonden</string>
+    <string name="sync_status_anytype_network_connecting">Netwerk verbinden...</string>
     <string name="sync_status_anytype_network_no_connecting">Geen verbinding</string>
-    <string name="sync_status_anytype_sync_slow">Sync might be slow. Update the app.</string>
-    <string name="sync_status_storage_limit_exceed">Storage limit reached</string>
+    <string name="sync_status_anytype_sync_slow">Synchronisatie kan traag zijn. Update de app.</string>
+    <string name="sync_status_storage_limit_exceed">Opslaglimiet bereikt</string>
     <string name="sync_status_incompatible_version">Niet-compatibele versie</string>
-    <string name="sync_status_network_error">No access to the space</string>
-    <string name="sync_status_unrecognized">Unrecognized error</string>
+    <string name="sync_status_network_error">Geen toegang tot de ruimte</string>
+    <string name="sync_status_unrecognized">Onbekende fout</string>
     <string name="version_history_title">Versiegeschiedenis</string>
     <string name="version_history_error_no_versions">Geen versies gevonden</string>
-    <string name="version_history_error_get_version">Fout bij ophalen versiegeschiedenis</string>
-    <string name="version_history_error_get_members">Fout bij ophalen deelnemers</string>
+    <string name="version_history_error_get_version">Fout bij ophalen van versiegeschiedenis</string>
+    <string name="version_history_error_get_members">Fout bij ophalen van deelnemers</string>
     <string name="new_object">Nieuw object</string>
-    <string name="vault_my_spaces">My Spaces</string>
-    <string name="all_content_title_all_content">All Objects</string>
-    <string name="all_content_title_only_unlinked">Only unlinked</string>
-    <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
-    <string name="all_content_view_bin">View Bin</string>
-    <string name="all_content_title_tab_pages">Pages</string>
+    <string name="vault_my_spaces">Mijn ruimten</string>
+    <string name="all_content_title_all_content">Alle objecten</string>
+    <string name="all_content_title_only_unlinked">Alleen niet-gelinkt</string>
+    <string name="all_content_title_only_unlinked_description">Niet-gelinkte objecten die geen directe link of teruglink hebben met andere objecten in de weergave.</string>
+    <string name="all_content_view_bin">Prullenmand weergeven</string>
+    <string name="all_content_title_tab_pages">Pagina\'s</string>
     <string name="all_content_title_tab_lists">Lijsten</string>
     <string name="all_content_title_tab_media">Media</string>
-    <string name="all_content_title_tab_bookmarks">Bookmarks</string>
+    <string name="all_content_title_tab_bookmarks">Bladwijzers</string>
     <string name="all_content_title_tab_files">Bestanden</string>
     <string name="all_content_title_tab_objetc_types">Types</string>
     <string name="all_content_title_tab_relations">Relaties</string>
     <string name="all_content_sort_by">Sorteer op</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
-    <string name="all_content_sort_date_desc">Newest first</string>
-    <string name="all_content_sort_date_asc">Oldest first</string>
-    <string name="all_content_sort_date_updated">Date updated</string>
-    <string name="all_content_sort_date_created">Date created</string>
-    <string name="all_content_sort_date_used">Date last used</string>
+    <string name="all_content_sort_date_desc">Nieuwste eerst</string>
+    <string name="all_content_sort_date_asc">Oudste eerst</string>
+    <string name="all_content_sort_date_updated">Datum geüpdatet</string>
+    <string name="all_content_sort_date_created">Datum gemaakt</string>
+    <string name="all_content_sort_date_used">Datum laatst gebruikt</string>
     <string name="all_content_sort_name">Naam</string>
-    <string name="all_content">All Objects</string>
+    <string name="all_content">Alle objecten</string>
     <string name="allContent_group_today">Vandaag</string>
     <string name="allContent_group_yesterday">Gisteren</string>
     <string name="allContent_group_prev_7">Afgelopen 7 dagen</string>
-    <string name="allContent_group_prev_14">Previous 14 days</string>
-    <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
-    <string name="introduce_vault_text_2">You can now easily reorder your Spaces using drag and drop and navigate them more easily.</string>
-    <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
-    <string name="introduce_vault_welcome_to_the_vault">Welcome to the Vault</string>
-    <string name="introduce_vault_simple_flexible"><![CDATA[Simple & Flexible]]></string>
-    <string name="allContent_empty_state_title">It’s empty here.</string>
-    <string name="allContent_empty_state_description">Create your first objects to get started.</string>
-    <string name="all_content_no_results_title">No results found.</string>
-    <string name="all_content_no_results_description">Try searching with different keywords.</string>
-    <string name="all_content_error_title">Something went wrong.</string>
-    <string name="onboarding_my_first_space">My First Space</string>
+    <string name="allContent_group_prev_14">Afgelopen 14 dagen</string>
+    <string name="introduce_vault_text_1">Kluis is het nieuwe thuis voor al jouw ruimten.\nMaak, neem deel of deel ruimten - alles is hier veilig opgeslagen.</string>
+    <string name="introduce_vault_text_2">Je kunt nu eenvoudig de volgorde van jouw ruimten wijzigen door ze te slepen en neer te zetten. Zo navigeer je er nog gemakkelijker doorheen.</string>
+    <string name="introduce_vault_text_3">Standaard vervagen we het pictogram van jouw ruimte als een achtergrond. Indien nodig, kun je het wijzigen in de ruimte-instellingen.</string>
+    <string name="introduce_vault_welcome_to_the_vault">Welkom in de kluis</string>
+    <string name="introduce_vault_simple_flexible"><![CDATA[Eenvoudig & flexibel]]></string>
+    <string name="allContent_empty_state_title">Het is hier leeg.</string>
+    <string name="allContent_empty_state_description">Maak jouw eerste objecten om te beginnen.</string>
+    <string name="all_content_no_results_title">Geen resultaten gevonden.</string>
+    <string name="all_content_no_results_description">Probeer te zoeken met andere trefwoorden.</string>
+    <string name="all_content_error_title">Er ging iets mis.</string>
+    <string name="onboarding_my_first_space">Mijn eerste ruimte</string>
     <string name="all_content_error_unexpected_layout">Fout: onverwachte lay-out</string>
-    <string name="all_content_toast_relation_added">Relation added</string>
-    <string name="all_content_toast_relation_removed">Relation removed</string>
-    <string name="all_content_toast_type_added">Object type added</string>
-    <string name="all_content_toast_type_removed">Object type removed</string>
-    <string name="all_content_toast_archived">Object archived</string>
+    <string name="all_content_toast_relation_added">Relatie toegevoegd</string>
+    <string name="all_content_toast_relation_removed">Relatie verwijderd</string>
+    <string name="all_content_toast_type_added">Objecttype toegevoegd</string>
+    <string name="all_content_toast_type_removed">Objecttype verwijderd</string>
+    <string name="all_content_toast_archived">Object gearchiveerd</string>
     <string name="all_content_new_relation">Nieuwe relatie</string>
     <string name="all_content_new_type">Nieuw type</string>
-    <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
-    <string name="all_content_snackbar_title">moved to bin</string>
+    <string name="all_content_unlinked_description">Niet-gelinkte objecten die geen directe link of teruglink hebben met andere objecten in de weergave.</string>
+    <string name="all_content_snackbar_title">verplaatst naar prullenmand</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
-    <string name="main_navigation_content_desc_search_button">Search objects button</string>
-    <string name="main_navigation_content_desc_create_button">Create object button</string>
+    <string name="main_navigation_content_desc_search_button">Zoek objecten knop</string>
+    <string name="main_navigation_content_desc_create_button">Maak object knop</string>
     <string name="chat">Chat</string>
     <string name="copy">Kopieer</string>
-    <string name="chats_edit_message">Edit message</string>
-    <string name="chats_message_edited">edited</string>
-    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
-    <string name="write_a_message">Write a message...</string>
+    <string name="chats_edit_message">Bewerk bericht</string>
+    <string name="chats_message_edited">bewerkt</string>
+    <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>
+    <string name="write_a_message">Schrijf een bericht...</string>
     <string name="chat_attachment_object">Object</string>
     <string name="chat_attachment_file">Bestand</string>
     <string name="chat_attachment_media">Media</string>
     <string name="chat_attachment_upload">Upload</string>
-    <string name="chats_reply">Reply</string>
+    <string name="chats_reply">Antwoord</string>
 </resources>

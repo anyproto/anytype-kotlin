@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.RestoreGlobalSearchHistory
 import com.anytypeio.anytype.domain.search.SearchWithMeta
 import com.anytypeio.anytype.domain.search.UpdateGlobalSearchHistory
@@ -75,7 +76,8 @@ class GlobalSearchViewModel @Inject constructor(
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
-    private val updateGlobalSearchHistory: UpdateGlobalSearchHistory
+    private val updateGlobalSearchHistory: UpdateGlobalSearchHistory,
+    private val fieldParser: FieldParser
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val userInput = MutableStateFlow("")
@@ -146,7 +148,8 @@ class GlobalSearchViewModel @Inject constructor(
                 val relatedGlobalSearchItemView = result.firstOrNull()?.view(
                     storeOfRelations = storeOfRelations,
                     storeOfObjectTypes = storeOfObjectTypes,
-                    urlBuilder = urlBuilder
+                    urlBuilder = urlBuilder,
+                    fieldParser = fieldParser
                 )
                 if (relatedGlobalSearchItemView != null) {
                     mode.value = Mode.Related(target = relatedGlobalSearchItemView)
@@ -248,7 +251,8 @@ class GlobalSearchViewModel @Inject constructor(
                             it.view(
                                 storeOfRelations = storeOfRelations,
                                 storeOfObjectTypes = storeOfObjectTypes,
-                                urlBuilder = urlBuilder
+                                urlBuilder = urlBuilder,
+                                fieldParser = fieldParser
                             )
                         },
                         isLoading = false
@@ -330,7 +334,8 @@ class GlobalSearchViewModel @Inject constructor(
                             it.view(
                                 storeOfRelations = storeOfRelations,
                                 storeOfObjectTypes = storeOfObjectTypes,
-                                urlBuilder = urlBuilder
+                                urlBuilder = urlBuilder,
+                                fieldParser = fieldParser
                             )
                         },
                         isLoading = false
@@ -416,7 +421,8 @@ class GlobalSearchViewModel @Inject constructor(
         private val analytics: Analytics,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
-        private val updateGlobalSearchHistory: UpdateGlobalSearchHistory
+        private val updateGlobalSearchHistory: UpdateGlobalSearchHistory,
+        private val fieldParser: FieldParser
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -429,7 +435,8 @@ class GlobalSearchViewModel @Inject constructor(
                 analytics = analytics,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 restoreGlobalSearchHistory = restoreGlobalSearchHistory,
-                updateGlobalSearchHistory = updateGlobalSearchHistory
+                updateGlobalSearchHistory = updateGlobalSearchHistory,
+                fieldParser = fieldParser
             ) as T
         }
     }
@@ -544,7 +551,8 @@ data class GlobalSearchItemView(
 suspend fun Command.SearchWithMeta.Result.view(
     storeOfObjectTypes: StoreOfObjectTypes,
     storeOfRelations: StoreOfRelations,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    fieldParser: FieldParser
 ) : GlobalSearchItemView? {
     if (wrapper.spaceId == null) return null
     if (wrapper.layout == null) return null
@@ -557,7 +565,7 @@ suspend fun Command.SearchWithMeta.Result.view(
         backlinks = wrapper.backlinks,
         space = SpaceId(requireNotNull(wrapper.spaceId)),
         layout = requireNotNull(wrapper.layout),
-        title = wrapper.getProperName(),
+        title = fieldParser.getObjectName(wrapper),
         type =  if (type != null) {
             storeOfObjectTypes.get(type)?.name.orEmpty()
         } else {
@@ -612,7 +620,7 @@ suspend fun Command.SearchWithMeta.Result.view(
                             }
                             FILE -> GlobalSearchItemView.Meta.Default(
                                 name = relation.name.orEmpty(),
-                                value = dep.getProperName(),
+                                value = fieldParser.getObjectName(dep),
                                 highlights = emptyList()
                             )
                             OBJECT -> {

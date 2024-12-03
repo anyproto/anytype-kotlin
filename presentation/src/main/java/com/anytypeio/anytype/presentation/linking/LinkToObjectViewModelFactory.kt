@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -46,7 +47,8 @@ class LinkToObjectOrWebViewModelFactory(
     private val analytics: Analytics,
     private val stores: Editor.Storage,
     private val urlValidator: UrlValidator,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val fieldParser: FieldParser
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -59,7 +61,8 @@ class LinkToObjectOrWebViewModelFactory(
             analytics = analytics,
             stores = stores,
             urlValidator = urlValidator,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            fieldParser = fieldParser
         ) as T
     }
 }

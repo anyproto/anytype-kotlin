@@ -6354,7 +6354,7 @@ class EditorViewModel(
                             .toViews(
                                 urlBuilder = urlBuilder,
                                 objectTypes = storeOfObjectTypes.getAll(),
-                                dateProvider = dateProvider
+                                fieldParser = fieldParser
                             )
 
                         controlPanelInteractor.onEvent(

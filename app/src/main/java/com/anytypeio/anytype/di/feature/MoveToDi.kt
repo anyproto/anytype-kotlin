@@ -4,8 +4,8 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.moving.MoveToViewModel
@@ -41,7 +41,7 @@ interface MoveToDependencies : ComponentDependencies {
     fun searchObjects(): SearchObjects
     fun analytics(): Analytics
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
-    fun dateProvider(): DateProvider
+    fun  fieldParser(): FieldParser
 }
 
 @Module
@@ -57,7 +57,7 @@ object MoveToModule {
         searchObjects: SearchObjects,
         analytics: Analytics,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        dateProvider: DateProvider
+        fieldParser: FieldParser
     ): MoveToViewModelFactory = MoveToViewModelFactory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
@@ -65,6 +65,6 @@ object MoveToModule {
         searchObjects = searchObjects,
         analytics = analytics,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        dateProvider = dateProvider
+        fieldParser = fieldParser
     )
 }

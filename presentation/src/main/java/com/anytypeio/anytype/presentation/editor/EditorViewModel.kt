@@ -4360,7 +4360,7 @@ class EditorViewModel(
                 orchestrator.proxies.intents.send(
                     Media.DownloadFile(
                         url = url,
-                        name = obj.getProperName(),
+                        name = fieldParser.getObjectName(obj),
                         type = null
                     )
                 )

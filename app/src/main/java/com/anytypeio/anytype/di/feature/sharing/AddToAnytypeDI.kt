@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.workspace.EventProcessDropFilesChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -72,7 +73,6 @@ interface AddToAnytypeDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun dispatchers(): AppCoroutineDispatchers
     fun userSettings(): UserSettingsRepository
-    fun configStorage(): ConfigStorage
     fun container(): StorelessSubscriptionContainer
     fun urlBuilder(): UrlBuilder
     fun awaitAccountStartedManager(): AwaitAccountStartManager
@@ -81,4 +81,5 @@ interface AddToAnytypeDependencies : ComponentDependencies {
     fun permissions(): UserPermissionProvider
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
     fun eventProxy(): EventProxy
+    fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
 }

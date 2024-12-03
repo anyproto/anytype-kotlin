@@ -48,7 +48,7 @@ class SpaceListViewModel(
                 permissions.all()
             ) { spaceViews, permission ->
                 ViewState.Success(
-                    data = spaceViews.map { spaceView ->
+                    data = spaceViews.distinctBy { it.id }.map { spaceView ->
                         SpaceListItemView(
                             space = spaceView,
                             icon = spaceView.spaceIcon(

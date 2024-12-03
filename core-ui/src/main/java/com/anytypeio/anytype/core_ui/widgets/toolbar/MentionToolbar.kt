@@ -55,6 +55,11 @@ class MentionToolbar @JvmOverloads constructor(
 
     fun addItems(items: List<DefaultSearchItem>) {
         mentionAdapter.submitList(items)
+        if (items.isNotEmpty()) {
+            handler.post {
+                binding.recyclerView.scrollToPosition(0)
+            }
+        }
     }
 
     fun updateFilter(filter: String) {

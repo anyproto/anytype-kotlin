@@ -60,6 +60,7 @@ import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
+import com.anytypeio.anytype.core_ui.features.editor.EditorDatePicker
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
@@ -749,6 +750,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     onDismiss = vm::onSyncWidgetDismiss,
                     scope = lifecycleScope,
                     onUpdateAppClick = vm::onUpdateAppClick
+                )
+            }
+        }
+
+        binding.editorDatePicker.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                EditorDatePicker(
+                    uiState = vm.mentionDatePicker.collectAsStateWithLifecycle().value,
+                    onEvent = vm::onEditorDatePickerEvent
                 )
             }
         }

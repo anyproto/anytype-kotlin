@@ -48,6 +48,7 @@ import com.anytypeio.anytype.core_models.ext.sortByType
 import com.anytypeio.anytype.core_models.ext.supportNesting
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.updateTextContent
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -90,6 +91,7 @@ import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -182,7 +184,9 @@ import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableEvent
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.editor.editor.toCoreModel
 import com.anytypeio.anytype.presentation.editor.editor.updateText
+import com.anytypeio.anytype.presentation.editor.model.EditorDatePickerState
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
+import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.editor.picker.PickerListener
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -268,6 +272,7 @@ import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import java.time.format.DateTimeFormatter
 import java.util.LinkedList
 import java.util.Queue
 import java.util.regex.Pattern
@@ -340,7 +345,8 @@ class EditorViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser : FieldParser,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val objectDateByTimestamp: ObjectDateByTimestamp
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -421,6 +427,11 @@ class EditorViewModel(
     override val commands = MutableLiveData<EventWrapper<Command>>()
 
     val permission = MutableStateFlow(permissions.get(vmParams.space))
+
+    /**
+     * Mention date picker
+     */
+    val mentionDatePicker = MutableStateFlow<EditorDatePickerState>(EditorDatePickerState.Hidden)
 
     init {
         Timber.i("EditorViewModel, init")
@@ -6145,6 +6156,96 @@ class EditorViewModel(
                 spaceParams = provideParams(vmParams.space.id)
             )
             onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
+        }
+        if (mention is SelectDateItem) {
+            mentionDatePicker.value = EditorDatePickerState.Visible
+        }
+    }
+
+    private enum class PredefinedDate {
+        TODAY,
+        TOMORROW
+    }
+
+    fun onEditorDatePickerEvent(event: OnEditorDatePickerEvent) {
+        Timber.d("onEditorDatePickerEvent, event:[$event]")
+
+        when (event) {
+            is OnEditorDatePickerEvent.OnDateSelected -> {
+                handleDatePickerDismiss()
+                handleDateSelected(event.timeInMillis)
+            }
+            is OnEditorDatePickerEvent.OnDatePickerDismiss -> handleDatePickerDismiss()
+            OnEditorDatePickerEvent.OnTodayClick -> {
+                handleDatePickerDismiss()
+                handlePredefinedDateClick(predefinedDate = PredefinedDate.TODAY)
+            }
+            OnEditorDatePickerEvent.OnTomorrowClick -> {
+                handleDatePickerDismiss()
+                handlePredefinedDateClick(predefinedDate = PredefinedDate.TOMORROW)
+            }
+        }
+    }
+
+    private fun handleDateSelected(timeInMillis: Long?) {
+        if (timeInMillis == null) {
+            sendToast("Selected time is invalid.")
+            Timber.w("OnDateSelected received null timeInMillis")
+            return
+        }
+
+        val adjustedTimestamp = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(timeInMillis)
+        handleTimestamp(adjustedTimestamp)
+    }
+
+    private fun handlePredefinedDateClick(predefinedDate: PredefinedDate) {
+        val timestamp = when (predefinedDate) {
+            PredefinedDate.TODAY -> dateProvider.getTimestampForTodayAtStartOfDay()
+            PredefinedDate.TOMORROW -> dateProvider.getTimestampForTomorrowAtStartOfDay()
+        }
+        handleTimestamp(timestamp)
+    }
+
+    private fun handleTimestamp(timestamp: Long) {
+        proceedWithGettingDateByTimestamp(timestamp) { dateObject ->
+            Timber.d("handleTimestamp, dateObject:[$dateObject]")
+            val id = dateObject?.getSingleValue<String>(Relations.ID)
+            val name = dateObject?.getSingleValue<String>(Relations.NAME)
+
+            if (id != null && name != null) {
+                onCreateMentionInText(
+                    id = id,
+                    name = name,
+                    mentionTrigger = mentionFilter.value
+                )
+            } else {
+                sendToast("Error while creating mention, date object is null")
+                Timber.e("Date object missing ID or name.")
+            }
+        }
+    }
+
+    private fun handleDatePickerDismiss() {
+        mentionDatePicker.value = EditorDatePickerState.Hidden
+    }
+
+    private fun proceedWithGettingDateByTimestamp(timestamp: Long, action: (Struct?) -> Unit) {
+        val params = ObjectDateByTimestamp.Params(
+            space = vmParams.space,
+            timestamp = timestamp
+        )
+        Timber.d("Start ObjectDateByTimestamp with params: [$params]")
+        viewModelScope.launch {
+            objectDateByTimestamp.async(params).fold(
+                onSuccess = { dateObject ->
+                    Timber.d("ObjectDateByTimestamp Success, dateObject: [$dateObject]")
+                    action(dateObject)
+                },
+                onFailure = { e ->
+                    Timber.e(e, "ObjectDateByTimestamp Error")
+                    sendToast("Failed to retrieve date object.")
+                }
+            )
         }
     }
 

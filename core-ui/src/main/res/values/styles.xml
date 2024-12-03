@@ -507,7 +507,7 @@
     </style>
 
     <!-- Object items in lists -->
-    <style name="ObjectListItemTitle" parent="TextView.UXStyle.Titles.2.Medium">
+    <style name="ObjectListItemTitle" parent="TextView.ContentStyle.PreviewTitles.2.Medium">
         <item name="android:textColorHint">@color/text_tertiary</item>
     </style>
 

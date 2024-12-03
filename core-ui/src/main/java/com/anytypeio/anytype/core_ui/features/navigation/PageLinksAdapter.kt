@@ -88,7 +88,7 @@ class DefaultObjectViewAdapter(
                         holder.title.setText(R.string.widget_source_anytype_library)
                     }
                     ObjectSearchSection.SelectWidgetSource.FromMyObjects -> {
-                        holder.title.setText(R.string.objects)
+                        holder.title.setText(R.string.your_objects)
                     }
                     ObjectSearchSection.SelectWidgetSource.DefaultLists -> {
                         holder.title.setText(R.string.widget_source_default_lists)

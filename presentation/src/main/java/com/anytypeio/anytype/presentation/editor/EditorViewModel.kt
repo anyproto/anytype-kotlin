@@ -6173,15 +6173,21 @@ class EditorViewModel(
         when (event) {
             is OnEditorDatePickerEvent.OnDateSelected -> {
                 handleDatePickerDismiss()
+                dispatch(Command.ShowKeyboard)
                 handleDateSelected(event.timeInMillis)
             }
-            is OnEditorDatePickerEvent.OnDatePickerDismiss -> handleDatePickerDismiss()
+            is OnEditorDatePickerEvent.OnDatePickerDismiss -> {
+                dispatch(Command.ShowKeyboard)
+                handleDatePickerDismiss()
+            }
             OnEditorDatePickerEvent.OnTodayClick -> {
                 handleDatePickerDismiss()
+                dispatch(Command.ShowKeyboard)
                 handlePredefinedDateClick(predefinedDate = PredefinedDate.TODAY)
             }
             OnEditorDatePickerEvent.OnTomorrowClick -> {
                 handleDatePickerDismiss()
+                dispatch(Command.ShowKeyboard)
                 handlePredefinedDateClick(predefinedDate = PredefinedDate.TOMORROW)
             }
         }

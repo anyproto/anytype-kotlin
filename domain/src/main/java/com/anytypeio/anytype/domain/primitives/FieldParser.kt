@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.primitives
 
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.Field
 import com.anytypeio.anytype.core_models.primitives.FieldDateValue
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
@@ -10,6 +11,7 @@ import javax.inject.Inject
 
 interface FieldParser {
     fun toDate(any: Any?): Field.Date?
+    fun getObjectName(objectWrapper: ObjectWrapper.Basic): String
 }
 
 class FieldParserImpl @Inject constructor(
@@ -28,6 +30,10 @@ class FieldParserImpl @Inject constructor(
                 return null
             }
         }
+    }
+
+    override fun getObjectName(objectWrapper: ObjectWrapper.Basic): String {
+        return objectWrapper.name.orEmpty()
     }
 
     private fun calculateFieldDate(value: Value.Single<Long>?): Field.Date? {

@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.download.ProcessCancel
 import com.anytypeio.anytype.domain.media.FileDrop
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.Permissions
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
@@ -53,6 +54,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
@@ -62,7 +64,6 @@ class AddToAnytypeViewModel(
     private val createBookmarkObject: CreateBookmarkObject,
     private val createPrefilledNote: CreatePrefilledNote,
     private val spaceManager: SpaceManager,
-    private val getSpaceViews: GetSpaceViews,
     private val urlBuilder: UrlBuilder,
     private val awaitAccountStartManager: AwaitAccountStartManager,
     private val analytics: Analytics,
@@ -71,16 +72,10 @@ class AddToAnytypeViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fileDrop: FileDrop,
     private val eventProcessChannel: EventProcessDropFilesChannel,
-    private val configStorage: ConfigStorage
+    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
-
-    private val spaces: Flow<List<ObjectWrapper.SpaceView>> get() = getSpaceViews.asFlow(
-        SpaceId(
-            configStorage.getOrNull()?.techSpace.orEmpty()
-        )
-    )
 
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val spaceViews = MutableStateFlow<List<SpaceView>>(emptyList())
@@ -113,7 +108,7 @@ class AddToAnytypeViewModel(
                 .awaitStart()
                 .flatMapLatest {
                     combine(
-                        spaces,
+                        spaceViewSubscriptionContainer.observe().map { items -> items.distinctBy { it.id } },
                         selectedSpaceId,
                         permissions.all()
                     ) { spaces, selected, currPermissions ->
@@ -486,7 +481,6 @@ class AddToAnytypeViewModel(
         private val createBookmarkObject: CreateBookmarkObject,
         private val createPrefilledNote: CreatePrefilledNote,
         private val spaceManager: SpaceManager,
-        private val getSpaceViews: GetSpaceViews,
         private val urlBuilder: UrlBuilder,
         private val awaitAccountStartManager: AwaitAccountStartManager,
         private val analytics: Analytics,
@@ -496,7 +490,7 @@ class AddToAnytypeViewModel(
         private val fileDrop: FileDrop,
         private val eventProcessChannel: EventProcessDropFilesChannel,
         private val processCancel: ProcessCancel,
-        private val configStorage: ConfigStorage
+        private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -504,7 +498,6 @@ class AddToAnytypeViewModel(
                 createBookmarkObject = createBookmarkObject,
                 spaceManager = spaceManager,
                 createPrefilledNote = createPrefilledNote,
-                getSpaceViews = getSpaceViews,
                 urlBuilder = urlBuilder,
                 awaitAccountStartManager = awaitAccountStartManager,
                 analytics = analytics,
@@ -513,7 +506,7 @@ class AddToAnytypeViewModel(
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 fileDrop = fileDrop,
                 eventProcessChannel = eventProcessChannel,
-                configStorage = configStorage
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
             ) as T
         }
     }

@@ -509,7 +509,8 @@ open class EditorPresentationTestSetup {
             clearLastOpenedObject = clearLastOpenedObject,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             getNetworkMode = getNetworkMode,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            dateProvider = dateProvider
         )
     }
 

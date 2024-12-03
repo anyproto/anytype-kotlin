@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -168,4 +169,5 @@ interface DateObjectDependencies : ComponentDependencies {
     fun provideDateProvider(): DateProvider
     fun provideSpaceSyncAndP2PStatusProvider(): SpaceSyncAndP2PStatusProvider
     fun provideUserSettingsRepository(): UserSettingsRepository
+    fun fieldParser(): FieldParser
 }

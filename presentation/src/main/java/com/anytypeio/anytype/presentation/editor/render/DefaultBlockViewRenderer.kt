@@ -1677,7 +1677,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectIcon.None
         }
 
-        val name = obj.getProperObjectName()?.trim()
+        val name = fieldParser.getObjectName(obj)
 
         val description = when (inEditorAppearance.description) {
             InEditor.Description.NONE -> null
@@ -1855,7 +1855,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         isEmpty = true,
         emoji = null,
         image = null,
-        text = obj.getProperObjectName()?.trim(),
+        text = fieldParser.getObjectName(obj),
         indent = indent,
         isSelected = checkIfSelected(
             mode = mode,

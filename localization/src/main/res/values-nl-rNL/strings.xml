@@ -1560,4 +1560,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chat_attachment_file">Bestand</string>
     <string name="chat_attachment_media">Media</string>
     <string name="chat_attachment_upload">Upload</string>
+    <string name="chats_reply">Reply</string>
 </resources>

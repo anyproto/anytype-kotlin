@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
@@ -44,9 +45,6 @@ class TreeWidgetContainerTest {
 
     @Mock
     lateinit var gateway: Gateway
-
-    @Mock
-    lateinit var spaceGradientProvider: SpaceGradientProvider
 
     @Mock
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
@@ -301,27 +299,42 @@ class TreeWidgetContainerTest {
                     expected = WidgetView.Tree(
                         id = widget.id,
                         source = widget.source,
+                        name = WidgetView.Name.Default(
+                            (widget.source as Widget.Source.Default).obj.getWidgetObjectName()
+                        ),
                         elements = listOf(
                             WidgetView.Tree.Element(
+                                id = sourceLinks[0].id,
                                 indent = 0,
                                 obj = sourceLinks[0],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = false),
                                 objectIcon = ObjectIcon.Empty.Page,
+                                name = WidgetView.Name.Default(
+                                    prettyPrintName = sourceLinks[0].getWidgetObjectName()
+                                )
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
+                                id = sourceLinks[1].id,
                                 obj = sourceLinks[1],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[1].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
+                                name = WidgetView.Name.Default(
+                                    prettyPrintName = sourceLinks[1].getWidgetObjectName()
+                                )
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
+                                id = sourceLinks[2].id,
                                 obj = sourceLinks[2],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[2].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
+                                name = WidgetView.Name.Default(
+                                    prettyPrintName = sourceLinks[2].getWidgetObjectName()
+                                )
                             )
                         ),
                         isExpanded = true
@@ -335,48 +348,75 @@ class TreeWidgetContainerTest {
                     expected = WidgetView.Tree(
                         id = widget.id,
                         source = widget.source,
+                        name = WidgetView.Name.Default(
+                            (widget.source as Widget.Source.Default).obj.getWidgetObjectName()
+                        ),
                         elements = listOf(
                             WidgetView.Tree.Element(
                                 indent = 0,
+                                id = sourceLinks[0].id,
                                 obj = sourceLinks[0],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = true),
                                 objectIcon = ObjectIcon.Empty.Page,
+                                name = WidgetView.Name.Default(
+                                    prettyPrintName = sourceLinks[0].getWidgetObjectName()
+                                )
                             ),
                             WidgetView.Tree.Element(
                                 indent = 1,
+                                id = linkA1.id,
                                 obj = linkA1,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA1.id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
+                                name = WidgetView.Name.Default(
+                                    prettyPrintName = linkA1.getWidgetObjectName()
+                                )
                             ),
                             WidgetView.Tree.Element(
                                 indent = 1,
+                                id = linkA2.id,
                                 obj = linkA2,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA2.id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
+                                name = WidgetView.Name.Default(
+                                    prettyPrintName = linkA2.getWidgetObjectName()
+                                )
                             ),
                             WidgetView.Tree.Element(
                                 indent = 1,
+                                id = linkA3.id,
                                 obj = linkA3,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA3.id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
+                                name = WidgetView.Name.Default(
+                                    prettyPrintName = linkA3.getWidgetObjectName()
+                                )
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
+                                id = sourceLinks[1].id,
                                 obj = sourceLinks[1],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[1].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
+                                name = WidgetView.Name.Default(
+                                    prettyPrintName = sourceLinks[1].getWidgetObjectName()
+                                )
                             ),
                             WidgetView.Tree.Element(
                                 indent = 0,
+                                id = sourceLinks[2].id,
                                 obj = sourceLinks[2],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[2].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
+                                name = WidgetView.Name.Default(
+                                    prettyPrintName = sourceLinks[2].getWidgetObjectName()
+                                )
                             )
                         ),
                         isExpanded = true

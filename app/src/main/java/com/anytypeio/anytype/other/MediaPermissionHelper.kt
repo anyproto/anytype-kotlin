@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_utils.ext.FilePickerUtils.hasPermission
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.core_utils.ext.toast
+import timber.log.Timber
 
 class MediaPermissionHelper(
     private val fragment: Fragment,
@@ -16,36 +17,67 @@ class MediaPermissionHelper(
 ) {
     private var mimeType: Mimetype? = null
     private var requestCode: Int? = null
+    private var isRequestInProgress: Boolean = false
 
     private val permissionReadStorage: ActivityResultLauncher<Array<String>> =
         fragment.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
-            grantResults.entries.forEach {
-                val isGranted = it.value
-                if (isGranted) {
-                    val type = requireNotNull(mimeType) {
-                        "mimeType should be initialized"
-                    }
-                    onPermissionSuccess(type, requestCode)
-                } else {
-                    onPermissionDenied()
-                }
+            Timber.d("Permission callback: $grantResults")
+
+            if (mimeType == null) {
+                Timber.e("mimeType is null in permission callback")
+                onPermissionDenied()
+                isRequestInProgress = false
+                return@registerForActivityResult
             }
+
+            val allGranted = grantResults.values.all { it }
+            if (allGranted) {
+                onPermissionSuccess(mimeType!!, requestCode)
+            } else {
+                onPermissionDenied()
+            }
+
+            // Reset state
+            mimeType = null
+            requestCode = null
+            isRequestInProgress = false
         }
 
     fun openFilePicker(mimeType: Mimetype, requestCode: Int?) {
+        if (isRequestInProgress) {
+            Timber.w("Permission request already in progress")
+            return
+        }
+
         try {
             this.mimeType = mimeType
             this.requestCode = requestCode
-            val context = fragment.context ?: return
+            isRequestInProgress = true
+
+            val context = fragment.context ?: run {
+                onPermissionDenied()
+                isRequestInProgress = false
+                return
+            }
+
             val hasPermission = mimeType.hasPermission(context)
             if (hasPermission) {
                 onPermissionSuccess(mimeType, requestCode)
+                isRequestInProgress = false
             } else {
-                val permission = mimeType.getPermissionToRequestByMime()
-                permissionReadStorage.launch(permission)
+                val permissions = mimeType.getPermissionToRequestByMime()
+                if (permissions.isNotEmpty()) {
+                    permissionReadStorage.launch(permissions)
+                } else {
+                    // No permissions to request
+                    onPermissionDenied()
+                    isRequestInProgress = false
+                }
             }
         } catch (e: Exception) {
             fragment.toast(e.msg())
+            onPermissionDenied()
+            isRequestInProgress = false
         }
     }
 }

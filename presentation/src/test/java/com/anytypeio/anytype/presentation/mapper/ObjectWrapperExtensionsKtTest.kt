@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.mapper
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -19,6 +20,9 @@ class ObjectWrapperExtensionsKtTest {
 
     @Mock
     lateinit var urlBuilder: UrlBuilder
+
+    @Mock
+    lateinit var dateProvider: DateProvider
 
     val URL = "anytype.io/"
 
@@ -92,7 +96,11 @@ class ObjectWrapperExtensionsKtTest {
 
         )
 
-        val result = listOf(obj).toViews(urlBuilder, objectTypes = listOf())
+        val result = listOf(obj).toViews(
+            urlBuilder = urlBuilder,
+            objectTypes = listOf(),
+            dateProvider = dateProvider
+        )
 
         assertEquals(
             expected = "OMr2Y",
@@ -118,7 +126,8 @@ class ObjectWrapperExtensionsKtTest {
 
         val result = listOf(obj).toViews(
             urlBuilder = urlBuilder,
-            objectTypes = listOf()
+            objectTypes = listOf(),
+            dateProvider = dateProvider
         )
 
         assertEquals(
@@ -144,7 +153,11 @@ class ObjectWrapperExtensionsKtTest {
 
         )
 
-        val result = listOf(obj).toViews(urlBuilder, objectTypes = listOf())
+        val result = listOf(obj).toViews(
+            urlBuilder = urlBuilder,
+            objectTypes = listOf(),
+            dateProvider = dateProvider
+        )
 
         assertEquals(
             expected = "Anytype is next-generation sof",

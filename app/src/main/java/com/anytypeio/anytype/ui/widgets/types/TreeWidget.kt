@@ -55,7 +55,6 @@ import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 
 @Composable
@@ -102,11 +101,11 @@ fun TreeWidgetCard(
             )
         ) {
             WidgetHeader(
-                title = when (val source = item.source) {
-                    is Widget.Source.Default -> {
-                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                title = when (val name = item.name) {
+                    is WidgetView.Name.Default -> {
+                        name.prettyPrintName ?: stringResource(id = R.string.untitled)
                     }
-                    is Widget.Source.Bundled -> { stringResource(id = source.res()) }
+                    is WidgetView.Name.Bundled -> { stringResource(id = name.source.res()) }
                 },
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
@@ -223,12 +222,12 @@ private fun TreeWidgetTreeItems(
                     icon = element.objectIcon,
                     modifier = Modifier.align(Alignment.CenterVertically).padding(start = 8.dp, end = 4.dp),
                     onTaskIconClicked = { isChecked ->
-                        onObjectCheckboxClicked(element.obj.id, isChecked)
+                        onObjectCheckboxClicked(element.id, isChecked)
                     }
                 )
             }
             Text(
-                text = element.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled),
+                text = element.name.prettyPrintName ?: stringResource(id = R.string.untitled),
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .fillMaxWidth(),

@@ -41,16 +41,17 @@ sealed class Chat {
              */
             fun new(
                 text: String,
-                attachments: List<Attachment> = emptyList()
-            ) : Message = Chat.Message(
+                attachments: List<Attachment> = emptyList(),
+                replyToMessageId: Id? = null
+            ) : Message = Message(
                 id = "",
                 createdAt = 0L,
                 modifiedAt = 0L,
                 attachments = attachments,
                 reactions = emptyMap(),
                 creator = "",
-                replyToMessageId = "",
-                content = Chat.Message.Content(
+                replyToMessageId = replyToMessageId,
+                content = Content(
                     text = text,
                     marks = emptyList(),
                     style = Block.Content.Text.Style.P

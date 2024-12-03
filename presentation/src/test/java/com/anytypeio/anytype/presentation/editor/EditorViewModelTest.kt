@@ -3978,7 +3978,8 @@ open class EditorViewModelTest {
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             clearLastOpenedObject = clearLastOpenedObject,
             getNetworkMode = getNetworkMode,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            dateProvider = dateProvider
         )
     }
 

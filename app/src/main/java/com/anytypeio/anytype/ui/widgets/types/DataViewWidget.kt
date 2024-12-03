@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,7 +57,6 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -103,13 +103,12 @@ fun DataViewListWidgetCard(
                 .padding(horizontal = 0.dp, vertical = 6.dp)
         ) {
             WidgetHeader(
-                title = when (val source = item.source) {
-                    is Widget.Source.Default -> {
-                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                title = when (val name = item.name) {
+                    is WidgetView.Name.Default -> {
+                        name.prettyPrintName ?: stringResource(id = R.string.untitled)
                     }
-
-                    is Widget.Source.Bundled -> {
-                        stringResource(id = source.res())
+                    is WidgetView.Name.Bundled -> {
+                        stringResource(id = name.source.res())
                     }
                 },
                 isCardMenuExpanded = isCardMenuExpanded,
@@ -237,13 +236,12 @@ fun GalleryWidgetCard(
                 .padding(horizontal = 0.dp, vertical = 6.dp)
         ) {
             WidgetHeader(
-                title = when (val source = item.source) {
-                    is Widget.Source.Default -> {
-                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                title = when (val source = item.name) {
+                    is WidgetView.Name.Default -> {
+                        source.prettyPrintName ?: stringResource(id = R.string.untitled)
                     }
-
-                    is Widget.Source.Bundled -> {
-                        stringResource(id = source.res())
+                    is WidgetView.Name.Bundled -> {
+                        stringResource(id = source.source.res())
                     }
                 },
                 isCardMenuExpanded = isCardMenuExpanded,
@@ -314,6 +312,8 @@ fun GalleryWidgetCard(
                                         color = colorResource(id = R.color.glyph_active),
                                         modifier = Modifier
                                             .align(Alignment.Center)
+                                            .padding(horizontal = 12.dp),
+                                        textAlign = TextAlign.Center
                                     )
                                 }
                             }
@@ -658,6 +658,9 @@ fun GalleryWidgetItemCardPreview() {
                 map = mapOf(
                     Relations.NAME to "Stephen Bann"
                 )
+            ),
+            name = WidgetView.Name.Default(
+                prettyPrintName = "Stephen Bann"
             )
         ),
         onItemClicked = {}

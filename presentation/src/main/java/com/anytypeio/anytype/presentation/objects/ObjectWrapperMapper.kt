@@ -25,109 +25,39 @@ fun List<ObjectWrapper.Basic>.toViews(
     obj.toView(urlBuilder, objectTypes, dateProvider)
 }
 
-//fun ObjectWrapper.Basic.toView(
-//    urlBuilder: UrlBuilder,
-//    objectTypes: List<ObjectWrapper.Type>,
-//    dateProvider: DateProvider
-//): DefaultObjectView {
-//    val obj = this
-//    val typeUrl = obj.getProperType()
-//    val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
-//    val layout = obj.getProperLayout()
-//    val (name, typeName) = if (layout == ObjectType.Layout.DATE) {
-//        obj.getProperDateName(dateProvider) to null
-//    } else {
-//        obj.getProperName() to objectTypes.firstOrNull { type ->
-//            if (isProfile) {
-//                type.uniqueKey == ObjectTypeUniqueKeys.PROFILE
-//            } else {
-//                type.id == typeUrl
-//            }
-//        }?.name
-//    }
-//    return DefaultObjectView(
-//        id = obj.id,
-//        name = name,
-//        description = obj.description,
-//        type = typeUrl,
-//        typeName = typeName,
-//        layout = layout,
-//        icon = obj.objectIcon(urlBuilder),
-//        lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
-//        lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
-//        isFavorite = obj.isFavorite ?: false,
-//        space = requireNotNull(obj.spaceId)
-//    )
-//}
-
 fun ObjectWrapper.Basic.toView(
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>,
     dateProvider: DateProvider
 ): DefaultObjectView {
-    val typeUrl = getProperType()
+    val obj = this
+    val typeUrl = obj.getProperType()
     val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
-    val layout = getProperLayout()
-
-    val name = determineName(layout, dateProvider)
-    val typeName = determineTypeName(layout, isProfile, typeUrl, objectTypes)
-
-    return DefaultObjectView(
-        id = id,
-        name = name,
-        description = description,
-        type = typeUrl,
-        typeName = typeName,
-        layout = layout,
-        icon = objectIcon(urlBuilder),
-        lastModifiedDate = parseDate(lastModifiedDate),
-        lastOpenedDate = parseDate(lastOpenedDate),
-        isFavorite = isFavorite == true,
-        space = spaceId ?: throw IllegalStateException("spaceId must not be null")
-    )
-}
-
-/**
- * Determines the name based on the layout.
- */
-private fun ObjectWrapper.Basic.determineName(
-    layout: ObjectType.Layout,
-    dateProvider: DateProvider
-): String {
-    return if (layout == ObjectType.Layout.DATE) {
-        getProperDateName(dateProvider)
+    val layout = obj.getProperLayout()
+    val name = if(layout == ObjectType.Layout.DATE) {
+        obj.getProperDateName(dateProvider)
     } else {
-        getProperName()
+        obj.getProperName()
     }
-}
-
-/**
- * Determines the type name based on whether the object is a profile and the type URL.
- */
-private fun ObjectWrapper.Basic.determineTypeName(
-    layout: ObjectType.Layout,
-    isProfile: Boolean,
-    typeUrl: Id?,
-    objectTypes: List<ObjectWrapper.Type>
-): String? {
-    return if (layout != ObjectType.Layout.DATE) {
-        objectTypes.firstOrNull { type ->
+    return DefaultObjectView(
+        id = obj.id,
+        name = name,
+        description = obj.description,
+        type = typeUrl,
+        typeName = objectTypes.firstOrNull { type ->
             if (isProfile) {
                 type.uniqueKey == ObjectTypeUniqueKeys.PROFILE
             } else {
                 type.id == typeUrl
             }
-        }?.name
-    } else {
-        null
-    }
-}
-
-/**
- * Parses a date string into milliseconds, defaulting to 0L if parsing fails.
- */
-private fun parseDate(dateString: Any?): Long {
-    return DateParser.parseInMillis(dateString) ?: 0L
+        }?.name,
+        layout = layout,
+        icon = obj.objectIcon(urlBuilder),
+        lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
+        lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
+        isFavorite = obj.isFavorite == true,
+        space = requireNotNull(obj.spaceId)
+    )
 }
 
 fun List<ObjectWrapper.Basic>.toLinkToView(

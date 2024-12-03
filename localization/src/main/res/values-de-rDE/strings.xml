@@ -291,7 +291,7 @@
     <string name="enter_value">Wert eingeben</string>
     <string name="ityem_relations">Verknüpfungen</string>
     <string name="add_sort">Sortierung hinzufügen</string>
-    <string name="apply">Apply</string>
+    <string name="apply">Anwenden</string>
     <string name="add_filter">Filter hinzufügen</string>
     <string name="relation_format_tag">Mehrfachauswahl</string>
     <string name="unknown_number_of_objects">Unbekannte Anzahl von Objekten</string>
@@ -1217,7 +1217,7 @@
     <string name="multiplayer_toast_share_limit_reached">Freigabelimit erreicht</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink zu deinem Objekt</string>
     <string name="multiplayer_deeplink_to_your_object_error">Dieser Deeplink funktioniert nicht. Das Objekt könnte gelöscht worden sein oder es gibt Probleme mit dem Zugriff auf den Space.</string>
-    <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
+    <string name="multiplayer_collaborate_on_spaces">Zusammenarbeiten in Spaces</string>
     <string name="multiplayer_collaborate_step_1">1. Tippe auf das Widget des aktiven Space, um die Einstellungen für den Space anzupassen</string>
     <string name="multiplayer_collaborate_step_2">2. Teilen-Bereich öffnen</string>
     <string name="multiplayer_collaborate_step_3">3. Generiere einen Einladungslink und teile ihn mit anderen</string>
@@ -1253,7 +1253,7 @@
     <string name="payments_card_text_1">Erschaffe die Vision mit</string>
     <string name="payments_card_description_1">Als geschätztes Mitglied zählt deine Stimme! Nimm an exklusiven Veranstaltungen teil, gestalte strategische Entscheidungen und beeinflusse unseren Entwicklungsplan.</string>
     <string name="payments_card_text_2">Mitgliedsvorteile freischalten</string>
-    <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
+    <string name="payments_card_description_2">Mitglieder genießen größeren Backup-Speicherplatz, größere Synchronisierungs-Limits, Einladungen für mehrere Gäste zum zusammenarbeiten in gemeinsamen Spaces und eine einzigartige Identität in dem Anytype Netzwerk.</string>
     <string name="payments_card_text_3">Digitale Unabhängigkeit unterstützen</string>
     <string name="payments_card_description_3">Mit deinem Beitrag unterstützt du unser unabhängiges Team und befürwortest unsere Vision︎ eines nutzergeführten, sicheren und gemeinschaftlichen digitalen Netzwerks.</string>
     <string name="payments_card_text_4">In Konnektivität investieren</string>
@@ -1372,8 +1372,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="membership_name_invalid_chars">Name enthält ungültige Zeichen</string>
     <string name="membership_name_not_logged">Du bist nicht angemeldet! 😵‍💫</string>
     <string name="membership_name_payment_node_error">Fehler auf unserer Seite, versuche es später noch erneut</string>
-    <string name="membership_name_tier_features_no_name">Name is not available for this tier</string>
-    <string name="membership_name_tier_not_found">Tier not found, try again later</string>
+    <string name="membership_name_tier_features_no_name">Name nicht verfügbar für diese Stufe</string>
+    <string name="membership_name_tier_not_found">Stufe nicht gefunden, versuche es später erneut</string>
     <string name="membership_name_too_long">Name ist zu lang</string>
     <string name="membership_name_too_short">Name ist zu kurz</string>
     <string name="membership_any_name_not_reserved">Dieser Name kann nicht reserviert werden</string>
@@ -1560,4 +1560,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_attachment_file">Datei</string>
     <string name="chat_attachment_media">Medien</string>
     <string name="chat_attachment_upload">Hochladen</string>
+    <string name="chats_reply">Antworten</string>
 </resources>

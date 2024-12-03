@@ -33,7 +33,6 @@ import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -89,12 +88,13 @@ fun LinkWidgetCard(
                 .fillMaxWidth()
                 .height(40.dp)
         ) {
+
             Text(
-                text = when (val source = item.source) {
-                    is Widget.Source.Default -> {
-                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                text = when(val name = item.name) {
+                    is WidgetView.Name.Bundled -> stringResource(id = name.source.res())
+                    is WidgetView.Name.Default -> {
+                        name.prettyPrintName ?: stringResource(id = R.string.untitled)
                     }
-                    is Widget.Source.Bundled -> { stringResource(id = source.res()) }
                 },
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

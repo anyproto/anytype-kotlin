@@ -3,11 +3,14 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.asMap
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.getSingleValue
+import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts.isSupportedForWidgets
 
 sealed class Widget {
 
@@ -61,7 +64,9 @@ sealed class Widget {
         abstract val id: Id
         abstract val type: Id?
 
-        data class Default(val obj: ObjectWrapper.Basic) : Source() {
+        data class Default(
+            val obj: ObjectWrapper.Basic
+        ) : Source() {
             override val id: Id = obj.id
             override val type: Id? = obj.type.firstOrNull()
         }
@@ -95,15 +100,9 @@ sealed class Widget {
     }
 }
 
-fun Widget.hasValidLayout() : Boolean {
-    return when (val widgetSource = source) {
-        is Widget.Source.Default -> {
-            widgetSource.obj.layout != null && SupportedLayouts.layouts.contains(widgetSource.obj.layout)
-        }
-        is Widget.Source.Bundled -> {
-            true
-        }
-    }
+fun Widget.hasValidLayout(): Boolean = when (val widgetSource = source) {
+    is Widget.Source.Default -> isSupportedForWidgets(widgetSource.obj.layout)
+    is Widget.Source.Bundled -> true
 }
 
 fun List<Block>.parseActiveViews() : WidgetToActiveView {
@@ -139,9 +138,7 @@ fun List<Block>.parseWidgets(
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {
-                        Widget.Source.Default(
-                            ObjectWrapper.Basic(raw)
-                        )
+                        Widget.Source.Default(ObjectWrapper.Basic(raw))
                     }
                     val hasValidSource = when(source) {
                         is Widget.Source.Bundled -> true

@@ -31,7 +31,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     companion object {
-        const val DEFAULT_SIZE = 24
+        const val DEFAULT_SIZE = 28
     }
 
     val binding = WidgetObjectIconBinding.inflate(

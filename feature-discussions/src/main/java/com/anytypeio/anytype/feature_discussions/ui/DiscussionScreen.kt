@@ -1165,10 +1165,7 @@ fun Bubble(
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (isUserAuthor)
-                        colorResource(id = R.color.text_white)
-                    else
-                        colorResource(id = R.color.text_primary),
+                    color = colorResource(id = R.color.text_white)
                 )
                 Text(
                     modifier = Modifier.padding(
@@ -1179,10 +1176,7 @@ fun Bubble(
                     text = reply.text,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (isUserAuthor)
-                        colorResource(id = R.color.text_white)
-                    else
-                        colorResource(id = R.color.text_primary),
+                    color = colorResource(id = R.color.text_white),
                 )
             }
         }

@@ -248,6 +248,8 @@
     <string name="linked_to">Пов\'язаний з</string>
     <string name="remove_link">Вилучити посилання</string>
     <string name="mention_suggester_new_page">Створити об\'єкт</string>
+    <string name="mention_section_dates">Dates</string>
+    <string name="mention_section_objects">Об\'єкти</string>
     <string name="mention_suggester_create_object">Створити об\'єкт</string>
     <string name="your_search_query">Пошук</string>
     <string name="syncing">Syncing…</string>
@@ -350,11 +352,13 @@
     <string name="select_tags">Select tags</string>
     <string name="select_status">Оберіть статус</string>
     <string name="select_objects">Select objects</string>
+    <string name="select_date">Оберіть дату</string>
     <string name="no_value">No value</string>
     <string name="source">Source</string>
     <string name="query">Запит</string>
     <string name="select_query">Виберіть запит</string>
     <string name="objects">Об\'єкти</string>
+    <string name="your_objects">Your objects</string>
     <string name="web_pages">Вебсторінки</string>
     <string name="select_files">Select files</string>
     <string name="u">U</string>
@@ -1582,6 +1586,10 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Write a message...</string>
+    <string name="date_layout_mentioned_in">Mentioned in</string>
+    <string name="date_layout_empty_items">There is nothing here for this date yet</string>
+    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
+    <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">Об\'єкт</string>
     <string name="chat_attachment_file">Файл</string>
     <string name="chat_attachment_media">Медіа</string>

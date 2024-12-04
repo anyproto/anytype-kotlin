@@ -248,6 +248,8 @@
     <string name="linked_to">Vinculado a</string>
     <string name="remove_link">Remover link</string>
     <string name="mention_suggester_new_page">Criar novo objeto</string>
+    <string name="mention_section_dates">Dates</string>
+    <string name="mention_section_objects">Objetos</string>
     <string name="mention_suggester_create_object">Criar objeto</string>
     <string name="your_search_query">Pesquisar</string>
     <string name="syncing">Sincronizando…</string>
@@ -348,11 +350,13 @@
     <string name="select_tags">Selecionar tags</string>
     <string name="select_status">Selecionar status</string>
     <string name="select_objects">Selecionar objetos</string>
+    <string name="select_date">Selecionar data</string>
     <string name="no_value">Sem valor</string>
     <string name="source">Fonte</string>
     <string name="query">Consulta</string>
     <string name="select_query">Selecione a consulta</string>
     <string name="objects">Objetos</string>
+    <string name="your_objects">Seus objetos</string>
     <string name="web_pages">Páginas da Web</string>
     <string name="select_files">Selecionar arquivos</string>
     <string name="u">U</string>
@@ -1553,6 +1557,10 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Escreva uma mensagem...</string>
+    <string name="date_layout_mentioned_in">Mentioned in</string>
+    <string name="date_layout_empty_items">There is nothing here for this date yet</string>
+    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
+    <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">Objeto</string>
     <string name="chat_attachment_file">Arquivo</string>
     <string name="chat_attachment_media">Mídias</string>

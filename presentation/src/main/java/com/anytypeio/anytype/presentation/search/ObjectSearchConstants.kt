@@ -7,17 +7,15 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.library.StoreSearchParams
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts.globalSearchLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.globalSearchLayouts
 
 /**
  * This class contains all filters and sorts for different use cases using Rpc.Object.Search command
@@ -65,7 +63,7 @@ object ObjectSearchConstants {
             DVFilter(
                 relation = Relations.LAYOUT,
                 condition = DVFilterCondition.IN,
-                value = SupportedLayouts.globalSearchLayouts.map { it.code.toDouble() }
+                value = globalSearchLayouts.map { it.code.toDouble() }
             )
         )
     }

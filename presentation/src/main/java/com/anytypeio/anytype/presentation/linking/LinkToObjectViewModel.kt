@@ -7,12 +7,12 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +25,7 @@ class LinkToObjectViewModel(
     getObjectTypes: GetObjectTypes,
     analytics: Analytics,
     analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    dateProvider: DateProvider
+    fieldParser: FieldParser
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
@@ -33,7 +33,7 @@ class LinkToObjectViewModel(
     searchObjects = searchObjects,
     analytics = analytics,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-    dateProvider = dateProvider
+    fieldParser = fieldParser
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)

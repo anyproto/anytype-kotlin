@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import javax.inject.Inject
@@ -31,7 +32,8 @@ class DateVMFactory @Inject constructor(
     private val objectDateByTimestamp: ObjectDateByTimestamp,
     private val dateProvider: DateProvider,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-    private val createObject: CreateObject
+    private val createObject: CreateObject,
+    private val fieldParser: FieldParser
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -50,6 +52,7 @@ class DateVMFactory @Inject constructor(
             objectDateByTimestamp = objectDateByTimestamp,
             dateProvider = dateProvider,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            createObject = createObject
+            createObject = createObject,
+            fieldParser = fieldParser
         ) as T
 }

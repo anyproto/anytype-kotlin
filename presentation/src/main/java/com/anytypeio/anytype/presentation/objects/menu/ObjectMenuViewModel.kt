@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -35,8 +36,8 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplateEvent
 import com.anytypeio.anytype.presentation.objects.ObjectAction
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts.fileLayouts
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts.systemLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
@@ -67,7 +68,8 @@ class ObjectMenuViewModel(
     private val deepLinkResolver: DeepLinkResolver,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val setObjectListIsFavorite: SetObjectListIsFavorite,
-    private val setObjectIsArchived: SetObjectListIsArchived
+    private val setObjectIsArchived: SetObjectListIsArchived,
+    private val fieldParser: FieldParser
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -83,7 +85,8 @@ class ObjectMenuViewModel(
     spaceManager = spaceManager,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
     payloadDelegator = payloadDelegator,
-    setObjectListIsFavorite = setObjectListIsFavorite
+    setObjectListIsFavorite = setObjectListIsFavorite,
+    fieldParser = fieldParser
 ) {
 
     init {
@@ -475,7 +478,8 @@ class ObjectMenuViewModel(
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val payloadDelegator: PayloadDelegator,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
-        private val setObjectIsArchived: SetObjectListIsArchived
+        private val setObjectIsArchived: SetObjectListIsArchived,
+        private val fieldParser: FieldParser
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -499,7 +503,8 @@ class ObjectMenuViewModel(
                 deepLinkResolver = deepLinkResolver,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 payloadDelegator = payloadDelegator,
-                setObjectListIsFavorite = setObjectListIsFavorite
+                setObjectListIsFavorite = setObjectListIsFavorite,
+                fieldParser = fieldParser
             ) as T
         }
     }

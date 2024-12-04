@@ -26,7 +26,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toFileView
@@ -802,7 +801,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
             details = details,
-            marks = marks
+            marks = marks,
+            fieldParser = fieldParser
         )
         val isFocused = resolveIsFocused(focus, block)
 
@@ -863,7 +863,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
             details = details,
-            marks = marks
+            marks = marks,
+            fieldParser = fieldParser
         )
         return BlockView.Text.Header.Three(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -898,7 +899,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
             details = details,
-            marks = marks
+            marks = marks,
+            fieldParser = fieldParser
         )
         return BlockView.Text.Header.Two(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -933,7 +935,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
             details = details,
-            marks = marks
+            marks = marks,
+            fieldParser = fieldParser
         )
         return BlockView.Text.Header.One(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -968,7 +971,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
             details = details,
-            marks = marks
+            marks = marks,
+            fieldParser = fieldParser
         )
         return BlockView.Text.Checkbox(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1003,7 +1007,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
             details = details,
-            marks = marks
+            marks = marks,
+            fieldParser = fieldParser
         )
         return BlockView.Text.Bulleted(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1062,7 +1067,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
             details = details,
-            marks = marks
+            marks = marks,
+            fieldParser = fieldParser
         )
         val current = listOf(
             BlockView.Decoration(
@@ -1104,7 +1110,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
             details = details,
-            marks = marks
+            marks = marks,
+            fieldParser = fieldParser
         )
         val iconImage = content.iconImage
         val iconEmoji = content.iconEmoji
@@ -1157,7 +1164,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
             details = details,
-            marks = marks
+            marks = marks,
+            fieldParser = fieldParser
         )
         return BlockView.Text.Toggle(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1194,7 +1202,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
             details = details,
-            marks = marks
+            marks = marks,
+            fieldParser = fieldParser
         )
         return BlockView.Text.Numbered(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1677,7 +1686,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectIcon.None
         }
 
-        val name = obj.getProperObjectName()?.trim()
+        val name = fieldParser.getObjectName(obj)
 
         val description = when (inEditorAppearance.description) {
             InEditor.Description.NONE -> null
@@ -1855,7 +1864,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         isEmpty = true,
         emoji = null,
         image = null,
-        text = obj.getProperObjectName()?.trim(),
+        text = fieldParser.getObjectName(obj),
         indent = indent,
         isSelected = checkIfSelected(
             mode = mode,

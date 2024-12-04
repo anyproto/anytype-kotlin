@@ -1,17 +1,21 @@
 package com.anytypeio.anytype.presentation.editor.editor.ext
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
-import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.extension.shift
 import timber.log.Timber
 
 fun Block.Content.Text.getTextAndMarks(
     details: Block.Details,
-    marks: List<Markup.Mark>
+    marks: List<Markup.Mark>,
+    fieldParser: FieldParser
 ): Pair<String, List<Markup.Mark>> {
     if (details.details.isEmpty() ||
         marks.none { it is Markup.Mark.Mention }
@@ -49,5 +53,15 @@ fun Block.Content.Text.getTextAndMarks(
         return Pair(text, marks)
     }
     return Pair(updatedText, updatedMarks)
+}
+
+private fun Map<Id, Block.Fields>.getProperObjectName(id: Id?): String? {
+    if (id == null) return null
+    val layoutCode = this[id]?.layout?.toInt()
+    return if (layoutCode == ObjectType.Layout.NOTE.code) {
+        this[id]?.snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
+    } else {
+        this[id]?.name
+    }
 }
 

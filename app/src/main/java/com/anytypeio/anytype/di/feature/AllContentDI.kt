@@ -8,7 +8,6 @@ import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
@@ -20,10 +19,10 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -100,8 +99,7 @@ object AllContentModule {
     fun createObject(
         repo: BlockRepository,
         getDefaultObjectType: GetDefaultObjectType,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
+        dispatchers: AppCoroutineDispatchers
     ): CreateObject = CreateObject(
         repo = repo,
         getDefaultObjectType = getDefaultObjectType,
@@ -114,9 +112,7 @@ object AllContentModule {
     fun provideGetDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
-        configStorage: ConfigStorage
+        dispatchers: AppCoroutineDispatchers
     ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
@@ -169,8 +165,7 @@ interface AllContentDependencies : ComponentDependencies {
     fun subEventChannel(): SubscriptionEventChannel
     fun logger(): Logger
     fun localeProvider(): LocaleProvider
-    fun spaceManager(): SpaceManager
-    fun config(): ConfigStorage
     fun userPermissionProvider(): UserPermissionProvider
     fun searchObjects(): SearchObjects
+    fun fieldsProvider(): FieldParser
 }

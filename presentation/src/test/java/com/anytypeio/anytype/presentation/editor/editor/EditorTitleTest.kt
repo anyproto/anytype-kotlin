@@ -54,15 +54,10 @@ class EditorTitleTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubUserPermission()
-        stubInterceptEvents()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
         stubCopy()
         stubSplitBlock()
         stubCreateBlock(root)
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

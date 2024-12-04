@@ -13,8 +13,8 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.ID
 import com.anytypeio.anytype.core_models.Relations.LAYOUT
 import com.anytypeio.anytype.core_models.StubRelationObject
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -48,6 +48,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        fieldParser = FieldParserImpl(dateProvider, logger)
         objectCollection = MockCollection(context = root, space = defaultSpace)
         viewModel = givenViewModel()
         stubNetworkMode()
@@ -132,7 +133,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         items = listOf(
                             Viewer.ListView.Item.Default(
                                 objectId = objectCollection.obj1.id,
-                                name = objectCollection.obj1.getProperName(),
+                                name = objectCollection.obj1.name.orEmpty(),
                                 description = objectCollection.obj1.description,
                                 hideIcon = false,
                                 icon = ObjectIcon.Empty.Page,
@@ -153,7 +154,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                             ),
                             Viewer.ListView.Item.Default(
                                 objectId = objectCollection.obj2.id,
-                                name = objectCollection.obj2.getProperName(),
+                                name = objectCollection.obj2.name.orEmpty(),
                                 description = objectCollection.obj2.description,
                                 hideIcon = false,
                                 icon = ObjectIcon.Empty.Page,

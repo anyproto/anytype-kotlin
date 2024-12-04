@@ -12,12 +12,13 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toLinkToObjectView
 import com.anytypeio.anytype.presentation.objects.toLinkToView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -40,7 +41,8 @@ class LinkToObjectOrWebViewModel(
     private val analytics: Analytics,
     private val stores: Editor.Storage,
     private val urlValidator: UrlValidator,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val fieldParser: FieldParser
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<ViewState>(ViewState.Init)
@@ -109,7 +111,8 @@ class LinkToObjectOrWebViewModel(
                         LinkToItemView.Subheading.LinkedTo,
                         obj.toLinkToObjectView(
                             urlBuilder = urlBuilder,
-                            objectTypes = storeOfObjectTypes.getAll()
+                            objectTypes = storeOfObjectTypes.getAll(),
+                            fieldParser = fieldParser
                         ),
                         LinkToItemView.Subheading.Actions,
                         LinkToItemView.RemoveLink
@@ -129,7 +132,8 @@ class LinkToObjectOrWebViewModel(
 
                 val objectViews = filteredSearchResponse.toLinkToView(
                     urlBuilder = urlBuilder,
-                    objectTypes = storeOfObjectTypes.getAll()
+                    objectTypes = storeOfObjectTypes.getAll(),
+                    fieldParser = fieldParser
                 )
                 val views = mutableListOf<LinkToItemView>()
                 if (clipboardUrl != null && userInput.value.isBlank()) {

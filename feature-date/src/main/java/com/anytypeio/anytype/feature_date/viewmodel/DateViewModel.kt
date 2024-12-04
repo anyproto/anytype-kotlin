@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.RelationListWithValue
 import com.anytypeio.anytype.feature_date.viewmodel.UiErrorState.Reason
 import com.anytypeio.anytype.feature_date.mapping.toUiFieldsItem
@@ -83,7 +84,8 @@ class DateViewModel(
     private val objectDateByTimestamp: ObjectDateByTimestamp,
     private val dateProvider: DateProvider,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-    private val createObject: CreateObject
+    private val createObject: CreateObject,
+    private val fieldParser: FieldParser
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiCalendarIconState = MutableStateFlow<UiCalendarIconState>(UiCalendarIconState.Hidden)
@@ -410,7 +412,8 @@ class DateViewModel(
             it.toUiObjectsListItem(
                 space = vmParams.spaceId,
                 urlBuilder = urlBuilder,
-                objectTypes = storeOfObjectTypes.getAll()
+                objectTypes = storeOfObjectTypes.getAll(),
+                fieldParser = fieldParser
             )
         }
         uiContentState.value = if (items.isEmpty()) {

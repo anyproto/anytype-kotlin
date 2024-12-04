@@ -29,7 +29,6 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
-        stubInterceptEvents()
     }
 
     val title = Block(

@@ -5,13 +5,13 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -73,7 +73,7 @@ object ObjectValueObjectModule {
         duplicateObject: DuplicateObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         storeOfRelations: StoreOfRelations,
-        dateProvider: DateProvider
+        fieldParser: FieldParser,
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -89,7 +89,7 @@ object ObjectValueObjectModule {
         duplicateObject = duplicateObject,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         storeOfRelations = storeOfRelations,
-        dateProvider = dateProvider
+        fieldParser = fieldParser
     )
 }
 //endregion
@@ -132,7 +132,7 @@ object ObjectValueSetModule {
         duplicateObject: DuplicateObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         storeOfRelations: StoreOfRelations,
-        dateProvider: DateProvider
+        fieldParser: FieldParser
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -148,7 +148,7 @@ object ObjectValueSetModule {
         duplicateObject = duplicateObject,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         storeOfRelations = storeOfRelations,
-        dateProvider = dateProvider
+        fieldParser = fieldParser
     )
 }
 //endregion
@@ -191,7 +191,7 @@ object ObjectValueDataViewModule {
         duplicateObject: DuplicateObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         storeOfRelations: StoreOfRelations,
-        dateProvider: DateProvider
+        fieldParser: FieldParser
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -207,7 +207,7 @@ object ObjectValueDataViewModule {
         duplicateObject = duplicateObject,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         storeOfRelations = storeOfRelations,
-        dateProvider = dateProvider
+        fieldParser = fieldParser
     )
 }
 //endregion

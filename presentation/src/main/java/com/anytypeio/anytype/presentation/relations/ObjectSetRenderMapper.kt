@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_utils.ext.TOMORROW
 import com.anytypeio.anytype.core_utils.ext.YESTERDAY
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -45,7 +46,6 @@ import com.anytypeio.anytype.presentation.mapper.toTextView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
 import com.anytypeio.anytype.presentation.sets.buildListViews
 import com.anytypeio.anytype.presentation.sets.dataViewState
@@ -475,7 +475,8 @@ suspend fun ObjectWrapper.Relation.toStatus(
 suspend fun ObjectWrapper.Relation.toObjects(
     value: Any?,
     store: ObjectStore,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    fieldParser: FieldParser
 ) : List<ObjectView> {
     val ids = value.values<Id>()
     return buildList {
@@ -487,7 +488,7 @@ suspend fun ObjectWrapper.Relation.toObjects(
                     true -> ObjectView.Deleted(id)
                     else -> ObjectView.Default(
                         id = id,
-                        name = wrapper.getProperName(),
+                        name = fieldParser.getObjectName(wrapper),
                         icon = wrapper.objectIcon(urlBuilder),
                         types = type,
                         isRelation = wrapper.layout == ObjectType.Layout.RELATION
@@ -646,7 +647,8 @@ suspend fun DVFilter.toView(
                 relation.toObjects(
                     value = value,
                     store = store,
-                    urlBuilder = urlBuilder
+                    urlBuilder = urlBuilder,
+                    fieldParser = fieldParser
                 )
             ),
             format = relation.format.toView(),
@@ -672,9 +674,9 @@ suspend fun DVFilter.toView(
 
 suspend fun ObjectWrapper.Relation.toFilterValue(
     value: Any?,
-    details: Map<Id, Block.Fields>,
     urlBuilder: UrlBuilder,
-    store: ObjectStore
+    store: ObjectStore,
+    fieldParser: FieldParser
 ): FilterValue = when (this.format) {
     Relation.Format.SHORT_TEXT -> FilterValue.TextShort(toText(value))
     Relation.Format.LONG_TEXT -> FilterValue.Text(toText(value))
@@ -699,7 +701,8 @@ suspend fun ObjectWrapper.Relation.toFilterValue(
         val obj = toObjects(
             value = value,
             store = store,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            fieldParser = fieldParser
         )
         FilterValue.Object(obj)
     }

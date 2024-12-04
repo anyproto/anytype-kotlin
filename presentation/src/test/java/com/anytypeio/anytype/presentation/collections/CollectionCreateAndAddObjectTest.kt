@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -33,13 +34,11 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
         .onlyLogWhenTestFails(false)
         .build()
 
-//    @Mock
-//    lateinit var fieldsProvider: FieldsProvider
-
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         mockObjectCollection = MockCollection(context = root, space = defaultSpace)
+        fieldParser = FieldParserImpl(dateProvider, logger)
         repo = mock(verboseLogging = true)
         dispatchers = AppCoroutineDispatchers(
             io = rule.dispatcher,

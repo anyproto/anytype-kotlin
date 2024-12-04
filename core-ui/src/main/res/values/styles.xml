@@ -507,11 +507,11 @@
     </style>
 
     <!-- Object items in lists -->
-    <style name="ObjectListItemTitle" parent="TextView.UXStyle.Titles.2.Regular">
+    <style name="ObjectListItemTitle" parent="TextView.ContentStyle.PreviewTitles.2.Medium">
         <item name="android:textColorHint">@color/text_tertiary</item>
     </style>
 
-    <style name="ObjectListItemSubtitle" parent="TextView.ContentStyle.Relations.2">
+    <style name="ObjectListItemSubtitle" parent="TextView.UXStyle.Captions.1.Regular">
         <item name="android:textColor">@color/text_secondary</item>
     </style>
 

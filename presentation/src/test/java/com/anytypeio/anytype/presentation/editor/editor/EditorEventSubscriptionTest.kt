@@ -28,10 +28,7 @@ class EditorEventSubscriptionTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubFileLimitEvents()
-        stubGetNetworkMode()
-        stubInterceptEvents()
+        proceedWithDefaultBeforeTestStubbing()
         stubAnalyticSpaceHelperDelegate()
     }
 

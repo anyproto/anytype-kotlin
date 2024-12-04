@@ -47,8 +47,6 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
     }
 
     @Test

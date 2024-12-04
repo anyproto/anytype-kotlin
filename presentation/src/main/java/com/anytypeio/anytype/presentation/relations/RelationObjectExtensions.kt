@@ -52,7 +52,8 @@ fun ObjectWrapper.Relation.view(
             val objects = values.buildRelationValueObjectViews(
                 relationKey = relation.key,
                 details = details.details,
-                builder = urlBuilder
+                builder = urlBuilder,
+                fieldParser = fieldParser
             )
             ObjectRelationView.Object(
                 id = relation.id,

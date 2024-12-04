@@ -16,7 +16,6 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.setTypeRelationIconsAsNone
 import com.anytypeio.anytype.presentation.objects.values
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
@@ -96,7 +95,7 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
             fieldParser = fieldParser
         ).setTypeRelationIconsAsNone(),
         hideIcon = hideIcon,
-        name = obj.getProperName(),
+        name = fieldParser.getObjectName(obj),
         icon = obj.objectIcon(urlBuilder)
     )
 }
@@ -134,7 +133,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
             fieldParser = fieldParser
         ).setTypeRelationIconsAsNone(),
         hideIcon = dvViewer.hideIcon,
-        name = obj.getProperName(),
+        name = fieldParser.getObjectName(obj),
         icon = obj.objectIcon(urlBuilder),
         cover = cover,
         fitImage = dvViewer.coverFit,

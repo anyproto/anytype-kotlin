@@ -1,6 +1,4 @@
-package com.anytypeio.anytype.presentation.objects
-
-import com.anytypeio.anytype.core_models.ObjectType
+package com.anytypeio.anytype.core_models
 
 object SupportedLayouts {
     val layouts = listOf(

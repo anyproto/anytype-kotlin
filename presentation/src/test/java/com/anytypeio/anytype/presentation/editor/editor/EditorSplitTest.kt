@@ -48,10 +48,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
-        stubAnalyticSpaceHelperDelegate()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @After

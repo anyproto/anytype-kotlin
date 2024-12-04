@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.feature_allcontent.models.AllContentBottomMenu
@@ -42,10 +43,10 @@ import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
 import com.anytypeio.anytype.feature_allcontent.models.filtersForSearch
 import com.anytypeio.anytype.feature_allcontent.models.mapToSort
+import com.anytypeio.anytype.feature_allcontent.models.toAllContentItem
 import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsModeType
 import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsSortType
 import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsTabType
-import com.anytypeio.anytype.feature_allcontent.models.toUiContentItems
 import com.anytypeio.anytype.feature_allcontent.models.toUiContentRelations
 import com.anytypeio.anytype.feature_allcontent.models.toUiContentTypes
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.*
@@ -109,7 +110,8 @@ class AllContentViewModel(
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val setObjectDetails: SetObjectDetails,
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val fieldParser: FieldParser
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
@@ -330,12 +332,15 @@ class AllContentViewModel(
             }
 
             else -> {
-                val items = objectWrappers.toUiContentItems(
-                    space = vmParams.spaceId,
-                    urlBuilder = urlBuilder,
-                    objectTypes = storeOfObjectTypes.getAll(),
-                    isOwnerOrEditor = isOwnerOrEditor
-                )
+                val items = objectWrappers.map { obj ->
+                    obj.toAllContentItem(
+                        space = vmParams.spaceId,
+                        urlBuilder = urlBuilder,
+                        isOwnerOrEditor = isOwnerOrEditor,
+                        fieldParser = fieldParser,
+                        objectTypes = storeOfObjectTypes.getAll()
+                    )
+                }
                 val result = when (activeSort) {
                     is AllContentSort.ByDateCreated -> {
                         groupItemsByDate(items = items, isSortByDateCreated = true, activeSort = activeSort)

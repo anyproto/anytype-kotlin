@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -47,7 +48,8 @@ object LinkToObjectOrWebModule {
         analytics: Analytics,
         stores: Editor.Storage,
         urlValidator: UrlValidator,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        fieldParser: FieldParser
     ): LinkToObjectOrWebViewModelFactory = LinkToObjectOrWebViewModelFactory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
@@ -56,6 +58,7 @@ object LinkToObjectOrWebModule {
         analytics = analytics,
         stores = stores,
         urlValidator = urlValidator,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        fieldParser = fieldParser
     )
 }

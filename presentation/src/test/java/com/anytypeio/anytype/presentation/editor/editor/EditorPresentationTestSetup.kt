@@ -50,6 +50,7 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -79,6 +80,7 @@ import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -244,7 +246,6 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var move: MoveOld
 
-    @Mock
     lateinit var fieldParser: FieldParser
 
     @Mock
@@ -384,6 +385,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var dateProvider: DateProvider
+
+    @Mock
+    lateinit var logger: Logger
 
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
@@ -877,10 +881,14 @@ open class EditorPresentationTestSetup {
     }
 
     fun proceedWithDefaultBeforeTestStubbing() {
+        fieldParser = FieldParserImpl(dateProvider, logger)
         stubAnalyticSpaceHelperDelegate()
         stubSpaceManager()
         stubUserPermission()
         stubGetNetworkMode()
         stubFileLimitEvents()
+        stubInterceptEvents()
+        stubClosePage()
+        stubInterceptThreadStatus()
     }
 }

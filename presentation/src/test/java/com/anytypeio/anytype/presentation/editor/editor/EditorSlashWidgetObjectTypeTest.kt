@@ -16,7 +16,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -43,11 +42,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager(space = space)
-        stubGetNetworkMode()
-        stubFileLimitEvents()
-        stubClosePage()
-        stubAnalyticSpaceHelperDelegate()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -99,7 +94,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type2.id,
-                    name = type2.getProperName(),
+                    name = type2.name.orEmpty(),
                     description = type2.description,
                     emoji = type2.iconEmoji,
                     key = type2.getValue<Key>(Relations.UNIQUE_KEY)!!
@@ -167,7 +162,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type2.id,
-                    name = type2.getProperName(),
+                    name = type2.name.orEmpty(),
                     description = type2.description,
                     emoji = type2.iconEmoji,
                     key = type2.getValue(Relations.UNIQUE_KEY)!!

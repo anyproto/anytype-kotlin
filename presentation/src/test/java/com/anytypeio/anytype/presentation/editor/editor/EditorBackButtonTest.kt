@@ -30,12 +30,7 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubClosePage()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
-        stubInterceptEvents()
-        stubAnalyticSpaceHelperDelegate()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @Test

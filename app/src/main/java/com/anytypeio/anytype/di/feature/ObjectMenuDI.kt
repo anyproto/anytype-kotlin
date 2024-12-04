@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.OpenPage
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -116,7 +118,8 @@ object ObjectMenuModule {
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         payloadDelegator: PayloadDelegator,
         setObjectListIsFavorite: SetObjectListIsFavorite,
-        setObjectIsArchived: SetObjectListIsArchived
+        setObjectIsArchived: SetObjectListIsArchived,
+        fieldParser: FieldParser
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -138,7 +141,8 @@ object ObjectMenuModule {
         deepLinkResolver = deepLinkResolver,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         payloadDelegator = payloadDelegator,
-        setObjectListIsFavorite = setObjectListIsFavorite
+        setObjectListIsFavorite = setObjectListIsFavorite,
+        fieldParser = fieldParser
     )
 
     @JvmStatic
@@ -231,7 +235,8 @@ object ObjectSetMenuModule {
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         payloadDelegator: PayloadDelegator,
         setObjectListIsFavorite: SetObjectListIsFavorite,
-        setObjectIsArchived: SetObjectListIsArchived
+        setObjectIsArchived: SetObjectListIsArchived,
+        fieldParser: FieldParser,
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectListIsArchived = setObjectIsArchived,
         addBackLinkToObject = addBackLinkToObject,
@@ -249,7 +254,8 @@ object ObjectSetMenuModule {
         deepLinkResolver = deepLinkResolver,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         payloadDelegator = payloadDelegator,
-        setObjectListIsFavorite = setObjectListIsFavorite
+        setObjectListIsFavorite = setObjectListIsFavorite,
+        fieldParser = fieldParser
     )
 
     @JvmStatic

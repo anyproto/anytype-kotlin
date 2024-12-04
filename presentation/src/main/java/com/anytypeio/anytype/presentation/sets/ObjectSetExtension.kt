@@ -43,7 +43,6 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
@@ -178,7 +177,7 @@ private fun ObjectState.DataView.mapFeaturedRelations(
             val isReadOnly = wrapper?.relationReadonlyValue == true
 
             val sources = if (isValid && !isDeleted) {
-                listOf(wrapper.toObjectViewDefault(urlBuilder = urlBuilder))
+                listOf(wrapper.toObjectViewDefault(urlBuilder = urlBuilder, fieldParser = fieldParser))
             } else {
                 emptyList()
             }
@@ -288,15 +287,15 @@ fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>
 fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
     filter { !it.isHidden }
 
-fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder): ObjectView = when (isDeleted) {
+fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView = when (isDeleted) {
     true -> ObjectView.Deleted(id)
-    else -> toObjectViewDefault(urlBuilder)
+    else -> toObjectViewDefault(urlBuilder, fieldParser)
 }
 
-fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder): ObjectView.Default {
+fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView.Default {
     return ObjectView.Default(
         id = id,
-        name = getProperName(),
+        name = fieldParser.getObjectName(this),
         icon = this.objectIcon(builder = urlBuilder),
         types = type,
         isRelation = layout == ObjectType.Layout.RELATION

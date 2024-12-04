@@ -6,6 +6,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModelFactory
@@ -42,6 +43,7 @@ interface LinkToObjectDependencies: ComponentDependencies {
     fun analytics(): Analytics
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
     fun dateProvider(): DateProvider
+    fun fieldParser(): FieldParser
 
 }
 
@@ -58,7 +60,7 @@ object LinkToObjectModule {
         searchObjects: SearchObjects,
         analytics: Analytics,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        dateProvider: DateProvider
+        fieldParser: FieldParser
     ): LinkToObjectViewModelFactory = LinkToObjectViewModelFactory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
@@ -66,6 +68,6 @@ object LinkToObjectModule {
         searchObjects = searchObjects,
         analytics = analytics,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        dateProvider = dateProvider
+        fieldParser = fieldParser
     )
 }

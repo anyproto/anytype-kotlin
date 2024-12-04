@@ -14,9 +14,9 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts.editorLayouts
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts.fileLayouts
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts.systemLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.editorLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 
 /**

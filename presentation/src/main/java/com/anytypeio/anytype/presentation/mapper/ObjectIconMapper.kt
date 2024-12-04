@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Basic
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 
 fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
 

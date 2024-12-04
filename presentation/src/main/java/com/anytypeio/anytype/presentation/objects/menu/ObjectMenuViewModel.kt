@@ -18,7 +18,6 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -37,8 +36,8 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplateEvent
 import com.anytypeio.anytype.presentation.objects.ObjectAction
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts.fileLayouts
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts.systemLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader

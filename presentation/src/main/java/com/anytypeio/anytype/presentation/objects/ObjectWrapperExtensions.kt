@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.objects
 
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
@@ -10,7 +11,6 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.presentation.extension.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.FileView
@@ -344,10 +344,6 @@ suspend fun ObjectWrapper.Basic.objects(
         }
     }
     return result
-}
-
-fun ObjectWrapper.File.getProperName(): String {
-    return "${name.orEmpty()}.$fileExt"
 }
 
 fun ObjectWrapper.Basic.getDescriptionOrSnippet(): String? {

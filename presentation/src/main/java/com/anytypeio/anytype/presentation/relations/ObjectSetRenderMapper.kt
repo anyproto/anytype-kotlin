@@ -46,7 +46,6 @@ import com.anytypeio.anytype.presentation.mapper.toTextView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
 import com.anytypeio.anytype.presentation.sets.buildListViews
 import com.anytypeio.anytype.presentation.sets.dataViewState

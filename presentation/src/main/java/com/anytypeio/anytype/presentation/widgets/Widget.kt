@@ -3,14 +3,11 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.asMap
-import com.anytypeio.anytype.core_models.getSingleValue
-import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts.isSupportedForWidgets
+import com.anytypeio.anytype.core_models.SupportedLayouts.isSupportedForWidgets
 
 sealed class Widget {
 

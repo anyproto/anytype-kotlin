@@ -1,18 +1,15 @@
 package com.anytypeio.anytype.presentation.collections
 
-import app.cash.turbine.testIn
-import app.cash.turbine.turbineScope
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObject
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState

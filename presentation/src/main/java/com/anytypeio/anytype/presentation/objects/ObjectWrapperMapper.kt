@@ -7,10 +7,8 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -116,10 +114,6 @@ fun ObjectWrapper.Basic.getProperType() = type.firstOrNull()
 
 private fun getProperTypeName(id: Id?, types: List<ObjectWrapper.Type>) =
     types.find { it.id == id }?.name.orEmpty()
-
-fun ObjectWrapper.Basic.getProperName(dateProvider: DateProvider): String {
-    return getProperObjectName(dateProvider).orEmpty()
-}
 
 fun ObjectWrapper.Basic.mapFileObjectToView(fieldParser: FieldParser): CollectionView.ObjectView {
     val fileIcon = getFileObjectIcon(fieldParser)

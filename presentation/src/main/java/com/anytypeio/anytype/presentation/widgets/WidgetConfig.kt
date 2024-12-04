@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 
 object WidgetConfig {
     val excludedTypes = listOf(

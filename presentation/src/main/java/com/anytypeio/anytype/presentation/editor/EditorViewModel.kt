@@ -249,10 +249,9 @@ import com.anytypeio.anytype.presentation.navigation.SelectDateItem
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
@@ -272,7 +271,6 @@ import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import java.time.format.DateTimeFormatter
 import java.util.LinkedList
 import java.util.Queue
 import java.util.regex.Pattern

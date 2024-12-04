@@ -2,12 +2,10 @@ package com.anytypeio.anytype.presentation.types
 
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObjectType
@@ -23,7 +21,7 @@ import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory

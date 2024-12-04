@@ -12,7 +12,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

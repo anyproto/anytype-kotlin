@@ -41,7 +41,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
-import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -78,12 +77,10 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOM
 import com.anytypeio.anytype.presentation.mapper.toTemplateObjectTypeViewItems
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
-import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
@@ -130,7 +127,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach

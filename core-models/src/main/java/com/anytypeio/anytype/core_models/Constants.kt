@@ -29,3 +29,8 @@ const val DEFAULT_TIME_STYLE = DateFormat.DEFAULT
  * The date range for the date picker.
  */
 val DATE_PICKER_YEAR_RANGE = IntRange(0, 3000)
+
+/**
+ * The maximum size of a snippet.
+ */
+const val MAX_SNIPPET_SIZE = 30

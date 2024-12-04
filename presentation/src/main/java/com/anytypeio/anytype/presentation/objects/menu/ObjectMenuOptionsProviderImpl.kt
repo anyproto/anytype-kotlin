@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider.Options
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

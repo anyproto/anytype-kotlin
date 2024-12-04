@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.MARKETPLACE_OB
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers

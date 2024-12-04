@@ -14,7 +14,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -28,7 +27,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts.isEditorOrFileLayout
+import com.anytypeio.anytype.core_models.SupportedLayouts.isEditorOrFileLayout
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider

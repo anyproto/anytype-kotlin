@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.presentation.editor.editor.ext
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -28,7 +31,7 @@ fun Block.Content.Text.getTextAndMarks(
             var newName = if (mark is Markup.Mark.Mention.Deleted) {
                 NON_EXISTENT_OBJECT_MENTION_NAME
             } else {
-                fieldParser.getObjectName(details.details, mark.param) ?: return@forEach
+                details.details.getProperObjectName(id = mark.param) ?: return@forEach
             }
             val oldName = updatedText.substring(mark.from, mark.to)
             if (newName != oldName) {
@@ -50,5 +53,15 @@ fun Block.Content.Text.getTextAndMarks(
         return Pair(text, marks)
     }
     return Pair(updatedText, updatedMarks)
+}
+
+private fun Map<Id, Block.Fields>.getProperObjectName(id: Id?): String? {
+    if (id == null) return null
+    val layoutCode = this[id]?.layout?.toInt()
+    return if (layoutCode == ObjectType.Layout.NOTE.code) {
+        this[id]?.snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
+    } else {
+        this[id]?.name
+    }
 }
 

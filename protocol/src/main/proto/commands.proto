@@ -2776,10 +2776,6 @@ message Rpc {
                 enum UseCase {
                     NONE = 0;
                     GET_STARTED = 1;
-                    PERSONAL_PROJECTS = 2;
-                    KNOWLEDGE_BASE = 3;
-                    NOTES_DIARY = 4;
-                    STRATEGIC_WRITING = 5;
                     EMPTY = 6;
                 }
             }
@@ -2822,6 +2818,29 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         INSUFFICIENT_PERMISSION = 3;
+                    }
+                }
+            }
+        }
+
+        message DateByTimestamp {
+            message Request {
+                string spaceId = 1;
+                int64 timestamp = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                google.protobuf.Struct details = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
                     }
                 }
             }

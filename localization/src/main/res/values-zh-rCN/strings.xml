@@ -1443,8 +1443,8 @@
     <string name="membership_error_button_text_dismiss">好的</string>
     <string name="error_login_network_id_mismatch">检测到网络 ID 不匹配。请验证您的网络配置。</string>
     <string name="error_login_select_vault_error">选择库时出错</string>
-    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
-    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
+    <string name="error_login_account_deleted_error">此账户已被删除。请尝试使用另一个账户或者创建一个新的。</string>
+    <string name="error_login_account_need_update_error">无法检索账户。请更新 Anytype 至最新版本。</string>
     <string name="global_search_related_to">"与之相关的："</string>
     <string name="global_search_no_related_objects_found">没有找到相关对象</string>
     <string name="sort_empty_values_desc">显示空白值</string>

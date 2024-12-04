@@ -353,33 +353,31 @@ class DateObjectViewModel(
                 _activeField.filterNotNull(),
                 restartSubscription
             ) { dateId, timestamp, activeField, _ ->
-                loadData(dateId = dateId, timestamp = timestamp, field = activeField)
+                createSearchParams(
+                    dateId = dateId,
+                    timestamp = timestamp,
+                    space = vmParams.spaceId,
+                    itemsLimit = _itemsLimit,
+                    field = activeField
+                )
             }
+                .flatMapLatest { searchParams ->
+                    loadData(searchParams)
+                }
                 .catch {
                     errorState.value = UiErrorState.Show(
                         Reason.Other(it.message ?: "Error getting data")
                     )
-                }.flatMapLatest { items ->
-                    items
-                }.collectLatest { items ->
+                }
+                .collect { items ->
                     uiObjectsListState.value = UiObjectsListState(items)
                 }
         }
     }
 
     private fun loadData(
-        dateId: Id,
-        timestamp: TimeInSeconds,
-        field: ActiveField,
+        searchParams: StoreSearchParams
     ): Flow<List<UiObjectsListItem>> {
-
-        val searchParams = createSearchParams(
-            dateId = dateId,
-            timestamp = timestamp,
-            space = vmParams.spaceId,
-            itemsLimit = _itemsLimit,
-            field = field
-        )
 
         return storelessSubscriptionContainer.subscribe(searchParams)
             .onStart {

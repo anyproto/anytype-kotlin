@@ -248,6 +248,8 @@
     <string name="linked_to">Ditautkan ke</string>
     <string name="remove_link">Hapus tautan</string>
     <string name="mention_suggester_new_page">Buat objek baru</string>
+    <string name="mention_section_dates">Tanggal</string>
+    <string name="mention_section_objects">Objek</string>
     <string name="mention_suggester_create_object">Buat objek</string>
     <string name="your_search_query">Telusuri</string>
     <string name="syncing">Menyinkronkan …</string>
@@ -347,11 +349,13 @@
     <string name="select_tags">Pilih label</string>
     <string name="select_status">Pilih status</string>
     <string name="select_objects">Pilih objek</string>
+    <string name="select_date">Pilih tanggal</string>
     <string name="no_value">Tak bernilai</string>
     <string name="source">Sumber</string>
     <string name="query">Pertanyaan</string>
     <string name="select_query">Pilih kueri</string>
     <string name="objects">Objek</string>
+    <string name="your_objects">Objekmu</string>
     <string name="web_pages">Halaman web</string>
     <string name="select_files">Pilih berkas</string>
     <string name="u">U</string>
@@ -1543,6 +1547,10 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Tulis pesan …</string>
+    <string name="date_layout_mentioned_in">Disebut di</string>
+    <string name="date_layout_empty_items">Belum ada apa-apa untuk tanggal ini</string>
+    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
+    <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">Objek</string>
     <string name="chat_attachment_file">Berkas</string>
     <string name="chat_attachment_media">Media</string>

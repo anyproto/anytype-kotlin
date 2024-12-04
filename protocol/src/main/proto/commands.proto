@@ -492,6 +492,47 @@ message Rpc {
                 }
             }
         }
+        message SetOrder {
+            message Request {
+                string spaceViewId = 1;
+                repeated string spaceViewOrder = 2; // result order of space view ids
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+        message UnsetOrder {
+            message Request {
+                string spaceViewId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
     }
 
     message Wallet {

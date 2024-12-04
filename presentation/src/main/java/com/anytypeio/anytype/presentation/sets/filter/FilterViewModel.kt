@@ -247,9 +247,9 @@ open class FilterViewModel(
             if (index == null) {
                 filterValueState.value = relation.toFilterValue(
                     value = null,
-                    details = state.details,
                     urlBuilder = urlBuilder,
-                    store = objectSetDatabase.store
+                    store = objectSetDatabase.store,
+                    fieldParser = fieldParser
                 )
                 proceedWithFilterValueList(
                     relation = relation,
@@ -262,9 +262,9 @@ open class FilterViewModel(
                 check(filter.relation == relation.key) { "Incorrect filter state" }
                 filterValueState.value = relation.toFilterValue(
                     value = filter.value,
-                    details = state.details,
                     urlBuilder = urlBuilder,
-                    store = objectSetDatabase.store
+                    store = objectSetDatabase.store,
+                    fieldParser = fieldParser
                 )
                 proceedWithFilterValueList(
                     relation = relation,
@@ -407,7 +407,8 @@ open class FilterViewModel(
                     filterValueListState.value = objects.toCreateFilterObjectView(
                         ids = ids,
                         urlBuilder = urlBuilder,
-                        objectTypes = objectTypes
+                        objectTypes = objectTypes,
+                        fieldParser = fieldParser
                     ).also {
                         optionCountState.value = it.count { view -> view.isSelected }
                     }
@@ -441,7 +442,8 @@ open class FilterViewModel(
                     filterValueListState.value = objects.toCreateFilterObjectView(
                         ids = ids,
                         urlBuilder = urlBuilder,
-                        objectTypes = objectTypes
+                        objectTypes = objectTypes,
+                        fieldParser = fieldParser
                     ).also {
                         optionCountState.value = it.count { view -> view.isSelected }
                     }

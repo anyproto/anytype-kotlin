@@ -6,9 +6,9 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
@@ -49,7 +49,7 @@ interface SelectWidgetSourceDependencies : ComponentDependencies {
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun analyticsHelper(): AnalyticSpaceHelperDelegate
     fun searchObjects(): SearchObjects
-    fun dateProvider(): DateProvider
+    fun fieldParser(): FieldParser
 }
 
 @Module
@@ -66,7 +66,7 @@ object SelectWidgetSourceModule {
         getObjectTypes: GetObjectTypes,
         dispatcher: Dispatcher<WidgetDispatchEvent>,
         analyticsHelper: AnalyticSpaceHelperDelegate,
-        dateProvider: DateProvider
+        fieldParser: FieldParser
     ): SelectWidgetSourceViewModel.Factory = SelectWidgetSourceViewModel.Factory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
@@ -75,6 +75,6 @@ object SelectWidgetSourceModule {
         getObjectTypes = getObjectTypes,
         dispatcher = dispatcher,
         analyticSpaceHelperDelegate = analyticsHelper,
-        dateProvider = dateProvider
+        fieldParser = fieldParser
     )
 }

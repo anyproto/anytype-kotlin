@@ -51,7 +51,6 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
@@ -545,8 +544,14 @@ private fun GalleryWidgetItemCard(
                         .padding(start = 12.dp, top = 9.dp),
                     onTaskIconClicked = {}
                 )
+                val prettyPrintName = item.name.prettyPrintName
+                val name = if (prettyPrintName.isNullOrEmpty()) {
+                    stringResource(id = R.string.untitled)
+                } else {
+                    prettyPrintName
+                }
                 Text(
-                    text = item.obj.getProperName().ifEmpty { stringResource(id = R.string.untitled) },
+                    text = name,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = Caption1Medium,
@@ -561,8 +566,14 @@ private fun GalleryWidgetItemCard(
                 )
             }
         } else {
+            val prettyPrintName = item.name.prettyPrintName
+            val name = if (prettyPrintName.isNullOrEmpty()) {
+                stringResource(id = R.string.untitled)
+            } else {
+                prettyPrintName
+            }
             Text(
-                text = item.obj.getProperName().ifEmpty { stringResource(id = R.string.untitled) },
+                text = name,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 style = Caption1Medium,

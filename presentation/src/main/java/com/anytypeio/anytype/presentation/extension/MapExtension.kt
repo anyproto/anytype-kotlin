@@ -28,7 +28,7 @@ fun Map<Id, Block.Fields>.getProperObjectName(id: Id?): String? {
     }
 }
 
-fun ObjectWrapper.Basic.getProperDateName(dateProvider: DateProvider): String {
+private fun ObjectWrapper.Basic.getProperDateName(dateProvider: DateProvider): String {
     val timestampInSeconds = getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
     if (timestampInSeconds != null) {
         val (formattedDate, _) = dateProvider.formatTimestampToDateAndTime(
@@ -40,8 +40,11 @@ fun ObjectWrapper.Basic.getProperDateName(dateProvider: DateProvider): String {
     }
 }
 
-fun ObjectWrapper.Basic.getProperObjectName(): String? {
+fun ObjectWrapper.Basic.getProperObjectName(dateProvider: DateProvider): String? {
     return when (layout) {
+        ObjectType.Layout.DATE -> {
+            getProperDateName(dateProvider)
+        }
         ObjectType.Layout.NOTE -> {
             snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
         }

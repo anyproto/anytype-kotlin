@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -60,7 +61,7 @@ class ObjectValueViewModel(
     private val duplicateObject: DuplicateObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val storeOfRelations: StoreOfRelations,
-    private val dateProvider: DateProvider
+    private val fieldParser: FieldParser
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<ObjectValueViewState>(ObjectValueViewState.Loading())
@@ -183,7 +184,7 @@ class ObjectValueViewModel(
         objects: List<ObjectWrapper.Basic>,
         query: String = ""
     ) {
-        val views = mapObjects(ids, objects, query)
+        val views = mapObjects(ids, objects, query, fieldParser = fieldParser)
         viewState.value = if (views.isNotEmpty()) {
             ObjectValueViewState.Content(
                 isEditableRelation = isEditableRelation,
@@ -219,7 +220,8 @@ class ObjectValueViewModel(
     private suspend fun mapObjects(
         ids: List<Id>,
         objects: List<ObjectWrapper.Basic>,
-        query: String
+        query: String,
+        fieldParser: FieldParser
     ): List<ObjectValueItem.Object> = objects.mapNotNull { obj ->
         if (!obj.isValid) return@mapNotNull null
         if (query.isNotBlank() && obj.name?.contains(query, true) == false) return@mapNotNull null
@@ -230,7 +232,7 @@ class ObjectValueViewModel(
             view = obj.toView(
                 urlBuilder = urlBuilder,
                 objectTypes = storeOfObjectTypes.getAll(),
-                dateProvider = dateProvider
+                fieldParser = fieldParser
             ),
             isSelected = isSelected,
             number = number,

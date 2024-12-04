@@ -199,7 +199,8 @@ suspend fun ObjectWrapper.Basic.values(
                 val objects = objects(
                     relation = relation.key,
                     urlBuilder = urlBuilder,
-                    storeOfObjects = storeOfObjects
+                    storeOfObjects = storeOfObjects,
+                    fieldParser = fieldParser
                 )
                 val value = if (objects.isEmpty()) {
                     DefaultObjectRelationValueView.Empty(
@@ -326,7 +327,8 @@ suspend fun ObjectWrapper.Basic.files(
 suspend fun ObjectWrapper.Basic.objects(
     relation: Id,
     urlBuilder: UrlBuilder,
-    storeOfObjects: ObjectStore
+    storeOfObjects: ObjectStore,
+    fieldParser: FieldParser
 ) : List<ObjectView> {
     val result = mutableListOf<ObjectView>()
 
@@ -338,7 +340,7 @@ suspend fun ObjectWrapper.Basic.objects(
     ids.forEach { id ->
         val wrapper = storeOfObjects.get(id) ?: return@forEach
         if (wrapper.isValid) {
-            result.add(wrapper.toObjectView(urlBuilder))
+            result.add(wrapper.toObjectView(urlBuilder, fieldParser))
         }
     }
     return result

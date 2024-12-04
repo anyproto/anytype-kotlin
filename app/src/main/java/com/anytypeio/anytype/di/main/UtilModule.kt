@@ -114,6 +114,6 @@ object UtilModule {
 
         @Binds
         @Singleton
-        fun bindDateTypeNameProvider(provider: DefaultDateTypeNameProvider) : DateTypeNameProvider
+        fun bindDateTypeNameProvider(provider: DefaultDateTypeNameProvider): DateTypeNameProvider
     }
 }

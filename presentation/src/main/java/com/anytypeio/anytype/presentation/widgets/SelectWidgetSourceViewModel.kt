@@ -10,8 +10,8 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
@@ -37,7 +37,7 @@ class SelectWidgetSourceViewModel(
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<WidgetDispatchEvent>,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    dateProvider: DateProvider
+    fieldParser: FieldParser
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
@@ -45,7 +45,7 @@ class SelectWidgetSourceViewModel(
     getObjectTypes = getObjectTypes,
     analytics = analytics,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-    dateProvider = dateProvider
+    fieldParser = fieldParser
 ) {
 
     val isDismissed = MutableStateFlow(false)
@@ -267,7 +267,7 @@ class SelectWidgetSourceViewModel(
         private val analytics: Analytics,
         private val dispatcher: Dispatcher<WidgetDispatchEvent>,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val dateProvider: DateProvider
+        private val fieldParser: FieldParser
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -280,7 +280,7 @@ class SelectWidgetSourceViewModel(
                 getObjectTypes = getObjectTypes,
                 dispatcher = dispatcher,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-                dateProvider = dateProvider
+                fieldParser = fieldParser
             ) as T
         }
     }

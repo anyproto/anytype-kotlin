@@ -42,14 +42,11 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
         stubUpdateText()
         stubDuplicateBlock("", emptyList())
         stubCopy()
         stubPaste()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

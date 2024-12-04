@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.ext.DAYS_IN_MONTH
 import com.anytypeio.anytype.core_models.ext.DAYS_IN_WEEK
 import com.anytypeio.anytype.core_models.ext.SECONDS_IN_DAY
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
 import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
@@ -22,11 +23,13 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
@@ -48,12 +51,15 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
     val coroutineTestRule = CoroutinesTestRule()
 
     @Before
-    fun setup() = runTest {
-        //MockitoAnnotations.openMocks(this)
-        dateProvider = mock(verboseLogging = true)
-        storeOfRelations.merge(listOf(filterDate))
+    fun setup() {
+        MockitoAnnotations.openMocks(this)
+        fieldParser = FieldParserImpl(dateProvider, logger)
+
         dateProvider.stub {
             on { getCurrentTimestampInSeconds() } doReturn timestamp
+        }
+        runBlocking{
+            storeOfRelations.merge(listOf(filterDate))
         }
     }
 

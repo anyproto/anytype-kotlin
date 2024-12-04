@@ -34,8 +34,6 @@ class EditorCreateBlockTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
     }
 
     val title = StubTitle()

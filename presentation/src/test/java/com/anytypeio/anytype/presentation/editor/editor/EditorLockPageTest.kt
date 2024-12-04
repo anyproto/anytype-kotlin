@@ -273,9 +273,6 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             link
         )
 
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubClosePage()
         stubOpenDocument(
             document = page,
             details = Block.Details(
@@ -313,7 +310,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                     BlockView.Decoration(
                         background = link.parseThemeBackgroundColor()
                     )
-                )
+                ),
+                text = ""
             )
         )
 

@@ -169,8 +169,7 @@ class RequestJoinSpaceViewModel(
             } else {
                 spaceManager.set(space.id)
                 saveCurrentSpace.async(params = SaveCurrentSpace.Params(space))
-                // TODO navigate to the target space instead of dismissing
-                commands.emit(Command.Dismiss)
+                commands.emit(Command.SwitchToSpace(space))
             }
         }
     }
@@ -220,6 +219,7 @@ class RequestJoinSpaceViewModel(
         }
         data class ShowGenericMultiplayerError(val error: MultiplayerError.Generic) : Command()
         data object Dismiss: Command()
+        data class SwitchToSpace(val space: SpaceId): Command()
     }
 
     sealed class ErrorView {

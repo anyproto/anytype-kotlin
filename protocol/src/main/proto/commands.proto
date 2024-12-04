@@ -2776,10 +2776,6 @@ message Rpc {
                 enum UseCase {
                     NONE = 0;
                     GET_STARTED = 1;
-                    PERSONAL_PROJECTS = 2;
-                    KNOWLEDGE_BASE = 3;
-                    NOTES_DIARY = 4;
-                    STRATEGIC_WRITING = 5;
                     EMPTY = 6;
                 }
             }

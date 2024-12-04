@@ -624,7 +624,11 @@
 
     <dialog
         android:id="@+id/requestJoinSpaceScreen"
-        android:name="com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment"/>
+        android:name="com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment">
+        <action
+            android:id="@+id/actionOpenSpaceFromVault"
+            app:destination="@id/homeScreen" />
+    </dialog>
 
     <dialog
         android:id="@+id/howToShareSpaceScreen"

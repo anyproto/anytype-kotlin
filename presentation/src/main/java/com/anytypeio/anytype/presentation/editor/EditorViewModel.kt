@@ -252,6 +252,10 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.*
+import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDatePickerDismiss
+import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDateSelected
+import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
+import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTomorrowClick
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -5451,9 +5455,10 @@ class EditorViewModel(
                 onHideKeyboardClicked()
                 proceedWithLinkToButtonClicked(block = targetId, position = slashStartIndex)
             }
-
             SlashItem.Actions.SelectDate -> {
-                mentionDatePicker.value = EditorDatePickerState.Visible.Link
+                mentionDatePicker.value = EditorDatePickerState.Visible.Link(
+                    targetId = targetId
+                )
             }
         }
     }
@@ -6162,100 +6167,12 @@ class EditorViewModel(
             onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
         }
         if (mention is SelectDateItem) {
-            mentionDatePicker.value = EditorDatePickerState.Visible.Mention
-        }
-    }
-
-    private enum class EditorCalendarDateShortcuts {
-        TODAY,
-        TOMORROW
-    }
-
-    fun onEditorDatePickerEvent(event: OnEditorDatePickerEvent) {
-        Timber.d("onEditorDatePickerEvent, event:[$event]")
-
-        when (event) {
-            is OnEditorDatePickerEvent.OnDateSelected -> {
-                handleDatePickerDismiss()
-                dispatch(Command.ShowKeyboard)
-                handleDateSelected(event.timeInMillis)
+            val targetId = orchestrator.stores.focus.current().targetOrNull()
+            if (targetId == null) {
+                Timber.e("Error while getting targetId from focus")
+                return
             }
-            is OnEditorDatePickerEvent.OnDatePickerDismiss -> {
-                dispatch(Command.ShowKeyboard)
-                handleDatePickerDismiss()
-            }
-            OnEditorDatePickerEvent.OnTodayClick -> {
-                handleDatePickerDismiss()
-                dispatch(Command.ShowKeyboard)
-                handlePredefinedDateClick(editorCalendarDateShortcuts = EditorCalendarDateShortcuts.TODAY)
-            }
-            OnEditorDatePickerEvent.OnTomorrowClick -> {
-                handleDatePickerDismiss()
-                dispatch(Command.ShowKeyboard)
-                handlePredefinedDateClick(editorCalendarDateShortcuts = EditorCalendarDateShortcuts.TOMORROW)
-            }
-        }
-    }
-
-    private fun handleDateSelected(timeInMillis: Long?) {
-        if (timeInMillis == null) {
-            sendToast("Selected time is invalid.")
-            Timber.w("OnDateSelected received null timeInMillis")
-            return
-        }
-
-        val adjustedTimestamp = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(timeInMillis)
-        handleTimestamp(adjustedTimestamp)
-    }
-
-    private fun handlePredefinedDateClick(editorCalendarDateShortcuts: EditorCalendarDateShortcuts) {
-        val timestamp = when (editorCalendarDateShortcuts) {
-            EditorCalendarDateShortcuts.TODAY -> dateProvider.getTimestampForTodayAtStartOfDay()
-            EditorCalendarDateShortcuts.TOMORROW -> dateProvider.getTimestampForTomorrowAtStartOfDay()
-        }
-        handleTimestamp(timestamp)
-    }
-
-    private fun handleTimestamp(timestamp: Long) {
-        proceedWithGettingDateByTimestamp(timestamp) { dateObject ->
-            Timber.d("handleTimestamp, dateObject:[$dateObject]")
-            val id = dateObject?.getSingleValue<String>(Relations.ID)
-            val name = dateObject?.getSingleValue<String>(Relations.NAME)
-
-            if (id != null && name != null) {
-                onCreateMentionInText(
-                    id = id,
-                    name = name,
-                    mentionTrigger = mentionFilter.value
-                )
-            } else {
-                sendToast("Error while creating mention, date object is null")
-                Timber.e("Date object missing ID or name.")
-            }
-        }
-    }
-
-    private fun handleDatePickerDismiss() {
-        mentionDatePicker.value = EditorDatePickerState.Hidden
-    }
-
-    private fun proceedWithGettingDateByTimestamp(timestamp: Long, action: (Struct?) -> Unit) {
-        val params = GetDateObjectByTimestamp.Params(
-            space = vmParams.space,
-            timestamp = timestamp
-        )
-        Timber.d("Start ObjectDateByTimestamp with params: [$params]")
-        viewModelScope.launch {
-            getDateObjectByTimestamp.async(params).fold(
-                onSuccess = { dateObject ->
-                    Timber.d("ObjectDateByTimestamp Success, dateObject: [$dateObject]")
-                    action(dateObject)
-                },
-                onFailure = { e ->
-                    Timber.e(e, "ObjectDateByTimestamp Error")
-                    sendToast("Failed to retrieve date object.")
-                }
-            )
+            mentionDatePicker.value = EditorDatePickerState.Visible.Mention(targetId = targetId)
         }
     }
 
@@ -7681,6 +7598,189 @@ class EditorViewModel(
 
     fun onUpdateAppClick() {
         dispatch(command = Command.OpenAppStore)
+    }
+    //endregion
+
+    //region CALENDAR
+    private enum class EditorCalendarDateShortcuts {
+        TODAY,
+        TOMORROW
+    }
+
+    private enum class EditorCalendarActionType {
+        MENTION,
+        LINK
+    }
+
+    fun onEditorDatePickerEvent(event: OnEditorDatePickerEvent) {
+        Timber.d("onEditorDatePickerEvent, event:[$event]")
+
+        when (event) {
+            is OnDateSelected.Mention -> {
+                handleDatePickerDismiss()
+                dispatch(Command.ShowKeyboard)
+                handleDateSelected(
+                    timeInMillis = event.timeInMillis,
+                    actionType = EditorCalendarActionType.MENTION,
+                    targetId = event.targetId
+                )
+            }
+            is OnDateSelected.Link -> {
+                cutSlashFilter(targetId = event.targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                handleDatePickerDismiss()
+                handleDateSelected(
+                    timeInMillis = event.timeInMillis,
+                    actionType = EditorCalendarActionType.LINK,
+                    targetId = event.targetId
+                )
+                proceedWithClearingFocus()
+            }
+            is OnTodayClick.Mention -> {
+                handleDatePickerDismiss()
+                dispatch(Command.ShowKeyboard)
+                handlePredefinedDateClick(
+                    predefinedDate = EditorCalendarDateShortcuts.TODAY,
+                    actionType = EditorCalendarActionType.MENTION,
+                    targetId = event.targetId
+                )
+            }
+            is OnTodayClick.Link -> {
+                handleDatePickerDismiss()
+                cutSlashFilter(targetId = event.targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                handlePredefinedDateClick(
+                    predefinedDate = EditorCalendarDateShortcuts.TODAY,
+                    actionType = EditorCalendarActionType.LINK,
+                    targetId = event.targetId
+                )
+                proceedWithClearingFocus()
+            }
+            is OnTomorrowClick.Mention -> {
+                handleDatePickerDismiss()
+                dispatch(Command.ShowKeyboard)
+                handlePredefinedDateClick(
+                    predefinedDate = EditorCalendarDateShortcuts.TOMORROW,
+                    actionType = EditorCalendarActionType.MENTION,
+                    targetId = event.targetId
+                )
+            }
+            is OnTomorrowClick.Link -> {
+                handleDatePickerDismiss()
+                cutSlashFilter(targetId = event.targetId)
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                handlePredefinedDateClick(
+                    predefinedDate = EditorCalendarDateShortcuts.TOMORROW,
+                    actionType = EditorCalendarActionType.LINK,
+                    targetId = event.targetId
+                )
+                proceedWithClearingFocus()
+            }
+            is OnDatePickerDismiss -> handleDatePickerDismiss()
+        }
+    }
+
+    private fun handleDateSelected(
+        timeInMillis: Long?,
+        actionType: EditorCalendarActionType,
+        targetId: Id
+    ) {
+        if (timeInMillis == null) {
+            sendToast("Selected time is invalid.")
+            Timber.w("OnDateSelected received null timeInMillis")
+            return
+        }
+
+        val adjustedTimestamp = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(timeInMillis)
+        handleTimestamp(adjustedTimestamp, actionType, targetId)
+    }
+
+    private fun handlePredefinedDateClick(
+        predefinedDate: EditorCalendarDateShortcuts,
+        actionType: EditorCalendarActionType,
+        targetId: Id
+    ) {
+        val timestamp = when (predefinedDate) {
+            EditorCalendarDateShortcuts.TODAY -> dateProvider.getTimestampForTodayAtStartOfDay()
+            EditorCalendarDateShortcuts.TOMORROW -> dateProvider.getTimestampForTomorrowAtStartOfDay()
+        }
+        handleTimestamp(timestamp, actionType, targetId)
+    }
+
+    private fun handleTimestamp(timestamp: Long, actionType: EditorCalendarActionType, targetId: Id) {
+        proceedWithGettingDateByTimestamp(timestamp) { dateObject ->
+            Timber.d("handleTimestamp, dateObject:[$dateObject]")
+            val id = dateObject?.getSingleValue<String>(Relations.ID)
+            val name = dateObject?.getSingleValue<String>(Relations.NAME)
+
+            if (id != null && name != null) {
+                when (actionType) {
+                    EditorCalendarActionType.MENTION -> onCreateMentionInText(
+                        id = id,
+                        name = name,
+                        mentionTrigger = mentionFilter.value
+                    )
+                    EditorCalendarActionType.LINK -> onCreateDateLink(
+                        linkId = id,
+                        targetId = targetId
+                    )
+                }
+            } else {
+                sendToast("Error while creating ${actionType.name.lowercase()}, date object is null")
+                Timber.e("Date object missing ID or name.")
+            }
+        }
+    }
+
+    private fun handleDatePickerDismiss() {
+        mentionDatePicker.value = EditorDatePickerState.Hidden
+    }
+
+    private fun proceedWithGettingDateByTimestamp(timestamp: Long, action: (Struct?) -> Unit) {
+        val params = GetDateObjectByTimestamp.Params(
+            space = vmParams.space,
+            timestamp = timestamp
+        )
+        Timber.d("Start ObjectDateByTimestamp with params: [$params]")
+        viewModelScope.launch {
+            getDateObjectByTimestamp.async(params).fold(
+                onSuccess = { dateObject ->
+                    Timber.d("ObjectDateByTimestamp Success, dateObject: [$dateObject]")
+                    action(dateObject)
+                },
+                onFailure = { e ->
+                    Timber.e(e, "ObjectDateByTimestamp Error")
+                    sendToast("Failed to retrieve date object.")
+                }
+            )
+        }
+    }
+
+    private fun onCreateDateLink(linkId: String, targetId: Id) {
+        Timber.d("Link created with id: $linkId, targetId: $targetId")
+        val targetBlock = blocks.firstOrNull { it.id == targetId }
+        if (targetBlock != null) {
+            val targetContent = targetBlock.content
+            val position = if (targetContent is Content.Text && targetContent.text.isEmpty()) {
+                Position.REPLACE
+            } else {
+                Position.BOTTOM
+            }
+            viewModelScope.launch{
+                orchestrator.proxies.intents.send(
+                    Intent.CRUD.Create(
+                        context = context,
+                        target = targetId,
+                        position = position,
+                        prototype = Prototype.Link(target = linkId),
+                        onSuccess = {}
+                    )
+                )
+            }
+        } else {
+            Timber.e("Can't find target block for link")
+            sendToast("Error while creating link")
+        }
     }
     //endregion
 

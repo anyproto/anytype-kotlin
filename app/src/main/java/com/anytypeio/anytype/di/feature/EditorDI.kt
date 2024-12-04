@@ -96,7 +96,6 @@ import com.anytypeio.anytype.domain.table.MoveTableColumn
 import com.anytypeio.anytype.domain.table.MoveTableRow
 import com.anytypeio.anytype.domain.table.SetTableRowHeader
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
@@ -722,12 +721,10 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideCreateObjectUseCase(
         repo: BlockRepository,
-        getTemplates: GetTemplates,
         dispatchers: AppCoroutineDispatchers
     ): CreateBlockLinkWithObject =
         CreateBlockLinkWithObject(
             repo = repo,
-            getTemplates = getTemplates,
             dispatchers = dispatchers
         )
 
@@ -736,8 +733,6 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideCreateObjectAsMentionOrLink(
         repo: BlockRepository,
-        getDefaultObjectType: GetDefaultObjectType,
-        getTemplates: GetTemplates,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager
     ): CreateObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
@@ -1011,20 +1006,6 @@ object EditorUseCaseModule {
     fun provideSetDocumentImageIconUseCase(
         repo: BlockRepository
     ): SetDocumentImageIcon = SetDocumentImageIcon(repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun getTemplates(
-        repo: BlockRepository,
-        spaceManager: SpaceManager,
-        dispatchers: AppCoroutineDispatchers
-    ): GetTemplates =
-        GetTemplates(
-            repo = repo,
-            spaceManager = spaceManager,
-            dispatchers = dispatchers
-        )
 
     @JvmStatic
     @Provides

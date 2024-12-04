@@ -347,7 +347,7 @@ open class EditorTestSetup {
         setupBookmark = SetupBookmark(repo)
         updateAlignment = UpdateAlignment(repo)
         uploadBlock = UploadBlock(repo)
-        createBlockLinkWithObject = CreateBlockLinkWithObject(repo, getTemplates, dispatchers)
+        createBlockLinkWithObject = CreateBlockLinkWithObject(repo, dispatchers)
         setRelationKey = SetRelationKey(repo)
         turnIntoDocument = TurnIntoDocument(repo)
         updateFields = UpdateFields(repo)

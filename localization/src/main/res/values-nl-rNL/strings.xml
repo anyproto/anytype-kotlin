@@ -248,6 +248,8 @@
     <string name="linked_to">Gekoppeld aan</string>
     <string name="remove_link">Verwijder link</string>
     <string name="mention_suggester_new_page">Maak nieuw object</string>
+    <string name="mention_section_dates">Datums</string>
+    <string name="mention_section_objects">Objecten</string>
     <string name="mention_suggester_create_object">Maak object</string>
     <string name="your_search_query">Zoeken</string>
     <string name="syncing">Aan het synchroniseren…</string>
@@ -348,11 +350,13 @@
     <string name="select_tags">Selecteer tags</string>
     <string name="select_status">Selecteer status</string>
     <string name="select_objects">Selecteer objecten</string>
+    <string name="select_date">Selecteer datum</string>
     <string name="no_value">Geen waarde</string>
     <string name="source">Bron</string>
     <string name="query">Vraag</string>
     <string name="select_query">Selecteer zoekopdracht</string>
     <string name="objects">Objecten</string>
+    <string name="your_objects">Jouw objecten</string>
     <string name="web_pages">Internetpagina\'s</string>
     <string name="select_files">Selecteer bestanden</string>
     <string name="u">U</string>
@@ -1556,6 +1560,10 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chats_message_edited">bewerkt</string>
     <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>
     <string name="write_a_message">Schrijf een bericht...</string>
+    <string name="date_layout_mentioned_in">Vermeld in</string>
+    <string name="date_layout_empty_items">Er is hier nog niets voor deze datum</string>
+    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
+    <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">Object</string>
     <string name="chat_attachment_file">Bestand</string>
     <string name="chat_attachment_media">Media</string>

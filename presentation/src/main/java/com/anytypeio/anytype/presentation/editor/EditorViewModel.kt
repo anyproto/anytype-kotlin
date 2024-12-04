@@ -3279,6 +3279,16 @@ class EditorViewModel(
                     )
                 }
             }
+            ObjectType.Layout.DATE -> {
+                navigate(
+                    EventWrapper(
+                        OpenDateObject(
+                            objectId = target,
+                            space = vmParams.space.id
+                        )
+                    )
+                )
+            }
             else -> {
                 sendToast("Cannot open object with layout: ${wrapper.layout}")
             }

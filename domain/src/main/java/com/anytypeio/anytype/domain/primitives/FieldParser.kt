@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.domain.primitives
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -17,6 +19,7 @@ import kotlin.collections.contains
 interface FieldParser {
     fun toDate(any: Any?): Field.Date?
     fun getObjectName(objectWrapper: ObjectWrapper.Basic): String
+    fun getObjectName(map: Map<Id, Block.Fields>, objectId: Id?): String?
 }
 
 class FieldParserImpl @Inject constructor(
@@ -24,6 +27,7 @@ class FieldParserImpl @Inject constructor(
     private val logger: Logger
 ) : FieldParser {
 
+    //region Date field
     override fun toDate(
         any: Any?
     ): Field.Date? {
@@ -36,10 +40,6 @@ class FieldParserImpl @Inject constructor(
                 return null
             }
         }
-    }
-
-    override fun getObjectName(objectWrapper: ObjectWrapper.Basic): String {
-        return objectWrapper.getProperObjectName().orEmpty()
     }
 
     private fun calculateFieldDate(value: Value.Single<Long>?): Field.Date? {
@@ -56,6 +56,12 @@ class FieldParserImpl @Inject constructor(
                 )
             )
         )
+    }
+    //endregion
+
+    //region ObjectWrapper.Basic fields
+    override fun getObjectName(objectWrapper: ObjectWrapper.Basic): String {
+        return objectWrapper.getProperObjectName().orEmpty()
     }
 
     private fun ObjectWrapper.Basic.getProperObjectName(): String? {
@@ -98,4 +104,21 @@ class FieldParserImpl @Inject constructor(
             return ""
         }
     }
+    //endregion
+
+    //region Block.Fields
+    override fun getObjectName(map: Map<Id, Block.Fields>, objectId: Id?): String? {
+        return map.getProperObjectName(id = objectId)
+    }
+
+    private fun Map<Id, Block.Fields>.getProperObjectName(id: Id?): String? {
+        if (id == null) return null
+        val layoutCode = this[id]?.layout?.toInt()
+        return if (layoutCode == ObjectType.Layout.NOTE.code) {
+            this[id]?.snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
+        } else {
+            this[id]?.name
+        }
+    }
+    //endregion
 }

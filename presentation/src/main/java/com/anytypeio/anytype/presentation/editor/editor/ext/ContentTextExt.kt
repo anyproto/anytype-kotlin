@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
-import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.extension.shift
 import timber.log.Timber
 
@@ -29,7 +28,7 @@ fun Block.Content.Text.getTextAndMarks(
             var newName = if (mark is Markup.Mark.Mention.Deleted) {
                 NON_EXISTENT_OBJECT_MENTION_NAME
             } else {
-                details.details.getProperObjectName(id = mark.param) ?: return@forEach
+                fieldParser.getObjectName(details.details, mark.param) ?: return@forEach
             }
             val oldName = updatedText.substring(mark.from, mark.to)
             if (newName != oldName) {

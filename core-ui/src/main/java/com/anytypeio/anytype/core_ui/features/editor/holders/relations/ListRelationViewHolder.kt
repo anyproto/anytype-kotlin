@@ -8,12 +8,14 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationCheckboxBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationDateBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationDefaultBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationObjectBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationStatusBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationTagBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.widgets.GridCellFileItem
 import com.anytypeio.anytype.core_ui.widgets.RelationObjectItem
@@ -56,6 +58,28 @@ sealed class ListRelationViewHolder(
                         else -> setHint(R.string.enter_value)
                     }
                 }
+            }
+            setLockIcon(tvTitle, item)
+        }
+    }
+
+    class Date(binding: ItemRelationListRelationDateBinding) :
+        ListRelationViewHolder(binding.root) {
+
+        private val tvTitle = binding.content.tvRelationTitle
+        private val tvValue = binding.content.tvRelationValue
+
+        fun bind(item: ObjectRelationView) {
+            tvTitle.text = item.name
+            val item = item as? ObjectRelationView.Date ?: return
+            val relativeDate = item.relativeDate
+            if (relativeDate != null) {
+                tvValue.text = relativeDate.getPrettyName(
+                    resources = itemView.resources
+                )
+            } else {
+                tvValue.text = null
+                tvValue.setHint(R.string.enter_date)
             }
             setLockIcon(tvTitle, item)
         }

@@ -1,0 +1,19 @@
+package com.anytypeio.anytype.feature_date.viewmodel
+
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+
+sealed class DateObjectCommand {
+    data class OpenChat(val target: Id, val space: SpaceId) : DateObjectCommand()
+    data class NavigateToEditor(val id: Id, val space: SpaceId) : DateObjectCommand()
+    data class NavigateToSetOrCollection(val id: Id, val space: SpaceId) : DateObjectCommand()
+    data class NavigateToDateObject(val objectId: Id, val space: SpaceId) : DateObjectCommand()
+    data object TypeSelectionScreen : DateObjectCommand()
+    data object ExitToSpaceWidgets : DateObjectCommand()
+    sealed class SendToast : DateObjectCommand() {
+        data class UnexpectedLayout(val layout: String) : SendToast()
+    }
+    data object OpenGlobalSearch : DateObjectCommand()
+    data object ExitToVault : DateObjectCommand()
+    data object Back : DateObjectCommand()
+}

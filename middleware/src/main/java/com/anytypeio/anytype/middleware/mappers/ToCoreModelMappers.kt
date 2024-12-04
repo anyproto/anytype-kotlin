@@ -3,7 +3,6 @@ package com.anytypeio.anytype.middleware.mappers
 import anytype.ResponseEvent
 import anytype.Rpc
 import anytype.model.Account
-import anytype.model.Import
 import anytype.model.NameserviceNameType
 import anytype.model.ParticipantPermissions
 import anytype.model.Restrictions
@@ -44,7 +43,9 @@ import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.SpaceUsage
+import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
@@ -60,8 +61,9 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncNetwork
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
+import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
+import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -1150,7 +1152,7 @@ fun Rpc.History.Version.toCoreModel(): Version {
         previousIds = previousIds,
         spaceMember = authorId,
         spaceMemberName = authorName,
-        timestamp = TimeInSeconds(time),
+        timestamp = TimestampInSeconds(time),
         groupId = groupId
     )
 }
@@ -1169,5 +1171,12 @@ fun Rpc.History.DiffVersions.Response.toCoreModel(
     return DiffVersionResponse(
         historyEvents = historyEvents.mapNotNull { it.toCoreModels(context) },
         objectView = objectView?.toCore()
+    )
+}
+
+fun Rpc.Relation.ListWithValue.Response.ResponseItem.toCoreModel(): RelationListWithValueItem {
+    return RelationListWithValueItem(
+        key = RelationKey(key = relationKey),
+        counter = counter
     )
 }

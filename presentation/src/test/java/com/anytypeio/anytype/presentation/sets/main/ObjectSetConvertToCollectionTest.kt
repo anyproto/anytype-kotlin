@@ -4,6 +4,7 @@ import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -31,6 +32,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        fieldParser = FieldParserImpl(dateProvider, logger)
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
         stubGetDefaultPageType()

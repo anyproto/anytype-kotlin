@@ -56,6 +56,8 @@ object Relations {
     const val SYNC_DATE = "syncDate"
     const val SYNC_STATUS = "syncStatus"
     const val IS_HIDDEN_DISCOVERY = "isHiddenDiscovery"
+    const val MENTIONS = "mentions"
+    const val TIMESTAMP = "timestamp"
 
     const val PAGE_COVER = "pageCover"
 

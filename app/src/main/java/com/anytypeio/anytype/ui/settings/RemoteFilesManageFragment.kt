@@ -104,6 +104,9 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
             is CollectionViewModel.Command.ExitToSpaceWidgets -> {
                 // Do nothing
             }
+            is CollectionViewModel.Command.OpenDateObject -> {
+                // Do nothing
+            }
         }
     }
 

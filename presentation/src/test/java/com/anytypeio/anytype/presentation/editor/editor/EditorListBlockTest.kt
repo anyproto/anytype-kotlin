@@ -48,8 +48,6 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
-        stubInterceptThreadStatus()
-        stubInterceptEvents()
     }
 
     @Test

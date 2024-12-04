@@ -273,9 +273,6 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             link
         )
 
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubClosePage()
         stubOpenDocument(
             document = page,
             details = Block.Details(
@@ -313,7 +310,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                     BlockView.Decoration(
                         background = link.parseThemeBackgroundColor()
                     )
-                )
+                ),
+                text = ""
             )
         )
 
@@ -392,7 +390,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                     target to Block.Fields(
                         mapOf(
                             Relations.ID to target,
-                            Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                            Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+                            Relations.SPACE_ID to defaultSpace
                         )
                     )
                 )

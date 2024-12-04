@@ -39,10 +39,10 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
@@ -64,7 +64,8 @@ import timber.log.Timber
 fun ObjectState.DataView.featuredRelations(
     ctx: Id,
     urlBuilder: UrlBuilder,
-    relations: List<ObjectWrapper.Relation>
+    relations: List<ObjectWrapper.Relation>,
+    fieldParser: FieldParser
 ): BlockView.FeaturedRelation? {
     val block = blocks.find { it.content is Block.Content.FeaturedRelations }
     if (block != null) {
@@ -76,7 +77,8 @@ fun ObjectState.DataView.featuredRelations(
                 keys = ids,
                 details = Block.Details(details),
                 relations = relations,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                fieldParser = fieldParser
             )
         )
         return BlockView.FeaturedRelation(
@@ -127,7 +129,8 @@ private fun ObjectState.DataView.mapFeaturedRelations(
     keys: List<String>,
     details: Block.Details,
     relations: List<ObjectWrapper.Relation>,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    fieldParser: FieldParser
 ): List<ObjectRelationView> = keys.mapNotNull { key ->
     when (key) {
         Relations.DESCRIPTION -> null
@@ -174,7 +177,7 @@ private fun ObjectState.DataView.mapFeaturedRelations(
             val isReadOnly = wrapper?.relationReadonlyValue == true
 
             val sources = if (isValid && !isDeleted) {
-                listOf(wrapper.toObjectViewDefault(urlBuilder = urlBuilder))
+                listOf(wrapper.toObjectViewDefault(urlBuilder = urlBuilder, fieldParser = fieldParser))
             } else {
                 emptyList()
             }
@@ -203,7 +206,8 @@ private fun ObjectState.DataView.mapFeaturedRelations(
                 details = details.details,
                 values = details.details[ctx]?.map ?: emptyMap(),
                 urlBuilder = urlBuilder,
-                isFeatured = true
+                isFeatured = true,
+                fieldParser = fieldParser
             )
         }
     }
@@ -283,15 +287,15 @@ fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>
 fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
     filter { !it.isHidden }
 
-fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder): ObjectView = when (isDeleted) {
+fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView = when (isDeleted) {
     true -> ObjectView.Deleted(id)
-    else -> toObjectViewDefault(urlBuilder)
+    else -> toObjectViewDefault(urlBuilder, fieldParser)
 }
 
-fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder): ObjectView.Default {
+fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView.Default {
     return ObjectView.Default(
         id = id,
-        name = getProperName(),
+        name = fieldParser.getObjectName(this),
         icon = this.objectIcon(builder = urlBuilder),
         types = type,
         isRelation = layout == ObjectType.Layout.RELATION

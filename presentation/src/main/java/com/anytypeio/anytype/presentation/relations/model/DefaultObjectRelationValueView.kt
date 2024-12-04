@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.relations.model
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.presentation.sets.model.FileView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.StatusView
@@ -51,7 +52,8 @@ sealed class DefaultObjectRelationValueView {
         override val objectId: Id,
         override val relationKey: Id,
         val timeInMillis: Long? = null,
-        val dateFormat: String,
+        val relativeDate: RelativeDate?,
+        val isTimeIncluded: Boolean,
     ) : DefaultObjectRelationValueView()
 
     data class Tag(

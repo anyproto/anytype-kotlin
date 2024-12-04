@@ -52,7 +52,13 @@ class TreeWidgetContainer(
                         source = widget.source,
                         isExpanded = !isCollapsed,
                         elements = emptyList(),
-                        isLoading = true
+                        isLoading = true,
+                        name = when(val source = widget.source) {
+                            is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
+                            is Widget.Source.Default -> WidgetView.Name.Default(
+                                prettyPrintName = source.obj.getWidgetObjectName()
+                            )
+                        }
                     )
                     if (isCollapsed) {
                         emit(loadingStateView)
@@ -113,7 +119,8 @@ class TreeWidgetContainer(
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
                             data = data,
                             rootLimit = rootLevelLimit
-                        )
+                        ),
+                        name = WidgetView.Name.Bundled(source = source)
                     )
                 }
             }
@@ -152,6 +159,9 @@ class TreeWidgetContainer(
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
                             data = data,
                             rootLimit = WidgetConfig.NO_LIMIT
+                        ),
+                        name = WidgetView.Name.Default(
+                            prettyPrintName = source.obj.getWidgetObjectName()
                         )
                     )
                 }
@@ -260,6 +270,8 @@ class TreeWidgetContainer(
                 val isExpandable = level < MAX_INDENT
                 add(
                     WidgetView.Tree.Element(
+                        id = obj.id,
+                        obj = obj,
                         elementIcon = resolveObjectIcon(
                             obj = obj,
                             isExpandable = isExpandable,
@@ -270,8 +282,10 @@ class TreeWidgetContainer(
                             builder = urlBuilder
                         ),
                         indent = level,
-                        obj = obj,
-                        path = path + link
+                        path = path + link,
+                        name = WidgetView.Name.Default(
+                            prettyPrintName = obj.getWidgetObjectName()
+                        )
                     )
                 )
                 if (isExpandable && expanded.contains(currentLinkPath)) {

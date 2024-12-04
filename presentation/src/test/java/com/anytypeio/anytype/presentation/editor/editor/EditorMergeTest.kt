@@ -36,10 +36,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
-        stubAnalyticSpaceHelperDelegate()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @Test

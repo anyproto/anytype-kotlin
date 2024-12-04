@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets.main
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
@@ -44,6 +45,7 @@ class ObjectSetZeroViewTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        fieldParser = FieldParserImpl(dateProvider, logger)
     }
 
     @Test

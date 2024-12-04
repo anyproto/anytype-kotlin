@@ -3,39 +3,34 @@ package com.anytypeio.anytype.presentation.relations
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
-import com.anytypeio.anytype.core_models.getSingleValue
-import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.buildFileViews
 import com.anytypeio.anytype.presentation.sets.buildRelationValueObjectViews
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
-import java.sql.Date
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 fun List<ObjectWrapper.Relation>.views(
     context: Id,
     details: Block.Details,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
-    featured: List<Id> = emptyList()
+    featured: List<Id> = emptyList(),
+    fieldParser: FieldParser
 ): List<ObjectRelationView> = mapNotNull { relation ->
     relation.view(
         context = context,
         details = details,
         values = values,
         urlBuilder = urlBuilder,
-        isFeatured = featured.contains(relation.key)
+        isFeatured = featured.contains(relation.key),
+        fieldParser = fieldParser
     )
 }
 
@@ -44,7 +39,8 @@ fun ObjectWrapper.Relation.view(
     details: Block.Details,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
-    isFeatured: Boolean = false
+    isFeatured: Boolean = false,
+    fieldParser: FieldParser
 ): ObjectRelationView? {
     val relation = this
     val relationFormat = relation.relationFormat
@@ -56,7 +52,8 @@ fun ObjectWrapper.Relation.view(
             val objects = values.buildRelationValueObjectViews(
                 relationKey = relation.key,
                 details = details.details,
-                builder = urlBuilder
+                builder = urlBuilder,
+                fieldParser = fieldParser
             )
             ObjectRelationView.Object(
                 id = relation.id,
@@ -84,27 +81,15 @@ fun ObjectWrapper.Relation.view(
             )
         }
         RelationFormat.DATE -> {
-            //TODO In DataView Relation Date uses DateFormat and TimeFormat
-            // so SimpleDateFormat can be different from what we have here
-            // see {SetsExtension:buildGridRow()}
-            val format = SimpleDateFormat(DateConst.DEFAULT_DATE_FORMAT, Locale.getDefault())
-            val value = values[relation.key]
-
-            val timeInSec = DateParser.parse(value)
-            val formattedDate = if (timeInSec != null) {
-                format.format(Date(TimeUnit.SECONDS.toMillis(timeInSec)))
-            } else {
-                null
-            }
-            ObjectRelationView.Default(
+            val fieldDate = fieldParser.toDate(any = values[relation.key])
+            ObjectRelationView.Date(
                 id = relation.id,
                 key = relation.key,
                 name = relation.name.orEmpty(),
-                value = formattedDate,
                 featured = isFeatured,
-                format = relationFormat,
                 readOnly = relation.isReadonlyValue,
-                system = relation.key.isSystemKey()
+                system = relation.key.isSystemKey(),
+                relativeDate = fieldDate?.relativeDate
             )
         }
         RelationFormat.STATUS -> {

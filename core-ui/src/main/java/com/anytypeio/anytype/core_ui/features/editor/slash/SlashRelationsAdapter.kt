@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationCheckboxBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationDateBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationDefaultBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationObjectBinding
@@ -39,6 +40,18 @@ class SlashRelationsAdapter(
                 val binding =
                     ItemRelationListRelationDefaultBinding.inflate(inflater, parent, false)
                 ListRelationViewHolder.Default(binding).apply {
+                    updateHeight(binding.root)
+                    updatePadding(binding.root, defaultPadding)
+                    binding.divider.visible()
+                    itemView.setOnClickListener {
+                        onItemClicked(bindingAdapterPosition)
+                    }
+                }
+            }
+            R.layout.item_relation_list_relation_date -> {
+                val binding =
+                    ItemRelationListRelationDateBinding.inflate(inflater, parent, false)
+                ListRelationViewHolder.Date(binding).apply {
                     updateHeight(binding.root)
                     updatePadding(binding.root, defaultPadding)
                     binding.divider.visible()
@@ -196,6 +209,12 @@ class SlashRelationsAdapter(
                 check(view is ObjectRelationView.Default)
                 holder.bind(view)
             }
+            is ListRelationViewHolder.Date -> {
+                check(item is SlashRelationView.Item)
+                val view = item.view
+                check(view is ObjectRelationView.Date)
+                holder.bind(view)
+            }
             is RelationsSubheaderMenuHolder -> {
                 check(item is SlashRelationView.Section)
                 holder.bind(item)
@@ -216,6 +235,7 @@ class SlashRelationsAdapter(
                 is ObjectRelationView.Status -> R.layout.item_relation_list_relation_status
                 is ObjectRelationView.Tags -> R.layout.item_relation_list_relation_tag
                 is ObjectRelationView.File -> R.layout.item_relation_list_relation_file
+                is ObjectRelationView.Date -> R.layout.item_relation_list_relation_date
                 else -> R.layout.item_relation_list_relation_default
             }
         }

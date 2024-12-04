@@ -48,6 +48,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -57,6 +58,7 @@ import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -79,12 +81,12 @@ import java.util.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 abstract class TestObjectSetSetup {
@@ -231,7 +233,18 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var localeProvider : LocaleProvider
 
-    private val dateProvider = DateProviderImpl(ZoneId.systemDefault(), localeProvider)
+    @Mock
+    lateinit var observeVaultSettings: ObserveVaultSettings
+
+    @Mock
+    lateinit var fieldParser: FieldParser
+
+    private val dateProvider = DateProviderImpl(
+        defaultZoneId = ZoneId.systemDefault(),
+        localeProvider = localeProvider,
+        vaultSettings = observeVaultSettings,
+        scope = TestScope()
+    )
 
     open fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -317,7 +330,8 @@ abstract class TestObjectSetSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            fieldParser = fieldParser
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

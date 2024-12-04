@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 
@@ -14,7 +15,8 @@ class MoveToViewModelFactory(
     private val getObjectTypes: GetObjectTypes,
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val fieldParser: FieldParser
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -25,7 +27,8 @@ class MoveToViewModelFactory(
             getObjectTypes = getObjectTypes,
             searchObjects = searchObjects,
             analytics = analytics,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            fieldParser = fieldParser
         ) as T
     }
 }

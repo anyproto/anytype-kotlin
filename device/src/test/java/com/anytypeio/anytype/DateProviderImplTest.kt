@@ -3,8 +3,11 @@ package com.anytypeio.anytype
 import com.anytypeio.anytype.device.providers.DateProviderImpl
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import java.time.ZoneId
 import java.util.Locale
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -14,20 +17,25 @@ import org.mockito.MockitoAnnotations
 
 class DateProviderImplTest {
 
+    private val dispatcher = StandardTestDispatcher(name = "Default test dispatcher")
+
     @Mock
     lateinit var localeProvider: LocaleProvider
+
+    @Mock
+    lateinit var observeVaultSettings: ObserveVaultSettings
 
     lateinit var dateProviderImpl: DateProvider
 
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        dateProviderImpl = DateProviderImpl(ZoneId.systemDefault(), localeProvider)
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
+        Mockito.`when`(localeProvider.language()).thenReturn("en")
     }
 
     @Test
-    fun adjustToStartOfDayInUserTimeZoneWithPastStart() {
+    fun adjustToStartOfDayInUserTimeZoneWithPastStart() = runTest(dispatcher) {
 
         val timeStamp = 1720828800L // Saturday, 13 July 2024 00:00:00
 
@@ -61,15 +69,23 @@ class DateProviderImplTest {
             Triple(timeStamp, ZoneId.of("GMT-12"), 1720872000L)
         )
         tests.forEach { (utcTimestamp, zoneId, expected) ->
+            dateProviderImpl = DateProviderImpl(
+                defaultZoneId = zoneId,
+                localeProvider = localeProvider,
+                vaultSettings = observeVaultSettings,
+                scope = backgroundScope
+            )
             val startOfDayInLocalZone =
-                dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp, zoneId)
+                dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(
+                    timeInMillis = utcTimestamp * 1000
+                )
 
             assertEquals(expected, startOfDayInLocalZone)
         }
     }
 
     @Test
-    fun adjustToStartOfDayInUserTimeZoneWithPastMidday() {
+    fun adjustToStartOfDayInUserTimeZoneWithPastMidday() = runTest(dispatcher) {
 
         val timeStamp = 1720888800L // Saturday, 13 July 2024 16:40:00
         val tests = listOf(
@@ -101,16 +117,23 @@ class DateProviderImplTest {
             Triple(timeStamp, ZoneId.of("GMT+12"), 1720785600L),
             Triple(timeStamp, ZoneId.of("GMT-12"), 1720872000L)
         )
+        // TODO fix tests
         tests.forEach { (utcTimestamp, zoneId, expected) ->
+            dateProviderImpl = DateProviderImpl(
+                defaultZoneId = zoneId,
+                localeProvider = localeProvider,
+                vaultSettings = observeVaultSettings,
+                scope = backgroundScope
+            )
             val startOfDayInLocalZone =
-                dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp, zoneId)
+                dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp * 1000)
 
             assertEquals(expected, startOfDayInLocalZone)
         }
     }
 
     @Test
-    fun adjustToStartOfDayInUserTimeZoneWithPastEnd() {
+    fun adjustToStartOfDayInUserTimeZoneWithPastEnd() = runTest(dispatcher) {
 
         val timeStamp = 1720915199L // Saturday, 13 July 2024 23:59:59
         val tests = listOf(
@@ -143,15 +166,21 @@ class DateProviderImplTest {
             Triple(timeStamp, ZoneId.of("GMT-12"), 1720872000L)
         )
         tests.forEach { (utcTimestamp, zoneId, expected) ->
+            dateProviderImpl = DateProviderImpl(
+                defaultZoneId = zoneId,
+                localeProvider = localeProvider,
+                vaultSettings = observeVaultSettings,
+                scope = backgroundScope
+            )
             val startOfDayInLocalZone =
-                dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp, zoneId)
+                dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp * 1000)
 
             assertEquals(expected, startOfDayInLocalZone)
         }
     }
 
     @Test
-    fun adjustToStartOfDayInUserTimeZoneWithFuture() {
+    fun adjustToStartOfDayInUserTimeZoneWithFuture() = runTest(dispatcher) {
 
         val timeStamp = 3720915199 // Saturday, 29 November 2087 03:33:19
         val tests = listOf(
@@ -181,9 +210,16 @@ class DateProviderImplTest {
             Triple(timeStamp, ZoneId.of("GMT-11"), 3720942000L),
             Triple(timeStamp, ZoneId.of("GMT-12"), 3720945600L)
         )
+        // TODO fix tests
         tests.forEach { (utcTimestamp, zoneId, expected) ->
+            dateProviderImpl = DateProviderImpl(
+                defaultZoneId = zoneId,
+                localeProvider = localeProvider,
+                vaultSettings = observeVaultSettings,
+                scope = backgroundScope
+            )
             val startOfDayInLocalZone =
-                dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp, zoneId)
+                dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp * 1000)
 
             assertEquals(expected, startOfDayInLocalZone)
         }

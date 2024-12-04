@@ -201,5 +201,6 @@ fun imageAsset(emptyType: ObjectIcon.Empty): Int {
         ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list
         ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type
         ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page
+        ObjectIcon.Empty.Date -> R.drawable.ic_obj_date_24
     }
 }

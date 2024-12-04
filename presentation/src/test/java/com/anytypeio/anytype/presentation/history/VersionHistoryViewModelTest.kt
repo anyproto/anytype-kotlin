@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
+import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
@@ -162,23 +162,23 @@ class VersionHistoryViewModelTest {
      *         Fri Dec 31 2021 23:59:57 GMT+0100 1640991597 User2
      */
 
-    private val timestamp0 = TimeInSeconds(1640991603L)
-    private val timestamp1 = TimeInSeconds(1640991602L)
-    private val timestamp2 = TimeInSeconds(1640991601L)
-    private val timestamp3 = TimeInSeconds(1640991600L)
-    private val timestamp4 = TimeInSeconds(1640991599L)
-    private val timestamp5 = TimeInSeconds(1640991598L)
-    private val timestamp6 = TimeInSeconds(1640991597L)
+    private val timestamp0 = TimestampInSeconds(1640991603L)
+    private val timestamp1 = TimestampInSeconds(1640991602L)
+    private val timestamp2 = TimestampInSeconds(1640991601L)
+    private val timestamp3 = TimestampInSeconds(1640991600L)
+    private val timestamp4 = TimestampInSeconds(1640991599L)
+    private val timestamp5 = TimestampInSeconds(1640991598L)
+    private val timestamp6 = TimestampInSeconds(1640991597L)
 
-    private val timestamp7 = TimeInSeconds(1641078000L)
-    private val timestamp8 = TimeInSeconds(1641078001L)
-    private val timestamp9 = TimeInSeconds(1641078003L)
-    private val timestamp10 = TimeInSeconds(1641078004L)
-    private val timestamp11 = TimeInSeconds(1641078059L)
-    private val timestamp12 = TimeInSeconds(1641078060L)
-    private val timestamp13 = TimeInSeconds(1641078061L)
-    private val timestamp14 = TimeInSeconds(1641078062L)
-    private val timestamp15 = TimeInSeconds(1641078120L)
+    private val timestamp7 = TimestampInSeconds(1641078000L)
+    private val timestamp8 = TimestampInSeconds(1641078001L)
+    private val timestamp9 = TimestampInSeconds(1641078003L)
+    private val timestamp10 = TimestampInSeconds(1641078004L)
+    private val timestamp11 = TimestampInSeconds(1641078059L)
+    private val timestamp12 = TimestampInSeconds(1641078060L)
+    private val timestamp13 = TimestampInSeconds(1641078061L)
+    private val timestamp14 = TimestampInSeconds(1641078062L)
+    private val timestamp15 = TimestampInSeconds(1641078120L)
 
     private val versions = listOf(
         StubVersion(

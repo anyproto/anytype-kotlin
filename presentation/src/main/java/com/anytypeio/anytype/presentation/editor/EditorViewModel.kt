@@ -48,6 +48,7 @@ import com.anytypeio.anytype.core_models.ext.sortByType
 import com.anytypeio.anytype.core_models.ext.supportNesting
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.updateTextContent
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -59,7 +60,6 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.isEndLineClick
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.toPrettyString
@@ -84,12 +84,14 @@ import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -97,6 +99,7 @@ import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
@@ -181,7 +184,9 @@ import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableEvent
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.editor.editor.toCoreModel
 import com.anytypeio.anytype.presentation.editor.editor.updateText
+import com.anytypeio.anytype.presentation.editor.model.EditorDatePickerState
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
+import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.editor.picker.PickerListener
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -234,14 +239,19 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.*
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
+import com.anytypeio.anytype.presentation.navigation.NewObject
+import com.anytypeio.anytype.presentation.navigation.SectionDates
+import com.anytypeio.anytype.presentation.navigation.SectionObjects
+import com.anytypeio.anytype.presentation.navigation.SelectDateItem
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
@@ -331,7 +341,10 @@ class EditorViewModel(
     private val getNetworkMode: GetNetworkMode,
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
+    private val fieldParser : FieldParser,
+    private val dateProvider: DateProvider,
+    private val getDateObjectByTimestamp: GetDateObjectByTimestamp
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -412,6 +425,11 @@ class EditorViewModel(
     override val commands = MutableLiveData<EventWrapper<Command>>()
 
     val permission = MutableStateFlow(permissions.get(vmParams.space))
+
+    /**
+     * Mention date picker
+     */
+    val mentionDatePicker = MutableStateFlow<EditorDatePickerState>(EditorDatePickerState.Hidden)
 
     init {
         Timber.i("EditorViewModel, init")
@@ -4340,7 +4358,7 @@ class EditorViewModel(
                 orchestrator.proxies.intents.send(
                     Media.DownloadFile(
                         url = url,
-                        name = obj.getProperName(),
+                        name = fieldParser.getObjectName(obj),
                         type = null
                     )
                 )
@@ -4464,6 +4482,16 @@ class EditorViewModel(
             }
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
+            }
+            is OpenObjectNavigation.OpenDataObject -> {
+                navigate(
+                    EventWrapper(
+                        OpenDateObject(
+                            objectId = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                )
             }
         }
     }
@@ -5247,7 +5275,8 @@ class EditorViewModel(
             details = details,
             values = objectDetails,
             urlBuilder = urlBuilder,
-            featured = objectWrapper.featuredRelations
+            featured = objectWrapper.featuredRelations,
+            fieldParser = fieldParser
         )
     }
 
@@ -5268,7 +5297,8 @@ class EditorViewModel(
             context = ctx,
             details = details,
             values = objectDetails,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            fieldParser = fieldParser
         )
     }
 
@@ -6114,15 +6144,113 @@ class EditorViewModel(
         }
     }
 
-    fun onMentionSuggestClick(mention: DefaultObjectView, mentionTrigger: String, pos: Int) {
+    fun onMentionSuggestClick(mention: DefaultSearchItem, mentionTrigger: String, pos: Int) {
         Timber.d("onMentionSuggestClick, mention:[$mention] mentionTrigger:[$mentionTrigger]")
-        viewModelScope.sendAnalyticsSearchResultEvent(
-            analytics = analytics,
-            pos = pos,
-            length = mentionTrigger.length - 1,
-            spaceParams = provideParams(vmParams.space.id)
+        if (mention is DefaultObjectView)  {
+            viewModelScope.sendAnalyticsSearchResultEvent(
+                analytics = analytics,
+                pos = pos,
+                length = mentionTrigger.length - 1,
+                spaceParams = provideParams(vmParams.space.id)
+            )
+            onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
+        }
+        if (mention is SelectDateItem) {
+            mentionDatePicker.value = EditorDatePickerState.Visible
+        }
+    }
+
+    private enum class EditorCalendarDateShortcuts {
+        TODAY,
+        TOMORROW
+    }
+
+    fun onEditorDatePickerEvent(event: OnEditorDatePickerEvent) {
+        Timber.d("onEditorDatePickerEvent, event:[$event]")
+
+        when (event) {
+            is OnEditorDatePickerEvent.OnDateSelected -> {
+                handleDatePickerDismiss()
+                dispatch(Command.ShowKeyboard)
+                handleDateSelected(event.timeInMillis)
+            }
+            is OnEditorDatePickerEvent.OnDatePickerDismiss -> {
+                dispatch(Command.ShowKeyboard)
+                handleDatePickerDismiss()
+            }
+            OnEditorDatePickerEvent.OnTodayClick -> {
+                handleDatePickerDismiss()
+                dispatch(Command.ShowKeyboard)
+                handlePredefinedDateClick(editorCalendarDateShortcuts = EditorCalendarDateShortcuts.TODAY)
+            }
+            OnEditorDatePickerEvent.OnTomorrowClick -> {
+                handleDatePickerDismiss()
+                dispatch(Command.ShowKeyboard)
+                handlePredefinedDateClick(editorCalendarDateShortcuts = EditorCalendarDateShortcuts.TOMORROW)
+            }
+        }
+    }
+
+    private fun handleDateSelected(timeInMillis: Long?) {
+        if (timeInMillis == null) {
+            sendToast("Selected time is invalid.")
+            Timber.w("OnDateSelected received null timeInMillis")
+            return
+        }
+
+        val adjustedTimestamp = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(timeInMillis)
+        handleTimestamp(adjustedTimestamp)
+    }
+
+    private fun handlePredefinedDateClick(editorCalendarDateShortcuts: EditorCalendarDateShortcuts) {
+        val timestamp = when (editorCalendarDateShortcuts) {
+            EditorCalendarDateShortcuts.TODAY -> dateProvider.getTimestampForTodayAtStartOfDay()
+            EditorCalendarDateShortcuts.TOMORROW -> dateProvider.getTimestampForTomorrowAtStartOfDay()
+        }
+        handleTimestamp(timestamp)
+    }
+
+    private fun handleTimestamp(timestamp: Long) {
+        proceedWithGettingDateByTimestamp(timestamp) { dateObject ->
+            Timber.d("handleTimestamp, dateObject:[$dateObject]")
+            val id = dateObject?.getSingleValue<String>(Relations.ID)
+            val name = dateObject?.getSingleValue<String>(Relations.NAME)
+
+            if (id != null && name != null) {
+                onCreateMentionInText(
+                    id = id,
+                    name = name,
+                    mentionTrigger = mentionFilter.value
+                )
+            } else {
+                sendToast("Error while creating mention, date object is null")
+                Timber.e("Date object missing ID or name.")
+            }
+        }
+    }
+
+    private fun handleDatePickerDismiss() {
+        mentionDatePicker.value = EditorDatePickerState.Hidden
+    }
+
+    private fun proceedWithGettingDateByTimestamp(timestamp: Long, action: (Struct?) -> Unit) {
+        val params = GetDateObjectByTimestamp.Params(
+            space = vmParams.space,
+            timestamp = timestamp
         )
-        onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
+        Timber.d("Start ObjectDateByTimestamp with params: [$params]")
+        viewModelScope.launch {
+            getDateObjectByTimestamp.async(params).fold(
+                onSuccess = { dateObject ->
+                    Timber.d("ObjectDateByTimestamp Success, dateObject: [$dateObject]")
+                    action(dateObject)
+                },
+                onFailure = { e ->
+                    Timber.e(e, "ObjectDateByTimestamp Error")
+                    sendToast("Failed to retrieve date object.")
+                }
+            )
+        }
     }
 
     fun onCreateMentionInText(id: Id, name: String, mentionTrigger: String) {
@@ -6192,7 +6320,12 @@ class EditorViewModel(
 
     fun onMentionClicked(target: String) {
         if (isObjectTemplate()) return
-        proceedWithOpeningObjectByLayout(target)
+        val details = orchestrator.stores.details.current()
+        val objectDetails = details.details[target]?.map ?: return
+        if (objectDetails.isEmpty()) return
+        val obj = ObjectWrapper.Basic(objectDetails)
+        proceedWithClearingFocus()
+        proceedWithOpeningObject(obj)
     }
 
     private suspend fun onMentionFilter(filter: String) {
@@ -6218,16 +6351,14 @@ class EditorViewModel(
                         val objects = result
                             .toViews(
                                 urlBuilder = urlBuilder,
-                                objectTypes = storeOfObjectTypes.getAll()
+                                objectTypes = storeOfObjectTypes.getAll(),
+                                fieldParser = fieldParser
                             )
-                            .filter {
-                                SupportedLayouts.layouts.contains(it.layout)
-                                        && it.type != ObjectTypeIds.TEMPLATE
-                            }
+
                         controlPanelInteractor.onEvent(
                             ControlPanelMachine.Event.Mentions.OnResult(
-                                objects,
-                                filter
+                                mentions = createSectionedList(objects),
+                                text = filter
                             )
                         )
                     },
@@ -6235,6 +6366,32 @@ class EditorViewModel(
                 )
             }
         }
+    }
+
+    fun createSectionedList(items: List<DefaultObjectView>): List<DefaultSearchItem> {
+
+        val (dateItems, otherItems) = items.partition { it.layout == ObjectType.Layout.DATE }
+
+        val sectionedList = mutableListOf<DefaultSearchItem>()
+
+        if (dateItems.isNotEmpty()) {
+            sectionedList.add(SectionDates)
+            dateItems.forEach { item ->
+                sectionedList.add(item)
+            }
+            sectionedList.add(SelectDateItem)
+        }
+
+        if (otherItems.isNotEmpty()) {
+            sectionedList.add(SectionObjects)
+            otherItems.forEach { item ->
+                sectionedList.add(item)
+            }
+        }
+
+        sectionedList.add(NewObject)
+
+        return sectionedList
     }
 
     fun onDragAndDrop(

@@ -11,10 +11,13 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemListObjectBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSearchNewObjectBinding
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.setOnThrottleClickListener
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.NewObject
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 
@@ -85,7 +88,7 @@ class DefaultObjectViewAdapter(
                         holder.title.setText(R.string.widget_source_anytype_library)
                     }
                     ObjectSearchSection.SelectWidgetSource.FromMyObjects -> {
-                        holder.title.setText(R.string.objects)
+                        holder.title.setText(R.string.your_objects)
                     }
                     ObjectSearchSection.SelectWidgetSource.DefaultLists -> {
                         holder.title.setText(R.string.widget_source_default_lists)
@@ -129,8 +132,19 @@ class ObjectItemViewHolder(view: View) : ObjectViewHolder(view) {
 
         fun bind(link: DefaultObjectView) {
             title.text = link.name
-            subtitle.text = link.typeName
+            if (link.typeName != null) {
+                subtitle.visible()
+                subtitle.text = link.typeName
+            } else {
+                subtitle.gone()
+            }
             icon.setIcon(link.icon)
+        }
+
+        fun bindSelectDateItem() {
+            title.setText(R.string.select_date)
+            subtitle.gone()
+            icon.setIcon(ObjectIcon.Empty.Date)
         }
     }
 
@@ -168,7 +182,7 @@ class BundledWidgetSourceHolder(
             BundledWidgetSourceView.Favorites -> {
                 with(binding) {
                     tvTitle.setText(R.string.favorites)
-                    tvSubtitle.text = ""
+                    tvSubtitle.gone()
                     ivIcon.setImageDrawable(
                         drawable = binding.root.context.resources.getDrawable(
                             R.drawable.ic_widget_bundled_source_favorites,
@@ -181,6 +195,7 @@ class BundledWidgetSourceHolder(
             BundledWidgetSourceView.Recent -> {
                 with(binding) {
                     tvTitle.setText(R.string.recent)
+                    tvSubtitle.gone()
                     ivIcon.setImageDrawable(
                         drawable = binding.root.context.resources.getDrawable(
                             R.drawable.ic_widget_bundled_source_recently_edited,
@@ -193,6 +208,7 @@ class BundledWidgetSourceHolder(
             BundledWidgetSourceView.RecentLocal -> {
                 with(binding) {
                     tvTitle.setText(R.string.recently_opened)
+                    tvSubtitle.visible()
                     tvSubtitle.setText(R.string.on_this_device)
                     ivIcon.setImageDrawable(
                         drawable = binding.root.context.resources.getDrawable(
@@ -206,7 +222,7 @@ class BundledWidgetSourceHolder(
             BundledWidgetSourceView.Sets -> {
                 with(binding) {
                     tvTitle.setText(R.string.sets)
-                    tvSubtitle.text = ""
+                    tvSubtitle.gone()
                     ivIcon.setImageDrawable(
                         drawable = binding.root.context.resources.getDrawable(
                             R.drawable.ic_widget_bundled_source_sets,
@@ -218,7 +234,7 @@ class BundledWidgetSourceHolder(
             BundledWidgetSourceView.Collections -> {
                 with(binding) {
                     tvTitle.setText(R.string.collections)
-                    tvSubtitle.text = ""
+                    tvSubtitle.gone()
                     ivIcon.setImageDrawable(
                         drawable = binding.root.context.resources.getDrawable(
                             R.drawable.ic_widget_bundled_source_collection,

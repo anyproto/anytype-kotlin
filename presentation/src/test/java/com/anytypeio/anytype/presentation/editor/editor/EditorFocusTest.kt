@@ -61,11 +61,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
-        stubInterceptEvents()
-        stubAnalyticSpaceHelperDelegate()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @Test

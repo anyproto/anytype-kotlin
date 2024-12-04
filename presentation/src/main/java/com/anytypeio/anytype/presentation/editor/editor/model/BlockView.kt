@@ -53,6 +53,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PROFILE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_CHECKBOX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DATE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_FILE
@@ -1300,6 +1301,7 @@ sealed class BlockView : ViewType {
                 is ObjectRelationView.Source -> HOLDER_RELATION_SOURCE
                 is ObjectRelationView.ObjectType.Deleted -> HOLDER_OBJECT_TYPE_DELETED
                 is ObjectRelationView.Links -> HOLDER_RELATION_OBJECT
+                is ObjectRelationView.Date -> HOLDER_RELATION_DATE
             }
         }
 

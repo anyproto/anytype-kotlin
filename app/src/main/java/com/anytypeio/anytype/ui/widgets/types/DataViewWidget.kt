@@ -51,13 +51,11 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -104,13 +102,12 @@ fun DataViewListWidgetCard(
                 .padding(horizontal = 0.dp, vertical = 6.dp)
         ) {
             WidgetHeader(
-                title = when (val source = item.source) {
-                    is Widget.Source.Default -> {
-                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                title = when (val name = item.name) {
+                    is WidgetView.Name.Default -> {
+                        name.prettyPrintName ?: stringResource(id = R.string.untitled)
                     }
-
-                    is Widget.Source.Bundled -> {
-                        stringResource(id = source.res())
+                    is WidgetView.Name.Bundled -> {
+                        stringResource(id = name.source.res())
                     }
                 },
                 isCardMenuExpanded = isCardMenuExpanded,
@@ -238,13 +235,12 @@ fun GalleryWidgetCard(
                 .padding(horizontal = 0.dp, vertical = 6.dp)
         ) {
             WidgetHeader(
-                title = when (val source = item.source) {
-                    is Widget.Source.Default -> {
-                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                title = when (val source = item.name) {
+                    is WidgetView.Name.Default -> {
+                        source.prettyPrintName ?: stringResource(id = R.string.untitled)
                     }
-
-                    is Widget.Source.Bundled -> {
-                        stringResource(id = source.res())
+                    is WidgetView.Name.Bundled -> {
+                        stringResource(id = source.source.res())
                     }
                 },
                 isCardMenuExpanded = isCardMenuExpanded,
@@ -548,8 +544,14 @@ private fun GalleryWidgetItemCard(
                         .padding(start = 12.dp, top = 9.dp),
                     onTaskIconClicked = {}
                 )
+                val prettyPrintName = item.name.prettyPrintName
+                val name = if (prettyPrintName.isNullOrEmpty()) {
+                    stringResource(id = R.string.untitled)
+                } else {
+                    prettyPrintName
+                }
                 Text(
-                    text = item.obj.getProperName().ifEmpty { stringResource(id = R.string.untitled) },
+                    text = name,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = Caption1Medium,
@@ -564,8 +566,14 @@ private fun GalleryWidgetItemCard(
                 )
             }
         } else {
+            val prettyPrintName = item.name.prettyPrintName
+            val name = if (prettyPrintName.isNullOrEmpty()) {
+                stringResource(id = R.string.untitled)
+            } else {
+                prettyPrintName
+            }
             Text(
-                text = item.obj.getProperName().ifEmpty { stringResource(id = R.string.untitled) },
+                text = name,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 style = Caption1Medium,
@@ -661,6 +669,9 @@ fun GalleryWidgetItemCardPreview() {
                 map = mapOf(
                     Relations.NAME to "Stephen Bann"
                 )
+            ),
+            name = WidgetView.Name.Default(
+                prettyPrintName = "Stephen Bann"
             )
         ),
         onItemClicked = {}

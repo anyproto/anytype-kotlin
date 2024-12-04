@@ -18,11 +18,15 @@ import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.const.DetailsKeys
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.editor.Editor
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
@@ -95,6 +99,14 @@ class DefaultBlockViewRendererTest {
     @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
 
+    @Mock
+    lateinit var dateProvider: DateProvider
+
+    @Mock
+    lateinit var logger: Logger
+
+    lateinit var fieldParser: FieldParser
+
     private lateinit var renderer: DefaultBlockViewRenderer
 
     private lateinit var wrapper: BlockViewRenderWrapper
@@ -106,12 +118,14 @@ class DefaultBlockViewRendererTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        fieldParser = FieldParserImpl(dateProvider, logger)
         renderer = DefaultBlockViewRenderer(
             urlBuilder = UrlBuilder(gateway),
             toggleStateHolder = toggleStateHolder,
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            fieldParser = fieldParser
         )
     }
 

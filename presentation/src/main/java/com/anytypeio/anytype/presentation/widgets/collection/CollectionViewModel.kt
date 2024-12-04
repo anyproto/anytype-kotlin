@@ -39,6 +39,7 @@ import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -50,7 +51,6 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.mapFileObjectToView
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -58,6 +58,7 @@ import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.FavoritesView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.ObjectView
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.*
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -107,7 +108,8 @@ class CollectionViewModel(
     private val getSpaceView: GetSpaceView,
     private val dateTypeNameProvider: DateTypeNameProvider,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val fieldParser: FieldParser
 ) : ViewModel(), Reducer<CoreObjectView, Payload>, AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val payloads: Flow<Payload>
@@ -273,17 +275,18 @@ class CollectionViewModel(
                                 ),
                                 sorts = subscription.sorts,
                                 limit = subscription.limit
-                            )
+                            ),
+                            fieldParser = fieldParser
                         )
                     } else {
-                        subscriptionFlow(buildSearchParams())
+                        subscriptionFlow(buildSearchParams(), fieldParser)
                     }
                 }
                 Subscription.Files -> {
                     filesSubscriptionFlow()
                 }
                 else -> {
-                    subscriptionFlow(buildSearchParams())
+                    subscriptionFlow(buildSearchParams(), fieldParser)
                 }
             }
                 .map { update -> preserveSelectedState(update) }
@@ -311,7 +314,8 @@ class CollectionViewModel(
 
     @OptIn(FlowPreview::class)
     private suspend fun subscriptionFlow(
-        params: StoreSearchParams
+        params: StoreSearchParams,
+        fieldParser: FieldParser
     ) =
         combine(
             container.subscribe(params).map { results -> results.distinctBy { it.id } },
@@ -320,11 +324,12 @@ class CollectionViewModel(
         ) { objects, query, types ->
 
             val filteredResults = objects.filter { obj ->
-                obj.getProperName().contains(query, ignoreCase = true)
+                val name = fieldParser.getObjectName(obj)
+                name.contains(query, ignoreCase = true)
             }
 
             val views = filteredResults
-                .toViews(urlBuilder = urlBuilder, objectTypes = types)
+                .toViews(urlBuilder = urlBuilder, objectTypes = types, fieldParser = fieldParser)
                 .map { ObjectView(it) }
                 .tryAddSections()
 
@@ -404,9 +409,10 @@ class CollectionViewModel(
             details = favoritesObj.details
         )
         return objs.toOrder(favs).filter { obj ->
-            obj.getProperName().lowercase().contains(query.lowercase(), true)
+            val name = fieldParser.getObjectName(obj)
+            name.lowercase().contains(query.lowercase(), true)
         }
-            .toViews(urlBuilder, types)
+            .toViews(urlBuilder, types, fieldParser)
             .map { FavoritesView(it, favs[it.id]?.blockId ?: "") }
     }
 
@@ -912,6 +918,14 @@ class CollectionViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 toasts.emit("Object id is missing")
             }
+            is OpenObjectNavigation.OpenDataObject -> {
+                commands.emit(
+                    OpenDateObject(
+                        target = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
         }
     }
 
@@ -937,8 +951,10 @@ class CollectionViewModel(
         query: String
     ): List<CollectionView> {
         return objects
-            .filter { it.getProperName().contains(query, true) }
-            .map { it.mapFileObjectToView() }
+            .filter {
+                val name = fieldParser.getObjectName(it)
+                name.contains(query, true) }
+            .map { it.mapFileObjectToView(fieldParser) }
             .tryAddSections()
     }
 
@@ -972,7 +988,8 @@ class CollectionViewModel(
         private val getSpaceView: GetSpaceView,
         private val dateTypeNameProvider: DateTypeNameProvider,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val userPermissionProvider: UserPermissionProvider
+        private val userPermissionProvider: UserPermissionProvider,
+        private val fieldParser: FieldParser
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -1000,7 +1017,8 @@ class CollectionViewModel(
                 dateTypeNameProvider = dateTypeNameProvider,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 userPermissionProvider = userPermissionProvider,
-                vmParams = vmParams
+                vmParams = vmParams,
+                fieldParser = fieldParser
             ) as T
         }
     }
@@ -1011,6 +1029,7 @@ class CollectionViewModel(
         data class OpenCollection(val subscription: Subscription, val space: Id) : Command()
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
         data class OpenChat(val target: Id, val space: Id) : Command()
+        data class OpenDateObject(val target: Id, val space: Id) : Command()
 
         data object ToDesktop : Command()
         data class ToSearch(val space: Id) : Command()

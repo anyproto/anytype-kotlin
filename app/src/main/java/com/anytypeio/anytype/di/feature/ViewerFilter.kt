@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -41,7 +42,8 @@ object ViewerFilterModule {
         urlBuilder: UrlBuilder,
         analytics: Analytics,
         storeOfRelations: StoreOfRelations,
-        db: ObjectSetDatabase
+        db: ObjectSetDatabase,
+        fieldParser: FieldParser
     ): ViewerFilterViewModel.Factory = ViewerFilterViewModel.Factory(
         state = state,
         dispatcher = dispatcher,
@@ -49,10 +51,11 @@ object ViewerFilterModule {
         urlBuilder = urlBuilder,
         analytics = analytics,
         storeOfRelations = storeOfRelations,
-        objectSetDatabase = db
+        objectSetDatabase = db,
+        fieldParser = fieldParser
     )
 }
 
 @Scope
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class ViewerFilterByScope

@@ -7,9 +7,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.relationsFilteredByHiddenAndDescription
 import com.anytypeio.anytype.presentation.objects.setTypeRelationIconsAsNone
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -19,7 +18,8 @@ suspend fun DVViewer.buildListViews(
     relations: List<ObjectWrapper.Relation>,
     urlBuilder: UrlBuilder,
     store: ObjectStore,
-    objectOrderIds: List<Id>
+    objectOrderIds: List<Id>,
+    fieldParser: FieldParser
 ): List<Viewer.ListView.Item> {
     val items = objects.mapNotNull { id ->
         val obj = store.get(id)
@@ -37,9 +37,10 @@ suspend fun DVViewer.buildListViews(
                             relations = relations,
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
-                            storeOfObjects = store
+                            storeOfObjects = store,
+                            fieldParser = fieldParser
                         ).setTypeRelationIconsAsNone(),
-                        name = obj.getProperName(),
+                        name = fieldParser.getObjectName(obj),
                         icon = obj.objectIcon(urlBuilder),
                         description = description,
                         hideIcon = hideIcon
@@ -57,10 +58,11 @@ suspend fun DVViewer.buildListViews(
                             relations = relations,
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
-                            storeOfObjects = store
+                            storeOfObjects = store,
+                            fieldParser = fieldParser
                         ).setTypeRelationIconsAsNone(),
-                        name = obj.getProperName(),
-                        done = obj.done ?: false,
+                        name = fieldParser.getObjectName(obj),
+                        done = obj.done == true,
                         description = description
                     )
                 }
@@ -76,9 +78,10 @@ suspend fun DVViewer.buildListViews(
                             relations = relations,
                             urlBuilder = urlBuilder,
                             settings = viewerRelations,
-                            storeOfObjects = store
+                            storeOfObjects = store,
+                            fieldParser = fieldParser
                         ).setTypeRelationIconsAsNone(),
-                        name = obj.getProperName(),
+                        name = fieldParser.getObjectName(obj),
                         icon = obj.objectIcon(urlBuilder),
                         description = description,
                         hideIcon = hideIcon

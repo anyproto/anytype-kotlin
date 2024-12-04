@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
@@ -87,8 +88,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
-        stubInterceptThreadStatus()
-        stubInterceptEvents()
     }
 
     @Test

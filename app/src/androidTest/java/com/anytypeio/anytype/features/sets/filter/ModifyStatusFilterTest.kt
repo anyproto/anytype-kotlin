@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -75,6 +76,9 @@ class ModifyStatusFilterTest {
     lateinit var analytics: Analytics
 
     @Mock
+    lateinit var fieldParser: FieldParser
+
+    @Mock
     lateinit var spaceManager: SpaceManager
 
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
@@ -108,7 +112,8 @@ class ModifyStatusFilterTest {
             analytics = analytics,
             storeOfRelations = storeOfRelations,
             objectSetDatabase = db,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            fieldParser = fieldParser
         )
     }
 

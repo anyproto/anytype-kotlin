@@ -63,9 +63,6 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubClosePage()
     }
 
     @Test

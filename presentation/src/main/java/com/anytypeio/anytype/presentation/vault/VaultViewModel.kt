@@ -281,6 +281,14 @@ class VaultViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
             }
+            is OpenObjectNavigation.OpenDataObject -> {
+                navigate(
+                    Navigation.OpenDateObject(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
         }
     }
 
@@ -344,6 +352,7 @@ class VaultViewModel(
         data class OpenChat(val ctx: Id, val space: Id) : Navigation()
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
+        data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
     }
 
     companion object {

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.di.feature.CreateObjectModule
 import com.anytypeio.anytype.di.feature.DaggerAllContentComponent
 import com.anytypeio.anytype.di.feature.DaggerAppPreferencesComponent
 import com.anytypeio.anytype.di.feature.DaggerBacklinkOrAddToObjectComponent
+import com.anytypeio.anytype.di.feature.DaggerDateObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerLinkToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerMoveToComponent
 import com.anytypeio.anytype.di.feature.DaggerSplashComponent
@@ -100,9 +101,9 @@ import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetSourceComponen
 import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetTypeComponent
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
+import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
-import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModel
@@ -333,6 +334,12 @@ class ComponentManager(
 
     val allContentComponent = ComponentWithParams { params: AllContentViewModel.VmParams ->
         DaggerAllContentComponent
+            .factory()
+            .create(params, findComponentDependencies())
+    }
+
+    val dateObjectComponent = ComponentWithParams { params: DateObjectVmParams  ->
+        DaggerDateObjectComponent
             .factory()
             .create(params, findComponentDependencies())
     }

@@ -15,9 +15,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="76dp"
-        android:fontFamily="@font/inter_medium"
+        style="@style/TextView.ContentStyle.PreviewTitles.2.Medium"
         android:text="@string/new_object"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp" />
+        android:textColor="@color/text_primary" />
 
 </FrameLayout>

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.RelationValueListBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
@@ -64,6 +65,7 @@ class RelationValueListWidget @JvmOverloads constructor(
             is ObjectRelationView.ObjectType -> setObjectTypeRelation(relation)
             is ObjectRelationView.Links -> setLinksRelation(relation)
             is ObjectRelationView.Source -> setSourceRelation(relation, clickListener)
+            is ObjectRelationView.Date -> setDateRelation(relation)
         }
         if (!isLast) dot.visible()
     }
@@ -80,6 +82,26 @@ class RelationValueListWidget @JvmOverloads constructor(
             name = value,
             textColor = if (relation.value != null) textColorPrimary else textColorSecondary
         )
+    }
+    //endregion
+
+    //region DATE
+    private fun setDateRelation(relation: ObjectRelationView.Date) {
+        val relativeDate = relation.relativeDate
+        if (relativeDate != null) {
+            val formattedDate = relativeDate.getPrettyName(
+                resources = resources
+            )
+            setupSingleTextItem(
+                name = formattedDate,
+                textColor = textColorPrimary
+            )
+        } else {
+            setupSingleTextItem(
+                name = relation.name,
+                textColor =textColorSecondary
+            )
+        }
     }
     //endregion
 

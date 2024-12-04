@@ -1,9 +1,10 @@
 package com.anytypeio.anytype.domain.misc
 
+import com.anytypeio.anytype.core_models.DEFAULT_TIME_STYLE
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
-import java.text.DateFormat
-import java.time.ZoneId
+import java.time.LocalDate
 
 
 /**
@@ -19,14 +20,16 @@ interface DateProvider {
     fun getTimestampForWeekAheadAtStartOfDay(): TimeInSeconds
     fun getTimestampForWeekAgoAtStartOfDay(): TimeInSeconds
     fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis
-    fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis, zoneId: ZoneId): TimeInSeconds
+    fun adjustFromStartOfDayInUserTimeZoneToUTC(timeInMillis: TimeInMillis): TimeInSeconds
     fun formatToDateString(timestamp: Long, pattern: String): String
     fun formatTimestampToDateAndTime(
         timestamp: TimeInMillis,
-        dateStyle: Int = DateFormat.MEDIUM,
-        timeStyle: Int = DateFormat.SHORT
+        timeStyle: Int = DEFAULT_TIME_STYLE
     ): Pair<String, String>
+    fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate?
     fun isSameMinute(timestamp1: Long, timestamp2: Long): Boolean
+    fun getLocalDateOfTime(epochMilli: Long): LocalDate
+    fun isTimestampWithinYearRange(timeStampInMillis: Long, yearRange: IntRange): Boolean
 }
 
 interface DateTypeNameProvider {

@@ -39,11 +39,8 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
         stubGetObjectTypes(emptyList())
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

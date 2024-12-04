@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -32,7 +33,8 @@ class ObjectValueViewModelFactory @Inject constructor(
     private val objectListIsArchived: SetObjectListIsArchived,
     private val duplicateObject: DuplicateObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val fieldParser: FieldParser
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -51,6 +53,7 @@ class ObjectValueViewModelFactory @Inject constructor(
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        fieldParser = fieldParser
     ) as T
 }

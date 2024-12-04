@@ -7,14 +7,13 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -30,11 +29,12 @@ suspend fun List<ColumnView>.buildGridRow(
     showIcon: Boolean,
     obj: ObjectWrapper.Basic,
     builder: UrlBuilder,
-    store: ObjectStore
+    store: ObjectStore,
+    fieldParser: FieldParser
 ): Viewer.GridView.Row {
 
     val type = obj.type.firstOrNull()
-    val name = obj.getProperName()
+    val name = fieldParser.getObjectName(obj)
     val emoji = obj.iconEmoji
     val image = obj.iconImage
     val done = obj.done
@@ -59,7 +59,8 @@ suspend fun List<ColumnView>.buildGridRow(
                     columnKey = column.key,
                     builder = builder,
                     store = store,
-                    withIcon = false
+                    withIcon = false,
+                    fieldParser = fieldParser
                 )
                 cells.add(
                     CellView.Object(
@@ -93,12 +94,14 @@ suspend fun List<ColumnView>.buildGridRow(
                         }
 
                         ColumnView.Format.DATE -> {
-                            val value = obj.getValue<Any?>(column.key)
+                            val fieldDate = fieldParser.toDate(any = obj.getValue<Any?>(column.key))
                             CellView.Date(
                                 id = obj.id,
                                 relationKey = column.key,
-                                timeInSecs = DateParser.parse(value),
-                                dateFormat = column.getDateRelationFormat()
+                                timeInSecs = fieldDate?.timestamp?.time,
+                                dateFormat = column.getDateRelationFormat(),
+                                relativeDate = fieldDate?.relativeDate,
+                                isTimeIncluded = column.isDateIncludeTime == true
                             )
                         }
 
@@ -166,7 +169,8 @@ suspend fun List<ColumnView>.buildGridRow(
                             val objects = obj.map.buildObjectViews(
                                 columnKey = column.key,
                                 builder = builder,
-                                store = store
+                                store = store,
+                                fieldParser = fieldParser
                             )
                             CellView.Object(
                                 id = obj.id,
@@ -287,20 +291,21 @@ private fun ObjectWrapper.File.toView() : FileView {
 fun Struct.buildRelationValueObjectViews(
     relationKey: Id,
     details: Map<Id, Block.Fields>,
-    builder: UrlBuilder
+    builder: UrlBuilder,
+    fieldParser: FieldParser
 ): List<ObjectView> {
     val objects = mutableListOf<ObjectView>()
     val value = this.getOrDefault(relationKey, null)
     if (value is Id) {
         val wrapper = ObjectWrapper.Basic(details[value]?.map.orEmpty())
         if (wrapper.isValid) {
-            objects.add(wrapper.toObjectView(urlBuilder = builder))
+            objects.add(wrapper.toObjectView(urlBuilder = builder, fieldParser = fieldParser))
         }
     } else if (value is List<*>) {
         value.typeOf<Id>().forEach { id ->
             val wrapper = ObjectWrapper.Basic(details[id]?.map.orEmpty())
             if (wrapper.isValid) {
-                objects.add(wrapper.toObjectView(urlBuilder = builder))
+                objects.add(wrapper.toObjectView(urlBuilder = builder, fieldParser = fieldParser))
             }
         }
     }
@@ -311,7 +316,8 @@ suspend fun Struct.buildObjectViews(
     columnKey: Id,
     store: ObjectStore,
     builder: UrlBuilder,
-    withIcon: Boolean = true
+    withIcon: Boolean = true,
+    fieldParser: FieldParser
 ): List<ObjectView> {
     val objects = mutableListOf<ObjectView>()
     val value = this.getOrDefault(columnKey, null)
@@ -329,7 +335,7 @@ suspend fun Struct.buildObjectViews(
                 objects.add(
                     ObjectView.Default(
                         id = value,
-                        name = wrapper.getProperName(),
+                        name = fieldParser.getObjectName(wrapper),
                         icon = icon,
                         types = wrapper.type
                     )
@@ -353,7 +359,7 @@ suspend fun Struct.buildObjectViews(
                     objects.add(
                         ObjectView.Default(
                             id = id,
-                            name = wrapper.getProperName(),
+                            name = fieldParser.getObjectName(wrapper),
                             icon = icon,
                             types = wrapper.type
                         )

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -71,7 +72,8 @@ object ObjectValueObjectModule {
         objectListIsArchived: SetObjectListIsArchived,
         duplicateObject: DuplicateObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        fieldParser: FieldParser,
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -86,7 +88,8 @@ object ObjectValueObjectModule {
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        fieldParser = fieldParser
     )
 }
 //endregion
@@ -128,7 +131,8 @@ object ObjectValueSetModule {
         objectListIsArchived: SetObjectListIsArchived,
         duplicateObject: DuplicateObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        fieldParser: FieldParser
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -143,7 +147,8 @@ object ObjectValueSetModule {
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        fieldParser = fieldParser
     )
 }
 //endregion
@@ -185,7 +190,8 @@ object ObjectValueDataViewModule {
         objectListIsArchived: SetObjectListIsArchived,
         duplicateObject: DuplicateObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        fieldParser: FieldParser
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -200,7 +206,8 @@ object ObjectValueDataViewModule {
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        fieldParser = fieldParser
     )
 }
 //endregion

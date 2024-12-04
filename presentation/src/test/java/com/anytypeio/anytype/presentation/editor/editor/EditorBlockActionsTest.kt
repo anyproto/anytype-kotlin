@@ -30,7 +30,6 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
-        stubInterceptEvents()
     }
 
     @Test

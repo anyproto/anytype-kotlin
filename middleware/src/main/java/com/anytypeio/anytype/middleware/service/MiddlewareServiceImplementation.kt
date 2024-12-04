@@ -961,6 +961,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectRelationListWithValue(request: Rpc.Relation.ListWithValue.Request): Rpc.Relation.ListWithValue.Response {
+        val encoded = Service.relationListWithValue(
+            Rpc.Relation.ListWithValue.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Relation.ListWithValue.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Relation.ListWithValue.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectRelationRemoveFeatured(request: Rpc.ObjectRelation.RemoveFeatured.Request): Rpc.ObjectRelation.RemoveFeatured.Response {
         val encoded = Service.objectRelationRemoveFeatured(
             Rpc.ObjectRelation.RemoveFeatured.Request.ADAPTER.encode(request)
@@ -2419,6 +2432,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Debug.AccountSelectTrace.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Debug.AccountSelectTrace.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectDateByTimestamp(request: Rpc.Object.DateByTimestamp.Request): Rpc.Object.DateByTimestamp.Response {
+        val encoded = Service.objectDateByTimestamp(
+            Rpc.Object.DateByTimestamp.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.DateByTimestamp.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.DateByTimestamp.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

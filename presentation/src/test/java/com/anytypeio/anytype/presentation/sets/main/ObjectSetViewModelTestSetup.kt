@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
@@ -56,6 +57,8 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -215,6 +218,11 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var localeProvider : LocaleProvider
 
+    lateinit var fieldParser: FieldParser
+
+    @Mock
+    lateinit var logger: Logger
+
     @Mock
     lateinit var dateProvider: DateProvider
 
@@ -264,7 +272,7 @@ open class ObjectSetViewModelTestSetup {
         )
         dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer)
         storeOfObjectTypes = DefaultStoreOfObjectTypes()
-        Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
+        stubLocalProvider()
         return ObjectSetViewModel(
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
@@ -309,7 +317,8 @@ open class ObjectSetViewModelTestSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            fieldParser = fieldParser
         )
     }
 
@@ -564,5 +573,12 @@ open class ObjectSetViewModelTestSetup {
     fun stubAnalyticSpaceHelperDelegate() {
         Mockito.`when`(analyticSpaceHelperDelegate.provideParams(defaultSpace))
             .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
+    }
+
+    fun stubLocalProvider() {
+        localeProvider.stub {
+            on { locale() } doReturn Locale.getDefault()
+            on { language() } doReturn "en"
+        }
     }
 }

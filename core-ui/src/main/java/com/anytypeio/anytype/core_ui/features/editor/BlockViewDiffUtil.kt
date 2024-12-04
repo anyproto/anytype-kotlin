@@ -229,6 +229,13 @@ class BlockViewDiffUtil(
                         changes.add(RELATION_VALUE_CHANGED)
                     }
                 }
+
+                newRelationView is ObjectRelationView.Date && oldRelationView is ObjectRelationView.Date -> {
+                    if (newRelationView.relativeDate != oldRelationView.relativeDate
+                        || newRelationView.isTimeIncluded != oldRelationView.isTimeIncluded) {
+                        changes.add(RELATION_VALUE_CHANGED)
+                    }
+                }
             }
         }
 

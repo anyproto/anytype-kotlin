@@ -7,16 +7,15 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.library.StoreSearchParams
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.globalSearchLayouts
 
 /**
  * This class contains all filters and sorts for different use cases using Rpc.Object.Search command
@@ -64,7 +63,7 @@ object ObjectSearchConstants {
             DVFilter(
                 relation = Relations.LAYOUT,
                 condition = DVFilterCondition.IN,
-                value = SupportedLayouts.globalSearchLayouts.map { it.code.toDouble() }
+                value = globalSearchLayouts.map { it.code.toDouble() }
             )
         )
     }
@@ -112,7 +111,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = (SupportedLayouts.createObjectLayouts + SupportedLayouts.fileLayouts).map { it.code.toDouble() }
+            value = globalSearchLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.ID,
@@ -123,7 +122,7 @@ object ObjectSearchConstants {
 
     val sortLinkTo = listOf(
         DVSort(
-            relationKey = Relations.LAST_MODIFIED_DATE,
+            relationKey = Relations.LAST_OPENED_DATE,
             type = DVSortType.DESC,
             includeTime = true,
             relationFormat = RelationFormat.DATE
@@ -683,7 +682,8 @@ object ObjectSearchConstants {
         Relations.LINKS,
         Relations.BACKLINKS,
         Relations.LAST_USED_DATE,
-        Relations.DESCRIPTION
+        Relations.DESCRIPTION,
+        Relations.TIMESTAMP
     )
 
     val defaultOptionKeys = listOf(

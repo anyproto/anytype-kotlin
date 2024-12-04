@@ -87,7 +87,7 @@ import com.anytypeio.anytype.presentation.extension.sendSelectHomeTabEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
@@ -633,15 +633,24 @@ class HomeScreenViewModel(
                 .withLatestFrom(spaceManager.observe()) { dispatch, config ->
                     when (dispatch) {
                         is WidgetDispatchEvent.SourcePicked.Default -> {
-                            commands.emit(
-                                Command.SelectWidgetType(
+                            if (dispatch.sourceLayout == ObjectType.Layout.DATE.code) {
+                                proceedWithCreatingWidget(
                                     ctx = config.widgets,
                                     source = dispatch.source,
-                                    layout = dispatch.sourceLayout,
-                                    target = dispatch.target,
-                                    isInEditMode = isInEditMode()
+                                    type = Command.ChangeWidgetType.TYPE_LINK,
+                                    target = dispatch.target
                                 )
-                            )
+                            } else {
+                                commands.emit(
+                                    Command.SelectWidgetType(
+                                        ctx = config.widgets,
+                                        source = dispatch.source,
+                                        layout = dispatch.sourceLayout,
+                                        target = dispatch.target,
+                                        isInEditMode = isInEditMode()
+                                    )
+                                )
+                            }
                         }
                         is WidgetDispatchEvent.SourcePicked.Bundled -> {
                             commands.emit(
@@ -1406,6 +1415,14 @@ class HomeScreenViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
             }
+            is OpenObjectNavigation.OpenDataObject -> {
+                navigate(
+                    destination = Navigation.OpenDateObject(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
         }
     }
 
@@ -2120,6 +2137,7 @@ class HomeScreenViewModel(
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data object OpenSpaceSwitcher: Navigation()
         data class OpenAllContent(val space: Id) : Navigation()
+        data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
     }
 
     class Factory @Inject constructor(
@@ -2346,6 +2364,7 @@ sealed class OpenObjectNavigation {
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
     data object NonValidObject: OpenObjectNavigation()
     data class OpenDiscussion(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenDataObject(val target: Id, val space: Id): OpenObjectNavigation()
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
@@ -2390,6 +2409,12 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         }
         ObjectType.Layout.CHAT_DERIVED -> {
             OpenObjectNavigation.OpenDiscussion(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
+        }
+        ObjectType.Layout.DATE -> {
+            OpenObjectNavigation.OpenDataObject(
                 target = id,
                 space = requireNotNull(spaceId)
             )

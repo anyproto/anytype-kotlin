@@ -259,6 +259,16 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         Timber.e(it, "Failed to open relation editing screen from all content")
                     }
                 }
+                is AllContentViewModel.Command.NavigateToDateObject -> {
+                    runCatching {
+                        navigation().openDateObject(
+                            objectId = command.objectId,
+                            space = command.space
+                        )
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while opening date object from All Objects screen")
+                    }
+                }
             }
         }
     }

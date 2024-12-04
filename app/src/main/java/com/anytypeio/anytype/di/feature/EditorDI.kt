@@ -55,6 +55,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -62,6 +63,7 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
@@ -75,6 +77,7 @@ import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.UpdateTitle
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
@@ -287,7 +290,10 @@ object EditorSessionModule {
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         syncStatusProvider: SpaceSyncAndP2PStatusProvider,
         getNetworkMode: GetNetworkMode,
-        clearLastOpenedObject: ClearLastOpenedObject
+        clearLastOpenedObject: ClearLastOpenedObject,
+        fieldParser: FieldParser,
+        dateProvider: DateProvider,
+        getDateObjectByTimestamp: GetDateObjectByTimestamp
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -333,7 +339,10 @@ object EditorSessionModule {
         getNetworkMode = getNetworkMode,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         clearLastOpenedObject = clearLastOpenedObject,
-        syncStatusProvider = syncStatusProvider
+        syncStatusProvider = syncStatusProvider,
+        fieldParser = fieldParser,
+        dateProvider = dateProvider,
+        getDateObjectByTimestamp = getDateObjectByTimestamp
     )
 
     @JvmStatic
@@ -374,13 +383,15 @@ object EditorSessionModule {
         toggleStateHolder: ToggleStateHolder,
         coverImageHashProvider: CoverImageHashProvider,
         storeOfRelations: StoreOfRelations,
-        storeOfObjectTypes: StoreOfObjectTypes
+        storeOfObjectTypes: StoreOfObjectTypes,
+        fieldParser: FieldParser
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
         toggleStateHolder = toggleStateHolder,
         coverImageHashProvider = coverImageHashProvider,
         storeOfRelations = storeOfRelations,
-        storeOfObjectTypes = storeOfObjectTypes
+        storeOfObjectTypes = storeOfObjectTypes,
+        fieldParser = fieldParser
     )
 
     @JvmStatic
@@ -1160,4 +1171,12 @@ object EditorUseCaseModule {
         getDefaultObjectType = getDefaultObjectType,
         dispatchers = dispatchers
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDateByTimestamp(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetDateObjectByTimestamp = GetDateObjectByTimestamp(repository, dispatchers)
 }

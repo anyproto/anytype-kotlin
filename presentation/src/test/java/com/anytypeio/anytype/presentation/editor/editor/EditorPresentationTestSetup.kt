@@ -50,12 +50,14 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -65,6 +67,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -76,6 +79,8 @@ import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
+import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -215,6 +220,9 @@ open class EditorPresentationTestSetup {
     lateinit var copy: Copy
 
     @Mock
+    lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
+
+    @Mock
     lateinit var undo: Undo
 
     @Mock
@@ -237,6 +245,8 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var move: MoveOld
+
+    lateinit var fieldParser: FieldParser
 
     @Mock
     lateinit var turnIntoDocument: TurnIntoDocument
@@ -373,6 +383,12 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
+    @Mock
+    lateinit var dateProvider: DateProvider
+
+    @Mock
+    lateinit var logger: Logger
+
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
@@ -460,7 +476,8 @@ open class EditorPresentationTestSetup {
                 toggleStateHolder = ToggleStateHolder.Default(),
                 coverImageHashProvider = coverImageHashProvider,
                 storeOfRelations = storeOfRelations,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                fieldParser = fieldParser
             ),
             orchestrator = orchestrator,
             analytics = analytics,
@@ -499,7 +516,10 @@ open class EditorPresentationTestSetup {
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             clearLastOpenedObject = clearLastOpenedObject,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            fieldParser = fieldParser,
+            dateProvider = dateProvider,
+            getDateObjectByTimestamp = getDateObjectByTimestamp
         )
     }
 
@@ -861,10 +881,14 @@ open class EditorPresentationTestSetup {
     }
 
     fun proceedWithDefaultBeforeTestStubbing() {
+        fieldParser = FieldParserImpl(dateProvider, logger)
         stubAnalyticSpaceHelperDelegate()
         stubSpaceManager()
         stubUserPermission()
         stubGetNetworkMode()
         stubFileLimitEvents()
+        stubInterceptEvents()
+        stubClosePage()
+        stubInterceptThreadStatus()
     }
 }

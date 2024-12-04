@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -105,6 +106,9 @@ class ObjectRelationListTest {
 
     lateinit var urlBuilder: UrlBuilder
 
+    @Mock
+    lateinit var fieldParser: FieldParser
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -126,7 +130,8 @@ class ObjectRelationListTest {
             storeOfRelations = storeOfRelations,
             addRelationToObject = addRelationToObject,
             spaceManager = spaceManager,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            fieldParser = fieldParser
         )
     }
 

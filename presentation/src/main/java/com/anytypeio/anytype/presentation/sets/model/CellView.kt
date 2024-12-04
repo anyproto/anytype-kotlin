@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.model
 
+import com.anytypeio.anytype.core_models.RelativeDate
+
 sealed class CellView {
 
     abstract val relationKey: String
@@ -28,6 +30,8 @@ sealed class CellView {
         override val relationKey: String,
         val timeInSecs: Long? = null,
         override val dateFormat: String,
+        val relativeDate: RelativeDate?,
+        val isTimeIncluded: Boolean = false
     ) : CellView(), DateFormat
 
     data class Number(

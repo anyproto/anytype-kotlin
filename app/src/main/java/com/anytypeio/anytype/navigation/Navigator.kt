@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.allcontent.AllContentFragment
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
+import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
@@ -316,6 +317,18 @@ class Navigator : AppNavigation {
                 iconUnicode = iconUnicode,
                 readOnly = readOnly
             )
+        )
+    }
+
+    override fun openDateObject(
+        objectId: Id,
+        space: Id
+    ) {
+        navController?.navigate(
+            resId = R.id.dateObjectScreen,
+            args = DateObjectFragment.args(
+                objectId = objectId,
+                space = space)
         )
     }
 }

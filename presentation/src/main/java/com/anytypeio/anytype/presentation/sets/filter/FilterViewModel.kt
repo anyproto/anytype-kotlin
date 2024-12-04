@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -35,7 +36,7 @@ import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.toConditionView
 import com.anytypeio.anytype.presentation.extension.type
 import com.anytypeio.anytype.presentation.mapper.toDomain
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toCreateFilterObjectView
 import com.anytypeio.anytype.presentation.relations.FilterInputValueParser
 import com.anytypeio.anytype.presentation.relations.toCreateFilterCheckboxView
@@ -73,7 +74,8 @@ open class FilterViewModel(
     private val objectSetDatabase: ObjectSetDatabase,
     private val analytics: Analytics,
     private val getOptions: GetOptions,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val fieldParser: FieldParser
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Commands>()
@@ -96,7 +98,8 @@ open class FilterViewModel(
                 setValueStates(
                     condition = condition?.condition,
                     index = filterIndex,
-                    viewerId = viewerId
+                    viewerId = viewerId,
+                    fieldParser = fieldParser
                 )
             }
         }
@@ -133,7 +136,8 @@ open class FilterViewModel(
                             setValueStates(
                                 condition = conditionState.value?.condition,
                                 index = filterIndex,
-                                viewerId = viewerId
+                                viewerId = viewerId,
+                                fieldParser = fieldParser
                             )
                         } else {
                             Timber.e("Couldn't find relation in StoreOfRelations by relationKey:[$relationKey]")
@@ -226,7 +230,8 @@ open class FilterViewModel(
     private suspend fun setValueStates(
         viewerId: Id,
         condition: Viewer.Filter.Condition?,
-        index: Int?
+        index: Int?,
+        fieldParser: FieldParser
     ) {
         if (condition == null || !condition.hasValue()) {
             filterValueState.value = null
@@ -242,28 +247,30 @@ open class FilterViewModel(
             if (index == null) {
                 filterValueState.value = relation.toFilterValue(
                     value = null,
-                    details = state.details,
                     urlBuilder = urlBuilder,
-                    store = objectSetDatabase.store
+                    store = objectSetDatabase.store,
+                    fieldParser = fieldParser
                 )
                 proceedWithFilterValueList(
                     relation = relation,
                     filter = null,
-                    condition = condition
+                    condition = condition,
+                    fieldParser = fieldParser
                 )
             } else {
                 val filter = viewer.filters[index]
                 check(filter.relation == relation.key) { "Incorrect filter state" }
                 filterValueState.value = relation.toFilterValue(
                     value = filter.value,
-                    details = state.details,
                     urlBuilder = urlBuilder,
-                    store = objectSetDatabase.store
+                    store = objectSetDatabase.store,
+                    fieldParser = fieldParser
                 )
                 proceedWithFilterValueList(
                     relation = relation,
                     filter = filter,
                     condition = condition,
+                    fieldParser = fieldParser
                 )
             }
         }
@@ -272,14 +279,16 @@ open class FilterViewModel(
     private suspend fun proceedWithFilterValueList(
         relation: ObjectWrapper.Relation,
         filter: DVFilter?,
-        condition: Viewer.Filter.Condition
+        condition: Viewer.Filter.Condition,
+        fieldParser: FieldParser
     ): Unit = when (relation.format) {
         Relation.Format.DATE -> {
             val value = (filter?.value as? Double)?.toLong() ?: 0L
             filterValueListState.value = relation.toCreateFilterDateView(
                 quickOption = filter?.quickOption,
                 condition = condition.toDomain(),
-                value = value
+                value = value,
+                fieldParser = fieldParser
             )
         }
         Relation.Format.TAG -> {
@@ -398,7 +407,8 @@ open class FilterViewModel(
                     filterValueListState.value = objects.toCreateFilterObjectView(
                         ids = ids,
                         urlBuilder = urlBuilder,
-                        objectTypes = objectTypes
+                        objectTypes = objectTypes,
+                        fieldParser = fieldParser
                     ).also {
                         optionCountState.value = it.count { view -> view.isSelected }
                     }
@@ -432,7 +442,8 @@ open class FilterViewModel(
                     filterValueListState.value = objects.toCreateFilterObjectView(
                         ids = ids,
                         urlBuilder = urlBuilder,
-                        objectTypes = objectTypes
+                        objectTypes = objectTypes,
+                        fieldParser = fieldParser
                     ).also {
                         optionCountState.value = it.count { view -> view.isSelected }
                     }
@@ -925,7 +936,8 @@ open class FilterViewModel(
         private val objectSetDatabase: ObjectSetDatabase,
         private val getOptions: GetOptions,
         private val analytics: Analytics,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val fieldParser: FieldParser
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -940,7 +952,8 @@ open class FilterViewModel(
                 objectSetDatabase = objectSetDatabase,
                 getOptions = getOptions,
                 analytics = analytics,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                fieldParser = fieldParser
             ) as T
         }
     }

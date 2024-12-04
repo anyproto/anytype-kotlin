@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.extensions
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.webkit.MimeTypeMap
 import androidx.annotation.ColorRes
@@ -9,6 +10,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
@@ -291,4 +293,20 @@ fun RelationFormat.getPrettyName(): Int = when (this) {
     RelationFormat.OBJECT -> R.string.relation_format_object
     RelationFormat.RELATIONS -> R.string.relation_format_relation
     RelationFormat.UNDEFINED -> R.string.undefined
+}
+
+fun RelativeDate.getPrettyName(
+    isTimeIncluded: Boolean = false,
+    resources: Resources
+): String = when (this) {
+    is RelativeDate.Other -> {
+        if (isTimeIncluded) {
+            "$formattedDate $formattedTime"
+        } else {
+            formattedDate
+        }
+    }
+    is RelativeDate.Today -> resources.getString(R.string.today)
+    is RelativeDate.Tomorrow -> resources.getString(R.string.tomorrow)
+    is RelativeDate.Yesterday -> resources.getString(R.string.yesterday)
 }

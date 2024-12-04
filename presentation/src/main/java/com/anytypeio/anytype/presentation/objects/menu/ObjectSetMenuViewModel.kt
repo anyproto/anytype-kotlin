@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -49,7 +50,8 @@ class ObjectSetMenuViewModel(
     private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
     private val deepLinkResolver: DeepLinkResolver,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    setObjectListIsFavorite: SetObjectListIsFavorite
+    setObjectListIsFavorite: SetObjectListIsFavorite,
+    fieldParser: FieldParser
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -65,7 +67,8 @@ class ObjectSetMenuViewModel(
     spaceManager = spaceManager,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
     payloadDelegator = payloadDelegator,
-    setObjectListIsFavorite = setObjectListIsFavorite
+    setObjectListIsFavorite = setObjectListIsFavorite,
+    fieldParser = fieldParser
 ) {
 
     init {
@@ -90,7 +93,8 @@ class ObjectSetMenuViewModel(
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val payloadDelegator: PayloadDelegator,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
-        private val setObjectListIsArchived: SetObjectListIsArchived
+        private val setObjectListIsArchived: SetObjectListIsArchived,
+        private val fieldParser: FieldParser
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -110,7 +114,8 @@ class ObjectSetMenuViewModel(
                 deepLinkResolver = deepLinkResolver,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 payloadDelegator = payloadDelegator,
-                setObjectListIsFavorite = setObjectListIsFavorite
+                setObjectListIsFavorite = setObjectListIsFavorite,
+                fieldParser = fieldParser
             ) as T
         }
     }

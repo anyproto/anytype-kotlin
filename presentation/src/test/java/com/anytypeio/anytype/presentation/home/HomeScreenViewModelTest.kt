@@ -92,6 +92,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -506,7 +507,10 @@ class HomeScreenViewModelTest {
                             id = widgetBlock.id,
                             source = Widget.Source.Default(sourceObject),
                             elements = emptyList(),
-                            isExpanded = true
+                            isExpanded = true,
+                            name = WidgetView.Name.Default(
+                                prettyPrintName = sourceObject.getWidgetObjectName()
+                            )
                         )
                     )
                     addAll(HomeScreenViewModel.actions)
@@ -615,21 +619,32 @@ class HomeScreenViewModelTest {
                     add(
                         WidgetView.Tree(
                             id = widgetBlock.id,
+                            name = WidgetView.Name.Default(
+                                prettyPrintName = sourceObject.getWidgetObjectName()
+                            ),
                             source = Widget.Source.Default(sourceObject),
                             elements = listOf(
                                 WidgetView.Tree.Element(
+                                    id = firstLink.id,
                                     elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                     obj = firstLink,
                                     objectIcon = ObjectIcon.Empty.Page,
                                     indent = 0,
-                                    path = widgetBlock.id + "/" + sourceObject.id + "/" + firstLink.id
+                                    path = widgetBlock.id + "/" + sourceObject.id + "/" + firstLink.id,
+                                    name = WidgetView.Name.Default(
+                                        prettyPrintName = firstLink.getWidgetObjectName()
+                                    )
                                 ),
                                 WidgetView.Tree.Element(
+                                    id = secondLink.id,
                                     elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                     obj = secondLink,
                                     objectIcon = ObjectIcon.Empty.Page,
                                     indent = 0,
-                                    path = widgetBlock.id + "/" + sourceObject.id + "/" + secondLink.id
+                                    path = widgetBlock.id + "/" + sourceObject.id + "/" + secondLink.id,
+                                    name = WidgetView.Name.Default(
+                                        prettyPrintName = secondLink.getWidgetObjectName()
+                                    )
                                 )
                             ),
                             isExpanded = true
@@ -734,6 +749,9 @@ class HomeScreenViewModelTest {
                     add(
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
+                            name = WidgetView.Name.Default(
+                                prettyPrintName = sourceObject.getWidgetObjectName()
+                            ),
                             source = Widget.Source.Default(sourceObject),
                             elements = emptyList(),
                             isExpanded = true,
@@ -840,6 +858,9 @@ class HomeScreenViewModelTest {
                     add(
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
+                            name = WidgetView.Name.Default(
+                                prettyPrintName = sourceObject.getWidgetObjectName()
+                            ),
                             source = Widget.Source.Default(sourceObject),
                             elements = emptyList(),
                             isExpanded = true,
@@ -1073,20 +1094,31 @@ class HomeScreenViewModelTest {
                             WidgetView.Tree(
                                 id = favoriteWidgetBlock.id,
                                 source = Widget.Source.Bundled.Favorites,
+                                name = WidgetView.Name.Bundled(
+                                    Widget.Source.Bundled.Favorites,
+                                ),
                                 elements = listOf(
                                     WidgetView.Tree.Element(
+                                        id = firstLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
                                         objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
-                                        path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + firstLink.id
+                                        path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + firstLink.id,
+                                        name = WidgetView.Name.Default(
+                                            prettyPrintName = firstLink.getWidgetObjectName()
+                                        )
                                     ),
                                     WidgetView.Tree.Element(
+                                        id = secondLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
                                         objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
-                                        path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + secondLink.id
+                                        path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + secondLink.id,
+                                        name = WidgetView.Name.Default(
+                                            prettyPrintName = secondLink.getWidgetObjectName()
+                                        )
                                     )
                                 ),
                                 isExpanded = true
@@ -1095,21 +1127,32 @@ class HomeScreenViewModelTest {
                         add(
                             WidgetView.Tree(
                                 id = recentWidgetBlock.id,
+                                name = WidgetView.Name.Bundled(
+                                    Widget.Source.Bundled.Recent,
+                                ),
                                 source = Widget.Source.Bundled.Recent,
                                 elements = listOf(
                                     WidgetView.Tree.Element(
+                                        id = firstLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
                                         objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
-                                        path = recentWidgetBlock.id + "/" + recentSource.id + "/" + firstLink.id
+                                        path = recentWidgetBlock.id + "/" + recentSource.id + "/" + firstLink.id,
+                                        name = WidgetView.Name.Default(
+                                            prettyPrintName = firstLink.getWidgetObjectName()
+                                        )
                                     ),
                                     WidgetView.Tree.Element(
+                                        id = secondLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
                                         objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
-                                        path = recentWidgetBlock.id + "/" + recentSource.id + "/" + secondLink.id
+                                        path = recentWidgetBlock.id + "/" + recentSource.id + "/" + secondLink.id,
+                                        name = WidgetView.Name.Default(
+                                            prettyPrintName = secondLink.getWidgetObjectName()
+                                        )
                                     )
                                 ),
                                 isExpanded = true
@@ -1119,20 +1162,31 @@ class HomeScreenViewModelTest {
                             WidgetView.Tree(
                                 id = setsWidgetBlock.id,
                                 source = Widget.Source.Bundled.Sets,
+                                name = WidgetView.Name.Bundled(
+                                    Widget.Source.Bundled.Sets,
+                                ),
                                 elements = listOf(
                                     WidgetView.Tree.Element(
+                                        id = firstLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
                                         objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
-                                        path = setsWidgetBlock.id + "/" + setsSource.id + "/" + firstLink.id
+                                        path = setsWidgetBlock.id + "/" + setsSource.id + "/" + firstLink.id,
+                                        name = WidgetView.Name.Default(
+                                            prettyPrintName = firstLink.getWidgetObjectName()
+                                        )
                                     ),
                                     WidgetView.Tree.Element(
+                                        id = secondLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
                                         objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
-                                        path = setsWidgetBlock.id + "/" + setsSource.id + "/" + secondLink.id
+                                        path = setsWidgetBlock.id + "/" + setsSource.id + "/" + secondLink.id,
+                                        name = WidgetView.Name.Default(
+                                            prettyPrintName = secondLink.getWidgetObjectName()
+                                        )
                                     )
                                 ),
                                 isExpanded = true
@@ -1223,6 +1277,9 @@ class HomeScreenViewModelTest {
                         WidgetView.Link(
                             id = widgetBlock.id,
                             source = Widget.Source.Default(sourceObject),
+                            name = WidgetView.Name.Default(
+                                sourceObject.getWidgetObjectName()
+                            )
                         )
                     )
                     addAll(HomeScreenViewModel.actions)

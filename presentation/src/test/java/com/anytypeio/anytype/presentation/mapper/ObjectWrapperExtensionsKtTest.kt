@@ -3,7 +3,11 @@ package com.anytypeio.anytype.presentation.mapper
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
@@ -20,11 +24,20 @@ class ObjectWrapperExtensionsKtTest {
     @Mock
     lateinit var urlBuilder: UrlBuilder
 
+    @Mock
+    lateinit var dateProvider: DateProvider
+
+    @Mock
+    lateinit var logger: Logger
+
+    lateinit var fieldParser: FieldParser
+
     val URL = "anytype.io/"
 
     @Before
     fun before() {
         MockitoAnnotations.openMocks(this)
+        fieldParser = FieldParserImpl(dateProvider, logger)
     }
 
     @Test
@@ -92,7 +105,11 @@ class ObjectWrapperExtensionsKtTest {
 
         )
 
-        val result = listOf(obj).toViews(urlBuilder, objectTypes = listOf())
+        val result = listOf(obj).toViews(
+            urlBuilder = urlBuilder,
+            objectTypes = listOf(),
+            fieldParser
+        )
 
         assertEquals(
             expected = "OMr2Y",
@@ -118,7 +135,8 @@ class ObjectWrapperExtensionsKtTest {
 
         val result = listOf(obj).toViews(
             urlBuilder = urlBuilder,
-            objectTypes = listOf()
+            objectTypes = listOf(),
+            fieldParser
         )
 
         assertEquals(
@@ -144,7 +162,11 @@ class ObjectWrapperExtensionsKtTest {
 
         )
 
-        val result = listOf(obj).toViews(urlBuilder, objectTypes = listOf())
+        val result = listOf(obj).toViews(
+            urlBuilder = urlBuilder,
+            objectTypes = listOf(),
+            fieldParser
+        )
 
         assertEquals(
             expected = "Anytype is next-generation sof",

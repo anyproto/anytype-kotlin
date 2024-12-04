@@ -15,6 +15,7 @@ sealed class ObjectIcon {
         data object Bookmark : Empty()
         data object Discussion : Empty()
         data object ObjectType : Empty()
+        data object Date : Empty()
     }
 
     sealed class Basic : ObjectIcon() {

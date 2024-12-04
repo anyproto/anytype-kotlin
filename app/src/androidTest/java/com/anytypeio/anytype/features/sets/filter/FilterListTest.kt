@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -64,6 +65,9 @@ class FilterListTest {
     @Mock
     lateinit var dispatchers: AppCoroutineDispatchers
 
+    @Mock
+    lateinit var fieldParser: FieldParser
+
     lateinit var updateDataViewViewer: UpdateDataViewViewer
     lateinit var searchObjects: SearchObjects
     lateinit var urlBuilder: UrlBuilder
@@ -88,7 +92,8 @@ class FilterListTest {
             state = state,
             analytics = analytics,
             storeOfRelations = storeOfRelations,
-            objectSetDatabase = db
+            objectSetDatabase = db,
+            fieldParser = fieldParser
         )
     }
 

@@ -5,11 +5,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
@@ -34,14 +36,16 @@ class SelectWidgetSourceViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<WidgetDispatchEvent>,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    fieldParser: FieldParser
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
     searchObjects = searchObjects,
     getObjectTypes = getObjectTypes,
     analytics = analytics,
-    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+    fieldParser = fieldParser
 ) {
 
     val isDismissed = MutableStateFlow(false)
@@ -204,6 +208,9 @@ class SelectWidgetSourceViewModel(
                             isInEditMode = curr.isInEditMode
                         )
                     }
+                    if (view.layout == ObjectType.Layout.DATE) {
+                        isDismissed.value = true
+                    }
                 }
             }
             is Config.ExistingWidget -> {
@@ -259,7 +266,8 @@ class SelectWidgetSourceViewModel(
         private val getObjectTypes: GetObjectTypes,
         private val analytics: Analytics,
         private val dispatcher: Dispatcher<WidgetDispatchEvent>,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val fieldParser: FieldParser
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -271,7 +279,8 @@ class SelectWidgetSourceViewModel(
                 analytics = analytics,
                 getObjectTypes = getObjectTypes,
                 dispatcher = dispatcher,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                fieldParser = fieldParser
             ) as T
         }
     }

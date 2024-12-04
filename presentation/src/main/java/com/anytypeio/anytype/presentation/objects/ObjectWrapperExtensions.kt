@@ -1,18 +1,16 @@
 package com.anytypeio.anytype.presentation.objects
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.ext.DateParser
-import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.presentation.extension.MAX_SNIPPET_SIZE
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.FileView
@@ -26,7 +24,8 @@ suspend fun ObjectWrapper.Basic.values(
     relations: List<ObjectWrapper.Relation>,
     settings: List<DVViewerRelation>,
     urlBuilder: UrlBuilder,
-    storeOfObjects: ObjectStore
+    storeOfObjects: ObjectStore,
+    fieldParser: FieldParser
 ): List<DefaultObjectRelationValueView> {
     val values = mutableListOf<DefaultObjectRelationValueView>()
     relations.forEach { relation ->
@@ -121,24 +120,8 @@ suspend fun ObjectWrapper.Basic.values(
             }
             RelationFormat.DATE -> {
                 val setting = settings.find { it.key == relation.key }
-                val format: String
-                val dateFormat: String
-                if (setting != null) {
-                    dateFormat = setting.dateFormat?.format ?: DateConst.DEFAULT_DATE_FORMAT
-                    format = if (setting.isDateIncludeTime == true) {
-                        if (setting.timeFormat == Block.Content.DataView.TimeFormat.H12) {
-                            dateFormat + DateConst.DATE_FORMAT_SPACE + DateConst.TIME_H12
-                        } else {
-                            dateFormat + DateConst.DATE_FORMAT_SPACE + DateConst.TIME_H24
-                        }
-                    } else {
-                        dateFormat
-                    }
-                } else {
-                    format = DateConst.DEFAULT_DATE_FORMAT
-                }
-                val time = map.getOrDefault(key = relation.key, null)
-                val value = if (time == null) {
+                val fieldDate = fieldParser.toDate(any = map.getOrDefault(relation.key, null))
+                val value = if (fieldDate == null) {
                     DefaultObjectRelationValueView.Empty(
                         objectId = id,
                         relationKey = relation.key,
@@ -147,8 +130,9 @@ suspend fun ObjectWrapper.Basic.values(
                     DefaultObjectRelationValueView.Date(
                         objectId = id,
                         relationKey = relation.key,
-                        timeInMillis = DateParser.parseInMillis(time),
-                        dateFormat = format
+                        timeInMillis = fieldDate.timestamp.inMillis,
+                        isTimeIncluded = setting?.isDateIncludeTime == true,
+                        relativeDate = fieldDate.relativeDate
                     )
                 }
                 values.add(value)
@@ -215,7 +199,8 @@ suspend fun ObjectWrapper.Basic.values(
                 val objects = objects(
                     relation = relation.key,
                     urlBuilder = urlBuilder,
-                    storeOfObjects = storeOfObjects
+                    storeOfObjects = storeOfObjects,
+                    fieldParser = fieldParser
                 )
                 val value = if (objects.isEmpty()) {
                     DefaultObjectRelationValueView.Empty(
@@ -244,13 +229,15 @@ suspend fun ObjectWrapper.Basic.relationsFilteredByHiddenAndDescription(
     relations: List<ObjectWrapper.Relation>,
     settings: List<DVViewerRelation>,
     urlBuilder: UrlBuilder,
-    storeOfObjects: ObjectStore
+    storeOfObjects: ObjectStore,
+    fieldParser: FieldParser
 ): List<DefaultObjectRelationValueView> {
     return values(
         relations = relations.filter { it.isHidden != true && it.key != Relations.DESCRIPTION },
         settings = settings,
         urlBuilder = urlBuilder,
-        storeOfObjects = storeOfObjects
+        storeOfObjects = storeOfObjects,
+        fieldParser = fieldParser
     )
 }
 
@@ -340,7 +327,8 @@ suspend fun ObjectWrapper.Basic.files(
 suspend fun ObjectWrapper.Basic.objects(
     relation: Id,
     urlBuilder: UrlBuilder,
-    storeOfObjects: ObjectStore
+    storeOfObjects: ObjectStore,
+    fieldParser: FieldParser
 ) : List<ObjectView> {
     val result = mutableListOf<ObjectView>()
 
@@ -352,14 +340,10 @@ suspend fun ObjectWrapper.Basic.objects(
     ids.forEach { id ->
         val wrapper = storeOfObjects.get(id) ?: return@forEach
         if (wrapper.isValid) {
-            result.add(wrapper.toObjectView(urlBuilder))
+            result.add(wrapper.toObjectView(urlBuilder, fieldParser))
         }
     }
     return result
-}
-
-fun ObjectWrapper.File.getProperName(): String {
-    return "${name.orEmpty()}.$fileExt"
 }
 
 fun ObjectWrapper.Basic.getDescriptionOrSnippet(): String? {

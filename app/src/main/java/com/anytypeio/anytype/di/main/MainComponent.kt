@@ -8,6 +8,7 @@ import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
 import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
 import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
 import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
+import com.anytypeio.anytype.di.feature.DateObjectDependencies
 import com.anytypeio.anytype.di.feature.DebugSettingsSubComponent
 import com.anytypeio.anytype.di.feature.EditorSubComponent
 import com.anytypeio.anytype.di.feature.KeychainPhraseSubComponent
@@ -133,7 +134,8 @@ interface MainComponent :
     SelectWidgetSourceDependencies,
     SelectWidgetTypeDependencies,
     LinkToObjectDependencies,
-    MoveToDependencies
+    MoveToDependencies,
+    DateObjectDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -379,4 +381,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(MoveToDependencies::class)
     abstract fun provideMoveToDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(DateObjectDependencies::class)
+    abstract fun provideDateObjectDependencies(component: MainComponent): ComponentDependencies
 }

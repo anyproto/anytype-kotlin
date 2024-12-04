@@ -1,14 +1,12 @@
 package com.anytypeio.anytype.presentation.extension
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.search.DataViewState
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.relations.toView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
@@ -62,7 +60,8 @@ suspend fun List<DVFilter>.toView(
     storeOfRelations: StoreOfRelations,
     storeOfObjects: ObjectStore,
     screenState: ViewerFilterViewModel.ScreenState,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    fieldParser: FieldParser
 ): List<FilterView.Expression> = mapNotNull { filter ->
     val relation = storeOfRelations.getByKey(filter.relation)
     if (relation != null) {
@@ -70,7 +69,8 @@ suspend fun List<DVFilter>.toView(
             relation = relation,
             isInEditMode = screenState == ViewerFilterViewModel.ScreenState.EDIT,
             urlBuilder = urlBuilder,
-            store = storeOfObjects
+            store = storeOfObjects,
+            fieldParser = fieldParser
         )
     } else {
         Timber.w("Could not found relation: ${filter.relation} for filter: $filter")

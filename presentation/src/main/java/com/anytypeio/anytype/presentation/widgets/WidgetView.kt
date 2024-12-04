@@ -12,9 +12,15 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 sealed class WidgetView {
 
+    sealed interface Name {
+        data class Bundled(val source: Widget.Source.Bundled): Name
+        data class Default(val prettyPrintName: String?): Name
+    }
+
     interface Element {
         val objectIcon: ObjectIcon
         val obj: ObjectWrapper.Basic
+        val name: Name.Default
     }
 
     abstract val id: Id
@@ -23,17 +29,23 @@ sealed class WidgetView {
     data class Tree(
         override val id: Id,
         override val isLoading: Boolean = false,
+        val name: Name,
         val source: Widget.Source,
         val elements: List<Element> = emptyList(),
         val isExpanded: Boolean = false,
         val isEditable: Boolean = true
     ) : WidgetView(), Draggable {
+        /**
+         * @property [obj] is deprecated
+         */
         data class Element(
+            val id: Id,
+            val obj: ObjectWrapper.Basic,
             val elementIcon: ElementIcon,
             val objectIcon: ObjectIcon = ObjectIcon.None,
             val indent: Indent,
-            val obj: ObjectWrapper.Basic,
-            val path: String
+            val path: String,
+            val name: Name.Default
         )
 
         sealed class ElementIcon {
@@ -47,6 +59,7 @@ sealed class WidgetView {
     data class Link(
         override val id: Id,
         override val isLoading: Boolean = false,
+        val name: Name,
         val source: Widget.Source,
     ) : WidgetView(), Draggable
 
@@ -57,8 +70,9 @@ sealed class WidgetView {
         val tabs: List<Tab>,
         val elements: List<Element>,
         val isExpanded: Boolean,
-        val isCompact: Boolean = false
-    ) : WidgetView(), Draggable {
+        val isCompact: Boolean = false,
+        val name: Name
+        ) : WidgetView(), Draggable {
         data class Tab(
             val id: Id,
             val name: String,
@@ -67,6 +81,7 @@ sealed class WidgetView {
         data class Element(
             override val objectIcon: ObjectIcon,
             override val obj: ObjectWrapper.Basic,
+            override val name: Name.Default,
             val cover: CoverView? = null
         ) : WidgetView.Element
     }
@@ -75,6 +90,7 @@ sealed class WidgetView {
         override val id: Id,
         override val isLoading: Boolean = false,
         val view: Id? = null,
+        val name: Name,
         val source: Widget.Source,
         val tabs: List<SetOfObjects.Tab>,
         val elements: List<SetOfObjects.Element>,
@@ -94,7 +110,8 @@ sealed class WidgetView {
     ) : WidgetView(), Draggable {
         data class Element(
             override val objectIcon: ObjectIcon,
-            override val obj: ObjectWrapper.Basic
+            override val obj: ObjectWrapper.Basic,
+            override val name: Name.Default
         ) : WidgetView.Element
         sealed class Type {
             data object Recent : Type()
@@ -155,6 +172,7 @@ sealed class DropDownMenuAction {
     data object EmptyBin: DropDownMenuAction()
 }
 
+// TODO extend to support date object name or consider creating another extension function
 fun ObjectWrapper.Basic.getWidgetObjectName(): String? {
     return if (layout == ObjectType.Layout.NOTE) {
         snippet?.trim()?.ifEmpty { null }

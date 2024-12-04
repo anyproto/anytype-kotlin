@@ -32,11 +32,8 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
         stubCreateBlock(root)
-        stubAnalyticSpaceHelperDelegate()
     }
 
     val title = Block(

@@ -29,11 +29,11 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_date.viewmodel.UiErrorState
-import com.anytypeio.anytype.feature_date.viewmodel.DateViewModel
-import com.anytypeio.anytype.feature_date.viewmodel.DateVMFactory
+import com.anytypeio.anytype.feature_date.viewmodel.DateObjectViewModel
+import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVMFactory
 import com.anytypeio.anytype.feature_date.ui.DateMainScreen
-import com.anytypeio.anytype.feature_date.viewmodel.DateEffect
-import com.anytypeio.anytype.feature_date.viewmodel.DateVmParams
+import com.anytypeio.anytype.feature_date.viewmodel.DateObjectCommand
+import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
@@ -45,9 +45,9 @@ import timber.log.Timber
 
 class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     @Inject
-    lateinit var factory: DateVMFactory
+    lateinit var factory: DateObjectVMFactory
 
-    private val vm by viewModels<DateViewModel> { factory }
+    private val vm by viewModels<DateObjectViewModel> { factory }
     private lateinit var navComposeController: NavHostController
 
     private val space get() = argString(ARG_SPACE)
@@ -69,21 +69,21 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
         subscribe(vm.effects) { effect ->
             Timber.d("Received date effect: $effect")
             when (effect) {
-                DateEffect.Back -> {
+                DateObjectCommand.Back -> {
                     runCatching {
                         findNavController().popBackStack()
                     }.onFailure { e ->
                         Timber.e(e, "Error while exiting back from all content")
                     }
                 }
-                DateEffect.ExitToVault -> {
+                DateObjectCommand.ExitToVault -> {
                     runCatching {
                         findNavController().navigate(R.id.actionOpenVault)
                     }.onFailure { e ->
                         Timber.e(e, "Error while exiting to vault from all content")
                     }
                 }
-                is DateEffect.NavigateToEditor -> {
+                is DateObjectCommand.NavigateToEditor -> {
                     runCatching {
                         navigation().openDocument(
                             target = effect.id,
@@ -94,7 +94,7 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         Timber.e(it, "Failed to open document from all content")
                     }
                 }
-                is DateEffect.NavigateToSetOrCollection -> {
+                is DateObjectCommand.NavigateToSetOrCollection -> {
                     runCatching {
                         navigation().openObjectSet(
                             target = effect.id,
@@ -105,7 +105,7 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         Timber.e(it, "Failed to open object set from all content")
                     }
                 }
-                is DateEffect.OpenChat -> {
+                is DateObjectCommand.OpenChat -> {
                     runCatching {
                         navigation().openChat(
                             target = effect.target,
@@ -115,7 +115,7 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         Timber.e(it, "Failed to open a chat from all content")
                     }
                 }
-                DateEffect.OpenGlobalSearch -> {
+                DateObjectCommand.OpenGlobalSearch -> {
                     runCatching {
                         findNavController().navigate(
                             resId = R.id.globalSearchScreen,
@@ -127,9 +127,7 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         Timber.e(e, "Error while opening global search screen from all content")
                     }
                 }
-                is DateEffect.SendToast.Error -> TODO()
-                is DateEffect.SendToast.ObjectArchived -> TODO()
-                is DateEffect.NavigateToDateObject -> {
+                is DateObjectCommand.NavigateToDateObject -> {
                     runCatching {
                         findNavController().navigate(
                             resId = R.id.dateObjectScreen,
@@ -146,17 +144,17 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     }
                 }
 
-                DateEffect.ExitToSpaceWidgets -> {
+                DateObjectCommand.ExitToSpaceWidgets -> {
                     runCatching {
                         findNavController().navigate(R.id.actionExitToSpaceWidgets)
                     }.onFailure {
                         Timber.e(it, "Error while opening space switcher from all-content screen")
                     }
                 }
-                is DateEffect.SendToast.UnexpectedLayout -> {
+                is DateObjectCommand.SendToast.UnexpectedLayout -> {
                     toast("Unexpected layout")
                 }
-                DateEffect.TypeSelectionScreen -> {
+                DateObjectCommand.TypeSelectionScreen -> {
                     val dialog = ObjectTypeSelectionFragment.new(space = space)
                     dialog.show(childFragmentManager, null)
                 }
@@ -237,7 +235,7 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     }
 
     override fun injectDependencies() {
-        val params = DateVmParams(
+        val params = DateObjectVmParams(
             spaceId = SpaceId(space),
             objectId = objectId
         )

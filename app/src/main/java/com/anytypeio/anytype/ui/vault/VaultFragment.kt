@@ -168,11 +168,15 @@ class VaultFragment : BaseComposeFragment() {
                 )
             }
             is Navigation.OpenDateObject -> {
-                findNavController().navigate(R.id.actionOpenSpaceFromVault)
-                navigation().openDateObject(
-                    objectId = destination.ctx,
-                    space = destination.space
-                )
+                runCatching {
+                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                    navigation().openDateObject(
+                        objectId = destination.ctx,
+                        space = destination.space
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening date object from widgets")
+                }
             }
         }
     }

@@ -63,7 +63,7 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
@@ -293,7 +293,7 @@ object EditorSessionModule {
         clearLastOpenedObject: ClearLastOpenedObject,
         fieldParser: FieldParser,
         dateProvider: DateProvider,
-        objectDateByTimestamp: ObjectDateByTimestamp
+        getDateObjectByTimestamp: GetDateObjectByTimestamp
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -342,7 +342,7 @@ object EditorSessionModule {
         syncStatusProvider = syncStatusProvider,
         fieldParser = fieldParser,
         dateProvider = dateProvider,
-        objectDateByTimestamp = objectDateByTimestamp
+        getDateObjectByTimestamp = getDateObjectByTimestamp
     )
 
     @JvmStatic
@@ -1178,5 +1178,5 @@ object EditorUseCaseModule {
     fun provideDateByTimestamp(
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): ObjectDateByTimestamp = ObjectDateByTimestamp(repository, dispatchers)
+    ): GetDateObjectByTimestamp = GetDateObjectByTimestamp(repository, dispatchers)
 }

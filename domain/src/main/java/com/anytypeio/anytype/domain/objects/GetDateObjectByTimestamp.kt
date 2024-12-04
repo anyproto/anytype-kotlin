@@ -6,10 +6,10 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp.Params
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp.Params
 import javax.inject.Inject
 
-class ObjectDateByTimestamp @Inject constructor(
+class GetDateObjectByTimestamp @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<Params, Struct?>(dispatchers.io) {

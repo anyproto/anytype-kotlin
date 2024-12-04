@@ -91,7 +91,7 @@ import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -344,7 +344,7 @@ class EditorViewModel(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser : FieldParser,
     private val dateProvider: DateProvider,
-    private val objectDateByTimestamp: ObjectDateByTimestamp
+    private val getDateObjectByTimestamp: GetDateObjectByTimestamp
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -6160,7 +6160,7 @@ class EditorViewModel(
         }
     }
 
-    private enum class PredefinedDate {
+    private enum class EditorCalendarDateShortcuts {
         TODAY,
         TOMORROW
     }
@@ -6181,12 +6181,12 @@ class EditorViewModel(
             OnEditorDatePickerEvent.OnTodayClick -> {
                 handleDatePickerDismiss()
                 dispatch(Command.ShowKeyboard)
-                handlePredefinedDateClick(predefinedDate = PredefinedDate.TODAY)
+                handlePredefinedDateClick(editorCalendarDateShortcuts = EditorCalendarDateShortcuts.TODAY)
             }
             OnEditorDatePickerEvent.OnTomorrowClick -> {
                 handleDatePickerDismiss()
                 dispatch(Command.ShowKeyboard)
-                handlePredefinedDateClick(predefinedDate = PredefinedDate.TOMORROW)
+                handlePredefinedDateClick(editorCalendarDateShortcuts = EditorCalendarDateShortcuts.TOMORROW)
             }
         }
     }
@@ -6202,10 +6202,10 @@ class EditorViewModel(
         handleTimestamp(adjustedTimestamp)
     }
 
-    private fun handlePredefinedDateClick(predefinedDate: PredefinedDate) {
-        val timestamp = when (predefinedDate) {
-            PredefinedDate.TODAY -> dateProvider.getTimestampForTodayAtStartOfDay()
-            PredefinedDate.TOMORROW -> dateProvider.getTimestampForTomorrowAtStartOfDay()
+    private fun handlePredefinedDateClick(editorCalendarDateShortcuts: EditorCalendarDateShortcuts) {
+        val timestamp = when (editorCalendarDateShortcuts) {
+            EditorCalendarDateShortcuts.TODAY -> dateProvider.getTimestampForTodayAtStartOfDay()
+            EditorCalendarDateShortcuts.TOMORROW -> dateProvider.getTimestampForTomorrowAtStartOfDay()
         }
         handleTimestamp(timestamp)
     }
@@ -6234,13 +6234,13 @@ class EditorViewModel(
     }
 
     private fun proceedWithGettingDateByTimestamp(timestamp: Long, action: (Struct?) -> Unit) {
-        val params = ObjectDateByTimestamp.Params(
+        val params = GetDateObjectByTimestamp.Params(
             space = vmParams.space,
             timestamp = timestamp
         )
         Timber.d("Start ObjectDateByTimestamp with params: [$params]")
         viewModelScope.launch {
-            objectDateByTimestamp.async(params).fold(
+            getDateObjectByTimestamp.async(params).fold(
                 onSuccess = { dateObject ->
                     Timber.d("ObjectDateByTimestamp Success, dateObject: [$dateObject]")
                     action(dateObject)

@@ -85,7 +85,7 @@ private fun buildSpaceIdFilter(spaces: List<Id>): DVFilter = DVFilter(
 private fun buildLayoutFilter(): DVFilter = DVFilter(
     relation = Relations.LAYOUT,
     condition = DVFilterCondition.IN,
-    value = SUPPORTED_LAYOUTS.map { it.code.toDouble() }
+    value = SUPPORTED_DATE_OBJECT_LAYOUTS.map { it.code.toDouble() }
 )
 
 private fun buildDeletedFilter(): List<DVFilter> {
@@ -113,7 +113,7 @@ private fun buildDeletedFilter(): List<DVFilter> {
     )
 }
 
-private val SUPPORTED_LAYOUTS = listOf(
+private val SUPPORTED_DATE_OBJECT_LAYOUTS = listOf(
     ObjectType.Layout.SET,
     ObjectType.Layout.COLLECTION,
 

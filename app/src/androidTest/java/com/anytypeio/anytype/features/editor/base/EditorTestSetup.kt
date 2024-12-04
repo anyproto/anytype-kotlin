@@ -70,7 +70,7 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
-import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -283,7 +283,7 @@ open class EditorTestSetup {
     lateinit var fileLimitsEventChannel: FileLimitsEventChannel
 
     @Mock
-    lateinit var objectDateByTimestamp: ObjectDateByTimestamp
+    lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
 
     @Mock
     lateinit var spaceManager: SpaceManager
@@ -512,7 +512,7 @@ open class EditorTestSetup {
             getNetworkMode = getNetworkMode,
             fieldParser = fieldParser,
             dateProvider = dateProvider,
-            objectDateByTimestamp = objectDateByTimestamp,
+            getDateObjectByTimestamp = getDateObjectByTimestamp,
         )
     }
 

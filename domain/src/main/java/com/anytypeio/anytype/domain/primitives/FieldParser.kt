@@ -17,6 +17,10 @@ import kotlin.collections.contains
 interface FieldParser {
     fun toDate(any: Any?): Field.Date?
     fun getObjectName(objectWrapper: ObjectWrapper.Basic): String
+    fun getObjectTypeName(
+        objectWrapper: ObjectWrapper.Basic,
+        types: List<ObjectWrapper.Type>
+    ): String?
 }
 
 class FieldParserImpl @Inject constructor(
@@ -59,6 +63,20 @@ class FieldParserImpl @Inject constructor(
     //region ObjectWrapper.Basic fields
     override fun getObjectName(objectWrapper: ObjectWrapper.Basic): String {
         return objectWrapper.getProperObjectName().orEmpty()
+    }
+
+    override fun getObjectTypeName(
+        objectWrapper: ObjectWrapper.Basic,
+        types: List<ObjectWrapper.Type>
+    ): String? {
+        return when (objectWrapper.layout) {
+            ObjectType.Layout.DATE -> {
+                return null
+            }
+            else -> {
+                types.find { it.id == objectWrapper.id }?.name
+            }
+        }
     }
 
     private fun ObjectWrapper.Basic.getProperObjectName(): String? {

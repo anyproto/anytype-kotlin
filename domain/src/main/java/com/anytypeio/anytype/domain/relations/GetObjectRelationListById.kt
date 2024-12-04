@@ -1,15 +1,16 @@
 package com.anytypeio.anytype.domain.relations
 
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.relations.RelationListWithValue.Params
+import com.anytypeio.anytype.domain.relations.GetObjectRelationListById.Params
 import javax.inject.Inject
 
-class RelationListWithValue @Inject constructor(
+class GetObjectRelationListById @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<Params, List<RelationListWithValueItem>>(dispatchers.io) {
@@ -22,5 +23,5 @@ class RelationListWithValue @Inject constructor(
         return repo.objectRelationListWithValue(command)
     }
 
-    data class Params(val space: SpaceId, val value: Any?)
+    data class Params(val space: SpaceId, val value: Id)
 }

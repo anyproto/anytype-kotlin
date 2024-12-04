@@ -22,12 +22,12 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
-import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.domain.relations.RelationListWithValue
+import com.anytypeio.anytype.domain.relations.GetObjectRelationListById
 import com.anytypeio.anytype.feature_date.viewmodel.UiErrorState.Reason
 import com.anytypeio.anytype.feature_date.mapping.toUiFieldsItem
 import com.anytypeio.anytype.feature_date.mapping.toUiObjectsListItem
@@ -66,22 +66,22 @@ import timber.log.Timber
 
 /**
  * ViewState: @see [UiContentState]
- * Factory: @see [DateVMFactory]
+ * Factory: @see [DateObjectVMFactory]
  * Screen: @see [com.anytypeio.anytype.feature_date.ui.DateMainScreen]
  * Models: @see [UiObjectsListState]
  */
-class DateViewModel(
-    private val vmParams: DateVmParams,
+class DateObjectViewModel(
+    private val vmParams: DateObjectVmParams,
     private val getObject: GetObject,
     private val analytics: Analytics,
     private val urlBuilder: UrlBuilder,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val userPermissionProvider: UserPermissionProvider,
-    private val relationListWithValue: RelationListWithValue,
+    private val getObjectRelationListById: GetObjectRelationListById,
     private val storeOfRelations: StoreOfRelations,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val objectDateByTimestamp: ObjectDateByTimestamp,
+    private val getDateObjectByTimestamp: GetDateObjectByTimestamp,
     private val dateProvider: DateProvider,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val createObject: CreateObject,
@@ -101,7 +101,7 @@ class DateViewModel(
     val uiSyncStatusWidgetState =
         MutableStateFlow<UiSyncStatusWidgetState>(UiSyncStatusWidgetState.Hidden)
 
-    val effects = MutableSharedFlow<DateEffect>()
+    val effects = MutableSharedFlow<DateObjectCommand>()
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
 
     private val _dateId = MutableStateFlow<Id?>(null)
@@ -262,12 +262,12 @@ class DateViewModel(
             _dateId
                 .filterNotNull()
                 .collect { id ->
-                    val params = RelationListWithValue.Params(
+                    val params = GetObjectRelationListById.Params(
                         space = vmParams.spaceId,
                         value = id
                     )
                     Timber.d("Start RelationListWithValue with params: $params")
-                    relationListWithValue.async(params).fold(
+                    getObjectRelationListById.async(params).fold(
                         onSuccess = { result ->
                             Timber.d("RelationListWithValue Success: $result")
                             val items =
@@ -324,13 +324,13 @@ class DateViewModel(
     }
 
     private fun proceedWithGettingDateByTimestamp(timestamp: Long, action: (Struct?) -> Unit) {
-        val params = ObjectDateByTimestamp.Params(
+        val params = GetDateObjectByTimestamp.Params(
             space = vmParams.spaceId,
             timestamp = timestamp
         )
         Timber.d("Start ObjectDateByTimestamp with params: [$params]")
         viewModelScope.launch {
-            objectDateByTimestamp.async(params).fold(
+            getDateObjectByTimestamp.async(params).fold(
                 onSuccess = { dateObject ->
                     Timber.d("ObjectDateByTimestamp Success, dateObject: [$dateObject]")
                     action(dateObject)
@@ -574,7 +574,7 @@ class DateViewModel(
             when (navigation) {
                 is OpenObjectNavigation.OpenDataView -> {
                     effects.emit(
-                        DateEffect.NavigateToSetOrCollection(
+                        DateObjectCommand.NavigateToSetOrCollection(
                             id = navigation.target,
                             space = SpaceId(navigation.space)
                         )
@@ -583,7 +583,7 @@ class DateViewModel(
 
                 is OpenObjectNavigation.OpenEditor -> {
                     effects.emit(
-                        DateEffect.NavigateToEditor(
+                        DateObjectCommand.NavigateToEditor(
                             id = navigation.target,
                             space = SpaceId(navigation.space)
                         )
@@ -592,12 +592,12 @@ class DateViewModel(
 
                 is OpenObjectNavigation.UnexpectedLayoutError -> {
                     Timber.e("Unexpected layout: ${navigation.layout}")
-                    effects.emit(DateEffect.SendToast.UnexpectedLayout(navigation.layout?.name.orEmpty()))
+                    effects.emit(DateObjectCommand.SendToast.UnexpectedLayout(navigation.layout?.name.orEmpty()))
                 }
 
                 is OpenObjectNavigation.OpenDiscussion -> {
                     effects.emit(
-                        DateEffect.OpenChat(
+                        DateObjectCommand.OpenChat(
                             target = navigation.target,
                             space = SpaceId(navigation.space)
                         )
@@ -610,7 +610,7 @@ class DateViewModel(
 
                 is OpenObjectNavigation.OpenDataObject -> {
                     effects.emit(
-                        DateEffect.NavigateToEditor(
+                        DateObjectCommand.NavigateToEditor(
                             id = navigation.target,
                             space = SpaceId(navigation.space)
                         )
@@ -781,25 +781,25 @@ class DateViewModel(
 
             DateEvent.NavigationWidget.OnAddDocLongClick -> {
                 viewModelScope.launch {
-                    effects.emit(DateEffect.TypeSelectionScreen)
+                    effects.emit(DateObjectCommand.TypeSelectionScreen)
                 }
             }
 
             DateEvent.NavigationWidget.OnBackClick -> {
                 viewModelScope.launch {
-                    effects.emit(DateEffect.Back)
+                    effects.emit(DateObjectCommand.Back)
                 }
             }
 
             DateEvent.NavigationWidget.OnBackLongClick -> {
                 viewModelScope.launch {
-                    effects.emit(DateEffect.ExitToSpaceWidgets)
+                    effects.emit(DateObjectCommand.ExitToSpaceWidgets)
                 }
             }
 
             DateEvent.NavigationWidget.OnGlobalSearchClick -> {
                 viewModelScope.launch {
-                    effects.emit(DateEffect.OpenGlobalSearch)
+                    effects.emit(DateObjectCommand.OpenGlobalSearch)
                 }
             }
         }

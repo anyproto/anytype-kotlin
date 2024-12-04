@@ -18,16 +18,16 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.objects.ObjectDateByTimestamp
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.domain.relations.RelationListWithValue
+import com.anytypeio.anytype.domain.relations.GetObjectRelationListById
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
-import com.anytypeio.anytype.feature_date.viewmodel.DateVMFactory
-import com.anytypeio.anytype.feature_date.viewmodel.DateVmParams
+import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVMFactory
+import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import dagger.Binds
@@ -48,7 +48,7 @@ interface DateObjectComponent {
     @Component.Factory
     interface Factory {
         fun create(
-            @BindsInstance vmParams: DateVmParams,
+            @BindsInstance vmParams: DateObjectVmParams,
             dependencies: DateObjectDependencies
         ): DateObjectComponent
     }
@@ -124,7 +124,7 @@ object DateObjectModule {
     fun provideRelationListWithValue(
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): RelationListWithValue = RelationListWithValue(repository, dispatchers)
+    ): GetObjectRelationListById = GetObjectRelationListById(repository, dispatchers)
 
     @JvmStatic
     @Provides
@@ -140,14 +140,14 @@ object DateObjectModule {
     fun provideDateByTimestamp(
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): ObjectDateByTimestamp = ObjectDateByTimestamp(repository, dispatchers)
+    ): GetDateObjectByTimestamp = GetDateObjectByTimestamp(repository, dispatchers)
 
     @Module
     interface Declarations {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: DateVMFactory
+            factory: DateObjectVMFactory
         ): ViewModelProvider.Factory
 
     }

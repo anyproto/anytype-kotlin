@@ -13,7 +13,7 @@ import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem.Loading
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 
-data class DateVmParams(
+data class DateObjectVmParams(
     val objectId: Id,
     val spaceId: SpaceId
 )
@@ -130,7 +130,7 @@ sealed class UiObjectsListItem {
     data class Item(
         override val id: String,
         val name: String,
-        val space: SpaceId?,
+        val space: SpaceId,
         val type: String? = null,
         val typeName: String? = null,
         val createdBy: String? = null,

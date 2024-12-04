@@ -250,6 +250,8 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
+import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.*
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -5392,7 +5394,7 @@ class EditorViewModel(
             }
             SlashItem.Actions.Copy -> {
                 val block = blocks.first { it.id == targetId }
-                val intent = Intent.Clipboard.Copy(
+                val intent = Copy(
                     context = context,
                     range = null,
                     blocks = listOf(block)
@@ -5404,7 +5406,7 @@ class EditorViewModel(
             SlashItem.Actions.Paste -> {
                 viewModelScope.launch {
                     orchestrator.proxies.intents.send(
-                        Intent.Clipboard.Paste(
+                        Paste(
                             context = context,
                             focus = targetId,
                             range = IntRange(slashStartIndex, slashStartIndex),
@@ -5431,7 +5433,7 @@ class EditorViewModel(
                     orchestrator.stores.views.update(updated)
                     renderCommand.send(Unit)
                     controlPanelInteractor.onEvent(
-                        ControlPanelMachine.Event.SAM.OnQuickStart(
+                        OnQuickStart(
                             currentSelection().size
                         )
                     )
@@ -5448,6 +5450,10 @@ class EditorViewModel(
             SlashItem.Actions.LinkTo -> {
                 onHideKeyboardClicked()
                 proceedWithLinkToButtonClicked(block = targetId, position = slashStartIndex)
+            }
+
+            SlashItem.Actions.SelectDate -> {
+                mentionDatePicker.value = EditorDatePickerState.Visible.Link
             }
         }
     }
@@ -6156,7 +6162,7 @@ class EditorViewModel(
             onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
         }
         if (mention is SelectDateItem) {
-            mentionDatePicker.value = EditorDatePickerState.Visible
+            mentionDatePicker.value = EditorDatePickerState.Visible.Mention
         }
     }
 

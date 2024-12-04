@@ -248,6 +248,8 @@
     <string name="linked_to">Enlazado a</string>
     <string name="remove_link">Quitar enlace</string>
     <string name="mention_suggester_new_page">Crear un objeto</string>
+    <string name="mention_section_dates">Fechas</string>
+    <string name="mention_section_objects">Objetos</string>
     <string name="mention_suggester_create_object">Crear objeto</string>
     <string name="your_search_query">Buscar</string>
     <string name="syncing">Sincronizando…</string>
@@ -348,11 +350,13 @@
     <string name="select_tags">Seleccionar etiquetas</string>
     <string name="select_status">Seleccionar estado</string>
     <string name="select_objects">Seleccionar objetos</string>
+    <string name="select_date">Seleccionar fecha</string>
     <string name="no_value">Sin valor</string>
     <string name="source">Origen</string>
     <string name="query">Consulta</string>
     <string name="select_query">Seleccionar consulta</string>
     <string name="objects">Objetos</string>
+    <string name="your_objects">tus objetos</string>
     <string name="web_pages">Páginas web</string>
     <string name="select_files">Seleccionar archivos</string>
     <string name="u">U</string>
@@ -1556,6 +1560,10 @@ En concreto,
     <string name="chats_message_edited">editado</string>
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>
     <string name="write_a_message">Escribe un mensaje...</string>
+    <string name="date_layout_mentioned_in">Con mención en</string>
+    <string name="date_layout_empty_items">Aún no hay nada aquí para esta fecha</string>
+    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
+    <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">Objeto</string>
     <string name="chat_attachment_file">Archivo</string>
     <string name="chat_attachment_media">Medios</string>

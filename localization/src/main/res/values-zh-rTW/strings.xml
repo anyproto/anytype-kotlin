@@ -248,6 +248,8 @@
     <string name="linked_to">連結至</string>
     <string name="remove_link">移除連結</string>
     <string name="mention_suggester_new_page">建立新物件</string>
+    <string name="mention_section_dates">日期</string>
+    <string name="mention_section_objects">物件</string>
     <string name="mention_suggester_create_object">建立物件</string>
     <string name="your_search_query">搜尋</string>
     <string name="syncing">正在同步...</string>
@@ -347,11 +349,13 @@
     <string name="select_tags">選擇標籤</string>
     <string name="select_status">選擇狀態</string>
     <string name="select_objects">選擇物件</string>
+    <string name="select_date">選擇日期</string>
     <string name="no_value">無數值</string>
     <string name="source">來源</string>
     <string name="query">查詢</string>
     <string name="select_query">指定查詢</string>
     <string name="objects">物件</string>
+    <string name="your_objects">你的物件</string>
     <string name="web_pages">網頁</string>
     <string name="select_files">選擇檔案</string>
     <string name="u">U</string>
@@ -1543,6 +1547,10 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Write a message...</string>
+    <string name="date_layout_mentioned_in">Mentioned in</string>
+    <string name="date_layout_empty_items">There is nothing here for this date yet</string>
+    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
+    <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">物件</string>
     <string name="chat_attachment_file">檔案</string>
     <string name="chat_attachment_media">媒體</string>

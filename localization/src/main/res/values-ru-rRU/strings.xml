@@ -248,6 +248,8 @@
     <string name="linked_to">Привязан к</string>
     <string name="remove_link">Удалить ссылку</string>
     <string name="mention_suggester_new_page">Создать новый объект</string>
+    <string name="mention_section_dates">Даты</string>
+    <string name="mention_section_objects">Объекты</string>
     <string name="mention_suggester_create_object">Создать объект</string>
     <string name="your_search_query">Поиск</string>
     <string name="syncing">Синхронизация…</string>
@@ -350,11 +352,13 @@
     <string name="select_tags">Выберите теги</string>
     <string name="select_status">Выбрать статус</string>
     <string name="select_objects">Выберите объекты</string>
+    <string name="select_date">Выбрать дату</string>
     <string name="no_value">Нет значения</string>
     <string name="source">Источник</string>
     <string name="query">Запрос</string>
     <string name="select_query">Выберите запрос</string>
     <string name="objects">Объекты</string>
+    <string name="your_objects">Ваши объекты</string>
     <string name="web_pages">Веб-страницы</string>
     <string name="select_files">Выберите файлы</string>
     <string name="u">U</string>
@@ -1585,6 +1589,10 @@
     <string name="chats_message_edited">отредактировано</string>
     <string name="chat_empty_state_message">Пока нет сообщений. \nБудьте первыми, кто начнет обсуждение.</string>
     <string name="write_a_message">Написать сообщение...</string>
+    <string name="date_layout_mentioned_in">Mentioned in</string>
+    <string name="date_layout_empty_items">There is nothing here for this date yet</string>
+    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
+    <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">Объект</string>
     <string name="chat_attachment_file">Файл</string>
     <string name="chat_attachment_media">Медиа-файлы</string>

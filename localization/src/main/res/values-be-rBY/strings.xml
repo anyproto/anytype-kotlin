@@ -248,6 +248,8 @@
     <string name="linked_to">Звязаны з</string>
     <string name="remove_link">Выдаліць спасылку</string>
     <string name="mention_suggester_new_page">Стварыць новы аб\'ект</string>
+    <string name="mention_section_dates">Dates</string>
+    <string name="mention_section_objects">Аб\'екты</string>
     <string name="mention_suggester_create_object">Стварыць аб\'ект</string>
     <string name="your_search_query">Пошук</string>
     <string name="syncing">Сінхранізацыя...</string>
@@ -350,11 +352,13 @@
     <string name="select_tags">Выберыце тэгі</string>
     <string name="select_status">Выберыце статус</string>
     <string name="select_objects">Выберыце аб\'ект</string>
+    <string name="select_date">Выберыце дату</string>
     <string name="no_value">Няма значэння</string>
     <string name="source">Крыніца</string>
     <string name="query">Запыт</string>
     <string name="select_query">Выберыце запыт</string>
     <string name="objects">Аб\'екты</string>
+    <string name="your_objects">Вашы аб\'екты</string>
     <string name="web_pages">Вэб-старонкі</string>
     <string name="select_files">Выбраць файлы</string>
     <string name="u">U</string>
@@ -1582,6 +1586,10 @@
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Напісаць паведамленне...</string>
+    <string name="date_layout_mentioned_in">Mentioned in</string>
+    <string name="date_layout_empty_items">There is nothing here for this date yet</string>
+    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
+    <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">Аб\'ект</string>
     <string name="chat_attachment_file">Файл</string>
     <string name="chat_attachment_media">Медыя</string>

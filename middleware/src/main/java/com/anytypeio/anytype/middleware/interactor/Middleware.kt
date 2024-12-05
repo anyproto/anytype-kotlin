@@ -2844,7 +2844,7 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct? {
         val request = Rpc.Object.DateByTimestamp.Request(
-            timestamp = command.timestamp,
+            timestamp = command.timeInSeconds,
             spaceId = command.space.id
         )
         logRequestIfDebug(request)

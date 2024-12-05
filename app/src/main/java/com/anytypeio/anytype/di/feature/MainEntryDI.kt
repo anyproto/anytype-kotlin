@@ -14,6 +14,8 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
@@ -70,7 +72,8 @@ object MainEntryModule {
         deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
         awaitAccountStartManager: AwaitAccountStartManager,
         membershipProvider: MembershipProvider,
-        globalSubscriptionManager: GlobalSubscriptionManager
+        globalSubscriptionManager: GlobalSubscriptionManager,
+        spaceInviteResolver: SpaceInviteResolver
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -87,7 +90,8 @@ object MainEntryModule {
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         awaitAccountStartManager = awaitAccountStartManager,
         membershipProvider = membershipProvider,
-        globalSubscriptionManager = globalSubscriptionManager
+        globalSubscriptionManager = globalSubscriptionManager,
+        spaceInviteResolver = spaceInviteResolver
     )
 
     @JvmStatic

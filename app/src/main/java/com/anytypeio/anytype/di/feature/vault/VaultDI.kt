@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -71,4 +72,5 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun appActionManager(): AppActionManager
     fun logger(): Logger
     fun awaitAccount(): AwaitAccountStartManager
+    fun spaceInviteResolver(): SpaceInviteResolver
 }

@@ -20,7 +20,7 @@ import com.anytypeio.anytype.core_ui.views.AvatarTitle
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 
-val avatarBackgroundColor = R.color.shape_tertiary
+val avatarBackgroundColor = R.color.shape_secondary
 val avatarTextColor = R.color.glyph_active
 
 @Composable

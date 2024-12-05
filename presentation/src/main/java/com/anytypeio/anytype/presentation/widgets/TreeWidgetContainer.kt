@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -33,6 +34,7 @@ class TreeWidgetContainer(
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
+    private val fieldParser: FieldParser,
     isSessionActive: Flow<Boolean>,
     onRequestCache: () -> WidgetView.Tree? = { null }
 ) : WidgetContainer {
@@ -56,7 +58,7 @@ class TreeWidgetContainer(
                         name = when(val source = widget.source) {
                             is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                             is Widget.Source.Default -> WidgetView.Name.Default(
-                                prettyPrintName = source.obj.getWidgetObjectName()
+                                prettyPrintName = fieldParser.getObjectName(source.obj)
                             )
                         }
                     )
@@ -161,7 +163,7 @@ class TreeWidgetContainer(
                             rootLimit = WidgetConfig.NO_LIMIT
                         ),
                         name = WidgetView.Name.Default(
-                            prettyPrintName = source.obj.getWidgetObjectName()
+                            prettyPrintName = fieldParser.getObjectName(source.obj)
                         )
                     )
                 }
@@ -284,7 +286,7 @@ class TreeWidgetContainer(
                         indent = level,
                         path = path + link,
                         name = WidgetView.Name.Default(
-                            prettyPrintName = obj.getWidgetObjectName()
+                            prettyPrintName = fieldParser.getObjectName(obj)
                         )
                     )
                 )

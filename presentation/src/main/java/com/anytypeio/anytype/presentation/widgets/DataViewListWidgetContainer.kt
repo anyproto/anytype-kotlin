@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -43,6 +44,7 @@ class DataViewListWidgetContainer(
     private val isWidgetCollapsed: Flow<Boolean>,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val storeOfRelations: StoreOfRelations,
+    private val fieldParser: FieldParser,
     isSessionActive: Flow<Boolean>,
     onRequestCache: () -> WidgetView.SetOfObjects? = { null },
 ) : WidgetContainer {
@@ -70,7 +72,7 @@ class DataViewListWidgetContainer(
                                 name = when(val source = widget.source) {
                                     is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                                     is Widget.Source.Default ->  WidgetView.Name.Default(
-                                        prettyPrintName = source.obj.getWidgetObjectName()
+                                        prettyPrintName = fieldParser.getObjectName(source.obj)
                                     )
                                 }
                             )
@@ -84,7 +86,7 @@ class DataViewListWidgetContainer(
                                 isExpanded = !isCollapsed,
                                 isLoading = true,
                                 name =  WidgetView.Name.Default(
-                                    prettyPrintName = widget.source.obj.getWidgetObjectName()
+                                    prettyPrintName = fieldParser.getObjectName(widget.source.obj)
                                 )
                             )
                         }
@@ -125,7 +127,7 @@ class DataViewListWidgetContainer(
                                     name = when(val source = widget.source) {
                                         is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                                         is Widget.Source.Default ->  WidgetView.Name.Default(
-                                            prettyPrintName = source.obj.getWidgetObjectName()
+                                            prettyPrintName = fieldParser.getObjectName(source.obj)
                                         )
                                     }
                                 )
@@ -140,7 +142,7 @@ class DataViewListWidgetContainer(
                                     elements = emptyList(),
                                     isExpanded = false,
                                     name =  WidgetView.Name.Default(
-                                        prettyPrintName = source.obj.getWidgetObjectName()
+                                        prettyPrintName = fieldParser.getObjectName(source.obj)
                                     )
                                 )
                             )
@@ -261,7 +263,7 @@ class DataViewListWidgetContainer(
                             null
                         },
                         name = WidgetView.Name.Default(
-                            prettyPrintName = obj.getWidgetObjectName()
+                            prettyPrintName = fieldParser.getObjectName(obj)
                         )
                     )
                 },
@@ -271,7 +273,7 @@ class DataViewListWidgetContainer(
                 name = when(val source = widget.source) {
                     is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                     is Widget.Source.Default -> WidgetView.Name.Default(
-                        prettyPrintName = source.obj.getWidgetObjectName()
+                        prettyPrintName = fieldParser.getObjectName(source.obj)
                     )
                 }
             )
@@ -299,7 +301,7 @@ class DataViewListWidgetContainer(
                         obj = obj,
                         objectIcon = obj.objectIcon(builder = urlBuilder),
                         name = WidgetView.Name.Default(
-                            prettyPrintName = obj.getWidgetObjectName()
+                            prettyPrintName = fieldParser.getObjectName(obj)
                         )
                     )
                 },
@@ -308,7 +310,7 @@ class DataViewListWidgetContainer(
                 name = when(val source = widget.source) {
                     is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                     is Widget.Source.Default ->  WidgetView.Name.Default(
-                        prettyPrintName = source.obj.getWidgetObjectName()
+                        prettyPrintName = fieldParser.getObjectName(source.obj)
                     )
                 }
             )
@@ -327,7 +329,7 @@ class DataViewListWidgetContainer(
                 name = when(val source = widget.source) {
                     is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                     is Widget.Source.Default ->  WidgetView.Name.Default(
-                        prettyPrintName = source.obj.getWidgetObjectName()
+                        prettyPrintName = fieldParser.getObjectName(source.obj)
                     )
                 }
             )
@@ -339,7 +341,7 @@ class DataViewListWidgetContainer(
                 isExpanded = true,
                 view = null,
                 name =  WidgetView.Name.Default(
-                    prettyPrintName = widget.source.obj.getWidgetObjectName()
+                    prettyPrintName = fieldParser.getObjectName(widget.source.obj)
                 )
             )
             is Widget.Link, is Widget.Tree -> {

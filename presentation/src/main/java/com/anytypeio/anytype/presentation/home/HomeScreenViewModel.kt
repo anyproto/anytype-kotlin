@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
@@ -62,6 +63,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
@@ -87,7 +89,6 @@ import com.anytypeio.anytype.presentation.extension.sendSelectHomeTabEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
-import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
@@ -205,7 +206,8 @@ class HomeScreenViewModel(
     private val clearLastOpenedSpace: ClearLastOpenedSpace,
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
-    private val featureToggles: FeatureToggles
+    private val featureToggles: FeatureToggles,
+    private val fieldParser: FieldParser
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -450,7 +452,8 @@ class HomeScreenViewModel(
                 widgets.filter { widget -> widget.hasValidLayout() }.map { widget ->
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
-                            widget = widget
+                            widget = widget,
+                            fieldParser = fieldParser
                         )
                         is Widget.Tree -> TreeWidgetContainer(
                             widget = widget,
@@ -467,7 +470,8 @@ class HomeScreenViewModel(
                                             && view is WidgetView.Tree
                                             && view.source == widget.source
                                 } as? WidgetView.Tree
-                            }
+                            },
+                            fieldParser = fieldParser
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
                             ListWidgetContainer(
@@ -485,7 +489,8 @@ class HomeScreenViewModel(
                                                 && view is WidgetView.ListOfObjects
                                                 && view.source == widget.source
                                     } as? WidgetView.ListOfObjects
-                                }
+                                },
+                                fieldParser = fieldParser
                             )
                         } else {
                             DataViewListWidgetContainer(
@@ -504,7 +509,8 @@ class HomeScreenViewModel(
                                                 && view.source == widget.source
                                     } as? WidgetView.SetOfObjects
                                 },
-                                storeOfRelations = storeOfRelations
+                                storeOfRelations = storeOfRelations,
+                                fieldParser = fieldParser
                             )
                         }
                         is Widget.View -> {
@@ -525,7 +531,8 @@ class HomeScreenViewModel(
                                                 && view.source == widget.source
                                     } as? WidgetView.SetOfObjects
                                 },
-                                storeOfRelations = storeOfRelations
+                                storeOfRelations = storeOfRelations,
+                                fieldParser = fieldParser
                             )
                         }
                     }
@@ -2188,7 +2195,8 @@ class HomeScreenViewModel(
         private val clearLastOpenedSpace: ClearLastOpenedSpace,
         private val clearLastOpenedObject: ClearLastOpenedObject,
         private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
-        private val featureToggles: FeatureToggles
+        private val featureToggles: FeatureToggles,
+        private val fieldParser: FieldParser
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2239,7 +2247,8 @@ class HomeScreenViewModel(
             clearLastOpenedSpace = clearLastOpenedSpace,
             clearLastOpenedObject = clearLastOpenedObject,
             spaceBinWidgetContainer = spaceBinWidgetContainer,
-            featureToggles = featureToggles
+            featureToggles = featureToggles,
+            fieldParser = fieldParser
         ) as T
     }
 

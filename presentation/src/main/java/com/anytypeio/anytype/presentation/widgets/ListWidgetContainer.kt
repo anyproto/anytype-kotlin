@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -37,6 +38,7 @@ class ListWidgetContainer(
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
+    private val fieldParser: FieldParser,
     isSessionActive: Flow<Boolean>,
     onRequestCache: () -> WidgetView.ListOfObjects? = { null }
 ) : WidgetContainer {
@@ -104,7 +106,8 @@ class ListWidgetContainer(
                                         .filter { obj ->
                                             obj.isArchived != true && obj.isDeleted != true
                                         }
-                                        .sortedBy { obj -> order[obj.id] }
+                                        .sortedBy { obj -> order[obj.id] },
+                                    fieldParser = fieldParser
                                 )
                             }
                         }
@@ -126,7 +129,8 @@ class ListWidgetContainer(
                         )
                     ).map { objects ->
                         buildWidgetViewWithElements(
-                            objects = objects
+                            objects = objects,
+                            fieldParser = fieldParser
                         )
                     }
                 }
@@ -134,7 +138,8 @@ class ListWidgetContainer(
                 else -> {
                     storage.subscribe(buildParams()).map { objects ->
                         buildWidgetViewWithElements(
-                            objects = objects
+                            objects = objects,
+                            fieldParser = fieldParser
                         )
                     }
                 }
@@ -144,6 +149,7 @@ class ListWidgetContainer(
 
     private fun buildWidgetViewWithElements(
         objects: List<ObjectWrapper.Basic>,
+        fieldParser: FieldParser
     ) = WidgetView.ListOfObjects(
         id = widget.id,
         source = widget.source,
@@ -155,7 +161,7 @@ class ListWidgetContainer(
                     builder = urlBuilder
                 ),
                 name = WidgetView.Name.Default(
-                    prettyPrintName = obj.getWidgetObjectName()
+                    prettyPrintName = fieldParser.getObjectName(obj)
                 )
             )
         },

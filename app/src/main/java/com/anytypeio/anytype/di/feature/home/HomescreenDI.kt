@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
@@ -276,4 +277,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
     fun featureToggles(): FeatureToggles
     fun payloadDelegator(): PayloadDelegator
+    fun fieldParser(): FieldParser
 }

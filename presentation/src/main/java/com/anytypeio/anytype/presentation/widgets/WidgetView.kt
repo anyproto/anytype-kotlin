@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
@@ -170,13 +169,4 @@ sealed class DropDownMenuAction {
     data object AddBelow: DropDownMenuAction()
     data object EditWidgets : DropDownMenuAction()
     data object EmptyBin: DropDownMenuAction()
-}
-
-// TODO extend to support date object name or consider creating another extension function
-fun ObjectWrapper.Basic.getWidgetObjectName(): String? {
-    return if (layout == ObjectType.Layout.NOTE) {
-        snippet?.trim()?.ifEmpty { null }
-    } else {
-        name?.trim()?.ifEmpty { null }
-    }
 }

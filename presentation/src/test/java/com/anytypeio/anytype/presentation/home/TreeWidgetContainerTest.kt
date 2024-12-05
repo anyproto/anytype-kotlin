@@ -9,19 +9,21 @@ import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
@@ -63,6 +65,13 @@ class TreeWidgetContainerTest {
 
     private lateinit var urlBuilder: UrlBuilder
 
+    lateinit var fieldParser: FieldParser
+
+    @Mock
+    lateinit var logger: Logger
+
+    @Mock
+    lateinit var dateProvider: DateProvider
 
     private val config = StubConfig()
     private val workspace = config.spaceView
@@ -70,6 +79,7 @@ class TreeWidgetContainerTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        fieldParser = FieldParserImpl(dateProvider, logger)
         urlBuilder = UrlBuilder(gateway = gateway)
     }
 
@@ -104,7 +114,8 @@ class TreeWidgetContainerTest {
                 urlBuilder = urlBuilder,
                 isSessionActive = flowOf(true),
                 objectWatcher = objectWatcher,
-                getSpaceView = getSpaceView
+                getSpaceView = getSpaceView,
+                fieldParser = fieldParser
             )
 
             stubObjectSearch(
@@ -180,7 +191,8 @@ class TreeWidgetContainerTest {
             urlBuilder = urlBuilder,
             isSessionActive = flowOf(true),
             objectWatcher = objectWatcher,
-            getSpaceView = getSpaceView
+            getSpaceView = getSpaceView,
+            fieldParser = fieldParser
         )
 
         stubObjectSearch(
@@ -271,7 +283,8 @@ class TreeWidgetContainerTest {
                 urlBuilder = urlBuilder,
                 isSessionActive = flowOf(true),
                 objectWatcher = objectWatcher,
-                getSpaceView = getSpaceView
+                getSpaceView = getSpaceView,
+                fieldParser = fieldParser
             )
 
             stubObjectSearch(
@@ -300,7 +313,7 @@ class TreeWidgetContainerTest {
                         id = widget.id,
                         source = widget.source,
                         name = WidgetView.Name.Default(
-                            (widget.source as Widget.Source.Default).obj.getWidgetObjectName()
+                            fieldParser.getObjectName((widget.source as Widget.Source.Default).obj)
                         ),
                         elements = listOf(
                             WidgetView.Tree.Element(
@@ -311,7 +324,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = false),
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    prettyPrintName = sourceLinks[0].getWidgetObjectName()
+                                    prettyPrintName = fieldParser.getObjectName(sourceLinks[0])
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -322,7 +335,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    prettyPrintName = sourceLinks[1].getWidgetObjectName()
+                                    prettyPrintName = fieldParser.getObjectName(sourceLinks[1])
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -333,7 +346,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    prettyPrintName = sourceLinks[2].getWidgetObjectName()
+                                    prettyPrintName = fieldParser.getObjectName(sourceLinks[2])
                                 )
                             )
                         ),
@@ -349,7 +362,7 @@ class TreeWidgetContainerTest {
                         id = widget.id,
                         source = widget.source,
                         name = WidgetView.Name.Default(
-                            (widget.source as Widget.Source.Default).obj.getWidgetObjectName()
+                            fieldParser.getObjectName((widget.source as Widget.Source.Default).obj)
                         ),
                         elements = listOf(
                             WidgetView.Tree.Element(
@@ -360,7 +373,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = true),
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    prettyPrintName = sourceLinks[0].getWidgetObjectName()
+                                    prettyPrintName = fieldParser.getObjectName(sourceLinks[0])
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -371,7 +384,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    prettyPrintName = linkA1.getWidgetObjectName()
+                                    prettyPrintName = fieldParser.getObjectName(linkA1)
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -382,7 +395,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    prettyPrintName = linkA2.getWidgetObjectName()
+                                    prettyPrintName = fieldParser.getObjectName(linkA2)
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -393,7 +406,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    prettyPrintName = linkA3.getWidgetObjectName()
+                                    prettyPrintName = fieldParser.getObjectName(linkA3)
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -404,7 +417,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    prettyPrintName = sourceLinks[1].getWidgetObjectName()
+                                    prettyPrintName = fieldParser.getObjectName(sourceLinks[1])
                                 )
                             ),
                             WidgetView.Tree.Element(
@@ -415,7 +428,7 @@ class TreeWidgetContainerTest {
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                 objectIcon = ObjectIcon.Empty.Page,
                                 name = WidgetView.Name.Default(
-                                    prettyPrintName = sourceLinks[2].getWidgetObjectName()
+                                    prettyPrintName = fieldParser.getObjectName(sourceLinks[2])
                                 )
                             )
                         ),
@@ -458,7 +471,8 @@ class TreeWidgetContainerTest {
             urlBuilder = urlBuilder,
             isSessionActive = flowOf(true),
             objectWatcher = objectWatcher,
-            getSpaceView = getSpaceView
+            getSpaceView = getSpaceView,
+            fieldParser = fieldParser
         )
 
         stubObjectSearch(
@@ -521,7 +535,8 @@ class TreeWidgetContainerTest {
             urlBuilder = urlBuilder,
             isSessionActive = flowOf(true),
             objectWatcher = objectWatcher,
-            getSpaceView = getSpaceView
+            getSpaceView = getSpaceView,
+            fieldParser = fieldParser
         )
 
         stubObjectSearch(

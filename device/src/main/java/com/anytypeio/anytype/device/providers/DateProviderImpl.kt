@@ -1,14 +1,12 @@
 package com.anytypeio.anytype.device.providers
 
 import android.text.format.DateUtils
-import com.anytypeio.anytype.core_models.FALLBACK_DATE_PATTERN
 import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -20,27 +18,15 @@ import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class DateProviderImpl @Inject constructor(
     private val defaultZoneId: ZoneId,
     private val localeProvider: LocaleProvider,
-    private val vaultSettings: ObserveVaultSettings,
-    scope: CoroutineScope
+    private val appDefaultDateFormatProvider: AppDefaultDateFormatProvider
 ) : DateProvider {
 
-    private val defaultDateFormat = MutableStateFlow(FALLBACK_DATE_PATTERN)
-
-    init {
-        scope.launch {
-            vaultSettings.flow().collect { settings ->
-                defaultDateFormat.value = settings.dateFormat
-            }
-        }
-    }
+    private val defaultDateFormat get() = appDefaultDateFormatProvider.provide()
 
     override fun calculateDateType(date: TimeInSeconds): DateType {
         val dateInstant = Instant.ofEpochSecond(date)
@@ -172,10 +158,9 @@ class DateProviderImpl @Inject constructor(
         timestamp: TimeInMillis,
         timeStyle: Int
     ): Pair<String, String> {
-        Timber.d("Formatting timestamp [$timestamp] to date and time")
         return try {
             val locale = localeProvider.locale()
-            val datePattern = defaultDateFormat.value
+            val datePattern = defaultDateFormat
             val timePattern =
                 (DateFormat.getTimeInstance(timeStyle, locale) as SimpleDateFormat).toPattern()
             val dateFormatter = SimpleDateFormat(datePattern, locale)

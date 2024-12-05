@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.device.providers
 
-import com.anytypeio.anytype.core_models.DEFAULT_TIME_STYLE
+import com.anytypeio.anytype.core_models.DEFAULT_DATE_FORMAT_STYLE
 import com.anytypeio.anytype.core_models.FALLBACK_DATE_PATTERN
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import java.text.DateFormat
@@ -34,7 +34,7 @@ class AppDefaultDateFormatProviderImpl @Inject constructor(
     override fun provide(): String {
         return try {
             val locale = localeProvider.locale()
-            val dateFormat = DateFormat.getDateInstance(DEFAULT_TIME_STYLE, locale)
+            val dateFormat = DateFormat.getDateInstance(DEFAULT_DATE_FORMAT_STYLE, locale)
             if (dateFormat is SimpleDateFormat) {
                 dateFormat.toPattern()
             } else {

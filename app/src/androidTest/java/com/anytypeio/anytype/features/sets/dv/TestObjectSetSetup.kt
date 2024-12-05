@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProviderImpl
 import com.anytypeio.anytype.device.providers.DateProviderImpl
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -81,7 +82,6 @@ import java.util.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
@@ -242,8 +242,7 @@ abstract class TestObjectSetSetup {
     private val dateProvider = DateProviderImpl(
         defaultZoneId = ZoneId.systemDefault(),
         localeProvider = localeProvider,
-        vaultSettings = observeVaultSettings,
-        scope = TestScope()
+        appDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl(localeProvider)
     )
 
     open fun setup() {

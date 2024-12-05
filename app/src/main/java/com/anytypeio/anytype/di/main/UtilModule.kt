@@ -13,8 +13,8 @@ import com.anytypeio.anytype.core_utils.tools.DefaultUrlValidator
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
+import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
 import com.anytypeio.anytype.device.providers.DateProviderImpl
-import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.DebugConfig
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -24,7 +24,6 @@ import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
-import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
 import com.anytypeio.anytype.other.BasicLogger
@@ -34,9 +33,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import java.time.ZoneId
-import javax.inject.Named
 import javax.inject.Singleton
-import kotlinx.coroutines.CoroutineScope
 
 @Module(includes = [UtilModule.Bindings::class])
 object UtilModule {
@@ -64,13 +61,11 @@ object UtilModule {
     @Singleton
     fun provideDateProvider(
         localeProvider: LocaleProvider,
-        observeVaultSettings: ObserveVaultSettings,
-        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
+        appDefaultDateFormatProvider: AppDefaultDateFormatProvider
     ): DateProvider = DateProviderImpl(
         defaultZoneId = ZoneId.systemDefault(),
         localeProvider = localeProvider,
-        vaultSettings = observeVaultSettings,
-        scope = scope
+        appDefaultDateFormatProvider = appDefaultDateFormatProvider
     )
 
     @JvmStatic

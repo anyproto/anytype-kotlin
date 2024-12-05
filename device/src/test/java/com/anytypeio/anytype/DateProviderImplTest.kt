@@ -1,5 +1,7 @@
 package com.anytypeio.anytype
 
+import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
+import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProviderImpl
 import com.anytypeio.anytype.device.providers.DateProviderImpl
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -27,9 +29,12 @@ class DateProviderImplTest {
 
     lateinit var dateProviderImpl: DateProvider
 
+    lateinit var appDefaultDateFormatProvider: AppDefaultDateFormatProvider
+
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
+        appDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl(localeProvider)
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
         Mockito.`when`(localeProvider.language()).thenReturn("en")
     }
@@ -72,8 +77,7 @@ class DateProviderImplTest {
             dateProviderImpl = DateProviderImpl(
                 defaultZoneId = zoneId,
                 localeProvider = localeProvider,
-                vaultSettings = observeVaultSettings,
-                scope = backgroundScope
+                appDefaultDateFormatProvider = appDefaultDateFormatProvider,
             )
             val startOfDayInLocalZone =
                 dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(
@@ -122,8 +126,7 @@ class DateProviderImplTest {
             dateProviderImpl = DateProviderImpl(
                 defaultZoneId = zoneId,
                 localeProvider = localeProvider,
-                vaultSettings = observeVaultSettings,
-                scope = backgroundScope
+                appDefaultDateFormatProvider = appDefaultDateFormatProvider,
             )
             val startOfDayInLocalZone =
                 dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp * 1000)
@@ -169,8 +172,7 @@ class DateProviderImplTest {
             dateProviderImpl = DateProviderImpl(
                 defaultZoneId = zoneId,
                 localeProvider = localeProvider,
-                vaultSettings = observeVaultSettings,
-                scope = backgroundScope
+                appDefaultDateFormatProvider = appDefaultDateFormatProvider,
             )
             val startOfDayInLocalZone =
                 dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp * 1000)
@@ -215,8 +217,7 @@ class DateProviderImplTest {
             dateProviderImpl = DateProviderImpl(
                 defaultZoneId = zoneId,
                 localeProvider = localeProvider,
-                vaultSettings = observeVaultSettings,
-                scope = backgroundScope
+                appDefaultDateFormatProvider = appDefaultDateFormatProvider,
             )
             val startOfDayInLocalZone =
                 dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp * 1000)

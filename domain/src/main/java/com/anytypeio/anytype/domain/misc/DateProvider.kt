@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.domain.misc
 
-import com.anytypeio.anytype.core_models.DEFAULT_TIME_STYLE
+import com.anytypeio.anytype.core_models.DEFAULT_DATE_FORMAT_STYLE
 import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
@@ -24,7 +24,7 @@ interface DateProvider {
     fun formatToDateString(timestamp: Long, pattern: String): String
     fun formatTimestampToDateAndTime(
         timestamp: TimeInMillis,
-        timeStyle: Int = DEFAULT_TIME_STYLE
+        timeStyle: Int = DEFAULT_DATE_FORMAT_STYLE
     ): Pair<String, String>
     fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate?
     fun isSameMinute(timestamp1: Long, timestamp2: Long): Boolean

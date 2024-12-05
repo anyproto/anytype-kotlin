@@ -40,6 +40,7 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
@@ -57,6 +58,8 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
@@ -92,7 +95,6 @@ import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -265,6 +267,11 @@ class HomeScreenViewModelTest {
 
     lateinit var vm: HomeScreenViewModel
 
+    lateinit var fieldParser: FieldParser
+
+    @Mock
+    lateinit var logger: Logger
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private val appCoroutineDispatchers = AppCoroutineDispatchers(
         io = coroutineTestRule.dispatcher,
@@ -301,6 +308,7 @@ class HomeScreenViewModelTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        fieldParser = FieldParserImpl(dateProvider, logger)
         urlBuilder = UrlBuilder(gateway)
         stubSpaceManager()
         userPermissionProvider = UserPermissionProviderStub()
@@ -509,7 +517,7 @@ class HomeScreenViewModelTest {
                             elements = emptyList(),
                             isExpanded = true,
                             name = WidgetView.Name.Default(
-                                prettyPrintName = sourceObject.getWidgetObjectName()
+                                prettyPrintName = fieldParser.getObjectName(sourceObject)
                             )
                         )
                     )
@@ -620,7 +628,7 @@ class HomeScreenViewModelTest {
                         WidgetView.Tree(
                             id = widgetBlock.id,
                             name = WidgetView.Name.Default(
-                                prettyPrintName = sourceObject.getWidgetObjectName()
+                                prettyPrintName = fieldParser.getObjectName(sourceObject)
                             ),
                             source = Widget.Source.Default(sourceObject),
                             elements = listOf(
@@ -632,7 +640,7 @@ class HomeScreenViewModelTest {
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + firstLink.id,
                                     name = WidgetView.Name.Default(
-                                        prettyPrintName = firstLink.getWidgetObjectName()
+                                        prettyPrintName = fieldParser.getObjectName(firstLink)
                                     )
                                 ),
                                 WidgetView.Tree.Element(
@@ -643,7 +651,7 @@ class HomeScreenViewModelTest {
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + secondLink.id,
                                     name = WidgetView.Name.Default(
-                                        prettyPrintName = secondLink.getWidgetObjectName()
+                                        prettyPrintName = fieldParser.getObjectName(secondLink)
                                     )
                                 )
                             ),
@@ -750,7 +758,7 @@ class HomeScreenViewModelTest {
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
                             name = WidgetView.Name.Default(
-                                prettyPrintName = sourceObject.getWidgetObjectName()
+                                prettyPrintName = fieldParser.getObjectName(sourceObject)
                             ),
                             source = Widget.Source.Default(sourceObject),
                             elements = emptyList(),
@@ -859,7 +867,7 @@ class HomeScreenViewModelTest {
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
                             name = WidgetView.Name.Default(
-                                prettyPrintName = sourceObject.getWidgetObjectName()
+                                prettyPrintName = fieldParser.getObjectName(sourceObject)
                             ),
                             source = Widget.Source.Default(sourceObject),
                             elements = emptyList(),
@@ -1106,7 +1114,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + firstLink.id,
                                         name = WidgetView.Name.Default(
-                                            prettyPrintName = firstLink.getWidgetObjectName()
+                                            prettyPrintName = fieldParser.getObjectName(firstLink)
                                         )
                                     ),
                                     WidgetView.Tree.Element(
@@ -1117,7 +1125,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + secondLink.id,
                                         name = WidgetView.Name.Default(
-                                            prettyPrintName = secondLink.getWidgetObjectName()
+                                            prettyPrintName = fieldParser.getObjectName(secondLink)
                                         )
                                     )
                                 ),
@@ -1140,7 +1148,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + firstLink.id,
                                         name = WidgetView.Name.Default(
-                                            prettyPrintName = firstLink.getWidgetObjectName()
+                                            prettyPrintName = fieldParser.getObjectName(firstLink)
                                         )
                                     ),
                                     WidgetView.Tree.Element(
@@ -1151,7 +1159,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + secondLink.id,
                                         name = WidgetView.Name.Default(
-                                            prettyPrintName = secondLink.getWidgetObjectName()
+                                            prettyPrintName = fieldParser.getObjectName(secondLink)
                                         )
                                     )
                                 ),
@@ -1174,7 +1182,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + firstLink.id,
                                         name = WidgetView.Name.Default(
-                                            prettyPrintName = firstLink.getWidgetObjectName()
+                                            prettyPrintName = fieldParser.getObjectName(firstLink)
                                         )
                                     ),
                                     WidgetView.Tree.Element(
@@ -1185,7 +1193,7 @@ class HomeScreenViewModelTest {
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + secondLink.id,
                                         name = WidgetView.Name.Default(
-                                            prettyPrintName = secondLink.getWidgetObjectName()
+                                            prettyPrintName = fieldParser.getObjectName(secondLink)
                                         )
                                     )
                                 ),
@@ -1278,7 +1286,7 @@ class HomeScreenViewModelTest {
                             id = widgetBlock.id,
                             source = Widget.Source.Default(sourceObject),
                             name = WidgetView.Name.Default(
-                                sourceObject.getWidgetObjectName()
+                                fieldParser.getObjectName(sourceObject)
                             )
                         )
                     )
@@ -3034,7 +3042,8 @@ class HomeScreenViewModelTest {
             container = storelessSubscriptionContainer,
             manager = spaceManager
         ),
-        featureToggles = featureToggles
+        featureToggles = featureToggles,
+        fieldParser = fieldParser
     )
 
     companion object {

@@ -112,6 +112,7 @@ import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
@@ -360,6 +361,7 @@ class ComponentManager(
         editorComponent
             .get(key = param.ctx, param = param)
             .objectRelationListComponent()
+            .withVmParams(RelationListViewModel.VmParams(param.space))
             .module(ObjectRelationListModule)
             .build()
     }

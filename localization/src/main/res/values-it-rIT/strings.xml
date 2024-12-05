@@ -248,6 +248,8 @@
     <string name="linked_to">Collegato a</string>
     <string name="remove_link">Rimuovi collegamento</string>
     <string name="mention_suggester_new_page">Crea un nuovo oggetto</string>
+    <string name="mention_section_dates">Date</string>
+    <string name="mention_section_objects">Oggetti</string>
     <string name="mention_suggester_create_object">Crea oggetto</string>
     <string name="your_search_query">Cerca</string>
     <string name="syncing">Sincronizzazione…</string>
@@ -348,11 +350,13 @@
     <string name="select_tags">Seleziona i tag</string>
     <string name="select_status">Seleziona stato</string>
     <string name="select_objects">Seleziona gli oggetti</string>
+    <string name="select_date">Seleziona data</string>
     <string name="no_value">Nessun valore</string>
     <string name="source">Sorgente</string>
     <string name="query">Query</string>
     <string name="select_query">Seleziona query</string>
     <string name="objects">Oggetti</string>
+    <string name="your_objects">I tuoi oggetti</string>
     <string name="web_pages">Pagine Web</string>
     <string name="select_files">Seleziona i file</string>
     <string name="u">U</string>
@@ -1557,6 +1561,10 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">modificato</string>
     <string name="chat_empty_state_message">Non ci sono ancora messaggi.\nSii il primo ad avviare una discussione.</string>
     <string name="write_a_message">Scrivi un messaggio...</string>
+    <string name="date_layout_mentioned_in">Menzionato in</string>
+    <string name="date_layout_empty_items">Non c\'è ancora nulla per questa data</string>
+    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
+    <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">Oggetto</string>
     <string name="chat_attachment_file">File</string>
     <string name="chat_attachment_media">Multimedia</string>

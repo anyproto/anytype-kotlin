@@ -248,6 +248,8 @@
     <string name="linked_to">Koblet til</string>
     <string name="remove_link">Fjern lenke</string>
     <string name="mention_suggester_new_page">Opprett nytt objekt</string>
+    <string name="mention_section_dates">Dates</string>
+    <string name="mention_section_objects">Objekter</string>
     <string name="mention_suggester_create_object">Opprett objekt</string>
     <string name="your_search_query">Søk</string>
     <string name="syncing">Synkroniserer…</string>
@@ -348,11 +350,13 @@
     <string name="select_tags">Velg merkelapper</string>
     <string name="select_status">Velg status</string>
     <string name="select_objects">Velg objekter</string>
+    <string name="select_date">Velg dato</string>
     <string name="no_value">Ingen verdi</string>
     <string name="source">Kilde</string>
     <string name="query">Spørring</string>
     <string name="select_query">Velg spørring</string>
     <string name="objects">Objekter</string>
+    <string name="your_objects">Dine objekter</string>
     <string name="web_pages">Nettsider</string>
     <string name="select_files">Velg filer</string>
     <string name="u">U</string>
@@ -1556,6 +1560,10 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Write a message...</string>
+    <string name="date_layout_mentioned_in">Mentioned in</string>
+    <string name="date_layout_empty_items">There is nothing here for this date yet</string>
+    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
+    <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">Objekt</string>
     <string name="chat_attachment_file">Fil</string>
     <string name="chat_attachment_media">Media</string>

@@ -564,7 +564,7 @@ class HomeScreenFragment : BaseComposeFragment(),
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        if (space != SPACE_WITH_SPACE_LEVEL_CHAT) {
+        if (featureToggles.isNewSpaceHomeEnabled || space != SPACE_WITH_SPACE_LEVEL_CHAT) {
             super.onApplyWindowRootInsets(view)
         }
         // Do not apply window insets on fragment container.

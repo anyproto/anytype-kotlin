@@ -326,7 +326,7 @@ class DateObjectViewModel(
     private fun proceedWithGettingDateByTimestamp(timestamp: Long, action: (Struct?) -> Unit) {
         val params = GetDateObjectByTimestamp.Params(
             space = vmParams.spaceId,
-            timestamp = timestamp
+            timestampInSeconds = timestamp
         )
         Timber.d("Start ObjectDateByTimestamp with params: [$params]")
         viewModelScope.launch {

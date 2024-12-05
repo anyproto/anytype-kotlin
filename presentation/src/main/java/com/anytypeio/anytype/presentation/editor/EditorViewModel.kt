@@ -250,6 +250,8 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.TimeInMillis
+import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.*
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDatePickerDismiss
@@ -264,6 +266,7 @@ import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
 import com.anytypeio.anytype.presentation.relations.getObjectRelations
 import com.anytypeio.anytype.presentation.relations.views
@@ -7473,15 +7476,14 @@ class EditorViewModel(
                 )
             }
             RelationFormat.DATE -> {
-                dispatch(
-                    Command.OpenObjectRelationScreen.Value.Date(
-                        ctx = context,
-                        target = context,
-                        relationKey = relation.key,
-                        isReadOnlyValue = isReadOnlyValue(restrictions),
-                        space = requireNotNull(relation.spaceId)
-                    )
-                )
+                val timeInMillis =
+                    (relationView as? ObjectRelationView.Date)?.relativeDate?.initialTimeInMillis
+
+                if (isReadOnlyValue(restrictions) || relation.isReadonlyValue) {
+                    handleReadOnlyValue(timeInMillis, relation, restrictions)
+                } else {
+                    openObjectRelationScreen(relation, restrictions)
+                }
             }
             Relation.Format.TAG, Relation.Format.STATUS -> {
                 dispatch(
@@ -7510,6 +7512,59 @@ class EditorViewModel(
                 Timber.d("No interaction allowed with this relation")
             }
         }
+    }
+
+    private fun handleReadOnlyValue(
+        timeInMillis: Long?,
+        relation: ObjectWrapper.Relation,
+        restrictions: List<ObjectRestriction>
+        ) {
+        if (timeInMillis != null) {
+            proceedWithGettingDateByTimestamp(timeInSeconds = timeInMillis / 1000) { dateObject ->
+                val id = dateObject?.getSingleValue<String>(Relations.ID)
+                if (id != null) {
+                    navigateToDateObject(id)
+                } else {
+                    Timber.w("Couldn't find date object id in date object")
+                    openObjectRelationScreen(
+                        relation = relation,
+                        restrictions = restrictions
+                    )
+                }
+            }
+        } else {
+            Timber.d("timeInMillis is null")
+            openObjectRelationScreen(
+                relation = relation,
+                restrictions = restrictions
+            )
+        }
+    }
+
+    private fun navigateToDateObject(id: String) {
+        navigate(
+            EventWrapper(
+                OpenDateObject(
+                    objectId = id,
+                    space = vmParams.space.id,
+                )
+            )
+        )
+    }
+
+    private fun openObjectRelationScreen(
+        relation: ObjectWrapper.Relation,
+        restrictions: List<ObjectRestriction>
+    ) {
+        dispatch(
+            Command.OpenObjectRelationScreen.Value.Date(
+                ctx = context,
+                target = context,
+                relationKey = relation.key,
+                isReadOnlyValue = isReadOnlyValue(restrictions),
+                space = requireNotNull(relation.spaceId)
+            )
+        )
     }
     //endregion
 
@@ -7649,8 +7704,8 @@ class EditorViewModel(
             is OnTodayClick.Mention -> {
                 handleDatePickerDismiss()
                 dispatch(Command.ShowKeyboard)
-                handlePredefinedDateClick(
-                    predefinedDate = EditorCalendarDateShortcuts.TODAY,
+                handleShortcutClick(
+                    shortcut = EditorCalendarDateShortcuts.TODAY,
                     actionType = EditorCalendarActionType.MENTION,
                     targetId = event.targetId
                 )
@@ -7659,8 +7714,8 @@ class EditorViewModel(
                 handleDatePickerDismiss()
                 cutSlashFilter(targetId = event.targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-                handlePredefinedDateClick(
-                    predefinedDate = EditorCalendarDateShortcuts.TODAY,
+                handleShortcutClick(
+                    shortcut = EditorCalendarDateShortcuts.TODAY,
                     actionType = EditorCalendarActionType.LINK,
                     targetId = event.targetId
                 )
@@ -7669,8 +7724,8 @@ class EditorViewModel(
             is OnTomorrowClick.Mention -> {
                 handleDatePickerDismiss()
                 dispatch(Command.ShowKeyboard)
-                handlePredefinedDateClick(
-                    predefinedDate = EditorCalendarDateShortcuts.TOMORROW,
+                handleShortcutClick(
+                    shortcut = EditorCalendarDateShortcuts.TOMORROW,
                     actionType = EditorCalendarActionType.MENTION,
                     targetId = event.targetId
                 )
@@ -7679,8 +7734,8 @@ class EditorViewModel(
                 handleDatePickerDismiss()
                 cutSlashFilter(targetId = event.targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-                handlePredefinedDateClick(
-                    predefinedDate = EditorCalendarDateShortcuts.TOMORROW,
+                handleShortcutClick(
+                    shortcut = EditorCalendarDateShortcuts.TOMORROW,
                     actionType = EditorCalendarActionType.LINK,
                     targetId = event.targetId
                 )
@@ -7691,7 +7746,7 @@ class EditorViewModel(
     }
 
     private fun handleDateSelected(
-        timeInMillis: Long?,
+        timeInMillis: TimeInMillis?,
         actionType: EditorCalendarActionType,
         targetId: Id
     ) {
@@ -7701,24 +7756,33 @@ class EditorViewModel(
             return
         }
 
-        val adjustedTimestamp = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(timeInMillis)
-        handleTimestamp(adjustedTimestamp, actionType, targetId)
+        val timeInSeconds = dateProvider
+            .adjustFromStartOfDayInUserTimeZoneToUTC(timeInMillis = timeInMillis)
+        handleTimestamp(
+            timeInSeconds = timeInSeconds,
+            actionType = actionType,
+            targetId = targetId
+        )
     }
 
-    private fun handlePredefinedDateClick(
-        predefinedDate: EditorCalendarDateShortcuts,
+    private fun handleShortcutClick(
+        shortcut: EditorCalendarDateShortcuts,
         actionType: EditorCalendarActionType,
         targetId: Id
     ) {
-        val timestamp = when (predefinedDate) {
+        val timeInSeconds = when (shortcut) {
             EditorCalendarDateShortcuts.TODAY -> dateProvider.getTimestampForTodayAtStartOfDay()
             EditorCalendarDateShortcuts.TOMORROW -> dateProvider.getTimestampForTomorrowAtStartOfDay()
         }
-        handleTimestamp(timestamp, actionType, targetId)
+        handleTimestamp(
+            timeInSeconds = timeInSeconds,
+            actionType = actionType,
+            targetId = targetId
+        )
     }
 
-    private fun handleTimestamp(timestamp: Long, actionType: EditorCalendarActionType, targetId: Id) {
-        proceedWithGettingDateByTimestamp(timestamp) { dateObject ->
+    private fun handleTimestamp(timeInSeconds: TimeInSeconds, actionType: EditorCalendarActionType, targetId: Id) {
+        proceedWithGettingDateByTimestamp(timeInSeconds = timeInSeconds) { dateObject ->
             Timber.d("handleTimestamp, dateObject:[$dateObject]")
             val id = dateObject?.getSingleValue<String>(Relations.ID)
             val name = dateObject?.getSingleValue<String>(Relations.NAME)
@@ -7746,10 +7810,10 @@ class EditorViewModel(
         mentionDatePicker.value = EditorDatePickerState.Hidden
     }
 
-    private fun proceedWithGettingDateByTimestamp(timestamp: Long, action: (Struct?) -> Unit) {
+    private fun proceedWithGettingDateByTimestamp(timeInSeconds: TimeInSeconds, action: (Struct?) -> Unit) {
         val params = GetDateObjectByTimestamp.Params(
             space = vmParams.space,
-            timestamp = timestamp
+            timestampInSeconds = timeInSeconds
         )
         Timber.d("Start ObjectDateByTimestamp with params: [$params]")
         viewModelScope.launch {

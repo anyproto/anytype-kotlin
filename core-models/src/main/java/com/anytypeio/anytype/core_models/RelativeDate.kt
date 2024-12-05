@@ -1,8 +1,14 @@
 package com.anytypeio.anytype.core_models
 
 sealed class RelativeDate {
-    data object Today : RelativeDate()
-    data object Tomorrow : RelativeDate()
-    data object Yesterday : RelativeDate()
-    data class Other(val formattedDate: String, val formattedTime: String) : RelativeDate()
+    abstract val initialTimeInMillis: TimeInMillis
+
+    data class Today(override val initialTimeInMillis: TimeInMillis) : RelativeDate()
+    data class Tomorrow(override val initialTimeInMillis: TimeInMillis) : RelativeDate()
+    data class Yesterday(override val initialTimeInMillis: TimeInMillis) : RelativeDate()
+    data class Other(
+        override val initialTimeInMillis: TimeInMillis,
+        val formattedDate: String,
+        val formattedTime: String
+    ) : RelativeDate()
 }

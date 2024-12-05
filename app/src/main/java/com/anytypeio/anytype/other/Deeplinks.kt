@@ -9,6 +9,8 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 
 const val DEEP_LINK_PATTERN = "anytype://"
 
+const val DEEP_LINK_INVITE_DOMAIN = "invite.any.coop"
+
 /**
  * Regex pattern for matching
  */
@@ -25,6 +27,8 @@ const val MEMBERSHIP_PATH = "membership"
 const val TYPE_PARAM = "type"
 const val OBJECT_ID_PARAM = "objectId"
 const val SPACE_ID_PARAM = "spaceId"
+const val CONTENT_ID_PARAM = "cid"
+const val ENCRYPTION_KEY_PARAM = "key"
 const val SOURCE_PARAM = "source"
 const val TYPE_VALUE_EXPERIENCE = "experience"
 const val TIER_ID_PARAM = "tier"
@@ -61,9 +65,19 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
             val obj = uri.getQueryParameter(OBJECT_ID_PARAM)
             val space = uri.getQueryParameter(SPACE_ID_PARAM)
             if (!obj.isNullOrEmpty() && !space.isNullOrEmpty()) {
+                val cid = uri.getQueryParameter(CONTENT_ID_PARAM)
+                val key = uri.getQueryParameter(ENCRYPTION_KEY_PARAM)
                 DeepLinkResolver.Action.DeepLinkToObject(
                     obj = obj,
-                    space = SpaceId(space)
+                    space = SpaceId(space),
+                    invite = if (!cid.isNullOrEmpty() && !key.isNullOrEmpty()) {
+                        DeepLinkResolver.Action.DeepLinkToObject.Invite(
+                            cid = cid,
+                            key = key
+                        )
+                    } else {
+                        null
+                    }
                 )
             } else {
                 DeepLinkResolver.Action.Unknown
@@ -119,6 +133,10 @@ object DefaultSpaceInviteResolver : SpaceInviteResolver {
             val result = defaultRegex.find(link)
             result?.groupValues?.getOrNull(KEY_INDEX)
         }
+    }
+
+    override fun createInviteLink(contentId: String, encryptionKey: String) : String {
+        return "https://$DEEP_LINK_INVITE_DOMAIN/$contentId#$encryptionKey"
     }
 
     private const val CONTENT_INDEX = 1

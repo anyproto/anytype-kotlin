@@ -28,8 +28,14 @@ interface DeepLinkResolver {
         data class Invite(val link: String) : Action()
         data class DeepLinkToObject(
             val obj: Id,
-            val space: SpaceId
-        ) : Action()
+            val space: SpaceId,
+            val invite: Invite? = null
+        ) : Action() {
+            data class Invite(
+                val cid: String,
+                val key: String
+            )
+        }
         data class DeepLinkToMembership(
             val tierId: String?
         ) : Action()

@@ -132,7 +132,8 @@ object SlashExtensions {
     fun getSlashWidgetObjectTypeItems(objectTypes: List<ObjectTypeView>): List<SlashItem> =
         listOf(
             SlashItem.Subheader.ObjectTypeWithBlack,
-            SlashItem.Actions.LinkTo
+            SlashItem.Actions.LinkTo,
+            SlashItem.Actions.SelectDate
         ) + objectTypes.toSlashItemView()
 
     fun getSlashWidgetRelationItems(relations: List<SlashRelationView>): List<SlashRelationView> =
@@ -202,7 +203,7 @@ object SlashExtensions {
         )
         val filteredObjects = filterObjectTypes(
             filter = filter,
-            items = listOf(SlashItem.Actions.LinkTo) + objectTypes
+            items = listOf(SlashItem.Actions.LinkTo, SlashItem.Actions.SelectDate) + objectTypes
         )
         val filteredRelations = filterRelations(
             filter = filter,

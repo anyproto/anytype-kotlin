@@ -24,6 +24,8 @@ object SlashConst {
     const val SLASH_ACTION_COPY = "Copy"
     const val SLASH_ACTION_PASTE = "Paste"
     const val SLASH_ACTION_LINK_TO = "Link to object"
+    const val SLASH_ACTION_SELECT_DATE = "Select date"
+    const val SLASH_ACTION_SELECT_DATE_ABBREVIATION = "date"
     const val SLASH_ACTION_MOVE = "Move"
     const val SLASH_ACTION_MOVE_TO = "Move to"
     const val SLASH_ACTION_CLEAN_STYLE = "Clean style"

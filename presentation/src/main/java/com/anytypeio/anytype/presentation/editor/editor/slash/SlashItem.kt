@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor.slash
 import com.anytypeio.anytype.core_utils.const.SlashConst
 import com.anytypeio.anytype.core_utils.const.SlashConst.SLASH_OTHER_TOC_ABBREVIATION
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_utils.const.SlashConst.SLASH_ACTION_SELECT_DATE_ABBREVIATION
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 
 sealed class SlashWidgetState {
@@ -394,6 +395,13 @@ sealed class SlashItem {
         object LinkTo : Actions() {
             override fun getSearchName(): String = SlashConst.SLASH_ACTION_LINK_TO
             override fun getAbbreviation(): List<String>? = null
+        }
+
+        object SelectDate : Actions() {
+            override fun getSearchName(): String = SlashConst.SLASH_ACTION_SELECT_DATE
+            override fun getAbbreviation(): List<String>? = listOf(
+                SLASH_ACTION_SELECT_DATE_ABBREVIATION
+            )
         }
     }
     //endregion

@@ -4,14 +4,11 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.InternalFlags
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.util.dispatchers
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,14 +36,11 @@ class CreateBlockLinkWithObjectTest {
     @Mock
     lateinit var repo: BlockRepository
 
-    @Mock
-    lateinit var getTemplates: GetTemplates
-
     lateinit var createBlockLinkWithObject: CreateBlockLinkWithObject
 
     @Before
     fun setup() {
-        createBlockLinkWithObject = CreateBlockLinkWithObject(repo, getTemplates, dispatchers)
+        createBlockLinkWithObject = CreateBlockLinkWithObject(repo, dispatchers)
     }
 
     @Test
@@ -60,7 +54,6 @@ class CreateBlockLinkWithObjectTest {
         val typeId = MockDataFactory.randomString()
         val type = MockDataFactory.randomString()
         stubCreateBlockLinkWithObject()
-        givenGetTemplates(listOf())
 
         //TESTING
         val params = CreateBlockLinkWithObject.Params(
@@ -164,12 +157,6 @@ class CreateBlockLinkWithObjectTest {
             space = spaceId
         )
         verifyBlocking(repo, times(1)) { createBlockLinkWithObject(commands) }
-    }
-
-    private fun givenGetTemplates(objects: List<ObjectWrapper.Basic> = listOf()) {
-        getTemplates.stub {
-            onBlocking { run(any()) } doReturn objects
-        }
     }
 
     private fun stubCreateBlockLinkWithObject() {

@@ -14,17 +14,11 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
-import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
@@ -62,8 +56,7 @@ class RelationListViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val addRelationToObject: AddRelationToObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser,
-    private val getDateObjectByTimestamp: GetDateObjectByTimestamp
+    private val fieldParser: FieldParser
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val isEditMode = MutableStateFlow(false)
@@ -461,23 +454,26 @@ class RelationListViewModel(
         }
     }
 
-    private suspend fun handleReadOnlyValue(view: ObjectRelationView,
-                                    relation: ObjectWrapper.Relation,
-                                    ctx: Id,
-                                    isLocked: Boolean) {
+    private suspend fun handleReadOnlyValue(
+        view: ObjectRelationView,
+        relation: ObjectWrapper.Relation,
+        ctx: Id,
+        isLocked: Boolean
+    ) {
         val timeInMillis =
             (view as ObjectRelationView.Date).relativeDate?.initialTimeInMillis
         if ((timeInMillis != null)) {
-            val timeInSeconds = timeInMillis / 1000
-            proceedWithGettingDateByTimestamp(timeInSeconds = timeInSeconds) { dateObject ->
-                val id = dateObject?.getSingleValue<String>(Relations.ID)
-                if (id != null) {
-                    commands.emit(Command.NavigateToDateObject(id))
-                } else {
-                    Timber.w("Couldn't find date object id in date object")
+            fieldParser.getDateObjectByTimeInSeconds(
+                timeInSeconds = timeInMillis / 1000,
+                spaceId = vmParams.spaceId,
+                actionSuccess = { obj ->
+                    commands.emit(Command.NavigateToDateObject(obj.id))
+                },
+                actionFailure = {
+                    Timber.e(it, "Failed to get date object by timestamp")
                     openRelationDateScreen(relation, ctx, isLocked)
                 }
-            }
+            )
         } else {
             openRelationDateScreen(relation, ctx, isLocked)
         }
@@ -566,26 +562,6 @@ class RelationListViewModel(
                     )
                 },
                 failure = { Timber.e(it, "Error while updating relation values") }
-            )
-        }
-    }
-
-    private fun proceedWithGettingDateByTimestamp(timeInSeconds: TimeInSeconds, action: suspend (Struct?) -> Unit) {
-        val params = GetDateObjectByTimestamp.Params(
-            space = vmParams.spaceId,
-            timestampInSeconds = timeInSeconds
-        )
-        Timber.d("Start ObjectDateByTimestamp with params: [$params]")
-        viewModelScope.launch {
-            getDateObjectByTimestamp.async(params).fold(
-                onSuccess = { dateObject ->
-                    Timber.d("ObjectDateByTimestamp Success, dateObject: [$dateObject]")
-                    action(dateObject)
-                },
-                onFailure = { e ->
-                    Timber.e(e, "ObjectDateByTimestamp Error")
-                    sendToast("Failed to retrieve date object.")
-                }
             )
         }
     }

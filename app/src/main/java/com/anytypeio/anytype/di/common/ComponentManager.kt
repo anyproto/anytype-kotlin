@@ -370,6 +370,7 @@ class ComponentManager(
         objectSetComponent
             .get(key = param.ctx, param = param)
             .objectRelationListComponent()
+            .withVmParams(RelationListViewModel.VmParams(param.space))
             .module(ObjectRelationListModule)
             .build()
     }

@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
@@ -60,7 +59,6 @@ object ObjectRelationListModule {
         addRelationToObject: AddRelationToObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         fieldParser: FieldParser,
-        getDateObjectByTimestamp: GetDateObjectByTimestamp
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
             vmParams = vmParams,
@@ -77,7 +75,6 @@ object ObjectRelationListModule {
             addRelationToObject = addRelationToObject,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             fieldParser = fieldParser,
-            getDateObjectByTimestamp = getDateObjectByTimestamp
         )
     }
 

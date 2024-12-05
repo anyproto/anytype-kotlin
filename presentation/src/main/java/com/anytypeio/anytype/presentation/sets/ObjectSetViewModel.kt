@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
@@ -78,12 +79,18 @@ import com.anytypeio.anytype.presentation.mapper.toTemplateObjectTypeViewItems
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.TimeInMillis
+import com.anytypeio.anytype.core_models.TimeInSeconds
+import com.anytypeio.anytype.core_models.getSingleValue
+import com.anytypeio.anytype.core_models.primitives.RelationKey
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
 import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.model.CellView
@@ -169,12 +176,9 @@ class ObjectSetViewModel(
     private val spaceManager: SpaceManager,
     private val viewerDelegate: ViewerDelegate,
     private val createTemplate: CreateTemplate,
-    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers,
     private val dateProvider: DateProvider,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-    private val clearLastOpenedObject: ClearLastOpenedObject,
     private val fieldParser: FieldParser
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
@@ -878,14 +882,19 @@ class ObjectSetViewModel(
                     )
                 }
                 is CellView.Date -> {
-                    dispatch(
-                        ObjectSetCommand.Modal.EditGridDateCell(
-                            ctx = vmParams.ctx,
-                            objectId = cell.id,
-                            relationKey = cell.relationKey,
-                            space = vmParams.space.id
+                    if (relation.isReadonlyValue)  {
+                        val timeInMillis = cell.relativeDate?.initialTimeInMillis
+                        handleReadOnlyValue(timeInMillis)
+                    } else {
+                        dispatch(
+                            ObjectSetCommand.Modal.EditGridDateCell(
+                                ctx = vmParams.ctx,
+                                objectId = cell.id,
+                                relationKey = cell.relationKey,
+                                space = vmParams.space.id
+                            )
                         )
-                    )
+                    }
                 }
                 is CellView.Tag, is CellView.Status -> {
                     dispatch(
@@ -1506,6 +1515,16 @@ class ObjectSetViewModel(
                     }
                 )
             }
+            ObjectType.Layout.DATE -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenDateObject(
+                            objectId = target,
+                            space = space
+                        )
+                    )
+                )
+            }
             else -> {
                 toast("Unexpected layout: $layout")
                 Timber.e("Unexpected layout: $layout")
@@ -1722,14 +1741,20 @@ class ObjectSetViewModel(
                     proceedWithTogglingRelationCheckboxValue(view, ctx)
                 }
                 RelationFormat.DATE -> {
-                    _commands.emit(
-                        ObjectSetCommand.Modal.EditGridDateCell(
-                            ctx = vmParams.ctx,
-                            objectId = vmParams.ctx,
-                            relationKey = relation.key,
-                            space = vmParams.space.id
+                    if (relation.isReadonlyValue)  {
+                        val timeInMillis =
+                            (view as? ObjectRelationView.Date)?.relativeDate?.initialTimeInMillis
+                        handleReadOnlyValue(timeInMillis = timeInMillis)
+                    } else {
+                        _commands.emit(
+                            ObjectSetCommand.Modal.EditGridDateCell(
+                                ctx = vmParams.ctx,
+                                objectId = vmParams.ctx,
+                                relationKey = relation.key,
+                                space = vmParams.space.id
+                            )
                         )
-                    )
+                    }
                 }
                 RelationFormat.STATUS,
                 RelationFormat.TAG -> {
@@ -2827,6 +2852,32 @@ class ObjectSetViewModel(
 
     fun onUpdateAppClick() {
         dispatch(command = ObjectSetCommand.Intent.OpenAppStore)
+    }
+    //endregion
+
+    //region Date Field
+    private suspend fun handleReadOnlyValue(
+        timeInMillis: TimeInMillis?,
+    ) {
+        if ((timeInMillis != null)) {
+            fieldParser.getDateObjectByTimeInSeconds(
+                timeInSeconds = timeInMillis / 1000,
+                spaceId = vmParams.space,
+                actionSuccess = { obj ->
+                    proceedWithNavigation(
+                        target = obj.id,
+                        space = vmParams.space.id,
+                        layout = obj.layout
+                    )
+                },
+                actionFailure = {
+                    toast("Error while parsing date object")
+                    Timber.e(it, "Error while parsing date object")
+                }
+            )
+        } else {
+            toast("Date is not set")
+        }
     }
     //endregion
 

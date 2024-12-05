@@ -352,8 +352,7 @@ class EditorViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser : FieldParser,
-    private val dateProvider: DateProvider,
-    private val getDateObjectByTimestamp: GetDateObjectByTimestamp
+    private val dateProvider: DateProvider
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -7515,25 +7514,27 @@ class EditorViewModel(
     }
 
     private fun handleReadOnlyValue(
-        timeInMillis: Long?,
+        timeInMillis: TimeInMillis?,
         relation: ObjectWrapper.Relation,
         restrictions: List<ObjectRestriction>
-        ) {
+    ) {
         if (timeInMillis != null) {
-            proceedWithGettingDateByTimestamp(timeInSeconds = timeInMillis / 1000) { dateObject ->
-                val id = dateObject?.getSingleValue<String>(Relations.ID)
-                if (id != null) {
-                    navigateToDateObject(id)
-                } else {
-                    Timber.w("Couldn't find date object id in date object")
-                    openObjectRelationScreen(
-                        relation = relation,
-                        restrictions = restrictions
-                    )
-                }
+            viewModelScope.launch {
+                fieldParser.getDateObjectByTimeInSeconds(
+                    timeInSeconds = timeInMillis / 1000,
+                    spaceId = vmParams.space,
+                    actionSuccess = { obj ->
+                        navigateToDateObject(obj.id)
+                    },
+                    actionFailure = {
+                        openObjectRelationScreen(
+                            relation = relation,
+                            restrictions = restrictions
+                        )
+                    }
+                )
             }
         } else {
-            Timber.d("timeInMillis is null")
             openObjectRelationScreen(
                 relation = relation,
                 restrictions = restrictions
@@ -7781,53 +7782,38 @@ class EditorViewModel(
         )
     }
 
-    private fun handleTimestamp(timeInSeconds: TimeInSeconds, actionType: EditorCalendarActionType, targetId: Id) {
-        proceedWithGettingDateByTimestamp(timeInSeconds = timeInSeconds) { dateObject ->
-            Timber.d("handleTimestamp, dateObject:[$dateObject]")
-            val id = dateObject?.getSingleValue<String>(Relations.ID)
-            val name = dateObject?.getSingleValue<String>(Relations.NAME)
-
-            if (id != null && name != null) {
-                when (actionType) {
-                    EditorCalendarActionType.MENTION -> onCreateMentionInText(
-                        id = id,
-                        name = name,
-                        mentionTrigger = mentionFilter.value
-                    )
-                    EditorCalendarActionType.LINK -> onCreateDateLink(
-                        linkId = id,
-                        targetId = targetId
-                    )
+    private fun handleTimestamp(
+        timeInSeconds: TimeInSeconds,
+        actionType: EditorCalendarActionType,
+        targetId: Id
+    ) {
+        viewModelScope.launch {
+            fieldParser.getDateObjectByTimeInSeconds(
+                timeInSeconds = timeInSeconds,
+                spaceId = vmParams.space,
+                actionSuccess = { obj ->
+                    when (actionType) {
+                        EditorCalendarActionType.MENTION -> onCreateMentionInText(
+                            id = obj.id,
+                            name = obj.name.orEmpty(),
+                            mentionTrigger = mentionFilter.value
+                        )
+                        EditorCalendarActionType.LINK -> onCreateDateLink(
+                            linkId = obj.id,
+                            targetId = targetId
+                        )
+                    }
+                },
+                actionFailure = {
+                    sendToast("Error while creating ${actionType.name.lowercase()}, date object is null")
+                    Timber.e(it, "Error while creating ${actionType.name.lowercase()}")
                 }
-            } else {
-                sendToast("Error while creating ${actionType.name.lowercase()}, date object is null")
-                Timber.e("Date object missing ID or name.")
-            }
+            )
         }
     }
 
     private fun handleDatePickerDismiss() {
         mentionDatePicker.value = EditorDatePickerState.Hidden
-    }
-
-    private fun proceedWithGettingDateByTimestamp(timeInSeconds: TimeInSeconds, action: (Struct?) -> Unit) {
-        val params = GetDateObjectByTimestamp.Params(
-            space = vmParams.space,
-            timestampInSeconds = timeInSeconds
-        )
-        Timber.d("Start ObjectDateByTimestamp with params: [$params]")
-        viewModelScope.launch {
-            getDateObjectByTimestamp.async(params).fold(
-                onSuccess = { dateObject ->
-                    Timber.d("ObjectDateByTimestamp Success, dateObject: [$dateObject]")
-                    action(dateObject)
-                },
-                onFailure = { e ->
-                    Timber.e(e, "ObjectDateByTimestamp Error")
-                    sendToast("Failed to retrieve date object.")
-                }
-            )
-        }
     }
 
     private fun onCreateDateLink(linkId: String, targetId: Id) {

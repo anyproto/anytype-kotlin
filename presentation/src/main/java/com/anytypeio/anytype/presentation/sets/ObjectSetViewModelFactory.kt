@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
@@ -13,7 +11,6 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -79,13 +76,10 @@ class ObjectSetViewModelFactory(
     private val createTemplate: CreateTemplate,
     private val viewerDelegate: ViewerDelegate,
     private val spaceManager: SpaceManager,
-    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers,
     private val dateProvider: DateProvider,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val clearLastOpenedObject: ClearLastOpenedObject,
-    private val fieldParser: FieldParser,
+    private val fieldParser: FieldParser
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -125,12 +119,9 @@ class ObjectSetViewModelFactory(
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
             createTemplate = createTemplate,
-            dispatchers = dispatchers,
-            storelessSubscriptionContainer = storelessSubscriptionContainer,
             dateProvider = dateProvider,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject,
             fieldParser = fieldParser
         ) as T
     }

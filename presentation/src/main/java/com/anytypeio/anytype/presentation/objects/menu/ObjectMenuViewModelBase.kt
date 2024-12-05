@@ -11,11 +11,15 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.isDataView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
@@ -62,7 +66,10 @@ abstract class ObjectMenuViewModelBase(
     private val payloadDelegator: PayloadDelegator,
     private val setObjectListIsFavorite: SetObjectListIsFavorite,
     private val setObjectIsArchived: SetObjectListIsArchived,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+    private val getSpaceInviteLink: GetSpaceInviteLink,
+    private val deepLinkResolver: DeepLinkResolver
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     protected val jobs = mutableListOf<Job>()
@@ -431,6 +438,34 @@ abstract class ObjectMenuViewModelBase(
                     sendToast("Could not create widget: config is missing.")
                 }
             }
+        }
+    }
+
+    suspend fun proceedWithGeneratingObjectLink(
+        space: SpaceId,
+        ctx: String
+    ): String {
+        val spaceView = spaceViewSubscriptionContainer.get(space)
+        return if (spaceView?.spaceAccessType == SpaceAccessType.SHARED) {
+            val link = getSpaceInviteLink.async(space).getOrNull()
+            if (link != null) {
+                deepLinkResolver.createObjectDeepLinkWithInvite(
+                    obj = ctx,
+                    space = space,
+                    encryptionKey = link.fileKey,
+                    invite = link.contentId
+                )
+            } else {
+                deepLinkResolver.createObjectDeepLink(
+                    obj = ctx,
+                    space = space
+                )
+            }
+        } else {
+            deepLinkResolver.createObjectDeepLink(
+                obj = ctx,
+                space = space
+            )
         }
     }
 

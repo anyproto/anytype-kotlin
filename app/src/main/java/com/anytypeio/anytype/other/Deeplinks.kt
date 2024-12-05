@@ -82,6 +82,15 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         return "${DEEP_LINK_PATTERN}${OBJECT_PATH}?${OBJECT_ID_PARAM}=$obj&${SPACE_ID_PARAM}=${space.id}"
     }
 
+    override fun createObjectDeepLinkWithInvite(
+        obj: Id,
+        space: SpaceId,
+        invite: Id,
+        encryptionKey: String
+    ): Url {
+        return "${DEEP_LINK_PATTERN}${OBJECT_PATH}?${OBJECT_ID_PARAM}=$obj&${SPACE_ID_PARAM}=${space.id}&${DefaultSpaceInviteResolver.CONTENT_ID_KEY}=$invite&${DefaultSpaceInviteResolver.FILE_KEY_KEY}=$encryptionKey"
+    }
+
     override fun isDeepLink(link: String): Boolean {
         return link.contains(defaultInviteRegex) || link.contains(DEEP_LINK_PATTERN)
     }
@@ -114,6 +123,6 @@ object DefaultSpaceInviteResolver : SpaceInviteResolver {
 
     private const val CONTENT_INDEX = 1
     private const val KEY_INDEX = 2
-    private const val CONTENT_ID_KEY = "cid"
-    private const val FILE_KEY_KEY = "key"
+    const val CONTENT_ID_KEY = "cid"
+    const val FILE_KEY_KEY = "key"
 }

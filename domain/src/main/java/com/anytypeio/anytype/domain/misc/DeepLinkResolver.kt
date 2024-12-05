@@ -11,6 +11,13 @@ interface DeepLinkResolver {
 
     fun createObjectDeepLink(obj: Id, space: SpaceId) : Url
 
+    fun createObjectDeepLinkWithInvite(
+        obj: Id,
+        space: SpaceId,
+        invite: Id,
+        encryptionKey: String
+    ) : Url
+
     fun isDeepLink(link: String) : Boolean
 
     sealed class Action {

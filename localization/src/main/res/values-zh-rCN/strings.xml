@@ -696,7 +696,7 @@
     <string name="btn_upload_gallery">从图库上传</string>
     <string name="btn_upload_storage">从外部存储中上传</string>
     <string name="btn_upload">上传</string>
-    <string name="alert_qr_camera">请在电脑应用的设置 - 密钥，找到登录的二维码。</string>
+    <string name="alert_qr_camera">请前往位于桌面端的设置 - 密钥，以便找到用于登录的二维码。</string>
     <string name="alert_qr_camera_ok">好的</string>
     <string name="choose_option">选择选项</string>
     <string name="find_a_relation">寻找关联</string>
@@ -733,7 +733,7 @@
     <string name="go_to_settings">前往设置</string>
     <string name="do_not_forget_mnemonic_phrase">不要忘记保存您的密钥</string>
     <string name="you_can_always_find_mnemonic_in_settings">您总是可以在仪表盘屏幕上的设置中找到恢复短语。</string>
-    <string name="if_you_lose_recovery_phrase_warning">如果您丢失密钥并退出登录，您将无法再次访问您的数据。 请务必在 Anytype 之外的其他地方保存此密钥。</string>
+    <string name="if_you_lose_recovery_phrase_warning">如果您丢失密钥并退出登录，您将永远不能再访问您的数据。 请务必将密钥保存在 Anytype 之外以便完成数据恢复。</string>
     <string name="card_size">卡片尺寸</string>
     <string name="clear_cache">清除缓存</string>
     <string name="clear_cache_title">是否确定?</string>
@@ -757,7 +757,7 @@
     <string name="swipe_to_choose">滑动来选择</string>
     <string name="without_template">无模板</string>
     <string name="unsplash_generic_error">在 Unsplash上搜索图像时出错。请稍后再试。</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">不要忘记在设置中保存您的密钥</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">不要忘记在设置中获取并保存您的密钥</string>
     <string name="unlock_your_object_to_add_new_relation">解锁您的对象以编辑关联</string>
     <string name="unlock_your_object_to_edit_relations">解锁您的对象以编辑关联</string>
     <string name="fragment_relation_create_from_scratch_title">选择关联类型</string>
@@ -1177,7 +1177,7 @@
     <string name="multiplayer_share">分享</string>
     <string name="multiplayer_manage">管理</string>
     <string name="multiplayer_leave_space">离开空间</string>
-    <string name="multiplayer_leave_space_warning_subtitle">这个空间将被从您的设备中删除，您将无法再访问它</string>
+    <string name="multiplayer_leave_space_warning_subtitle">此空间将会被从您的设备里移除，您将不再有访问它的权限</string>
     <string name="multiplayer_generate_invite_link_description">创建邀请链接以共享空间并添加新成员</string>
     <string name="multiplayer_generate_invite_link">生成邀请链接</string>
     <string name="multiplayer_show_qr_code">显示二维码</string>
@@ -1195,7 +1195,7 @@
     <string name="multiplayer_already_space_member">你已经是这个空间的成员了</string>
     <string name="multiplayer_open_space">打开空间</string>
     <string name="multiplayer_error_space_deleted">空间已删除</string>
-    <string name="multiplayer_error_space_not_found">找不到空间</string>
+    <string name="multiplayer_error_space_not_found">空间未找到</string>
     <string name="multiplayer_read_only_access_error">只读权限。请联系空间所有者进行修改。</string>
     <string name="multiplayer_notification_member_user_sends_join_request">%1$s 已请求加入 %2$s 空间。</string>
     <string name="multiplayer_notification_member_user_sends_leave_request">%1$s 请求离开 %2$s 空间。</string>
@@ -1205,7 +1205,7 @@
     <string name="multiplayer_notification_member_request_approved">请求已批准</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">您加入 %1$s 空间的请求已获批准并获得了只读访问权限，该空间很快就会在您的设备中显示。</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">您加入 %1$s 空间的请求已获批准并获得了编辑访问权限，该空间很快就会在您的设备中显示。</string>
-    <string name="multiplayer_notification_member_removed_from_space">您从空间中被移出，或空间已被所有者删除。</string>
+    <string name="multiplayer_notification_member_removed_from_space">您已经被从此空间里移除，或者此空间已被所有者删除。</string>
     <string name="multiplayer_notification_member_permissions_changed">权限更改成功</string>
     <string name="multiplayer_notification_member_permission_change_read">您在 %1$s 空间中的访问权限已更改为只读。</string>
     <string name="multiplayer_notification_member_permission_change_edit">您在 %1$s 空间中的访问权限已更改为可编辑。</string>

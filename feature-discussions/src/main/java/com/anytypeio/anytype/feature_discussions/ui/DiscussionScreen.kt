@@ -496,7 +496,7 @@ private fun ChatBox(
                                     }
                                 )
                                 Image(
-                                    painter = painterResource(id = R.drawable.ic_clear_18),
+                                    painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
                                     contentDescription = "Close icon",
                                     modifier = Modifier
                                         .align(
@@ -525,10 +525,10 @@ private fun ChatBox(
                                         .clip(RoundedCornerShape(8.dp))
 
                                     ,
-                                    contentScale = ContentScale.FillBounds
+                                    contentScale = ContentScale.Crop
                                 )
                                 Image(
-                                    painter = painterResource(R.drawable.ic_clear_18),
+                                    painter = painterResource(R.drawable.ic_clear_chatbox_attachment),
                                     contentDescription = "Clear attachment icon",
                                     modifier = Modifier
                                         .align(

@@ -461,7 +461,7 @@ class RelationListViewModel(
         isLocked: Boolean
     ) {
         val timeInMillis =
-            (view as ObjectRelationView.Date).relativeDate?.initialTimeInMillis
+            (view as? ObjectRelationView.Date)?.relativeDate?.initialTimeInMillis
         if ((timeInMillis != null)) {
             fieldParser.getDateObjectByTimeInSeconds(
                 timeInSeconds = timeInMillis / 1000,

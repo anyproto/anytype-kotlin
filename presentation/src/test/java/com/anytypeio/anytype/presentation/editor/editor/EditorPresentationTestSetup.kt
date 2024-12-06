@@ -518,8 +518,7 @@ open class EditorPresentationTestSetup {
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             getNetworkMode = getNetworkMode,
             fieldParser = fieldParser,
-            dateProvider = dateProvider,
-            getDateObjectByTimestamp = getDateObjectByTimestamp
+            dateProvider = dateProvider
         )
     }
 
@@ -881,7 +880,7 @@ open class EditorPresentationTestSetup {
     }
 
     fun proceedWithDefaultBeforeTestStubbing() {
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
         stubAnalyticSpaceHelperDelegate()
         stubSpaceManager()
         stubUserPermission()

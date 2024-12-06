@@ -37,12 +37,9 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         viewModel = givenViewModel()
-        stubNetworkMode()
         stubCreateDataViewObject()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

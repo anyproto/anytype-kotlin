@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -24,7 +25,6 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -43,6 +43,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class RelationListViewModel(
+    private val vmParams: VmParams,
     private val relationListProvider: RelationListProvider,
     private val lockedStateProvider: LockedStateProvider,
     private val urlBuilder: UrlBuilder,
@@ -55,7 +56,6 @@ class RelationListViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val addRelationToObject: AddRelationToObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val spaceManager: SpaceManager,
     private val fieldParser: FieldParser
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
@@ -265,7 +265,7 @@ class RelationListViewModel(
                     eventName = EventsDictionary.relationAdd,
                     storeOfRelations = storeOfRelations,
                     relationKey = view.key,
-                    spaceParams = provideParams(spaceManager.get())
+                    spaceParams = provideParams(vmParams.spaceId.id)
                 )
                 success.invoke()
             }
@@ -293,7 +293,7 @@ class RelationListViewModel(
                                 eventName = objectRelationUnfeature,
                                 storeOfRelations = storeOfRelations,
                                 relationKey = relationKey,
-                                spaceParams = provideParams(spaceManager.get())
+                                spaceParams = provideParams(vmParams.spaceId.id)
                             )
                         }
                     )
@@ -313,7 +313,7 @@ class RelationListViewModel(
                                 eventName = objectRelationFeature,
                                 storeOfRelations = storeOfRelations,
                                 relationKey = relationKey,
-                                spaceParams = provideParams(spaceManager.get())
+                                spaceParams = provideParams(vmParams.spaceId.id)
                             )
                         }
                     )
@@ -337,7 +337,7 @@ class RelationListViewModel(
                         eventName = EventsDictionary.relationDelete,
                         storeOfRelations = storeOfRelations,
                         relationKey = view.key,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(vmParams.spaceId.id)
                     )
                 }
             )
@@ -413,15 +413,11 @@ class RelationListViewModel(
                     proceedWithTogglingRelationCheckboxValue(view, ctx)
                 }
                 RelationFormat.DATE -> {
-                    commands.emit(
-                        Command.EditDateRelationValue(
-                            ctx = ctx,
-                            relationId = relation.id,
-                            relationKey = relation.key,
-                            target = ctx,
-                            isLocked = isLocked
-                        )
-                    )
+                    if (view.readOnly || isLocked) {
+                        handleReadOnlyValue(view, relation, ctx, isLocked)
+                    } else {
+                        openRelationDateScreen(relation, ctx, isLocked)
+                    }
                 }
                 RelationFormat.TAG, RelationFormat.STATUS -> {
                     commands.emit(
@@ -458,6 +454,47 @@ class RelationListViewModel(
         }
     }
 
+    private suspend fun handleReadOnlyValue(
+        view: ObjectRelationView,
+        relation: ObjectWrapper.Relation,
+        ctx: Id,
+        isLocked: Boolean
+    ) {
+        val timeInMillis =
+            (view as? ObjectRelationView.Date)?.relativeDate?.initialTimeInMillis
+        if ((timeInMillis != null)) {
+            fieldParser.getDateObjectByTimeInSeconds(
+                timeInSeconds = timeInMillis / 1000,
+                spaceId = vmParams.spaceId,
+                actionSuccess = { obj ->
+                    commands.emit(Command.NavigateToDateObject(obj.id))
+                },
+                actionFailure = {
+                    Timber.e(it, "Failed to get date object by timestamp")
+                    openRelationDateScreen(relation, ctx, isLocked)
+                }
+            )
+        } else {
+            openRelationDateScreen(relation, ctx, isLocked)
+        }
+    }
+
+    private suspend fun openRelationDateScreen(
+        relation: ObjectWrapper.Relation,
+        ctx: Id,
+        isLocked: Boolean
+    ) {
+        commands.emit(
+            Command.EditDateRelationValue(
+                ctx = ctx,
+                relationId = relation.id,
+                relationKey = relation.key,
+                target = ctx,
+                isLocked = isLocked
+            )
+        )
+    }
+
     private fun resolveIsLockedStateOrDetailsRestriction(ctx: Id): Boolean =
         lockedStateProvider.isLocked(ctx) || lockedStateProvider.isContainsDetailsRestriction()
 
@@ -477,7 +514,7 @@ class RelationListViewModel(
                         eventName = EventsDictionary.relationChangeValue,
                         storeOfRelations = storeOfRelations,
                         relationKey = view.key,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(vmParams.spaceId.id)
                     )
                 },
                 failure = { Timber.e(it, "Error while updating checkbox relation") }
@@ -521,7 +558,7 @@ class RelationListViewModel(
                         else EventsDictionary.relationChangeValue,
                         storeOfRelations = storeOfRelations,
                         relationKey = relationKey,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(vmParams.spaceId.id)
                     )
                 },
                 failure = { Timber.e(it, "Error while updating relation values") }
@@ -591,7 +628,15 @@ class RelationListViewModel(
             val blockId: Id,
             val key: Id
         ) : Command()
+
+        data class NavigateToDateObject(
+            val objectId: Id
+        ) : Command()
     }
+
+    data class VmParams(
+        val spaceId: SpaceId
+    )
 
     companion object {
         const val NOT_ALLOWED_FOR_RELATION = "Not allowed for this relation"

@@ -17,10 +17,10 @@ class GetDateObjectByTimestamp @Inject constructor(
     override suspend fun doWork(params: Params): Struct? {
         val command = Command.ObjectDateByTimestamp(
             space = params.space,
-            timestamp = params.timestamp
+            timeInSeconds = params.timestampInSeconds
         )
         return repo.objectDateByTimestamp(command)
     }
 
-    data class Params(val space: SpaceId, val timestamp: Long)
+    data class Params(val space: SpaceId, val timestampInSeconds: Long)
 }

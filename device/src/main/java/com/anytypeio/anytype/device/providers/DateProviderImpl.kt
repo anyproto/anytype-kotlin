@@ -188,6 +188,7 @@ class DateProviderImpl @Inject constructor(
     override fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate? {
 
         if (dateInSeconds == null || dateInSeconds == 0L) return null
+        val initialTimeInMillis = dateInSeconds * 1000
         val zoneId = defaultZoneId
         val dateInstant = Instant.ofEpochSecond(dateInSeconds)
         val givenDate = dateInstant.atZone(zoneId).toLocalDate()
@@ -196,14 +197,15 @@ class DateProviderImpl @Inject constructor(
         val daysDifference = ChronoUnit.DAYS.between(today, givenDate)
 
         return when (daysDifference) {
-            0L -> RelativeDate.Today
-            1L -> RelativeDate.Tomorrow
-            -1L -> RelativeDate.Yesterday
+            0L -> RelativeDate.Today(initialTimeInMillis = initialTimeInMillis)
+            1L -> RelativeDate.Tomorrow(initialTimeInMillis = initialTimeInMillis)
+            -1L -> RelativeDate.Yesterday(initialTimeInMillis = initialTimeInMillis)
             else -> {
                 val timestampMillis = TimeUnit.SECONDS.toMillis(dateInSeconds)
 
                 val (dateString, timeString) = formatTimestampToDateAndTime(timestampMillis)
                 RelativeDate.Other(
+                    initialTimeInMillis = initialTimeInMillis,
                     formattedDate = dateString,
                     formattedTime = timeString
                 )

@@ -34,7 +34,7 @@ class ObjectSetZeroDataViewTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @Test

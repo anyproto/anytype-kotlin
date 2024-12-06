@@ -30,13 +30,9 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         viewModel = givenViewModel()
         objectCollection = MockCollection(context = root, space = defaultSpace)
-        stubGetDefaultPageType()
-        stubNetworkMode()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

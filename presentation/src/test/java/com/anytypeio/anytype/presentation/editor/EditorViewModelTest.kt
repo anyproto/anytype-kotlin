@@ -3984,7 +3984,6 @@ open class EditorViewModelTest {
             getNetworkMode = getNetworkMode,
             fieldParser = fieldParser,
             dateProvider = dateProvider,
-            getDateObjectByTimestamp = getDateObjectByTimestamp
         )
     }
 

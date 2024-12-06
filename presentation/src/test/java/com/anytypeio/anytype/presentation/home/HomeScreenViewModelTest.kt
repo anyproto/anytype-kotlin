@@ -49,6 +49,8 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -258,6 +260,12 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var featureToggles: FeatureToggles
+
+    @Mock
+    lateinit var spaceInviteResolver: SpaceInviteResolver
+
+    @Mock
+    lateinit var getSpaceInviteLink: GetSpaceInviteLink
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -3047,7 +3055,8 @@ class HomeScreenViewModelTest {
             manager = spaceManager
         ),
         featureToggles = featureToggles,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        spaceInviteResolver = spaceInviteResolver
     )
 
     companion object {

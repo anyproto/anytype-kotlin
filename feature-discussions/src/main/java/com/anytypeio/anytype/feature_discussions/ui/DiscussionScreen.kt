@@ -130,7 +130,6 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.ChatBoxMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.UXCommand
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import kotlinx.coroutines.launch
@@ -514,7 +513,7 @@ private fun ChatBox(
                         item {
                             Box(modifier = Modifier.padding()) {
                                 Image(
-                                    painter = rememberAsyncImagePainter(attachment.url),
+                                    painter = rememberAsyncImagePainter(attachment.uri),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .padding(

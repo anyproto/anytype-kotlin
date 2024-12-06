@@ -241,7 +241,7 @@ class DiscussionViewModel @Inject constructor(
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
-                                    path = attachment.url
+                                    path = attachment.uri
                                 )
                             ).onSuccess { file ->
                                 add(
@@ -432,7 +432,7 @@ class DiscussionViewModel @Inject constructor(
         Timber.d("onChatBoxMediaPicked: $uris")
         chatBoxAttachments.value = chatBoxAttachments.value + uris.map {
             DiscussionView.Message.ChatBoxAttachment.Media(
-                url = it
+                uri = it
             )
         }
     }

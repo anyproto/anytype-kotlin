@@ -70,7 +70,7 @@ sealed class Chat {
                 id = id,
                 createdAt = 0L,
                 modifiedAt = 0L,
-                attachments = emptyList(),
+                attachments = attachments,
                 reactions = emptyMap(),
                 creator = "",
                 replyToMessageId = "",

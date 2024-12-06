@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
 sealed interface DiscussionView {
@@ -54,7 +53,7 @@ sealed interface DiscussionView {
 
         sealed class ChatBoxAttachment {
             data class Media(
-                val url: String
+                val uri: String
             ): ChatBoxAttachment()
             data class Link(
                 val target: Id,

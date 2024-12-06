@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
 sealed interface DiscussionView {
     data class Message(
@@ -49,6 +49,16 @@ sealed interface DiscussionView {
                 val target: Id,
                 val wrapper: ObjectWrapper.Basic?
             ): Attachment()
+        }
+
+        sealed class ChatBoxAttachment {
+            data class Media(
+                val uri: String
+            ): ChatBoxAttachment()
+            data class Link(
+                val target: Id,
+                val wrapper: GlobalSearchItemView
+            ): ChatBoxAttachment()
         }
 
         data class Reaction(

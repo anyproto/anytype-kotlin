@@ -20,6 +20,8 @@ import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
+import com.anytypeio.anytype.domain.media.FileDrop
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
@@ -34,7 +36,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -51,12 +52,13 @@ class DiscussionViewModel @Inject constructor(
     private val getAccount: GetAccount,
     private val urlBuilder: UrlBuilder,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val uploadFile: UploadFile
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
     val messages = MutableStateFlow<List<DiscussionView.Message>>(emptyList())
-    val attachments = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
+    val chatBoxAttachments = MutableStateFlow<List<DiscussionView.Message.ChatBoxAttachment>>(emptyList())
     val commands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
@@ -223,6 +225,35 @@ class DiscussionViewModel @Inject constructor(
     fun onMessageSent(msg: String) {
         Timber.d("DROID-2635 OnMessageSent: $msg")
         viewModelScope.launch {
+            val attachments = buildList {
+                chatBoxAttachments.value.forEach { attachment ->
+                    when(attachment) {
+                        is DiscussionView.Message.ChatBoxAttachment.Link -> {
+                            add(
+                                Chat.Message.Attachment(
+                                    target = attachment.target,
+                                    type = Chat.Message.Attachment.Type.Link
+                                )
+                            )
+                        }
+                        is DiscussionView.Message.ChatBoxAttachment.Media -> {
+                            uploadFile.async(
+                                UploadFile.Params(
+                                    space = vmParams.space,
+                                    path = attachment.uri
+                                )
+                            ).onSuccess { file ->
+                                add(
+                                    Chat.Message.Attachment(
+                                        target = file.id,
+                                        type = Chat.Message.Attachment.Type.Image
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
             when (val mode = chatBoxMode.value) {
                 is ChatBoxMode.Default -> {
                     // TODO consider moving this use-case inside chat container
@@ -231,16 +262,11 @@ class DiscussionViewModel @Inject constructor(
                             chat = chat,
                             message = Chat.Message.new(
                                 text = msg,
-                                attachments = attachments.value.map { a ->
-                                    Chat.Message.Attachment(
-                                        target = a.id,
-                                        type = Chat.Message.Attachment.Type.Link
-                                    )
-                                }
+                                attachments = attachments
                             )
                         )
                     ).onSuccess { (id, payload) ->
-                        attachments.value = emptyList()
+                        chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         commands.emit(UXCommand.JumpToBottom)
@@ -254,12 +280,14 @@ class DiscussionViewModel @Inject constructor(
                             chat = chat,
                             message = Chat.Message.updated(
                                 id = mode.msg,
-                                text = msg
+                                text = msg,
+                                attachments = attachments
                             )
                         )
                     ).onSuccess {
                         delay(JUMP_TO_BOTTOM_DELAY)
                         commands.emit(UXCommand.JumpToBottom)
+                        chatBoxAttachments.value = emptyList()
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }.onSuccess {
@@ -273,16 +301,11 @@ class DiscussionViewModel @Inject constructor(
                             message = Chat.Message.new(
                                 text = msg,
                                 replyToMessageId = mode.msg,
-                                attachments = attachments.value.map { a ->
-                                    Chat.Message.Attachment(
-                                        target = a.id,
-                                        type = Chat.Message.Attachment.Type.Link
-                                    )
-                                }
+                                attachments = attachments
                             )
                         )
                     ).onSuccess { (id, payload) ->
-                        attachments.value = emptyList()
+                        chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         commands.emit(UXCommand.JumpToBottom)
@@ -322,11 +345,18 @@ class DiscussionViewModel @Inject constructor(
     }
 
     fun onAttachObject(obj: GlobalSearchItemView) {
-        attachments.value = listOf(obj)
+        chatBoxAttachments.value = chatBoxAttachments.value + listOf(
+            DiscussionView.Message.ChatBoxAttachment.Link(
+                target = obj.id,
+                wrapper = obj
+            )
+        )
     }
 
-    fun onClearAttachmentClicked() {
-        attachments.value = emptyList()
+    fun onClearAttachmentClicked(attachment: DiscussionView.Message.ChatBoxAttachment) {
+        chatBoxAttachments.value = chatBoxAttachments.value.filter {
+            it != attachment
+        }
     }
 
     fun onClearReplyClicked() {
@@ -395,6 +425,15 @@ class DiscussionViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun onChatBoxMediaPicked(uris: List<String>) {
+        Timber.d("onChatBoxMediaPicked: $uris")
+        chatBoxAttachments.value = chatBoxAttachments.value + uris.map {
+            DiscussionView.Message.ChatBoxAttachment.Media(
+                uri = it
+            )
         }
     }
 

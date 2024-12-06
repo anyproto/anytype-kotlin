@@ -93,7 +93,7 @@ fun LinkWidgetCard(
                 text = when(val name = item.name) {
                     is WidgetView.Name.Bundled -> stringResource(id = name.source.res())
                     is WidgetView.Name.Default -> {
-                        name.prettyPrintName ?: stringResource(id = R.string.untitled)
+                        name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
                     }
                 },
                 maxLines = 1,

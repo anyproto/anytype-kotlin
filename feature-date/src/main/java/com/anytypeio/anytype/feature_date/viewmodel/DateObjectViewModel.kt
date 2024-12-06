@@ -294,7 +294,8 @@ class DateObjectViewModel(
                 .collect { id ->
                     val params = GetObject.Params(
                         target = id,
-                        space = vmParams.spaceId
+                        space = vmParams.spaceId,
+                        saveAsLastOpened = true
                     )
                     Timber.d("Start GetObject with params: $params")
                     getObject.async(params).fold(

@@ -15,6 +15,8 @@ import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -119,7 +121,9 @@ object ObjectMenuModule {
         payloadDelegator: PayloadDelegator,
         setObjectListIsFavorite: SetObjectListIsFavorite,
         setObjectIsArchived: SetObjectListIsArchived,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+        getSpaceInviteLink: GetSpaceInviteLink
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -142,7 +146,9 @@ object ObjectMenuModule {
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         payloadDelegator = payloadDelegator,
         setObjectListIsFavorite = setObjectListIsFavorite,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        getSpaceInviteLink = getSpaceInviteLink,
+        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
     )
 
     @JvmStatic
@@ -237,6 +243,8 @@ object ObjectSetMenuModule {
         setObjectListIsFavorite: SetObjectListIsFavorite,
         setObjectIsArchived: SetObjectListIsArchived,
         fieldParser: FieldParser,
+        getSpaceInviteLink: GetSpaceInviteLink,
+        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectListIsArchived = setObjectIsArchived,
         addBackLinkToObject = addBackLinkToObject,
@@ -255,7 +263,9 @@ object ObjectSetMenuModule {
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         payloadDelegator = payloadDelegator,
         setObjectListIsFavorite = setObjectListIsFavorite,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        getSpaceInviteLink = getSpaceInviteLink,
+        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
     )
 
     @JvmStatic

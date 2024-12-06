@@ -319,8 +319,6 @@ abstract class TestObjectSetSetup {
             spaceManager = spaceManager,
             createTemplate = createTemplate,
             getObjectTypes = getObjectTypes,
-            storelessSubscriptionContainer = storelessSubscriptionContainer,
-            dispatchers = appCoroutineDispatchers,
             dateProvider = dateProvider,
             params = ObjectSetViewModel.Params(
                 ctx = ctx,
@@ -329,7 +327,6 @@ abstract class TestObjectSetSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject,
             fieldParser = fieldParser
         )
 

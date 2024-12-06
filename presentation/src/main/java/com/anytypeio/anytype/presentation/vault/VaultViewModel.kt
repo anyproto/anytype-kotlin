@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.GetVaultSettings
@@ -60,7 +61,8 @@ class VaultViewModel(
     private val setVaultSpaceOrder: SetVaultSpaceOrder,
     private val analytics: Analytics,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
-    private val appActionManager: AppActionManager
+    private val appActionManager: AppActionManager,
+    private val spaceInviteResolver: SpaceInviteResolver
 ) : NavigationViewModel<VaultViewModel.Navigation>(), DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
@@ -206,7 +208,19 @@ class VaultViewModel(
                     ).collect { result ->
                         when(result) {
                             is DeepLinkToObjectDelegate.Result.Error -> {
-                                commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+                                val link = deeplink.invite
+                                if (link != null) {
+                                    commands.emit(
+                                        Command.Deeplink.Invite(
+                                            link = spaceInviteResolver.createInviteLink(
+                                                contentId = link.cid,
+                                                encryptionKey = link.key
+                                            )
+                                        )
+                                    )
+                                } else {
+                                    commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+                                }
                             }
                             is DeepLinkToObjectDelegate.Result.Success -> {
                                 proceedWithNavigation(result.obj.navigation())
@@ -304,7 +318,8 @@ class VaultViewModel(
         private val observeVaultSettings: ObserveVaultSettings,
         private val analytics: Analytics,
         private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
-        private val appActionManager: AppActionManager
+        private val appActionManager: AppActionManager,
+        private val spaceInviteResolver: SpaceInviteResolver
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -321,7 +336,8 @@ class VaultViewModel(
             observeVaultSettings = observeVaultSettings,
             analytics = analytics,
             deepLinkToObjectDelegate = deepLinkToObjectDelegate,
-            appActionManager = appActionManager
+            appActionManager = appActionManager,
+            spaceInviteResolver = spaceInviteResolver
         ) as T
     }
 

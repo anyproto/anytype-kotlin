@@ -64,15 +64,13 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         getNetworkMode.stub {
             onBlocking {
                 run(any())
             } doReturn NetworkModeConfig()
         }
         viewModel = givenViewModel()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

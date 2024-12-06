@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.app.DefaultFeatureToggles
 import com.anytypeio.anytype.app.TogglePrefs
+import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.core_utils.tools.DefaultAppInfo
 import com.anytypeio.anytype.core_utils.tools.DefaultThreadInfo
@@ -15,6 +16,8 @@ import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
 import com.anytypeio.anytype.device.providers.DateProviderImpl
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.DebugConfig
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -22,6 +25,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
@@ -71,10 +75,19 @@ object UtilModule {
     @JvmStatic
     @Provides
     @Singleton
+    fun provideDateByTimestamp(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetDateObjectByTimestamp = GetDateObjectByTimestamp(repository, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @Singleton
     fun provideFieldsProvider(
         dateProvider: DateProvider,
-        logger: Logger
-    ): FieldParser = FieldParserImpl(dateProvider, logger)
+        logger: Logger,
+        getDateObjectByTimestamp: GetDateObjectByTimestamp
+    ): FieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
 
     @Module
     interface Bindings {

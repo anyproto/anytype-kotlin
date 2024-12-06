@@ -15,50 +15,41 @@ import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.ext.DAYS_IN_MONTH
 import com.anytypeio.anytype.core_models.ext.DAYS_IN_WEEK
 import com.anytypeio.anytype.core_models.ext.SECONDS_IN_DAY
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
 import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
 
     private val timestamp = 1703775402L
-    private val spaceId = "spaceId-${MockDataFactory.randomString()}"
+    private val spaceId get() = defaultSpace
     private val filterDate = StubRelationObject(
         id = "dueDateId-${MockDataFactory.randomString()}",
         key = "dueDateKey-${MockDataFactory.randomString()}",
         format = RelationFormat.DATE,
         isReadOnlyValue = false,
-        spaceId = spaceId
+        spaceId = defaultSpace
     )
-
-    @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
-
+        proceedWithDefaultBeforeTestStubbing()
         dateProvider.stub {
             on { getCurrentTimestampInSeconds() } doReturn timestamp
         }
-        runBlocking{
+        runTest {
             storeOfRelations.merge(listOf(filterDate))
         }
     }

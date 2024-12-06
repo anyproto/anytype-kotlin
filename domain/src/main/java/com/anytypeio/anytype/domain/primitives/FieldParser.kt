@@ -5,17 +5,28 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.primitives.Field
 import com.anytypeio.anytype.core_models.primitives.FieldDateValue
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_models.primitives.Value
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import javax.inject.Inject
 import kotlin.collections.contains
 
 interface FieldParser {
     fun toDate(any: Any?): Field.Date?
+    suspend fun getDateObjectByTimeInSeconds(
+        timeInSeconds: TimeInSeconds,
+        spaceId: SpaceId,
+        actionSuccess: suspend (ObjectWrapper.Basic) -> Unit,
+        actionFailure: suspend (Throwable) -> Unit
+    )
+
     fun getObjectName(objectWrapper: ObjectWrapper.Basic): String
     fun getObjectTypeName(
         objectWrapper: ObjectWrapper.Basic,
@@ -25,7 +36,8 @@ interface FieldParser {
 
 class FieldParserImpl @Inject constructor(
     private val dateProvider: DateProvider,
-    private val logger: Logger
+    private val logger: Logger,
+    private val getDateObjectByTimestamp: GetDateObjectByTimestamp
 ) : FieldParser {
 
     //region Date field
@@ -41,6 +53,39 @@ class FieldParserImpl @Inject constructor(
                 return null
             }
         }
+    }
+
+    override suspend fun getDateObjectByTimeInSeconds(
+        timeInSeconds: TimeInSeconds,
+        spaceId: SpaceId,
+        actionSuccess: suspend (ObjectWrapper.Basic) -> Unit,
+        actionFailure: suspend (Throwable) -> Unit
+    ) {
+        val params = GetDateObjectByTimestamp.Params(
+            space = spaceId,
+            timestampInSeconds = timeInSeconds
+        )
+        getDateObjectByTimestamp.async(params).fold(
+            onSuccess = { dateObject ->
+                logger.logInfo("Date object: $dateObject")
+                if (dateObject == null) {
+                    logger.logWarning("Date object is null")
+                    actionFailure(Exception("Date object is null"))
+                    return@fold
+                }
+                val obj = ObjectWrapper.Basic(dateObject)
+                if (obj.isValid) {
+                    actionSuccess(obj)
+                } else {
+                    logger.logWarning("Date object is invalid")
+                    actionFailure(Exception("Date object is invalid"))
+                }
+            },
+            onFailure = { e ->
+                logger.logException(e, "Failed to get date object by timestamp")
+                actionFailure(e)
+            }
+        )
     }
 
     private fun calculateFieldDate(value: Value.Single<Long>?): Field.Date? {
@@ -73,6 +118,7 @@ class FieldParserImpl @Inject constructor(
             ObjectType.Layout.DATE -> {
                 return null
             }
+
             else -> {
                 types.find { it.id == objectWrapper.id }?.name
             }

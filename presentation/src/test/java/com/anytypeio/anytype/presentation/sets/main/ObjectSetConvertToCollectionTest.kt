@@ -4,7 +4,6 @@ import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -19,7 +18,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 
@@ -32,12 +30,9 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
-        stubGetDefaultPageType()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After
@@ -51,10 +46,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
 
             // SETUP
             stubSpaceManager(defaultSpace)
-            stubInterceptEvents()
-            stubNetworkMode()
             stubObjectToCollection()
-            stubInterceptThreadStatus()
             stubOpenObject(
                 doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
                 details = mockObjectSet.details

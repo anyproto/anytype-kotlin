@@ -38,7 +38,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         mockObjectCollection = MockCollection(context = root, space = defaultSpace)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         repo = mock(verboseLogging = true)
         dispatchers = AppCoroutineDispatchers(
             io = rule.dispatcher,
@@ -97,8 +97,6 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             spaceManager = spaceManager,
             createTemplate = createTemplate,
             getObjectTypes = getObjectTypes,
-            storelessSubscriptionContainer = storelessSubscriptionContainer,
-            dispatchers = dispatchers,
             dateProvider = dateProvider,
             vmParams = ObjectSetViewModel.Params(
                 ctx = root,
@@ -107,12 +105,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject,
             fieldParser = fieldParser
         )
-        stubNetworkMode()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

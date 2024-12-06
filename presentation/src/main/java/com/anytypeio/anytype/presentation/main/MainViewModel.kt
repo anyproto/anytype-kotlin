@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
@@ -62,7 +63,8 @@ class MainViewModel(
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val awaitAccountStartManager: AwaitAccountStartManager,
     private val membershipProvider: MembershipProvider,
-    private val globalSubscriptionManager: GlobalSubscriptionManager
+    private val globalSubscriptionManager: GlobalSubscriptionManager,
+    private val spaceInviteResolver: SpaceInviteResolver
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -336,7 +338,19 @@ class MainViewModel(
                 )
                 when (result) {
                     is DeepLinkToObjectDelegate.Result.Error -> {
-                        toasts.emit("Error: $result")
+                        val link = deeplink.invite
+                        if (link != null) {
+                            commands.emit(
+                                Command.Deeplink.Invite(
+                                    spaceInviteResolver.createInviteLink(
+                                        contentId = link.cid,
+                                        encryptionKey = link.key
+                                    )
+                                )
+                            )
+                        } else {
+                            toasts.emit("Error: $result")
+                        }
                     }
                     is DeepLinkToObjectDelegate.Result.Success -> {
                         commands.emit(

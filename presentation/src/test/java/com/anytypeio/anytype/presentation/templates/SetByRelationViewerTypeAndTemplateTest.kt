@@ -84,11 +84,8 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         viewModel = givenViewModel()
-        stubNetworkMode()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

@@ -44,14 +44,11 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         viewModel = givenViewModel()
         mockObjectSet =
             MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey, space = defaultSpace)
         mockObjectCollection = MockCollection(context = root, space = defaultSpace)
-        stubNetworkMode()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After
@@ -63,8 +60,6 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun `create pre-populated record`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
             details = mockObjectSet.details
@@ -128,8 +123,6 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun `shouldn't be object create allowed when restriction is present`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
             details = mockObjectSet.details,
@@ -169,8 +162,6 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun `shouldn't be object create allowed when type recommended layout`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
 
         val skipLayouts = SupportedLayouts.fileLayouts + SupportedLayouts.systemLayouts
         val recommendedLayout = skipLayouts.random()
@@ -227,8 +218,6 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun `should be object create allowed when type recommended layout`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
 
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),

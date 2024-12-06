@@ -283,13 +283,7 @@ open class EditorTestSetup {
     lateinit var fileLimitsEventChannel: FileLimitsEventChannel
 
     @Mock
-    lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
-
-    @Mock
     lateinit var spaceManager: SpaceManager
-
-    @Mock
-    lateinit var configStorage: ConfigStorage
 
     @Mock
     lateinit var templatesContainer: ObjectTypeTemplatesContainer

@@ -122,7 +122,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
-                if (featureToggles.isNewSpaceHomeEnabled) {
+                if (featureToggles.isNewSpaceHomeEnabled || space == SPACE_WITH_SPACE_LEVEL_CHAT) {
                     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
 
@@ -564,6 +564,9 @@ class HomeScreenFragment : BaseComposeFragment(),
     }
 
     override fun onApplyWindowRootInsets(view: View) {
+        if (featureToggles.isNewSpaceHomeEnabled || space != SPACE_WITH_SPACE_LEVEL_CHAT) {
+            super.onApplyWindowRootInsets(view)
+        }
         // Do not apply window insets on fragment container.
     }
 
@@ -571,6 +574,11 @@ class HomeScreenFragment : BaseComposeFragment(),
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
         const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
         const val SPACE_ID_KEY = "arg.home-screen.space-id"
+
+        /**
+         * Temporary space for beta-testing space-level chat
+         */
+        const val SPACE_WITH_SPACE_LEVEL_CHAT = "bafyreiezhzb4ggnhjwejmh67pd5grilk6jn3jt7y2rnfpbkjwekilreola.1t123w9f2lgn5"
 
         fun args(
             space: Id,

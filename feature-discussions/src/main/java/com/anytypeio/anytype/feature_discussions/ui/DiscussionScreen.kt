@@ -239,7 +239,7 @@ fun DiscussionScreen(
     onTitleChanged: (String) -> Unit,
     onAttachClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
-    onClearAttachmentClicked: () -> Unit,
+    onClearAttachmentClicked: (DiscussionView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (DiscussionView.Message) -> Unit,
@@ -443,7 +443,7 @@ private fun ChatBox(
     onAttachMediaClicked: () -> Unit,
     onAttachFileClicked: () -> Unit,
     onUploadAttachmentClicked: () -> Unit,
-    onClearAttachmentClicked: () -> Unit,
+    onClearAttachmentClicked: (DiscussionView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit
 ) {
@@ -504,7 +504,7 @@ private fun ChatBox(
                                         )
                                         .padding(top = 6.dp)
                                         .noRippleClickable {
-                                            onClearAttachmentClicked()
+                                            onClearAttachmentClicked(attachment)
                                         }
                                 )
                             }
@@ -537,6 +537,9 @@ private fun ChatBox(
                                         .padding(
                                             top = 6.dp
                                         )
+                                        .noRippleClickable {
+                                            onClearAttachmentClicked(attachment)
+                                        }
                                 )
                             }
                         }

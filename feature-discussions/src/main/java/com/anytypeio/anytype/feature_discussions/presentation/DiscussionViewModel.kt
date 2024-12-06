@@ -351,8 +351,10 @@ class DiscussionViewModel @Inject constructor(
         )
     }
 
-    fun onClearAttachmentClicked() {
-        chatBoxAttachments.value = emptyList()
+    fun onClearAttachmentClicked(attachment: DiscussionView.Message.ChatBoxAttachment) {
+        chatBoxAttachments.value = chatBoxAttachments.value.filter {
+            it != attachment
+        }
     }
 
     fun onClearReplyClicked() {

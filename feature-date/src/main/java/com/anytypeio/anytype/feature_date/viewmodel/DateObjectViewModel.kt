@@ -672,21 +672,7 @@ class DateObjectViewModel(
     private fun onTopToolbarEvent(event: DateEvent.TopToolbar) {
         when (event) {
             is DateEvent.TopToolbar.OnCalendarClick -> {
-                val timestampInSeconds = event.timestampInSeconds
-                val timeInMillis = dateProvider.adjustToStartOfDayInUserTimeZone(
-                    timestamp = timestampInSeconds.time
-                )
-                val isValid = dateProvider.isTimestampWithinYearRange(
-                    timeStampInMillis = timeInMillis,
-                    yearRange = DATE_PICKER_YEAR_RANGE
-                )
-                if (isValid) {
-                    uiCalendarState.value = UiCalendarState.Calendar(
-                        timeInMillis = timeInMillis
-                    )
-                } else {
-                    showDateOutOfRangeError()
-                }
+                proceedWithShowCalendar(timestampInSeconds = event.timestampInSeconds)
             }
 
             is DateEvent.TopToolbar.OnSyncStatusClick -> {
@@ -698,10 +684,33 @@ class DateObjectViewModel(
         }
     }
 
+    private fun proceedWithShowCalendar(timestampInSeconds: TimestampInSeconds) {
+        val timeInMillis = dateProvider.adjustToStartOfDayInUserTimeZone(
+            timestamp = timestampInSeconds.time
+        )
+        val isValid = dateProvider.isTimestampWithinYearRange(
+            timeStampInMillis = timeInMillis,
+            yearRange = DATE_PICKER_YEAR_RANGE
+        )
+        if (isValid) {
+            uiCalendarState.value = UiCalendarState.Calendar(
+                timeInMillis = timeInMillis
+            )
+        } else {
+            showDateOutOfRangeError()
+        }
+    }
+
     private fun onHeaderEvent(event: DateEvent.Header) {
         when (event) {
             DateEvent.Header.OnNextClick -> proceedWithReopeningDate(offset = SECONDS_IN_DAY)
             DateEvent.Header.OnPreviousClick -> proceedWithReopeningDate(offset = -SECONDS_IN_DAY)
+            is DateEvent.Header.OnHeaderClick -> {
+                val timestampInSeconds = TimestampInSeconds(
+                    time = event.timeInMillis / 1000
+                )
+                proceedWithShowCalendar(timestampInSeconds)
+            }
         }
     }
 

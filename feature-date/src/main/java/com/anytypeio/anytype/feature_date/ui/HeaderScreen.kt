@@ -77,7 +77,14 @@ fun HeaderScreen(
                         modifier = Modifier
                             .wrapContentHeight()
                             .fillMaxWidth()
-                            .weight(1f),
+                            .weight(1f)
+                            .noRippleThrottledClickable {
+                                onDateEvent(
+                                    DateEvent.Header.OnHeaderClick(
+                                        timeInMillis = uiState.relativeDate.initialTimeInMillis
+                                    )
+                                )
+                            },
                         style = HeadlineTitle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,

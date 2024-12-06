@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.primitives.Field
@@ -91,7 +92,7 @@ class FieldParserImpl @Inject constructor(
     private fun calculateFieldDate(value: Value.Single<Long>?): Field.Date? {
         val dateInSeconds = value?.single ?: return null
         val relativeDate = dateProvider.calculateRelativeDates(dateInSeconds)
-        if (relativeDate == null) {
+        if (relativeDate is RelativeDate.Empty) {
             return null
         }
         return Field.Date(

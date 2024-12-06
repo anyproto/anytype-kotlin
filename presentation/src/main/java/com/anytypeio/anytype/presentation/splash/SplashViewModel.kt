@@ -241,7 +241,7 @@ class SplashViewModel(
                 success = { response ->
                     when (response) {
                         is GetLastOpenedObject.Response.Success -> {
-                            if (SupportedLayouts.layouts.contains(response.obj.layout)) {
+                            if (SupportedLayouts.lastOpenObjectLayouts.contains(response.obj.layout)) {
                                 val id = response.obj.id
                                 val space = requireNotNull(response.obj.spaceId)
                                 when (response.obj.layout) {
@@ -252,6 +252,14 @@ class SplashViewModel(
                                                 space = space
                                             )
                                         )
+                                    ObjectType.Layout.DATE -> {
+                                        commands.emit(
+                                            Command.NavigateToDateObject(
+                                                id = id,
+                                                space = space
+                                            )
+                                        )
+                                    }
                                     else ->
                                         commands.emit(
                                             Command.NavigateToObject(
@@ -319,6 +327,7 @@ class SplashViewModel(
         data object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id, val space: Id) : Command()
         data class NavigateToObjectSet(val id: Id, val space: Id) : Command()
+        data class NavigateToDateObject(val id: Id, val space: Id) : Command()
         data class Toast(val message: String) : Command()
     }
 

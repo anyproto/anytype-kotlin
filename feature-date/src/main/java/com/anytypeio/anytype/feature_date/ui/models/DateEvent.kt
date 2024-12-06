@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_date.ui.models
 
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem
@@ -15,6 +16,7 @@ sealed class DateEvent {
     sealed class Header : DateEvent() {
         data object OnNextClick : Header()
         data object OnPreviousClick : Header()
+        data class OnHeaderClick(val timeInMillis: TimeInMillis): Header()
     }
 
     sealed class FieldsSheet : DateEvent() {

@@ -145,10 +145,12 @@ object HomeScreenModule {
     @PerScreen
     fun getObject(
         repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        settings: UserSettingsRepository,
     ): GetObject = GetObject(
         repo = repo,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        settings = settings
     )
 
     @JvmStatic

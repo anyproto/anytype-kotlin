@@ -226,30 +226,31 @@ class DiscussionViewModel @Inject constructor(
     fun onMessageSent(msg: String) {
         Timber.d("DROID-2635 OnMessageSent: $msg")
         viewModelScope.launch {
-            val attachments = mutableListOf<Chat.Message.Attachment>()
-            chatBoxAttachments.value.forEach { attachment ->
-                when(attachment) {
-                    is DiscussionView.Message.ChatBoxAttachment.Link -> {
-                        attachments.add(
-                            Chat.Message.Attachment(
-                                target = attachment.target,
-                                type = Chat.Message.Attachment.Type.Link
-                            )
-                        )
-                    }
-                    is DiscussionView.Message.ChatBoxAttachment.Media -> {
-                        uploadFile.async(
-                            UploadFile.Params(
-                                space = vmParams.space,
-                                path = attachment.url
-                            )
-                        ).onSuccess { file ->
-                            attachments.add(
+            val attachments = buildList {
+                chatBoxAttachments.value.forEach { attachment ->
+                    when(attachment) {
+                        is DiscussionView.Message.ChatBoxAttachment.Link -> {
+                            add(
                                 Chat.Message.Attachment(
-                                    target = file.id,
-                                    type = Chat.Message.Attachment.Type.Image
+                                    target = attachment.target,
+                                    type = Chat.Message.Attachment.Type.Link
                                 )
                             )
+                        }
+                        is DiscussionView.Message.ChatBoxAttachment.Media -> {
+                            uploadFile.async(
+                                UploadFile.Params(
+                                    space = vmParams.space,
+                                    path = attachment.url
+                                )
+                            ).onSuccess { file ->
+                                add(
+                                    Chat.Message.Attachment(
+                                        target = file.id,
+                                        type = Chat.Message.Attachment.Type.Image
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -280,7 +281,8 @@ class DiscussionViewModel @Inject constructor(
                             chat = chat,
                             message = Chat.Message.updated(
                                 id = mode.msg,
-                                text = msg
+                                text = msg,
+                                attachments = attachments
                             )
                         )
                     ).onSuccess {

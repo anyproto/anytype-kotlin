@@ -64,8 +64,9 @@ sealed class Chat {
              */
             fun updated(
                 id: Id,
-                text: String
-            ) : Message = Chat.Message(
+                text: String,
+                attachments: List<Attachment> = emptyList(),
+            ) : Message = Message(
                 id = id,
                 createdAt = 0L,
                 modifiedAt = 0L,
@@ -73,7 +74,7 @@ sealed class Chat {
                 reactions = emptyMap(),
                 creator = "",
                 replyToMessageId = "",
-                content = Chat.Message.Content(
+                content = Content(
                     text = text,
                     marks = emptyList(),
                     style = Block.Content.Text.Style.P

@@ -124,6 +124,7 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
@@ -698,7 +699,6 @@ private fun ChatBox(
                             },
                             onClick = {
                                 showDropdownMenu = false
-//                                onAttachMediaClicked()
                                 launcher.launch(
                                     PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
                                 )
@@ -717,7 +717,8 @@ private fun ChatBox(
                             },
                             onClick = {
                                 showDropdownMenu = false
-                                onAttachFileClicked()
+//                                onAttachFileClicked()
+                                context.toast("Coming soon")
                             }
                         )
                         Divider(
@@ -733,7 +734,8 @@ private fun ChatBox(
                             },
                             onClick = {
                                 showDropdownMenu = false
-                                onUploadAttachmentClicked()
+//                                onUploadAttachmentClicked()
+                                context.toast("Coming soon")
                             }
                         )
                     }

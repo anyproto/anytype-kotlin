@@ -18,7 +18,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -135,14 +134,6 @@ object DateObjectModule {
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetObjectDetails = SetObjectDetails(repository, dispatchers)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideDateByTimestamp(
-        repository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): GetDateObjectByTimestamp = GetDateObjectByTimestamp(repository, dispatchers)
 
     @Module
     interface Declarations {

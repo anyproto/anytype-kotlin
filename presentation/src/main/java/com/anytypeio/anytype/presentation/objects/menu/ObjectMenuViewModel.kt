@@ -38,6 +38,9 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplate
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
@@ -69,7 +72,9 @@ class ObjectMenuViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val setObjectListIsFavorite: SetObjectListIsFavorite,
     private val setObjectIsArchived: SetObjectListIsArchived,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+    private val getSpaceInviteLink: GetSpaceInviteLink
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -86,7 +91,10 @@ class ObjectMenuViewModel(
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
     payloadDelegator = payloadDelegator,
     setObjectListIsFavorite = setObjectListIsFavorite,
-    fieldParser = fieldParser
+    fieldParser = fieldParser,
+    spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+    deepLinkResolver = deepLinkResolver,
+    getSpaceInviteLink = getSpaceInviteLink
 ) {
 
     init {
@@ -276,11 +284,13 @@ class ObjectMenuViewModel(
                 proceedWithLinkTo()
             }
             ObjectAction.COPY_LINK -> {
-                val deeplink = deepLinkResolver.createObjectDeepLink(
-                    obj = ctx,
-                    space = SpaceId(space)
-                )
-                viewModelScope.launch { commands.emit(Command.ShareDeeplinkToObject(deeplink)) }
+                viewModelScope.launch {
+                    val link = proceedWithGeneratingObjectLink(
+                        space = SpaceId(space),
+                        ctx = ctx
+                    )
+                    commands.emit(Command.ShareDeeplinkToObject(link))
+                }
             }
             ObjectAction.UNLOCK -> {
                 proceedWithUpdatingLockStatus(ctx, false)
@@ -479,7 +489,9 @@ class ObjectMenuViewModel(
         private val payloadDelegator: PayloadDelegator,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
         private val setObjectIsArchived: SetObjectListIsArchived,
-        private val fieldParser: FieldParser
+        private val fieldParser: FieldParser,
+        private val getSpaceInviteLink: GetSpaceInviteLink,
+        private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -504,7 +516,9 @@ class ObjectMenuViewModel(
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 payloadDelegator = payloadDelegator,
                 setObjectListIsFavorite = setObjectListIsFavorite,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                getSpaceInviteLink = getSpaceInviteLink,
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
             ) as T
         }
     }

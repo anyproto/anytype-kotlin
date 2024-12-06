@@ -29,6 +29,5 @@ class DefaultFeatureToggles @Inject constructor(
     override val isSpaceLevelChatWidgetEnabled: Boolean
         get() = false
 
-    override val isNewSpaceHomeEnabled: Boolean
-        get() = true
+    override val isNewSpaceHomeEnabled: Boolean = buildProvider.isDebug()
 }

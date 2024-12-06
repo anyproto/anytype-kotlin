@@ -16,15 +16,20 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.toTimeSeconds
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -34,6 +39,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -66,6 +72,8 @@ class ObjectRelationListTest {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
+    private val spaceId = MockDataFactory.randomUuid()
+
     @Mock
     lateinit var gateway: Gateway
 
@@ -91,9 +99,6 @@ class ObjectRelationListTest {
     lateinit var lockedStateProvider: LockedStateProvider
 
     @Mock
-    lateinit var spaceManager: SpaceManager
-
-    @Mock
     lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 
     private lateinit var updateDetail: UpdateDetail
@@ -106,18 +111,34 @@ class ObjectRelationListTest {
 
     lateinit var urlBuilder: UrlBuilder
 
-    @Mock
     lateinit var fieldParser: FieldParser
+
+    @Mock
+    lateinit var logger: Logger
+
+    @Mock
+    lateinit var dateProvider: DateProvider
+
+    @Mock
+    lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
         updateDetail = UpdateDetail(repo)
+        fieldParser = FieldParserImpl(
+            logger = logger,
+            dateProvider = dateProvider,
+            getDateObjectByTimestamp = getDateObjectByTimestamp
+        )
         addToFeaturedRelations = AddToFeaturedRelations(repo)
         removeFromFeaturedRelations = RemoveFromFeaturedRelations(repo)
         deleteRelationFromObject = DeleteRelationFromObject(repo)
         TestObjectRelationListFragment.testVmFactory = ObjectRelationListViewModelFactory(
+            vmParams = RelationListViewModel.VmParams(
+                spaceId = SpaceId(spaceId)
+            ),
             lockedStateProvider = lockedStateProvider,
             relationListProvider = relationListProvider,
             urlBuilder = urlBuilder,
@@ -129,7 +150,6 @@ class ObjectRelationListTest {
             analytics = analytics,
             storeOfRelations = storeOfRelations,
             addRelationToObject = addRelationToObject,
-            spaceManager = spaceManager,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             fieldParser = fieldParser
         )

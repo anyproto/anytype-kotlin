@@ -1256,9 +1256,9 @@
     <string name="multiplayer_error_invite_not_found">The invitation does not exist. Please ensure that your devices are synchronized.</string>
     <string name="multiplayer_error_invite_bad_content">The invitation link could not be parsed. It may contain errors in the format or invalid data.</string>
     <string name="multiplayer_error_space_is_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
-    <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
-    <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
-    <string name="multiplayer_error_request_failed">Oops! The request failed. Please check your Internet connection and try again.</string>
+    <string name="multiplayer_error_limit_reached">Досягнута межа для цього простору. Будь ласка, оновіть ваш членство або зверніться до служби підтримки за допомогою.</string>
+    <string name="multiplayer_error_not_shareable">Схоже, що простір більше не спільний. Переконайтеся, що ваші пристрої синхронізовані.</string>
+    <string name="multiplayer_error_request_failed">Упс! Запит не вдалося виконати. Будь ласка, перевірте підключення до Інтернету і спробуйте ще раз.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
     <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
     <string name="multiplayer_invite_link_request_already_sent">Request sent</string>
@@ -1382,17 +1382,17 @@
 Specifically,
 Please provide specific details of your needs here.</string>
     <!-- Membership name errors -->
-    <string name="membership_name_bad_input">Something wrong with input, try again</string>
-    <string name="membership_name_cache_error">Error on our side, try again later</string>
-    <string name="membership_name_cant_connect">Can not connect, check your internet connection</string>
-    <string name="membership_name_invalid_chars">Name has invalid characters</string>
-    <string name="membership_name_not_logged">You are not logged in! 😵‍💫</string>
-    <string name="membership_name_payment_node_error">Error on our side, try again later</string>
+    <string name="membership_name_bad_input">Щось пішло не так, спробуйте ще раз</string>
+    <string name="membership_name_cache_error">Помилка на нашому боці, спробуйте ще раз пізніше</string>
+    <string name="membership_name_cant_connect">Не вдається підключитися, перевірте підключення до Інтернету</string>
+    <string name="membership_name_invalid_chars">Ім\'я має недопустимі символи</string>
+    <string name="membership_name_not_logged">Ви не ввійшли! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Помилка на нашому боці, спробуйте ще раз пізніше</string>
     <string name="membership_name_tier_features_no_name">Name is not available for this tier</string>
     <string name="membership_name_tier_not_found">Tier not found, try again later</string>
-    <string name="membership_name_too_long">Name is too long</string>
-    <string name="membership_name_too_short">Name is too short</string>
-    <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
+    <string name="membership_name_too_long">Ім\'я занадто довге</string>
+    <string name="membership_name_too_short">Ім\'я занадто коротке</string>
+    <string name="membership_any_name_not_reserved">Це ім\'я не можна зарезервувати</string>
     <string name="membership_any_name_null_error">Empty error</string>
     <string name="membership_any_name_unknown">Невідома помилка</string>
     <string name="membership_email_wrong_format">Email has wrong format</string>

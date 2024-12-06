@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
@@ -36,7 +37,8 @@ class MainViewModelFactory @Inject constructor(
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val awaitAccountStartManager: AwaitAccountStartManager,
     private val membershipProvider: MembershipProvider,
-    private val globalSubscriptionManager: GlobalSubscriptionManager
+    private val globalSubscriptionManager: GlobalSubscriptionManager,
+    private val spaceInviteResolver: SpaceInviteResolver
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -57,6 +59,7 @@ class MainViewModelFactory @Inject constructor(
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         awaitAccountStartManager = awaitAccountStartManager,
         membershipProvider = membershipProvider,
-        globalSubscriptionManager = globalSubscriptionManager
+        globalSubscriptionManager = globalSubscriptionManager,
+        spaceInviteResolver = spaceInviteResolver
     ) as T
 }

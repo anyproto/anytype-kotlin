@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class UploadFile @Inject constructor(
     private val repo: BlockRepository,
-    private val dispatchers: AppCoroutineDispatchers
+    dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<UploadFile.Params, ObjectWrapper.File>(dispatchers.io) {
 
     override suspend fun doWork(params: Params) : ObjectWrapper.File = repo.uploadFile(

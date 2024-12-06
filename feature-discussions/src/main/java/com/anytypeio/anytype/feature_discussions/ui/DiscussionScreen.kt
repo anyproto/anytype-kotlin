@@ -1,16 +1,17 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
 import android.content.res.Configuration
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,6 +38,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -101,6 +103,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
@@ -120,6 +123,7 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
+import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
@@ -141,6 +145,7 @@ fun DiscussionScreenWrapper(
     onBackButtonClicked: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
 ) {
+    val context = LocalContext.current
     NavHost(
         navController = rememberNavController(),
         startDestination = "discussions"
@@ -168,7 +173,7 @@ fun DiscussionScreenWrapper(
                     isSpaceLevelChat = isSpaceLevelChat,
                     title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
-                    attachments = vm.attachments.collectAsState().value,
+                    attachments = vm.chatBoxAttachments.collectAsState().value,
                     onMessageSent = vm::onMessageSent,
                     onTitleChanged = vm::onTitleChanged,
                     onAttachClicked = onAttachObjectClicked,
@@ -196,7 +201,10 @@ fun DiscussionScreenWrapper(
 
                     },
                     onReplyMessage = vm::onReplyMessage,
-                    onClearReplyClicked = vm::onClearReplyClicked
+                    onClearReplyClicked = vm::onClearReplyClicked,
+                    onChatBoxMediaPicked = { uris ->
+                        vm.onChatBoxMediaPicked(uris.map { it.parseImagePath(context = context) })
+                    }
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -226,7 +234,7 @@ fun DiscussionScreen(
     lazyListState: LazyListState,
     title: String?,
     messages: List<DiscussionView.Message>,
-    attachments: List<GlobalSearchItemView>,
+    attachments: List<DiscussionView.Message.ChatBoxAttachment>,
     onMessageSent: (String) -> Unit,
     onTitleChanged: (String) -> Unit,
     onAttachClicked: () -> Unit,
@@ -244,7 +252,8 @@ fun DiscussionScreen(
     onAttachObjectClicked: () -> Unit,
     onAttachMediaClicked: () -> Unit,
     onAttachFileClicked: () -> Unit,
-    onUploadAttachmentClicked: () -> Unit
+    onUploadAttachmentClicked: () -> Unit,
+    onChatBoxMediaPicked: (List<Uri>) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -367,7 +376,8 @@ fun DiscussionScreen(
             onUploadAttachmentClicked = onUploadAttachmentClicked,
             onAttachObjectClicked = onAttachObjectClicked,
             onClearAttachmentClicked = onClearAttachmentClicked,
-            onClearReplyClicked = onClearReplyClicked
+            onClearReplyClicked = onClearReplyClicked,
+            onChatBoxMediaPicked = onChatBoxMediaPicked
         )
     }
 }
@@ -416,89 +426,6 @@ private fun DiscussionTitle(
 }
 
 @Composable
-private fun OldChatBox(
-    chatBoxFocusRequester: FocusRequester,
-    textState: TextFieldValue,
-    onMessageSent: (String) -> Unit = {},
-    onAttachClicked: () -> Unit = {},
-    resetScroll: () -> Unit = {},
-    isTitleFocused: Boolean,
-    attachments: List<GlobalSearchItemView>,
-    clearText: () -> Unit,
-    updateValue: (TextFieldValue) -> Unit
-) {
-
-    val scope = rememberCoroutineScope()
-
-    val focus = LocalFocusManager.current
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .defaultMinSize(minHeight = 56.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 4.dp, vertical = 8.dp)
-                .clip(CircleShape)
-                .align(Alignment.Bottom)
-                .clickable {
-                    scope.launch {
-                        focus.clearFocus(force = true)
-                        onAttachClicked()
-                    }
-                }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_plus_32),
-                contentDescription = "Plus button",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 4.dp, vertical = 4.dp)
-            )
-        }
-        ChatBoxUserInput(
-            textState = textState,
-            onMessageSent = {
-                onMessageSent(it)
-                clearText()
-                resetScroll()
-            },
-            onTextChanged = { value ->
-                updateValue(value)
-            },
-            modifier = Modifier
-                .weight(1f)
-                .align(Alignment.Bottom)
-                .focusRequester(chatBoxFocusRequester)
-        )
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 4.dp, vertical = 8.dp)
-                .clip(CircleShape)
-                .align(Alignment.Bottom)
-                .clickable {
-                    if (textState.text.isNotBlank()) {
-                        onMessageSent(textState.text)
-                        clearText()
-                        resetScroll()
-                    }
-                }
-        ) {
-            if (textState.text.isNotBlank()) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_send_message),
-                    contentDescription = "Send message button",
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp, vertical = 4.dp)
-                        .align(Alignment.Center)
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun ChatBox(
     mode: ChatBoxMode = ChatBoxMode.Default,
     modifier: Modifier = Modifier,
@@ -509,7 +436,7 @@ private fun ChatBox(
     onAttachClicked: () -> Unit = {},
     resetScroll: () -> Unit = {},
     isTitleFocused: Boolean,
-    attachments: List<GlobalSearchItemView>,
+    attachments: List<DiscussionView.Message.ChatBoxAttachment>,
     clearText: () -> Unit,
     updateValue: (TextFieldValue) -> Unit,
     onAttachObjectClicked: () -> Unit,
@@ -517,8 +444,15 @@ private fun ChatBox(
     onAttachFileClicked: () -> Unit,
     onUploadAttachmentClicked: () -> Unit,
     onClearAttachmentClicked: () -> Unit,
-    onClearReplyClicked: () -> Unit
+    onClearReplyClicked: () -> Unit,
+    onChatBoxMediaPicked: (List<Uri>) -> Unit
 ) {
+    val context = LocalContext.current
+    val result = remember { mutableStateOf<List<String>>(emptyList()) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) {
+        result.value = it.map { it.parseImagePath(context) }
+        onChatBoxMediaPicked(it.filterNotNull())
+    }
 
     var showDropdownMenu by remember { mutableStateOf(false) }
 
@@ -540,36 +474,59 @@ private fun ChatBox(
                 shape = RoundedCornerShape(16.dp)
             )
     ) {
-        attachments.forEach {
-            Box {
-                AttachedObject(
-                    modifier = Modifier.padding(
-                        top = 12.dp,
-                        start = 16.dp,
-                        end = 16.dp
-                    ),
-                    title = it.title,
-                    type = it.type,
-                    icon = it.icon,
-                    onAttachmentClicked = {
-                        // TODO
+        attachments.forEach { attachment ->
+            when(attachment) {
+                is DiscussionView.Message.ChatBoxAttachment.Link -> {
+                    Box {
+                        AttachedObject(
+                            modifier = Modifier.padding(
+                                top = 12.dp,
+                                start = 16.dp,
+                                end = 16.dp
+                            ),
+                            title = attachment.wrapper.title,
+                            type = attachment.wrapper.type,
+                            icon = attachment.wrapper.icon,
+                            onAttachmentClicked = {
+                                // TODO
+                            }
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_clear_18),
+                            contentDescription = "Close icon",
+                            modifier = Modifier
+                                .align(
+                                    Alignment.TopEnd
+                                )
+                                .padding(
+                                    top = 6.dp,
+                                    end = 10.dp
+                                )
+                                .noRippleClickable {
+                                    onClearAttachmentClicked()
+                                }
+                        )
                     }
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.ic_clear_18),
-                    contentDescription = "Close icon",
-                    modifier = Modifier
-                        .align(
-                            Alignment.TopEnd
+                }
+                is DiscussionView.Message.ChatBoxAttachment.Media -> {
+                    Box(modifier = Modifier.padding(start = 12.dp)) {
+                        Image(
+                            painter = rememberAsyncImagePainter(attachment.url),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.FillBounds
                         )
-                        .padding(
-                            top = 6.dp,
-                            end = 10.dp
+                        Image(
+                            painter = painterResource(R.drawable.ic_clear_18),
+                            contentDescription = "Clear attachment icon",
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(4.dp)
                         )
-                        .noRippleClickable {
-                            onClearAttachmentClicked()
-                        }
-                )
+                    }
+                }
             }
         }
         when(mode) {
@@ -724,7 +681,10 @@ private fun ChatBox(
                             },
                             onClick = {
                                 showDropdownMenu = false
-                                onAttachMediaClicked()
+//                                onAttachMediaClicked()
+                                launcher.launch(
+                                    PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
                             }
                         )
                         Divider(
@@ -765,13 +725,13 @@ private fun ChatBox(
             AnimatedVisibility(
                 visible = attachments.isNotEmpty() || textState.text.isNotEmpty(),
                 exit = fadeOut() + scaleOut(),
-                enter = fadeIn() + scaleIn()
+                enter = fadeIn() + scaleIn(),
+                modifier = Modifier.align(Alignment.Bottom)
             ) {
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 4.dp, vertical = 8.dp)
                         .clip(CircleShape)
-                        .align(Alignment.Bottom)
                         .clickable {
                             onMessageSent(textState.text)
                             clearText()

@@ -9,6 +9,8 @@ import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
+import com.anytypeio.anytype.domain.media.FileDrop
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -30,7 +32,9 @@ class DiscussionViewModelFactory @Inject constructor(
     private val getAccount: GetAccount,
     private val urlBuilder: UrlBuilder,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val fileDrop: FileDrop,
+    private val uploadFile: UploadFile
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = DiscussionViewModel(
@@ -46,6 +50,8 @@ class DiscussionViewModelFactory @Inject constructor(
         urlBuilder = urlBuilder,
         editChatMessage = editChatMessage,
         spaceViews = spaceViews,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        fileDrop = fileDrop,
+        uploadFile = uploadFile
     ) as T
 }

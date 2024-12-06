@@ -1933,12 +1933,19 @@ class HomeScreenViewModel(
                 if (source is Widget.Source.Default) {
                     if (!source.obj.layout.isDataView()) {
                         viewModelScope.launch {
-                            commands.emit(
-                                Command.CreateObjectForWidget(
+                            createObject.async(
+                                params = CreateObject.Param(
                                     space = SpaceId(target.config.space),
-                                    widget = target.id,
-                                    source = target.source.id
+                                    type = TypeKey(ObjectTypeUniqueKeys.PAGE)
                                 )
+                            ).fold(
+                                onSuccess = { result ->
+                                    proceedWithCreatingLinkToNewObject(source.id, result)
+                                    proceedWithNavigation(result.obj.navigation())
+                                },
+                                onFailure = {
+                                    Timber.e(it, "Error while creating object")
+                                }
                             )
                         }
                     }

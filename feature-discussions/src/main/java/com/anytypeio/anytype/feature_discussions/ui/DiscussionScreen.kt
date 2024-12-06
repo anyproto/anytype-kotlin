@@ -474,57 +474,72 @@ private fun ChatBox(
                 shape = RoundedCornerShape(16.dp)
             )
     ) {
-        attachments.forEach { attachment ->
-            when(attachment) {
-                is DiscussionView.Message.ChatBoxAttachment.Link -> {
-                    Box {
-                        AttachedObject(
-                            modifier = Modifier.padding(
-                                top = 12.dp,
-                                start = 16.dp,
-                                end = 16.dp
-                            ),
-                            title = attachment.wrapper.title,
-                            type = attachment.wrapper.type,
-                            icon = attachment.wrapper.icon,
-                            onAttachmentClicked = {
-                                // TODO
+        LazyRow(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            attachments.forEach { attachment ->
+                when(attachment) {
+                    is DiscussionView.Message.ChatBoxAttachment.Link -> {
+                        item {
+                            Box {
+                                AttachedObject(
+                                    modifier = Modifier.padding(
+                                        top = 12.dp,
+                                        end = 4.dp
+                                    ),
+                                    title = attachment.wrapper.title,
+                                    type = attachment.wrapper.type,
+                                    icon = attachment.wrapper.icon,
+                                    onAttachmentClicked = {
+                                        // TODO
+                                    }
+                                )
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_clear_18),
+                                    contentDescription = "Close icon",
+                                    modifier = Modifier
+                                        .align(
+                                            Alignment.TopEnd
+                                        )
+                                        .padding(top = 6.dp)
+                                        .noRippleClickable {
+                                            onClearAttachmentClicked()
+                                        }
+                                )
                             }
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_clear_18),
-                            contentDescription = "Close icon",
-                            modifier = Modifier
-                                .align(
-                                    Alignment.TopEnd
-                                )
-                                .padding(
-                                    top = 6.dp,
-                                    end = 10.dp
-                                )
-                                .noRippleClickable {
-                                    onClearAttachmentClicked()
-                                }
-                        )
+                        }
                     }
-                }
-                is DiscussionView.Message.ChatBoxAttachment.Media -> {
-                    Box(modifier = Modifier.padding(start = 12.dp)) {
-                        Image(
-                            painter = rememberAsyncImagePainter(attachment.url),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(72.dp)
-                                .clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.FillBounds
-                        )
-                        Image(
-                            painter = painterResource(R.drawable.ic_clear_18),
-                            contentDescription = "Clear attachment icon",
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(4.dp)
-                        )
+                    is DiscussionView.Message.ChatBoxAttachment.Media -> {
+                        item {
+                            Box(modifier = Modifier.padding()) {
+                                Image(
+                                    painter = rememberAsyncImagePainter(attachment.url),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(
+                                            top = 12.dp,
+                                            end = 4.dp
+                                        )
+                                        .size(72.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+
+                                    ,
+                                    contentScale = ContentScale.FillBounds
+                                )
+                                Image(
+                                    painter = painterResource(R.drawable.ic_clear_18),
+                                    contentDescription = "Clear attachment icon",
+                                    modifier = Modifier
+                                        .align(
+                                            Alignment.TopEnd
+                                        )
+                                        .padding(
+                                            top = 6.dp
+                                        )
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -1440,7 +1455,7 @@ fun AttachedObject(
     Box(
         modifier = modifier
             .height(72.dp)
-            .fillMaxWidth()
+            .width(216.dp)
             .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,

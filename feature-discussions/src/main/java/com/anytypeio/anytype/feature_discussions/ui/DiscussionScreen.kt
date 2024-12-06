@@ -717,7 +717,6 @@ private fun ChatBox(
                             },
                             onClick = {
                                 showDropdownMenu = false
-//                                onAttachFileClicked()
                                 context.toast("Coming soon")
                             }
                         )
@@ -734,7 +733,6 @@ private fun ChatBox(
                             },
                             onClick = {
                                 showDropdownMenu = false
-//                                onUploadAttachmentClicked()
                                 context.toast("Coming soon")
                             }
                         )

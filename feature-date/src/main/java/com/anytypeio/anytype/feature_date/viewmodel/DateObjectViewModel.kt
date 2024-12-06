@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -22,7 +21,6 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
-import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -81,7 +79,6 @@ class DateObjectViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val getDateObjectByTimestamp: GetDateObjectByTimestamp,
     private val dateProvider: DateProvider,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val createObject: CreateObject,
@@ -176,16 +173,18 @@ class DateObjectViewModel(
         resetLimit()
     }
 
-    private fun proceedWithReopenDateObjectByTimestamp(timestamp: TimeInSeconds) {
-        proceedWithGettingDateByTimestamp(
-            timestamp = timestamp
-        ) { dateObject ->
-            val id = dateObject?.getSingleValue<String>(Relations.ID)
-            if (id != null) {
-                reopenDateObject(id)
-            } else {
-                Timber.e("GettingDateByTimestamp error, object has no id")
-            }
+    private fun proceedWithReopenDateObjectByTimestamp(timeInSeconds: TimeInSeconds) {
+        viewModelScope.launch {
+            fieldParser.getDateObjectByTimeInSeconds(
+                timeInSeconds = timeInSeconds,
+                spaceId = vmParams.spaceId,
+                actionSuccess = { obj ->
+                    reopenDateObject(obj.id)
+                },
+                actionFailure = {
+                    Timber.e("GettingDateByTimestamp error, object has no id")
+                }
+            )
         }
     }
 
@@ -320,23 +319,6 @@ class DateObjectViewModel(
                         onFailure = { e -> Timber.e(e, "GetObject Error") }
                     )
                 }
-        }
-    }
-
-    private fun proceedWithGettingDateByTimestamp(timestamp: Long, action: (Struct?) -> Unit) {
-        val params = GetDateObjectByTimestamp.Params(
-            space = vmParams.spaceId,
-            timestamp = timestamp
-        )
-        Timber.d("Start ObjectDateByTimestamp with params: [$params]")
-        viewModelScope.launch {
-            getDateObjectByTimestamp.async(params).fold(
-                onSuccess = { dateObject ->
-                    Timber.d("ObjectDateByTimestamp Success, dateObject: [$dateObject]")
-                    action(dateObject)
-                },
-                onFailure = { e -> Timber.e(e, "ObjectDateByTimestamp Error") }
-            )
         }
     }
     //endregion
@@ -532,7 +514,7 @@ class DateObjectViewModel(
 
         if (isValid) {
             proceedWithReopenDateObjectByTimestamp(
-                timestamp = newTimestamp
+                timeInSeconds = newTimestamp
             )
         } else {
             showDateOutOfRangeError()
@@ -727,7 +709,7 @@ class DateObjectViewModel(
                 Timber.d("Selected date in millis: [$timeInMillis]")
                 if (timeInMillis == null) return
                 proceedWithReopenDateObjectByTimestamp(
-                    timestamp = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(
+                    timeInSeconds = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(
                         timeInMillis = timeInMillis
                     )
                 )
@@ -740,14 +722,14 @@ class DateObjectViewModel(
             DateEvent.Calendar.OnTodayClick -> {
                 uiCalendarState.value = UiCalendarState.Hidden
                 proceedWithReopenDateObjectByTimestamp(
-                    timestamp = dateProvider.getTimestampForTodayAtStartOfDay()
+                    timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay()
                 )
             }
 
             DateEvent.Calendar.OnTomorrowClick -> {
                 uiCalendarState.value = UiCalendarState.Hidden
                 proceedWithReopenDateObjectByTimestamp(
-                    timestamp = dateProvider.getTimestampForTomorrowAtStartOfDay()
+                    timeInSeconds = dateProvider.getTimestampForTomorrowAtStartOfDay()
                 )
             }
         }

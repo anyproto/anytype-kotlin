@@ -35,6 +35,7 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelF
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
@@ -186,6 +187,16 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                     context = relationContext
                 )
                 findNavController().safeNavigate(R.id.objectRelationListScreen, R.id.nav_relations, bundle)
+            }
+            is Command.NavigateToDateObject -> {
+                runCatching {
+                    navigation().openDateObject(
+                        objectId = command.objectId,
+                        space = space
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening date object from relation list")
+                }
             }
         }
     }

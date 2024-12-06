@@ -167,9 +167,6 @@ class ObjectSetGridPrimitiveRelationTest : TestObjectSetSetup() {
         )
 
         val set = listOf(root, header, title, dataview)
-
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
             set = set,
             relations = listOf(relation1, relation2, relation3, relation4, relation5),

@@ -4,12 +4,11 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -40,12 +39,9 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
-        stubNetworkMode()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After
@@ -58,8 +54,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     fun `should emit command for editing relation-tag cell`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubStoreOfRelations(mockObjectSet)
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
@@ -106,8 +100,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     fun `should emit command for editing relation-object cell if this relation is read-only and object's layout is supported`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubStoreOfRelations(mockObjectSet)
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
@@ -178,8 +170,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     fun `should close current object before navigating to some other object`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubStoreOfRelations(mockObjectSet)
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
@@ -229,8 +219,6 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     fun `should not emit any navigation command for opening an object if object's layout is not supported`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubStoreOfRelations(mockObjectSet)
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),

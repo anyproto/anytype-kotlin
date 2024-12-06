@@ -12,13 +12,14 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
+import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -29,6 +30,8 @@ interface ObjectRelationListComponent {
 
     @Subcomponent.Builder
     interface Builder {
+        @BindsInstance
+        fun withVmParams(vmParams: RelationListViewModel.VmParams) : Builder
         fun module(module: ObjectRelationListModule): Builder
         fun build(): ObjectRelationListComponent
     }
@@ -42,6 +45,7 @@ object ObjectRelationListModule {
     @Provides
     @PerModal
     fun factory(
+        vmParams: RelationListViewModel.VmParams,
         lockedStateProvider: LockedStateProvider,
         relationListProvider: RelationListProvider,
         urlBuilder: UrlBuilder,
@@ -54,10 +58,10 @@ object ObjectRelationListModule {
         storeOfRelations: StoreOfRelations,
         addRelationToObject: AddRelationToObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        spaceManager: SpaceManager,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
+            vmParams = vmParams,
             lockedStateProvider = lockedStateProvider,
             relationListProvider = relationListProvider,
             urlBuilder = urlBuilder,
@@ -70,8 +74,7 @@ object ObjectRelationListModule {
             storeOfRelations = storeOfRelations,
             addRelationToObject = addRelationToObject,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            spaceManager = spaceManager,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
         )
     }
 

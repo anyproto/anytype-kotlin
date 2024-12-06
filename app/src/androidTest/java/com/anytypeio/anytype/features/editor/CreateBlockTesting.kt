@@ -157,8 +157,6 @@ class CreateBlockTesting : EditorTestSetup() {
             )
         )
 
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubOpenDocument(document)
         stubUpdateText()
         stubCreateBlocks(params, new, events)

@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.presentation.sets.main
 
-import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,8 +8,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.verifyNoInteractions
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -24,12 +20,9 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
-        stubNetworkMode()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After
@@ -41,8 +34,6 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
     fun `should not start creating new record if dv is not initialized yet`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title),
             details = mockObjectSet.details

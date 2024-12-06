@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.account.AccountStatusChannel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
@@ -196,4 +198,9 @@ object MainEntryModule {
     fun provideDeepLinkToObjectDelegate(
         default: DeepLinkToObjectDelegate.Default
     ): DeepLinkToObjectDelegate = default
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideSpaceInviteResolver(): SpaceInviteResolver = DefaultSpaceInviteResolver
 }

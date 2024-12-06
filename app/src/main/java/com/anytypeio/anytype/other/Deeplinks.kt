@@ -110,7 +110,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     }
 }
 
-object DefaultSpaceInviteResolver : SpaceInviteResolver {
+object DefaultSpaceInviteResolver constructor() : SpaceInviteResolver {
 
     private val customRegex = Regex(DEE_LINK_INVITE_CUSTOM_REG_EXP)
     private val defaultRegex = Regex(DEEP_LINK_INVITE_REG_EXP)

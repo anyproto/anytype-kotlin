@@ -39,6 +39,7 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -208,6 +209,11 @@ object HomeScreenModule {
     @PerScreen
     fun coverHashProvider() : CoverImageHashProvider = DefaultCoverImageHashProvider()
 
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideSpaceInviteResolver(): SpaceInviteResolver = DefaultSpaceInviteResolver
+
     @Module
     interface Declarations {
         @PerScreen
@@ -279,5 +285,4 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun featureToggles(): FeatureToggles
     fun payloadDelegator(): PayloadDelegator
     fun fieldParser(): FieldParser
-    fun spaceInviteResolver(): SpaceInviteResolver
 }

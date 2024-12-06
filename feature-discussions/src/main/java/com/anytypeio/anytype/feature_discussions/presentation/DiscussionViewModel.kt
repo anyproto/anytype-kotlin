@@ -266,7 +266,7 @@ class DiscussionViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess { (id, payload) ->
-                        this@DiscussionViewModel.chatBoxAttachments.value = emptyList()
+                        chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         commands.emit(UXCommand.JumpToBottom)
@@ -287,6 +287,7 @@ class DiscussionViewModel @Inject constructor(
                     ).onSuccess {
                         delay(JUMP_TO_BOTTOM_DELAY)
                         commands.emit(UXCommand.JumpToBottom)
+                        chatBoxAttachments.value = emptyList()
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }.onSuccess {
@@ -304,7 +305,7 @@ class DiscussionViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess { (id, payload) ->
-                        this@DiscussionViewModel.chatBoxAttachments.value = emptyList()
+                        chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         commands.emit(UXCommand.JumpToBottom)

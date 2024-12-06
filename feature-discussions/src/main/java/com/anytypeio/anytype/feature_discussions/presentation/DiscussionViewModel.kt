@@ -53,7 +53,6 @@ class DiscussionViewModel @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val fileDrop: FileDrop,
     private val uploadFile: UploadFile
 ) : BaseViewModel() {
 

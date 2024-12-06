@@ -33,7 +33,6 @@ class DiscussionViewModelFactory @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val fileDrop: FileDrop,
     private val uploadFile: UploadFile
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -51,7 +50,6 @@ class DiscussionViewModelFactory @Inject constructor(
         editChatMessage = editChatMessage,
         spaceViews = spaceViews,
         dispatchers = dispatchers,
-        fileDrop = fileDrop,
         uploadFile = uploadFile
     ) as T
 }

@@ -26,7 +26,7 @@ interface DateProvider {
         timestamp: TimeInMillis,
         timeStyle: Int = DEFAULT_DATE_FORMAT_STYLE
     ): Pair<String, String>
-    fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate?
+    fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate
     fun isSameMinute(timestamp1: Long, timestamp2: Long): Boolean
     fun getLocalDateOfTime(epochMilli: Long): LocalDate
     fun isTimestampWithinYearRange(timeStampInMillis: Long, yearRange: IntRange): Boolean

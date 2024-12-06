@@ -313,7 +313,10 @@ class DateObjectViewModel(
                                     timestampInSeconds = TimestampInSeconds(timestampInSeconds)
                                 )
                                 uiHeaderState.value = UiHeaderState.Content(
-                                    title = formattedDate
+                                    title = formattedDate,
+                                    relativeDate = dateProvider.calculateRelativeDates(
+                                        dateInSeconds = timestampInSeconds
+                                    )
                                 )
                             }
                         },

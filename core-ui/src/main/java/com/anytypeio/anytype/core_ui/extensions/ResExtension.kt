@@ -309,4 +309,5 @@ fun RelativeDate.getPrettyName(
     is RelativeDate.Today -> resources.getString(R.string.today)
     is RelativeDate.Tomorrow -> resources.getString(R.string.tomorrow)
     is RelativeDate.Yesterday -> resources.getString(R.string.yesterday)
+    RelativeDate.Empty -> ""
 }

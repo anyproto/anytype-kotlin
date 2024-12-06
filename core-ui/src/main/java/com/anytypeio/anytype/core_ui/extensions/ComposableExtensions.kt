@@ -15,6 +15,9 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
+import com.anytypeio.anytype.core_models.DayOfWeekCustom
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 
@@ -95,4 +98,28 @@ fun Modifier.bouncingClickable(
 fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
     clear()
     addAll(newList)
+}
+
+@Composable
+fun getLocalizedDayName(dayOfWeek: DayOfWeekCustom): String {
+    return when (dayOfWeek) {
+        DayOfWeekCustom.MONDAY -> stringResource(id = R.string.day_of_week_monday)
+        DayOfWeekCustom.TUESDAY -> stringResource(id = R.string.day_of_week_tuesday)
+        DayOfWeekCustom.WEDNESDAY -> stringResource(id = R.string.day_of_week_wednesday)
+        DayOfWeekCustom.THURSDAY -> stringResource(id = R.string.day_of_week_thursday)
+        DayOfWeekCustom.FRIDAY -> stringResource(id = R.string.day_of_week_friday)
+        DayOfWeekCustom.SATURDAY -> stringResource(id = R.string.day_of_week_saturday)
+        DayOfWeekCustom.SUNDAY -> stringResource(id = R.string.day_of_week_sunday)
+    }
+}
+
+@Composable
+fun RelativeDate.getPrettyName(): String {
+    return when (this) {
+        is RelativeDate.Today -> stringResource(id = R.string.today)
+        is RelativeDate.Tomorrow -> stringResource(id = R.string.tomorrow)
+        is RelativeDate.Yesterday -> stringResource(id = R.string.yesterday)
+        is RelativeDate.Other -> this.formattedDate
+        RelativeDate.Empty -> ""
+    }
 }

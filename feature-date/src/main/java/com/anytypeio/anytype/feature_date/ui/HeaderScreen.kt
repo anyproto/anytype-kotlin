@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -133,50 +134,46 @@ fun HeaderScreen(
 
 @Composable
 fun RelativeDateAndDayOfWeek(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     uiState: UiHeaderState
 ) {
-    Row(modifier = modifier) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         if (uiState is UiHeaderState.Content) {
-            when (val relativeDate = uiState.relativeDate) {
-                is RelativeDate.Today -> {
-                    Text(
-                        modifier = Modifier.wrapContentSize(),
-                        text = "${relativeDate.getPrettyName()} \u2022 ",
-                        style = Relations2,
-                        color = colorResource(id = R.color.text_secondary)
-                    )
+            uiState.relativeDate.takeIf { it is RelativeDate.Today || it is RelativeDate.Tomorrow || it is RelativeDate.Yesterday }
+                ?.let { relativeDate ->
+                    DateWithDot(relativeDate.getPrettyName())
                 }
 
-                is RelativeDate.Tomorrow -> {
-                    Text(
-                        modifier = Modifier.wrapContentSize(),
-                        text = "${relativeDate.getPrettyName()} \u2022 ",
-                        style = Relations2,
-                        color = colorResource(id = R.color.text_secondary)
-                    )
-                }
-
-                is RelativeDate.Yesterday -> {
-                    Text(
-                        modifier = Modifier.wrapContentSize(),
-                        text = "${relativeDate.getPrettyName()} \u2022 ",
-                        style = Relations2,
-                        color = colorResource(id = R.color.text_secondary)
-                    )
-                }
-
-                else -> {}
-            }
             val dayOfWeek = getLocalizedDayName(uiState.relativeDate.dayOfWeek)
             Text(
-                modifier = Modifier.wrapContentSize(),
                 text = dayOfWeek,
                 style = Relations2,
-                color = colorResource(id = R.color.text_secondary)
+                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier.wrapContentSize()
             )
         }
     }
+}
+
+@Composable
+fun DateWithDot(dateText: String) {
+    Text(
+        text = dateText,
+        style = Relations2,
+        color = colorResource(id = R.color.text_secondary),
+        modifier = Modifier.wrapContentSize()
+    )
+    Image(
+        painter = painterResource(id = R.drawable.ic_dot_3),
+        contentDescription = "dot",
+        contentScale = ContentScale.Fit,
+        modifier = Modifier
+            .padding(horizontal = 8.dp)
+            .wrapContentSize()
+    )
 }
 
 @Composable
@@ -204,11 +201,9 @@ fun DateLayoutHeaderLoadingPreview() {
 fun DateLayoutHeaderPreview() {
     val state = UiHeaderState.Content(
         title = "Tue, 12 Oct",
-        relativeDate = RelativeDate.Other(
+        relativeDate = RelativeDate.Today(
             initialTimeInMillis = 1634016000000,
-            dayOfWeek = DayOfWeekCustom.MONDAY,
-            formattedDate = "Tue, 12 Oct",
-            formattedTime = "12:00 AM"
+            dayOfWeek = DayOfWeekCustom.MONDAY
         )
     )
     HeaderScreen(

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature.vault
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
@@ -12,15 +13,18 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import dagger.Binds
 import dagger.Component
 import dagger.Module
+import dagger.Provides
 
 @Component(
     dependencies = [VaultComponentDependencies::class],
@@ -56,6 +60,10 @@ object VaultModule {
             default: DeepLinkToObjectDelegate.Default
         ) : DeepLinkToObjectDelegate
     }
+
+    @PerScreen
+    @Provides
+    fun provideSpaceInviteResolver() : SpaceInviteResolver = DefaultSpaceInviteResolver
 }
 
 interface VaultComponentDependencies : ComponentDependencies {

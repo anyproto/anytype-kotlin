@@ -13,6 +13,8 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
@@ -51,7 +53,9 @@ class ObjectSetMenuViewModel(
     private val deepLinkResolver: DeepLinkResolver,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     setObjectListIsFavorite: SetObjectListIsFavorite,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+    getSpaceInviteLink: GetSpaceInviteLink
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -68,7 +72,10 @@ class ObjectSetMenuViewModel(
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
     payloadDelegator = payloadDelegator,
     setObjectListIsFavorite = setObjectListIsFavorite,
-    fieldParser = fieldParser
+    fieldParser = fieldParser,
+    deepLinkResolver = deepLinkResolver,
+    spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+    getSpaceInviteLink = getSpaceInviteLink
 ) {
 
     init {
@@ -94,7 +101,9 @@ class ObjectSetMenuViewModel(
         private val payloadDelegator: PayloadDelegator,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
         private val setObjectListIsArchived: SetObjectListIsArchived,
-        private val fieldParser: FieldParser
+        private val fieldParser: FieldParser,
+        private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+        private val getSpaceInviteLink: GetSpaceInviteLink
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -115,7 +124,9 @@ class ObjectSetMenuViewModel(
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 payloadDelegator = payloadDelegator,
                 setObjectListIsFavorite = setObjectListIsFavorite,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                getSpaceInviteLink = getSpaceInviteLink
             ) as T
         }
     }
@@ -219,11 +230,13 @@ class ObjectSetMenuViewModel(
                 proceedWithCreatingWidget(obj = wrapper)
             }
             ObjectAction.COPY_LINK -> {
-                val deeplink = deepLinkResolver.createObjectDeepLink(
-                    obj = ctx,
-                    space = SpaceId(space)
-                )
-                viewModelScope.launch { commands.emit(Command.ShareDeeplinkToObject(deeplink)) }
+                viewModelScope.launch {
+                    val link = proceedWithGeneratingObjectLink(
+                        space = SpaceId(space),
+                        ctx = ctx
+                    )
+                    commands.emit(Command.ShareDeeplinkToObject(link))
+                }
             }
             ObjectAction.MOVE_TO,
             ObjectAction.SEARCH_ON_PAGE,

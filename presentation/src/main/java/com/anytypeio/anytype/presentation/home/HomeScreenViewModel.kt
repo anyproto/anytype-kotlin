@@ -54,6 +54,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -207,7 +208,8 @@ class HomeScreenViewModel(
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
     private val featureToggles: FeatureToggles,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceInviteResolver: SpaceInviteResolver
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -1339,7 +1341,19 @@ class HomeScreenViewModel(
                     ).collect { result ->
                         when(result) {
                             is DeepLinkToObjectDelegate.Result.Error -> {
-                                commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+                                val link = deeplink.invite
+                                if (link != null) {
+                                    commands.emit(
+                                        Command.Deeplink.Invite(
+                                            link = spaceInviteResolver.createInviteLink(
+                                                contentId = link.cid,
+                                                encryptionKey = link.key
+                                            )
+                                        )
+                                    )
+                                } else {
+                                    commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+                                }
                             }
                             is DeepLinkToObjectDelegate.Result.Success -> {
                                 proceedWithNavigation(result.obj.navigation())
@@ -2196,7 +2210,8 @@ class HomeScreenViewModel(
         private val clearLastOpenedObject: ClearLastOpenedObject,
         private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
         private val featureToggles: FeatureToggles,
-        private val fieldParser: FieldParser
+        private val fieldParser: FieldParser,
+        private val spaceInviteResolver: SpaceInviteResolver
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2248,7 +2263,8 @@ class HomeScreenViewModel(
             clearLastOpenedObject = clearLastOpenedObject,
             spaceBinWidgetContainer = spaceBinWidgetContainer,
             featureToggles = featureToggles,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            spaceInviteResolver = spaceInviteResolver
         ) as T
     }
 

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.RelationKey
@@ -29,7 +30,8 @@ sealed class UiHeaderState {
     data object Empty : UiHeaderState()
     data object Loading : UiHeaderState()
     data class Content(
-        val title: String
+        val title: String,
+        val relativeDate: RelativeDate
     ) : UiHeaderState()
 }
 

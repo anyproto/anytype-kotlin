@@ -43,6 +43,7 @@ import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsState
 
 @Composable
 fun FieldsScreen(
+    modifier: Modifier,
     uiState: UiFieldsState,
     onDateEvent: (DateEvent) -> Unit
 ) {
@@ -66,9 +67,9 @@ fun FieldsScreen(
 
     LazyRow(
         state = lazyFieldsListState,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 24.dp)
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)
     ) {
         items(
             count = items.size,
@@ -181,6 +182,7 @@ fun FieldsScreen(
 @DefaultPreviews
 fun FieldsScreenPreview() {
     FieldsScreen(
+        modifier = Modifier.fillMaxWidth().height(40.dp),
         uiState = UiFieldsState(
             items = StubHorizontalItems,
             selectedRelationKey = RelationKey("1")
@@ -193,6 +195,7 @@ fun FieldsScreenPreview() {
 @DefaultPreviews
 fun LoadingPreview() {
     FieldsScreen(
+        modifier = Modifier.fillMaxWidth().height(40.dp),
         uiState = UiFieldsState.LoadingState,
         onDateEvent = {}
     )

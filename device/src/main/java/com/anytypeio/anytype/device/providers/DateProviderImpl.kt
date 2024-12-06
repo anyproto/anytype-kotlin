@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.device.providers
 
 import android.text.format.DateUtils
+import com.anytypeio.anytype.core_models.DayOfWeekCustom
 import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
@@ -185,9 +186,9 @@ class DateProviderImpl @Inject constructor(
         return truncatedDateTime1 == truncatedDateTime2
     }
 
-    override fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate? {
+    override fun calculateRelativeDates(dateInSeconds: TimeInSeconds?): RelativeDate {
 
-        if (dateInSeconds == null || dateInSeconds == 0L) return null
+        if (dateInSeconds == null || dateInSeconds == 0L) return RelativeDate.Empty
         val initialTimeInMillis = dateInSeconds * 1000
         val zoneId = defaultZoneId
         val dateInstant = Instant.ofEpochSecond(dateInSeconds)
@@ -196,10 +197,33 @@ class DateProviderImpl @Inject constructor(
 
         val daysDifference = ChronoUnit.DAYS.between(today, givenDate)
 
+        // Convert java.time.DayOfWeek to DayOfWeekCustom
+        val dayOfWeekCustom = when (givenDate.dayOfWeek) {
+            java.time.DayOfWeek.MONDAY -> DayOfWeekCustom.MONDAY
+            java.time.DayOfWeek.TUESDAY -> DayOfWeekCustom.TUESDAY
+            java.time.DayOfWeek.WEDNESDAY -> DayOfWeekCustom.WEDNESDAY
+            java.time.DayOfWeek.THURSDAY -> DayOfWeekCustom.THURSDAY
+            java.time.DayOfWeek.FRIDAY -> DayOfWeekCustom.FRIDAY
+            java.time.DayOfWeek.SATURDAY -> DayOfWeekCustom.SATURDAY
+            java.time.DayOfWeek.SUNDAY -> DayOfWeekCustom.SUNDAY
+        }
+
         return when (daysDifference) {
-            0L -> RelativeDate.Today(initialTimeInMillis = initialTimeInMillis)
-            1L -> RelativeDate.Tomorrow(initialTimeInMillis = initialTimeInMillis)
-            -1L -> RelativeDate.Yesterday(initialTimeInMillis = initialTimeInMillis)
+            0L -> RelativeDate.Today(
+                initialTimeInMillis = initialTimeInMillis,
+                dayOfWeek = dayOfWeekCustom
+            )
+
+            1L -> RelativeDate.Tomorrow(
+                initialTimeInMillis = initialTimeInMillis,
+                dayOfWeek = dayOfWeekCustom
+            )
+
+            -1L -> RelativeDate.Yesterday(
+                initialTimeInMillis = initialTimeInMillis,
+                dayOfWeek = dayOfWeekCustom
+            )
+
             else -> {
                 val timestampMillis = TimeUnit.SECONDS.toMillis(dateInSeconds)
 
@@ -207,7 +231,8 @@ class DateProviderImpl @Inject constructor(
                 RelativeDate.Other(
                     initialTimeInMillis = initialTimeInMillis,
                     formattedDate = dateString,
-                    formattedTime = timeString
+                    formattedTime = timeString,
+                    dayOfWeek = dayOfWeekCustom
                 )
             }
         }

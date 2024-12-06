@@ -512,7 +512,6 @@ open class EditorTestSetup {
             getNetworkMode = getNetworkMode,
             fieldParser = fieldParser,
             dateProvider = dateProvider,
-            getDateObjectByTimestamp = getDateObjectByTimestamp,
         )
     }
 

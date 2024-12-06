@@ -1,11 +1,8 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.test
-import app.cash.turbine.turbineScope
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -34,12 +31,9 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey, space = defaultSpace)
-        stubNetworkMode()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After
@@ -52,9 +46,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
     fun `should create new object with source object type if given set is aggregated by specific object type`() = runTest{
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
         stubCreateDataViewObject()
-        stubInterceptThreadStatus()
         stubStoreOfRelations(mockObjectSet)
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),

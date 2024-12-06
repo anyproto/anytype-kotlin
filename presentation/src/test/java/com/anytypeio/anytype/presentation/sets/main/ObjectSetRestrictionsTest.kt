@@ -26,12 +26,9 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
-        givenNetworkNodeMocked()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After
@@ -43,8 +40,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     fun `should show error toast when clicked on viewer button`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
             details = mockObjectSet.details,
@@ -89,8 +84,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     fun `should show error toast when clicked on add object button`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
             details = mockObjectSet.details,
@@ -135,8 +128,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     fun `should show error toast when clicked on add filter button`() = runTest {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
             details = mockObjectSet.details,

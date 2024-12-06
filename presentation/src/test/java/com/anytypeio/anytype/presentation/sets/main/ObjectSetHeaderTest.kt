@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -23,12 +21,9 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
-        stubNetworkMode()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After
@@ -40,8 +35,6 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
     fun `should return header with title but without emoji`() = runTest {
 
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
             details = mockObjectSet.details
@@ -91,8 +84,6 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
     fun `should return header with title but with emoji`() = runTest {
 
         stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
         stubOpenObject(
             doc = listOf(
                 mockObjectSet.headerWithEmoji,

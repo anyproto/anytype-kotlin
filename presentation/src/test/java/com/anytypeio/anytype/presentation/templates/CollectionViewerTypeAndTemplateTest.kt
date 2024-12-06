@@ -76,12 +76,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        proceedWithDefaultBeforeTestStubbing()
         givenNetworkNodeMocked()
         viewModel = givenViewModel()
         stubAddObjectToCollection()
-        stubObservePermissions()
-        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

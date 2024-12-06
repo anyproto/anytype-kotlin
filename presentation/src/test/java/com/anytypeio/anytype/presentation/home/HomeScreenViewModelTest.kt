@@ -53,6 +53,7 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -305,10 +306,13 @@ class HomeScreenViewModelTest {
 
     private lateinit var urlBuilder: UrlBuilder
 
+    @Mock
+    lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger)
+        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
         urlBuilder = UrlBuilder(gateway)
         stubSpaceManager()
         userPermissionProvider = UserPermissionProviderStub()

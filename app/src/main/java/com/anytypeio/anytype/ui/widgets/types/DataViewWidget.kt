@@ -104,7 +104,7 @@ fun DataViewListWidgetCard(
             WidgetHeader(
                 title = when (val name = item.name) {
                     is WidgetView.Name.Default -> {
-                        name.prettyPrintName ?: stringResource(id = R.string.untitled)
+                        name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
                     }
                     is WidgetView.Name.Bundled -> {
                         stringResource(id = name.source.res())
@@ -237,7 +237,7 @@ fun GalleryWidgetCard(
             WidgetHeader(
                 title = when (val source = item.name) {
                     is WidgetView.Name.Default -> {
-                        source.prettyPrintName ?: stringResource(id = R.string.untitled)
+                        source.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
                     }
                     is WidgetView.Name.Bundled -> {
                         stringResource(id = source.source.res())

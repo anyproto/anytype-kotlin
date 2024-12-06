@@ -103,7 +103,7 @@ fun TreeWidgetCard(
             WidgetHeader(
                 title = when (val name = item.name) {
                     is WidgetView.Name.Default -> {
-                        name.prettyPrintName ?: stringResource(id = R.string.untitled)
+                        name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
                     }
                     is WidgetView.Name.Bundled -> { stringResource(id = name.source.res()) }
                 },
@@ -227,7 +227,7 @@ private fun TreeWidgetTreeItems(
                 )
             }
             Text(
-                text = element.name.prettyPrintName ?: stringResource(id = R.string.untitled),
+                text = element.name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) },
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .fillMaxWidth(),

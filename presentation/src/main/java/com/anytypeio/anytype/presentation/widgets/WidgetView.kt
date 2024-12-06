@@ -13,7 +13,7 @@ sealed class WidgetView {
 
     sealed interface Name {
         data class Bundled(val source: Widget.Source.Bundled): Name
-        data class Default(val prettyPrintName: String?): Name
+        data class Default(val prettyPrintName: String): Name
     }
 
     interface Element {

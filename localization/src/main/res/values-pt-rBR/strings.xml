@@ -1566,4 +1566,11 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="chat_attachment_media">Mídias</string>
     <string name="chat_attachment_upload">Fazer upload</string>
     <string name="chats_reply">Reply</string>
+    <string name="day_of_week_monday">Monday</string>
+    <string name="day_of_week_tuesday">Tuesday</string>
+    <string name="day_of_week_wednesday">Wednesday</string>
+    <string name="day_of_week_thursday">Thursday</string>
+    <string name="day_of_week_friday">Friday</string>
+    <string name="day_of_week_saturday">Saturday</string>
+    <string name="day_of_week_sunday">Sunday</string>
 </resources>

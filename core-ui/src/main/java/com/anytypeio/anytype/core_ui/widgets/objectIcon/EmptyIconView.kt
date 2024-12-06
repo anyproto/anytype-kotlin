@@ -25,7 +25,7 @@ fun EmptyIconView(
     emptyType: ObjectIcon.Empty,
     iconWithoutBackgroundMaxSize: Dp = 20.dp,
     imageMultiplier: Float = 0.625f,
-    backgroundColor: Int = R.color.shape_secondary
+    backgroundColor: Int = R.color.shape_transparent_secondary
 ) {
     val (containerModifier, iconModifier) = if (backgroundSize > iconWithoutBackgroundMaxSize) {
         modifier

@@ -1,6 +1,10 @@
 package com.anytypeio.anytype.feature_date.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
@@ -16,6 +20,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -24,6 +31,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -34,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.extensions.swapList
+import com.anytypeio.anytype.core_ui.foundation.DismissBackground
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -47,6 +57,7 @@ import com.anytypeio.anytype.feature_date.ui.models.StubVerticalItems
 import com.anytypeio.anytype.feature_date.viewmodel.UiContentState
 import com.anytypeio.anytype.feature_date.viewmodel.UiObjectsListItem
 import com.anytypeio.anytype.feature_date.viewmodel.UiObjectsListState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -100,15 +111,18 @@ fun ObjectsScreen(
             val item = items[index]
             when (item) {
                 is UiObjectsListItem.Item -> {
-                    ListItem(
+                    SwipeToDismissListItems(
                         modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItem()
                             .noRippleThrottledClickable {
                                 onDateEvent(DateEvent.ObjectsList.OnObjectClicked(item))
                             },
-                        item = item
+                        item = item,
+                        onDateEvent = onDateEvent
                     )
+                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                 }
-
                 is UiObjectsListItem.Loading -> {
                     ListItemLoading(modifier = Modifier)
                 }
@@ -227,6 +241,71 @@ private fun ListItemLoading(
             )
         }
     )
+}
+
+@Composable
+fun SwipeToDismissListItems(
+    item: UiObjectsListItem.Item,
+    modifier: Modifier,
+    animationDuration: Int = 500,
+    onDateEvent: (DateEvent) -> Unit,
+) {
+    var isRemoved by remember { mutableStateOf(false) }
+    val dismissState = rememberSwipeToDismissBoxState(
+        initialValue = SwipeToDismissBoxValue.Settled,
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                isRemoved = true
+                true
+            } else {
+                false
+            }
+            return@rememberSwipeToDismissBoxState true
+        },
+        positionalThreshold = { it * .5f }
+    )
+
+    if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
+        LaunchedEffect(Unit) {
+            dismissState.snapTo(SwipeToDismissBoxValue.Settled)
+        }
+    }
+
+    LaunchedEffect(key1 = isRemoved) {
+        if (isRemoved) {
+            delay(animationDuration.toLong())
+            onDateEvent(DateEvent.ObjectsList.OnObjectMoveToBin(item))
+        }
+    }
+    AnimatedVisibility(
+        visible = !isRemoved,
+        exit = shrinkVertically(
+            animationSpec = tween(durationMillis = animationDuration),
+            shrinkTowards = Alignment.Top
+        ) + fadeOut()
+    ) {
+        SwipeToDismissBox(
+            modifier = modifier,
+            state = dismissState,
+            enableDismissFromEndToStart = item.isPossibleToDelete,
+            enableDismissFromStartToEnd = false,
+            backgroundContent = {
+                DismissBackground(
+                    actionText = stringResource(R.string.move_to_bin),
+                    dismissState = dismissState
+                )
+            },
+            content = {
+                ListItem(
+                    modifier = Modifier
+                        .noRippleThrottledClickable {
+                            onDateEvent(DateEvent.ObjectsList.OnObjectClicked(item))
+                        },
+                    item = item
+                )
+            }
+        )
+    }
 }
 
 @Composable

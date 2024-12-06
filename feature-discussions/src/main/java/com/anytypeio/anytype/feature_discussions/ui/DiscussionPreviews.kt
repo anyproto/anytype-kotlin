@@ -121,7 +121,8 @@ fun DiscussionScreenPreview() {
         onAttachObjectClicked = {},
         onReplyMessage = {},
         chatBoxMode = DiscussionViewModel.ChatBoxMode.Default,
-        onClearReplyClicked = {}
+        onClearReplyClicked = {},
+        onChatBoxMediaPicked = {}
     )
 }
 

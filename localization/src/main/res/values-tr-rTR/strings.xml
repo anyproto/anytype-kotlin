@@ -1569,4 +1569,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_attachment_media">Medya</string>
     <string name="chat_attachment_upload">Yükle</string>
     <string name="chats_reply">Yanıtla</string>
+    <string name="day_of_week_monday">Pazartesi</string>
+    <string name="day_of_week_tuesday">Salı</string>
+    <string name="day_of_week_wednesday">Çarşamba</string>
+    <string name="day_of_week_thursday">Perşembe</string>
+    <string name="day_of_week_friday">Cuma</string>
+    <string name="day_of_week_saturday">Cumartesi</string>
+    <string name="day_of_week_sunday">Pazar</string>
 </resources>

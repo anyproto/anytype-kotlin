@@ -475,7 +475,9 @@ private fun ChatBox(
             )
     ) {
         LazyRow(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             attachments.forEach { attachment ->
@@ -484,10 +486,12 @@ private fun ChatBox(
                         item {
                             Box {
                                 AttachedObject(
-                                    modifier = Modifier.padding(
-                                        top = 12.dp,
-                                        end = 4.dp
-                                    ),
+                                    modifier = Modifier
+                                        .padding(
+                                            top = 12.dp,
+                                            end = 4.dp
+                                        )
+                                        .width(216.dp),
                                     title = attachment.wrapper.title,
                                     type = attachment.wrapper.type,
                                     icon = attachment.wrapper.icon,
@@ -1255,14 +1259,17 @@ fun Bubble(
                 }
                 is DiscussionView.Message.Attachment.Link -> {
                     AttachedObject(
-                        modifier = Modifier.padding(
-                            start = 16.dp,
-                            end = 16.dp,
-                            top = 8.dp
-                        ),
+                        modifier = Modifier
+                            .padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 8.dp
+                            )
+                            .fillMaxWidth()
+                        ,
                         title = attachment.wrapper?.name.orEmpty(),
                         type = attachment.wrapper?.type?.firstOrNull().orEmpty(),
-                        icon = ObjectIcon.None,
+                        icon = attachment.icon,
                         onAttachmentClicked = {
                             onAttachmentClicked(attachment)
                         }
@@ -1457,7 +1464,6 @@ fun AttachedObject(
     Box(
         modifier = modifier
             .height(72.dp)
-            .width(216.dp)
             .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
@@ -1677,7 +1683,7 @@ fun TopDiscussionToolbarPreview() {
 @Composable
 fun AttachmentPreview() {
     AttachedObject(
-        modifier = Modifier,
+        modifier = Modifier.fillMaxWidth(),
         icon = ObjectIcon.None,
         type = "Project",
         title = "Travel to Switzerland",

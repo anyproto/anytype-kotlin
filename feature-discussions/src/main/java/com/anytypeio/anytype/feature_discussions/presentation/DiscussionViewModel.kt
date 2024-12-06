@@ -31,6 +31,8 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -196,7 +198,8 @@ class DiscussionViewModel @Inject constructor(
                                     } else {
                                         DiscussionView.Message.Attachment.Link(
                                             target = attachment.target,
-                                            wrapper = wrapper
+                                            wrapper = wrapper,
+                                            icon = wrapper?.objectIcon(urlBuilder) ?: ObjectIcon.None
                                         )
                                     }
                                 }

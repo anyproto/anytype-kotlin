@@ -42,6 +42,7 @@ sealed class DateEvent {
 
     sealed class ObjectsList : DateEvent() {
         data class OnObjectClicked(val item: UiObjectsListItem) : ObjectsList()
+        data class OnObjectMoveToBin(val item: UiObjectsListItem.Item) : ObjectsList()
         data object OnLoadMore : ObjectsList()
     }
 
@@ -52,5 +53,10 @@ sealed class DateEvent {
 
     sealed class SyncStatusWidget : DateEvent() {
         data object OnSyncStatusDismiss : SyncStatusWidget()
+    }
+
+    sealed class Snackbar : DateEvent() {
+        data object OnSnackbarDismiss : Snackbar()
+        data class UndoMoveToBin(val objectId: String) : Snackbar()
     }
 }

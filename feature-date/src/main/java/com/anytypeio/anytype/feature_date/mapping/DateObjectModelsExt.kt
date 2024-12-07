@@ -57,7 +57,8 @@ fun ObjectWrapper.Basic.toUiObjectsListItem(
     space: SpaceId,
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    isOwnerOrEditor: Boolean
 ): UiObjectsListItem {
     val obj = this
     val typeUrl = obj.getProperType()
@@ -76,6 +77,7 @@ fun ObjectWrapper.Basic.toUiObjectsListItem(
             }
         }?.name,
         layout = layout,
-        icon = obj.objectIcon(builder = urlBuilder)
+        icon = obj.objectIcon(builder = urlBuilder),
+        isPossibleToDelete = isOwnerOrEditor
     )
 }

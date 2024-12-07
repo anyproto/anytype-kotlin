@@ -154,6 +154,9 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                 is DateObjectCommand.SendToast.UnexpectedLayout -> {
                     toast("Unexpected layout")
                 }
+                is DateObjectCommand.SendToast.Error -> {
+                    toast(effect.message)
+                }
                 DateObjectCommand.TypeSelectionScreen -> {
                     val dialog = ObjectTypeSelectionFragment.new(space = space)
                     dialog.show(childFragmentManager, null)
@@ -198,6 +201,7 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     uiCalendarState = vm.uiCalendarState.collectAsStateWithLifecycle().value,
                     uiSyncStatusState = vm.uiSyncStatusWidgetState.collectAsStateWithLifecycle().value,
+                    uiSnackbarState = vm.uiSnackbarState.collectAsStateWithLifecycle().value,
                     onDateEvent = vm::onDateEvent
                 )
             }

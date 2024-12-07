@@ -11,6 +11,7 @@ sealed class DateObjectCommand {
     data object TypeSelectionScreen : DateObjectCommand()
     data object ExitToSpaceWidgets : DateObjectCommand()
     sealed class SendToast : DateObjectCommand() {
+        data class Error(val message: String) : SendToast()
         data class UnexpectedLayout(val layout: String) : SendToast()
     }
     data object OpenGlobalSearch : DateObjectCommand()

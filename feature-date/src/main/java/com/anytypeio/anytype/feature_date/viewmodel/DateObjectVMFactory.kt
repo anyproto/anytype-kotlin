@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -31,7 +32,8 @@ class DateObjectVMFactory @Inject constructor(
     private val dateProvider: DateProvider,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val createObject: CreateObject,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -50,6 +52,8 @@ class DateObjectVMFactory @Inject constructor(
             dateProvider = dateProvider,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             createObject = createObject,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            setObjectListIsArchived = setObjectListIsArchived
+
         ) as T
 }

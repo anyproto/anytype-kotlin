@@ -1549,18 +1549,18 @@ Please provide specific details of your needs here.</string>
     <string name="write_a_message">Tulis pesan …</string>
     <string name="date_layout_mentioned_in">Disebut di</string>
     <string name="date_layout_empty_items">Belum ada apa-apa untuk tanggal ini</string>
-    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
+    <string name="date_layout_alert_date_out_of_range">Tanggal terpilih di luar rentang valid (tahun %1$d hingga %2$d). Silakan pilih tanggal dalam rentang ini.</string>
     <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">Objek</string>
     <string name="chat_attachment_file">Berkas</string>
     <string name="chat_attachment_media">Media</string>
     <string name="chat_attachment_upload">Unggah</string>
     <string name="chats_reply">Balas</string>
-    <string name="day_of_week_monday">Monday</string>
-    <string name="day_of_week_tuesday">Tuesday</string>
-    <string name="day_of_week_wednesday">Wednesday</string>
-    <string name="day_of_week_thursday">Thursday</string>
-    <string name="day_of_week_friday">Friday</string>
-    <string name="day_of_week_saturday">Saturday</string>
-    <string name="day_of_week_sunday">Sunday</string>
+    <string name="day_of_week_monday">Senin</string>
+    <string name="day_of_week_tuesday">Selasa</string>
+    <string name="day_of_week_wednesday">Rabu</string>
+    <string name="day_of_week_thursday">Kamis</string>
+    <string name="day_of_week_friday">Jumat</string>
+    <string name="day_of_week_saturday">Sabtu</string>
+    <string name="day_of_week_sunday">Minggu</string>
 </resources>

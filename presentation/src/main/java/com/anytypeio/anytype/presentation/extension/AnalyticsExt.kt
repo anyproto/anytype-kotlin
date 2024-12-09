@@ -71,7 +71,8 @@ fun Block.Prototype.getAnalyticsEvent(
     startTime: Long,
     middlewareTime: Long,
     renderTime: Long,
-    spaceParams: AnalyticSpaceHelperDelegate.Params
+    spaceParams: AnalyticSpaceHelperDelegate.Params,
+    isDate: Boolean = false
 ): EventAnalytics.Anytype {
     val props = when (this) {
         is Block.Prototype.Text -> {
@@ -96,7 +97,6 @@ fun Block.Prototype.getAnalyticsEvent(
             )
         }
         is Block.Prototype.Link -> {
-            val isDate = this.isDate
             return EventAnalytics.Anytype(
                 name = objectCreateLink,
                 duration = EventAnalytics.Duration(
@@ -529,14 +529,16 @@ suspend fun Analytics.sendAnalyticsCreateBlockEvent(
     prototype: Block.Prototype,
     startTime: Long,
     middlewareTime: Long,
-    spaceParams: AnalyticSpaceHelperDelegate.Params
+    spaceParams: AnalyticSpaceHelperDelegate.Params,
+    isDate: Boolean = false
 ) {
     val event = prototype.getAnalyticsEvent(
         eventName = EventsDictionary.blockCreate,
         startTime = startTime,
         middlewareTime = middlewareTime,
         renderTime = System.currentTimeMillis(),
-        spaceParams = spaceParams
+        spaceParams = spaceParams,
+        isDate = isDate
     )
     registerEvent(event)
 }
@@ -2003,7 +2005,6 @@ fun CoroutineScope.sendAnalyticsCreateLink(
         )
     )
 }
-
 
 //region Self-Hosting
 fun CoroutineScope.sendAnalyticsSelectNetworkEvent(

@@ -18,6 +18,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptions.*
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
@@ -54,6 +55,7 @@ import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
@@ -525,9 +527,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
             is NotificationCommand.GoToSpace -> {
                 runCatching {
-                    findNavController(R.id.fragment).popBackStack(
-                        R.id.homeScreen,
-                        inclusive = true
+                    findNavController(R.id.fragment).popBackStack(R.id.vaultScreen, false)
+                    findNavController(R.id.fragment).navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        HomeScreenFragment.args(
+                            space = command.space.id,
+                            deeplink = null
+                        )
                     )
                 }.onFailure {
                     Timber.e(it, "Error while navigation")

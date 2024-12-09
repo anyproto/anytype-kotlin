@@ -646,4 +646,8 @@
         android:id="@+id/multiplayerFeatureDialog"
         android:name="com.anytypeio.anytype.ui.multiplayer.IntroduceSpaceSharingFragment"/>
 
+    <action
+        android:id="@+id/actionOpenSpaceFromVault"
+        app:destination="@id/homeScreen" />
+
 </navigation>

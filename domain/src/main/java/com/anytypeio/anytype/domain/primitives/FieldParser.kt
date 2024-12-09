@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.domain.primitives
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.RelativeDate
@@ -29,10 +31,10 @@ interface FieldParser {
     )
 
     fun getObjectName(objectWrapper: ObjectWrapper.Basic): String
-    fun getObjectTypeName(
+    fun getObjectTypeIdAndName(
         objectWrapper: ObjectWrapper.Basic,
         types: List<ObjectWrapper.Type>
-    ): String?
+    ): Pair<Id?, String?>
 }
 
 class FieldParserImpl @Inject constructor(
@@ -111,18 +113,19 @@ class FieldParserImpl @Inject constructor(
         return objectWrapper.getProperObjectName().orEmpty()
     }
 
-    override fun getObjectTypeName(
+    override fun getObjectTypeIdAndName(
         objectWrapper: ObjectWrapper.Basic,
         types: List<ObjectWrapper.Type>
-    ): String? {
-        return when (objectWrapper.layout) {
-            ObjectType.Layout.DATE -> {
-                return null
-            }
+    ): Pair<Id?, String?> {
+        val id = when (objectWrapper.layout) {
+            ObjectType.Layout.DATE -> ObjectTypeIds.DATE
+            else -> objectWrapper.type.firstOrNull()
+        }
 
-            else -> {
-                types.find { it.id == objectWrapper.id }?.name
-            }
+        return if (id != null) {
+            id to types.find { it.id == id }?.name
+        } else {
+            null to null
         }
     }
 

@@ -137,7 +137,8 @@ sealed class UiObjectsListItem {
         val typeName: String? = null,
         val createdBy: String? = null,
         val layout: ObjectType.Layout? = null,
-        val icon: ObjectIcon = ObjectIcon.None
+        val icon: ObjectIcon = ObjectIcon.None,
+        val isPossibleToDelete: Boolean = false
     ) : UiObjectsListItem()
 }
 
@@ -178,4 +179,9 @@ sealed class UiErrorState {
         data class ErrorGettingObjects(val msg: String) : Reason()
         data class Other(val msg: String) : Reason()
     }
+}
+
+sealed class UiSnackbarState {
+    data object Hidden : UiSnackbarState()
+    data class Visible(val message: String, val objId: Id) : UiSnackbarState()
 }

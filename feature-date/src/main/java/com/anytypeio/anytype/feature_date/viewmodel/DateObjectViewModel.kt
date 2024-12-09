@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -47,6 +48,7 @@ import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel.Companion
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import kotlin.collections.map
+import kotlin.text.take
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -88,7 +90,8 @@ class DateObjectViewModel(
     private val dateProvider: DateProvider,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val createObject: CreateObject,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiCalendarIconState = MutableStateFlow<UiCalendarIconState>(UiCalendarIconState.Hidden)
@@ -103,6 +106,7 @@ class DateObjectViewModel(
     val uiCalendarState = MutableStateFlow<UiCalendarState>(UiCalendarState.Hidden)
     val uiSyncStatusWidgetState =
         MutableStateFlow<UiSyncStatusWidgetState>(UiSyncStatusWidgetState.Hidden)
+    val uiSnackbarState = MutableStateFlow<UiSnackbarState>(UiSnackbarState.Hidden)
 
     val effects = MutableSharedFlow<DateObjectCommand>()
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
@@ -403,7 +407,8 @@ class DateObjectViewModel(
                 space = vmParams.spaceId,
                 urlBuilder = urlBuilder,
                 objectTypes = storeOfObjectTypes.getAll(),
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
             )
         }
         uiContentState.value = if (items.isEmpty()) {
@@ -659,6 +664,18 @@ class DateObjectViewModel(
             is DateEvent.NavigationWidget -> onNavigationWidgetEvent(event)
             is DateEvent.ObjectsList -> onObjectsListEvent(event)
             is DateEvent.SyncStatusWidget -> onSyncStatusWidgetEvent(event)
+            is DateEvent.Snackbar -> onSnackbarEvent(event)
+        }
+    }
+
+    private fun onSnackbarEvent(event: DateEvent.Snackbar) {
+        when (event) {
+            DateEvent.Snackbar.OnSnackbarDismiss -> {
+                proceedWithDismissSnackbar()
+            }
+            is DateEvent.Snackbar.UndoMoveToBin -> {
+                proceedWithUndoMoveToBin(event.objectId)
+            }
         }
     }
 
@@ -685,6 +702,7 @@ class DateObjectViewModel(
         when (event) {
             DateEvent.ObjectsList.OnLoadMore -> updateLimit()
             is DateEvent.ObjectsList.OnObjectClicked -> onItemClicked(event.item)
+            is DateEvent.ObjectsList.OnObjectMoveToBin -> proceedWithMoveToBin(event.item)
         }
     }
 
@@ -841,6 +859,48 @@ class DateObjectViewModel(
             }
         }
     }
+
+    fun proceedWithMoveToBin(item: UiObjectsListItem.Item) {
+        val params = SetObjectListIsArchived.Params(
+            targets = listOf(item.id),
+            isArchived = true
+        )
+        viewModelScope.launch {
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = { ids ->
+                    Timber.d("Successfully archived object: $ids")
+                    val name = item.name
+                    uiSnackbarState.value = UiSnackbarState.Visible(
+                        message = name.take(10),
+                        objId = item.id
+                    )
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while archiving object")
+                    effects.emit(DateObjectCommand.SendToast.Error("Error while archiving object"))
+                }
+            )
+        }
+    }
+
+    fun proceedWithUndoMoveToBin(objectId: Id) {
+        val params = SetObjectListIsArchived.Params(
+            targets = listOf(objectId),
+            isArchived = false
+        )
+        viewModelScope.launch {
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = { ids ->
+                    Timber.d("Successfully archived object: $ids")
+                    uiSnackbarState.value = UiSnackbarState.Hidden
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while un-archiving object")
+                    effects.emit(DateObjectCommand.SendToast.Error("Error while un-archiving object"))
+                }
+            )
+        }
+    }
     //endregion
 
     //region Ui State
@@ -890,6 +950,10 @@ class DateObjectViewModel(
                 )
             )
         }
+    }
+
+    fun proceedWithDismissSnackbar() {
+        uiSnackbarState.value = UiSnackbarState.Hidden
     }
     //endregion
 

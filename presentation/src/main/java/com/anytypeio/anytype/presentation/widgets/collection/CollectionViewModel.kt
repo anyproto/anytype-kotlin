@@ -656,9 +656,22 @@ class CollectionViewModel(
     }
 
     private fun changeObjectListBinStatus(ids: List<Id>, isArchived: Boolean) {
-        launch {
-            setObjectListIsArchived.stream(SetObjectListIsArchived.Params(ids, isArchived))
-                .collect { it.progressiveFold() }
+        viewModelScope.launch {
+            val params = SetObjectListIsArchived.Params(ids, isArchived)
+            setObjectListIsArchived.async(params)
+                .fold(
+                    onSuccess = {
+                        if (isArchived) {
+                            toasts.emit("Objects moved to bin")
+                        } else {
+                            toasts.emit("Objects restored")
+                        }
+                    },
+                    onFailure = {
+                        toasts.emit("Error while moving files to bin")
+                        Timber.e(it, "Error while moving files to bin")
+                    }
+                )
         }
     }
 

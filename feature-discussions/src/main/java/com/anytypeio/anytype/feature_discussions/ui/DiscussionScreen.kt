@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -147,6 +148,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.Async
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -1486,7 +1488,9 @@ private fun BubbleAttachments(
                 GlideImage(
                     model = attachment.url,
                     contentDescription = "Attachment image",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
+                        .size(300.dp)
                         .padding(8.dp)
                         .clip(shape = RoundedCornerShape(16.dp))
                         .clickable {

@@ -1258,9 +1258,9 @@ fun Bubble(
                     GlideImage(
                         model = attachment.url,
                         contentDescription = "Attachment image",
-                        contentScale = ContentScale.FillWidth,
                         modifier = Modifier
                             .padding(8.dp)
+                            .fillMaxWidth()
                             .clip(shape = RoundedCornerShape(16.dp))
                             .clickable {
                                 onAttachmentClicked(attachment)

@@ -418,7 +418,9 @@ class DiscussionViewModel @Inject constructor(
             when(attachment) {
                 is DiscussionView.Message.Attachment.Image -> {
                     commands.emit(
-                        UXCommand.OpenFullScreenImage(attachment.url)
+                        UXCommand.OpenFullScreenImage(
+                            url = urlBuilder.original(attachment.target)
+                        )
                     )
                 }
                 is DiscussionView.Message.Attachment.Link -> {

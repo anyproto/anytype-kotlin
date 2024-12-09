@@ -7,8 +7,8 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
 import com.anytypeio.anytype.presentation.extension.shift
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import timber.log.Timber
@@ -30,10 +30,25 @@ fun Block.Content.Text.getTextAndMarks(
     try {
         updatedMarks.forEach { mark ->
             if (mark !is Markup.Mark.Mention || mark.param.isBlank()) return@forEach
-            var newName = if (mark is Markup.Mark.Mention.Deleted) {
-                NON_EXISTENT_OBJECT_MENTION_NAME
-            } else {
-                details.details.getProperObjectName(id = mark.param) ?: return@forEach
+            var newName = when (mark) {
+                is Markup.Mark.Mention.Date -> {
+                    if (BuildConfig.ENABLE_RELATIVE_DATES_IN_MENTIONS) {
+                        val dateObjects = details.details[mark.param] ?: return@forEach
+                        val timestamp = dateObjects.timestamp ?: return@forEach
+                        val formattedString = resourceProvider.toFormattedString(
+                            relativeDate = fieldParser.toDate(timestamp)?.relativeDate
+                        )
+                        formattedString.ifEmpty { return@forEach }
+                    } else {
+                        details.details[mark.param]?.name ?: return@forEach
+                    }
+                }
+                is Markup.Mark.Mention.Deleted -> {
+                    resourceProvider.getNonExistentObjectTitle()
+                }
+                else -> {
+                    details.details.getProperObjectName(id = mark.param) ?: return@forEach
+                }
             }
             val oldName = updatedText.substring(mark.from, mark.to)
             if (newName != oldName) {

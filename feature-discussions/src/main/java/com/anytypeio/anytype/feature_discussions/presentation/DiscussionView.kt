@@ -31,6 +31,7 @@ sealed interface DiscussionView {
                 val isStrike = styles.any { it.type == Block.Content.Text.Mark.Type.STRIKETHROUGH }
                 val underline = styles.any { it.type == Block.Content.Text.Mark.Type.UNDERLINE }
                 val link = styles.find { it.type == Block.Content.Text.Mark.Type.LINK }
+                val isCode = styles.any { it.type == Block.Content.Text.Mark.Type.KEYBOARD }
             }
         }
 

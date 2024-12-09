@@ -1562,18 +1562,18 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="write_a_message">Schrijf een bericht...</string>
     <string name="date_layout_mentioned_in">Vermeld in</string>
     <string name="date_layout_empty_items">Er is hier nog niets voor deze datum</string>
-    <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
-    <string name="date_layout_item_created_by">by</string>
+    <string name="date_layout_alert_date_out_of_range">De geselecteerde datum valt buiten het geldige bereik (jaren %1$d tot %2$d). Selecteer alsjeblieft een datum binnen dit bereik.</string>
+    <string name="date_layout_item_created_by">op</string>
     <string name="chat_attachment_object">Object</string>
     <string name="chat_attachment_file">Bestand</string>
     <string name="chat_attachment_media">Media</string>
     <string name="chat_attachment_upload">Upload</string>
     <string name="chats_reply">Antwoord</string>
-    <string name="day_of_week_monday">Monday</string>
-    <string name="day_of_week_tuesday">Tuesday</string>
-    <string name="day_of_week_wednesday">Wednesday</string>
-    <string name="day_of_week_thursday">Thursday</string>
-    <string name="day_of_week_friday">Friday</string>
-    <string name="day_of_week_saturday">Saturday</string>
-    <string name="day_of_week_sunday">Sunday</string>
+    <string name="day_of_week_monday">Maandag</string>
+    <string name="day_of_week_tuesday">Dinsdag</string>
+    <string name="day_of_week_wednesday">Woensdag</string>
+    <string name="day_of_week_thursday">Donderdag</string>
+    <string name="day_of_week_friday">Vrijdag</string>
+    <string name="day_of_week_saturday">Zaterdag</string>
+    <string name="day_of_week_sunday">Zondag</string>
 </resources>

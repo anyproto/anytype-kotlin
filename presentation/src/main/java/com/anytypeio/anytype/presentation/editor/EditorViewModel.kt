@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.Routes.objDate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.searchScreenShow
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
@@ -21,6 +22,7 @@ import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.COLLECTION_MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.Marketplace.SET_MARKETPLACE_ID
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
@@ -48,7 +50,6 @@ import com.anytypeio.anytype.core_models.ext.sortByType
 import com.anytypeio.anytype.core_models.ext.supportNesting
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.updateTextContent
-import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -91,7 +92,6 @@ import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -266,7 +266,6 @@ import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
-import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
 import com.anytypeio.anytype.presentation.relations.getObjectRelations
 import com.anytypeio.anytype.presentation.relations.views
@@ -2066,10 +2065,12 @@ class EditorViewModel(
                 )
             )
         }
-        viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
-            analytics = analytics,
-            type = type
-        )
+        viewModelScope.launch {
+            analytics.sendAnalyticsUpdateTextMarkupEvent(
+                markupType = type.toCoreModel(),
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+        }
     }
 
     private fun proceedWithAlignmentUpdate(targets: List<Id>, alignment: Block.Align) {
@@ -2102,10 +2103,12 @@ class EditorViewModel(
                 )
             )
         }
-        viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
-            analytics = analytics,
-            type = Content.Text.Mark.Type.TEXT_COLOR
-        )
+        viewModelScope.launch {
+            analytics.sendAnalyticsUpdateTextMarkupEvent(
+                markupType = Block.Content.Text.Mark.Type.TEXT_COLOR,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+        }
     }
 
     private fun onBlockBackgroundColorAction(ids: List<Id>, color: String) {
@@ -2154,9 +2157,11 @@ class EditorViewModel(
                     )
                 )
             )
-            sendAnalyticsUpdateTextMarkupEvent(
-                analytics = analytics,
-                type = type
+        }
+        viewModelScope.launch {
+            analytics.sendAnalyticsUpdateTextMarkupEvent(
+                markupType = type.toCoreModel(),
+                storeOfObjectTypes = storeOfObjectTypes
             )
         }
     }
@@ -5035,9 +5040,9 @@ class EditorViewModel(
                                 )
                             )
                         )
-                        sendAnalyticsUpdateTextMarkupEvent(
-                            analytics = analytics,
-                            type = type
+                        analytics.sendAnalyticsUpdateTextMarkupEvent(
+                            markupType = type,
+                            storeOfObjectTypes = storeOfObjectTypes
                         )
                     }
                 }
@@ -5364,9 +5369,9 @@ class EditorViewModel(
                     )
                 }
                 is SlashItem.Color.Text -> {
-                    sendAnalyticsUpdateTextMarkupEvent(
-                        analytics = analytics,
-                        type = Content.Text.Mark.Type.TEXT_COLOR
+                    analytics.sendAnalyticsUpdateTextMarkupEvent(
+                        markupType = Content.Text.Mark.Type.TEXT_COLOR,
+                        storeOfObjectTypes = storeOfObjectTypes
                     )
                 }
             }
@@ -6170,13 +6175,14 @@ class EditorViewModel(
     fun onMentionSuggestClick(mention: DefaultSearchItem, mentionTrigger: String, pos: Int) {
         Timber.d("onMentionSuggestClick, mention:[$mention] mentionTrigger:[$mentionTrigger]")
         if (mention is DefaultObjectView)  {
-            viewModelScope.sendAnalyticsSearchResultEvent(
-                analytics = analytics,
-                pos = pos,
-                length = mentionTrigger.length - 1,
-                spaceParams = provideParams(vmParams.space.id)
-            )
             onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
+            viewModelScope.launch {
+                analytics.sendAnalyticsUpdateTextMarkupEvent(
+                    markupType = Content.Text.Mark.Type.MENTION,
+                    typeId = mention.type,
+                    storeOfObjectTypes = storeOfObjectTypes
+                )
+            }
         }
         if (mention is SelectDateItem) {
             val targetId = orchestrator.stores.focus.current().targetOrNull()
@@ -7793,15 +7799,26 @@ class EditorViewModel(
                 spaceId = vmParams.space,
                 actionSuccess = { obj ->
                     when (actionType) {
-                        EditorCalendarActionType.MENTION -> onCreateMentionInText(
-                            id = obj.id,
-                            name = obj.name.orEmpty(),
-                            mentionTrigger = mentionFilter.value
-                        )
-                        EditorCalendarActionType.LINK -> onCreateDateLink(
-                            linkId = obj.id,
-                            targetId = targetId
-                        )
+                        EditorCalendarActionType.MENTION -> {
+                            onCreateMentionInText(
+                                id = obj.id,
+                                name = obj.name.orEmpty(),
+                                mentionTrigger = mentionFilter.value
+                            )
+                            viewModelScope.launch {
+                                analytics.sendAnalyticsUpdateTextMarkupEvent(
+                                    markupType = Content.Text.Mark.Type.MENTION,
+                                    typeId = ObjectTypeIds.DATE,
+                                    storeOfObjectTypes = storeOfObjectTypes
+                                )
+                            }
+                        }
+                        EditorCalendarActionType.LINK -> {
+                            onCreateDateLink(
+                                linkId = obj.id,
+                                targetId = targetId
+                            )
+                        }
                     }
                 },
                 actionFailure = {
@@ -7833,7 +7850,8 @@ class EditorViewModel(
                         target = targetId,
                         position = position,
                         prototype = Prototype.Link(target = linkId),
-                        onSuccess = {}
+                        onSuccess = {},
+                        isDate = true
                     )
                 )
             }

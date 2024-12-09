@@ -40,6 +40,7 @@ import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -49,8 +50,11 @@ import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.RelationKey
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -60,6 +64,7 @@ import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import kotlinx.coroutines.CoroutineScope
+import timber.log.Timber
 
 fun Block.Prototype.getAnalyticsEvent(
     eventName: String,
@@ -91,6 +96,7 @@ fun Block.Prototype.getAnalyticsEvent(
             )
         }
         is Block.Prototype.Link -> {
+            val isDate = this.isDate
             return EventAnalytics.Anytype(
                 name = objectCreateLink,
                 duration = EventAnalytics.Duration(
@@ -99,10 +105,13 @@ fun Block.Prototype.getAnalyticsEvent(
                     render = renderTime
                 ),
                 props = Props(
-                    mapOf(
-                        EventsPropertiesKey.permissions to spaceParams.permission,
-                        EventsPropertiesKey.spaceType to spaceParams.spaceType
-                    )
+                    buildMap {
+                        if (isDate) {
+                            put(EventsPropertiesKey.type, "Date")
+                        }
+                        put(EventsPropertiesKey.permissions, spaceParams.permission)
+                        put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                    }
                 )
             )
         }
@@ -221,7 +230,7 @@ fun Block.Content.Text.Mark.Type.getPropName() = when (this) {
     Block.Content.Text.Mark.Type.LINK -> "linkURL"
     Block.Content.Text.Mark.Type.TEXT_COLOR -> "color"
     Block.Content.Text.Mark.Type.BACKGROUND_COLOR -> "bgcolor"
-    Block.Content.Text.Mark.Type.MENTION -> "mention"
+    Block.Content.Text.Mark.Type.MENTION -> "Mention"
     Block.Content.Text.Mark.Type.EMOJI -> "emoji"
     Block.Content.Text.Mark.Type.OBJECT -> "linkObject"
 }
@@ -562,10 +571,25 @@ suspend fun Analytics.sendAnalyticsRemoveObjects(
     registerEvent(event)
 }
 
-suspend fun Analytics.sendAnalyticsUpdateTextMarkupEvent(type: Block.Content.Text.Mark.Type) {
+suspend fun Analytics.sendAnalyticsUpdateTextMarkupEvent(
+    markupType: Block.Content.Text.Mark.Type,
+    typeKey: TypeKey? = null,
+    storeOfObjectTypes: StoreOfObjectTypes
+) {
+    Timber.d("sendAnalyticsUpdateTextMarkupEvent: $markupType, typeKey: $typeKey")
+    val objectType = if (typeKey != null) {
+        storeOfObjectTypes.getByKey(typeKey.key)?.sourceObject ?: OBJ_TYPE_CUSTOM
+    } else {
+        null
+    }
     val event = EventAnalytics.Anytype(
         name = EventsDictionary.blockChangeTextStyle,
-        props = Props(mapOf(EventsPropertiesKey.type to type.getPropName()))
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to markupType.getPropName(),
+                EventsPropertiesKey.objectType to objectType
+            )
+        )
     )
     registerEvent(event)
 }
@@ -837,36 +861,6 @@ fun CoroutineScope.sendAnalyticsSetDescriptionEvent(
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.objectSetDescription
-    )
-}
-
-fun CoroutineScope.sendAnalyticsUpdateTextMarkupEvent(
-    analytics: Analytics,
-    type: Block.Content.Text.Mark.Type
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.blockChangeTextStyle,
-        props = Props(
-            mapOf(
-                EventsPropertiesKey.type to type.getPropName()
-            )
-        )
-    )
-}
-
-fun CoroutineScope.sendAnalyticsUpdateTextMarkupEvent(
-    analytics: Analytics,
-    type: Markup.Type
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.blockChangeTextStyle,
-        props = Props(
-            mapOf(
-                EventsPropertiesKey.type to type.getPropName()
-            )
-        )
     )
 }
 
@@ -2211,3 +2205,81 @@ fun CoroutineScope.sendAnalyticsAllContentChangeSort(
         )
     )
 }
+//endregion
+
+//region DateObject
+fun CoroutineScope.sendAnalyticsScreenDate(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.screenDate
+    )
+}
+
+suspend fun CoroutineScope.sendAnalyticsSwitchRelationDate(
+    analytics: Analytics,
+    storeOfRelations: StoreOfRelations,
+    relationKey: RelationKey
+) {
+    val relation = storeOfRelations.getByKey(relationKey.key)
+    val sourceObject = relation?.sourceObject ?: OBJ_RELATION_CUSTOM
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.switchRelationDate,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.relationKey, sourceObject)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsClickDateForward(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.clickDateForward
+    )
+}
+
+fun CoroutineScope.sendAnalyticsClickDateBack(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.clickDateBack
+    )
+}
+
+fun CoroutineScope.sendAnalyticsClickDateCalendarView(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.clickDateCalendarView
+    )
+}
+
+fun CoroutineScope.sendAnalyticsObjectListSort(
+    analytics: Analytics,
+    sortType: DVSortType
+) {
+    val sortType = when (sortType) {
+        DVSortType.ASC -> "Asc"
+        DVSortType.DESC -> "Desc"
+        DVSortType.CUSTOM -> "Custom"
+    }
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.objectListSort,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.type, sortType)
+                put(EventsPropertiesKey.route, "ScreenDate")
+            }
+        )
+    )
+}
+

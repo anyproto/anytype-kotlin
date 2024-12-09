@@ -224,6 +224,14 @@ object EventsDictionary {
     const val changeLibrarySort = "ChangeLibrarySort"//+
     const val screenBin = "ScreenBin"//+
 
+    //Date Object
+    const val screenDate = "ScreenDate"
+    const val switchRelationDate = "SwitchRelationDate"
+    const val clickDateForward = "ClickDateForward"
+    const val clickDateBack = "ClickDateBack"
+    const val clickDateCalendarView = "ClickDateCalendarView"
+    const val objectListSort = "ObjectListSort"
+
     const val searchBacklink = "SearchBacklink"
 
     object SharingSpacesTypes {
@@ -317,6 +325,7 @@ object EventsDictionary {
         const val anytype = "Anytype"
         const val localOnly = "LocalOnly"
         const val selfHost = "SelfHost"
+        const val dateObject = "Date"
     }
 
     object BlockAction {

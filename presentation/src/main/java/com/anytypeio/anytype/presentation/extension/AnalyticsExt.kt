@@ -43,6 +43,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
@@ -575,14 +576,13 @@ suspend fun Analytics.sendAnalyticsRemoveObjects(
 
 suspend fun Analytics.sendAnalyticsUpdateTextMarkupEvent(
     markupType: Block.Content.Text.Mark.Type,
-    typeKey: TypeKey? = null,
+    typeId: Id? = null,
     storeOfObjectTypes: StoreOfObjectTypes
 ) {
-    Timber.d("sendAnalyticsUpdateTextMarkupEvent: $markupType, typeKey: $typeKey")
-    val objectType = if (typeKey != null) {
-        storeOfObjectTypes.getByKey(typeKey.key)?.sourceObject ?: OBJ_TYPE_CUSTOM
-    } else {
-        null
+    val objectType = when (typeId) {
+        null -> null
+        ObjectTypeIds.DATE -> "Date"
+        else -> storeOfObjectTypes.get(typeId)?.sourceObject ?: OBJ_TYPE_CUSTOM
     }
     val event = EventAnalytics.Anytype(
         name = EventsDictionary.blockChangeTextStyle,

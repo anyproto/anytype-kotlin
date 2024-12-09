@@ -6179,7 +6179,7 @@ class EditorViewModel(
             viewModelScope.launch {
                 analytics.sendAnalyticsUpdateTextMarkupEvent(
                     markupType = Content.Text.Mark.Type.MENTION,
-                    typeKey = mention.type?.let { TypeKey(it) },
+                    typeId = mention.type,
                     storeOfObjectTypes = storeOfObjectTypes
                 )
             }
@@ -7808,7 +7808,7 @@ class EditorViewModel(
                             viewModelScope.launch {
                                 analytics.sendAnalyticsUpdateTextMarkupEvent(
                                     markupType = Content.Text.Mark.Type.MENTION,
-                                    typeKey = TypeKey(ObjectTypeIds.DATE),
+                                    typeId = ObjectTypeIds.DATE,
                                     storeOfObjectTypes = storeOfObjectTypes
                                 )
                             }

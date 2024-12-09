@@ -98,6 +98,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -120,6 +121,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.fontIBM
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
@@ -144,6 +146,7 @@ fun DiscussionScreenWrapper(
     onAttachObjectClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
+    onRequestOpenFullScreenImage: (String) -> Unit
 ) {
     val context = LocalContext.current
     NavHost(
@@ -214,6 +217,9 @@ fun DiscussionScreenWrapper(
                             }
                             is UXCommand.SetChatBoxInput -> {
                                 // TODO
+                            }
+                            is UXCommand.OpenFullScreenImage -> {
+                                onRequestOpenFullScreenImage(command.url)
                             }
                         }
                     }
@@ -1223,6 +1229,7 @@ fun Bubble(
                                 else if (part.isStrike)
                                     TextDecoration.LineThrough
                                 else null,
+                                fontFamily = if (part.isCode) fontIBM else null,
                             )
                         ) {
                             append(part.part)
@@ -1255,6 +1262,9 @@ fun Bubble(
                         modifier = Modifier
                             .padding(8.dp)
                             .clip(shape = RoundedCornerShape(16.dp))
+                            .clickable {
+                                onAttachmentClicked(attachment)
+                            }
                     )
                 }
                 is DiscussionView.Message.Attachment.Link -> {

@@ -66,6 +66,7 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -184,6 +185,14 @@ class HomeScreenFragment : BaseComposeFragment(),
                                     },
                                     onMarkupLinkClicked = {
                                         proceedWithAction(SystemAction.OpenUrl(it))
+                                    },
+                                    onRequestOpenFullScreenImage = { url ->
+                                        findNavController().navigate(
+                                            R.id.fullScreenImageFragment,
+                                            FullScreenPictureFragment.args(
+                                                url = url
+                                            )
+                                        )
                                     }
                                 )
                             }

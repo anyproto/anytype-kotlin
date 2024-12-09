@@ -122,7 +122,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
-                if (featureToggles.isNewSpaceHomeEnabled || space == SPACE_WITH_SPACE_LEVEL_CHAT) {
+                if (featureToggles.isNewSpaceHomeEnabled || spacesWithSpaceLevelChat.contains(space)) {
                     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
 
@@ -564,7 +564,9 @@ class HomeScreenFragment : BaseComposeFragment(),
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        if (!featureToggles.isNewSpaceHomeEnabled && space != SPACE_WITH_SPACE_LEVEL_CHAT) {
+        if (featureToggles.isNewSpaceHomeEnabled || spacesWithSpaceLevelChat.contains(space)) {
+            // Do nothing.
+        } else {
             super.onApplyWindowRootInsets(view)
         }
         // Do not apply window insets on fragment container.
@@ -576,9 +578,14 @@ class HomeScreenFragment : BaseComposeFragment(),
         const val SPACE_ID_KEY = "arg.home-screen.space-id"
 
         /**
-         * Temporary space for beta-testing space-level chat
+         * Spaces for beta-testing space-level chats
          */
-        const val SPACE_WITH_SPACE_LEVEL_CHAT = "bafyreiezhzb4ggnhjwejmh67pd5grilk6jn3jt7y2rnfpbkjwekilreola.1t123w9f2lgn5"
+
+        val spacesWithSpaceLevelChat = listOf(
+            "bafyreiezhzb4ggnhjwejmh67pd5grilk6jn3jt7y2rnfpbkjwekilreola.1t123w9f2lgn5",
+            "bafyreifikxj75r4duzhqxqelmi66rwlzqml5jnad35dnukxwlawtfrql5a.21584urzltddb",
+            "bafyreia4jsiobrq7ptpuxsv6nmpj4vis7o5p73yibjb5w4crhxl2oqocoq.9tkr2p3mb0pj"
+        )
 
         fun args(
             space: Id,

@@ -1,9 +1,7 @@
 package com.anytypeio.anytype.presentation.objects
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
@@ -29,14 +27,17 @@ fun ObjectWrapper.Basic.toView(
     fieldParser: FieldParser
 ): DefaultObjectView {
     val obj = this
-    val typeUrl = obj.getProperType()
+    val (objTypeId, objTypeName) = fieldParser.getObjectTypeIdAndName(
+        objectWrapper = obj,
+        types = objectTypes
+    )
     val layout = obj.getProperLayout()
     return DefaultObjectView(
         id = obj.id,
         name = fieldParser.getObjectName(obj),
         description = obj.description,
-        type = typeUrl,
-        typeName = fieldParser.getObjectTypeName(obj, objectTypes),
+        type = objTypeId,
+        typeName = objTypeName,
         layout = layout,
         icon = obj.objectIcon(urlBuilder),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,

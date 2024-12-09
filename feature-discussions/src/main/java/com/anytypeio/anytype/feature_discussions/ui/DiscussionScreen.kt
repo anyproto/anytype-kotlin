@@ -146,6 +146,7 @@ fun DiscussionScreenWrapper(
     onAttachObjectClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
+    onRequestOpenFullScreenImage: (String) -> Unit
 ) {
     val context = LocalContext.current
     NavHost(
@@ -216,6 +217,9 @@ fun DiscussionScreenWrapper(
                             }
                             is UXCommand.SetChatBoxInput -> {
                                 // TODO
+                            }
+                            is UXCommand.OpenFullScreenImage -> {
+                                onRequestOpenFullScreenImage(command.url)
                             }
                         }
                     }

@@ -24,6 +24,8 @@ class FullScreenPictureFragment : BaseFragment<FragmentFullScreenPictureBinding>
             )
         }
 
+        fun args(url: String) : Bundle = bundleOf(ARG_URL_KEY to url)
+
         const val ARG_URL_KEY = "arg.full_screen_picture.url"
         const val ARG_TARGET_KEY = "arg.full_screen_picture.target"
     }

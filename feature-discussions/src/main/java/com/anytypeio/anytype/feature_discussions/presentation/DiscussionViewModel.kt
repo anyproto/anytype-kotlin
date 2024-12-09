@@ -417,7 +417,9 @@ class DiscussionViewModel @Inject constructor(
         viewModelScope.launch {
             when(attachment) {
                 is DiscussionView.Message.Attachment.Image -> {
-                    // TODO open fullscreen preview for image
+                    commands.emit(
+                        UXCommand.OpenFullScreenImage(attachment.url)
+                    )
                 }
                 is DiscussionView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper
@@ -449,6 +451,7 @@ class DiscussionViewModel @Inject constructor(
     sealed class UXCommand {
         data object JumpToBottom : UXCommand()
         data class SetChatBoxInput(val input: String) : UXCommand()
+        data class OpenFullScreenImage(val url: String) : UXCommand()
     }
 
     sealed class ChatBoxMode {

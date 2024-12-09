@@ -417,7 +417,7 @@ class DiscussionViewModel @Inject constructor(
         viewModelScope.launch {
             when(attachment) {
                 is DiscussionView.Message.Attachment.Image -> {
-                    // Do nothing.
+                    // TODO open fullscreen preview for image
                 }
                 is DiscussionView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper

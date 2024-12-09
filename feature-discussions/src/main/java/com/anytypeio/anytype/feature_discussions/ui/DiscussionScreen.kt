@@ -1258,6 +1258,9 @@ fun Bubble(
                         modifier = Modifier
                             .padding(8.dp)
                             .clip(shape = RoundedCornerShape(16.dp))
+                            .clickable {
+                                onAttachmentClicked(attachment)
+                            }
                     )
                 }
                 is DiscussionView.Message.Attachment.Link -> {

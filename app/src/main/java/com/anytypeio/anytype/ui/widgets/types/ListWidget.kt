@@ -161,13 +161,15 @@ fun CompactListWidgetList(
                 ListWidgetObjectIcon(
                     iconSize = 18.dp,
                     icon = element.objectIcon,
-                    modifier = Modifier.align(Alignment.CenterVertically).padding(start = 0.dp, end = 4.dp),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(start = 0.dp, end = 4.dp),
                     onTaskIconClicked = { isChecked ->
                         onObjectCheckboxClicked(element.obj.id, isChecked)
                     }
                 )
                 Text(
-                    text = element.name.prettyPrintName ?: stringResource(id = R.string.untitled),
+                    text = element.name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) },
                     modifier = Modifier
                         .padding(start = 8.dp)
                         .fillMaxWidth(),

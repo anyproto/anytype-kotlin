@@ -57,7 +57,8 @@ sealed class Intent {
             val target: Id,
             val position: Position,
             val prototype: Block.Prototype,
-            val onSuccess: (() -> Unit)? = null
+            val onSuccess: (() -> Unit)? = null,
+            val isDate: Boolean = false
         ) : CRUD()
 
         class Duplicate(

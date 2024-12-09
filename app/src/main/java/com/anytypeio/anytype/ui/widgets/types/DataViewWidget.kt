@@ -544,14 +544,8 @@ private fun GalleryWidgetItemCard(
                         .padding(start = 12.dp, top = 9.dp),
                     onTaskIconClicked = {}
                 )
-                val prettyPrintName = item.name.prettyPrintName
-                val name = if (prettyPrintName.isNullOrEmpty()) {
-                    stringResource(id = R.string.untitled)
-                } else {
-                    prettyPrintName
-                }
                 Text(
-                    text = name,
+                    text = item.name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) },
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = Caption1Medium,
@@ -566,14 +560,8 @@ private fun GalleryWidgetItemCard(
                 )
             }
         } else {
-            val prettyPrintName = item.name.prettyPrintName
-            val name = if (prettyPrintName.isNullOrEmpty()) {
-                stringResource(id = R.string.untitled)
-            } else {
-                prettyPrintName
-            }
             Text(
-                text = name,
+                text = item.name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) },
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 style = Caption1Medium,

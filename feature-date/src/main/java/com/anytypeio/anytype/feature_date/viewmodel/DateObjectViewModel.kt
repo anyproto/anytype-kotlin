@@ -34,7 +34,13 @@ import com.anytypeio.anytype.feature_date.ui.models.DateEvent
 import com.anytypeio.anytype.feature_date.viewmodel.UiContentState.*
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentScreen
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateBack
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateCalendarView
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateForward
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectListSort
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenDate
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSwitchRelationDate
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
@@ -150,7 +156,7 @@ class DateObjectViewModel(
         Timber.d("onStart")
         setupUiStateFlow()
         viewModelScope.launch {
-            sendAnalyticsAllContentScreen(
+            sendAnalyticsScreenDate(
                 analytics = analytics
             )
         }
@@ -482,6 +488,12 @@ class DateObjectViewModel(
                     uiObjectsListState.value = UiObjectsListState.Empty
                     restartSubscription.value++
                     updateHorizontalListState(selectedItem = item, needToScroll = needToScroll)
+                    viewModelScope.launch {
+                        sendAnalyticsObjectListSort(
+                            analytics = analytics,
+                            sortType = _activeField.value?.sort ?: DEFAULT_SORT_TYPE
+                        )
+                    }
                 } else {
                     shouldScrollToTopItems = true
                     resetLimit()
@@ -493,6 +505,13 @@ class DateObjectViewModel(
                     )
                     restartSubscription.value++
                     updateHorizontalListState(selectedItem = item, needToScroll = needToScroll)
+                    viewModelScope.launch {
+                        sendAnalyticsSwitchRelationDate(
+                            analytics = analytics,
+                            storeOfRelations = storeOfRelations,
+                            relationKey = item.key
+                        )
+                    }
                 }
             }
 
@@ -691,6 +710,11 @@ class DateObjectViewModel(
         when (event) {
             is DateEvent.TopToolbar.OnCalendarClick -> {
                 proceedWithShowCalendar(timestampInSeconds = event.timestampInSeconds)
+                viewModelScope.launch {
+                    sendAnalyticsClickDateCalendarView(
+                        analytics = analytics
+                    )
+                }
             }
 
             is DateEvent.TopToolbar.OnSyncStatusClick -> {
@@ -721,13 +745,33 @@ class DateObjectViewModel(
 
     private fun onHeaderEvent(event: DateEvent.Header) {
         when (event) {
-            DateEvent.Header.OnNextClick -> proceedWithReopeningDate(offset = SECONDS_IN_DAY)
-            DateEvent.Header.OnPreviousClick -> proceedWithReopeningDate(offset = -SECONDS_IN_DAY)
+            DateEvent.Header.OnNextClick -> {
+                proceedWithReopeningDate(offset = SECONDS_IN_DAY)
+                viewModelScope.launch {
+                    sendAnalyticsClickDateForward(
+                        analytics = analytics
+                    )
+                }
+
+            }
+            DateEvent.Header.OnPreviousClick -> {
+                proceedWithReopeningDate(offset = -SECONDS_IN_DAY)
+                viewModelScope.launch {
+                    sendAnalyticsClickDateBack(
+                        analytics = analytics
+                    )
+                }
+            }
             is DateEvent.Header.OnHeaderClick -> {
                 val timestampInSeconds = TimestampInSeconds(
                     time = event.timeInMillis / 1000
                 )
                 proceedWithShowCalendar(timestampInSeconds)
+                viewModelScope.launch {
+                    sendAnalyticsClickDateCalendarView(
+                        analytics = analytics
+                    )
+                }
             }
         }
     }

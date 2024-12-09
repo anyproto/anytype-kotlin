@@ -124,7 +124,8 @@ class Orchestrator(
                                 prototype = intent.prototype,
                                 startTime = startTime,
                                 middlewareTime = middlewareTime,
-                                spaceParams = spaceParams
+                                spaceParams = spaceParams,
+                                isDate = intent.isDate
                             )
                         },
                         onFailure = defaultOnError

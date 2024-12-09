@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.templates.TemplateBlankViewModelFactory
+import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.templates.TemplateBlankFragment
 import dagger.Binds
@@ -73,6 +74,7 @@ interface TemplateBlankDependencies : ComponentDependencies {
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun dateProvider(): DateProvider
     fun fieldsProvider(): FieldParser
+    fun resourceProvider(): ResourceProvider
 }
 
 @Scope

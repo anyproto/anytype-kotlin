@@ -10,12 +10,14 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
 import com.anytypeio.anytype.presentation.extension.shift
+import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import timber.log.Timber
 
 fun Block.Content.Text.getTextAndMarks(
     details: Block.Details,
     marks: List<Markup.Mark>,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    resourceProvider: ResourceProvider
 ): Pair<String, List<Markup.Mark>> {
     if (details.details.isEmpty() ||
         marks.none { it is Markup.Mark.Mention }

@@ -68,10 +68,6 @@ object SupportedLayouts {
 
     val lastOpenObjectLayouts = layouts + dateLayouts
 
-    fun isSupported(layout: ObjectType.Layout?) : Boolean {
-        return layouts.contains(layout)
-    }
-
     fun isSupportedForWidgets(layout: ObjectType.Layout?) : Boolean {
         return widgetsLayouts.contains(layout)
     }

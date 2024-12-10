@@ -44,6 +44,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
@@ -1408,6 +1409,10 @@ open class ObjectSetFragment :
             objectId = objectId,
             relationKey = relationKey
         )
+    }
+
+    override fun onOpenDateObject(timeInMillis: TimeInMillis) {
+        vm.onOpenDateObjectByTimeInMillis(timeInMillis)
     }
 
     override fun onProceedWithSelectSource(id: Id) {

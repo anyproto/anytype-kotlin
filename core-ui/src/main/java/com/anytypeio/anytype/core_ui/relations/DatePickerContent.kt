@@ -1,18 +1,23 @@
 package com.anytypeio.anytype.core_ui.relations
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
@@ -25,15 +30,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.DATE_PICKER_YEAR_RANGE
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.sets.DateValueView
@@ -42,11 +50,13 @@ import com.anytypeio.anytype.presentation.sets.DateValueView
 @Composable
 fun DatePickerContent(
     state: DateValueView,
-    showHeader: Boolean = true,
+    showHeader: Boolean = false,
+    showOpenSelectDate: Boolean = false,
     onDateSelected: (Long?) -> Unit,
     onClear: () -> Unit = {},
     onTodayClicked: () -> Unit,
-    onTomorrowClicked: () -> Unit
+    onTomorrowClicked: () -> Unit,
+    openSelectedDate: (Long) -> Unit = {}
 ) {
 
     val datePickerState = rememberDatePickerState(
@@ -123,27 +133,79 @@ fun DatePickerContent(
             colors = datePickerColors,
         )
         if (state.isEditable) {
-            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
-                    .noRippleClickable { onTodayClicked() },
-                color = colorResource(id = R.color.text_primary),
-                text = stringResource(id = R.string.today),
-                style = UXBody
-            )
-            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
-                    .noRippleClickable { onTomorrowClicked() },
-                color = colorResource(id = R.color.text_primary),
-                text = stringResource(id = R.string.tomorrow),
-                style = UXBody
+            CalendarShortcuts(
+                showOpenSelectDate = showOpenSelectDate,
+                datePickerState = datePickerState,
+                onTodayClicked = onTodayClicked,
+                onTomorrowClicked = onTomorrowClicked,
+                openSelectedDate = openSelectedDate
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ColumnScope.CalendarShortcuts(
+    showOpenSelectDate: Boolean,
+    datePickerState: DatePickerState,
+    onTodayClicked: () -> Unit,
+    onTomorrowClicked: () -> Unit,
+    openSelectedDate: (Long) -> Unit
+) {
+    Divider(paddingStart = 16.dp, paddingEnd = 0.dp)
+    Text(
+        modifier = Modifier
+            .height(44.dp)
+            .fillMaxWidth()
+            .padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
+            .noRippleClickable { onTodayClicked() },
+        color = colorResource(id = R.color.text_primary),
+        text = stringResource(id = R.string.today),
+        style = UXBody
+    )
+    Divider(paddingStart = 16.dp, paddingEnd = 0.dp)
+    Text(
+        modifier = Modifier
+            .height(44.dp)
+            .fillMaxWidth()
+            .padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
+            .noRippleClickable { onTomorrowClicked() },
+        color = colorResource(id = R.color.text_primary),
+        text = stringResource(id = R.string.tomorrow),
+        style = UXBody
+    )
+    if (datePickerState.selectedDateMillis != null && showOpenSelectDate) {
+        Divider(paddingStart = 16.dp, paddingEnd = 0.dp)
+        Row(
+            modifier = Modifier
+                .height(44.dp)
+                .noRippleThrottledClickable {
+                    val timeInMillis = datePickerState.selectedDateMillis
+                    if (timeInMillis != null) {
+                        openSelectedDate(timeInMillis)
+                    }
+                },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(start = 16.dp),
+                color = colorResource(id = R.color.text_primary),
+                text = stringResource(id = R.string.open_selected_date),
+                style = UXBody
+            )
+            Image(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(end = 16.dp),
+                painter = painterResource(id = R.drawable.ic_arrow_forward),
+                contentDescription = "Open selected date"
+            )
+        }
+        Divider(paddingStart = 16.dp, paddingEnd = 0.dp)
     }
 }
 
@@ -196,6 +258,21 @@ private fun Header(state: DateValueView, onClear: () -> Unit) {
             color = colorResource(R.color.text_primary),
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@DefaultPreviews
+@Composable
+private fun CalendarShortcutsPreview() {
+    Column {
+        CalendarShortcuts(
+            showOpenSelectDate = true,
+            onTodayClicked = {},
+            onTomorrowClicked = {},
+            openSelectedDate = {},
+            datePickerState = rememberDatePickerState()
         )
     }
 }

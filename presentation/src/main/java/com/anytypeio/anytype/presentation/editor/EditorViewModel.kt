@@ -7752,6 +7752,21 @@ class EditorViewModel(
         }
     }
 
+    fun onOpenDateObjectByTimeInMillis(timeInMillis: TimeInMillis) {
+        Timber.d("onOpenDateObjectByTimeInMillis, timeInMillis:[$timeInMillis]")
+        viewModelScope.launch {
+            fieldParser.getDateObjectByTimeInSeconds(
+                timeInSeconds = timeInMillis / 1000,
+                spaceId = vmParams.space,
+                actionSuccess = { obj -> navigateToDateObject(obj.id) },
+                actionFailure = {
+                    sendToast("Error while opening date object")
+                    Timber.e(it, "Error while opening date object")
+                }
+            )
+        }
+    }
+
     private fun handleDateSelected(
         timeInMillis: TimeInMillis?,
         actionType: EditorCalendarActionType,

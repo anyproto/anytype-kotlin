@@ -33,6 +33,8 @@ import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
 import com.anytypeio.anytype.other.BasicLogger
 import com.anytypeio.anytype.other.DefaultDateTypeNameProvider
 import com.anytypeio.anytype.other.DefaultDebugConfig
+import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
+import com.anytypeio.anytype.presentation.widgets.collection.ResourceProviderImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -88,6 +90,12 @@ object UtilModule {
         logger: Logger,
         getDateObjectByTimestamp: GetDateObjectByTimestamp
     ): FieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideResourceProvider(context: Context): ResourceProvider =
+        ResourceProviderImpl(context)
 
     @Module
     interface Bindings {

@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
+import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
 import dagger.Binds
@@ -209,4 +210,5 @@ interface CollectionDependencies : ComponentDependencies {
     fun analyticsHelperDelegate(): AnalyticSpaceHelperDelegate
     fun provideUserPermissionProvider(): UserPermissionProvider
     fun fieldParser(): FieldParser
+    fun resourceProvider(): ResourceProvider
 }

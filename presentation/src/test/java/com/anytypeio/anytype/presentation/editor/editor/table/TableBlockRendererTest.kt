@@ -30,6 +30,7 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.util.TXT
+import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
@@ -91,6 +92,9 @@ class TableBlockRendererTest {
     private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
     @Mock
+    lateinit var resourceProvider: ResourceProvider
+
+    @Mock
     lateinit var fieldParser: FieldParser
 
     @Before
@@ -102,7 +106,8 @@ class TableBlockRendererTest {
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
             storeOfObjectTypes = storeOfObjectTypes,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            resourceProvider = resourceProvider
         )
     }
 

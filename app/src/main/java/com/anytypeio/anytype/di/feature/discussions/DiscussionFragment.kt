@@ -80,6 +80,9 @@ class DiscussionFragment : BaseComposeFragment() {
                         },
                         onMarkupLinkClicked = {
 
+                        },
+                        onRequestOpenFullScreenImage = {
+                            // TODO
                         }
                     )
 

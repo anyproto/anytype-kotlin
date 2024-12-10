@@ -676,6 +676,7 @@
     <string name="today">Hari ini</string>
     <string name="yesterday">Kemarin</string>
     <string name="tomorrow">Besok</string>
+    <string name="open_selected_date">Buka tanggal terpilih</string>
     <string name="no_date">Tidak ada tanggal</string>
     <string name="exact_day">Hari yang pasti</string>
     <string name="reorder">Urutkan ulang</string>

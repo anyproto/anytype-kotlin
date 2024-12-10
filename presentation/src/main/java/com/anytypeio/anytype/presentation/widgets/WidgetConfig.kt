@@ -23,7 +23,7 @@ object WidgetConfig {
                 && obj.isValid
                 && obj.isArchived != true
                 && obj.isDeleted != true
-                && SupportedLayouts.isSupported(obj.layout)
+                && SupportedLayouts.isSupportedForWidgets(obj.layout)
     }
 
     fun resolveListWidgetLimit(

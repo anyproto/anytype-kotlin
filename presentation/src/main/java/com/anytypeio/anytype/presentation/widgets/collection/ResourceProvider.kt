@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets.collection
 
 import android.content.Context
-import androidx.annotation.StringRes
 import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.presentation.R
 import javax.inject.Inject
@@ -17,6 +16,8 @@ interface ResourceProvider {
     fun toFormattedString(relativeDate: RelativeDate?): String
 
     fun getNonExistentObjectTitle(): String
+
+    fun getUntitledTitle(): String
 }
 
 class ResourceProviderImpl @Inject constructor(
@@ -73,5 +74,9 @@ class ResourceProviderImpl @Inject constructor(
 
     override fun getNonExistentObjectTitle(): String {
         return context.getString(R.string.non_existent_object)
+    }
+
+    override fun getUntitledTitle(): String {
+        return context.getString(R.string.untitled)
     }
 }

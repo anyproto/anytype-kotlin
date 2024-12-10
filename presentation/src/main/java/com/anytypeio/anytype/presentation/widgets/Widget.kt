@@ -3,11 +3,14 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.SupportedLayouts.isSupportedForWidgets
+import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.presentation.widgets.WidgetView.Name
 
 sealed class Widget {
 
@@ -210,6 +213,33 @@ fun Id.bundled() : Widget.Source.Bundled = when (this) {
     BundledWidgetSourceIds.COLLECTIONS -> Widget.Source.Bundled.Collections
     BundledWidgetSourceIds.FAVORITE -> Widget.Source.Bundled.Favorites
     else -> throw IllegalStateException("Widget bundled id can't be $this")
+}
+
+fun buildWidgetName(
+    obj: ObjectWrapper.Basic,
+    fieldParser: FieldParser
+): Name {
+    return if (obj.layout == ObjectType.Layout.DATE) {
+        val timestamp = obj.getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
+        if (timestamp != null) {
+            Name.Date(
+                relativeDate = fieldParser.calculateRelativeDate(timeStampInSeconds = timestamp)
+            )
+        } else {
+            createDefaultName(obj, fieldParser)
+        }
+    } else {
+        createDefaultName(obj, fieldParser)
+    }
+}
+
+private fun createDefaultName(
+    obj: ObjectWrapper.Basic,
+    fieldParser: FieldParser
+): Name.Default {
+    return Name.Default(
+        prettyPrintName = fieldParser.getObjectName(obj)
+    )
 }
 
 typealias WidgetId = Id

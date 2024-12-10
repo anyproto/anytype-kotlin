@@ -23,6 +23,7 @@ import kotlin.collections.contains
 
 interface FieldParser {
     fun toDate(any: Any?): Field.Date?
+    fun calculateRelativeDate(timeStampInSeconds: TimeInSeconds): RelativeDate
     suspend fun getDateObjectByTimeInSeconds(
         timeInSeconds: TimeInSeconds,
         spaceId: SpaceId,
@@ -104,6 +105,12 @@ class FieldParserImpl @Inject constructor(
                     relativeDate = relativeDate
                 )
             )
+        )
+    }
+
+    override fun calculateRelativeDate(timeStampInSeconds: TimeInSeconds): RelativeDate {
+        return dateProvider.calculateRelativeDates(
+            dateInSeconds = timeStampInSeconds
         )
     }
     //endregion

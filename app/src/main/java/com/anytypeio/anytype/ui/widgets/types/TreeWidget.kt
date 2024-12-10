@@ -101,12 +101,7 @@ fun TreeWidgetCard(
             )
         ) {
             WidgetHeader(
-                title = when (val name = item.name) {
-                    is WidgetView.Name.Default -> {
-                        name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
-                    }
-                    is WidgetView.Name.Bundled -> { stringResource(id = name.source.res()) }
-                },
+                title = item.getPrettyName(),
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = { onWidgetSourceClicked(item.source) },
@@ -227,7 +222,7 @@ private fun TreeWidgetTreeItems(
                 )
             }
             Text(
-                text = element.name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) },
+                text = element.getPrettyName(),
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .fillMaxWidth(),

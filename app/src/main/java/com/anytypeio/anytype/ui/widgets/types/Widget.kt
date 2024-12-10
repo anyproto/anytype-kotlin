@@ -18,9 +18,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Relations2
+import com.anytypeio.anytype.presentation.widgets.WidgetView
+import kotlin.text.ifEmpty
 
 @Composable
 fun EmptyWidgetPlaceholder(
@@ -70,6 +73,50 @@ fun EmptyWidgetPlaceholderWithCreateButton(
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
+}
+
+@Composable
+fun WidgetView.Name.getPrettyName(): String {
+    return when (this) {
+        is WidgetView.Name.Bundled -> stringResource(id = source.res())
+        is WidgetView.Name.Date -> relativeDate.getPrettyName()
+        is WidgetView.Name.Default -> prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
+    }
+}
+
+@Composable
+fun WidgetView.Element.getPrettyName(): String {
+    return name.getPrettyName()
+}
+
+@Composable
+fun WidgetView.Link.getPrettyName(): String {
+    return name.getPrettyName()
+}
+
+@Composable
+fun WidgetView.Tree.getPrettyName(): String {
+    return name.getPrettyName()
+}
+
+@Composable
+fun WidgetView.SetOfObjects.getPrettyName(): String {
+    return name.getPrettyName()
+}
+
+@Composable
+fun WidgetView.SetOfObjects.Element.getPrettyName(): String {
+    return name.getPrettyName()
+}
+
+@Composable
+fun WidgetView.Gallery.getPrettyName(): String {
+    return name.getPrettyName()
+}
+
+@Composable
+fun WidgetView.Tree.Element.getPrettyName(): String {
+    return name.getPrettyName()
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")

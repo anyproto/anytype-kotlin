@@ -5466,6 +5466,10 @@ class DefaultBlockViewRendererTest {
     //endregion
 
     //region Date mention
+
+    /**
+     * ENABLE_RELATIVE_DATES_IN_MENTIONS should be enabled
+     */
     @Test
     fun `should set date mention in text and shift all markups when relative date is shorter then mention text`() {
 
@@ -5603,6 +5607,10 @@ class DefaultBlockViewRendererTest {
         assertEquals(expected = expected, actual = result)
     }
 
+
+    /**
+     * ENABLE_RELATIVE_DATES_IN_MENTIONS should be enabled
+     */
     @Test
     fun `should set date mention in text and shift all markups when relative date is longer then mention text`() {
 

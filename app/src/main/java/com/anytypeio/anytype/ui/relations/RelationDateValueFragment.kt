@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.relations.DatePickerContent
 import com.anytypeio.anytype.core_ui.views.Title3
@@ -53,11 +54,14 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
                 typography = MaterialTheme.typography.copy(bodyLarge = Title3)
             ) {
                 DatePickerContent(
+                    showHeader = true,
+                    showOpenSelectDate = true,
                     state = vm.views.collectAsStateWithLifecycle().value,
                     onDateSelected = vm::onDateSelected,
                     onClear = vm::onClearClicked,
                     onTodayClicked = vm::onTodayClicked,
-                    onTomorrowClicked = vm::onTomorrowClicked
+                    onTomorrowClicked = vm::onTomorrowClicked,
+                    openSelectedDate = vm::openSelectedDateClicked
                 )
             }
         }
@@ -83,6 +87,14 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
             is DateValueCommand.OpenDatePicker -> {
                 DatePickerFragment.new(command.timeInSeconds)
                     .showChildFragment()
+            }
+            is DateValueCommand.OpenDateObject -> {
+                withParent<DateValueEditReceiver> {
+                    onOpenDateObject(
+                        timeInMillis = command.timeInMillis
+                    )
+                }
+                dismiss()
             }
         }
     }
@@ -168,6 +180,10 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
             timeInSeconds: Number?,
             objectId: Id,
             relationKey: Key
+        )
+
+        fun onOpenDateObject(
+            timeInMillis: TimeInMillis
         )
     }
 }

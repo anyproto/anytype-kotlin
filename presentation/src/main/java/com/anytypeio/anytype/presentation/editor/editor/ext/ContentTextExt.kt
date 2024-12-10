@@ -4,23 +4,23 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
 import com.anytypeio.anytype.presentation.extension.shift
+import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import timber.log.Timber
 
 fun Block.Content.Text.getTextAndMarks(
     details: Block.Details,
     marks: List<Markup.Mark>,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    resourceProvider: ResourceProvider
 ): Pair<String, List<Markup.Mark>> {
-    if (details.details.isEmpty() ||
-        marks.none { it is Markup.Mark.Mention }
-    ) {
-        return Pair(text, marks)
+
+    if (details.details.isEmpty() || marks.none { it is Markup.Mark.Mention }) {
+        return text to marks
     }
     var updatedText = text
     val updatedMarks = marks.toMutableList()
@@ -28,31 +28,54 @@ fun Block.Content.Text.getTextAndMarks(
     try {
         updatedMarks.forEach { mark ->
             if (mark !is Markup.Mark.Mention || mark.param.isBlank()) return@forEach
-            var newName = if (mark is Markup.Mark.Mention.Deleted) {
-                NON_EXISTENT_OBJECT_MENTION_NAME
-            } else {
-                details.details.getProperObjectName(id = mark.param) ?: return@forEach
+            val newName = when (mark) {
+                is Markup.Mark.Mention.Date -> getFormattedDateMention(
+                    mark = mark,
+                    details = details,
+                    fieldParser = fieldParser,
+                    resourceProvider = resourceProvider
+                )
+                is Markup.Mark.Mention.Deleted -> resourceProvider.getNonExistentObjectTitle()
+                else -> details.details.getProperObjectName(id = mark.param) ?: return@forEach
             }
             val oldName = updatedText.substring(mark.from, mark.to)
-            if (newName != oldName) {
-                if (newName.isEmpty()) newName = Relations.RELATION_NAME_EMPTY
-                val d = newName.length - oldName.length
+            val finalName =
+                if (newName.isNullOrBlank()) resourceProvider.getUntitledTitle() else newName
+
+            if (finalName != oldName) {
+                val lengthDifference = finalName.length - oldName.length
                 updatedText = updatedText.replaceRangeWithWord(
-                    replace = newName,
+                    replace = finalName,
                     from = mark.from,
                     to = mark.to
                 )
                 updatedMarks.shift(
                     start = mark.from,
-                    length = d
+                    length = lengthDifference
                 )
             }
         }
     } catch (e: Exception) {
         Timber.e(e, "Error while update mention markups")
-        return Pair(text, marks)
+        return text to marks
     }
-    return Pair(updatedText, updatedMarks)
+    return updatedText to updatedMarks
+}
+
+private fun Block.Content.Text.getFormattedDateMention(
+    mark: Markup.Mark.Mention.Date,
+    details: Block.Details,
+    fieldParser: FieldParser,
+    resourceProvider: ResourceProvider
+): String? {
+    return if (BuildConfig.ENABLE_RELATIVE_DATES_IN_MENTIONS) {
+        val dateObject = details.details[mark.param] ?: return null
+        val timestamp = dateObject.timestamp ?: return null
+        val relativeDate = fieldParser.toDate(timestamp)?.relativeDate
+        resourceProvider.toFormattedString(relativeDate = relativeDate).takeIf { it.isNotEmpty() }
+    } else {
+        details.details[mark.param]?.name
+    }
 }
 
 private fun Map<Id, Block.Fields>.getProperObjectName(id: Id?): String? {

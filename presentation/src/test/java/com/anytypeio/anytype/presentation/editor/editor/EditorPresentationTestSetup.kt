@@ -122,6 +122,7 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.dispatchers
 import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
+import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -230,6 +231,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var setupBookmark: SetupBookmark
+
+    @Mock
+    lateinit var resourceProvider: ResourceProvider
 
     @Mock
     lateinit var createBookmarkBlock: CreateBookmarkBlock
@@ -477,7 +481,8 @@ open class EditorPresentationTestSetup {
                 coverImageHashProvider = coverImageHashProvider,
                 storeOfRelations = storeOfRelations,
                 storeOfObjectTypes = storeOfObjectTypes,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                resourceProvider = resourceProvider
             ),
             orchestrator = orchestrator,
             analytics = analytics,

@@ -131,6 +131,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
+import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import dagger.BindsInstance
@@ -380,14 +381,16 @@ object EditorSessionModule {
         coverImageHashProvider: CoverImageHashProvider,
         storeOfRelations: StoreOfRelations,
         storeOfObjectTypes: StoreOfObjectTypes,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        resourceProvider: ResourceProvider
     ): DefaultBlockViewRenderer = DefaultBlockViewRenderer(
         urlBuilder = urlBuilder,
         toggleStateHolder = toggleStateHolder,
         coverImageHashProvider = coverImageHashProvider,
         storeOfRelations = storeOfRelations,
         storeOfObjectTypes = storeOfObjectTypes,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        resourceProvider = resourceProvider
     )
 
     @JvmStatic

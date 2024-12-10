@@ -58,6 +58,13 @@ data class Block(
                 else -> null
             }
 
+        val timestamp: Double?
+            get() = when (val value = map[Relations.TIMESTAMP]) {
+                is Double -> value
+                is Int -> value.toDouble()
+                else -> null
+            }
+
         companion object {
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"

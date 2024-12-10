@@ -114,6 +114,7 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
+import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
@@ -298,6 +299,9 @@ open class EditorTestSetup {
     @Mock
     lateinit var fieldParser: FieldParser
 
+    @Mock
+    lateinit var resourceProvider: ResourceProvider
+
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     lateinit var addRelationToObject: AddRelationToObject
@@ -415,7 +419,8 @@ open class EditorTestSetup {
                 coverImageHashProvider = coverImageHashProvider,
                 storeOfRelations = storeOfRelations,
                 storeOfObjectTypes = storeOfObjectTypes,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                resourceProvider = resourceProvider
             ),
             orchestrator = Orchestrator(
                 createBlock = createBlock,

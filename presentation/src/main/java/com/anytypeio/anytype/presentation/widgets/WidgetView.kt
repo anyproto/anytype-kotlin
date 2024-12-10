@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
@@ -14,12 +15,13 @@ sealed class WidgetView {
     sealed interface Name {
         data class Bundled(val source: Widget.Source.Bundled): Name
         data class Default(val prettyPrintName: String): Name
+        data class Date(val relativeDate: RelativeDate): Name
     }
 
     interface Element {
         val objectIcon: ObjectIcon
         val obj: ObjectWrapper.Basic
-        val name: Name.Default
+        val name: Name
     }
 
     abstract val id: Id
@@ -44,7 +46,7 @@ sealed class WidgetView {
             val objectIcon: ObjectIcon = ObjectIcon.None,
             val indent: Indent,
             val path: String,
-            val name: Name.Default
+            val name: Name
         )
 
         sealed class ElementIcon {
@@ -80,7 +82,7 @@ sealed class WidgetView {
         data class Element(
             override val objectIcon: ObjectIcon,
             override val obj: ObjectWrapper.Basic,
-            override val name: Name.Default,
+            override val name: Name,
             val cover: CoverView? = null
         ) : WidgetView.Element
     }
@@ -110,7 +112,7 @@ sealed class WidgetView {
         data class Element(
             override val objectIcon: ObjectIcon,
             override val obj: ObjectWrapper.Basic,
-            override val name: Name.Default
+            override val name: Name
         ) : WidgetView.Element
         sealed class Type {
             data object Recent : Type()

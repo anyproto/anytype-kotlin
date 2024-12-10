@@ -677,6 +677,7 @@
     <string name="today">Aujourd\'hui</string>
     <string name="yesterday">Hier</string>
     <string name="tomorrow">Demain</string>
+    <string name="open_selected_date">Ouvrir la date sélectionnée</string>
     <string name="no_date">Pas de date</string>
     <string name="exact_day">Date exacte</string>
     <string name="reorder">Réorganiser</string>

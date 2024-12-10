@@ -677,6 +677,7 @@
     <string name="today">I dag</string>
     <string name="yesterday">I går</string>
     <string name="tomorrow">I morgen</string>
+    <string name="open_selected_date">Open selected date</string>
     <string name="no_date">Ingen dato</string>
     <string name="exact_day">Eksakt dag</string>
     <string name="reorder">Endre rekkefølge</string>

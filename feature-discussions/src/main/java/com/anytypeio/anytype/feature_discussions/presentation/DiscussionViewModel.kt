@@ -223,11 +223,9 @@ class DiscussionViewModel @Inject constructor(
                     }
                 )
             }.reversed()
+        }.flowOn(dispatchers.io).collect {
+            messages.value = it
         }
-            .flowOn(dispatchers.io)
-            .collect {
-                messages.value = it
-            }
     }
 
     fun onMessageSent(msg: String) {

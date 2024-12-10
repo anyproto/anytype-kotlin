@@ -677,6 +677,7 @@
     <string name="today">Heute</string>
     <string name="yesterday">Gestern</string>
     <string name="tomorrow">Morgen</string>
+    <string name="open_selected_date">Ausgewähltes Datum öffnen</string>
     <string name="no_date">Kein Datum</string>
     <string name="exact_day">Genauer Tag</string>
     <string name="reorder">Sortieren</string>

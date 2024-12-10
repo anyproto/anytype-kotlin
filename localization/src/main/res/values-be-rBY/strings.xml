@@ -679,6 +679,7 @@
     <string name="today">Сёння</string>
     <string name="yesterday">Учора</string>
     <string name="tomorrow">Заўтра</string>
+    <string name="open_selected_date">Open selected date</string>
     <string name="no_date">Без даты</string>
     <string name="exact_day">Дакладны дзень</string>
     <string name="reorder">Упарадкаваць</string>

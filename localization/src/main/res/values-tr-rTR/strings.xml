@@ -677,6 +677,7 @@
     <string name="today">Bugün</string>
     <string name="yesterday">Dün</string>
     <string name="tomorrow">Yarın</string>
+    <string name="open_selected_date">Seçilen tarihi aç</string>
     <string name="no_date">Tarih yok</string>
     <string name="exact_day">Tam tarih</string>
     <string name="reorder">Yeniden sırala</string>

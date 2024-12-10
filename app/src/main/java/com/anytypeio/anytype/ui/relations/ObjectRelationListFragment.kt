@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.relations.DocumentRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
@@ -281,6 +282,10 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
             value = timeInSeconds,
             isValueEmpty = timeInSeconds == null
         )
+    }
+
+    override fun onOpenDateObject(timeInMillis: TimeInMillis) {
+        vm.onOpenDateObjectByTimeInMillis(timeInMillis)
     }
 
     override fun injectDependencies() {

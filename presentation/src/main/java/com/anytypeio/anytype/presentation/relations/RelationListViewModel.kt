@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
@@ -562,6 +563,23 @@ class RelationListViewModel(
                     )
                 },
                 failure = { Timber.e(it, "Error while updating relation values") }
+            )
+        }
+    }
+
+    fun onOpenDateObjectByTimeInMillis(timeInMillis: TimeInMillis) {
+        Timber.d("onOpenDateObjectByTimeInMillis, timeInMillis: $timeInMillis")
+        viewModelScope.launch {
+            fieldParser.getDateObjectByTimeInSeconds(
+                timeInSeconds = timeInMillis / 1000,
+                spaceId = vmParams.spaceId,
+                actionSuccess = { obj ->
+                    commands.emit(Command.NavigateToDateObject(obj.id))
+                },
+                actionFailure = {
+                    Timber.e(it, "Failed to get date object by timestamp")
+                    _toasts.emit("Failed to get date object by timestamp")
+                }
             )
         }
     }

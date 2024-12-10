@@ -2870,6 +2870,13 @@ class ObjectSetViewModel(
             toast("Date is not set")
         }
     }
+
+    fun onOpenDateObjectByTimeInMillis(timeInMillis: TimeInMillis) {
+        Timber.d("onOpenDateObjectByTimeInMillis, timeInMillis:[$timeInMillis]")
+        viewModelScope.launch {
+            handleReadOnlyValue(timeInMillis = timeInMillis)
+        }
+    }
     //endregion
 
     companion object {

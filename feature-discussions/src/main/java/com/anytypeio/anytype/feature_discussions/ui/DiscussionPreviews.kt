@@ -122,7 +122,8 @@ fun DiscussionScreenPreview() {
         onReplyMessage = {},
         chatBoxMode = DiscussionViewModel.ChatBoxMode.Default,
         onClearReplyClicked = {},
-        onChatBoxMediaPicked = {}
+        onChatBoxMediaPicked = {},
+        onChatBoxFilePicked = {}
     )
 }
 

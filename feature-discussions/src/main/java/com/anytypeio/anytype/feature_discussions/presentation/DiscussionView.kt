@@ -57,6 +57,9 @@ sealed interface DiscussionView {
             data class Media(
                 val uri: String
             ): ChatBoxAttachment()
+            data class File(
+                val uri: String
+            ): ChatBoxAttachment()
             data class Link(
                 val target: Id,
                 val wrapper: GlobalSearchItemView

@@ -124,6 +124,7 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
+import com.anytypeio.anytype.core_utils.ext.parsePath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
@@ -204,6 +205,9 @@ fun DiscussionScreenWrapper(
                     onClearReplyClicked = vm::onClearReplyClicked,
                     onChatBoxMediaPicked = { uris ->
                         vm.onChatBoxMediaPicked(uris.map { it.parseImagePath(context = context) })
+                    },
+                    onChatBoxFilePicked = { uris ->
+                        // TODO parse path and path it vm.
                     }
                 )
                 LaunchedEffect(Unit) {
@@ -253,7 +257,8 @@ fun DiscussionScreen(
     onAttachMediaClicked: () -> Unit,
     onAttachFileClicked: () -> Unit,
     onUploadAttachmentClicked: () -> Unit,
-    onChatBoxMediaPicked: (List<Uri>) -> Unit
+    onChatBoxMediaPicked: (List<Uri>) -> Unit,
+    onChatBoxFilePicked: (List<Uri>) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -377,7 +382,8 @@ fun DiscussionScreen(
             onAttachObjectClicked = onAttachObjectClicked,
             onClearAttachmentClicked = onClearAttachmentClicked,
             onClearReplyClicked = onClearReplyClicked,
-            onChatBoxMediaPicked = onChatBoxMediaPicked
+            onChatBoxMediaPicked = onChatBoxMediaPicked,
+            onChatBoxFilePicked = onChatBoxFilePicked
         )
     }
 }
@@ -445,13 +451,15 @@ private fun ChatBox(
     onUploadAttachmentClicked: () -> Unit,
     onClearAttachmentClicked: (DiscussionView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
-    onChatBoxMediaPicked: (List<Uri>) -> Unit
+    onChatBoxMediaPicked: (List<Uri>) -> Unit,
+    onChatBoxFilePicked: (List<Uri>) -> Unit,
 ) {
-    val context = LocalContext.current
-    val result = remember { mutableStateOf<List<String>>(emptyList()) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) {
-        result.value = it.map { it.parseImagePath(context) }
-        onChatBoxMediaPicked(it.filterNotNull())
+    val uploadMediaLauncher = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) {
+        onChatBoxMediaPicked(it)
+    }
+
+    val uploadFileLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) {
+        onChatBoxFilePicked(it)
     }
 
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -546,6 +554,11 @@ private fun ChatBox(
                                         }
                                 )
                             }
+                        }
+                    }
+                    is DiscussionView.Message.ChatBoxAttachment.File -> {
+                        item {
+                            Text(text = attachment.uri)
                         }
                     }
                 }
@@ -703,43 +716,29 @@ private fun ChatBox(
                             },
                             onClick = {
                                 showDropdownMenu = false
-                                launcher.launch(
+                                uploadMediaLauncher.launch(
                                     PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
                                 )
                             }
                         )
-                        Divider(
-                            paddingStart = 0.dp,
-                            paddingEnd = 0.dp
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.chat_attachment_file),
-                                    color = colorResource(id = R.color.text_primary)
-                                )
-                            },
-                            onClick = {
-                                showDropdownMenu = false
-                                context.toast("Coming soon")
-                            }
-                        )
-                        Divider(
-                            paddingStart = 0.dp,
-                            paddingEnd = 0.dp
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.chat_attachment_upload),
-                                    color = colorResource(id = R.color.text_primary)
-                                )
-                            },
-                            onClick = {
-                                showDropdownMenu = false
-                                context.toast("Coming soon")
-                            }
-                        )
+//                        Divider(
+//                            paddingStart = 0.dp,
+//                            paddingEnd = 0.dp
+//                        )
+//                        DropdownMenuItem(
+//                            text = {
+//                                Text(
+//                                    text = stringResource(R.string.chat_attachment_file),
+//                                    color = colorResource(id = R.color.text_primary)
+//                                )
+//                            },
+//                            onClick = {
+//                                showDropdownMenu = false
+//                                uploadFileLauncher.launch(
+//                                    arrayOf("*/*")
+//                                )
+//                            }
+//                        )
                     }
                 }
             }

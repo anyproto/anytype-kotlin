@@ -160,9 +160,10 @@ class ListWidgetContainer(
                 objectIcon = obj.objectIcon(
                     builder = urlBuilder
                 ),
-                name = WidgetView.Name.Default(
-                    prettyPrintName = fieldParser.getObjectName(obj)
-                )
+                name = buildWidgetName(
+                    obj = obj,
+                    fieldParser = fieldParser
+                ),
             )
         },
         isExpanded = true,

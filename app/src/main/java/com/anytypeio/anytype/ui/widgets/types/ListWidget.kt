@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -169,7 +170,7 @@ fun CompactListWidgetList(
                     }
                 )
                 Text(
-                    text = element.name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) },
+                    text = element.getPrettyName(),
                     modifier = Modifier
                         .padding(start = 8.dp)
                         .fillMaxWidth(),

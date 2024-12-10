@@ -749,6 +749,7 @@
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="tomorrow">Tomorrow</string>
+    <string name="open_selected_date">Open selected date</string>
     <string name="no_date">No date</string>
     <string name="exact_day">Exact day</string>
     <string name="reorder">Reorder</string>

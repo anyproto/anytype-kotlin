@@ -102,14 +102,7 @@ fun DataViewListWidgetCard(
                 .padding(horizontal = 0.dp, vertical = 6.dp)
         ) {
             WidgetHeader(
-                title = when (val name = item.name) {
-                    is WidgetView.Name.Default -> {
-                        name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
-                    }
-                    is WidgetView.Name.Bundled -> {
-                        stringResource(id = name.source.res())
-                    }
-                },
+                title = item.getPrettyName(),
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
@@ -235,14 +228,7 @@ fun GalleryWidgetCard(
                 .padding(horizontal = 0.dp, vertical = 6.dp)
         ) {
             WidgetHeader(
-                title = when (val source = item.name) {
-                    is WidgetView.Name.Default -> {
-                        source.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
-                    }
-                    is WidgetView.Name.Bundled -> {
-                        stringResource(id = source.source.res())
-                    }
-                },
+                title = item.getPrettyName(),
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
@@ -545,7 +531,7 @@ private fun GalleryWidgetItemCard(
                     onTaskIconClicked = {}
                 )
                 Text(
-                    text = item.name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) },
+                    text = item.getPrettyName(),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = Caption1Medium,
@@ -561,7 +547,7 @@ private fun GalleryWidgetItemCard(
             }
         } else {
             Text(
-                text = item.name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) },
+                text =  item.getPrettyName(),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 style = Caption1Medium,

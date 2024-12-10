@@ -90,6 +90,16 @@ fun WidgetView.Element.getPrettyName(): String {
 }
 
 @Composable
+fun WidgetView.Link.getPrettyName(): String {
+    return name.getPrettyName()
+}
+
+@Composable
+fun WidgetView.Tree.getPrettyName(): String {
+    return name.getPrettyName()
+}
+
+@Composable
 fun WidgetView.SetOfObjects.getPrettyName(): String {
     return name.getPrettyName()
 }

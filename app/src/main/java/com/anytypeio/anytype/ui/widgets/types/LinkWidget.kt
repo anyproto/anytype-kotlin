@@ -24,7 +24,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -90,12 +89,7 @@ fun LinkWidgetCard(
         ) {
 
             Text(
-                text = when(val name = item.name) {
-                    is WidgetView.Name.Bundled -> stringResource(id = name.source.res())
-                    is WidgetView.Name.Default -> {
-                        name.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
-                    }
-                },
+                text = item.getPrettyName(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

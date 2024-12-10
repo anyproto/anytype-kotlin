@@ -14,8 +14,9 @@ class LinkWidgetContainer(
             source = widget.source,
             name = when(val source = widget.source) {
                 is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
-                is Widget.Source.Default -> WidgetView.Name.Default(
-                    prettyPrintName = fieldParser.getObjectName(source.obj)
+                is Widget.Source.Default -> buildWidgetName(
+                    obj = source.obj,
+                    fieldParser = fieldParser
                 )
             }
         )

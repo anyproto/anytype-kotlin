@@ -285,8 +285,9 @@ class TreeWidgetContainer(
                         ),
                         indent = level,
                         path = path + link,
-                        name = WidgetView.Name.Default(
-                            prettyPrintName = fieldParser.getObjectName(obj)
+                        name = buildWidgetName(
+                            obj = obj,
+                            fieldParser = fieldParser
                         )
                     )
                 )

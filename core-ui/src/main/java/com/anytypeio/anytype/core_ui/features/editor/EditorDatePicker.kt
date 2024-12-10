@@ -51,7 +51,6 @@ fun EditorDatePicker(
         content = {
             DatePickerContent(
                 state = DateValueView(timeInMillis = null),
-                showHeader = false,
                 onDateSelected = { onEvent(getDateSelectedEvent(uiState, it)) },
                 onTodayClicked = { onEvent(getTodayEvent(uiState)) },
                 onTomorrowClicked = { onEvent(getTomorrowEvent(uiState)) }

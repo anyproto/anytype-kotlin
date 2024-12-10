@@ -35,10 +35,9 @@ fun CalendarScreen(
                 is UiCalendarState.Calendar -> {
                     DatePickerContent(
                         state = DateValueView(timeInMillis = uiState.timeInMillis),
-                        showHeader = false,
                         onDateSelected = { onDateEvent(DateEvent.Calendar.OnCalendarDateSelected(it)) },
                         onTodayClicked = { onDateEvent(DateEvent.Calendar.OnTodayClick) },
-                        onTomorrowClicked = { onDateEvent(DateEvent.Calendar.OnTomorrowClick) }
+                        onTomorrowClicked = { onDateEvent(DateEvent.Calendar.OnTomorrowClick) },
                     )
                 }
 

@@ -81,6 +81,14 @@ class RelationDateValueViewModel(
         }
     }
 
+    fun openSelectedDateClicked(timeInMillis: TimeInMillis) {
+        viewModelScope.launch {
+            commands.emit(
+                DateValueCommand.OpenDateObject(timeInMillis)
+            )
+        }
+    }
+
     fun onYesterdayClicked() {
         setDate(timeInSeconds = dateProvider.getTimestampForYesterdayAtStartOfDay())
     }
@@ -165,6 +173,7 @@ class RelationDateValueViewModel(
 sealed class DateValueCommand {
     data class DispatchResult(val timeInSeconds: Double?, val dismiss: Boolean = false) : DateValueCommand()
     data class OpenDatePicker(val timeInSeconds: Long?) : DateValueCommand()
+    data class OpenDateObject(val timeInMillis: TimeInMillis) : DateValueCommand()
 }
 
 data class DateValueView(

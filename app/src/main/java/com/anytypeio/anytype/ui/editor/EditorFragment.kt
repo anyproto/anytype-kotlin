@@ -52,6 +52,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -2118,6 +2119,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             value = timeInSeconds,
             isValueEmpty = timeInSeconds == null
         )
+    }
+
+    override fun onOpenDateObject(timeInMillis: TimeInMillis) {
+        vm.onOpenDateObjectByTimeInMillis(timeInMillis)
     }
 
     override fun onMoveTo(

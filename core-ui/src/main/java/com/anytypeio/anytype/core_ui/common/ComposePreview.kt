@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
     showSystemUi = true
 )
 @Preview(
-    backgroundColor = 0x000000,
+    backgroundColor = 0xFF121212,
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES,
     name = "Dark Mode",

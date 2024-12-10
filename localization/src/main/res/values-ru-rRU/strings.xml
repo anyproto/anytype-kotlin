@@ -679,6 +679,7 @@
     <string name="today">Сегодня</string>
     <string name="yesterday">Вчера</string>
     <string name="tomorrow">Завтра</string>
+    <string name="open_selected_date">Открыть выбранную дату</string>
     <string name="no_date">Нет даты</string>
     <string name="exact_day">Точная дата</string>
     <string name="reorder">Упорядочить</string>

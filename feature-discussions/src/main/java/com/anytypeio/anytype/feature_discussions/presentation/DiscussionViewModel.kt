@@ -38,6 +38,9 @@ import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.combineLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -108,7 +111,6 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    // TODO move to IO thread.
     private suspend fun proceedWithObservingChatMessages(
         account: Id,
         chat: Id
@@ -219,7 +221,7 @@ class DiscussionViewModel @Inject constructor(
                     )
                 }.reversed()
             }
-//            .flowOn(dispatchers.io)
+            .flowOn(dispatchers.io)
             .collect { result ->
                 messages.value = result
             }

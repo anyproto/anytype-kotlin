@@ -16,6 +16,7 @@ import kotlin.collections.isNotEmpty
 import kotlin.collections.toList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
@@ -32,13 +33,11 @@ class ChatContainer @Inject constructor(
 ) {
     private val payloads = MutableSharedFlow<List<Event.Command.Chats>>()
 
-    private val attachments = MutableSharedFlow<Set<Id>>(replay = 0)
-    private val replies = MutableSharedFlow<Set<Id>>(replay = 0)
+    private val attachments = MutableStateFlow<Set<Id>>(emptySet())
+    private val replies = MutableStateFlow<Set<Id>>(emptySet())
 
-    @Deprecated("Naive implementation. Add caching logic - maybe store for wrappers")
     fun fetchAttachments(space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
         return attachments
-            .distinctUntilChanged()
             .map { ids ->
                 if (ids.isNotEmpty()) {
                     repo.searchObjects(
@@ -68,7 +67,6 @@ class ChatContainer @Inject constructor(
     @Deprecated("Naive implementation. Add caching logic")
     fun fetchReplies(chat: Id) : Flow<Map<Id, Chat.Message>> {
         return replies
-            .distinctUntilChanged()
             .map { ids ->
                 if (ids.isNotEmpty()) {
                     repo.getChatMessagesByIds(
@@ -96,8 +94,8 @@ class ChatContainer @Inject constructor(
                         repliesIds.add(msg.replyToMessageId.orEmpty())
                     }
                 }
-                attachments.emit(attachmentsIds)
-                replies.emit(repliesIds)
+                attachments.value = attachmentsIds
+                replies.value = repliesIds
             }
     }
 

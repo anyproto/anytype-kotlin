@@ -256,6 +256,21 @@ class DiscussionViewModel @Inject constructor(
                                 )
                             }
                         }
+                        is DiscussionView.Message.ChatBoxAttachment.File -> {
+                            uploadFile.async(
+                                UploadFile.Params(
+                                    space = vmParams.space,
+                                    path = attachment.uri
+                                )
+                            ).onSuccess { file ->
+                                add(
+                                    Chat.Message.Attachment(
+                                        target = file.id,
+                                        type = Chat.Message.Attachment.Type.Image
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -441,6 +456,15 @@ class DiscussionViewModel @Inject constructor(
         Timber.d("onChatBoxMediaPicked: $uris")
         chatBoxAttachments.value = chatBoxAttachments.value + uris.map {
             DiscussionView.Message.ChatBoxAttachment.Media(
+                uri = it
+            )
+        }
+    }
+
+    fun onChatBoxFilePicked(uris: List<String>) {
+        Timber.d("onChatBoxFilePicked: $uris")
+        chatBoxAttachments.value = chatBoxAttachments.value + uris.map {
+            DiscussionView.Message.ChatBoxAttachment.File(
                 uri = it
             )
         }

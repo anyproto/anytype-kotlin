@@ -160,7 +160,10 @@ class ListWidgetContainer(
                 objectIcon = obj.objectIcon(
                     builder = urlBuilder
                 ),
-                name = buildWidgetName(obj, fieldParser),
+                name = buildWidgetName(
+                    obj = obj,
+                    fieldParser = fieldParser
+                ),
             )
         },
         isExpanded = true,

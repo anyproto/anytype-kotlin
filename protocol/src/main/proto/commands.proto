@@ -2817,7 +2817,7 @@ message Rpc {
                 enum UseCase {
                     NONE = 0;
                     GET_STARTED = 1;
-                    EMPTY = 6;
+                    EMPTY = 2;
                 }
             }
 
@@ -7628,6 +7628,7 @@ message Rpc {
         message GetMessages {
             message Request {
                 string chatObjectId = 1;
+                string afterOrderId = 4; // OrderId of the message after which to get messages
                 string beforeOrderId = 2; // OrderId of the message before which to get messages
                 int32 limit = 3;
             }

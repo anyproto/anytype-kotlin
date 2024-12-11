@@ -43,8 +43,19 @@ fun Block.Content.Text.getTextAndMarks(
                 else -> details.details.getProperObjectName(id = mark.param) ?: return@forEach
             }
             val oldName = updatedText.substring(mark.from, mark.to)
-            val finalName =
-                if (newName.isNullOrBlank()) resourceProvider.getUntitledTitle() else newName
+
+            val finalName = when (mark) {
+                is Markup.Mark.Mention.Base -> {
+                    val actualName =
+                        if (newName.isNullOrBlank()) resourceProvider.getUntitledTitle() else newName
+                    actualName
+                }
+                else -> {
+                    val actualName =
+                        if (newName.isNullOrBlank()) resourceProvider.getUntitledTitle() else newName
+                    "  $actualName"  //two spaces for image span and to separate from the actual text
+                }
+            }
 
             if (finalName != oldName) {
                 val lengthDifference = finalName.length - oldName.length

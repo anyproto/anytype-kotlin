@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.style.ClickableSpan
+import android.text.style.ImageSpan
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_ui.R
@@ -16,6 +17,7 @@ import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_ui.widgets.text.setBounds
 import timber.log.Timber
 
 fun Markup.toSpannable(
@@ -476,21 +478,30 @@ fun Editable.proceedWithSettingMentionSpan(
                     context,
                     R.drawable.ic_obj_date_20
                 )
+            placeholder!!.setBounds(0, 0, placeholder.intrinsicWidth, placeholder.intrinsicHeight)
             setSpan(
-                MentionSpan(
-                    onImageResourceReady = onImageReady,
-                    context = context,
-                    imageSize = mentionImageSize,
-                    imagePadding = mentionImagePadding,
-                    param = mark.param,
-                    placeholder = placeholder,
-                    isArchived = false
+                ImageSpan(
+                    placeholder,
+                    ImageSpan.ALIGN_BASELINE
                 ),
                 mark.from,
+                mark.from+1,
+                Markup.MENTION_SPANNABLE_FLAG
+            )
+            val clickableSpan = object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    // TODO consider pausing text watchers. Otherwise, redundant text watcher events will be triggered.
+                    (widget as? TextInputWidget)?.enableReadMode()
+                    click?.invoke(mark.param)
+                }
+            }
+            setSpan(
+                clickableSpan,
+                mark.from + 2,
                 mark.to,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            setClickableSpan(click, mark)
+            //setClickableSpan(click, mark)
         }
     }
 }

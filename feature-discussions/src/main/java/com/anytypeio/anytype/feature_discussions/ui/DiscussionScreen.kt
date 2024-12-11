@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
+import android.content.ContentResolver
 import android.content.res.Configuration
 import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -122,6 +124,7 @@ import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontIBM
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
@@ -209,7 +212,28 @@ fun DiscussionScreenWrapper(
                         vm.onChatBoxMediaPicked(uris.map { it.parseImagePath(context = context) })
                     },
                     onChatBoxFilePicked = { uris ->
-                        // TODO parse path and path it vm.
+                        val infos = uris.mapNotNull { uri ->
+                            val cursor = context.contentResolver.query(
+                                uri,
+                                null,
+                                null,
+                                null,
+                                null
+                            )
+                            if (cursor != null) {
+                                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                                val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                                cursor.moveToFirst()
+                                DefaultFileInfo(
+                                    uri = uri.toString(),
+                                    name = cursor.getString(nameIndex),
+                                    size = cursor.getLong(sizeIndex).toInt()
+                                )
+                            } else {
+                                null
+                            }
+                        }
+                        vm.onChatBoxFilePicked(infos)
                     }
                 )
                 LaunchedEffect(Unit) {
@@ -548,12 +572,8 @@ private fun ChatBox(
                                     painter = painterResource(R.drawable.ic_clear_chatbox_attachment),
                                     contentDescription = "Clear attachment icon",
                                     modifier = Modifier
-                                        .align(
-                                            Alignment.TopEnd
-                                        )
-                                        .padding(
-                                            top = 6.dp
-                                        )
+                                        .align(Alignment.TopEnd)
+                                        .padding(top = 6.dp)
                                         .noRippleClickable {
                                             onClearAttachmentClicked(attachment)
                                         }
@@ -563,7 +583,37 @@ private fun ChatBox(
                     }
                     is DiscussionView.Message.ChatBoxAttachment.File -> {
                         item {
-                            Text(text = attachment.uri)
+                            Box {
+                                AttachedObject(
+                                    modifier = Modifier
+                                        .padding(
+                                            top = 12.dp,
+                                            end = 4.dp
+                                        )
+                                        .width(216.dp),
+                                    title = attachment.name,
+                                    type = attachment.size.toString(),
+                                    icon = ObjectIcon.File(
+                                        mime = null,
+                                        fileName = null
+                                    ),
+                                    onAttachmentClicked = {
+                                        // TODO
+                                    }
+                                )
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
+                                    contentDescription = "Close icon",
+                                    modifier = Modifier
+                                        .align(
+                                            Alignment.TopEnd
+                                        )
+                                        .padding(top = 6.dp)
+                                        .noRippleClickable {
+                                            onClearAttachmentClicked(attachment)
+                                        }
+                                )
+                            }
                         }
                     }
                 }
@@ -726,24 +776,24 @@ private fun ChatBox(
                                 )
                             }
                         )
-//                        Divider(
-//                            paddingStart = 0.dp,
-//                            paddingEnd = 0.dp
-//                        )
-//                        DropdownMenuItem(
-//                            text = {
-//                                Text(
-//                                    text = stringResource(R.string.chat_attachment_file),
-//                                    color = colorResource(id = R.color.text_primary)
-//                                )
-//                            },
-//                            onClick = {
-//                                showDropdownMenu = false
-//                                uploadFileLauncher.launch(
-//                                    arrayOf("*/*")
-//                                )
-//                            }
-//                        )
+                        Divider(
+                            paddingStart = 0.dp,
+                            paddingEnd = 0.dp
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chat_attachment_file),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                showDropdownMenu = false
+                                uploadFileLauncher.launch(
+                                    arrayOf("*/*")
+                                )
+                            }
+                        )
                     }
                 }
             }

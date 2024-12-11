@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.text.splitByMarks
+import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -462,11 +463,13 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    fun onChatBoxFilePicked(uris: List<String>) {
-        Timber.d("onChatBoxFilePicked: $uris")
-        chatBoxAttachments.value = chatBoxAttachments.value + uris.map {
+    fun onChatBoxFilePicked(infos: List<DefaultFileInfo>) {
+        Timber.d("onChatBoxFilePicked: $infos")
+        chatBoxAttachments.value = chatBoxAttachments.value + infos.map { info ->
             DiscussionView.Message.ChatBoxAttachment.File(
-                uri = it
+                uri = info.uri,
+                name = info.name,
+                size = info.size
             )
         }
     }

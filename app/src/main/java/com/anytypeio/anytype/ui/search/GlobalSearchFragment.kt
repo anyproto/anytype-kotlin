@@ -102,7 +102,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                             )
                         }
                         OpenObjectNavigation.NonValidObject -> {
-                            toast("Non valid object")
+                            toast(getString(R.string.error_non_valid_object))
                         }
                         is OpenObjectNavigation.OpenDataObject -> {
                             runCatching {
@@ -118,7 +118,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                             }
                         }
                         is OpenObjectNavigation.UnexpectedLayoutError -> {
-                            toast("Unexpected layout ${nav.layout} error")
+                            toast(getString(R.string.error_unexpected_layout))
                         }
                         else -> {
                             // Do nothing.

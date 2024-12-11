@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
@@ -126,10 +127,13 @@ class DefaultBlockViewRendererTest {
     @Mock
     lateinit var resourceProvider: ResourceProvider
 
+    @Mock
+    lateinit var stringResourceProvider: StringResourceProvider
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
+        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         renderer = DefaultBlockViewRenderer(
             urlBuilder = UrlBuilder(gateway),
             toggleStateHolder = toggleStateHolder,

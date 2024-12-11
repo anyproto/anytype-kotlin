@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
+import android.R
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
@@ -27,6 +28,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.whenever
 
 class EditorLockPageTest : EditorPresentationTestSetup() {
 
@@ -37,7 +41,9 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = DefaultCoroutineTestRule()
 
-    val title = StubTitle()
+    val title = StubTitle(
+        id = "titleId-${MockDataFactory.randomUuid()}",
+    )
 
     val header = Block(
         id = MockDataFactory.randomUuid(),
@@ -287,6 +293,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             )
         )
 
+        whenever(stringResourceProvider.getUntitledObjectTitle()).thenReturn("Untitled")
+
         val vm = buildViewModel()
 
         // TESTING
@@ -311,7 +319,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                         background = link.parseThemeBackgroundColor()
                     )
                 ),
-                text = ""
+                text = "Untitled"
             )
         )
 

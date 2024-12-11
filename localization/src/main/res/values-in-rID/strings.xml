@@ -1552,9 +1552,9 @@ Please provide specific details of your needs here.</string>
     <string name="date_layout_empty_items">Belum ada apa-apa untuk tanggal ini</string>
     <string name="date_layout_alert_date_out_of_range">Tanggal terpilih di luar rentang valid (tahun %1$d hingga %2$d). Silakan pilih tanggal dalam rentang ini.</string>
     <string name="date_layout_item_created_by">by</string>
-    <string name="chat_attachment_object">Objek</string>
-    <string name="chat_attachment_file">Berkas</string>
-    <string name="chat_attachment_media">Media</string>
+    <string name="chat_attachment_object">Pilih objek yang sudah ada</string>
+    <string name="chat_attachment_file">Unggah berkas</string>
+    <string name="chat_attachment_media">Unggah media</string>
     <string name="chat_attachment_upload">Unggah</string>
     <string name="chats_reply">Balas</string>
     <string name="day_of_week_monday">Senin</string>

@@ -1939,7 +1939,7 @@ class Middleware @Inject constructor(
         val request = Rpc.Workspace.Create.Request(
             details = command.details,
             useCase = if (command.shouldApplyEmptyUseCase)
-                Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED
+                Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
             else
                Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED,
             withChat = command.withChat

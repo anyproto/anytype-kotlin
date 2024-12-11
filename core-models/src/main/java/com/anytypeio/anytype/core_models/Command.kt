@@ -475,6 +475,12 @@ sealed class Command {
 
     data class SetInternalFlags(val ctx: Id, val flags: List<InternalFlags>)
 
+    data class CreateSpace(
+        val details: Struct,
+        val withChat: Boolean,
+        val shouldApplyEmptyUseCase: Boolean
+    )
+
     data class AddObjectToSpace(val space: Id, val objectId: Id)
     data class ApplyTemplate(val objectId: Id, val template: Id?)
 

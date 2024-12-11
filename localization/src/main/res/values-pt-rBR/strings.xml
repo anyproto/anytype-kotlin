@@ -1562,9 +1562,9 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="date_layout_empty_items">There is nothing here for this date yet</string>
     <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
     <string name="date_layout_item_created_by">by</string>
-    <string name="chat_attachment_object">Objeto</string>
-    <string name="chat_attachment_file">Arquivo</string>
-    <string name="chat_attachment_media">Mídias</string>
+    <string name="chat_attachment_object">Select existing object</string>
+    <string name="chat_attachment_file">Upload file</string>
+    <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Fazer upload</string>
     <string name="chats_reply">Reply</string>
     <string name="day_of_week_monday">Monday</string>

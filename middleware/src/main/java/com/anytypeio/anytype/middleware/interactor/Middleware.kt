@@ -1935,11 +1935,14 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceCreate(details: Struct, withChat: Boolean): Id {
+    fun workspaceCreate(command: Command.CreateSpace): Id {
         val request = Rpc.Workspace.Create.Request(
-            details = details,
-            useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED,
-            withChat = withChat
+            details = command.details,
+            useCase = if (command.shouldApplyEmptyUseCase)
+                Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
+            else
+               Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED,
+            withChat = command.withChat
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceCreate(request) }

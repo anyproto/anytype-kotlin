@@ -66,7 +66,7 @@ class CreateSpaceViewModel(
                         Relations.NAME to name,
                         Relations.ICON_OPTION to spaceIconView.value.color.index.toDouble()
                     ),
-                    shouldApplyEmptyUseCase = numberOfActiveSpaces >= 2
+                    shouldApplyEmptyUseCase = numberOfActiveSpaces >= MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE
                 )
             ).collect { result ->
                 result.fold(
@@ -136,5 +136,9 @@ class CreateSpaceViewModel(
             val space: Space,
             val showMultiplayerTooltip: Boolean
         ): Command()
+    }
+
+    companion object {
+        const val MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE = 2
     }
 }

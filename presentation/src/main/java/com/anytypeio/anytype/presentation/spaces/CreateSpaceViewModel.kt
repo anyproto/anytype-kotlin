@@ -58,13 +58,15 @@ class CreateSpaceViewModel(
             return
         }
         val isSingleSpace = spaceViewContainer.get().size == 1
+        val numberOfActiveSpaces = spaceViewContainer.get().filter { it.isActive }.size
         viewModelScope.launch {
             createSpace.stream(
                 CreateSpace.Params(
                     details = mapOf(
                         Relations.NAME to name,
                         Relations.ICON_OPTION to spaceIconView.value.color.index.toDouble()
-                    )
+                    ),
+                    shouldApplyEmptyUseCase = numberOfActiveSpaces >= MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE
                 )
             ).collect { result ->
                 result.fold(
@@ -134,5 +136,9 @@ class CreateSpaceViewModel(
             val space: Space,
             val showMultiplayerTooltip: Boolean
         ): Command()
+    }
+
+    companion object {
+        const val MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE = 2
     }
 }

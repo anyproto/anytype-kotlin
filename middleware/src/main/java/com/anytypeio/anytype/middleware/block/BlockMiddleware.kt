@@ -730,12 +730,8 @@ class BlockMiddleware(
         middleware.spaceDelete(space)
     }
 
-    override suspend fun createWorkspace(
-        details: Struct,
-        withChat: Boolean
-    ): Id = middleware.workspaceCreate(
-        details = details,
-        withChat = withChat
+    override suspend fun createWorkspace(command: Command.CreateSpace): Id = middleware.workspaceCreate(
+        command = command
     )
 
     override suspend fun getSpaceConfig(space: Id): Config = middleware.workspaceOpen(

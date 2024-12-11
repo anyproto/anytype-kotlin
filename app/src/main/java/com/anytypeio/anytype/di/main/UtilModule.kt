@@ -6,7 +6,6 @@ import androidx.preference.PreferenceManager
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.app.DefaultFeatureToggles
 import com.anytypeio.anytype.app.TogglePrefs
-import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.core_utils.tools.DefaultAppInfo
 import com.anytypeio.anytype.core_utils.tools.DefaultThreadInfo
@@ -28,11 +27,13 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
 import com.anytypeio.anytype.other.BasicLogger
 import com.anytypeio.anytype.other.DefaultDateTypeNameProvider
 import com.anytypeio.anytype.other.DefaultDebugConfig
+import com.anytypeio.anytype.presentation.util.StringResourceProviderImpl
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProviderImpl
 import dagger.Binds
@@ -88,14 +89,21 @@ object UtilModule {
     fun provideFieldsProvider(
         dateProvider: DateProvider,
         logger: Logger,
-        getDateObjectByTimestamp: GetDateObjectByTimestamp
-    ): FieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
+        getDateObjectByTimestamp: GetDateObjectByTimestamp,
+        stringResourceProvider: StringResourceProvider
+    ): FieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
 
     @JvmStatic
     @Provides
     @Singleton
     fun provideResourceProvider(context: Context): ResourceProvider =
         ResourceProviderImpl(context)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideStringResourceProvider(context: Context): StringResourceProvider =
+        StringResourceProviderImpl(context)
 
     @Module
     interface Bindings {

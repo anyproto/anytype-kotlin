@@ -2497,6 +2497,12 @@ fun ObjectType.Layout.navigation(
                 space = space
             )
         }
+        ObjectType.Layout.DATE -> {
+            OpenObjectNavigation.OpenDataObject(
+                target = target,
+                space = space
+            )
+        }
         else -> {
             OpenObjectNavigation.UnexpectedLayoutError(this)
         }

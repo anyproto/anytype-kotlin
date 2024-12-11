@@ -1396,7 +1396,7 @@ class DefaultBlockViewRendererTest {
         val header = MockTypicalDocumentFactory.header
 
         val mentionText1 = "Foobar"
-        val mentionTextUpdated1 = "FoobaraPpJd20"
+        val mentionTextUpdated1 = "  FoobaraPpJd20"
         val mentionText2 = "Anytype"
         val mentionTextUpdated2 = "Anyt"
         val source = "Start $mentionText1 middle end Hdm5K 6511 xFMoTKqe $mentionText2 sNmO2f"
@@ -1479,7 +1479,7 @@ class DefaultBlockViewRendererTest {
         val fieldsUpdated2 = Block.Fields(
             mapOf(
                 Block.Fields.NAME_KEY to mentionTextUpdated2,
-                DetailsKeys.ICON_EMOJI to randomEmoji2
+                Relations.LAYOUT to Layout.BASIC.code.toDouble(),
             )
         )
 
@@ -1526,38 +1526,38 @@ class DefaultBlockViewRendererTest {
                     ),
                     Markup.Mark.Mention.WithEmoji(
                         from = 6,
-                        to = 19,
+                        to = 21,
                         param = mentionTarget1,
                         emoji = randomEmoji1,
                         isArchived = false
                     ),
                     Markup.Mark.Bold(
-                        from = 20,
-                        to = 26
+                        from = 22,
+                        to = 28
                     ),
                     Markup.Mark.Link(
-                        from = 27,
-                        to = 30,
+                        from = 29,
+                        to = 32,
                         param = link1
                     ),
                     Markup.Mark.Italic(
-                        from = 31,
-                        to = 36
+                        from = 33,
+                        to = 38
                     ),
                     Markup.Mark.Strikethrough(
-                        from = 37,
-                        to = 41
+                        from = 39,
+                        to = 43
                     ),
                     Markup.Mark.Mention.WithEmoji(
-                        from = 51,
-                        to = 55,
+                        from = 53,
+                        to = 57,
                         param = mentionTarget2,
                         emoji = randomEmoji2,
                         isArchived = false
                     ),
                     Markup.Mark.Link(
-                        from = 56,
-                        to = 62,
+                        from = 58,
+                        to = 64,
                         param = link2
                     )
                 ),
@@ -1581,7 +1581,7 @@ class DefaultBlockViewRendererTest {
         val header = MockTypicalDocumentFactory.header
 
         val mentionText1 = "Foobar"
-        val mentionTextUpdated1 = "FoobaraPpJd20"
+        val mentionTextUpdated1 = "  FoobaraPpJd20"
         val mentionText2 = "Anytype"
         val mentionTextUpdated2 = "Anyt"
         val source = "Start $mentionText1 middle end Hdm5K 6511 xFMoTKqe $mentionText2 sNmO2f"
@@ -5641,7 +5641,7 @@ class DefaultBlockViewRendererTest {
 
         val mentionTextUpdated1 = "07-12-2024"
         val source = "Start 07-12-2024 middle"
-        val sourceUpdated = "Start $relativeDateTomorrow middle"
+        val sourceUpdated = "Start   $relativeDateTomorrow middle"
         val textColor = "F0So"
         val mentionTarget1 = "_date_07_12_2024"
 
@@ -5732,12 +5732,290 @@ class DefaultBlockViewRendererTest {
                     ),
                     Markup.Mark.Mention.Date(
                         from = 6,
-                        to = 30,
+                        to = 32,
                         param = mentionTarget1
                     ),
                     Markup.Mark.Bold(
-                        from = 31,
-                        to = 36
+                        from = 33,
+                        to = 38
+                    )
+                ),
+                isFocused = true,
+                alignment = Alignment.START,
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
+                    )
+                )
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should be no spaces before mention text in case of mention basic(without icon)`() {
+
+        val title = MockTypicalDocumentFactory.title
+        val header = MockTypicalDocumentFactory.header
+
+        val timestamp = 1733775232L
+
+        val relativeDateTomorrow = "TomorrowTomorrowTomorrow"
+
+        val relativeDate = RelativeDate.Tomorrow(
+            initialTimeInMillis = timestamp,
+            dayOfWeek = DayOfWeekCustom.MONDAY
+        )
+
+        dateProvider.stub {
+            onBlocking { calculateRelativeDates(dateInSeconds = timestamp) } doReturn relativeDate
+        }
+
+        resourceProvider.stub {
+            onBlocking { toFormattedString(relativeDate) } doReturn relativeDateTomorrow
+        }
+
+        val mentionTextFromDetails = "mentionFromDetails"
+        val source = "Start mention middle"
+        val sourceUpdated = "Start $mentionTextFromDetails middle"
+        val textColor = "F0So"
+        val mentionTarget1 = "mentionObjectId"
+
+        val marks: List<Block.Content.Text.Mark> = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                type = Block.Content.Text.Mark.Type.TEXT_COLOR,
+                param = textColor
+            ),
+            Block.Content.Text.Mark(
+                range = 6..13,
+                type = Block.Content.Text.Mark.Type.MENTION,
+                param = mentionTarget1
+            ),
+            Block.Content.Text.Mark(
+                range = 14..19,
+                type = Block.Content.Text.Mark.Type.BOLD
+            )
+        )
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(),
+            content = Block.Content.Text(
+                text = source,
+                style = Block.Content.Text.Style.P,
+                marks = marks,
+                align = Block.Align.AlignLeft
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(header.id, a.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart
+        )
+
+        val fieldsUpdated1 = Block.Fields(
+            mapOf(
+                Relations.ID to mentionTarget1,
+                Relations.NAME to mentionTextFromDetails,
+                Relations.LAYOUT to Layout.BASIC.code.toDouble()
+            )
+        )
+
+        val detailsAmend = mapOf(
+            mentionTarget1 to fieldsUpdated1,
+        )
+
+        val blocks = listOf(page, header, title, a)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.id(a.id),
+                indent = 0,
+                details = Block.Details(detailsAmend)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null,
+                mode = BlockView.Mode.EDIT
+            ),
+            BlockView.Text.Paragraph(
+                id = a.id,
+                text = sourceUpdated,
+                marks = listOf(
+                    Markup.Mark.TextColor(
+                        from = 0,
+                        to = 5,
+                        color = textColor
+                    ),
+                    Markup.Mark.Mention.Base(
+                        from = 6,
+                        to = 24,
+                        param = mentionTarget1,
+                        isArchived = false
+                    ),
+                    Markup.Mark.Bold(
+                        from = 25,
+                        to = 30
+                    )
+                ),
+                isFocused = true,
+                alignment = Alignment.START,
+                decorations = listOf(
+                    BlockView.Decoration(
+                        background = a.parseThemeBackgroundColor()
+                    )
+                )
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should be 2 spaces before mention text in case of mention basic(with icon)`() {
+
+        val title = MockTypicalDocumentFactory.title
+        val header = MockTypicalDocumentFactory.header
+
+        val timestamp = 1733775232L
+
+        val relativeDateTomorrow = "TomorrowTomorrowTomorrow"
+
+        val relativeDate = RelativeDate.Tomorrow(
+            initialTimeInMillis = timestamp,
+            dayOfWeek = DayOfWeekCustom.MONDAY
+        )
+
+        dateProvider.stub {
+            onBlocking { calculateRelativeDates(dateInSeconds = timestamp) } doReturn relativeDate
+        }
+
+        resourceProvider.stub {
+            onBlocking { toFormattedString(relativeDate) } doReturn relativeDateTomorrow
+        }
+
+        val mentionTextFromDetails = "mentionFromDetails"
+        val source = "Start mention middle"
+        val sourceUpdated = "Start   $mentionTextFromDetails middle"
+        val textColor = "F0So"
+        val mentionTarget1 = "mentionObjectId"
+
+        val marks: List<Block.Content.Text.Mark> = listOf(
+            Block.Content.Text.Mark(
+                range = 0..5,
+                type = Block.Content.Text.Mark.Type.TEXT_COLOR,
+                param = textColor
+            ),
+            Block.Content.Text.Mark(
+                range = 6..13,
+                type = Block.Content.Text.Mark.Type.MENTION,
+                param = mentionTarget1
+            ),
+            Block.Content.Text.Mark(
+                range = 14..19,
+                type = Block.Content.Text.Mark.Type.BOLD
+            )
+        )
+
+        val a = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(),
+            content = Block.Content.Text(
+                text = source,
+                style = Block.Content.Text.Style.P,
+                marks = marks,
+                align = Block.Align.AlignLeft
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(header.id, a.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart
+        )
+
+        val emoji = "\uD83D\uDE0D"
+
+        val fieldsUpdated1 = Block.Fields(
+            mapOf(
+                Relations.ID to mentionTarget1,
+                Relations.NAME to mentionTextFromDetails,
+                Relations.LAYOUT to Layout.BASIC.code.toDouble(),
+                Relations.ICON_EMOJI to emoji
+            )
+        )
+
+        val detailsAmend = mapOf(
+            mentionTarget1 to fieldsUpdated1,
+        )
+
+        val blocks = listOf(page, header, title, a)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.id(a.id),
+                indent = 0,
+                details = Block.Details(detailsAmend)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Title.Basic(
+                id = title.id,
+                isFocused = false,
+                text = title.content<Block.Content.Text>().text,
+                image = null,
+                mode = BlockView.Mode.EDIT
+            ),
+            BlockView.Text.Paragraph(
+                id = a.id,
+                text = sourceUpdated,
+                marks = listOf(
+                    Markup.Mark.TextColor(
+                        from = 0,
+                        to = 5,
+                        color = textColor
+                    ),
+                    Markup.Mark.Mention.WithEmoji(
+                        from = 6,
+                        to = 26,
+                        param = mentionTarget1,
+                        isArchived = false,
+                        emoji = emoji
+                    ),
+                    Markup.Mark.Bold(
+                        from = 27,
+                        to = 32
                     )
                 ),
                 isFocused = true,

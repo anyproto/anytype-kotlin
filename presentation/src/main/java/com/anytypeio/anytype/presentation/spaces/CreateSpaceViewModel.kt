@@ -58,13 +58,15 @@ class CreateSpaceViewModel(
             return
         }
         val isSingleSpace = spaceViewContainer.get().size == 1
+        val numberOfActiveSpaces = spaceViewContainer.get().filter { it.isActive }.size
         viewModelScope.launch {
             createSpace.stream(
                 CreateSpace.Params(
                     details = mapOf(
                         Relations.NAME to name,
                         Relations.ICON_OPTION to spaceIconView.value.color.index.toDouble()
-                    )
+                    ),
+                    shouldApplyEmptyUseCase = numberOfActiveSpaces >= 2
                 )
             ).collect { result ->
                 result.fold(

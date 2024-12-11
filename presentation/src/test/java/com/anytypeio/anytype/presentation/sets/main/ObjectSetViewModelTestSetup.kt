@@ -56,6 +56,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
@@ -239,6 +240,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
 
+    @Mock
+    lateinit var stringResourceProvider: StringResourceProvider
+
     fun proceedWithDefaultBeforeTestStubbing() = runTest {
         repo = mock(verboseLogging = true)
         dispatchers = AppCoroutineDispatchers(
@@ -262,7 +266,7 @@ open class ObjectSetViewModelTestSetup {
         dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer)
         storeOfObjectTypes = DefaultStoreOfObjectTypes()
         stubLocalProvider()
-        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
+        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         stubGetDefaultPageType()
         stubObservePermissions()
         stubAnalyticSpaceHelperDelegate()

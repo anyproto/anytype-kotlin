@@ -63,6 +63,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
@@ -317,10 +318,13 @@ class HomeScreenViewModelTest {
     @Mock
     lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
 
+    @Mock
+    lateinit var stringResourceProvider: StringResourceProvider
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
+        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         urlBuilder = UrlBuilder(gateway)
         stubSpaceManager()
         userPermissionProvider = UserPermissionProviderStub()

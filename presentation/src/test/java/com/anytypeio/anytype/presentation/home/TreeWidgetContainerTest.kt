@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
@@ -77,13 +78,16 @@ class TreeWidgetContainerTest {
     @Mock
     lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
 
+    @Mock
+    lateinit var stringResourceProvider: StringResourceProvider
+
     private val config = StubConfig()
     private val workspace = config.spaceView
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
+        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         urlBuilder = UrlBuilder(gateway = gateway)
     }
 

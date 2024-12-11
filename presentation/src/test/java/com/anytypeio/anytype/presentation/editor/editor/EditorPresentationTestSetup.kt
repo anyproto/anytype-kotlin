@@ -83,6 +83,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.table.CreateTable
@@ -884,8 +885,11 @@ open class EditorPresentationTestSetup {
         }
     }
 
+    @Mock
+    lateinit var stringResourceProvider: StringResourceProvider
+
     fun proceedWithDefaultBeforeTestStubbing() {
-        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
+        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         stubAnalyticSpaceHelperDelegate()
         stubSpaceManager()
         stubUserPermission()

@@ -43,7 +43,7 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
             isFirstResource: Boolean
         ): Boolean {
             error.visible()
-            Timber.w(e, "Error while loading picture")
+            Timber.w(e, "Error while loading picture with url: $model")
             return false
         }
 
@@ -65,6 +65,7 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
             .with(image)
             .load(item.url)
             .listener(listener)
+            .timeout(LOADING_TIMEOUT_IN_MILLIS)
             .into(image)
     }
 
@@ -87,5 +88,9 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
             content = binding.card,
             res = itemView.resources
         )
+    }
+
+    companion object {
+        const val LOADING_TIMEOUT_IN_MILLIS = 30000
     }
 }

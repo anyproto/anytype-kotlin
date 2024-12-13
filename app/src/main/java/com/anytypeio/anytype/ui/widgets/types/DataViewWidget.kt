@@ -526,9 +526,10 @@ private fun GalleryWidgetItemCard(
                     iconSize = 18.dp,
                     icon = item.objectIcon,
                     modifier = Modifier
-                        .align(Alignment.CenterVertically)
                         .padding(start = 12.dp, top = 9.dp),
-                    onTaskIconClicked = {}
+                    onTaskIconClicked = {
+                        // Do nothing.
+                    }
                 )
                 Text(
                     text = item.getPrettyName(),

@@ -360,7 +360,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val expectedObjectItems = listOf(
             SlashItem.Subheader.ObjectTypeWithBlack,
             SlashItem.Actions.LinkTo,
-            SlashItem.Actions.SelectDate,
+            SlashItem.SelectDate,
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type1.id,

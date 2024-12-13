@@ -396,13 +396,6 @@ sealed class SlashItem {
             override fun getSearchName(): String = SlashConst.SLASH_ACTION_LINK_TO
             override fun getAbbreviation(): List<String>? = null
         }
-
-        object SelectDate : Actions() {
-            override fun getSearchName(): String = SlashConst.SLASH_ACTION_SELECT_DATE
-            override fun getAbbreviation(): List<String>? = listOf(
-                SLASH_ACTION_SELECT_DATE_ABBREVIATION
-            )
-        }
     }
     //endregion
 
@@ -445,4 +438,11 @@ sealed class SlashItem {
         ) : Color()
     }
     //endregion
+
+    object SelectDate : SlashItem() {
+        override fun getSearchName(): String = SlashConst.SLASH_ACTION_SELECT_DATE
+        override fun getAbbreviation(): List<String>? = listOf(
+            SLASH_ACTION_SELECT_DATE_ABBREVIATION
+        )
+    }
 }

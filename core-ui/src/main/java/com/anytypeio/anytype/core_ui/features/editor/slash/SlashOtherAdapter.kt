@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetStyleBinding
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.OtherMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.SubheaderMenuHolder
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.SubheaderOnlyMenuHolder
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 
 class SlashOtherAdapter(
@@ -34,12 +35,16 @@ class SlashOtherAdapter(
                 val item = items[position] as SlashItem.Subheader
                 holder.bind(item)
             }
+            is SubheaderOnlyMenuHolder -> {
+                val item = items[position] as SlashItem.Subheader
+                holder.bind(item)
+            }
         }
     }
 
     override fun getItemViewType(position: Int): Int = when (val item = items[position]) {
         is SlashItem.Other -> R.layout.item_slash_widget_style
-        is SlashItem.Subheader -> R.layout.item_slash_widget_subheader
+        is SlashItem.Subheader -> item.getViewType()
         else -> throw IllegalArgumentException("Wrong item type:$item")
     }
 }

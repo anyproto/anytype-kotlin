@@ -133,7 +133,7 @@ object SlashExtensions {
         listOf(
             SlashItem.Subheader.ObjectTypeWithBlack,
             SlashItem.Actions.LinkTo,
-            SlashItem.Actions.SelectDate
+            SlashItem.SelectDate
         ) + objectTypes.toSlashItemView()
 
     fun getSlashWidgetRelationItems(relations: List<SlashRelationView>): List<SlashRelationView> =
@@ -203,7 +203,7 @@ object SlashExtensions {
         )
         val filteredObjects = filterObjectTypes(
             filter = filter,
-            items = listOf(SlashItem.Actions.LinkTo, SlashItem.Actions.SelectDate) + objectTypes
+            items = listOf(SlashItem.Actions.LinkTo, SlashItem.SelectDate) + objectTypes
         )
         val filteredRelations = filterRelations(
             filter = filter,
@@ -284,8 +284,12 @@ object SlashExtensions {
             searchBySubheadingOrName(
                 filter = filter,
                 subheading = SlashItem.Main.Objects.getSearchName(),
-                name = if (item is SlashItem.ObjectType) item.objectTypeView.name
-                else (item as SlashItem.Actions).getSearchName()
+                name = when(item) {
+                    is SlashItem.ObjectType -> item.objectTypeView.name
+                    is SlashItem.Actions -> item.getSearchName()
+                    is SlashItem.SelectDate -> item.getSearchName()
+                    else -> ""
+                }
             )
         }
         return updateWithSubheader(items = filtered)
@@ -346,6 +350,7 @@ object SlashExtensions {
                 is SlashItem.ObjectType -> listOf(SlashItem.Subheader.ObjectType) + items
                 is SlashItem.Other -> listOf(SlashItem.Subheader.Other) + items
                 is SlashItem.Style -> listOf(SlashItem.Subheader.Style) + items
+                is SlashItem.SelectDate -> listOf(SlashItem.Subheader.ObjectType) + items
                 else -> items
             }
         } else {

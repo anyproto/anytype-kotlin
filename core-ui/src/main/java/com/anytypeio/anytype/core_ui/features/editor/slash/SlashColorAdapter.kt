@@ -9,11 +9,13 @@ import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetBackgroundBindin
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetBackgroundDefaultBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetColorBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderLeftBinding
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.BackgroundDefaultMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.BackgroundMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.ColorMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.DefaultMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.SubheaderMenuHolder
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.SubheaderOnlyMenuHolder
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 
 class SlashColorAdapter(
@@ -85,6 +87,13 @@ class SlashColorAdapter(
                     }
                 }
             }
+            R.layout.item_slash_widget_subheader_left -> {
+                SubheaderOnlyMenuHolder(
+                    binding = ItemSlashWidgetSubheaderLeftBinding.inflate(
+                        inflater, parent, false
+                    )
+                )
+            }
             else -> throw IllegalArgumentException("Wrong viewtype:$viewType")
         }
     }
@@ -99,6 +108,10 @@ class SlashColorAdapter(
                 val item = items[position] as SlashItem.Subheader
                 holder.bind(item)
             }
+            is SubheaderOnlyMenuHolder -> {
+                val item = items[position] as SlashItem.Subheader
+                holder.bind(item)
+            }
         }
     }
 
@@ -108,7 +121,7 @@ class SlashColorAdapter(
             else R.layout.item_slash_widget_background
         }
         is SlashItem.Color.Text -> R.layout.item_slash_widget_color
-        is SlashItem.Subheader -> R.layout.item_slash_widget_subheader
+        is SlashItem.Subheader -> item.getViewType()
         else -> throw IllegalArgumentException("Wrong item type:$item")
     }
 

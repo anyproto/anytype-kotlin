@@ -139,6 +139,6 @@ class CreateSpaceViewModel(
     }
 
     companion object {
-        const val MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE = 2
+        const val MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE = 1
     }
 }

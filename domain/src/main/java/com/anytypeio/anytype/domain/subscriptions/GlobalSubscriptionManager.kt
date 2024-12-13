@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.subscriptions
 
+import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
@@ -17,7 +18,8 @@ interface GlobalSubscriptionManager {
         private val relations: RelationsSubscriptionManager,
         private val permissions: UserPermissionProvider,
         private val isSpaceDeleted: SpaceDeletedStatusWatcher,
-        private val profile: ProfileSubscriptionManager
+        private val profile: ProfileSubscriptionManager,
+        private val networkConnectionStatus: NetworkConnectionStatus
     ) : GlobalSubscriptionManager {
 
         override fun onStart() {
@@ -26,6 +28,7 @@ interface GlobalSubscriptionManager {
             permissions.start()
             isSpaceDeleted.onStart()
             profile.onStart()
+            networkConnectionStatus.start()
         }
 
         override fun onStop() {
@@ -34,6 +37,7 @@ interface GlobalSubscriptionManager {
             permissions.stop()
             isSpaceDeleted.onStop()
             profile.onStop()
+            networkConnectionStatus.stop()
         }
     }
 

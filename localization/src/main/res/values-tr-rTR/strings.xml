@@ -677,6 +677,7 @@
     <string name="today">Bugün</string>
     <string name="yesterday">Dün</string>
     <string name="tomorrow">Yarın</string>
+    <string name="open_selected_date">Seçilen tarihi aç</string>
     <string name="no_date">Tarih yok</string>
     <string name="exact_day">Tam tarih</string>
     <string name="reorder">Yeniden sırala</string>
@@ -1564,9 +1565,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="date_layout_empty_items">Bu tarih için henüz bir şey yok</string>
     <string name="date_layout_alert_date_out_of_range">Seçilen tarih geçerli tarih aralığının dışında (%1$d ile %2$d yılları arasında). Lütfen bu aralıkta bir tarih seçin.</string>
     <string name="date_layout_item_created_by">tarafından</string>
-    <string name="chat_attachment_object">Nesne</string>
-    <string name="chat_attachment_file">Dosya</string>
-    <string name="chat_attachment_media">Medya</string>
+    <string name="chat_attachment_object">Mevcut nesneyi seç</string>
+    <string name="chat_attachment_file">Dosya yükle</string>
+    <string name="chat_attachment_media">Ortam yükle</string>
     <string name="chat_attachment_upload">Yükle</string>
     <string name="chats_reply">Yanıtla</string>
     <string name="day_of_week_monday">Pazartesi</string>

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -26,6 +27,7 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
     override val clickContainer: View = root
     private val image = binding.image
     private val error = binding.error
+    private val loading = binding.progress
 
     override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
     override val decoratableCard: View = binding.card
@@ -42,6 +44,7 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
             target: Target<Drawable>,
             isFirstResource: Boolean
         ): Boolean {
+            loading.gone()
             error.visible()
             Timber.w(e, "Error while loading picture with url: $model")
             return false
@@ -54,6 +57,7 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
             dataSource: DataSource,
             isFirstResource: Boolean
         ): Boolean {
+            loading.gone()
             error.invisible()
             return false
         }
@@ -61,6 +65,7 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
 
     fun bind(item: BlockView.Media.Picture, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
+        loading.visible()
         Glide
             .with(image)
             .load(item.url)

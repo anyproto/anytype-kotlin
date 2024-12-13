@@ -206,23 +206,33 @@ fun Block.Content.File.toFileView(
         val url = urlBuilder.getUrlForFileContent(this)
         val targetId = this.targetObjectId
         val struct = details.details[targetId]?.map
-        if (url != null && targetId != null && !struct.isNullOrEmpty()) {
-            val targetObject = ObjectWrapper.File(struct)
-            BlockView.Media.File(
-                id = blockId,
-                targetObjectId = targetId,
-                url = url,
-                indent = indent,
-                mode = mode,
-                isSelected = isSelected,
-                background = background,
-                decorations = decorations,
-                size = targetObject.sizeInBytes?.toLong(),
-                name = targetObject.name,
-                mime = targetObject.fileMimeType,
-                fileExt = targetObject.fileExt
-            )
-
+        if (url != null && targetId != null) {
+            if (struct.isNullOrEmpty()) {
+                BlockView.Upload.File(
+                    id = blockId,
+                    indent = indent,
+                    mode = mode,
+                    isSelected = isSelected,
+                    background = background,
+                    decorations = decorations
+                )
+            } else {
+                val targetObject = ObjectWrapper.File(struct)
+                BlockView.Media.File(
+                    id = blockId,
+                    targetObjectId = targetId,
+                    url = url,
+                    indent = indent,
+                    mode = mode,
+                    isSelected = isSelected,
+                    background = background,
+                    decorations = decorations,
+                    size = targetObject.sizeInBytes?.toLong(),
+                    name = targetObject.name,
+                    mime = targetObject.fileMimeType,
+                    fileExt = targetObject.fileExt
+                )
+            }
         } else {
             Timber.w("Could not build file view for block $blockId")
             BlockView.Error.File(

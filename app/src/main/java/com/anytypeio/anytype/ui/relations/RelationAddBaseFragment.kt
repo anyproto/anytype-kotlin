@@ -23,7 +23,9 @@ import com.anytypeio.anytype.core_ui.features.relations.RelationAddAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationAddHeaderAdapter
 import com.anytypeio.anytype.core_ui.reactive.focusChanges
 import com.anytypeio.anytype.core_ui.reactive.textChanges
+import com.anytypeio.anytype.core_ui.tools.LastItemBottomOffsetDecorator
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.statusBarHeight
@@ -89,6 +91,11 @@ abstract class RelationAddBaseFragment :
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
                     setDrawable(drawable(R.drawable.divider_relations_with_padding))
                 }
+            )
+            addItemDecoration(
+                LastItemBottomOffsetDecorator(
+                    dimen(R.dimen.dp_48)
+                )
             )
         }
         with(lifecycleScope) {

@@ -677,6 +677,7 @@
     <string name="today">Hoy</string>
     <string name="yesterday">Ayer</string>
     <string name="tomorrow">Mañana</string>
+    <string name="open_selected_date">Open selected date</string>
     <string name="no_date">Sin fecha</string>
     <string name="exact_day">Fecha exacta</string>
     <string name="reorder">Reordenar</string>
@@ -1564,9 +1565,9 @@ En concreto,
     <string name="date_layout_empty_items">Aún no hay nada aquí para esta fecha</string>
     <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
     <string name="date_layout_item_created_by">by</string>
-    <string name="chat_attachment_object">Objeto</string>
-    <string name="chat_attachment_file">Archivo</string>
-    <string name="chat_attachment_media">Medios</string>
+    <string name="chat_attachment_object">Select existing object</string>
+    <string name="chat_attachment_file">Upload file</string>
+    <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Cargar</string>
     <string name="chats_reply">Responder</string>
     <string name="day_of_week_monday">Monday</string>

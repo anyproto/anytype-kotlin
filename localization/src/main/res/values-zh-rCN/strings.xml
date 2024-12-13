@@ -676,6 +676,7 @@
     <string name="today">今天</string>
     <string name="yesterday">昨天</string>
     <string name="tomorrow">明天</string>
+    <string name="open_selected_date">打开选定日期</string>
     <string name="no_date">未注明日期</string>
     <string name="exact_day">确切日期</string>
     <string name="reorder">重新排序</string>
@@ -1547,9 +1548,9 @@
     <string name="date_layout_empty_items">此日期暂无任何内容</string>
     <string name="date_layout_alert_date_out_of_range">被选中的日期超过了有效范围（年 %1$d 到 %2$d）。请选择一个在此范围内的日期。</string>
     <string name="date_layout_item_created_by">by</string>
-    <string name="chat_attachment_object">对象</string>
-    <string name="chat_attachment_file">文件</string>
-    <string name="chat_attachment_media">媒体</string>
+    <string name="chat_attachment_object">Select existing object</string>
+    <string name="chat_attachment_file">上传文件</string>
+    <string name="chat_attachment_media">上传媒体文件</string>
     <string name="chat_attachment_upload">上传</string>
     <string name="chats_reply">回复</string>
     <string name="day_of_week_monday">Monday</string>

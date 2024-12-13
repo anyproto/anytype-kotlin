@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVSortEmptyType
+import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.ObjectType
@@ -628,5 +629,11 @@ fun Rpc.Object.SearchWithMeta.Response.toCoreModelSearchResults(): List<Command.
             }
         )
     }
+}
+
+fun DeviceNetworkType.mw(): MDeviceNetworkType = when(this) {
+    DeviceNetworkType.WIFI -> MDeviceNetworkType.WIFI
+    DeviceNetworkType.CELLULAR -> MDeviceNetworkType.CELLULAR
+    DeviceNetworkType.NOT_CONNECTED -> MDeviceNetworkType.NOT_CONNECTED
 }
 

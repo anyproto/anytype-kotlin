@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -2854,6 +2855,16 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.objectDateByTimestamp(request) }
         logResponseIfDebug(response, time)
         return response.details
+    }
+
+    @Throws(Exception::class)
+    fun setDeviceNetworkState(type: DeviceNetworkType) {
+        val request = Rpc.Device.NetworkState.Set.Request(
+            deviceNetworkType = type.mw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.deviceNetworkStateSet(request) }
+        logResponseIfDebug(response, time)
     }
 
     private fun logRequestIfDebug(request: Any) {

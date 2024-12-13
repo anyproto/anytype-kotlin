@@ -99,7 +99,7 @@ fun ViewersWidget(
 }
 
 @Composable
-private fun DragHandle() {
+fun DragHandle() {
     Column {
         Spacer(modifier = Modifier.height(6.dp))
         Dragger()

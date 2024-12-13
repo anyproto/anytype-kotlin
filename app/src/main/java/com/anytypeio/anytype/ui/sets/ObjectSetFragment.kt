@@ -421,7 +421,6 @@ open class ObjectSetFragment :
                 ViewerEditWidget(
                     state = vm.viewerEditWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewerEditWidgetAction,
-                    scope = lifecycleScope
                 )
             }
         }

@@ -162,6 +162,7 @@ private fun ViewersWidgetContent(
             ) { index ->
 
                 ReorderableItem(
+                    modifier = Modifier.animateItem(),
                     reorderableState = lazyListState,
                     key = views[index].id
                 ) { isDragging ->

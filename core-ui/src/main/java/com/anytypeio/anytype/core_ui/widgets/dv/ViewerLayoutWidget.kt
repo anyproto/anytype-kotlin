@@ -1,223 +1,105 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
-import androidx.compose.material.rememberSwipeableState
-import androidx.compose.material.swipeable
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
+import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
-import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
+import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.CardSizeMenu
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Dismiss
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.FitImage
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Icon
-import kotlin.math.roundToInt
+import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.State.CardSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ViewerLayoutWidget(
     uiState: ViewerLayoutWidgetUi,
     action: (ViewerLayoutWidgetUi.Action) -> Unit,
     scope: CoroutineScope
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomStart,
-    ) {
-        val currentState by rememberUpdatedState(uiState)
-        val swipeableState = rememberSwipeableState(DragStates.VISIBLE)
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
 
-        AnimatedVisibility(
-            visible = currentState.showWidget,
-            enter = fadeIn(),
-            exit = fadeOut(
-                tween(200)
-            )
-        ) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.4f))
-                    .noRippleClickable { action(Dismiss) }
-            )
-        }
+    var currentCoordinates: Rect by remember {
+        mutableStateOf(Rect.Zero)
+    }
 
-        if (swipeableState.isAnimationRunning && swipeableState.targetValue == DragStates.DISMISSED) {
-            DisposableEffect(Unit) {
-                onDispose {
-                    action(Dismiss)
-                }
-            }
-        }
-
-        if (!currentState.showWidget) {
-            DisposableEffect(Unit) {
-                onDispose {
-                    scope.launch { swipeableState.snapTo(DragStates.VISIBLE) }
-                }
-            }
-        }
-
-        val sizePx = with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
-
-        var currentCoordinates: androidx.compose.ui.geometry.Rect by remember {
-            mutableStateOf(androidx.compose.ui.geometry.Rect.Zero)
-        }
-
-        var currentCoverItem by remember {
-            mutableStateOf(uiState.getActiveImagePreviewItem())
-        }
-
-        LaunchedEffect(key1 = uiState) {
-            currentCoverItem = uiState.getActiveImagePreviewItem()
-        }
-
-        AnimatedVisibility(
-            visible = currentState.showWidget,
-            enter = slideInVertically { it },
-            exit = slideOutVertically(tween(200)) { it },
+    if (uiState.showWidget) {
+        ModalBottomSheet(
             modifier = Modifier
-                .swipeable(state = swipeableState,
-                    orientation = Orientation.Vertical,
-                    anchors = mapOf(
-                        0f to DragStates.VISIBLE, sizePx to DragStates.DISMISSED
-                    ),
-                    thresholds = { _, _ -> FractionalThreshold(0.3f) })
-                .offset { IntOffset(0, swipeableState.offset.value.roundToInt()) }
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(
-                        color = colorResource(id = R.color.background_secondary),
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                    ),
-            ) {
-                Column(
+                .windowInsetsPadding(WindowInsets.ime)
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            scrimColor = colorResource(id = R.color.modal_screen_outside_background),
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            onDismissRequest = { action(Dismiss) },
+            sheetState = bottomSheetState,
+            dragHandle = { DragHandle() },
+            content = {
+                ViewerLayoutContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(bottom = 20.dp)
-                ) {
-                    WidgetHeader(title = stringResource(R.string.view_layout_widget_title))
-                    Spacer(modifier = Modifier.height(12.dp))
-                    LayoutIcons(uiState = currentState, action = action)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    LayoutSwitcherItem(
-                        text = stringResource(id = R.string.icon),
-                        checked = currentState.withIcon.toggled,
-                        onCheckedChanged = { action(Icon(it)) }
-                    )
-                    val isGallery = currentState.layoutType == DVViewerType.GALLERY
-                    Divider(visible = isGallery)
-                    ColumnItem(
-                        modifier = Modifier
-                            .padding(start = 20.dp, end = 20.dp)
-                            .alpha(if (isGallery) 1f else 0f),
-                        title = stringResource(id = R.string.card_size),
-                        value = when (currentState.cardSize) {
-                            ViewerLayoutWidgetUi.State.CardSize.Large -> stringResource(id = R.string.large)
-                            ViewerLayoutWidgetUi.State.CardSize.Small -> stringResource(id = R.string.small)
-                        },
-                        onClick = {
-                            action(ViewerLayoutWidgetUi.Action.CardSizeMenu)
-                        },
-                        arrow = painterResource(id = R.drawable.ic_list_arrow_18),
-                        imageModifier = Modifier
-                            .onGloballyPositioned { coordinates ->
-                                if (coordinates.isAttached) {
-                                    with(coordinates.boundsInRoot()) {
-                                        currentCoordinates = this
-                                    }
-                                } else {
-                                    currentCoordinates = androidx.compose.ui.geometry.Rect.Zero
-                                }
-                            }
-                    )
-                    Divider(visible = isGallery)
-                    ColumnItem(
-                        modifier = Modifier
-                            .padding(start = 20.dp, end = 20.dp)
-                            .alpha(if (isGallery) 1f else 0f),
-                        title = stringResource(id = R.string.cover),
-                        value = currentCoverItem.getTitle(),
-                        onClick = {
-                            action(ViewerLayoutWidgetUi.Action.CoverMenu)
-                        },
-                        arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
-                    )
-                    Divider(visible = isGallery)
-                    LayoutSwitcherItem(
-                        modifier = Modifier.alpha(if (isGallery) 1f else 0f),
-                        text = stringResource(id = R.string.fit_image),
-                        checked = currentState.fitImage.toggled,
-                        onCheckedChanged = { action(FitImage(it)) }
-                    )
-                }
+                        .padding(bottom = 20.dp),
+                    currentState = uiState,
+                    action = action
+                )
             }
-        }
+        )
         ViewerLayoutListMenu(
-            show = currentState.showCardSize,
+            show = uiState.showCardSize,
             action = action,
             coordinates = currentCoordinates
         )
@@ -225,6 +107,96 @@ fun ViewerLayoutWidget(
             uiState = uiState,
             action = action,
             scope = scope
+        )
+    }
+}
+
+@Composable
+private fun ViewerLayoutContent(
+    modifier: Modifier,
+    currentState: ViewerLayoutWidgetUi,
+    action: (ViewerLayoutWidgetUi.Action) -> Unit
+) {
+    var currentCoverItem by remember {
+        mutableStateOf(currentState.getActiveImagePreviewItem())
+    }
+
+    LaunchedEffect(key1 = currentState) {
+        currentCoverItem = currentState.getActiveImagePreviewItem()
+    }
+
+    var currentCoordinates: Rect by remember {
+        mutableStateOf(Rect.Zero)
+    }
+
+    Column(
+        modifier = modifier
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                modifier = Modifier,
+                text = stringResource(R.string.view_layout_widget_title),
+                style = Title1,
+                color = colorResource(R.color.text_primary)
+            )
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        LayoutIcons(uiState = currentState, action = action)
+        Spacer(modifier = Modifier.height(8.dp))
+        LayoutSwitcherItem(
+            text = stringResource(id = R.string.icon),
+            checked = currentState.withIcon.toggled,
+            onCheckedChanged = { action(Icon(it)) }
+        )
+        val isGallery = currentState.layoutType == DVViewerType.GALLERY
+        Divider(visible = isGallery)
+        ColumnItem(
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp)
+                .alpha(if (isGallery) 1f else 0f),
+            title = stringResource(id = R.string.card_size),
+            value = when (currentState.cardSize) {
+                CardSize.Large -> stringResource(id = R.string.large)
+                CardSize.Small -> stringResource(id = R.string.small)
+            },
+            onClick = {
+                action(CardSizeMenu)
+            },
+            arrow = painterResource(id = R.drawable.ic_list_arrow_18),
+            imageModifier = Modifier
+                .onGloballyPositioned { coordinates ->
+                    if (coordinates.isAttached) {
+                        with(coordinates.boundsInRoot()) {
+                            currentCoordinates = this
+                        }
+                    } else {
+                        currentCoordinates = androidx.compose.ui.geometry.Rect.Zero
+                    }
+                }
+        )
+        Divider(visible = isGallery)
+        ColumnItem(
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp)
+                .alpha(if (isGallery) 1f else 0f),
+            title = stringResource(id = R.string.cover),
+            value = currentCoverItem.getTitle(),
+            onClick = {
+                action(ViewerLayoutWidgetUi.Action.CoverMenu)
+            },
+            arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
+        )
+        Divider(visible = isGallery)
+        LayoutSwitcherItem(
+            modifier = Modifier.alpha(if (isGallery) 1f else 0f),
+            text = stringResource(id = R.string.fit_image),
+            checked = currentState.fitImage.toggled,
+            onCheckedChanged = { action(FitImage(it)) }
         )
     }
 }

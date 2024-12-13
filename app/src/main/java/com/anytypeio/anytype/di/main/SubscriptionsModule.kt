@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -221,13 +222,15 @@ object SubscriptionsModule {
         relations: RelationsSubscriptionManager,
         permissions: UserPermissionProvider,
         isSpaceDeleted: SpaceDeletedStatusWatcher,
-        profileSubscriptionManager: ProfileSubscriptionManager
+        profileSubscriptionManager: ProfileSubscriptionManager,
+        networkConnectionStatus: NetworkConnectionStatus
     ): GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
         permissions = permissions,
         isSpaceDeleted = isSpaceDeleted,
-        profile = profileSubscriptionManager
+        profile = profileSubscriptionManager,
+        networkConnectionStatus = networkConnectionStatus
     )
 
     @JvmStatic

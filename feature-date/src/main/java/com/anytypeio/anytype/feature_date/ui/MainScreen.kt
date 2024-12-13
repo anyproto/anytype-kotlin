@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -126,7 +127,9 @@ fun DateMainScreen(
                     modifier = Modifier.height(32.dp)
                 )
                 FieldsScreen(
-                    modifier = Modifier.fillMaxWidth().height(40.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp),
                     uiState = uiFieldsState,
                     onDateEvent = onDateEvent
                 )
@@ -192,6 +195,10 @@ fun DateMainScreen(
             contentAlignment = Alignment.BottomCenter
         ) {
             SpaceSyncStatusScreen(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.ime)
+                    .padding(bottom = 27.dp, start = 8.dp, end = 8.dp),
                 uiState = uiSyncStatusState.status,
                 onDismiss = { onDateEvent(DateEvent.SyncStatusWidget.OnSyncStatusDismiss) },
                 scope = scope,

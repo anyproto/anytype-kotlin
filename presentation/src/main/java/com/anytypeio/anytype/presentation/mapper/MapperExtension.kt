@@ -62,8 +62,8 @@ fun Block.Content.File.toPictureView(
         val url = urlBuilder.getUrlForFileContent(this)
         val targetId = this.targetObjectId
         val struct = details.details[targetId]?.map
-        if (url != null && targetId != null && !struct.isNullOrEmpty()) {
-            val targetObject = ObjectWrapper.File(struct)
+        if (url != null && targetId != null) {
+            val targetObject = ObjectWrapper.File(struct.orEmpty())
             BlockView.Media.Picture(
                 id = blockId,
                 targetObjectId = targetId,

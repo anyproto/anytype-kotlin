@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.slash.holders
 
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.databinding.ItemListObjectSmallBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetObjectTypeBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible

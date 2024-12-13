@@ -5123,6 +5123,11 @@ class EditorViewModel(
                 onHideKeyboardClicked()
                 addSimpleTableBlock(item)
             }
+            is SlashItem.SelectDate -> {
+                mentionDatePicker.value = EditorDatePickerState.Visible.Link(
+                    targetId = targetId
+                )
+            }
         }
     }
 
@@ -5471,11 +5476,6 @@ class EditorViewModel(
             SlashItem.Actions.LinkTo -> {
                 onHideKeyboardClicked()
                 proceedWithLinkToButtonClicked(block = targetId, position = slashStartIndex)
-            }
-            SlashItem.Actions.SelectDate -> {
-                mentionDatePicker.value = EditorDatePickerState.Visible.Link(
-                    targetId = targetId
-                )
             }
         }
     }

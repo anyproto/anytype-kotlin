@@ -6,11 +6,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetObjectTypeBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSelectDateBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetStyleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderLeftBinding
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.ActionMenuHolder
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.DateSelectHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.ObjectTypeMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.SubheaderMenuHolder
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.SubheaderOnlyMenuHolder
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 
 class SlashObjectTypesAdapter(
@@ -57,6 +61,16 @@ class SlashObjectTypesAdapter(
                     clicks(SlashItem.Back)
                 }
             }
+            R.layout.item_slash_widget_subheader_left -> SubheaderOnlyMenuHolder(
+                binding = ItemSlashWidgetSubheaderLeftBinding.inflate(
+                    inflater, parent, false
+                )
+            )
+            R.layout.item_slash_widget_select_date -> DateSelectHolder(
+                binding = ItemSlashWidgetSelectDateBinding.inflate(
+                    inflater, parent, false
+                )
+            )
             else -> throw IllegalArgumentException("Wrong viewtype:$viewType")
         }.apply {
             itemView.setOnClickListener {
@@ -82,15 +96,39 @@ class SlashObjectTypesAdapter(
                 val item = items[position] as SlashItem.Subheader
                 holder.bind(item)
             }
+            is SubheaderOnlyMenuHolder -> {
+                val item = items[position] as SlashItem.Subheader
+                holder.bind(item)
+            }
         }
     }
 
     override fun getItemCount(): Int = items.size
 
-    override fun getItemViewType(position: Int): Int = when (items[position]) {
+    override fun getItemViewType(position: Int): Int = when (val item = items[position]) {
         is SlashItem.ObjectType -> R.layout.item_slash_widget_object_type
-        is SlashItem.Subheader -> R.layout.item_slash_widget_subheader
+        is SlashItem.Subheader -> item.getViewType()
         is SlashItem.Actions -> R.layout.item_slash_widget_style
+        is SlashItem.SelectDate -> R.layout.item_slash_widget_select_date
         else -> throw IllegalArgumentException("Wrong item type:${items[position]} for SlashObjectTypeAdapter")
     }
+}
+
+fun SlashItem.Subheader.getViewType(): Int = when (this) {
+    SlashItem.Subheader.Actions -> R.layout.item_slash_widget_subheader_left
+    SlashItem.Subheader.ActionsWithBack -> R.layout.item_slash_widget_subheader
+    SlashItem.Subheader.Alignment -> R.layout.item_slash_widget_subheader_left
+    SlashItem.Subheader.AlignmentWithBack -> R.layout.item_slash_widget_subheader
+    SlashItem.Subheader.Background -> R.layout.item_slash_widget_subheader_left
+    SlashItem.Subheader.BackgroundWithBack -> R.layout.item_slash_widget_subheader
+    SlashItem.Subheader.Color -> R.layout.item_slash_widget_subheader_left
+    SlashItem.Subheader.ColorWithBack -> R.layout.item_slash_widget_subheader
+    SlashItem.Subheader.Media -> R.layout.item_slash_widget_subheader_left
+    SlashItem.Subheader.MediaWithBack -> R.layout.item_slash_widget_subheader
+    SlashItem.Subheader.ObjectType -> R.layout.item_slash_widget_subheader_left
+    SlashItem.Subheader.ObjectTypeWithBlack -> R.layout.item_slash_widget_subheader
+    SlashItem.Subheader.Other -> R.layout.item_slash_widget_subheader_left
+    SlashItem.Subheader.OtherWithBack -> R.layout.item_slash_widget_subheader
+    SlashItem.Subheader.Style -> R.layout.item_slash_widget_subheader_left
+    SlashItem.Subheader.StyleWithBack -> R.layout.item_slash_widget_subheader
 }

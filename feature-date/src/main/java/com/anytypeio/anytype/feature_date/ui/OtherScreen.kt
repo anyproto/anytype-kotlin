@@ -24,7 +24,8 @@ fun EmptyScreen() {
     Box(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.ime)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(bottom = 68.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -32,7 +33,7 @@ fun EmptyScreen() {
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp),
             text = title,
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.text_secondary),
             style = UXBody,
             textAlign = TextAlign.Center
         )

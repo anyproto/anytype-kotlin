@@ -50,7 +50,7 @@ class ActionMenuHolder(val binding: ItemSlashWidgetStyleBinding) : RecyclerView.
                 ivIcon.setImageResource(R.drawable.ic_slash_actions_link_to)
                 tvSubtitle.setText(R.string.slash_widget_actions_link_to_subtitle)
             }
-            SlashItem.Actions.SelectDate -> {
+            SlashItem.SelectDate -> {
                 tvTitle.setText(R.string.select_date)
                 ivIcon.setImageResource(R.drawable.ic_obj_date_24)
                 tvSubtitle.gone()

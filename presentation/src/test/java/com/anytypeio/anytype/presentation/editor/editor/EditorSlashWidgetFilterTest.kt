@@ -478,7 +478,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val expectedItems = listOf(
             SlashItem.Subheader.Actions,
             SlashItem.Actions.LinkTo,
-            SlashItem.Actions.SelectDate,
+            SlashItem.SelectDate,
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type1.id,
@@ -1562,7 +1562,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val expectedItems = listOf(
             SlashItem.Subheader.Actions,
             SlashItem.Actions.LinkTo,
-            SlashItem.Actions.SelectDate,
+            SlashItem.SelectDate,
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type1.id,

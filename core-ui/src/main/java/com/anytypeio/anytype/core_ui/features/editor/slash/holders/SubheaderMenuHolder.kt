@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.slash.holders
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderLeftBinding
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
@@ -76,6 +77,44 @@ class SubheaderMenuHolder(
             SlashItem.Subheader.BackgroundWithBack -> {
                 flBack.visible()
                 R.string.slash_widget_main_background
+            }
+        }
+        subheader.setText(text)
+    }
+}
+
+class SubheaderOnlyMenuHolder(
+    val binding: ItemSlashWidgetSubheaderLeftBinding
+) : RecyclerView.ViewHolder(binding.root) {
+
+    fun bind(item: SlashItem.Subheader) = with(binding) {
+        val text = when (item) {
+            SlashItem.Subheader.Style -> {
+                R.string.slash_widget_main_style
+            }
+            SlashItem.Subheader.Media -> {
+                R.string.slash_widget_main_media
+            }
+            SlashItem.Subheader.ObjectType -> {
+                R.string.slash_widget_main_objects_subheader
+            }
+            SlashItem.Subheader.Other -> {
+                R.string.slash_widget_main_other
+            }
+            SlashItem.Subheader.Actions -> {
+                R.string.slash_widget_main_actions
+            }
+            SlashItem.Subheader.Alignment -> {
+                R.string.slash_widget_main_alignment
+            }
+            SlashItem.Subheader.Color -> {
+                R.string.slash_widget_main_color
+            }
+            SlashItem.Subheader.Background -> {
+                R.string.slash_widget_main_background
+            }
+            else -> {
+                0
             }
         }
         subheader.setText(text)

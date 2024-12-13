@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -45,7 +47,7 @@ import com.anytypeio.anytype.feature_date.viewmodel.UiNavigationWidget
 import com.anytypeio.anytype.feature_date.viewmodel.UiObjectsListState
 import com.anytypeio.anytype.feature_date.viewmodel.UiSnackbarState
 import com.anytypeio.anytype.feature_date.viewmodel.UiSyncStatusBadgeState
-import com.anytypeio.anytype.feature_date.viewmodel.UiSyncStatusWidgetState
+import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -59,7 +61,7 @@ fun DateMainScreen(
     uiObjectsListState: UiObjectsListState,
     uiNavigationWidget: UiNavigationWidget,
     uiFieldsSheetState: UiFieldsSheetState,
-    uiSyncStatusState: UiSyncStatusWidgetState,
+    uiSyncStatusState: SyncStatusWidgetState,
     uiCalendarState: UiCalendarState,
     uiContentState: UiContentState,
     uiSnackbarState: UiSnackbarState,
@@ -126,7 +128,9 @@ fun DateMainScreen(
                     modifier = Modifier.height(32.dp)
                 )
                 FieldsScreen(
-                    modifier = Modifier.fillMaxWidth().height(40.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp),
                     uiState = uiFieldsState,
                     onDateEvent = onDateEvent
                 )
@@ -186,19 +190,23 @@ fun DateMainScreen(
             SnackbarHost(hostState = snackBarHostState)
         }
     )
-    if (uiSyncStatusState is UiSyncStatusWidgetState.Visible) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            SpaceSyncStatusScreen(
-                uiState = uiSyncStatusState.status,
-                onDismiss = { onDateEvent(DateEvent.SyncStatusWidget.OnSyncStatusDismiss) },
-                scope = scope,
-                onUpdateAppClick = {}
-            )
-        }
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        SpaceSyncStatusScreen(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .windowInsetsPadding(WindowInsets.ime)
+                .padding(bottom = 27.dp, start = 8.dp, end = 8.dp),
+            uiState = uiSyncStatusState,
+            onDismiss = { onDateEvent(DateEvent.SyncStatusWidget.OnSyncStatusDismiss) },
+            scope = scope,
+            onUpdateAppClick = {}
+        )
     }
+
     if (uiFieldsSheetState is UiFieldsSheetState.Visible) {
         FieldsSheetScreen(
             uiState = uiFieldsSheetState,

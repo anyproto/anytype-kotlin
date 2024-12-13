@@ -16,9 +16,11 @@ import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationObjectB
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationStatusBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationTagBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderLeftBinding
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.ListRelationViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationNewHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationsSubheaderMenuHolder
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.RelationsSubheaderOnlyMenuHolder
 import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -144,6 +146,13 @@ class SlashRelationsAdapter(
                     }
                 }
             }
+            R.layout.item_slash_widget_subheader_left -> {
+                RelationsSubheaderOnlyMenuHolder(
+                    binding = ItemSlashWidgetSubheaderLeftBinding.inflate(
+                        inflater, parent, false
+                    )
+                )
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -219,6 +228,9 @@ class SlashRelationsAdapter(
                 check(item is SlashRelationView.Section)
                 holder.bind(item)
             }
+            is RelationsSubheaderOnlyMenuHolder -> {
+                holder.bind()
+            }
             else -> {
                 Timber.d("Skipping binding for: $holder")
             }
@@ -240,7 +252,7 @@ class SlashRelationsAdapter(
             }
         }
         is SlashRelationView.Section.SubheaderWithBack -> R.layout.item_slash_widget_subheader
-        SlashRelationView.Section.Subheader -> R.layout.item_slash_widget_subheader
+        SlashRelationView.Section.Subheader -> R.layout.item_slash_widget_subheader_left
         SlashRelationView.RelationNew -> R.layout.item_relation_add_new
     }
 

@@ -12,7 +12,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem.Loading
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 
 data class DateObjectVmParams(
     val objectId: Id,
@@ -43,11 +42,6 @@ sealed class UiCalendarIconState {
 sealed class UiSyncStatusBadgeState {
     data object Hidden : UiSyncStatusBadgeState()
     data class Visible(val status: SpaceSyncAndP2PStatusState) : UiSyncStatusBadgeState()
-}
-
-sealed class UiSyncStatusWidgetState {
-    data object Hidden : UiSyncStatusWidgetState()
-    data class Visible(val status: SyncStatusWidgetState) : UiSyncStatusWidgetState()
 }
 
 data class UiFieldsState(

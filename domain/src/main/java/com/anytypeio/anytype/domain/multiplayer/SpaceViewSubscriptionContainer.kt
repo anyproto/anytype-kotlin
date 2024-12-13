@@ -140,6 +140,7 @@ interface SpaceViewSubscriptionContainer {
                             value = buildList {
                                 add(SpaceStatus.OK.code.toDouble())
                                 add(SpaceStatus.UNKNOWN.code.toDouble())
+                                add(SpaceStatus.LOADING.code.toDouble())
                             },
                             condition = DVFilterCondition.IN
                         )

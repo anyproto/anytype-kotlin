@@ -66,7 +66,7 @@ fun HeaderScreen(
                         onDateEvent(DateEvent.Header.OnPreviousClick)
                     },
                 contentDescription = "Previous day",
-                painter = painterResource(id = R.drawable.ic_arrow_disclosure_18),
+                painter = painterResource(id = R.drawable.ic_date_arrow),
                 contentScale = ContentScale.None
             )
             when (uiState) {
@@ -132,7 +132,7 @@ fun HeaderScreen(
                         onDateEvent(DateEvent.Header.OnNextClick)
                     },
                 contentDescription = "Next day",
-                painter = painterResource(id = R.drawable.ic_arrow_disclosure_18),
+                painter = painterResource(id = R.drawable.ic_date_arrow),
                 contentScale = ContentScale.None
             )
         }

@@ -33,7 +33,6 @@ import com.anytypeio.anytype.feature_date.mapping.toUiObjectsListItem
 import com.anytypeio.anytype.feature_date.ui.models.DateEvent
 import com.anytypeio.anytype.feature_date.viewmodel.UiContentState.*
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentScreen
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateBack
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateCalendarView
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateForward
@@ -46,6 +45,7 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel.Companion.DEFAULT_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
+import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import kotlin.collections.map
 import kotlin.text.take
@@ -105,7 +105,7 @@ class DateObjectViewModel(
     val uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
     val uiCalendarState = MutableStateFlow<UiCalendarState>(UiCalendarState.Hidden)
     val uiSyncStatusWidgetState =
-        MutableStateFlow<UiSyncStatusWidgetState>(UiSyncStatusWidgetState.Hidden)
+        MutableStateFlow<SyncStatusWidgetState>(SyncStatusWidgetState.Hidden)
     val uiSnackbarState = MutableStateFlow<UiSnackbarState>(UiSnackbarState.Hidden)
 
     val effects = MutableSharedFlow<DateObjectCommand>()
@@ -257,10 +257,8 @@ class DateObjectViewModel(
                     uiSyncStatusBadgeState.value = UiSyncStatusBadgeState.Visible(syncAndP2pState)
                     val state = uiSyncStatusWidgetState.value
                     uiSyncStatusWidgetState.value = when (state) {
-                        UiSyncStatusWidgetState.Hidden -> UiSyncStatusWidgetState.Hidden
-                        is UiSyncStatusWidgetState.Visible -> state.copy(
-                            status = syncAndP2pState.toSyncStatusWidgetState()
-                        )
+                        SyncStatusWidgetState.Hidden -> SyncStatusWidgetState.Hidden
+                        else -> syncAndP2pState.toSyncStatusWidgetState()
                     }
                 }
         }
@@ -693,7 +691,7 @@ class DateObjectViewModel(
     private fun onSyncStatusWidgetEvent(event: DateEvent.SyncStatusWidget) {
         when (event) {
             DateEvent.SyncStatusWidget.OnSyncStatusDismiss -> {
-                uiSyncStatusWidgetState.value = UiSyncStatusWidgetState.Hidden
+                uiSyncStatusWidgetState.value = SyncStatusWidgetState.Hidden
             }
         }
     }
@@ -719,9 +717,7 @@ class DateObjectViewModel(
 
             is DateEvent.TopToolbar.OnSyncStatusClick -> {
                 uiSyncStatusWidgetState.value =
-                    UiSyncStatusWidgetState.Visible(
-                        status = event.status.toSyncStatusWidgetState()
-                    )
+                    event.status.toSyncStatusWidgetState()
             }
         }
     }

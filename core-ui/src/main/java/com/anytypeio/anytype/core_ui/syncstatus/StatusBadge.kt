@@ -50,7 +50,7 @@ fun StatusBadge(
                         Image(
                             painter = painterResource(R.drawable.ic_sync_error_10),
                             contentDescription = null,
-                            modifier = modifier
+                            modifier = modifier.size(8.dp)
                         )
                     } else {
                         when (spaceSyncUpdate.status) {
@@ -74,7 +74,7 @@ fun StatusBadge(
                                 Image(
                                     painter = painterResource(R.drawable.ic_sync_error_10),
                                     contentDescription = "Sync Error",
-                                    modifier = modifier
+                                    modifier = modifier.size(8.dp)
                                 )
                             }
 
@@ -82,7 +82,7 @@ fun StatusBadge(
                                 Image(
                                     painter = painterResource(R.drawable.ic_sync_grey_10),
                                     contentDescription = "Offline",
-                                    modifier = modifier
+                                    modifier = modifier.size(8.dp)
                                 )
                             }
 
@@ -90,7 +90,7 @@ fun StatusBadge(
                                 Image(
                                     painter = painterResource(R.drawable.ic_sync_slow_10),
                                     contentDescription = "Network Update Needed",
-                                    modifier = modifier
+                                    modifier = modifier.size(8.dp)
                                 )
                             }
                         }

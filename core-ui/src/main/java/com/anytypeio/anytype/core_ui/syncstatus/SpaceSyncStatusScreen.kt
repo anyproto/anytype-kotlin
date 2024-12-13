@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CircularProgressIndicator
@@ -60,6 +63,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SpaceSyncStatusScreen(
+    modifier: Modifier = Modifier,
     uiState: SyncStatusWidgetState,
     onDismiss: () -> Unit,
     scope: CoroutineScope,
@@ -99,10 +103,7 @@ fun SpaceSyncStatusScreen(
             .offset { IntOffset(0, swappableState.offset.value.roundToInt()) }
     ) {
         ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(start = 8.dp, end = 8.dp, bottom = 10.dp),
+            modifier = modifier,
             colors = CardDefaults.cardColors(
                 containerColor = colorResource(id = R.color.background_secondary)
             ),

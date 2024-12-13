@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
@@ -25,10 +25,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -43,6 +41,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.Visibility
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -56,7 +55,9 @@ import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.Dismiss
 import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.DoneMode
 import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.Edit
 import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.EditMode
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
@@ -86,7 +87,13 @@ fun ViewersWidget(
             onDismissRequest = { action(Dismiss) },
             sheetState = bottomSheetState,
             dragHandle = { DragHandle() },
-            content = { ViewersWidgetContent(state, action) }
+            content = {
+                ViewersWidgetContent(
+                    modifier = Modifier.padding(bottom = 168.dp),
+                    state = state,
+                    action = action
+                )
+            }
         )
     }
 }
@@ -102,238 +109,275 @@ private fun DragHandle() {
 
 @Composable
 private fun ViewersWidgetContent(
+    modifier: Modifier,
     state: ViewersWidgetUi.Visible,
     action: (ViewersWidgetUi.Action) -> Unit
 ) {
-    val currentState by rememberUpdatedState(state)
 
-    val views = remember { mutableStateOf(currentState.items) }
-    views.value = currentState.items
+    val views = remember { mutableStateListOf<ViewerView>() }
+    views.swapList(state.items)
 
-    val isEditing = remember { mutableStateOf(currentState.isEditing && !state.isReadOnly) }
-    isEditing.value = currentState.isEditing && !state.isReadOnly
+    val lazyListState = rememberReorderableLazyListState(
+        onMove = { from, to ->
+            val newList = views.toMutableList().apply {
+                add(to.index, removeAt(from.index))
+            }
+            views.swapList(newList)
+        },
+        onDragEnd = { from, to ->
+            action(
+                ViewersWidgetUi.Action.OnMove(
+                    currentViews = views,
+                    from = from,
+                    to = to
+                )
+            )
+        }
+    )
 
-        Column(
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        Header(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(48.dp),
+            isEditingMode = state.isEditing,
+            isReadOnlyState = state.isReadOnly,
+            action = action
+        )
+
+        LazyColumn(
+            state = lazyListState.listState,
+            modifier = Modifier
+                .reorderable(lazyListState)
+                .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(bottom = 16.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-            ) {
-                if (!state.isReadOnly) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterStart),
-                    ) {
-                        if (currentState.isEditing) {
-                            ActionText(
-                                text = stringResource(id = R.string.done),
-                                click = { action(DoneMode) }
-                            )
-                        } else {
-                            ActionText(
-                                text = stringResource(id = R.string.edit),
-                                click = { action(EditMode) }
-                            )
-                        }
+            items(
+                count = views.size,
+                key = { index -> views[index].id },
+            ) { index ->
+
+                ReorderableItem(
+                    reorderableState = lazyListState,
+                    key = views[index].id
+                ) { isDragging ->
+                    val currentItem = LocalView.current
+                    if (isDragging) {
+                        currentItem.isHapticFeedbackEnabled = true
+                        currentItem.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                     }
-                }
-                Box(modifier = Modifier.align(Alignment.Center)) {
-                    Text(
-                        text = stringResource(R.string.views),
-                        style = Title1,
-                        color = colorResource(R.color.text_primary)
+                    Item(
+                        modifier = Modifier,
+                        lazyListState = lazyListState,
+                        isDragging = isDragging,
+                        isEditing = state.isEditing,
+                        action = action,
+                        view = views[index]
                     )
+
                 }
-                if (!state.isReadOnly) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .noRippleThrottledClickable {
-                                action.invoke(ViewersWidgetUi.Action.Plus)
-                            }
-                    ) {
-                        Image(
-                            modifier = Modifier.padding(
-                                start = 16.dp,
-                                top = 12.dp,
-                                bottom = 12.dp,
-                                end = 16.dp
-                            ),
-                            painter = painterResource(id = R.drawable.ic_default_plus),
-                            contentDescription = null
-                        )
-                    }
-                }
-            }
-
-            val lazyListState = rememberReorderableLazyListState(
-                onMove = { from, to ->
-                    views.value = views.value.toMutableList().apply {
-                        add(to.index, removeAt(from.index))
-                    }
-                },
-                onDragEnd = { from, to ->
-                    action(
-                        ViewersWidgetUi.Action.OnMove(
-                            currentViews = views.value,
-                            from = from,
-                            to = to
-                        )
-                    )
-                }
-            )
-
-            LazyColumn(
-                state = lazyListState.listState,
-                modifier = Modifier
-                    .reorderable(lazyListState)
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-            ) {
-                itemsIndexed(
-                    items = views.value,
-                    key = { _, item -> item.id }) { index, view ->
-                    ReorderableItem(
-                        reorderableState = lazyListState,
-                        key = view.id
-                    ) { isDragging ->
-                        val currentItem = LocalView.current
-                        if (isDragging) {
-                            currentItem.isHapticFeedbackEnabled = true
-                            currentItem.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                        }
-                        val alpha =
-                            animateFloatAsState(if (isDragging) 0.8f else 1.0f, label = "")
-                        ConstraintLayout(
-                            modifier = Modifier
-                                .height(52.dp)
-                                .fillMaxWidth()
-                                .padding(start = 20.dp, end = 20.dp)
-                                .animateContentSize(
-                                    animationSpec = spring(
-                                        stiffness = Spring.StiffnessLow
-                                    )
-                                )
-                                .alpha(alpha.value)
-                        ) {
-                            val (delete, text, edit, dnd, unsupported) = createRefs()
-                            Image(
-                                modifier = Modifier
-                                    .noRippleThrottledClickable {
-                                        action.invoke(Delete(view.id))
-                                    }
-                                    .constrainAs(delete) {
-                                        start.linkTo(parent.start)
-                                        top.linkTo(parent.top)
-                                        bottom.linkTo(parent.bottom)
-                                        visibility =
-                                            if (isEditing.value && !view.isActive) Visibility.Visible else Visibility.Gone
-                                    },
-                                painter = painterResource(id = R.drawable.ic_relation_delete),
-                                contentDescription = "Delete view"
-                            )
-                            Image(
-                                modifier = Modifier
-                                    .detectReorder(lazyListState)
-                                    .constrainAs(dnd) {
-                                        end.linkTo(parent.end)
-                                        top.linkTo(parent.top)
-                                        bottom.linkTo(parent.bottom)
-                                        visibility =
-                                            if (isEditing.value) Visibility.Visible else Visibility.Gone
-
-                                    },
-                                painter = painterResource(id = R.drawable.ic_dnd),
-                                contentDescription = "Dnd view"
-                            )
-                            Image(
-                                modifier = Modifier
-                                    .noRippleThrottledClickable {
-                                        action.invoke(Edit(id = view.id))
-                                    }
-                                    .constrainAs(edit) {
-                                        end.linkTo(dnd.start, margin = 16.dp)
-                                        top.linkTo(parent.top)
-                                        bottom.linkTo(parent.bottom)
-                                        visibility =
-                                            if (isEditing.value) Visibility.Visible else Visibility.Gone
-                                    },
-                                painter = painterResource(id = R.drawable.ic_edit_24),
-                                contentDescription = "Edit view"
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .constrainAs(unsupported) {
-                                        top.linkTo(parent.top)
-                                        bottom.linkTo(parent.bottom)
-                                        end.linkTo(edit.start)
-                                        visibility =
-                                            if (!isEditing.value && view.isUnsupported) Visibility.Visible else Visibility.Gone
-                                    },
-                                text = stringResource(id = R.string.unsupported),
-                                color = colorResource(id = R.color.text_secondary),
-                                style = Caption2Regular,
-                                textAlign = TextAlign.Left
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .noRippleThrottledClickable {
-                                        if (!isEditing.value) {
-
-                                            action.invoke(
-                                                ViewersWidgetUi.Action.SetActive(
-                                                    id = view.id,
-                                                    type = view.type
-                                                )
-                                            )
-                                        }
-                                    }
-                                    .constrainAs(text) {
-                                        start.linkTo(
-                                            delete.end,
-                                            margin = 12.dp,
-                                            goneMargin = 0.dp
-                                        )
-                                        top.linkTo(parent.top)
-                                        bottom.linkTo(parent.bottom)
-                                        end.linkTo(
-                                            unsupported.start,
-                                            margin = 8.dp,
-                                            goneMargin = 38.dp
-                                        )
-                                        width = Dimension.fillToConstraints
-                                    },
-                                text = view.name.ifBlank { stringResource(id = R.string.untitled) },
-                                color = colorResource(id = if (view.isActive) R.color.text_primary else R.color.glyph_active),
-                                style = HeadlineSubheading,
-                                textAlign = TextAlign.Left,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                    if (index != views.value.size - 1) {
-                        Divider()
-                    }
+                if (index != views.size - 1) {
+                    Divider()
                 }
             }
         }
+    }
 }
 
 @Composable
-private fun ActionText(text: String, click: () -> Unit) {
+private fun Item(
+    modifier: Modifier,
+    lazyListState: ReorderableLazyListState,
+    isDragging: Boolean,
+    isEditing: Boolean,
+    action: (ViewersWidgetUi.Action) -> Unit,
+    view: ViewerView
+) {
+    val alpha = animateFloatAsState(if (isDragging) 0.8f else 1.0f, label = "")
+    ConstraintLayout(
+        modifier = modifier
+            .height(52.dp)
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp)
+            .animateContentSize(
+                animationSpec = spring(
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+            .alpha(alpha.value)
+    ) {
+        val (delete, text, edit, dnd, unsupported) = createRefs()
+        Image(
+            modifier = Modifier
+                .noRippleThrottledClickable {
+                    action.invoke(Delete(view.id))
+                }
+                .constrainAs(delete) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    visibility =
+                        if (isEditing && !view.isActive) Visibility.Visible else Visibility.Gone
+                },
+            painter = painterResource(id = R.drawable.ic_relation_delete),
+            contentDescription = "Delete view"
+        )
+        Image(
+            modifier = Modifier
+                .detectReorder(lazyListState)
+                .constrainAs(dnd) {
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    visibility =
+                        if (isEditing) Visibility.Visible else Visibility.Gone
+
+                },
+            painter = painterResource(id = R.drawable.ic_dnd),
+            contentDescription = "Dnd view"
+        )
+        Image(
+            modifier = Modifier
+                .noRippleThrottledClickable {
+                    action.invoke(Edit(id = view.id))
+                }
+                .constrainAs(edit) {
+                    end.linkTo(dnd.start, margin = 16.dp)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    visibility =
+                        if (isEditing) Visibility.Visible else Visibility.Gone
+                },
+            painter = painterResource(id = R.drawable.ic_edit_24),
+            contentDescription = "Edit view"
+        )
+        Text(
+            modifier = Modifier
+                .constrainAs(unsupported) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(edit.start)
+                    visibility =
+                        if (!isEditing && view.isUnsupported) Visibility.Visible else Visibility.Gone
+                },
+            text = stringResource(id = R.string.unsupported),
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption2Regular,
+            textAlign = TextAlign.Left
+        )
+        Text(
+            modifier = Modifier
+                .noRippleThrottledClickable {
+                    if (!isEditing) {
+
+                        action.invoke(
+                            ViewersWidgetUi.Action.SetActive(
+                                id = view.id, type = view.type
+                            )
+                        )
+                    }
+                }
+                .constrainAs(text) {
+                    start.linkTo(
+                        delete.end, margin = 12.dp, goneMargin = 0.dp
+                    )
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(
+                        unsupported.start, margin = 8.dp, goneMargin = 38.dp
+                    )
+                    width = Dimension.fillToConstraints
+                },
+            text = view.name.ifBlank { stringResource(id = R.string.untitled) },
+            color = colorResource(id = if (view.isActive) R.color.text_primary else R.color.glyph_active),
+            style = HeadlineSubheading,
+            textAlign = TextAlign.Left,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun Header(
+    modifier: Modifier,
+    isReadOnlyState: Boolean,
+    isEditingMode: Boolean,
+    action: (ViewersWidgetUi.Action) -> Unit
+) {
+    Box(modifier = modifier) {
+        if (!isReadOnlyState) {
+            ActionButtons(
+                modifier = Modifier.align(Alignment.CenterStart),
+                isEditingMode = isEditingMode,
+                action = action
+            )
+        }
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = stringResource(R.string.views),
+            style = Title1,
+            color = colorResource(R.color.text_primary)
+        )
+        if (!isReadOnlyState) {
+            PlusButton(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .noRippleThrottledClickable {
+                        action.invoke(ViewersWidgetUi.Action.Plus)
+                    }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActionButtons(
+    modifier: Modifier,
+    isEditingMode: Boolean,
+    action: (ViewersWidgetUi.Action) -> Unit
+) {
+    if (isEditingMode) {
+        ActionText(
+            modifier = modifier,
+            text = stringResource(id = R.string.done),
+            click = { action(DoneMode) }
+        )
+    } else {
+        ActionText(
+            modifier = modifier,
+            text = stringResource(id = R.string.edit),
+            click = { action(EditMode) }
+        )
+    }
+}
+
+@Composable
+private fun BoxScope.PlusButton(
+    modifier: Modifier
+) {
+    Image(
+        modifier = modifier.padding(
+            start = 16.dp,
+            top = 12.dp,
+            bottom = 12.dp,
+            end = 16.dp
+        ),
+        painter = painterResource(id = R.drawable.ic_default_plus),
+        contentDescription = null
+    )
+}
+
+@Composable
+private fun ActionText(modifier: Modifier, text: String, click: () -> Unit) {
     Text(
-        modifier = Modifier
+        modifier = modifier
             .padding(
-                start = 16.dp,
-                top = 12.dp,
-                bottom = 12.dp,
-                end = 16.dp
+                start = 16.dp, top = 12.dp, bottom = 12.dp, end = 16.dp
             )
             .noRippleThrottledClickable { click() },
         text = text,

@@ -6,26 +6,13 @@ import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.widgets.FromIndex
 import com.anytypeio.anytype.presentation.widgets.ToIndex
 
-data class ViewersWidgetUi(
-    val showWidget: Boolean,
-    val isEditing: Boolean,
-    val isReadOnly: Boolean,
-    val items: List<ViewerView>
-) {
-
-    fun dismiss() = copy(
-        showWidget = false,
-        isEditing = false
-    )
-
-    companion object {
-        fun init() = ViewersWidgetUi(
-            showWidget = false,
-            isEditing = false,
-            items = emptyList(),
-            isReadOnly = true
-        )
-    }
+sealed class ViewersWidgetUi{
+    data object Hidden : ViewersWidgetUi()
+    data class Visible(
+        val isEditing: Boolean,
+        val isReadOnly: Boolean,
+        val items: List<ViewerView>
+    ) : ViewersWidgetUi()
 
     sealed class Action {
         data object Dismiss : Action()
@@ -44,5 +31,3 @@ data class ViewersWidgetUi(
         data object Plus : Action()
     }
 }
-
-

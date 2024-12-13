@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -508,4 +509,6 @@ interface BlockRepository {
     suspend fun debugAccountSelectTrace(dir: String): String
 
     suspend fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct?
+
+    suspend fun setDeviceNetworkState(type: DeviceNetworkType)
 }

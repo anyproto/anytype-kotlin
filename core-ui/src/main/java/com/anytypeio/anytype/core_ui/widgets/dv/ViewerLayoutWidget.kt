@@ -85,20 +85,26 @@ fun ViewerLayoutWidget(
             sheetState = bottomSheetState,
             dragHandle = { DragHandle() },
             content = {
-                ViewerLayoutContent(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(bottom = 20.dp),
-                    currentState = uiState,
-                    action = action
-                )
+                var currentCoordinates: Rect by remember {
+                    mutableStateOf(Rect.Zero)
+                }
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    ViewerLayoutContent(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(bottom = 20.dp),
+                        currentState = uiState,
+                        action = action,
+                        updateCurrentCoordinates = { currentCoordinates = it }
+                    )
+                    ViewerLayoutListMenu(
+                        show = uiState.showCardSize,
+                        action = action,
+                        coordinates = currentCoordinates
+                    )
+                }
             }
-        )
-        ViewerLayoutListMenu(
-            show = uiState.showCardSize,
-            action = action,
-            coordinates = currentCoordinates
         )
         ViewerLayoutCoverWidget(
             uiState = uiState,
@@ -111,7 +117,8 @@ fun ViewerLayoutWidget(
 private fun ViewerLayoutContent(
     modifier: Modifier,
     currentState: ViewerLayoutWidgetUi,
-    action: (ViewerLayoutWidgetUi.Action) -> Unit
+    action: (ViewerLayoutWidgetUi.Action) -> Unit,
+    updateCurrentCoordinates: (Rect) -> Unit = {}
 ) {
     var currentCoverItem by remember {
         mutableStateOf(currentState.getActiveImagePreviewItem())
@@ -119,10 +126,6 @@ private fun ViewerLayoutContent(
 
     LaunchedEffect(key1 = currentState) {
         currentCoverItem = currentState.getActiveImagePreviewItem()
-    }
-
-    var currentCoordinates: Rect by remember {
-        mutableStateOf(Rect.Zero)
     }
 
     Column(
@@ -168,10 +171,10 @@ private fun ViewerLayoutContent(
                 .onGloballyPositioned { coordinates ->
                     if (coordinates.isAttached) {
                         with(coordinates.boundsInRoot()) {
-                            currentCoordinates = this
+                            updateCurrentCoordinates(this)
                         }
                     } else {
-                        currentCoordinates = androidx.compose.ui.geometry.Rect.Zero
+                        updateCurrentCoordinates(Rect.Zero)
                     }
                 }
         )
@@ -389,7 +392,7 @@ fun PreviewLayoutScreen() {
     ViewerLayoutWidget(
         uiState = ViewerLayoutWidgetUi(
             showWidget = true,
-            layoutType = DVViewerType.GRID,
+            layoutType = DVViewerType.GALLERY,
             withIcon = ViewerLayoutWidgetUi.State.Toggle.WithIcon(
                 toggled = true
             ),
@@ -397,7 +400,7 @@ fun PreviewLayoutScreen() {
                 toggled = false
             ),
             cardSize = ViewerLayoutWidgetUi.State.CardSize.Small,
-            showCardSize = false,
+            showCardSize = true,
             viewer = "",
             showCoverMenu = false,
             imagePreviewItems = emptyList()

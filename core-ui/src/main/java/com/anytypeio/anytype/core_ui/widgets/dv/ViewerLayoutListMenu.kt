@@ -21,6 +21,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCallout
@@ -36,7 +37,7 @@ fun ViewerLayoutListMenu(
     if (show) {
         Column(
             modifier = Modifier
-                .offset(x = offsetX - 220.dp, y = (-52).dp)
+                .offset(x = offsetX - 220.dp, y = 246.dp)
                 .width(220.dp)
                 .wrapContentHeight()
                 .shadow(
@@ -88,4 +89,14 @@ fun ViewerLayoutListMenu(
             )
         }
     }
+}
+
+@Composable
+@DefaultPreviews
+fun ViewerLayoutListMenuPreview() {
+    ViewerLayoutListMenu(
+        show = true,
+        action = {},
+        coordinates = Rect(0f, 0f, 0f, 0f)
+    )
 }

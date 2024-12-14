@@ -213,7 +213,7 @@ class ObjectSetViewModel(
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
     val typeTemplatesWidgetState: MutableStateFlow<TypeTemplatesWidgetUI> = MutableStateFlow(TypeTemplatesWidgetUI.Init())
-    val viewersWidgetState = MutableStateFlow<ViewersWidgetUi>(ViewersWidgetUi.Hidden)
+    val viewersWidgetState = MutableStateFlow(ViewersWidgetUi.init())
     val viewerEditWidgetState = MutableStateFlow<ViewerEditWidgetUi>(ViewerEditWidgetUi.Init)
     val viewerLayoutWidgetState = MutableStateFlow(ViewerLayoutWidgetUi.init())
     private val widgetViewerId = MutableStateFlow<String?>(null)
@@ -331,17 +331,10 @@ class ObjectSetViewModel(
             ) {  views, permissions ->
                 views to permissions
             }.collect { (views, permissions) ->
-                val state = viewersWidgetState.value
-                viewersWidgetState.value = when (state) {
-                    ViewersWidgetUi.Hidden -> ViewersWidgetUi.Hidden
-                    is ViewersWidgetUi.Visible -> {
-                        val isReadOnly = permissions?.isOwnerOrEditor() != true
-                        state.copy(
-                            items = views,
-                            isReadOnly = isReadOnly
-                        )
-                    }
-                }
+                viewersWidgetState.value = viewersWidgetState.value.copy(
+                    items = views,
+                    isReadOnly = permissions?.isOwnerOrEditor() != true
+                )
             }
         }
 
@@ -1234,11 +1227,7 @@ class ObjectSetViewModel(
         ) {
             toast(NOT_ALLOWED)
         } else {
-            viewersWidgetState.value = ViewersWidgetUi.Visible(
-                items = _dvViews.value,
-                isReadOnly = permission.value?.isOwnerOrEditor() != true,
-                isEditing = false
-            )
+            viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = true)
         }
     }
 
@@ -2363,21 +2352,16 @@ class ObjectSetViewModel(
         val state = stateReducer.state.value.dataViewState() ?: return
         when (action) {
             ViewersWidgetUi.Action.Dismiss -> {
-                viewersWidgetState.value = ViewersWidgetUi.Hidden
+                viewersWidgetState.value = viewersWidgetState.value.copy(
+                    showWidget = false,
+                    isEditing = false
+                )
             }
             ViewersWidgetUi.Action.DoneMode -> {
-                val state = viewersWidgetState.value
-                viewersWidgetState.value = when (state) {
-                    ViewersWidgetUi.Hidden -> ViewersWidgetUi.Hidden
-                    is ViewersWidgetUi.Visible -> state.copy(isEditing = false)
-                }
+                viewersWidgetState.value = viewersWidgetState.value.copy(isEditing = false)
             }
             ViewersWidgetUi.Action.EditMode -> {
-                val state = viewersWidgetState.value
-                viewersWidgetState.value = when (state) {
-                    ViewersWidgetUi.Hidden -> ViewersWidgetUi.Hidden
-                    is ViewersWidgetUi.Visible -> state.copy(isEditing = true)
-                }
+                viewersWidgetState.value = viewersWidgetState.value.copy(isEditing = true)
             }
             is ViewersWidgetUi.Action.Delete -> {
                 viewModelScope.launch {

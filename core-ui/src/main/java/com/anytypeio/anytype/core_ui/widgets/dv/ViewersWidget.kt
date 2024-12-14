@@ -74,7 +74,7 @@ fun ViewersWidget(
         skipPartiallyExpanded = true
     )
 
-    if (state is ViewersWidgetUi.Visible) {
+    if (state.showWidget) {
         ModalBottomSheet(
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.ime)
@@ -110,7 +110,7 @@ fun DragHandle() {
 @Composable
 private fun ViewersWidgetContent(
     modifier: Modifier,
-    state: ViewersWidgetUi.Visible,
+    state: ViewersWidgetUi,
     action: (ViewersWidgetUi.Action) -> Unit
 ) {
 

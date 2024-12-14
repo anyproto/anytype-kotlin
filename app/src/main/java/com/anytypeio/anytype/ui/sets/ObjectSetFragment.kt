@@ -1365,7 +1365,7 @@ open class ObjectSetFragment :
                 childFragmentManager.backStackEntryCount > 0 -> childFragmentManager.popBackStack()
                 vm.isCustomizeViewPanelVisible.value -> vm.onHideViewerCustomizeSwiped()
                 vm.typeTemplatesWidgetState.value.showWidget -> vm.onDismissTemplatesWidget()
-                vm.viewersWidgetState.value is ViewersWidgetUi.Visible -> handleViewersWidgetState()
+                vm.viewersWidgetState.value.showWidget -> handleViewersWidgetState()
                 vm.viewerEditWidgetState.value.isVisible() -> handleViewerEditWidgetState()
                 else -> vm.onSystemBackPressed()
             }

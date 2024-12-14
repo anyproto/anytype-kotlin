@@ -106,7 +106,6 @@ fun ViewerLayoutWidget(
         ViewerLayoutCoverWidget(
             uiState = uiState,
             action = action,
-            scope = scope
         )
     }
 }

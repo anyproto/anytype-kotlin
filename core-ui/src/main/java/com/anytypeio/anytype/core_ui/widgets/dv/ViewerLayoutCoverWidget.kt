@@ -1,46 +1,33 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Text
-import androidx.compose.material.rememberSwipeableState
-import androidx.compose.material.swipeable
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Relations
@@ -50,93 +37,81 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
+import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Dismiss
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.State.ImagePreview
-import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ViewerLayoutCoverWidget(
     uiState: ViewerLayoutWidgetUi,
     action: (ViewerLayoutWidgetUi.Action) -> Unit,
-    scope: CoroutineScope
 ) {
 
-    val swipeableState = rememberSwipeableState(DragStates.VISIBLE)
-    val sizePx = with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
 
-    val lazyListState = rememberLazyListState()
-
-    if (swipeableState.isAnimationRunning && swipeableState.targetValue == DragStates.DISMISSED) {
-        DisposableEffect(Unit) {
-            onDispose {
-                action(ViewerLayoutWidgetUi.Action.DismissCoverMenu)
-            }
-        }
-    }
-
-    if (!uiState.showCoverMenu) {
-        DisposableEffect(Unit) {
-            onDispose {
-                scope.launch { swipeableState.snapTo(DragStates.VISIBLE) }
-            }
-        }
-    }
-
-    AnimatedVisibility(
-        visible = uiState.showCoverMenu,
-        enter = slideInVertically { it },
-        exit = slideOutVertically(tween(200)) { it },
-        modifier = Modifier
-            .swipeable(state = swipeableState,
-                orientation = Orientation.Vertical,
-                anchors = mapOf(
-                    0f to DragStates.VISIBLE, sizePx to DragStates.DISMISSED
-                ),
-                thresholds = { _, _ -> FractionalThreshold(0.3f) })
-            .offset { IntOffset(0, swipeableState.offset.value.roundToInt()) }
-    ) {
-        val shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-        Box(
+    if (uiState.showCoverMenu) {
+        ModalBottomSheet(
             modifier = Modifier
+                .windowInsetsPadding(WindowInsets.ime)
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .background(
-                    color = colorResource(id = R.color.background_secondary),
-                    shape = shape
+                .wrapContentHeight(),
+            scrimColor = colorResource(id = R.color.modal_screen_outside_background),
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            onDismissRequest = { action(Dismiss) },
+            sheetState = bottomSheetState,
+            dragHandle = { DragHandle() },
+            content = {
+                Content(
+                    uiState = uiState,
+                    action = action
                 )
-                .clip(shape)
-        ) {
-            WidgetHeader(title = stringResource(R.string.view_layout_cover_widget_title))
-            LazyColumn(
-                state = lazyListState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 64.dp, bottom = 250.dp)
+            }
+        )
+    }
+}
+
+@Composable
+private fun ColumnScope.Content(
+    uiState: ViewerLayoutWidgetUi,
+    action: (ViewerLayoutWidgetUi.Action) -> Unit,
+) {
+    val lazyListState = rememberLazyListState()
+    Spacer(modifier = Modifier.height(12.dp))
+    Text(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        text = stringResource(R.string.view_layout_cover_widget_title),
+        style = Title1,
+        color = colorResource(R.color.text_primary)
+    )
+    LazyColumn(
+        state = lazyListState,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp, bottom = 250.dp)
+    ) {
+        items(
+            count = uiState.imagePreviewItems.size,
+            key = { index -> uiState.imagePreviewItems[index].relationKey.key }
+        ) { idx ->
+            val item = uiState.imagePreviewItems[idx]
+            val title = item.getTitle()
+            val iconDrawableRes = when (item) {
+                is ImagePreview.None -> null
+                is ImagePreview.PageCover -> null
+                is ImagePreview.Custom -> R.drawable.ic_relation_attachment_24
+            }
+            CoverItem(
+                text = title,
+                checked = item.isChecked,
+                iconDrawableRes = iconDrawableRes
             ) {
-                items(
-                    count = uiState.imagePreviewItems.size,
-                    key = { index -> uiState.imagePreviewItems[index].relationKey.key }
-                ) { idx ->
-                    val item = uiState.imagePreviewItems[idx]
-                    val title = item.getTitle()
-                    val iconDrawableRes = when (item) {
-                        is ImagePreview.None -> null
-                        is ImagePreview.PageCover -> null
-                        is ImagePreview.Custom -> R.drawable.ic_relation_attachment_24
-                    }
-                    CoverItem(
-                        text = title,
-                        checked = item.isChecked,
-                        iconDrawableRes = iconDrawableRes
-                    ) {
-                        action(ViewerLayoutWidgetUi.Action.ImagePreviewUpdate(item))
-                    }
-                }
+                action(ViewerLayoutWidgetUi.Action.ImagePreviewUpdate(item))
             }
         }
     }

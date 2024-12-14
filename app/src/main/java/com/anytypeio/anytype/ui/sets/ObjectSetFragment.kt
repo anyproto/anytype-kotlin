@@ -431,7 +431,6 @@ open class ObjectSetFragment :
                 ViewerLayoutWidget(
                     uiState = vm.viewerLayoutWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewerLayoutWidgetAction,
-                    scope = lifecycleScope
                 )
             }
         }

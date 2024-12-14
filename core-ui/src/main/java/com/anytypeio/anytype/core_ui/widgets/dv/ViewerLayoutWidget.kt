@@ -57,15 +57,12 @@ import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Dismi
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.FitImage
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Icon
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.State.CardSize
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ViewerLayoutWidget(
     uiState: ViewerLayoutWidgetUi,
     action: (ViewerLayoutWidgetUi.Action) -> Unit,
-    scope: CoroutineScope
 ) {
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -292,7 +289,7 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
             layoutType = DVViewerType.GRID,
             imageResource = R.drawable.ic_layout_grid,
             imageResourceSelected = R.drawable.ic_layout_grid_selected,
-            contentDescription = "Grid",
+            contentDescription = stringResource(id = R.string.view_grid),
             click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GRID)) }
         )
         LayoutIcon(
@@ -301,7 +298,7 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
             layoutType = DVViewerType.GALLERY,
             imageResourceSelected = R.drawable.ic_layout_gallery_selected,
             imageResource = R.drawable.ic_layout_gallery,
-            contentDescription = "Gallery",
+            contentDescription = stringResource(id = R.string.view_gallery),
             click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GALLERY)) }
         )
         LayoutIcon(
@@ -310,7 +307,7 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
             layoutType = DVViewerType.LIST,
             imageResourceSelected = R.drawable.ic_layout_list_selected,
             imageResource = R.drawable.ic_layout_list,
-            contentDescription = "List",
+            contentDescription = stringResource(id = R.string.view_list),
             click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.LIST)) }
         )
         LayoutIcon(
@@ -319,7 +316,7 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
             layoutType = DVViewerType.BOARD,
             imageResourceSelected = R.drawable.ic_layout_kanban_selected,
             imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = "Kanban",
+            contentDescription = stringResource(id = R.string.view_kanban),
             click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
         )
         LayoutIcon(
@@ -405,10 +402,7 @@ fun PreviewLayoutScreen() {
             showCoverMenu = false,
             imagePreviewItems = emptyList()
         ),
-        action = {},
-        scope = CoroutineScope(
-            Dispatchers.Main
-        )
+        action = {}
     )
 }
 

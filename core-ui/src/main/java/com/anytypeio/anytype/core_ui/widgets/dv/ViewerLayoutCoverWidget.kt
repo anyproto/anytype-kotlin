@@ -40,8 +40,6 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Dismiss
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.State.ImagePreview
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -193,9 +191,6 @@ fun PreviewLayoutCoverWidget() {
                 )
             )
         ),
-        action = {},
-        scope = CoroutineScope(
-            Dispatchers.Main
-        )
+        action = {}
     )
 }

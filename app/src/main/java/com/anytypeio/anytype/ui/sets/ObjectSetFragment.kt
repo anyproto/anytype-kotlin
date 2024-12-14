@@ -411,7 +411,6 @@ open class ObjectSetFragment :
                 ViewersWidget(
                     state = vm.viewersWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewersWidgetAction,
-                    scope = lifecycleScope
                 )
             }
         }
@@ -422,7 +421,6 @@ open class ObjectSetFragment :
                 ViewerEditWidget(
                     state = vm.viewerEditWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewerEditWidgetAction,
-                    scope = lifecycleScope
                 )
             }
         }
@@ -433,7 +431,6 @@ open class ObjectSetFragment :
                 ViewerLayoutWidget(
                     uiState = vm.viewerLayoutWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewerLayoutWidgetAction,
-                    scope = lifecycleScope
                 )
             }
         }

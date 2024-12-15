@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -91,7 +92,8 @@ class DateObjectViewModel(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val createObject: CreateObject,
     private val fieldParser: FieldParser,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val getDateObjectByTimestamp: GetDateObjectByTimestamp
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiCalendarIconState = MutableStateFlow<UiCalendarIconState>(UiCalendarIconState.Hidden)
@@ -185,14 +187,27 @@ class DateObjectViewModel(
 
     private fun proceedWithReopenDateObjectByTimestamp(timeInSeconds: TimeInSeconds) {
         viewModelScope.launch {
-            fieldParser.getDateObjectByTimeInSeconds(
-                timeInSeconds = timeInSeconds,
-                spaceId = vmParams.spaceId,
-                actionSuccess = { obj ->
-                    reopenDateObject(obj.id)
+            val params = GetDateObjectByTimestamp.Params(
+                space = vmParams.spaceId,
+                timestampInSeconds = timeInSeconds
+            )
+            getDateObjectByTimestamp.async(params).fold(
+                onSuccess = { dateObject ->
+                    val obj = ObjectWrapper.Basic(dateObject.orEmpty())
+                    if (obj.isValid) {
+                        reopenDateObject(obj.id)
+                    } else {
+                        Timber.w("Date object is invalid")
+                        errorState.value = UiErrorState.Show(
+                            Reason.Other(msg = "Couldn't open date object, object is invalid")
+                        )
+                    }
                 },
-                actionFailure = {
-                    Timber.e("GettingDateByTimestamp error, object has no id")
+                onFailure = { e ->
+                    Timber.e(e, "Failed to get date object by timestamp :$timeInSeconds")
+                    errorState.value = UiErrorState.Show(
+                        Reason.Other(msg = "Couldn't open date object:\n${e.message?.take(30)}")
+                    )
                 }
             )
         }

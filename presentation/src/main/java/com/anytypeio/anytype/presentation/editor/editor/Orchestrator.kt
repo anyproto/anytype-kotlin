@@ -423,7 +423,7 @@ class Orchestrator(
                         params = Move.Params(
                             context = intent.context,
                             targetContext = intent.targetContext,
-                            targetId = "",
+                            targetId = intent.target,
                             blockIds = intent.blocks,
                             position = intent.position
                         )

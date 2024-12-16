@@ -6360,7 +6360,7 @@ class EditorViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Document.Move(
                     context = context,
-                    target = target,
+                    target = if (targetContext != context) "" else target,
                     targetContext = targetContext,
                     blocks = listOf(dragged),
                     position = position

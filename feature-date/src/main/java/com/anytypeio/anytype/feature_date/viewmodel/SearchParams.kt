@@ -111,8 +111,7 @@ private fun buildFieldFilters(
                             relation = Relations.ORIGIN,
                             condition = DVFilterCondition.NOT_IN,
                             value = listOf(
-                                ObjectOrigin.BUILT_IN.code.toDouble(),
-                                ObjectOrigin.USE_CASE.code.toDouble()
+                                ObjectOrigin.BUILT_IN.code.toDouble()
                             )
                         )
                     )

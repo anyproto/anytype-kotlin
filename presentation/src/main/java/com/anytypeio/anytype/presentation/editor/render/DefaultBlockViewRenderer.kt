@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.ext.textColor
@@ -622,6 +623,11 @@ class DefaultBlockViewRenderer @Inject constructor(
                     isPreviousBlockMedia = link is BlockView.LinkToObject.Default.Card
                 }
                 is Content.File -> {
+                    val detail = details.details.getOrDefault(root.id, Block.Fields.empty())
+                    val obj = ObjectWrapper.Basic(detail.map)
+                    if (SupportedLayouts.fileLayouts.contains(obj.layout)) {
+                        return@forEach
+                    }
                     mCounter = 0
                     val blockDecorationScheme = buildNestedDecorationData(
                         block = block,

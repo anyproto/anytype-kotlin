@@ -139,6 +139,7 @@ class CreateSpaceViewModel(
     }
 
     companion object {
-        const val MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE = 1
+        // Always applying "empty" use-case when creating new space
+        const val MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE = 0
     }
 }

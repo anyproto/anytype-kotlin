@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -440,8 +441,8 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         }
 
         verifyBlocking(move, times(1)) {
-            invoke(
-                params = MoveOld.Params(
+            async(
+                params = Move.Params(
                     context = root,
                     targetContext = root,
                     targetId = b.id,
@@ -511,8 +512,8 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         }
 
         verifyBlocking(move, times(1)) {
-            invoke(
-                params = MoveOld.Params(
+            async(
+                params = Move.Params(
                     context = root,
                     targetContext = root,
                     targetId = b.id,
@@ -573,8 +574,8 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         }
 
         verifyBlocking(move, times(1)) {
-            invoke(
-                params = MoveOld.Params(
+            async(
+                params = Move.Params(
                     context = root,
                     targetContext = b.content<Block.Content.Link>().target,
                     targetId = b.id,
@@ -882,8 +883,8 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
         // Verifying order of selected blocks used in request
 
         verifyBlocking(move, times(1)) {
-            invoke(
-                params = MoveOld.Params(
+            async(
+                params = Move.Params(
                     context = root,
                     targetContext = root,
                     targetId = a.id,

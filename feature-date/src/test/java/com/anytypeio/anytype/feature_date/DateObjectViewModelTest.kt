@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
-import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -28,7 +27,6 @@ import com.anytypeio.anytype.feature_date.viewmodel.DateObjectViewModel.Companio
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.feature_date.viewmodel.createSearchParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
@@ -42,10 +40,10 @@ import org.junit.rules.TestRule
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
-import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
 class DateObjectViewModelTest {
@@ -53,64 +51,60 @@ class DateObjectViewModelTest {
     @get:Rule
     var rule: TestRule = DefaultCoroutineTestRule()
 
-    @Mock
-    private lateinit var getObject: GetObject
+    @Mock private lateinit var getObject: GetObject
+    @Mock private lateinit var analytics: Analytics
+    @Mock private lateinit var urlBuilder: UrlBuilder
+    @Mock lateinit var dateProvider: DateProvider
+    @Mock private lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    @Mock private lateinit var userPermissionProvider: UserPermissionProvider
+    @Mock private lateinit var relationListWithValue: GetObjectRelationListById
+    @Mock private lateinit var storeOfObjectTypes: StoreOfObjectTypes
+    @Mock private lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
+    @Mock private lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+    @Mock lateinit var createObject: CreateObject
+    @Mock lateinit var setObjectListIsArchived: SetObjectListIsArchived
+    @Mock lateinit var fieldParser: FieldParser
+    @Mock lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
+    private lateinit var storeOfRelations: StoreOfRelations
 
-    @Mock
-    private lateinit var analytics: Analytics
-
-    @Mock
-    private lateinit var urlBuilder: UrlBuilder
-
-    @Mock
-    lateinit var dateProvider: DateProvider
-
-    @Mock
-    private lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
-
-    @Mock
-    private lateinit var userPermissionProvider: UserPermissionProvider
-
-    @Mock
-    private lateinit var relationListWithValue: GetObjectRelationListById
-
-    lateinit var storeOfRelations: StoreOfRelations
-
-    @Mock
-    private lateinit var storeOfObjectTypes: StoreOfObjectTypes
-
-    @Mock
-    private lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
-
-    @Mock
-    private lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
-
-    @Mock
-    lateinit var createObject: CreateObject
-
-    @Mock
-    lateinit var setObjectListIsArchived: SetObjectListIsArchived
-
-    @Mock
-    lateinit var fieldParser: FieldParser
-
-    @Mock
-    lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
-
-    //Params
-    val spaceId = SpaceId("testSpaceId")
+    private val spaceId = SpaceId("testSpaceId")
 
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
         storelessSubscriptionContainer = mock(verboseLogging = true)
-        `when`(userPermissionProvider.get(space = spaceId)).thenReturn(SpaceMemberPermissions.OWNER)
-        `when`(userPermissionProvider.observe(space = spaceId)).thenReturn(
-            flowOf(
-                SpaceMemberPermissions.OWNER
-            )
-        )
+        setupDefaultMocks()
         storeOfRelations = DefaultStoreOfRelations()
+    }
+
+    private fun setupDefaultMocks() {
+        `when`(userPermissionProvider.get(space = spaceId)).thenReturn(SpaceMemberPermissions.OWNER)
+        `when`(userPermissionProvider.observe(space = spaceId)).thenReturn(flowOf(SpaceMemberPermissions.OWNER))
+    }
+
+    private fun createGetObjectParams(objectId: String): GetObject.Params {
+        return GetObject.Params(
+            target = objectId,
+            space = spaceId,
+            saveAsLastOpened = true
+        )
+    }
+
+    private fun createRelationListWithValueParams(objectId: String): GetObjectRelationListById.Params {
+        return GetObjectRelationListById.Params(
+            space = spaceId,
+            value = objectId
+        )
+    }
+
+    private suspend fun mockGetObjectSuccess(objectId: String, stubObjectView: ObjectView) {
+        val params = createGetObjectParams(objectId)
+        whenever(getObject.async(params)).thenReturn(Resultat.success(stubObjectView))
+    }
+
+    private suspend fun mockRelationListWithValueSuccess(objectId: String, list: List<RelationListWithValueItem>) {
+        val params = createRelationListWithValueParams(objectId)
+        whenever(relationListWithValue.async(params)).thenReturn(Resultat.success(list))
     }
 
     @Test
@@ -118,33 +112,17 @@ class DateObjectViewModelTest {
 
         // Arrange
         val objectId = "testObjectId-${RandomString.make()}"
-        val getObjectParams = GetObject.Params(
-            target = objectId,
-            space = spaceId,
-            saveAsLastOpened = true
-        )
         val stubObjectView = StubObjectView(root = objectId)
-        val relationListWithValueParams = GetObjectRelationListById.Params(
-            space = spaceId,
-            value = objectId
-        )
-
-        whenever(getObject.async(getObjectParams))
-            .thenReturn(Resultat.success(stubObjectView))
-
-        whenever(relationListWithValue.async(relationListWithValueParams))
-            .thenReturn(Resultat.success(emptyList()))
+        mockGetObjectSuccess(objectId, stubObjectView)
+        mockRelationListWithValueSuccess(objectId, emptyList())
 
         // Act
         getViewModel(objectId = objectId, spaceId = spaceId)
         advanceUntilIdle()
 
         // Assert
-        verifyBlocking(getObject, times(1)) { async(getObjectParams) }
-        verifyNoMoreInteractions(getObject)
-
-        verifyBlocking(relationListWithValue, times(1)) { async(relationListWithValueParams) }
-        verifyNoMoreInteractions(relationListWithValue)
+        verifyBlocking(getObject, times(1)) { async(createGetObjectParams(objectId)) }
+        verifyBlocking(relationListWithValue, times(1)) { async(createRelationListWithValueParams(objectId)) }
     }
 
     @Test
@@ -153,22 +131,11 @@ class DateObjectViewModelTest {
 
             // Arrange
             val objectId = "testObjectId1-${RandomString.make()}"
-            val getObjectParams = GetObject.Params(
-                target = objectId,
-                space = spaceId,
-                saveAsLastOpened = true
-            )
+            val nextObjectId = "nextObjectId-${RandomString.make()}"
             val stubObjectView = StubObjectView(root = objectId)
-            val relationListWithValueParams = GetObjectRelationListById.Params(
-                space = spaceId,
-                value = objectId
-            )
 
-            whenever(getObject.async(getObjectParams))
-                .thenReturn(Resultat.success(stubObjectView))
-
-            whenever(relationListWithValue.async(relationListWithValueParams))
-                .thenReturn(Resultat.success(emptyList()))
+            mockGetObjectSuccess(objectId, stubObjectView)
+            mockRelationListWithValueSuccess(objectId, emptyList())
 
             val vm = getViewModel(objectId = objectId, spaceId = spaceId)
 
@@ -176,12 +143,11 @@ class DateObjectViewModelTest {
             advanceUntilIdle()
 
             // Assert
-            verifyBlocking(getObject, times(1)) { async(getObjectParams) }
-            verifyBlocking(relationListWithValue, times(1)) { async(relationListWithValueParams) }
+            verifyBlocking(getObject, times(1)) { async(createGetObjectParams(objectId)) }
+            verifyBlocking(relationListWithValue, times(1)) { async(createRelationListWithValueParams(objectId)) }
 
             // Arrange for next call
             val tomorrowTimestamp = 211L
-            val nextObjectId = "nextObjectId-${RandomString.make()}"
             whenever(dateProvider.getTimestampForTomorrowAtStartOfDay())
                 .thenReturn(tomorrowTimestamp)
 
@@ -197,31 +163,16 @@ class DateObjectViewModelTest {
                 )
             )
 
-            val nextGetObjectParams = GetObject.Params(
-                target = nextObjectId,
-                space = spaceId,
-                saveAsLastOpened = true
-            )
-            whenever(getObject.async(nextGetObjectParams))
-                .thenReturn(Resultat.success(stubObjectView))
-
-            val nextRelationListWithValueParams = GetObjectRelationListById.Params(
-                space = spaceId,
-                value = nextObjectId
-            )
-            whenever(relationListWithValue.async(nextRelationListWithValueParams))
-                .thenReturn(Resultat.success(emptyList()))
+            mockGetObjectSuccess(nextObjectId, stubObjectView)
+            mockRelationListWithValueSuccess(nextObjectId, emptyList())
 
             // Act
             vm.onDateEvent(DateEvent.Calendar.OnTomorrowClick)
             advanceUntilIdle()
 
             // Assert
-            verifyBlocking(getObject, times(1)) { async(nextGetObjectParams) }
-            verifyBlocking(
-                relationListWithValue,
-                times(1)
-            ) { async(nextRelationListWithValueParams) }
+            verifyBlocking(getObject, times(1)) { async(createGetObjectParams(nextObjectId)) }
+            verifyBlocking(relationListWithValue, times(1)) { async(createRelationListWithValueParams(nextObjectId)) }
         }
 
     @Test
@@ -229,24 +180,6 @@ class DateObjectViewModelTest {
         runTest {
 
             // Arrange
-            val objectId = "testObjectId1-${RandomString.make()}"
-            val getObjectParams = GetObject.Params(
-                target = objectId,
-                space = spaceId,
-                saveAsLastOpened = true
-            )
-            val stubObjectView = StubObjectView(
-                root = objectId,
-                details = mapOf(
-                    objectId to mapOf(
-                        Relations.TIMESTAMP to 123.0
-                    )
-                )
-            )
-            val relationListWithValueParams = GetObjectRelationListById.Params(
-                space = spaceId,
-                value = objectId
-            )
 
             val fieldKey = RelationKey("key1-${RandomString.make()}")
             val fieldKey2 = RelationKey("key2-${RandomString.make()}")
@@ -283,12 +216,6 @@ class DateObjectViewModelTest {
                 ),
             )
 
-            whenever(getObject.async(getObjectParams))
-                .thenReturn(Resultat.success(stubObjectView))
-
-            whenever(relationListWithValue.async(relationListWithValueParams))
-                .thenReturn(Resultat.success(relationsListWithValues))
-
             whenever(dateProvider.formatTimestampToDateAndTime(123 * 1000))
                 .thenReturn("01-01-2024" to "12:00")
             whenever(dateProvider.calculateRelativeDates(123))
@@ -300,6 +227,19 @@ class DateObjectViewModelTest {
                         formattedTime = "12:00"
                     )
                 )
+
+            val objectId = "testObjectId1-${RandomString.make()}"
+            val stubObjectView = StubObjectView(
+                root = objectId,
+                details = mapOf(
+                    objectId to mapOf(
+                        Relations.TIMESTAMP to 123.0
+                    )
+                )
+            )
+
+            mockGetObjectSuccess(objectId, stubObjectView)
+            mockRelationListWithValueSuccess(objectId, relationsListWithValues)
 
             val vm = getViewModel(objectId = objectId, spaceId = spaceId)
 
@@ -381,11 +321,6 @@ class DateObjectViewModelTest {
 
             // Arrange
             val objectId = "testObjectId1-${RandomString.make()}"
-            val getObjectParams = GetObject.Params(
-                target = objectId,
-                space = spaceId,
-                saveAsLastOpened = true
-            )
             val stubObjectView = StubObjectView(
                 root = objectId,
                 details = mapOf(
@@ -393,10 +328,6 @@ class DateObjectViewModelTest {
                         Relations.TIMESTAMP to 123.0
                     )
                 )
-            )
-            val relationListWithValueParams = GetObjectRelationListById.Params(
-                space = spaceId,
-                value = objectId
             )
 
             val relationsListWithValues = listOf(
@@ -406,11 +337,8 @@ class DateObjectViewModelTest {
                 )
             )
 
-            whenever(getObject.async(getObjectParams))
-                .thenReturn(Resultat.success(stubObjectView))
-
-            whenever(relationListWithValue.async(relationListWithValueParams))
-                .thenReturn(Resultat.success(relationsListWithValues))
+            mockGetObjectSuccess(objectId, stubObjectView)
+            mockRelationListWithValueSuccess(objectId, relationsListWithValues)
 
             whenever(dateProvider.formatTimestampToDateAndTime(123 * 1000))
                 .thenReturn("01-01-2024" to "12:00")
@@ -457,11 +385,6 @@ class DateObjectViewModelTest {
 
             // Arrange
             val objectId = "testObjectId1-${RandomString.make()}"
-            val getObjectParams = GetObject.Params(
-                target = objectId,
-                space = spaceId,
-                saveAsLastOpened = true
-            )
             val stubObjectView = StubObjectView(
                 root = objectId,
                 details = mapOf(
@@ -469,10 +392,6 @@ class DateObjectViewModelTest {
                         Relations.TIMESTAMP to 123.0
                     )
                 )
-            )
-            val relationListWithValueParams = GetObjectRelationListById.Params(
-                space = spaceId,
-                value = objectId
             )
 
             val relationsListWithValues = listOf(
@@ -482,11 +401,8 @@ class DateObjectViewModelTest {
                 )
             )
 
-            whenever(getObject.async(getObjectParams))
-                .thenReturn(Resultat.success(stubObjectView))
-
-            whenever(relationListWithValue.async(relationListWithValueParams))
-                .thenReturn(Resultat.success(relationsListWithValues))
+            mockGetObjectSuccess(objectId, stubObjectView)
+            mockRelationListWithValueSuccess(objectId, relationsListWithValues)
 
             whenever(dateProvider.formatTimestampToDateAndTime(123 * 1000))
                 .thenReturn("01-01-2024" to "12:00")
@@ -548,11 +464,6 @@ class DateObjectViewModelTest {
 
             // Arrange
             val objectId = "testObjectId1-${RandomString.make()}"
-            val getObjectParams = GetObject.Params(
-                target = objectId,
-                space = spaceId,
-                saveAsLastOpened = true
-            )
             val stubObjectView = StubObjectView(
                 root = objectId,
                 details = mapOf(
@@ -560,10 +471,6 @@ class DateObjectViewModelTest {
                         Relations.TIMESTAMP to 123.0
                     )
                 )
-            )
-            val relationListWithValueParams = GetObjectRelationListById.Params(
-                space = spaceId,
-                value = objectId
             )
 
             val relationsListWithValues = listOf(
@@ -573,11 +480,8 @@ class DateObjectViewModelTest {
                 )
             )
 
-            whenever(getObject.async(getObjectParams))
-                .thenReturn(Resultat.success(stubObjectView))
-
-            whenever(relationListWithValue.async(relationListWithValueParams))
-                .thenReturn(Resultat.success(relationsListWithValues))
+            mockGetObjectSuccess(objectId, stubObjectView)
+            mockRelationListWithValueSuccess(objectId, relationsListWithValues)
 
             whenever(dateProvider.formatTimestampToDateAndTime(123 * 1000))
                 .thenReturn("01-01-2024" to "12:00")
@@ -642,11 +546,6 @@ class DateObjectViewModelTest {
 
             // Arrange
             val objectId = "testObjectId1-${RandomString.make()}"
-            val getObjectParams = GetObject.Params(
-                target = objectId,
-                space = spaceId,
-                saveAsLastOpened = true
-            )
             val stubObjectView = StubObjectView(
                 root = objectId,
                 details = mapOf(
@@ -654,10 +553,6 @@ class DateObjectViewModelTest {
                         Relations.TIMESTAMP to 123.0
                     )
                 )
-            )
-            val relationListWithValueParams = GetObjectRelationListById.Params(
-                space = spaceId,
-                value = objectId
             )
 
             val relationsListWithValues = listOf(
@@ -667,11 +562,8 @@ class DateObjectViewModelTest {
                 )
             )
 
-            whenever(getObject.async(getObjectParams))
-                .thenReturn(Resultat.success(stubObjectView))
-
-            whenever(relationListWithValue.async(relationListWithValueParams))
-                .thenReturn(Resultat.success(relationsListWithValues))
+            mockGetObjectSuccess(objectId, stubObjectView)
+            mockRelationListWithValueSuccess(objectId, relationsListWithValues)
 
             whenever(dateProvider.formatTimestampToDateAndTime(123 * 1000))
                 .thenReturn("01-01-2024" to "12:00")

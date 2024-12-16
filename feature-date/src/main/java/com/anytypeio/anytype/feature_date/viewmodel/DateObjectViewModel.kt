@@ -46,7 +46,6 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel.Companion.DEFAULT_DEBOUNCE_DURATION
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import kotlin.collections.map
@@ -292,8 +291,9 @@ class DateObjectViewModel(
                 relationIds
             }.collect { relationIds ->
                 Timber.d("RelationListWithValue: $relationIds")
-                val items = relationIds.toUiFieldsItem(storeOfRelations = storeOfRelations)
-                initFieldsState(items)
+                initFieldsState(
+                    items = relationIds.toUiFieldsItem(storeOfRelations = storeOfRelations)
+                )
             }
         }
     }
@@ -917,37 +917,38 @@ class DateObjectViewModel(
     //endregion
 
     //region Ui State
-    private fun initFieldsState(relations: List<UiFieldsItem.Item>) {
-        Timber.d("Init fields state with relations: $relations")
-        if (relations.isEmpty()) {
-            uiFieldsState.value = UiFieldsState.Empty
-            _activeField.value = null
-            Timber.w("Error getting fields for date object:${_dateId.value}, fields are empty")
+    private fun initFieldsState(items: List<UiFieldsItem.Item>) {
+        Timber.d("Init fields state with items: $items")
+        if (items.isEmpty()) {
+            handleEmptyFieldsState()
             return
         }
-        val relation = relations.getOrNull(0)
-        if (relation == null) {
-            uiFieldsState.value = UiFieldsState.Empty
-            _activeField.value = null
-            Timber.w("Error getting fields for date object:${_dateId.value}, first field is null")
-            return
-        }
+
+        val firstItem = items.first()
         _activeField.value = ActiveField(
-            key = relation.key,
-            format = relation.relationFormat
+            key = firstItem.key,
+            format = firstItem.relationFormat
         )
         restartSubscription.value++
         uiFieldsState.value = UiFieldsState(
             items = buildList {
                 add(UiFieldsItem.Settings())
-                addAll(relations)
+                addAll(items)
             },
             selectedRelationKey = _activeField.value?.key
         )
-        if (relations.isEmpty()) {
-            uiContentState.value = UiContentState.Empty
-            uiObjectsListState.value = UiObjectsListState.Empty
-        }
+    }
+
+    private fun handleEmptyFieldsState() {
+        uiFieldsState.value = UiFieldsState.Empty
+        uiContentState.value = UiContentState.Empty
+        uiObjectsListState.value = UiObjectsListState.Empty
+        _activeField.value = null
+        canPaginate.value = false
+        resetLimit()
+        shouldScrollToTopItems = true
+        uiFieldsSheetState.value = UiFieldsSheetState.Hidden
+        Timber.w("Error getting fields for date object:${_dateId.value}, fields are empty")
     }
 
     private fun updateHorizontalListState(selectedItem: UiFieldsItem.Item, needToScroll: Boolean = false) {

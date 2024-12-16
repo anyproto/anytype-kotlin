@@ -432,6 +432,9 @@ class Orchestrator(
                             intent.onSuccess?.invoke()
                             proxies.payloads.send(it)
                             analytics.sendAnalyticsReorderBlockEvent(intent.blocks.size)
+                        },
+                        onFailure = {
+                            Timber.e(it, "Error while moving blocks")
                         }
                     )
                 }

@@ -8,12 +8,14 @@ import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.unset
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 interface StoreOfRelations {
     val size: Int
+    suspend fun observe(): Flow<Map<Id, ObjectWrapper.Relation>>
     suspend fun getByKey(key: Key): ObjectWrapper.Relation?
     suspend fun getByKeys(keys: List<Key>): List<ObjectWrapper.Relation>
     suspend fun getById(id: Id): ObjectWrapper.Relation?
@@ -125,5 +127,9 @@ class DefaultStoreOfRelations : StoreOfRelations {
 
     override fun trackChanges(): Flow<StoreOfRelations.TrackedEvent> = updates.onStart {
         emit(StoreOfRelations.TrackedEvent.Init)
+    }
+
+    override suspend fun observe(): Flow<Map<Id, ObjectWrapper.Relation>> {
+        return trackChanges().map { store }
     }
 }

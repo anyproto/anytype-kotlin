@@ -8,12 +8,13 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.interactor.Move.Params
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import javax.inject.Inject
 
 /**
  * Use-case for moving a group of blocks (cross-document, inside one document, one block after another, etc).
  * @see Params for details.
  */
-class Move(
+class Move @Inject constructor(
     private val repo: BlockRepository,
     appCoroutineDispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<Params, Payload>(appCoroutineDispatchers.io) {

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.suspendFold
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
@@ -11,6 +12,7 @@ import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
+import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
@@ -81,7 +83,7 @@ class Orchestrator(
     private val updateFields: UpdateFields,
     private val createTable: CreateTable,
     private val fillTableRow: FillTableRow,
-    private val move: MoveOld,
+    private val move: Move,
     private val copy: Copy,
     private val paste: Paste,
     private val undo: Undo,
@@ -417,17 +419,16 @@ class Orchestrator(
                     )
                 }
                 is Intent.Document.Move -> {
-                    move(
-                        params = MoveOld.Params(
+                    move.async(
+                        params = Move.Params(
                             context = intent.context,
                             targetContext = intent.targetContext,
-                            targetId = intent.target,
+                            targetId = "",
                             blockIds = intent.blocks,
                             position = intent.position
                         )
-                    ).proceed(
-                        failure = defaultOnError,
-                        success = {
+                    ).fold(
+                        onSuccess = {
                             intent.onSuccess?.invoke()
                             proxies.payloads.send(it)
                             analytics.sendAnalyticsReorderBlockEvent(intent.blocks.size)

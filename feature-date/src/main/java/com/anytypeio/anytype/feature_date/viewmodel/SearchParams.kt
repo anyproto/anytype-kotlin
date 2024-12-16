@@ -4,11 +4,13 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Relations.CREATED_DATE
 import com.anytypeio.anytype.core_models.Relations.LAST_MODIFIED_DATE
 import com.anytypeio.anytype.core_models.Relations.RELATION_KEY
 import com.anytypeio.anytype.core_models.Relations.TYPE
@@ -99,6 +101,17 @@ private fun buildFieldFilters(
                             value = mapOf(
                                 RELATION_KEY to fieldKey,
                                 TYPE to VALUE_FROM_RELATION
+                            )
+                        )
+                    )
+                }
+                if (fieldKey == CREATED_DATE) {
+                    add(
+                        DVFilter(
+                            relation = Relations.ORIGIN,
+                            condition = DVFilterCondition.NOT_IN,
+                            value = listOf(
+                                ObjectOrigin.BUILT_IN.code.toDouble()
                             )
                         )
                     )

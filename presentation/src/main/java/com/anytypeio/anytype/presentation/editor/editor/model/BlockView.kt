@@ -46,6 +46,8 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE_COLLECTION
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE_SET
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OPEN_FILE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OPEN_IMAGE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
@@ -1266,6 +1268,24 @@ sealed class BlockView : ViewType {
         val isTodoLayout: Boolean = false
     ) : BlockView() {
         override fun getViewType(): Int = HOLDER_FEATURED_RELATION
+    }
+
+    sealed class OpenFile(
+        override val id: String,
+        val isSelected: Boolean = false
+    ) : BlockView() {
+
+        data class Image(
+            override val id: String
+        ) : OpenFile(id) {
+            override fun getViewType(): Int = HOLDER_OPEN_IMAGE
+        }
+
+        data class File(
+            override val id: String
+        ) : OpenFile(id) {
+            override fun getViewType(): Int = HOLDER_OPEN_FILE
+        }
     }
 
     sealed class Relation : BlockView(), Selectable, Indentable, Decoratable {

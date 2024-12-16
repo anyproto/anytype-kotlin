@@ -45,6 +45,8 @@ object Types {
     const val HOLDER_FILE_PLACEHOLDER = 32
     const val HOLDER_FILE_UPLOAD = 33
     const val HOLDER_FILE_ERROR = 34
+    const val HOLDER_OPEN_FILE = 134
+    const val HOLDER_OPEN_IMAGE = 135
 
     const val HOLDER_DIVIDER_LINE = 16
     const val HOLDER_DIVIDER_DOTS = 38

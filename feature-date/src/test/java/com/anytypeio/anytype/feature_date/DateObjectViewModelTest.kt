@@ -126,7 +126,7 @@ class DateObjectViewModelTest {
     }
 
     @Test
-    fun `should call getObjects and getRelationListWithValue again after the dateObjectId is updated `() =
+    fun `should call getObjects and getRelationListWithValue again after the dateObjectId was updated `() =
         runTest {
 
             // Arrange

@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
+import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
@@ -141,7 +142,7 @@ open class EditorTestSetup {
     lateinit var uploadBlock: UploadBlock
     lateinit var splitBlock: SplitBlock
     lateinit var updateBackgroundColor: UpdateBackgroundColor
-    lateinit var move: MoveOld
+    lateinit var move: Move
     lateinit var setRelationKey: SetRelationKey
     lateinit var updateDetail: UpdateDetail
 
@@ -371,7 +372,9 @@ open class EditorTestSetup {
             clipboard = clipboard,
             matcher = uriMatcher
         )
-        move = MoveOld(repo)
+        move = Move(
+            repo, dispatchers
+        )
         getObjectTypes = GetObjectTypes(repo, dispatchers)
 
         updateBackgroundColor = UpdateBackgroundColor(repo)

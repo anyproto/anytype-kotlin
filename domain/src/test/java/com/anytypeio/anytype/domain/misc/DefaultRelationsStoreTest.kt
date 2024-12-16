@@ -1,11 +1,16 @@
 package com.anytypeio.anytype.domain.misc
 
+import app.cash.turbine.test
+import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 
 class DefaultRelationsStoreTest {
 
@@ -200,6 +205,30 @@ class DefaultRelationsStoreTest {
                 expected = null,
                 actual = store.getById(id)
             )
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should observe changes in store`() = runTest {
+        turbineScope{
+            val store = DefaultStoreOfRelations()
+            val relation = StubRelationObject()
+            val relation2 = StubRelationObject()
+            store.observe().test {
+                val firstItem = awaitItem()
+                assertTrue(firstItem.isEmpty(), "Initial store should be empty")
+
+                store.merge(listOf(relation))
+                advanceUntilIdle()
+                val secondItem = awaitItem()
+                assertEquals(1, secondItem.size, "Store should have one relation after merge")
+
+                store.merge(listOf(relation2))
+                advanceUntilIdle()
+                val thirdItem = awaitItem()
+                assertEquals(2, thirdItem.size, "Store should have two relations after second merge")
+            }
         }
     }
 }

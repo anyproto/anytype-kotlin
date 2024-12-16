@@ -13,6 +13,32 @@ import com.anytypeio.anytype.core_models.Relations.LAST_MODIFIED_DATE
 import com.anytypeio.anytype.core_models.Relations.RELATION_KEY
 import com.anytypeio.anytype.core_models.Relations.TYPE
 import com.anytypeio.anytype.core_models.TimeInSeconds
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.library.StoreSearchParams
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
+
+fun DateObjectViewModel.createSearchParams(
+    dateId: Id,
+    timestamp: TimeInSeconds,
+    field: ActiveField,
+    space: SpaceId,
+    itemsLimit: Int
+): StoreSearchParams {
+    val (filters, sorts) = filtersAndSortsForSearch(
+        spaces = listOf(space.id),
+        field = field,
+        timestamp = timestamp,
+        dateId = dateId
+    )
+    return StoreSearchParams(
+        space = space,
+        filters = filters,
+        sorts = sorts,
+        keys = defaultKeys,
+        limit = itemsLimit,
+        subscription = subscriptionId()
+    )
+}
 
 fun filtersAndSortsForSearch(
     dateId: Id,

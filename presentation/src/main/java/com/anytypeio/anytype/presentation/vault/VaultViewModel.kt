@@ -209,7 +209,7 @@ class VaultViewModel(
                         when(result) {
                             is DeepLinkToObjectDelegate.Result.Error -> {
                                 val link = deeplink.invite
-                                if (link != null) {
+                                if (link != null && result is DeepLinkToObjectDelegate.Result.Error.PermissionNeeded) {
                                     commands.emit(
                                         Command.Deeplink.Invite(
                                             link = spaceInviteResolver.createInviteLink(

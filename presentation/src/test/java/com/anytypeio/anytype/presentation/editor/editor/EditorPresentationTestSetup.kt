@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
+import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
@@ -249,7 +250,7 @@ open class EditorPresentationTestSetup {
     lateinit var replaceBlock: ReplaceBlock
 
     @Mock
-    lateinit var move: MoveOld
+    lateinit var move: Move
 
     lateinit var fieldParser: FieldParser
 
@@ -574,7 +575,7 @@ open class EditorPresentationTestSetup {
 
     fun stubMove() {
         move.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { async(any()) } doReturn Resultat.Success(
                 Payload(
                     context = root,
                     events = emptyList()

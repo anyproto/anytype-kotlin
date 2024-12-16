@@ -20,7 +20,7 @@ import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
-import com.anytypeio.anytype.domain.block.interactor.MoveOld
+import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
 import com.anytypeio.anytype.domain.block.interactor.SetLinkAppearance
@@ -447,7 +447,7 @@ object EditorSessionModule {
         createTable: CreateTable,
         fillTableRow: FillTableRow,
         matcher: DefaultPatternMatcher,
-        move: MoveOld,
+        move: Move,
         copy: Copy,
         paste: Paste,
         undo: Undo,
@@ -817,15 +817,6 @@ object EditorUseCaseModule {
     ): Copy = Copy(
         repo = repo,
         clipboard = clipboard
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideMoveUseCase(
-        repo: BlockRepository
-    ): MoveOld = MoveOld(
-        repo = repo
     )
 
     @JvmStatic

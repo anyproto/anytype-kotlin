@@ -4,16 +4,16 @@
     android:viewportWidth="20"
     android:viewportHeight="20">
   <path
+      android:name="outer_circle"
       android:pathData="M10,10m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"
-      android:strokeAlpha="0.2"
       android:fillColor="@color/palette_system_green"
       android:fillAlpha="0.2"/>
   <path
       android:pathData="M10,10m-7,0a7,7 0,1 1,14 0a7,7 0,1 1,-14 0"
-      android:strokeAlpha="0.4"
       android:fillColor="@color/palette_system_green"
-      android:fillAlpha="0.4"/>
+      android:fillAlpha="0.4" />
+
   <path
       android:pathData="M10,10m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
-      android:fillColor="@color/palette_system_green"/>
+      android:fillColor="@color/palette_system_green" />
 </vector>

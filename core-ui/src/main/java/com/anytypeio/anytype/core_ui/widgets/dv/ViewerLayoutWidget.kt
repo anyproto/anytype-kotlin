@@ -68,10 +68,6 @@ fun ViewerLayoutWidget(
         skipPartiallyExpanded = true
     )
 
-    var currentCoordinates: Rect by remember {
-        mutableStateOf(Rect.Zero)
-    }
-
     if (uiState.showWidget) {
         ModalBottomSheet(
             modifier = Modifier

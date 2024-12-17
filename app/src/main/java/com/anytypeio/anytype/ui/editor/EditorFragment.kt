@@ -24,8 +24,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
@@ -756,8 +758,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 SpaceSyncStatusScreen(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .windowInsetsPadding(WindowInsets.ime)
-                        .padding(bottom = 6.dp, start = 8.dp, end = 8.dp),
+                        .wrapContentHeight()
+                        .windowInsetsPadding(WindowInsets.navigationBars),
                     uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onSyncWidgetDismiss,
                     scope = lifecycleScope,

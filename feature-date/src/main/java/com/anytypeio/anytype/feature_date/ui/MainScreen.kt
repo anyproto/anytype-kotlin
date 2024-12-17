@@ -198,8 +198,7 @@ fun DateMainScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .windowInsetsPadding(WindowInsets.ime)
-                .padding(bottom = 27.dp, start = 8.dp, end = 8.dp),
+                .windowInsetsPadding(WindowInsets.navigationBars),
             uiState = uiSyncStatusState,
             onDismiss = { onDateEvent(DateEvent.SyncStatusWidget.OnSyncStatusDismiss) },
             scope = scope,

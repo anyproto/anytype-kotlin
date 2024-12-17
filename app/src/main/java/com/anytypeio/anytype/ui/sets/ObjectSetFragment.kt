@@ -460,7 +460,6 @@ open class ObjectSetFragment :
                         .windowInsetsPadding(WindowInsets.navigationBars),
                     uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onSyncWidgetDismiss,
-                    scope = lifecycleScope,
                     onUpdateAppClick = vm::onUpdateAppClick
                 )
             }

@@ -762,7 +762,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         .windowInsetsPadding(WindowInsets.navigationBars),
                     uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onSyncWidgetDismiss,
-                    scope = lifecycleScope,
                     onUpdateAppClick = vm::onUpdateAppClick
                 )
             }

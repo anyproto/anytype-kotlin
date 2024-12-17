@@ -4,6 +4,6 @@
     android:drawable="@drawable/ic_syncing">
 
     <target
-        android:name="outer_circle"
+        android:name="animatable_group"
         android:animation="@animator/pulse_anim" />
 </animated-vector>

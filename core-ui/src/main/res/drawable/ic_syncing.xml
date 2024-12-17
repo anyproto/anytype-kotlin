@@ -1,19 +1,39 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="20dp"
     android:height="20dp"
     android:viewportWidth="20"
     android:viewportHeight="20">
-  <path
-      android:name="outer_circle"
-      android:pathData="M10,10m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"
-      android:fillColor="@color/palette_system_green"
-      android:fillAlpha="0.2"/>
-  <path
-      android:pathData="M10,10m-7,0a7,7 0,1 1,14 0a7,7 0,1 1,-14 0"
-      android:fillColor="@color/palette_system_green"
-      android:fillAlpha="0.4" />
 
+  <!-- Group containing the outer two circles that we will scale -->
+  <group
+      android:name="animatable_group"
+      android:pivotX="10"
+      android:pivotY="10"
+      android:scaleX="0"
+      android:scaleY="0">
+
+    <!-- Outer circle (radius = 10) -->
+    <path
+        android:name="outer_circle"
+        android:pathData="M10,10m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"
+        android:fillColor="@color/palette_system_green"
+        android:fillAlpha="0.2" />
+
+    <!-- Middle circle (radius = 7) -->
+    <path
+        android:name="middle_circle"
+        android:pathData="M10,10m-7,0a7,7 0,1 1,14 0a7,7 0,1 1,-14 0"
+        android:fillColor="@color/palette_system_green"
+        android:fillAlpha="0.4" />
+
+  </group>
+
+  <!-- Center circle (radius = 4), remains static -->
   <path
+      android:name="center_circle"
       android:pathData="M10,10m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
       android:fillColor="@color/palette_system_green" />
+
 </vector>

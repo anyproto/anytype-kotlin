@@ -457,7 +457,9 @@ open class ObjectSetFragment :
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
+                        .padding(bottom = 16.dp)
                         .windowInsetsPadding(WindowInsets.navigationBars),
+                    modifierCard = Modifier.padding(start = 8.dp, end = 8.dp),
                     uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onSyncWidgetDismiss,
                     onUpdateAppClick = vm::onUpdateAppClick

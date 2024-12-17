@@ -44,6 +44,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.RelationListWithValueItem
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceUsage
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.chats.Chat
@@ -280,13 +281,23 @@ fun List<MBlock>.toCoreModels(): List<Block> = mapNotNull { block ->
             )
         }
         else -> {
-            Block(
-                id = block.id,
-                fields = block.toCoreModelsFields(),
-                children = block.childrenIds,
-                content = Block.Content.Unsupported,
-                backgroundColor = block.backgroundColor.ifEmpty { null }
-            )
+            if (block.id == Relations.FEATURED_RELATIONS) {
+                Block(
+                    id = block.id,
+                    fields = block.toCoreModelsFields(),
+                    children = block.childrenIds,
+                    content = Block.Content.FeaturedRelations,
+                    backgroundColor = block.backgroundColor.ifEmpty { null }
+                )
+            } else {
+                Block(
+                    id = block.id,
+                    fields = block.toCoreModelsFields(),
+                    children = block.childrenIds,
+                    content = Block.Content.Unsupported,
+                    backgroundColor = block.backgroundColor.ifEmpty { null }
+                )
+            }
         }
     }
 }

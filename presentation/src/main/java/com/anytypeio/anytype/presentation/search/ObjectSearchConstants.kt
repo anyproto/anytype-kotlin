@@ -516,8 +516,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.LAST_OPENED_DATE,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = null
+            condition = DVFilterCondition.GREATER,
+            value = 0.0
         )
     )
 

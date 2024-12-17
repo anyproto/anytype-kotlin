@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatus
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatusUpdate
@@ -49,6 +50,7 @@ import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 @Composable
 fun SpaceSyncStatusScreen(
     modifier: Modifier = Modifier,
+    modifierCard: Modifier = Modifier,
     uiState: SyncStatusWidgetState,
     onDismiss: () -> Unit,
     onUpdateAppClick: () -> Unit
@@ -60,7 +62,7 @@ fun SpaceSyncStatusScreen(
 
     if (uiState is SyncStatusWidgetState.Success || uiState is SyncStatusWidgetState.Error) {
         ModalBottomSheet(
-            modifier = modifier.padding(bottom = 16.dp),
+            modifier = modifier,
             scrimColor = colorResource(id = R.color.transparent_black),
             containerColor = colorResource(id = R.color.transparent_black),
             shape = RoundedCornerShape(16.dp),
@@ -70,10 +72,7 @@ fun SpaceSyncStatusScreen(
             dragHandle = null,
             content = {
                 ElevatedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentSize()
-                        .padding(start = 8.dp, end = 8.dp),
+                    modifier = modifierCard,
                     colors = CardDefaults.cardColors(
                         containerColor = colorResource(id = R.color.background_secondary)
                     ),

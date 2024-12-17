@@ -198,6 +198,7 @@ fun DateMainScreen(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .windowInsetsPadding(WindowInsets.navigationBars),
+            modifierCard = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
             uiState = uiSyncStatusState,
             onDismiss = { onDateEvent(DateEvent.SyncStatusWidget.OnSyncStatusDismiss) },
             onUpdateAppClick = {}

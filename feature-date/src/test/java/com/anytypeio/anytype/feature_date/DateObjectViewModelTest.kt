@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_date
 
+import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -25,8 +26,11 @@ import com.anytypeio.anytype.feature_date.viewmodel.ActiveField
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectViewModel
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectViewModel.Companion.DEFAULT_SEARCH_LIMIT
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
+import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem
+import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsState
 import com.anytypeio.anytype.feature_date.viewmodel.createSearchParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
@@ -620,6 +624,302 @@ class DateObjectViewModelTest {
             verifyBlocking(storelessSubscriptionContainer, times(1)) {
                 subscribe(subscribeParams)
             }
+        }
+
+    @Test
+    fun `should restart subscription with updated params after next day clicked`() =
+        runTest {
+
+            // Arrange
+            val firstDayTimestamp = 101.0
+            val firstDayObjectId = "firstDayId-${RandomString.make()}"
+            val stubFirstDayObjectView = StubObjectView(
+                root = firstDayObjectId,
+                details = mapOf(
+                    firstDayObjectId to mapOf(
+                        Relations.TIMESTAMP to firstDayTimestamp
+                    )
+                )
+            )
+            val firstDayRelation = RelationKey("firstDayRelation-${RandomString.make()}")
+            val firstDayRelationsListWithValues = listOf(
+                RelationListWithValueItem(
+                    key = firstDayRelation,
+                    counter = 5L
+                )
+            )
+
+            val nextDayTimestamp = 102.0
+            val nextDayObjectId = "nextDayId-${RandomString.make()}"
+            val stubNextDayObjectView = StubObjectView(
+                root = nextDayObjectId,
+                details = mapOf(
+                    nextDayObjectId to mapOf(
+                        Relations.TIMESTAMP to nextDayTimestamp
+                    )
+                )
+            )
+            val nextDayRelation = RelationKey("nextDayRelation-${RandomString.make()}")
+            val nextDayRelationsListWithValues = listOf(
+                RelationListWithValueItem(
+                    key = nextDayRelation,
+                    counter = 5L
+                )
+            )
+            val relationObjects = listOf(
+                StubRelationObject(
+                    key = firstDayRelation.key,
+                    name = "First day date relation",
+                    format = RelationFormat.DATE
+                ),
+                StubRelationObject(
+                    key = nextDayRelation.key,
+                    name = "Next day date relation",
+                    format = RelationFormat.DATE
+                )
+            )
+            storeOfRelations.merge(relationObjects)
+
+            mockGetObjectSuccess(firstDayObjectId, stubFirstDayObjectView)
+            mockRelationListWithValueSuccess(firstDayObjectId, firstDayRelationsListWithValues)
+
+            whenever(dateProvider.formatTimestampToDateAndTime(firstDayTimestamp.toLong() * 1000))
+                .thenReturn("01-01-2024" to "12:00")
+            whenever(dateProvider.calculateRelativeDates(firstDayTimestamp.toLong()))
+                .thenReturn(
+                    RelativeDate.Other(
+                        initialTimeInMillis = firstDayTimestamp.toLong() * 1000,
+                        dayOfWeek = DayOfWeekCustom.MONDAY,
+                        formattedDate = "01-01-2024",
+                        formattedTime = "12:00"
+                    )
+                )
+
+            val vm = getViewModel(objectId = firstDayObjectId, spaceId = spaceId)
+
+            val subscribeParams =  vm.createSearchParams(
+                dateId = firstDayObjectId,
+                timestamp = firstDayTimestamp.toLong(),
+                space = spaceId,
+                itemsLimit = DEFAULT_SEARCH_LIMIT,
+                field = ActiveField(
+                    key = firstDayRelation,
+                    format = RelationFormat.DATE
+                )
+            )
+
+            whenever(storelessSubscriptionContainer.subscribe(subscribeParams))
+                .thenReturn(emptyFlow<List<ObjectWrapper.Basic>>())
+
+            vm.onStart()
+            advanceUntilIdle()
+
+            // Assert
+            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+                subscribe(subscribeParams)
+            }
+
+            // Arrange, next day clicked, imitate the next day has no relations
+            whenever(dateProvider.getTimestampForTomorrowAtStartOfDay())
+                .thenReturn(nextDayTimestamp.toLong())
+            val params = GetDateObjectByTimestamp.Params(
+                timestampInSeconds = nextDayTimestamp.toLong(),
+                space = spaceId
+            )
+            whenever(getDateObjectByTimestamp.async(params)).thenReturn(
+                Resultat.success(
+                    mapOf(
+                        Relations.ID to nextDayObjectId
+                    )
+                )
+            )
+            mockGetObjectSuccess(nextDayObjectId, stubNextDayObjectView)
+            mockRelationListWithValueSuccess(nextDayObjectId, nextDayRelationsListWithValues)
+            val subscribeParamsNextDay =  vm.createSearchParams(
+                dateId = nextDayObjectId,
+                timestamp = nextDayTimestamp.toLong(),
+                space = spaceId,
+                itemsLimit = DEFAULT_SEARCH_LIMIT,
+                field = ActiveField(
+                    key = nextDayRelation,
+                    format = RelationFormat.DATE
+                )
+            )
+            whenever(dateProvider.formatTimestampToDateAndTime(nextDayTimestamp.toLong() * 1000))
+                .thenReturn("02-01-2024" to "12:00")
+            whenever(dateProvider.calculateRelativeDates(nextDayTimestamp.toLong()))
+                .thenReturn(
+                    RelativeDate.Other(
+                        initialTimeInMillis = nextDayTimestamp.toLong() * 1000,
+                        dayOfWeek = DayOfWeekCustom.THURSDAY,
+                        formattedDate = "02-01-2024",
+                        formattedTime = "12:00"
+                    )
+                )
+
+            // Act, next day clicked
+            vm.onDateEvent(DateEvent.Calendar.OnTomorrowClick)
+            advanceUntilIdle()
+
+            // Assert, new subscription started
+            vm.uiFieldsState.test{
+                val state = expectMostRecentItem()
+                assertEquals(
+                    listOf<UiFieldsItem>(
+                        UiFieldsItem.Settings(),
+                        UiFieldsItem.Item.Default(
+                            key = nextDayRelation,
+                            title = "Next day date relation",
+                            relationFormat = RelationFormat.DATE,
+                            id = nextDayRelation.key
+                        )
+                    ),
+                    state.items
+                )
+            }
+            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+                subscribe(subscribeParamsNextDay)
+            }
+        }
+
+    @Test
+    fun `should not restart subscription with updated params when new date has no active fields`() =
+        runTest {
+
+            // Arrange
+            val firstDayTimestamp = 101.0
+            val firstDayObjectId = "firstDayId-${RandomString.make()}"
+            val stubFirstDayObjectView = StubObjectView(
+                root = firstDayObjectId,
+                details = mapOf(
+                    firstDayObjectId to mapOf(
+                        Relations.TIMESTAMP to firstDayTimestamp
+                    )
+                )
+            )
+            val firstDayRelation = RelationKey("firstDayRelation-${RandomString.make()}")
+            val firstDayRelationsListWithValues = listOf(
+                RelationListWithValueItem(
+                    key = firstDayRelation,
+                    counter = 5L
+                )
+            )
+
+            val nextDayTimestamp = 102.0
+            val nextDayObjectId = "nextDayId-${RandomString.make()}"
+            val stubNextDayObjectView = StubObjectView(
+                root = nextDayObjectId,
+                details = mapOf(
+                    nextDayObjectId to mapOf(
+                        Relations.TIMESTAMP to nextDayTimestamp
+                    )
+                )
+            )
+            val nextDayRelation = RelationKey("nextDayRelation-${RandomString.make()}")
+            val nextDayRelationsListWithValues = listOf(
+                RelationListWithValueItem(
+                    key = nextDayRelation,
+                    counter = 5L
+                )
+            )
+            val relationObjects = listOf(
+                StubRelationObject(
+                    key = firstDayRelation.key,
+                    name = "First day date relation",
+                    format = RelationFormat.DATE
+                ),
+                StubRelationObject(
+                    key = nextDayRelation.key,
+                    name = "Next day date relation",
+                    format = RelationFormat.DATE,
+                    isHidden = true
+                )
+            )
+            storeOfRelations.merge(relationObjects)
+
+            mockGetObjectSuccess(firstDayObjectId, stubFirstDayObjectView)
+            mockRelationListWithValueSuccess(firstDayObjectId, firstDayRelationsListWithValues)
+
+            whenever(dateProvider.formatTimestampToDateAndTime(firstDayTimestamp.toLong() * 1000))
+                .thenReturn("01-01-2024" to "12:00")
+            whenever(dateProvider.calculateRelativeDates(firstDayTimestamp.toLong()))
+                .thenReturn(
+                    RelativeDate.Other(
+                        initialTimeInMillis = firstDayTimestamp.toLong() * 1000,
+                        dayOfWeek = DayOfWeekCustom.MONDAY,
+                        formattedDate = "01-01-2024",
+                        formattedTime = "12:00"
+                    )
+                )
+
+            val vm = getViewModel(objectId = firstDayObjectId, spaceId = spaceId)
+
+            val subscribeParams =  vm.createSearchParams(
+                dateId = firstDayObjectId,
+                timestamp = firstDayTimestamp.toLong(),
+                space = spaceId,
+                itemsLimit = DEFAULT_SEARCH_LIMIT,
+                field = ActiveField(
+                    key = firstDayRelation,
+                    format = RelationFormat.DATE
+                )
+            )
+
+            whenever(storelessSubscriptionContainer.subscribe(subscribeParams))
+                .thenReturn(emptyFlow<List<ObjectWrapper.Basic>>())
+
+            vm.onStart()
+            advanceUntilIdle()
+
+            // Assert
+            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+                subscribe(subscribeParams)
+            }
+
+            // Arrange, next day clicked, imitate the next day has no relations
+            whenever(dateProvider.getTimestampForTomorrowAtStartOfDay())
+                .thenReturn(nextDayTimestamp.toLong())
+            val params = GetDateObjectByTimestamp.Params(
+                timestampInSeconds = nextDayTimestamp.toLong(),
+                space = spaceId
+            )
+            whenever(getDateObjectByTimestamp.async(params)).thenReturn(
+                Resultat.success(
+                    mapOf(
+                        Relations.ID to nextDayObjectId
+                    )
+                )
+            )
+            mockGetObjectSuccess(nextDayObjectId, stubNextDayObjectView)
+            mockRelationListWithValueSuccess(nextDayObjectId, nextDayRelationsListWithValues)
+            val subscribeParamsNextDay =  vm.createSearchParams(
+                dateId = nextDayObjectId,
+                timestamp = nextDayTimestamp.toLong(),
+                space = spaceId,
+                itemsLimit = DEFAULT_SEARCH_LIMIT,
+                field = ActiveField(
+                    key = nextDayRelation,
+                    format = RelationFormat.DATE
+                )
+            )
+            whenever(dateProvider.formatTimestampToDateAndTime(nextDayTimestamp.toLong() * 1000))
+                .thenReturn("02-01-2024" to "12:00")
+            whenever(dateProvider.calculateRelativeDates(nextDayTimestamp.toLong()))
+                .thenReturn(
+                    RelativeDate.Other(
+                        initialTimeInMillis = nextDayTimestamp.toLong() * 1000,
+                        dayOfWeek = DayOfWeekCustom.THURSDAY,
+                        formattedDate = "02-01-2024",
+                        formattedTime = "12:00"
+                    )
+                )
+
+            // Act, next day clicked
+            vm.onDateEvent(DateEvent.Calendar.OnTomorrowClick)
+            advanceUntilIdle()
+
+            // Assert, new subscription not started
+            verifyNoMoreInteractions(storelessSubscriptionContainer)
         }
 
     private fun getViewModel(objectId: Id, spaceId: SpaceId): DateObjectViewModel {

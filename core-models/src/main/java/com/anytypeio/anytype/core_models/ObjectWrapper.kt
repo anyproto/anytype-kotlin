@@ -298,7 +298,7 @@ sealed class ObjectWrapper {
 
         val isLoading: Boolean
             get() {
-                return spaceLocalStatus == SpaceStatus.LOADING || spaceLocalStatus == SpaceStatus.UNKNOWN
+                return spaceLocalStatus == SpaceStatus.LOADING
                         && spaceAccountStatus != SpaceStatus.SPACE_REMOVING
                         && spaceAccountStatus != SpaceStatus.SPACE_DELETED
             }

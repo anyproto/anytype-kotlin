@@ -65,6 +65,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -150,7 +151,8 @@ class DateObjectViewModel(
         uiObjectsListState.value = UiObjectsListState.LoadingState
         proceedWithObservingRelationListWithValue()
         proceedWithObservingPermissions()
-        proceedWithObservingDateId()
+        observeDateIdForObject()
+        observeDateIdForRelations()
         proceedWithObservingSyncStatus()
         setupSearchStateFlow()
         _dateId.value = vmParams.objectId
@@ -223,6 +225,9 @@ class DateObjectViewModel(
         uiFieldsState.value = UiFieldsState.Empty
         uiObjectsListState.value = UiObjectsListState.Empty
         uiFieldsSheetState.value = UiFieldsSheetState.Hidden
+        _dateObjectFieldIds.value = emptyList()
+        _dateId.value = null
+        _dateTimestamp.value = null
         _activeField.value = null
         _dateId.value = dateObjectId
     }
@@ -286,27 +291,35 @@ class DateObjectViewModel(
         viewModelScope.launch {
             combine(
                 _dateObjectFieldIds,
-                storeOfRelations.observe().filter { it.isNotEmpty() }
-            ) { relationIds, _ ->
-                relationIds
-            }.collect { relationIds ->
+                storeOfRelations.observe()
+            ) { relationIds, store ->
+                relationIds to store
+            }.collect { (relationIds, store) ->
                 Timber.d("RelationListWithValue: $relationIds")
-                initFieldsState(
-                    items = relationIds.toUiFieldsItem(storeOfRelations = storeOfRelations)
-                )
+                if (store.isEmpty()) {
+                    handleEmptyFieldsState()
+                } else {
+                    initFieldsState(
+                        items = relationIds.toUiFieldsItem(storeOfRelations = storeOfRelations)
+                    )
+                }
             }
         }
     }
 
-    private fun proceedWithObservingDateId() {
+    private fun observeDateIdForObject() {
         viewModelScope.launch {
-            _dateId
-                .filterNotNull()
-                .collect { id ->
-                    Timber.d("Getting date object with id: $id")
-                    proceedWithGettingDateObject(id)
-                    proceedWithGettingDateObjectRelationList(id)
-                }
+            _dateId.filterNotNull().collect { id ->
+                proceedWithGettingDateObject(id)
+            }
+        }
+    }
+
+    private fun observeDateIdForRelations() {
+        viewModelScope.launch {
+            _dateId.filterNotNull().collect { id ->
+                proceedWithGettingDateObjectRelationList(id)
+            }
         }
     }
 
@@ -317,6 +330,7 @@ class DateObjectViewModel(
         )
         getObjectRelationListById.async(params).fold(
             onSuccess = { result ->
+                Timber.d("RelationListWithValue success: $result")
                 _dateObjectFieldIds.value = result
             },
             onFailure = { e ->
@@ -382,21 +396,35 @@ class DateObjectViewModel(
     private fun setupUiStateFlow() {
         viewModelScope.launch {
             combine(
-                _dateId.filterNotNull(),
-                _dateTimestamp.filterNotNull(),
-                _activeField.filterNotNull(),
+                _dateId,
+                _dateTimestamp,
+                _activeField,
                 restartSubscription
             ) { dateId, timestamp, activeField, _ ->
-                createSearchParams(
-                    dateId = dateId,
-                    timestamp = timestamp,
-                    space = vmParams.spaceId,
-                    itemsLimit = _itemsLimit,
-                    field = activeField
-                )
+                Timber.d("setupUiStateFlow, Combine: dateId: $dateId, timestamp: $timestamp, activeField: $activeField")
+
+                // If any of these are null, we return null to indicate we should skip loading data.
+                if (dateId == null || timestamp == null || activeField == null) {
+                    null
+                } else {
+                    createSearchParams(
+                        dateId = dateId,
+                        timestamp = timestamp,
+                        space = vmParams.spaceId,
+                        itemsLimit = _itemsLimit,
+                        field = activeField
+                    )
+                }
             }
                 .flatMapLatest { searchParams ->
-                    loadData(searchParams)
+                    if (searchParams == null) {
+                        Timber.d("Search params are null, skipping loadData")
+                        // If searchParams is null, we skip loadData and emit an empty list.
+                        flowOf(emptyList())
+                    } else {
+                        Timber.d("Search params are not null, loading data")
+                        loadData(searchParams)
+                    }
                 }
                 .catch {
                     errorState.value = UiErrorState.Show(
@@ -670,6 +698,7 @@ class DateObjectViewModel(
     }
 
     fun onDateEvent(event: DateEvent) {
+        Timber.d("onDateEvent: $event")
         when (event) {
             is DateEvent.Calendar -> onCalendarEvent(event)
             is DateEvent.TopToolbar -> onTopToolbarEvent(event)

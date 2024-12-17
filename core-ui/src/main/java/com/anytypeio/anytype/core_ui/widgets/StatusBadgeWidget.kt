@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.widgets
 import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
@@ -16,6 +17,9 @@ class StatusBadgeWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : AppCompatImageView(context, attrs) {
+
+    private var animatedDrawable: AnimatedVectorDrawableCompat? =
+        AnimatedVectorDrawableCompat.create(context, R.drawable.animated_pulsing_circle)
 
     fun bind(status: SpaceSyncAndP2PStatusState?) {
         when (status) {
@@ -41,7 +45,9 @@ class StatusBadgeWidget @JvmOverloads constructor(
                                 }
                                 SpaceSyncStatus.SYNCING -> {
                                     visible()
-                                    setImageResource(R.drawable.ic_syncing)
+                                    setImageDrawable(animatedDrawable)
+                                    animatedDrawable?.start()
+                                    Unit
                                 }
                                 SpaceSyncStatus.ERROR -> {
                                     visible()

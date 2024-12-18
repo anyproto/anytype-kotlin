@@ -63,6 +63,17 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
             )
         )
 
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.TITLE
+            )
+        )
+
         val featuredBlock = Block(
             id = "featuredRelations",
             fields = Block.Fields.empty(),
@@ -76,17 +87,17 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
                 type = Block.Content.Layout.Type.HEADER
             ),
             fields = Block.Fields.empty(),
-            children = listOf(featuredBlock.id)
+            children = listOf(title.id, featuredBlock.id)
         )
 
         val page = Block(
             id = root,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Smart,
-            children = listOf(header.id, paragraph.id)
+            children = listOf(header.id, title.id, paragraph.id)
         )
 
-        val doc = listOf(page, header, paragraph, featuredBlock)
+        val doc = listOf(page, header, title, paragraph, featuredBlock)
 
         val objectDetails = Block.Fields(
             mapOf(

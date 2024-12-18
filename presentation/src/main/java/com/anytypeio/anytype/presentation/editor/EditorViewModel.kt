@@ -3688,14 +3688,14 @@ class EditorViewModel(
 
             mode = EditorMode.Edit
 
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
+            controlPanelInteractor.onEvent(OnApply)
 
             viewModelScope.launch {
                 val blocks = (selected - exclude).sortedBy { id -> ordering[id] }
                 orchestrator.proxies.intents.send(
                     Intent.Document.Move(
                         context = context,
-                        target = moveTarget,
+                        target = if (targetContext != vmParams.ctx) "" else target,
                         targetContext = targetContext,
                         blocks = blocks,
                         position = position
@@ -3723,7 +3723,7 @@ class EditorViewModel(
 
             mode = EditorMode.Edit
 
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
+            controlPanelInteractor.onEvent(OnApply)
 
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(

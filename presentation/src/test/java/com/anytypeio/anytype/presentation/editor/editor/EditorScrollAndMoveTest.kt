@@ -578,7 +578,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                 params = Move.Params(
                     context = root,
                     targetContext = b.content<Block.Content.Link>().target,
-                    targetId = b.id,
+                    targetId = "",
                     blockIds = listOf(a.id),
                     position = Position.INNER
                 )

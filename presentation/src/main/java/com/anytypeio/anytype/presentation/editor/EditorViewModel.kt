@@ -4535,7 +4535,7 @@ class EditorViewModel(
                     Timber.e(it, "Error while closing object")
                     navigate(
                         EventWrapper(
-                            AppNavigation.Command.OpenSetOrCollection(
+                            OpenSetOrCollection(
                                 target = target,
                                 space = space.id,
                                 isPopUpToDashboard
@@ -4546,7 +4546,7 @@ class EditorViewModel(
                 onSuccess = {
                     navigate(
                         EventWrapper(
-                            AppNavigation.Command.OpenSetOrCollection(
+                            OpenSetOrCollection(
                                 target = target,
                                 space = space.id,
                                 isPopUpToDashboard

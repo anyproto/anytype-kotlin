@@ -1,10 +1,14 @@
 package com.anytypeio.anytype.presentation.editor.editor.ext
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
+import com.anytypeio.anytype.core_models.ext.title
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -85,6 +89,20 @@ private fun Map<Id, Block.Fields>.getProperObjectName(id: Id?): String? {
         this[id]?.snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
     } else {
         this[id]?.name
+    }
+}
+
+fun List<Block>.isAllowedToShowTypesWidget(
+    objectRestrictions: List<ObjectRestriction>,
+    isOwnerOrEditor: Boolean,
+    objectLayout: Int?
+): Boolean {
+    if (objectRestrictions.any { it == ObjectRestriction.TYPE_CHANGE }) return false
+    if (!isOwnerOrEditor) return false
+    return if (objectLayout == ObjectType.Layout.NOTE.code) {
+        return true
+    } else {
+        return title()?.content<Content.Text>()?.text?.isEmpty() == true
     }
 }
 

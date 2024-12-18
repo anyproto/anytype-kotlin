@@ -254,6 +254,7 @@ import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.*
+import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDatePickerDismiss
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDateSelected
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
@@ -3688,14 +3689,14 @@ class EditorViewModel(
 
             mode = EditorMode.Edit
 
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
+            controlPanelInteractor.onEvent(OnApply)
 
             viewModelScope.launch {
                 val blocks = (selected - exclude).sortedBy { id -> ordering[id] }
                 orchestrator.proxies.intents.send(
                     Intent.Document.Move(
                         context = context,
-                        target = moveTarget,
+                        target = if (targetContext != vmParams.ctx) "" else target,
                         targetContext = targetContext,
                         blocks = blocks,
                         position = position
@@ -3723,7 +3724,7 @@ class EditorViewModel(
 
             mode = EditorMode.Edit
 
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
+            controlPanelInteractor.onEvent(OnApply)
 
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
@@ -7606,9 +7607,15 @@ class EditorViewModel(
                 }
             }
             containsFlag -> {
-                val restrictions = orchestrator.stores.objectRestrictions.current()
-                if (restrictions.none { it == ObjectRestriction.TYPE_CHANGE } && isUserEditor) {
+                if (blocks.isAllowedToShowTypesWidget(
+                        objectRestrictions = orchestrator.stores.objectRestrictions.current(),
+                        isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true,
+                        objectLayout = orchestrator.stores.details.current().details[context]?.layout?.toInt()
+                    )
+                ) {
                     setTypesWidgetVisibility(true)
+                } else {
+                    Timber.d("Object doesn't allow to show types widget, skip")
                 }
             }
         }

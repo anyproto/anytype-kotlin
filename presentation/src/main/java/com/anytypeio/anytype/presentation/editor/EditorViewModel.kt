@@ -7607,7 +7607,10 @@ class EditorViewModel(
             }
             containsFlag -> {
                 val restrictions = orchestrator.stores.objectRestrictions.current()
-                if (restrictions.none { it == ObjectRestriction.TYPE_CHANGE } && isUserEditor) {
+                if (restrictions.none { it == ObjectRestriction.TYPE_CHANGE }
+                    && isUserEditor
+                    && (blocks.title()?.content<Content.Text>()?.text?.isEmpty() == true)
+                ) {
                     setTypesWidgetVisibility(true)
                 }
             }

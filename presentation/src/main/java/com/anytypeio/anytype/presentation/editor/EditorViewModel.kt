@@ -4610,12 +4610,17 @@ class EditorViewModel(
         return controlPanelViewState.value?.let { state ->
             val isVisible = state.mentionToolbar.isVisible
             val isSlashWidgetVisible = state.slashWidget.isVisible
+            val isTypesWidgetVisible = _typesWidgetState.value.visible
             if (isVisible) {
                 onMentionEvent(MentionEvent.MentionSuggestStop)
                 return true
             }
             if (isSlashWidgetVisible) {
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                return true
+            }
+            if (isTypesWidgetVisible) {
+                sendHideTypesWidgetEvent()
                 return true
             }
             if (!orchestrator.stores.focus.current().isEmpty) {

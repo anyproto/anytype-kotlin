@@ -466,7 +466,6 @@ interface BlockRemote {
     suspend fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem>
 
     suspend fun debugAccountSelectTrace(dir: String): String
-    suspend fun debugExportLogs(dir: String): String
 
     suspend fun setDeviceNetworkState(type: DeviceNetworkType)
 }

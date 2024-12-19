@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_CUSTOM
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_LOCAL
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.debugging.DebugExportLogs
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.networkmode.SetNetworkMode
 import com.anytypeio.anytype.presentation.editor.picker.PickerListener
@@ -27,7 +28,8 @@ class PreferencesViewModel(
     private val copyFileToCache: CopyFileToCacheDirectory,
     private val getNetworkMode: GetNetworkMode,
     private val setNetworkMode: SetNetworkMode,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val debugExportLogs: DebugExportLogs
 ) : ViewModel(), PickerListener {
 
     val networkModeState = MutableStateFlow(NetworkModeConfig(NetworkMode.DEFAULT, "", ""))
@@ -149,7 +151,8 @@ class PreferencesViewModel(
         private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
         private val getNetworkMode: GetNetworkMode,
         private val setNetworkMode: SetNetworkMode,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val debugExportLogs: DebugExportLogs
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -158,7 +161,8 @@ class PreferencesViewModel(
             copyFileToCache = copyFileToCacheDirectory,
             getNetworkMode = getNetworkMode,
             setNetworkMode = setNetworkMode,
-            analytics = analytics
+            analytics = analytics,
+            debugExportLogs = debugExportLogs
         ) as T
     }
 }

@@ -6,6 +6,8 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.debugging.DebugExportLogs
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.networkmode.SetNetworkMode
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -47,16 +49,26 @@ object AppPreferencesModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideLogsExport(
+        repository: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DebugExportLogs = DebugExportLogs(repository, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideViewModelFactory(
         copyFileToCacheDirectory: CopyFileToCacheDirectory,
         getNetworkMode: GetNetworkMode,
         setNetworkMode: SetNetworkMode,
-        analytics: Analytics
+        analytics: Analytics,
+        debugExportLogs: DebugExportLogs
     ): PreferencesViewModel.Factory = PreferencesViewModel.Factory(
         copyFileToCacheDirectory = copyFileToCacheDirectory,
         getNetworkMode = getNetworkMode,
         setNetworkMode = setNetworkMode,
-        analytics = analytics
+        analytics = analytics,
+        debugExportLogs = debugExportLogs
     )
 }
 

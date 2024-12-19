@@ -1068,10 +1068,6 @@ class BlockMiddleware(
         return middleware.debugAccountSelectTrace(dir)
     }
 
-    override suspend fun debugExportLogs(dir: String): String {
-        return middleware.debugExportLogs(dir)
-    }
-
     override suspend fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct? {
         return middleware.objectDateByTimestamp(command)
     }

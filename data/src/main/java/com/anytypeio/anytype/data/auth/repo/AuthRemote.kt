@@ -22,4 +22,5 @@ interface AuthRemote {
 
     suspend fun getVersion(): String
     suspend fun setInitialParams(command: Command.SetInitialParams)
+    suspend fun debugExportLogs(dir: String): String
 }

@@ -1094,10 +1094,6 @@ class BlockDataRepository(
         return remote.debugAccountSelectTrace(dir)
     }
 
-    override suspend fun debugExportLogs(dir: String): String {
-        return remote.debugExportLogs(dir)
-    }
-
     override suspend fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct? {
         return remote.objectDateByTimestamp(command)
     }

@@ -507,7 +507,6 @@ interface BlockRepository {
     suspend fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem>
 
     suspend fun debugAccountSelectTrace(dir: String): String
-    suspend fun debugExportLogs(dir: String): String
 
     suspend fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct?
 

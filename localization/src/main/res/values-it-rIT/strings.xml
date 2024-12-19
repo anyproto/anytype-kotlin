@@ -1562,7 +1562,7 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">modificato</string>
     <string name="chat_empty_state_message">Non ci sono ancora messaggi.\nSii il primo ad avviare una discussione.</string>
     <string name="write_a_message">Scrivi un messaggio...</string>
-    <string name="date_layout_mentioned_in">Menzionato in</string>
+    <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">Non c\'è ancora nulla per questa data</string>
     <string name="date_layout_alert_date_out_of_range">La data selezionata non rientra nell\'intervallo valido (anni da %1$d a %2$d). Selezionare una data compresa in questo intervallo.</string>
     <string name="date_layout_item_created_by">da</string>

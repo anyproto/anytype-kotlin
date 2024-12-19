@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
@@ -91,4 +92,5 @@ interface DiscussionComponentDependencies : ComponentDependencies {
     fun logger(): Logger
     fun members(): ActiveSpaceMemberSubscriptionContainer
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
+    fun storeOfObjectTypes(): StoreOfObjectTypes
 }

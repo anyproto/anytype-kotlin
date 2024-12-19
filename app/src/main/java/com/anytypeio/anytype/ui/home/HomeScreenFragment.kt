@@ -160,7 +160,9 @@ class HomeScreenFragment : BaseComposeFragment(),
                                     pagerState.animateScrollToPage(1)
                                 }
                             },
-                            onSpaceIconClicked = vm::onSpaceSettingsClicked
+                            onSpaceIconClicked = vm::onSpaceSettingsClicked,
+                            membersCount = view?.membersCount ?: 0,
+                            name = view?.space?.name.orEmpty()
                         )
                         HorizontalPager(
                             modifier = Modifier

@@ -49,7 +49,8 @@ sealed interface DiscussionView {
             data class Link(
                 val target: Id,
                 val wrapper: ObjectWrapper.Basic?,
-                val icon: ObjectIcon = ObjectIcon.None
+                val icon: ObjectIcon = ObjectIcon.None,
+                val typeName: String
             ): Attachment()
         }
 

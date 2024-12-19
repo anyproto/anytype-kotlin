@@ -1114,9 +1114,9 @@ fun Bubble(
             .fillMaxWidth()
             .background(
                 color = if (isUserAuthor)
-                    userMessageBubbleColor
+                    colorResource(R.color.navigation_panel_icon)
                 else
-                    defaultBubbleColor,
+                    colorResource(R.color.navigation_panel),
                 shape = RoundedCornerShape(20.dp)
             )
             .clip(RoundedCornerShape(20.dp))
@@ -1369,18 +1369,20 @@ fun Bubble(
                         showDropdownMenu = false
                     }
                 )
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.copy),
-                            color = colorResource(id = R.color.text_primary)
-                        )
-                    },
-                    onClick = {
-                        onCopyMessage()
-                        showDropdownMenu = false
-                    }
-                )
+                if (content.msg.isNotEmpty()) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.copy),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            onCopyMessage()
+                            showDropdownMenu = false
+                        }
+                    )
+                }
                 if (isUserAuthor) {
                     DropdownMenuItem(
                         text = {

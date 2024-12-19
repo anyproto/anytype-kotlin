@@ -15,7 +15,7 @@ android {
         compose true
     }
 
-    namespace 'com.anytypeio.anytype.feature-object-type'
+    namespace 'com.anytypeio.anytype.feature_object_type'
 }
 
 dependencies {

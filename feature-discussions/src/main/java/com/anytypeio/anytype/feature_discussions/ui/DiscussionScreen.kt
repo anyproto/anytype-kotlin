@@ -977,11 +977,6 @@ fun Messages(
                 )
                 if (msg.isUserAuthor) {
                     Spacer(modifier = Modifier.width(8.dp))
-                    ChatUserAvatar(
-                        msg = msg,
-                        avatar = msg.avatar,
-                        modifier = Modifier.align(Alignment.Bottom)
-                    )
                 } else {
                     Spacer(modifier = Modifier.width(40.dp))
                 }
@@ -1083,9 +1078,6 @@ private fun ChatUserAvatar(
         }
     }
 }
-
-val defaultBubbleColor = Color(0x99FFFFFF)
-val userMessageBubbleColor = Color(0x66000000)
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable

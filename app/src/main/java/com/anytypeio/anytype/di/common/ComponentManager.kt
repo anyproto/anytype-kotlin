@@ -11,6 +11,7 @@ import com.anytypeio.anytype.di.feature.DaggerBacklinkOrAddToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerDateObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerLinkToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerMoveToComponent
+import com.anytypeio.anytype.di.feature.DaggerObjectTypeComponent
 import com.anytypeio.anytype.di.feature.DaggerSplashComponent
 import com.anytypeio.anytype.di.feature.DebugSettingsModule
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
@@ -103,6 +104,7 @@ import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
+import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVmParams
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
@@ -1083,6 +1085,12 @@ class ComponentManager(
         DaggerVaultComponent
             .factory()
             .create(findComponentDependencies())
+    }
+
+    val objectTypeComponent = ComponentWithParams { params: ObjectTypeVmParams ->
+        DaggerObjectTypeComponent
+            .factory()
+            .create(params, findComponentDependencies())
     }
 
     class Component<T>(private val builder: () -> T) {

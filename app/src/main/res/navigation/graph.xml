@@ -208,11 +208,17 @@
     <fragment
         android:id="@+id/dateObjectScreen"
         android:name="com.anytypeio.anytype.ui.date.DateObjectFragment"
-        android:label="Date Object"> {
+        android:label="Date Object">
         <action
             android:id="@+id/actionExitToSpaceWidgets"
             app:popUpTo="@+id/homeScreen"
             app:popUpToInclusive="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/objectTypeScreen"
+        android:name="com.anytypeio.anytype.ui.primitives.ObjectTypeFragment"
+        android:label=" Object">
     </fragment>
 
     <dialog

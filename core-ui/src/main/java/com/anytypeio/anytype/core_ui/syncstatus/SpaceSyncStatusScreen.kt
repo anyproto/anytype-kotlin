@@ -1,10 +1,6 @@
 package com.anytypeio.anytype.core_ui.syncstatus
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -12,32 +8,28 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Text
-import androidx.compose.material.rememberSwipeableState
-import androidx.compose.material.swipeable
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatus
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatusUpdate
@@ -47,83 +39,61 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title2
-import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
-import kotlin.math.roundToInt
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SpaceSyncStatusScreen(
+    modifier: Modifier = Modifier,
+    modifierCard: Modifier = Modifier,
     uiState: SyncStatusWidgetState,
     onDismiss: () -> Unit,
-    scope: CoroutineScope,
     onUpdateAppClick: () -> Unit
 ) {
-    val isVisible = uiState is SyncStatusWidgetState.Success || uiState is SyncStatusWidgetState.Error
 
-    val swappableState = rememberSwipeableState(DragStates.VISIBLE)
-    if (swappableState.isAnimationRunning && swappableState.targetValue == DragStates.DISMISSED) {
-        DisposableEffect(Unit) {
-            onDispose {
-                onDismiss()
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+
+    if (uiState is SyncStatusWidgetState.Success || uiState is SyncStatusWidgetState.Error) {
+        ModalBottomSheet(
+            modifier = modifier,
+            scrimColor = colorResource(id = R.color.transparent_black),
+            containerColor = colorResource(id = R.color.transparent_black),
+            shape = RoundedCornerShape(16.dp),
+            tonalElevation = 120.dp,
+            onDismissRequest = { onDismiss() },
+            sheetState = bottomSheetState,
+            dragHandle = null,
+            content = {
+                ElevatedCard(
+                    modifier = modifierCard,
+                    colors = CardDefaults.cardColors(
+                        containerColor = colorResource(id = R.color.background_secondary)
+                    ),
+                    elevation = CardDefaults.elevatedCardElevation(
+                        defaultElevation = 120.dp
+                    )
+                ) {
+                    when (uiState) {
+                        is SyncStatusWidgetState.Error -> ErrorState()
+                        SyncStatusWidgetState.Hidden -> LoadingState()
+                        is SyncStatusWidgetState.Success -> SuccessState(
+                            spaceSyncUpdate = uiState.spaceSyncUpdate,
+                            p2pStatus = uiState.p2PStatusUpdate,
+                            onUpdateAppClick = onUpdateAppClick
+                        )
+                    }
+                }
             }
-        }
-    }
-
-    if (!isVisible) {
-        DisposableEffect(Unit) {
-            onDispose {
-                scope.launch { swappableState.snapTo(DragStates.VISIBLE) }
-            }
-        }
-    }
-
-    val sizePx = with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
-
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = slideInVertically { it },
-        exit = slideOutVertically { it },
-        modifier = Modifier
-            .swipeable(
-                state = swappableState,
-                orientation = Orientation.Vertical,
-                anchors = mapOf(0f to DragStates.VISIBLE, sizePx to DragStates.DISMISSED),
-                thresholds = { _, _ -> FractionalThreshold(0.3f) })
-            .offset { IntOffset(0, swappableState.offset.value.roundToInt()) }
-    ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(start = 8.dp, end = 8.dp, bottom = 10.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = colorResource(id = R.color.background_secondary)
-            ),
-            elevation = CardDefaults.elevatedCardElevation(
-                defaultElevation = 16.dp
-            )
-        ) {
-            when (uiState) {
-                is SyncStatusWidgetState.Error -> ErrorState()
-                SyncStatusWidgetState.Hidden -> LoadingState()
-                is SyncStatusWidgetState.Success -> SuccessState(
-                    spaceSyncUpdate = uiState.spaceSyncUpdate,
-                    p2pStatus = uiState.p2PStatusUpdate,
-                    onUpdateAppClick = onUpdateAppClick
-                )
-            }
-        }
+        )
     }
 }
-
-enum class MenuVisibilityState(val fraction: Float) { Hidden(0f), Visible(1f) }
 
 @Composable
 private fun ColumnScope.LoadingState() {
@@ -149,11 +119,14 @@ private fun ColumnScope.ErrorState() {
 }
 
 @Composable
-private fun SuccessState(
+private fun ColumnScope.SuccessState(
     spaceSyncUpdate: SpaceSyncUpdate,
     p2pStatus: P2PStatusUpdate,
     onUpdateAppClick: () -> Unit
 ) {
+    Spacer(modifier = Modifier.height(6.dp))
+    Dragger(modifier = Modifier.align(Alignment.CenterHorizontally))
+    Spacer(modifier = Modifier.height(6.dp))
     if (spaceSyncUpdate is SpaceSyncUpdate.Update) {
         SpaceSyncStatusItem(spaceSyncUpdate, onUpdateAppClick)
         Divider()

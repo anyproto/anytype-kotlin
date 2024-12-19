@@ -24,7 +24,7 @@ suspend fun List<RelationListWithValueItem>.toUiFieldsItem(
         .mapNotNull { item ->
             val relation = storeOfRelations.getByKey(item.key.key)
             if (relation == null) {
-                Timber.e("Relation ${item.key.key} not found in the relation store")
+                Timber.w("Relation ${item.key.key} not found in the relation store")
                 return@mapNotNull null
             }
             if (relation.key == Relations.LINKS || relation.key == Relations.BACKLINKS) {

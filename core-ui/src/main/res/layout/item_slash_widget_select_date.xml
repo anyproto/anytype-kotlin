@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="56dp">
+
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/ivIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
+        android:contentDescription="@string/content_desc_object_icon"
+        app:checkboxSize="@dimen/list_item_object_half_checkbox_size"
+        app:emojiSize="@dimen/list_item_object_half_emoji_size"
+        android:layout_gravity="center_vertical"
+        app:hasEmojiRounded8Background="true"
+        app:hasInitialRounded8Background="true"
+        app:imageCornerRadius="@dimen/list_item_object_image_corner_radius"
+        app:imageSize="24dp"
+        app:initialTextSize="@dimen/list_item_object_half_initials_size" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        style="@style/TextView.UXStyle.Titles.2.Regular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:ellipsize="end"
+        android:hint="@string/untitled"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:text="@string/select_date"
+        android:textColor="@color/text_primary" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/divider_relations" />
+
+</FrameLayout>

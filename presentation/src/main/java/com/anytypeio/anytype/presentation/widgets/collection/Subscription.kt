@@ -75,7 +75,12 @@ sealed class Subscription(
             )
         ),
         limit = 0,
-        space = { spaces -> ObjectSearchConstants.filesFilters(spaces) }
+        space = { spaces ->
+            ObjectSearchConstants.filesFilters(
+                space = spaces,
+                hiddenDiscovery = false
+            )
+        }
     )
 
     data object None : Subscription("", emptyList(), emptyList(), 0, space = { emptyList() })

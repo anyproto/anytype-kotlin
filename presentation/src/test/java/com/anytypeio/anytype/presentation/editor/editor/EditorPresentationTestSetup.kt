@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
+import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
@@ -83,6 +84,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.table.CreateTable
@@ -248,7 +250,7 @@ open class EditorPresentationTestSetup {
     lateinit var replaceBlock: ReplaceBlock
 
     @Mock
-    lateinit var move: MoveOld
+    lateinit var move: Move
 
     lateinit var fieldParser: FieldParser
 
@@ -573,7 +575,7 @@ open class EditorPresentationTestSetup {
 
     fun stubMove() {
         move.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { async(any()) } doReturn Resultat.Success(
                 Payload(
                     context = root,
                     events = emptyList()
@@ -884,8 +886,11 @@ open class EditorPresentationTestSetup {
         }
     }
 
+    @Mock
+    lateinit var stringResourceProvider: StringResourceProvider
+
     fun proceedWithDefaultBeforeTestStubbing() {
-        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
+        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         stubAnalyticSpaceHelperDelegate()
         stubSpaceManager()
         stubUserPermission()

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Animate scaleX -->
+    <objectAnimator
+        android:propertyName="scaleX"
+        android:valueFrom="0.0"
+        android:valueTo="1.0"
+        android:duration="600"
+        android:repeatCount="infinite"
+        android:repeatMode="reverse"
+        android:valueType="floatType"/>
+
+    <!-- Animate scaleY -->
+    <objectAnimator
+        android:propertyName="scaleY"
+        android:valueFrom="0.0"
+        android:valueTo="1.0"
+        android:duration="600"
+        android:repeatCount="infinite"
+        android:repeatMode="reverse"
+        android:valueType="floatType"/>
+</set>

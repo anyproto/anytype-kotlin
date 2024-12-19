@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -759,9 +760,8 @@ class BlockDataRepository(
         remote.deleteSpace(space)
     }
 
-    override suspend fun createWorkspace(details: Struct, withChat: Boolean): Id = remote.createWorkspace(
-        details = details,
-        withChat = withChat
+    override suspend fun createWorkspace(command: Command.CreateSpace): Id = remote.createWorkspace(
+        command = command
     )
 
     override suspend fun setSpaceDetails(space: SpaceId, details: Struct) {
@@ -1096,5 +1096,9 @@ class BlockDataRepository(
 
     override suspend fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct? {
         return remote.objectDateByTimestamp(command)
+    }
+
+    override suspend fun setDeviceNetworkState(type: DeviceNetworkType) {
+        remote.setDeviceNetworkState(type)
     }
 }

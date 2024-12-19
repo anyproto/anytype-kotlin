@@ -44,5 +44,3 @@ data class ViewersWidgetUi(
         data object Plus : Action()
     }
 }
-
-

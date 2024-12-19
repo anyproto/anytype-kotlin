@@ -110,3 +110,5 @@ typealias MSpaceSyncError = anytype.Event.Space.SyncError
 typealias MP2PStatus = anytype.Event.P2PStatus.Status
 typealias MP2PStatusUpdate = P2PStatus.Update
 typealias MSyncStatusUpdate = Space.SyncStatus.Update
+
+typealias MDeviceNetworkType = anytype.model.DeviceNetworkType

@@ -4,12 +4,43 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Relations.CREATED_DATE
+import com.anytypeio.anytype.core_models.Relations.LAST_MODIFIED_DATE
+import com.anytypeio.anytype.core_models.Relations.RELATION_KEY
+import com.anytypeio.anytype.core_models.Relations.TYPE
 import com.anytypeio.anytype.core_models.TimeInSeconds
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.library.StoreSearchParams
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
+
+fun DateObjectViewModel.createSearchParams(
+    dateId: Id,
+    timestamp: TimeInSeconds,
+    field: ActiveField,
+    space: SpaceId,
+    itemsLimit: Int
+): StoreSearchParams {
+    val (filters, sorts) = filtersAndSortsForSearch(
+        spaces = listOf(space.id),
+        field = field,
+        timestamp = timestamp,
+        dateId = dateId
+    )
+    return StoreSearchParams(
+        space = space,
+        filters = filters,
+        sorts = sorts,
+        keys = defaultKeys,
+        limit = itemsLimit,
+        subscription = subscriptionId()
+    )
+}
 
 fun filtersAndSortsForSearch(
     dateId: Id,
@@ -21,8 +52,8 @@ fun filtersAndSortsForSearch(
         addAll(buildDeletedFilter())
         add(buildSpaceIdFilter(spaces))
         add(buildTemplateFilter())
-        add(
-            buildFieldFilter(
+        addAll(
+            buildFieldFilters(
                 dateObjectId = dateId,
                 field = field,
                 timestamp = timestamp
@@ -45,30 +76,61 @@ private fun buildSorts(
     )
 }
 
-private fun buildFieldFilter(
+private fun buildFieldFilters(
     dateObjectId: Id,
     field: ActiveField,
     timestamp: TimeInSeconds
-): DVFilter {
+): List<DVFilter> {
     val fieldKey = field.key.key
     return when (field.format) {
         Relation.Format.DATE -> {
-            DVFilter(
-                relation = fieldKey,
-                condition = DVFilterCondition.EQUAL,
-                value = timestamp.toDouble(),
-                relationFormat = RelationFormat.DATE
-            )
+            buildList {
+                add(
+                    DVFilter(
+                        relation = fieldKey,
+                        condition = DVFilterCondition.EQUAL,
+                        value = timestamp.toDouble(),
+                        relationFormat = RelationFormat.DATE
+                    )
+                )
+                if (fieldKey == LAST_MODIFIED_DATE) {
+                    add(
+                        DVFilter(
+                            relation = Relations.CREATED_DATE,
+                            condition = DVFilterCondition.NOT_EQUAL,
+                            value = mapOf(
+                                RELATION_KEY to fieldKey,
+                                TYPE to VALUE_FROM_RELATION
+                            )
+                        )
+                    )
+                }
+                if (fieldKey == CREATED_DATE) {
+                    add(
+                        DVFilter(
+                            relation = Relations.ORIGIN,
+                            condition = DVFilterCondition.NOT_IN,
+                            value = listOf(
+                                ObjectOrigin.BUILT_IN.code.toDouble()
+                            )
+                        )
+                    )
+                }
+            }
         }
         else -> {
-            DVFilter(
-                relation = fieldKey,
-                condition = DVFilterCondition.IN,
-                value = dateObjectId
+            listOf(
+                DVFilter(
+                    relation = fieldKey,
+                    condition = DVFilterCondition.IN,
+                    value = dateObjectId
+                )
             )
         }
     }
 }
+
+const val VALUE_FROM_RELATION = "valueFromRelation"
 
 private fun buildTemplateFilter(): DVFilter = DVFilter(
     relation = Relations.TYPE_UNIQUE_KEY,

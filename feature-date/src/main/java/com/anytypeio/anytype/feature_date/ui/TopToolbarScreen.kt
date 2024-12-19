@@ -55,7 +55,6 @@ fun TopToolbarScreen(
                 StatusBadge(
                     status = uiSyncStatusBadgeState.status,
                     modifier = Modifier
-                        .size(20.dp)
                         .align(Alignment.Center)
                 )
             }

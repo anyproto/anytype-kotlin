@@ -193,7 +193,9 @@ class Navigator : AppNavigation {
                     view = view
                 ),
                 navOptions {
-                    popUpTo(R.id.main_navigation) { inclusive = true }
+                    popUpTo(R.id.homeScreen) {
+                        inclusive = false
+                    }
                 }
             )
         } else {

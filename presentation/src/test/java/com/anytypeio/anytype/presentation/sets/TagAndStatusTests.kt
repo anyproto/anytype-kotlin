@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -29,6 +30,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import kotlin.test.assertEquals
+import org.mockito.kotlin.whenever
 
 class TagAndStatusTests {
 
@@ -48,11 +50,13 @@ class TagAndStatusTests {
     @Mock
     lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
 
+    @Mock
+    lateinit var stringResourceProvider: StringResourceProvider
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
+        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
     }
 
     @Test
@@ -95,6 +99,8 @@ class TagAndStatusTests {
                 color = "333"
             )
         )
+
+        whenever(stringResourceProvider.getUntitledObjectTitle()).thenReturn("Untitled")
 
         val recordId = MockDataFactory.randomUuid()
         val records = mapOf<String, Any?>(
@@ -155,7 +161,7 @@ class TagAndStatusTests {
 
         val expected = Viewer.GridView.Row(
             id = recordId,
-            name = "",
+            name = "Untitled",
             type = "Type111",
             showIcon = false,
             objectIcon = ObjectIcon.Empty.Page,
@@ -203,6 +209,8 @@ class TagAndStatusTests {
                 isVisible = true
             )
         )
+
+        whenever(stringResourceProvider.getUntitledObjectTitle()).thenReturn("Untitled")
 
         val selOptions = listOf(
             StubRelationOptionObject(
@@ -290,7 +298,7 @@ class TagAndStatusTests {
 
         val expected = Viewer.GridView.Row(
             id = recordId,
-            name = "",
+            name = "Untitled",
             type = "Type111",
             showIcon = false,
             objectIcon = ObjectIcon.Empty.Page,

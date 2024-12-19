@@ -230,6 +230,7 @@ class CollectionViewModel(
     }
 
     fun onStart(subscription: Subscription) {
+        Timber.i("CollectionViewModel, onStart, subscription:${subscription}")
         val isFirstLaunch = this.subscription == Subscription.None
         this.subscription = subscription
         if (permission.value?.isOwnerOrEditor() == true && isFirstLaunch && (subscription == Subscription.Bin || subscription == Subscription.Files)) {

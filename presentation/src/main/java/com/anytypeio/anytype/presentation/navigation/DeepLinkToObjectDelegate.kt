@@ -60,16 +60,16 @@ interface DeepLinkToObjectDelegate {
                             saveCurrentSpace.async(SaveCurrentSpace.Params(space = space))
                             Result.Success(wrapper)
                         } else {
-                            Result.Error
+                            Result.Error.CouldNotOpenSpace
                         }
                     } else {
                         return Result.Success(wrapper)
                     }
                 } else {
-                    Result.Error
+                    Result.Error.PermissionNeeded
                 }
             } else {
-                return Result.Error
+                return Result.Error.ObjectNotFound
             }
         }
 
@@ -101,24 +101,28 @@ interface DeepLinkToObjectDelegate {
                                         saveCurrentSpace.async(SaveCurrentSpace.Params(space = space))
                                         Result.Success(wrapper)
                                     } else {
-                                        Result.Error
+                                        Result.Error.CouldNotOpenSpace
                                     }
                                 } else {
                                     Result.Success(wrapper)
                                 }
                             } else {
-                                Result.Error
+                                Result.Error.PermissionNeeded
                             }
                         }
                 )
             } else {
-                emit(Result.Error)
+                emit(Result.Error.ObjectNotFound)
             }
         }
     }
 
     sealed class Result {
-        data object Error : Result()
+        sealed class Error : Result() {
+            object PermissionNeeded: Error()
+            object ObjectNotFound: Error()
+            object CouldNotOpenSpace: Error()
+        }
         data class Success(val obj: ObjectWrapper.Basic): Result()
     }
 }

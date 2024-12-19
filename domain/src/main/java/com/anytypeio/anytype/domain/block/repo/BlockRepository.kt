@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -391,7 +392,7 @@ interface BlockRepository {
     ): Payload
 
     suspend fun deleteSpace(space: SpaceId)
-    suspend fun createWorkspace(details: Struct, withChat: Boolean): Id
+    suspend fun createWorkspace(command: Command.CreateSpace): Id
     suspend fun getSpaceConfig(space: Id): Config
     suspend fun addObjectListToSpace(objects: List<Id>, space: Id) : List<Id>
     suspend fun addObjectToSpace(command: Command.AddObjectToSpace) : Pair<Id, Struct?>
@@ -508,4 +509,6 @@ interface BlockRepository {
     suspend fun debugAccountSelectTrace(dir: String): String
 
     suspend fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct?
+
+    suspend fun setDeviceNetworkState(type: DeviceNetworkType)
 }

@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -122,6 +123,9 @@ class ObjectRelationListTest {
     @Mock
     lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
 
+    @Mock
+    lateinit var stringResourceProvider: StringResourceProvider
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -130,7 +134,8 @@ class ObjectRelationListTest {
         fieldParser = FieldParserImpl(
             logger = logger,
             dateProvider = dateProvider,
-            getDateObjectByTimestamp = getDateObjectByTimestamp
+            getDateObjectByTimestamp = getDateObjectByTimestamp,
+            stringResourceProvider = stringResourceProvider
         )
         addToFeaturedRelations = AddToFeaturedRelations(repo)
         removeFromFeaturedRelations = RemoveFromFeaturedRelations(repo)

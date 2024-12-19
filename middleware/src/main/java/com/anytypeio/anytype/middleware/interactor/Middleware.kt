@@ -90,8 +90,7 @@ class Middleware @Inject constructor(
             avatarLocalPath = command.avatarPath,
             icon = command.icon.toLong(),
             networkMode = command.networkMode.toMiddlewareModel(),
-            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty(),
-            preferYamuxTransport = command.preferYamuxTransport ?: false
+            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty()
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.accountCreate(request) }

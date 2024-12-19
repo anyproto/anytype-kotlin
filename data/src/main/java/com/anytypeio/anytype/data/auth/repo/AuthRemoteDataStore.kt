@@ -91,6 +91,6 @@ class AuthRemoteDataStore(
     }
 
     override suspend fun debugExportLogs(dir: String): String {
-        throw UnsupportedOperationException()
+        return authRemote.debugExportLogs(dir)
     }
 }

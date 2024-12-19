@@ -1406,7 +1406,7 @@ private fun BubbleAttachments(
                         )
                         .fillMaxWidth(),
                     title = attachment.wrapper?.name.orEmpty(),
-                    type = attachment.wrapper?.type?.firstOrNull().orEmpty(),
+                    type = attachment.typeName,
                     icon = attachment.icon,
                     onAttachmentClicked = {
                         onAttachmentClicked(attachment)

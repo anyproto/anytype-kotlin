@@ -14,6 +14,7 @@ import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
+import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
 import com.anytypeio.anytype.ui.relations.RelationEditFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
@@ -329,6 +330,19 @@ class Navigator : AppNavigation {
             args = DateObjectFragment.args(
                 objectId = objectId,
                 space = space)
+        )
+    }
+
+    override fun openObjectType(
+        objectId: Id,
+        space: Id
+    ) {
+        navController?.navigate(
+            resId = R.id.objectTypeScreen,
+            args = ObjectTypeFragment.args(
+                objectId = objectId,
+                space = space
+            )
         )
     }
 }

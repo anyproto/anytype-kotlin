@@ -1242,41 +1242,7 @@ fun Bubble(
             else
                 colorResource(id = R.color.text_primary),
         )
-        attachments.forEach { attachment ->
-            when(attachment) {
-                is DiscussionView.Message.Attachment.Image -> {
-                    GlideImage(
-                        model = attachment.url,
-                        contentDescription = "Attachment image",
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                            .clip(shape = RoundedCornerShape(16.dp))
-                            .clickable {
-                                onAttachmentClicked(attachment)
-                            }
-                    )
-                }
-                is DiscussionView.Message.Attachment.Link -> {
-                    AttachedObject(
-                        modifier = Modifier
-                            .padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                top = 8.dp
-                            )
-                            .fillMaxWidth()
-                        ,
-                        title = attachment.wrapper?.name.orEmpty(),
-                        type = attachment.wrapper?.type?.firstOrNull().orEmpty(),
-                        icon = attachment.icon,
-                        onAttachmentClicked = {
-                            onAttachmentClicked(attachment)
-                        }
-                    )
-                }
-            }
-        }
+        BubbleAttachments(attachments, onAttachmentClicked)
         if (reactions.isNotEmpty()) {
             ReactionList(
                 reactions = reactions,
@@ -1403,6 +1369,49 @@ fun Bubble(
                         }
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalGlideComposeApi::class)
+private fun BubbleAttachments(
+    attachments: List<DiscussionView.Message.Attachment>,
+    onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit
+) {
+    attachments.forEach { attachment ->
+        when (attachment) {
+            is DiscussionView.Message.Attachment.Image -> {
+                GlideImage(
+                    model = attachment.url,
+                    contentDescription = "Attachment image",
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .clip(shape = RoundedCornerShape(16.dp))
+                        .clickable {
+                            onAttachmentClicked(attachment)
+                        }
+                )
+            }
+
+            is DiscussionView.Message.Attachment.Link -> {
+                AttachedObject(
+                    modifier = Modifier
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 8.dp
+                        )
+                        .fillMaxWidth(),
+                    title = attachment.wrapper?.name.orEmpty(),
+                    type = attachment.wrapper?.type?.firstOrNull().orEmpty(),
+                    icon = attachment.icon,
+                    onAttachmentClicked = {
+                        onAttachmentClicked(attachment)
+                    }
+                )
             }
         }
     }

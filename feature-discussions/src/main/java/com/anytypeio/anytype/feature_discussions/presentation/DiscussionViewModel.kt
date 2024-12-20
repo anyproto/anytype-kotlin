@@ -28,12 +28,14 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import java.sql.Types
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -58,7 +60,8 @@ class DiscussionViewModel @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val uploadFile: UploadFile
+    private val uploadFile: UploadFile,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -192,7 +195,6 @@ class DiscussionViewModel @Inject constructor(
                                 target = attachment.target,
                                 url = urlBuilder.medium(path = attachment.target)
                             )
-
                             else -> {
                                 val wrapper = dependencies[attachment.target]
                                 if (wrapper?.layout == ObjectType.Layout.IMAGE) {
@@ -201,10 +203,15 @@ class DiscussionViewModel @Inject constructor(
                                         url = urlBuilder.large(path = attachment.target)
                                     )
                                 } else {
+                                    val type = wrapper?.type?.firstOrNull()
                                     DiscussionView.Message.Attachment.Link(
                                         target = attachment.target,
                                         wrapper = wrapper,
-                                        icon = wrapper?.objectIcon(urlBuilder) ?: ObjectIcon.None
+                                        icon = wrapper?.objectIcon(urlBuilder) ?: ObjectIcon.None,
+                                        typeName = if (type != null)
+                                            storeOfObjectTypes.get(type)?.name.orEmpty()
+                                        else
+                                            ""
                                     )
                                 }
                             }
@@ -435,7 +442,11 @@ class DiscussionViewModel @Inject constructor(
         viewModelScope.launch {
             when(attachment) {
                 is DiscussionView.Message.Attachment.Image -> {
-                    // Do nothing.
+                    commands.emit(
+                        UXCommand.OpenFullScreenImage(
+                            url = urlBuilder.original(attachment.target)
+                        )
+                    )
                 }
                 is DiscussionView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper
@@ -476,6 +487,7 @@ class DiscussionViewModel @Inject constructor(
     sealed class UXCommand {
         data object JumpToBottom : UXCommand()
         data class SetChatBoxInput(val input: String) : UXCommand()
+        data class OpenFullScreenImage(val url: String) : UXCommand()
     }
 
     sealed class ChatBoxMode {

@@ -202,7 +202,8 @@ fun BubbleWithAttachmentPreview() {
             add(
                 DiscussionView.Message.Attachment.Link(
                     target = "ID",
-                    wrapper = null
+                    wrapper = null,
+                    typeName = "Page"
                 )
             )
         },

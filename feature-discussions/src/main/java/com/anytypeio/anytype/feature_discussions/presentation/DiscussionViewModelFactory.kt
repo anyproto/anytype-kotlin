@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 
@@ -33,7 +34,8 @@ class DiscussionViewModelFactory @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val uploadFile: UploadFile
+    private val uploadFile: UploadFile,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = DiscussionViewModel(
@@ -50,6 +52,7 @@ class DiscussionViewModelFactory @Inject constructor(
         editChatMessage = editChatMessage,
         spaceViews = spaceViews,
         dispatchers = dispatchers,
-        uploadFile = uploadFile
+        uploadFile = uploadFile,
+        storeOfObjectTypes = storeOfObjectTypes
     ) as T
 }

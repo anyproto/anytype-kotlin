@@ -246,13 +246,7 @@ class SpaceSettingsViewModel(
         val state = spaceViewState.value
         if (state is ViewState.Success) {
             val space = state.data.spaceId
-            val accountConfig = configStorage.getOrNull()
-            if (accountConfig == null) {
-                sendToast("Account config not found")
-                return
-            }
-            val personalSpaceId = accountConfig.space
-            if (space != null && space != personalSpaceId) {
+            if (space != null) {
                 viewModelScope.launch {
                     deleteSpace.async(params = SpaceId(space)).fold(
                         onSuccess = {

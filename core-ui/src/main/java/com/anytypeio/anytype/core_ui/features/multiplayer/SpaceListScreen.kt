@@ -143,15 +143,15 @@ fun SpaceListCardItem(
             mainSize = 48.dp
         )
 
-        if (actions.isNotEmpty()) {
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .constrainAs(dots) {
-                        top.linkTo(parent.top, margin = 24.dp)
-                        end.linkTo(parent.end, margin = 12.dp)
-                    }
-            ) {
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .constrainAs(dots) {
+                    top.linkTo(parent.top, margin = 24.dp)
+                    end.linkTo(parent.end, margin = 12.dp)
+                }
+        ) {
+            if (actions.isNotEmpty()) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_space_list_dots),
                     contentDescription = "Three-dots button",

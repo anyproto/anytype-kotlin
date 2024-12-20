@@ -82,8 +82,8 @@ class OnboardingNetworkSetupDialog : BaseBottomSheetComposeFragment() {
                             uriFileProvider = command.uriFileProvider
                         )
                     } catch (e: Exception) {
-                        Timber.e(e, "Error while stack goroutines debug").also {
-                            toast("Error while stack goroutines debug. Please try again later.")
+                        Timber.e(e, "Error while share debug logs").also {
+                            toast("Error while share debug logs. Please try again later.")
                         }
                     }
                 }

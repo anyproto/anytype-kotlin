@@ -15,6 +15,8 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.NetworkModeConstants
 import com.anytypeio.anytype.core_utils.const.FileConstants
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.core_utils.ext.shareFileFromPath
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -23,6 +25,7 @@ import com.anytypeio.anytype.ui.editor.PickerDelegate
 import com.anytypeio.anytype.ui.onboarding.screens.signin.NetworkSetupScreen
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import timber.log.Timber
 
 class OnboardingNetworkSetupDialog : BaseBottomSheetComposeFragment() {
 
@@ -62,8 +65,31 @@ class OnboardingNetworkSetupDialog : BaseBottomSheetComposeFragment() {
                     onAnytypeNetworkClicked = {
                         vm.proceedWithNetworkMode(NetworkModeConstants.NETWORK_MODE_DEFAULT)
                     },
-                    onUseYamuxToggled = vm::onChangeMultiplexLibrary
+                    onExportLogsClick = vm::onExportLogsClick
                 )
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        subscribe(vm.commands) { command ->
+            when (command) {
+                is PreferencesViewModel.Command.ShareDebugLogs -> {
+                    try {
+                        shareFileFromPath(
+                            path = command.path,
+                            uriFileProvider = command.uriFileProvider
+                        )
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error while share debug logs").also {
+                            toast("Error while share debug logs. Please try again later.")
+                        }
+                    }
+                }
+                is PreferencesViewModel.Command.ShowToast -> {
+                    toast(command.message)
+                }
             }
         }
     }

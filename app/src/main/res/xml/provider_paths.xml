@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <cache-path name="." path="/" />
-    <external-files-path
-        name="my_documents"
-        path="Documents"/>
+    <files-path name="." path="/" />
 </paths>

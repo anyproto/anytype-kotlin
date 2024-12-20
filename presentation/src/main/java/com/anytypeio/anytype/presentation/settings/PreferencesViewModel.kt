@@ -124,7 +124,7 @@ class PreferencesViewModel(
     fun onExportLogsClick() {
         Timber.d("onExportLogsClick: ")
         jobs += viewModelScope.launch {
-            val dir = pathProvider.provideSharedPath()
+            val dir = pathProvider.providePath()
             val params = DebugExportLogs.Params(dir = dir)
             debugExportLogs.async(params).fold(
                 onSuccess = { fileName ->

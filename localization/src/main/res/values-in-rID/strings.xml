@@ -1548,7 +1548,7 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Tulis pesan …</string>
-    <string name="date_layout_mentioned_in">Disebut di</string>
+    <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">Belum ada apa-apa untuk tanggal ini</string>
     <string name="date_layout_alert_date_out_of_range">Tanggal terpilih di luar rentang valid (tahun %1$d hingga %2$d). Silakan pilih tanggal dalam rentang ini.</string>
     <string name="date_layout_item_created_by">by</string>

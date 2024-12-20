@@ -6,12 +6,15 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.debugging.DebugExportLogs
+import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.networkmode.SetNetworkMode
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.settings.PreferencesViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.NetworkModeCopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.onboarding.OnboardingNetworkSetupDialog
 import com.anytypeio.anytype.ui.settings.system.PreferenceFragment
 import dagger.Component
@@ -47,16 +50,30 @@ object AppPreferencesModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideLogsExport(
+        repository: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DebugExportLogs = DebugExportLogs(repository, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideViewModelFactory(
         copyFileToCacheDirectory: CopyFileToCacheDirectory,
         getNetworkMode: GetNetworkMode,
         setNetworkMode: SetNetworkMode,
-        analytics: Analytics
+        analytics: Analytics,
+        debugExportLogs: DebugExportLogs,
+        pathProvider: PathProvider,
+        urlFileProvider: UriFileProvider
     ): PreferencesViewModel.Factory = PreferencesViewModel.Factory(
         copyFileToCacheDirectory = copyFileToCacheDirectory,
         getNetworkMode = getNetworkMode,
         setNetworkMode = setNetworkMode,
-        analytics = analytics
+        analytics = analytics,
+        debugExportLogs = debugExportLogs,
+        pathProvider = pathProvider,
+        uriFileProvider = urlFileProvider
     )
 }
 
@@ -66,4 +83,6 @@ interface AppPreferencesDependencies : ComponentDependencies {
     fun authRepository(): AuthRepository
     fun analytics(): Analytics
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
+    fun pathProvider(): PathProvider
+    fun provideUriFileProvider(): UriFileProvider
 }

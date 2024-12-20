@@ -625,7 +625,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 is Content.File -> {
                     val detail = details.details.getOrDefault(root.id, Block.Fields.empty())
                     val obj = ObjectWrapper.Basic(detail.map)
-                    if (SupportedLayouts.isFileLayout(obj.layout)) {
+                    if (SupportedLayouts.fileLayouts.contains(obj.layout)) {
                         return@forEach
                     }
                     mCounter = 0

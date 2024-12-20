@@ -386,6 +386,21 @@ fun Fragment.shareFirstFileFromPath(path: String, uriFileProvider: UriFileProvid
     }
 }
 
+fun Fragment.shareFileFromPath(path: String, uriFileProvider: UriFileProvider) {
+    try {
+        val dirPath = File(path)
+        if (dirPath.exists()) {
+            val uri = uriFileProvider.getUriForFile(dirPath)
+            shareFile(uri)
+        } else {
+            toast("File does not exist.")
+        }
+    } catch (e: Exception) {
+        Timber.e(e, "Error while sharing file")
+        toast("Could not share file: ${e.message}")
+    }
+}
+
 fun Fragment.shareFile(uri: Uri) {
     try {
         val shareIntent: Intent = Intent().apply {

@@ -75,4 +75,8 @@ class AuthMiddleware(
     override suspend fun setInitialParams(command: Command.SetInitialParams) {
         middleware.metricsSetParameters(command)
     }
+
+    override suspend fun debugExportLogs(dir: String): String {
+        return middleware.debugExportLogs(dir)
+    }
 }

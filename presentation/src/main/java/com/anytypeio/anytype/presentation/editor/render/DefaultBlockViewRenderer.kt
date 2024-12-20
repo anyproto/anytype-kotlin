@@ -626,33 +626,51 @@ class DefaultBlockViewRenderer @Inject constructor(
                     val detail = details.details.getOrDefault(root.id, Block.Fields.empty())
                     val obj = ObjectWrapper.Basic(detail.map)
                     if (SupportedLayouts.fileLayouts.contains(obj.layout)) {
-                        return@forEach
-                    }
-                    mCounter = 0
-                    val blockDecorationScheme = buildNestedDecorationData(
-                        block = block,
-                        parentScheme = parentScheme,
-                        currentDecoration = DecorationData(
-                            style = if ((content.type == Content.File.Type.FILE || content.type == Content.File.Type.PDF) && content.state == Content.File.State.DONE)
-                                DecorationData.Style.None
-                            else
-                                DecorationData.Style.Card,
-                            background = block.parseThemeBackgroundColor()
-                        )
-                    )
-                    result.add(
-                        file(
-                            mode = mode,
-                            content = content,
+                        when (obj.layout) {
+                            ObjectType.Layout.IMAGE -> {
+                                result.add(
+                                    BlockView.OpenFile.Image(
+                                        id = block.id,
+                                        targetId = content.targetObjectId
+                                    )
+                                )
+                            }
+                            else -> {
+                                result.add(
+                                    BlockView.OpenFile.File(
+                                        id = block.id,
+                                        targetId = content.targetObjectId
+                                    )
+                                )
+                            }
+                        }
+                    } else {
+                        mCounter = 0
+                        val blockDecorationScheme = buildNestedDecorationData(
                             block = block,
-                            indent = indent,
-                            selection = selection,
-                            isPreviousBlockMedia = isPreviousBlockMedia,
-                            schema = blockDecorationScheme,
-                            details = details
+                            parentScheme = parentScheme,
+                            currentDecoration = DecorationData(
+                                style = if ((content.type == Content.File.Type.FILE || content.type == Content.File.Type.PDF) && content.state == Content.File.State.DONE)
+                                    DecorationData.Style.None
+                                else
+                                    DecorationData.Style.Card,
+                                background = block.parseThemeBackgroundColor()
+                            )
                         )
-                    )
-                    isPreviousBlockMedia = true
+                        result.add(
+                            file(
+                                mode = mode,
+                                content = content,
+                                block = block,
+                                indent = indent,
+                                selection = selection,
+                                isPreviousBlockMedia = isPreviousBlockMedia,
+                                schema = blockDecorationScheme,
+                                details = details
+                            )
+                        )
+                        isPreviousBlockMedia = true
+                    }
                 }
                 is Content.Layout -> {
                     isPreviousBlockMedia = false

@@ -43,6 +43,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIco
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconCoverBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkDeleteBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkLoadingBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockOpenFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationCheckboxBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDefaultBinding
@@ -113,6 +114,8 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.text.Text
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.BookmarkUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.FileUpload
+import com.anytypeio.anytype.core_ui.features.editor.holders.upload.OpenFile
+import com.anytypeio.anytype.core_ui.features.editor.holders.upload.OpenImage
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.PictureUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
 import com.anytypeio.anytype.core_ui.features.table.holders.TableBlockHolder
@@ -163,6 +166,8 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_LOADING
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OPEN_FILE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OPEN_IMAGE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
@@ -529,6 +534,12 @@ class BlockAdapter(
                 FileError(
                     ItemBlockMediaErrorBinding.inflate(inflater, parent, false)
                 )
+            }
+            HOLDER_OPEN_FILE -> {
+                OpenFile(ItemBlockOpenFileBinding.inflate(inflater, parent, false))
+            }
+            HOLDER_OPEN_IMAGE -> {
+                OpenImage(ItemBlockOpenFileBinding.inflate(inflater, parent, false))
             }
             HOLDER_VIDEO -> {
                 Video(
@@ -1620,6 +1631,18 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.DataView.Deleted,
                     clicked = onClickListener
+                )
+            }
+            is OpenFile -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.OpenFile.File,
+                    click = onClickListener
+                )
+            }
+            is OpenImage -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.OpenFile.Image,
+                    click = onClickListener
                 )
             }
         }

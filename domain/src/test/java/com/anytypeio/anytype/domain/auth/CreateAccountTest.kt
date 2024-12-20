@@ -20,12 +20,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
 
 class CreateAccountTest {
 
@@ -97,8 +95,7 @@ class CreateAccountTest {
                     name = name,
                     avatarPath = path,
                     icon = icon,
-                    networkMode = NetworkMode.DEFAULT,
-                    preferYamuxTransport = false
+                    networkMode = NetworkMode.DEFAULT
                 )
                 onBlocking { createAccount(command) } doReturn setup
             }
@@ -114,8 +111,7 @@ class CreateAccountTest {
                 name = name,
                 avatarPath = path,
                 icon = icon,
-                networkMode = NetworkMode.DEFAULT,
-                preferYamuxTransport = false
+                networkMode = NetworkMode.DEFAULT
             )
             verify(repo, times(1)).getNetworkMode()
             verify(repo, times(1)).createAccount(command)

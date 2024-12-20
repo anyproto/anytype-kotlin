@@ -75,4 +75,8 @@ object SupportedLayouts {
     fun isEditorOrFileLayout(layout: ObjectType.Layout?) : Boolean {
         return editorLayouts.contains(layout) || fileLayouts.contains(layout)
     }
+
+    fun isFileLayout(layout: ObjectType.Layout?) : Boolean {
+        return fileLayouts.contains(layout)
+    }
 }

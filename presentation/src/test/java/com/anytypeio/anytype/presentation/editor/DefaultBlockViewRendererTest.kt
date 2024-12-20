@@ -5754,12 +5754,25 @@ class DefaultBlockViewRendererTest {
     //endregion
 
     @Test
-    fun `should not render file block in case of file layout`() {
+    fun `should render file open block in case of file, pdf, audio or video layouts`(){
+        val fileTypeExceptImage = listOf(
+            Block.Content.File.Type.FILE to ObjectType.Layout.FILE,
+            Block.Content.File.Type.PDF to ObjectType.Layout.PDF,
+            Block.Content.File.Type.VIDEO to ObjectType.Layout.VIDEO,
+            Block.Content.File.Type.AUDIO to ObjectType.Layout.AUDIO,
+        )
+
+        fileTypeExceptImage.forEach { (fileType, layout) ->
+            testFileLayout(type = fileType, layout = layout)
+        }
+    }
+
+    private fun testFileLayout(type: Block.Content.File.Type, layout: Layout) {
 
         val file = StubFile(
             backgroundColor = null,
             state = Block.Content.File.State.DONE,
-            type = Block.Content.File.Type.FILE
+            type = type
         )
 
         val paragraph = StubParagraph()
@@ -5769,7 +5782,7 @@ class DefaultBlockViewRendererTest {
         val details = mapOf(page.id to Block.Fields(
             mapOf(
                 Relations.NAME to "file-name",
-                Relations.LAYOUT to Layout.FILE.code.toDouble()
+                Relations.LAYOUT to layout.code.toDouble()
             )
         ))
 
@@ -5806,6 +5819,73 @@ class DefaultBlockViewRendererTest {
                         background = paragraph.parseThemeBackgroundColor()
                     )
                 ),
+            ),
+            BlockView.OpenFile.File(
+                id = file.id,
+                targetId = (file.content as Block.Content.File).targetObjectId
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should render image open block in case of image layout`() {
+
+        val file = StubFile(
+            backgroundColor = null,
+            state = Block.Content.File.State.DONE,
+            type = Block.Content.File.Type.IMAGE
+        )
+
+        val paragraph = StubParagraph()
+
+        val page = StubSmartBlock(children = listOf(paragraph.id, file.id))
+
+        val details = mapOf(page.id to Block.Fields(
+            mapOf(
+                Relations.NAME to "file-name",
+                Relations.LAYOUT to Layout.IMAGE.code.toDouble()
+            )
+        ))
+
+        val blocks = listOf(page, paragraph, file)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Text.Paragraph(
+                indent = 0,
+                isFocused = false,
+                id = paragraph.id,
+                marks = emptyList(),
+                background = paragraph.parseThemeBackgroundColor(),
+                text = paragraph.content<Block.Content.Text>().text,
+                decorations = listOf(
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.None,
+                        background = paragraph.parseThemeBackgroundColor()
+                    )
+                ),
+            ),
+            BlockView.OpenFile.Image(
+                id = file.id,
+                targetId = (file.content as Block.Content.File).targetObjectId
             )
         )
 

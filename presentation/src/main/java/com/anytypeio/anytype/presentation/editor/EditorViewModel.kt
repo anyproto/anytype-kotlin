@@ -4303,27 +4303,46 @@ class EditorViewModel(
     }
 
     fun startSharingFile(id: String, onDownloaded: (Uri) -> Unit = {}) {
-
-        Timber.d("startDownloadingFile, id:[$id]")
-
+        Timber.d("startSharingFile,  fileBlockId: [$id]")
         sendToast("Preparing file to share...")
 
         val block = blocks.firstOrNull { it.id == id }
-        val content = block?.content
+        if (block == null) {
+            Timber.e("No block found with id $id")
+            return
+        }
 
-        if (content is Content.File && content.state == Content.File.State.DONE) {
-            viewModelScope.launch {
-                orchestrator.proxies.intents.send(
-                    Media.ShareFile(
-                        objectId = content.targetObjectId.orEmpty(),
-                        name = content.name.orEmpty(),
-                        type = content.type,
-                        onDownloaded = onDownloaded
-                    )
+        val content = block.content
+        if (content !is Content.File || content.state != Content.File.State.DONE) {
+            Timber.e("Block content is not a file or is not in the DONE state; cannot proceed.")
+            return
+        }
+
+        val targetObjectId = content.targetObjectId
+        if (targetObjectId == null) {
+            Timber.e("Target object ID is null; cannot proceed with file sharing.")
+            return
+        }
+
+        val fileObject = orchestrator.stores.details.getAsObject(target = targetObjectId)
+        if (fileObject == null) {
+            Timber.e("Object with id $targetObjectId not found.")
+            return
+        }
+
+        val fileName = fieldParser.getObjectName(fileObject)
+
+        Timber.d("startDownloadingFile, fileObjectId: [$targetObjectId], fileName: [$fileName]")
+
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Media.ShareFile(
+                    objectId = targetObjectId,
+                    name = fileName,
+                    type = content.type,
+                    onDownloaded = onDownloaded
                 )
-            }
-        } else {
-            Timber.e("Block is not File or with wrong state, can't proceed with share!")
+            )
         }
     }
 

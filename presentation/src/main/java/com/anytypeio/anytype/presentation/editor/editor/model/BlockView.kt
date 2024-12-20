@@ -1275,14 +1275,18 @@ sealed class BlockView : ViewType {
         val isSelected: Boolean = false
     ) : BlockView() {
 
+        abstract val targetId: Id?
+
         data class Image(
-            override val id: String
+            override val id: String,
+            override val targetId: Id?
         ) : OpenFile(id) {
             override fun getViewType(): Int = HOLDER_OPEN_IMAGE
         }
 
         data class File(
-            override val id: String
+            override val id: String,
+            override val targetId: Id?
         ) : OpenFile(id) {
             override fun getViewType(): Int = HOLDER_OPEN_FILE
         }

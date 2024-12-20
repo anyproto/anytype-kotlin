@@ -298,14 +298,14 @@ sealed class ObjectWrapper {
 
         val isLoading: Boolean
             get() {
-                return spaceLocalStatus == SpaceStatus.LOADING
+                return spaceLocalStatus == SpaceStatus.LOADING || spaceLocalStatus == SpaceStatus.UNKNOWN
                         && spaceAccountStatus != SpaceStatus.SPACE_REMOVING
                         && spaceAccountStatus != SpaceStatus.SPACE_DELETED
             }
 
         val isActive: Boolean
             get() {
-                return spaceLocalStatus == SpaceStatus.OK
+                return spaceAccountStatus == SpaceStatus.SPACE_ACTIVE
                         && spaceAccountStatus != SpaceStatus.SPACE_REMOVING
                         && spaceAccountStatus != SpaceStatus.SPACE_DELETED
             }

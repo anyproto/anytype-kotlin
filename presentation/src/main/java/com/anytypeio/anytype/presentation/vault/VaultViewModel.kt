@@ -84,7 +84,7 @@ class VaultViewModel(
                 }
                 .combine(observeVaultSettings.flow()) { spaces, settings ->
                     spaces
-                        .filter { space -> space.isActive || space.isLoading }
+                        .filter { space -> space.isActive }
                         .distinctBy { it.id }
                         .map { space ->
                             VaultSpaceView(

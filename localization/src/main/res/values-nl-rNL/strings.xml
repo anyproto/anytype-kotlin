@@ -1561,7 +1561,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chats_message_edited">bewerkt</string>
     <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>
     <string name="write_a_message">Schrijf een bericht...</string>
-    <string name="date_layout_mentioned_in">Vermeld in</string>
+    <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">Er is hier nog niets voor deze datum</string>
     <string name="date_layout_alert_date_out_of_range">De geselecteerde datum valt buiten het geldige bereik (jaren %1$d tot %2$d). Selecteer alsjeblieft een datum binnen dit bereik.</string>
     <string name="date_layout_item_created_by">op</string>

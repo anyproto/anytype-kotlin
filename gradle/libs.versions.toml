@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.38.3"
+middlewareVersion = "v0.38.9"
 kotlinVersion = '2.0.21'
 kspVersion = "2.0.21-1.0.25"
 
@@ -19,7 +19,7 @@ appcompatVersion = '1.7.0'
 fragmentVersion = "1.8.5"
 exoplayerVersion = "2.19.1"
 wireVersion = "4.9.8"
-glideVersion = "4.14.2"
+glideVersion = "4.16.0"
 glideComposeVersion = "1.0.0-beta01"
 mockitoKotlinVersion = "5.3.1"
 junitVersion = '4.13.2'

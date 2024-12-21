@@ -254,6 +254,7 @@ import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.*
+import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDatePickerDismiss
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDateSelected
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
@@ -3688,14 +3689,14 @@ class EditorViewModel(
 
             mode = EditorMode.Edit
 
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
+            controlPanelInteractor.onEvent(OnApply)
 
             viewModelScope.launch {
                 val blocks = (selected - exclude).sortedBy { id -> ordering[id] }
                 orchestrator.proxies.intents.send(
                     Intent.Document.Move(
                         context = context,
-                        target = moveTarget,
+                        target = if (targetContext != vmParams.ctx) "" else target,
                         targetContext = targetContext,
                         blocks = blocks,
                         position = position
@@ -3723,7 +3724,7 @@ class EditorViewModel(
 
             mode = EditorMode.Edit
 
-            controlPanelInteractor.onEvent(ControlPanelMachine.Event.SAM.OnApply)
+            controlPanelInteractor.onEvent(OnApply)
 
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
@@ -4535,7 +4536,7 @@ class EditorViewModel(
                     Timber.e(it, "Error while closing object")
                     navigate(
                         EventWrapper(
-                            AppNavigation.Command.OpenSetOrCollection(
+                            OpenSetOrCollection(
                                 target = target,
                                 space = space.id,
                                 isPopUpToDashboard
@@ -4546,7 +4547,7 @@ class EditorViewModel(
                 onSuccess = {
                     navigate(
                         EventWrapper(
-                            AppNavigation.Command.OpenSetOrCollection(
+                            OpenSetOrCollection(
                                 target = target,
                                 space = space.id,
                                 isPopUpToDashboard
@@ -4609,12 +4610,17 @@ class EditorViewModel(
         return controlPanelViewState.value?.let { state ->
             val isVisible = state.mentionToolbar.isVisible
             val isSlashWidgetVisible = state.slashWidget.isVisible
+            val isTypesWidgetVisible = _typesWidgetState.value.visible
             if (isVisible) {
                 onMentionEvent(MentionEvent.MentionSuggestStop)
                 return true
             }
             if (isSlashWidgetVisible) {
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                return true
+            }
+            if (isTypesWidgetVisible) {
+                sendHideTypesWidgetEvent()
                 return true
             }
             if (!orchestrator.stores.focus.current().isEmpty) {
@@ -5123,6 +5129,11 @@ class EditorViewModel(
                 onHideKeyboardClicked()
                 addSimpleTableBlock(item)
             }
+            is SlashItem.SelectDate -> {
+                mentionDatePicker.value = EditorDatePickerState.Visible.Link(
+                    targetId = targetId
+                )
+            }
         }
     }
 
@@ -5471,11 +5482,6 @@ class EditorViewModel(
             SlashItem.Actions.LinkTo -> {
                 onHideKeyboardClicked()
                 proceedWithLinkToButtonClicked(block = targetId, position = slashStartIndex)
-            }
-            SlashItem.Actions.SelectDate -> {
-                mentionDatePicker.value = EditorDatePickerState.Visible.Link(
-                    targetId = targetId
-                )
             }
         }
     }
@@ -6360,7 +6366,7 @@ class EditorViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Document.Move(
                     context = context,
-                    target = target,
+                    target = if (targetContext != context) "" else target,
                     targetContext = targetContext,
                     blocks = listOf(dragged),
                     position = position
@@ -7606,9 +7612,15 @@ class EditorViewModel(
                 }
             }
             containsFlag -> {
-                val restrictions = orchestrator.stores.objectRestrictions.current()
-                if (restrictions.none { it == ObjectRestriction.TYPE_CHANGE } && isUserEditor) {
+                if (blocks.isAllowedToShowTypesWidget(
+                        objectRestrictions = orchestrator.stores.objectRestrictions.current(),
+                        isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true,
+                        objectLayout = orchestrator.stores.details.current().details[context]?.layout?.toInt()
+                    )
+                ) {
                     setTypesWidgetVisibility(true)
+                } else {
+                    Timber.d("Object doesn't allow to show types widget, skip")
                 }
             }
         }

@@ -219,18 +219,8 @@ fun buildWidgetName(
     obj: ObjectWrapper.Basic,
     fieldParser: FieldParser
 ): Name {
-    return if (obj.layout == ObjectType.Layout.DATE) {
-        val timestamp = obj.getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
-        if (timestamp != null) {
-            Name.Date(
-                relativeDate = fieldParser.calculateRelativeDate(timeStampInSeconds = timestamp)
-            )
-        } else {
-            createDefaultName(obj, fieldParser)
-        }
-    } else {
-        createDefaultName(obj, fieldParser)
-    }
+    val prettyPrintName = fieldParser.getObjectName(obj)
+    return Name.Default(prettyPrintName = prettyPrintName)
 }
 
 private fun createDefaultName(

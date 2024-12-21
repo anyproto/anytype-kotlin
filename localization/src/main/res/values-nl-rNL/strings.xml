@@ -677,6 +677,7 @@
     <string name="today">Vandaag</string>
     <string name="yesterday">Gisteren</string>
     <string name="tomorrow">Morgen</string>
+    <string name="open_selected_date">Open geselecteerde datum</string>
     <string name="no_date">Geen datum</string>
     <string name="exact_day">Exacte dag</string>
     <string name="reorder">Herschik</string>
@@ -1560,13 +1561,13 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chats_message_edited">bewerkt</string>
     <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>
     <string name="write_a_message">Schrijf een bericht...</string>
-    <string name="date_layout_mentioned_in">Vermeld in</string>
+    <string name="date_layout_mentioned_in">Vermeldingen</string>
     <string name="date_layout_empty_items">Er is hier nog niets voor deze datum</string>
     <string name="date_layout_alert_date_out_of_range">De geselecteerde datum valt buiten het geldige bereik (jaren %1$d tot %2$d). Selecteer alsjeblieft een datum binnen dit bereik.</string>
     <string name="date_layout_item_created_by">op</string>
-    <string name="chat_attachment_object">Object</string>
-    <string name="chat_attachment_file">Bestand</string>
-    <string name="chat_attachment_media">Media</string>
+    <string name="chat_attachment_object">Selecteer bestaand object</string>
+    <string name="chat_attachment_file">Upload bestand</string>
+    <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Upload</string>
     <string name="chats_reply">Antwoord</string>
     <string name="day_of_week_monday">Maandag</string>

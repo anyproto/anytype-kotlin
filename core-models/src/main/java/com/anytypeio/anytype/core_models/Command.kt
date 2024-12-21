@@ -13,8 +13,7 @@ sealed class Command {
         val avatarPath: String?,
         val icon: Int,
         val networkMode: NetworkMode = NetworkMode.DEFAULT,
-        val networkConfigFilePath: String? = null,
-        val preferYamuxTransport: Boolean? = null
+        val networkConfigFilePath: String? = null
     ) : Command()
 
     data class AccountSelect(
@@ -474,6 +473,12 @@ sealed class Command {
     data class SetQueryToSet(val ctx: Id, val query: String)
 
     data class SetInternalFlags(val ctx: Id, val flags: List<InternalFlags>)
+
+    data class CreateSpace(
+        val details: Struct,
+        val withChat: Boolean,
+        val shouldApplyEmptyUseCase: Boolean
+    )
 
     data class AddObjectToSpace(val space: Id, val objectId: Id)
     data class ApplyTemplate(val objectId: Id, val template: Id?)

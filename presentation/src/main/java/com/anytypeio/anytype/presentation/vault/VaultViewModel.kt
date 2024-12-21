@@ -84,7 +84,7 @@ class VaultViewModel(
                 }
                 .combine(observeVaultSettings.flow()) { spaces, settings ->
                     spaces
-                        .filter { space -> space.isActive }
+                        .filter { space -> space.isActive || space.isLoading }
                         .distinctBy { it.id }
                         .map { space ->
                             VaultSpaceView(
@@ -209,7 +209,7 @@ class VaultViewModel(
                         when(result) {
                             is DeepLinkToObjectDelegate.Result.Error -> {
                                 val link = deeplink.invite
-                                if (link != null) {
+                                if (link != null && result is DeepLinkToObjectDelegate.Result.Error.PermissionNeeded) {
                                     commands.emit(
                                         Command.Deeplink.Invite(
                                             link = spaceInviteResolver.createInviteLink(

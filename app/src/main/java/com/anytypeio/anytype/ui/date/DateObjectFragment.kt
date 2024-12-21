@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.date
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,7 @@ import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_date.viewmodel.UiErrorState
@@ -251,7 +253,11 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        // Do nothing. TODO add ime padding.
+        if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+            // Do nothing.
+        } else {
+            super.onApplyWindowRootInsets(view)
+        }
     }
 
     companion object DateLayoutNavigation {

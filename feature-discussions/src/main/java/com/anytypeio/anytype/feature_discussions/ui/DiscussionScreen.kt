@@ -1027,11 +1027,6 @@ fun Messages(
                 )
                 if (msg.isUserAuthor) {
                     Spacer(modifier = Modifier.width(8.dp))
-                    ChatUserAvatar(
-                        msg = msg,
-                        avatar = msg.avatar,
-                        modifier = Modifier.align(Alignment.Bottom)
-                    )
                 } else {
                     Spacer(modifier = Modifier.width(40.dp))
                 }
@@ -1134,9 +1129,6 @@ private fun ChatUserAvatar(
     }
 }
 
-val defaultBubbleColor = Color(0x99FFFFFF)
-val userMessageBubbleColor = Color(0x66000000)
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Bubble(
@@ -1164,9 +1156,9 @@ fun Bubble(
             .fillMaxWidth()
             .background(
                 color = if (isUserAuthor)
-                    userMessageBubbleColor
+                    colorResource(R.color.navigation_panel_icon)
                 else
-                    defaultBubbleColor,
+                    colorResource(R.color.navigation_panel),
                 shape = RoundedCornerShape(20.dp)
             )
             .clip(RoundedCornerShape(20.dp))
@@ -1300,41 +1292,7 @@ fun Bubble(
             else
                 colorResource(id = R.color.text_primary),
         )
-        attachments.forEach { attachment ->
-            when(attachment) {
-                is DiscussionView.Message.Attachment.Image -> {
-                    GlideImage(
-                        model = attachment.url,
-                        contentDescription = "Attachment image",
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                            .clip(shape = RoundedCornerShape(16.dp))
-                            .clickable {
-                                onAttachmentClicked(attachment)
-                            }
-                    )
-                }
-                is DiscussionView.Message.Attachment.Link -> {
-                    AttachedObject(
-                        modifier = Modifier
-                            .padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                top = 8.dp
-                            )
-                            .fillMaxWidth()
-                        ,
-                        title = attachment.wrapper?.name.orEmpty(),
-                        type = attachment.wrapper?.type?.firstOrNull().orEmpty(),
-                        icon = attachment.icon,
-                        onAttachmentClicked = {
-                            onAttachmentClicked(attachment)
-                        }
-                    )
-                }
-            }
-        }
+        BubbleAttachments(attachments, onAttachmentClicked)
         if (reactions.isNotEmpty()) {
             ReactionList(
                 reactions = reactions,
@@ -1419,18 +1377,20 @@ fun Bubble(
                         showDropdownMenu = false
                     }
                 )
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.copy),
-                            color = colorResource(id = R.color.text_primary)
-                        )
-                    },
-                    onClick = {
-                        onCopyMessage()
-                        showDropdownMenu = false
-                    }
-                )
+                if (content.msg.isNotEmpty()) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.copy),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            onCopyMessage()
+                            showDropdownMenu = false
+                        }
+                    )
+                }
                 if (isUserAuthor) {
                     DropdownMenuItem(
                         text = {
@@ -1459,6 +1419,49 @@ fun Bubble(
                         }
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalGlideComposeApi::class)
+private fun BubbleAttachments(
+    attachments: List<DiscussionView.Message.Attachment>,
+    onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit
+) {
+    attachments.forEach { attachment ->
+        when (attachment) {
+            is DiscussionView.Message.Attachment.Image -> {
+                GlideImage(
+                    model = attachment.url,
+                    contentDescription = "Attachment image",
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .clip(shape = RoundedCornerShape(16.dp))
+                        .clickable {
+                            onAttachmentClicked(attachment)
+                        }
+                )
+            }
+
+            is DiscussionView.Message.Attachment.Link -> {
+                AttachedObject(
+                    modifier = Modifier
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 8.dp
+                        )
+                        .fillMaxWidth(),
+                    title = attachment.wrapper?.name.orEmpty(),
+                    type = attachment.typeName,
+                    icon = attachment.icon,
+                    onAttachmentClicked = {
+                        onAttachmentClicked(attachment)
+                    }
+                )
             }
         }
     }

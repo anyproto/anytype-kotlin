@@ -609,4 +609,10 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun debugAccountSelectTrace(request: Rpc.Debug.AccountSelectTrace.Request): Rpc.Debug.AccountSelectTrace.Response
+
+    @Throws(Exception::class)
+    fun deviceNetworkStateSet(request: Rpc.Device.NetworkState.Set.Request): Rpc.Device.NetworkState.Set.Response
+
+    @Throws(Exception::class)
+    fun debugExportLogs(request: Rpc.Debug.ExportLog.Request): Rpc.Debug.ExportLog.Response
 }

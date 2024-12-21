@@ -1342,7 +1342,7 @@ class HomeScreenViewModel(
                         when(result) {
                             is DeepLinkToObjectDelegate.Result.Error -> {
                                 val link = deeplink.invite
-                                if (link != null) {
+                                if (link != null && result is DeepLinkToObjectDelegate.Result.Error.PermissionNeeded) {
                                     commands.emit(
                                         Command.Deeplink.Invite(
                                             link = spaceInviteResolver.createInviteLink(
@@ -2493,6 +2493,12 @@ fun ObjectType.Layout.navigation(
         }
         ObjectType.Layout.CHAT_DERIVED -> {
             OpenObjectNavigation.OpenDiscussion(
+                target = target,
+                space = space
+            )
+        }
+        ObjectType.Layout.DATE -> {
+            OpenObjectNavigation.OpenDataObject(
                 target = target,
                 space = space
             )

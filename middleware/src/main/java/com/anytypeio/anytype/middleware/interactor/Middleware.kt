@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -89,8 +90,7 @@ class Middleware @Inject constructor(
             avatarLocalPath = command.avatarPath,
             icon = command.icon.toLong(),
             networkMode = command.networkMode.toMiddlewareModel(),
-            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty(),
-            preferYamuxTransport = command.preferYamuxTransport ?: false
+            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty()
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.accountCreate(request) }
@@ -1935,11 +1935,14 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceCreate(details: Struct, withChat: Boolean): Id {
+    fun workspaceCreate(command: Command.CreateSpace): Id {
         val request = Rpc.Workspace.Create.Request(
-            details = details,
-            useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED,
-            withChat = withChat
+            details = command.details,
+            useCase = if (command.shouldApplyEmptyUseCase)
+                Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
+            else
+               Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED,
+            withChat = command.withChat
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceCreate(request) }
@@ -2851,6 +2854,25 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.objectDateByTimestamp(request) }
         logResponseIfDebug(response, time)
         return response.details
+    }
+
+    @Throws(Exception::class)
+    fun setDeviceNetworkState(type: DeviceNetworkType) {
+        val request = Rpc.Device.NetworkState.Set.Request(
+            deviceNetworkType = type.mw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.deviceNetworkStateSet(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun debugExportLogs(dir: String): String {
+        val request = Rpc.Debug.ExportLog.Request(dir = dir)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugExportLogs(request) }
+        logResponseIfDebug(response, time)
+        return response.path
     }
 
     private fun logRequestIfDebug(request: Any) {

@@ -18,19 +18,18 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import javax.inject.Inject
 import kotlin.collections.contains
 
 interface FieldParser {
     fun toDate(any: Any?): Field.Date?
-    fun calculateRelativeDate(timeStampInSeconds: TimeInSeconds): RelativeDate
     suspend fun getDateObjectByTimeInSeconds(
         timeInSeconds: TimeInSeconds,
         spaceId: SpaceId,
         actionSuccess: suspend (ObjectWrapper.Basic) -> Unit,
         actionFailure: suspend (Throwable) -> Unit
     )
-
     fun getObjectName(objectWrapper: ObjectWrapper.Basic): String
     fun getObjectTypeIdAndName(
         objectWrapper: ObjectWrapper.Basic,
@@ -41,7 +40,8 @@ interface FieldParser {
 class FieldParserImpl @Inject constructor(
     private val dateProvider: DateProvider,
     private val logger: Logger,
-    private val getDateObjectByTimestamp: GetDateObjectByTimestamp
+    private val getDateObjectByTimestamp: GetDateObjectByTimestamp,
+    private val stringResourceProvider: StringResourceProvider
 ) : FieldParser {
 
     //region Date field
@@ -107,17 +107,41 @@ class FieldParserImpl @Inject constructor(
             )
         )
     }
-
-    override fun calculateRelativeDate(timeStampInSeconds: TimeInSeconds): RelativeDate {
-        return dateProvider.calculateRelativeDates(
-            dateInSeconds = timeStampInSeconds
-        )
-    }
     //endregion
 
     //region ObjectWrapper.Basic fields
     override fun getObjectName(objectWrapper: ObjectWrapper.Basic): String {
-        return objectWrapper.getProperObjectName().orEmpty()
+        val result = when (objectWrapper.layout) {
+            ObjectType.Layout.DATE -> {
+                val relativeDate = dateProvider.calculateRelativeDates(
+                    dateInSeconds = objectWrapper.getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
+                )
+                stringResourceProvider.getRelativeDateName(relativeDate)
+            }
+            ObjectType.Layout.NOTE -> {
+                objectWrapper.snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
+            }
+            in SupportedLayouts.fileLayouts -> {
+                val fileName = if (objectWrapper.name.isNullOrBlank()) {
+                    stringResourceProvider.getUntitledObjectTitle()
+                } else {
+                    objectWrapper.name
+                }
+                when {
+                    objectWrapper.fileExt.isNullOrBlank() -> fileName
+                    fileName?.endsWith(".${objectWrapper.fileExt}") == true -> fileName
+                    else -> "$fileName.${objectWrapper.fileExt}"
+                }
+            }
+            else -> {
+                objectWrapper.name
+            }
+        }
+        return if (result.isNullOrBlank()) {
+            stringResourceProvider.getUntitledObjectTitle()
+        } else {
+            result
+        }
     }
 
     override fun getObjectTypeIdAndName(
@@ -133,47 +157,6 @@ class FieldParserImpl @Inject constructor(
             id to types.find { it.id == id }?.name
         } else {
             null to null
-        }
-    }
-
-    private fun ObjectWrapper.Basic.getProperObjectName(): String? {
-        return when (layout) {
-            ObjectType.Layout.DATE -> {
-                getProperDateName()
-            }
-
-            ObjectType.Layout.NOTE -> {
-                snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
-            }
-
-            in SupportedLayouts.fileLayouts -> {
-                val fileName = if (name.isNullOrBlank()) "Untitled" else name.orEmpty()
-                if (fileExt.isNullOrBlank()) {
-                    fileName
-                } else {
-                    if (fileName.endsWith(".$fileExt")) {
-                        fileName
-                    } else {
-                        "$fileName.$fileExt"
-                    }
-                }
-            }
-
-            else -> {
-                name
-            }
-        }
-    }
-
-    private fun ObjectWrapper.Basic.getProperDateName(): String {
-        val timestampInSeconds = getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
-        if (timestampInSeconds != null) {
-            val (formattedDate, _) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = timestampInSeconds * 1000,
-            )
-            return formattedDate
-        } else {
-            return ""
         }
     }
     //endregion

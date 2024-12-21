@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
@@ -34,6 +35,9 @@ class ObjectWrapperExtensionsKtTest {
     @Mock
     lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
 
+    @Mock
+    lateinit var stringResourceProvider: StringResourceProvider
+
     lateinit var fieldParser: FieldParser
 
     val URL = "anytype.io/"
@@ -41,7 +45,7 @@ class ObjectWrapperExtensionsKtTest {
     @Before
     fun before() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp)
+        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
     }
 
     @Test

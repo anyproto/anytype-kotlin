@@ -676,6 +676,7 @@
     <string name="today">Hari ini</string>
     <string name="yesterday">Kemarin</string>
     <string name="tomorrow">Besok</string>
+    <string name="open_selected_date">Buka tanggal terpilih</string>
     <string name="no_date">Tidak ada tanggal</string>
     <string name="exact_day">Hari yang pasti</string>
     <string name="reorder">Urutkan ulang</string>
@@ -1547,13 +1548,13 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Tulis pesan …</string>
-    <string name="date_layout_mentioned_in">Disebut di</string>
+    <string name="date_layout_mentioned_in">Sebutan</string>
     <string name="date_layout_empty_items">Belum ada apa-apa untuk tanggal ini</string>
     <string name="date_layout_alert_date_out_of_range">Tanggal terpilih di luar rentang valid (tahun %1$d hingga %2$d). Silakan pilih tanggal dalam rentang ini.</string>
     <string name="date_layout_item_created_by">by</string>
-    <string name="chat_attachment_object">Objek</string>
-    <string name="chat_attachment_file">Berkas</string>
-    <string name="chat_attachment_media">Media</string>
+    <string name="chat_attachment_object">Pilih objek yang sudah ada</string>
+    <string name="chat_attachment_file">Unggah berkas</string>
+    <string name="chat_attachment_media">Unggah media</string>
     <string name="chat_attachment_upload">Unggah</string>
     <string name="chats_reply">Balas</string>
     <string name="day_of_week_monday">Senin</string>

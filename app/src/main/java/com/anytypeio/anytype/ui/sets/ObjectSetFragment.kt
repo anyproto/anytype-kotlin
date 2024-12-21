@@ -21,7 +21,16 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
@@ -404,7 +413,6 @@ open class ObjectSetFragment :
                 ViewersWidget(
                     state = vm.viewersWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewersWidgetAction,
-                    scope = lifecycleScope
                 )
             }
         }
@@ -415,7 +423,6 @@ open class ObjectSetFragment :
                 ViewerEditWidget(
                     state = vm.viewerEditWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewerEditWidgetAction,
-                    scope = lifecycleScope
                 )
             }
         }
@@ -426,7 +433,6 @@ open class ObjectSetFragment :
                 ViewerLayoutWidget(
                     uiState = vm.viewerLayoutWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewerLayoutWidgetAction,
-                    scope = lifecycleScope
                 )
             }
         }
@@ -448,9 +454,14 @@ open class ObjectSetFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 SpaceSyncStatusScreen(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(bottom = 16.dp)
+                        .windowInsetsPadding(WindowInsets.navigationBars),
+                    modifierCard = Modifier.padding(start = 8.dp, end = 8.dp),
                     uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onSyncWidgetDismiss,
-                    scope = lifecycleScope,
                     onUpdateAppClick = vm::onUpdateAppClick
                 )
             }

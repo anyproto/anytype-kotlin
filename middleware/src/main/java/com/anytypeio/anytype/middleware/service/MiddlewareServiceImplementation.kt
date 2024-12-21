@@ -2450,4 +2450,30 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun deviceNetworkStateSet(request: Rpc.Device.NetworkState.Set.Request): Rpc.Device.NetworkState.Set.Response {
+        val encoded = Service.deviceNetworkStateSet(
+            Rpc.Device.NetworkState.Set.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Device.NetworkState.Set.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Device.NetworkState.Set.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun debugExportLogs(request: Rpc.Debug.ExportLog.Request): Rpc.Debug.ExportLog.Response {
+        val encoded = Service.debugExportLog(
+            Rpc.Debug.ExportLog.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Debug.ExportLog.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Debug.ExportLog.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -339,7 +340,7 @@ interface BlockRemote {
     suspend fun setSpaceDetails(space: SpaceId, details: Struct)
 
     suspend fun deleteSpace(space: SpaceId)
-    suspend fun createWorkspace(details: Struct, withChat: Boolean): Id
+    suspend fun createWorkspace(command: Command.CreateSpace): Id
 
     suspend fun getSpaceConfig(space: Id): Config
 
@@ -465,4 +466,6 @@ interface BlockRemote {
     suspend fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem>
 
     suspend fun debugAccountSelectTrace(dir: String): String
+
+    suspend fun setDeviceNetworkState(type: DeviceNetworkType)
 }

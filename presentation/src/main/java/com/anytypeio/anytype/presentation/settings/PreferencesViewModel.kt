@@ -11,7 +11,10 @@ import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_CUSTOM
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_LOCAL
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.debugging.DebugExportLogs
+import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.networkmode.SetNetworkMode
 import com.anytypeio.anytype.presentation.editor.picker.PickerListener
@@ -19,6 +22,9 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectNetworkEv
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUploadConfigFileEvent
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -27,11 +33,17 @@ class PreferencesViewModel(
     private val copyFileToCache: CopyFileToCacheDirectory,
     private val getNetworkMode: GetNetworkMode,
     private val setNetworkMode: SetNetworkMode,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val debugExportLogs: DebugExportLogs,
+    private val pathProvider: PathProvider,
+    private val uriFileProvider: UriFileProvider,
 ) : ViewModel(), PickerListener {
 
     val networkModeState = MutableStateFlow(NetworkModeConfig(NetworkMode.DEFAULT, "", ""))
     val reserveMultiplexSetting = MutableStateFlow(false)
+
+    private val jobs = mutableListOf<Job>()
+    val commands = MutableSharedFlow<Command>()
 
     fun onStart() {
         Timber.d("onStart")
@@ -47,6 +59,11 @@ class PreferencesViewModel(
                 }
             )
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        jobs.cancel()
     }
 
     fun proceedWithNetworkMode(mode: String?) {
@@ -104,16 +121,27 @@ class PreferencesViewModel(
         }
     }
 
-    fun onChangeMultiplexLibrary() {
-        val newValue = !networkModeState.value.useReserveMultiplexLib
-        Timber.d("onChangeMultiplexLibrary: $newValue")
-        viewModelScope.launch {
-            val mode = networkModeState.value.copy(useReserveMultiplexLib = newValue)
-            val params = SetNetworkMode.Params(mode)
-            setNetworkMode.async(params).fold(
-                onSuccess = { networkModeState.value = mode },
-                onFailure = { Timber.e(it, "Failed to update network mode ") }
+    fun onExportLogsClick() {
+        Timber.d("onExportLogsClick: ")
+        jobs += viewModelScope.launch {
+            val dir = pathProvider.providePath()
+            val params = DebugExportLogs.Params(dir = dir)
+            debugExportLogs.async(params).fold(
+                onSuccess = { fileName ->
+                    Timber.d("On debug logs success")
+                    sendCommand(Command.ShareDebugLogs(fileName, uriFileProvider))
+                },
+                onFailure = {
+                    Timber.e(it, "Error while collecting debug logs")
+                    sendCommand(Command.ShowToast("Error while collecting debug logs: "))
+                }
             )
+        }
+    }
+
+    private fun sendCommand(command: Command) {
+        viewModelScope.launch {
+            commands.emit(command)
         }
     }
 
@@ -145,11 +173,19 @@ class PreferencesViewModel(
         }
     }
 
+    sealed class Command {
+        data class ShowToast(val message: String) : Command()
+        data class ShareDebugLogs(val path: String, val uriFileProvider: UriFileProvider) : Command()
+    }
+
     class Factory(
         private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
         private val getNetworkMode: GetNetworkMode,
         private val setNetworkMode: SetNetworkMode,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val debugExportLogs: DebugExportLogs,
+        private val pathProvider: PathProvider,
+        private val uriFileProvider: UriFileProvider,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -158,7 +194,10 @@ class PreferencesViewModel(
             copyFileToCache = copyFileToCacheDirectory,
             getNetworkMode = getNetworkMode,
             setNetworkMode = setNetworkMode,
-            analytics = analytics
+            analytics = analytics,
+            debugExportLogs = debugExportLogs,
+            pathProvider = pathProvider,
+            uriFileProvider = uriFileProvider
         ) as T
     }
 }

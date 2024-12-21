@@ -516,8 +516,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.LAST_OPENED_DATE,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = null
+            condition = DVFilterCondition.GREATER,
+            value = 0.0
         )
     )
 
@@ -1106,44 +1106,52 @@ object ObjectSearchConstants {
         )
     )
 
-    fun filesFilters(space: Id) = listOf(
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN_DISCOVERY,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.IN,
-            value = listOf(
-                ObjectType.Layout.IMAGE.code.toDouble(),
-                ObjectType.Layout.FILE.code.toDouble(),
-                ObjectType.Layout.VIDEO.code.toDouble(),
-                ObjectType.Layout.AUDIO.code.toDouble(),
-                ObjectType.Layout.PDF.code.toDouble()
+    fun filesFilters(space: Id, hiddenDiscovery: Boolean = true) = buildList {
+        addAll(
+            listOf(
+                DVFilter(
+                    relation = Relations.IS_DELETED,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                ),
+                DVFilter(
+                    relation = Relations.IS_ARCHIVED,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                ),
+                DVFilter(
+                    relation = Relations.IS_HIDDEN,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                ),
+                DVFilter(
+                    relation = Relations.LAYOUT,
+                    condition = DVFilterCondition.IN,
+                    value = listOf(
+                        ObjectType.Layout.IMAGE.code.toDouble(),
+                        ObjectType.Layout.FILE.code.toDouble(),
+                        ObjectType.Layout.VIDEO.code.toDouble(),
+                        ObjectType.Layout.AUDIO.code.toDouble(),
+                        ObjectType.Layout.PDF.code.toDouble()
+                    )
+                ),
+                DVFilter(
+                    relation = Relations.SPACE_ID,
+                    condition = DVFilterCondition.EQUAL,
+                    value = space
+                )
             )
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
         )
-    )
+        if (hiddenDiscovery) {
+            add(
+                DVFilter(
+                    relation = Relations.IS_HIDDEN_DISCOVERY,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                )
+            )
+        }
+    }
 
     fun setsByObjectTypeFilters(types: List<Id>) = listOf(
         DVFilter(

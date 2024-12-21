@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DATE_PICKER_YEAR_RANGE
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.getSingleValue
@@ -21,6 +22,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -33,7 +35,6 @@ import com.anytypeio.anytype.feature_date.mapping.toUiObjectsListItem
 import com.anytypeio.anytype.feature_date.ui.models.DateEvent
 import com.anytypeio.anytype.feature_date.viewmodel.UiContentState.*
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentScreen
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateBack
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateCalendarView
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateForward
@@ -45,7 +46,7 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel.Companion.DEFAULT_DEBOUNCE_DURATION
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
+import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import kotlin.collections.map
 import kotlin.text.take
@@ -61,8 +62,10 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -91,7 +94,8 @@ class DateObjectViewModel(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val createObject: CreateObject,
     private val fieldParser: FieldParser,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val getDateObjectByTimestamp: GetDateObjectByTimestamp
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiCalendarIconState = MutableStateFlow<UiCalendarIconState>(UiCalendarIconState.Hidden)
@@ -105,7 +109,7 @@ class DateObjectViewModel(
     val uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
     val uiCalendarState = MutableStateFlow<UiCalendarState>(UiCalendarState.Hidden)
     val uiSyncStatusWidgetState =
-        MutableStateFlow<UiSyncStatusWidgetState>(UiSyncStatusWidgetState.Hidden)
+        MutableStateFlow<SyncStatusWidgetState>(SyncStatusWidgetState.Hidden)
     val uiSnackbarState = MutableStateFlow<UiSnackbarState>(UiSnackbarState.Hidden)
 
     val effects = MutableSharedFlow<DateObjectCommand>()
@@ -114,6 +118,7 @@ class DateObjectViewModel(
     private val _dateId = MutableStateFlow<Id?>(null)
     private val _dateTimestamp = MutableStateFlow<TimeInSeconds?>(null)
     private val _activeField = MutableStateFlow<ActiveField?>(null)
+    private val _dateObjectFieldIds: MutableStateFlow<List<RelationListWithValueItem>> = MutableStateFlow(emptyList())
 
     /**
      * Paging and subscription limit. If true, we can paginate after reaching bottom items.
@@ -144,9 +149,10 @@ class DateObjectViewModel(
         uiHeaderState.value = UiHeaderState.Loading
         uiFieldsState.value = UiFieldsState.LoadingState
         uiObjectsListState.value = UiObjectsListState.LoadingState
+        proceedWithObservingRelationListWithValue()
         proceedWithObservingPermissions()
-        proceedWithGettingDateObject()
-        proceedWithGettingDateObjectRelationList()
+        observeDateIdForObject()
+        observeDateIdForRelations()
         proceedWithObservingSyncStatus()
         setupSearchStateFlow()
         _dateId.value = vmParams.objectId
@@ -185,14 +191,27 @@ class DateObjectViewModel(
 
     private fun proceedWithReopenDateObjectByTimestamp(timeInSeconds: TimeInSeconds) {
         viewModelScope.launch {
-            fieldParser.getDateObjectByTimeInSeconds(
-                timeInSeconds = timeInSeconds,
-                spaceId = vmParams.spaceId,
-                actionSuccess = { obj ->
-                    reopenDateObject(obj.id)
+            val params = GetDateObjectByTimestamp.Params(
+                space = vmParams.spaceId,
+                timestampInSeconds = timeInSeconds
+            )
+            getDateObjectByTimestamp.async(params).fold(
+                onSuccess = { dateObject ->
+                    val obj = ObjectWrapper.Basic(dateObject.orEmpty())
+                    if (obj.isValid) {
+                        reopenDateObject(obj.id)
+                    } else {
+                        Timber.w("Date object is invalid")
+                        errorState.value = UiErrorState.Show(
+                            Reason.Other(msg = "Couldn't open date object, object is invalid")
+                        )
+                    }
                 },
-                actionFailure = {
-                    Timber.e("GettingDateByTimestamp error, object has no id")
+                onFailure = { e ->
+                    Timber.e(e, "Failed to get date object by timestamp :$timeInSeconds")
+                    errorState.value = UiErrorState.Show(
+                        Reason.Other(msg = "Couldn't open date object:\n${e.message?.take(30)}")
+                    )
                 }
             )
         }
@@ -206,6 +225,9 @@ class DateObjectViewModel(
         uiFieldsState.value = UiFieldsState.Empty
         uiObjectsListState.value = UiObjectsListState.Empty
         uiFieldsSheetState.value = UiFieldsSheetState.Hidden
+        _dateObjectFieldIds.value = emptyList()
+        _dateId.value = null
+        _dateTimestamp.value = null
         _activeField.value = null
         _dateId.value = dateObjectId
     }
@@ -257,108 +279,152 @@ class DateObjectViewModel(
                     uiSyncStatusBadgeState.value = UiSyncStatusBadgeState.Visible(syncAndP2pState)
                     val state = uiSyncStatusWidgetState.value
                     uiSyncStatusWidgetState.value = when (state) {
-                        UiSyncStatusWidgetState.Hidden -> UiSyncStatusWidgetState.Hidden
-                        is UiSyncStatusWidgetState.Visible -> state.copy(
-                            status = syncAndP2pState.toSyncStatusWidgetState()
-                        )
+                        SyncStatusWidgetState.Hidden -> SyncStatusWidgetState.Hidden
+                        else -> syncAndP2pState.toSyncStatusWidgetState()
                     }
                 }
         }
     }
 
-    private fun proceedWithGettingDateObjectRelationList() {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun proceedWithObservingRelationListWithValue() {
         viewModelScope.launch {
-            _dateId
-                .filterNotNull()
-                .collect { id ->
-                    val params = GetObjectRelationListById.Params(
-                        space = vmParams.spaceId,
-                        value = id
-                    )
-                    Timber.d("Start RelationListWithValue with params: $params")
-                    getObjectRelationListById.async(params).fold(
-                        onSuccess = { result ->
-                            Timber.d("RelationListWithValue Success: $result")
-                            val items =
-                                result.toUiFieldsItem(storeOfRelations = storeOfRelations)
-                            initFieldsState(items)
-                        },
-                        onFailure = { e ->
-                            Timber.e(e, "RelationListWithValue Error")
-                            errorState.value = UiErrorState.Show(
-                                Reason.ErrorGettingFields(
-                                    msg = e.message ?: "Error getting fields"
-                                )
-                            )
-                        }
+            combine(
+                _dateObjectFieldIds,
+                storeOfRelations.observe()
+            ) { relationIds, store ->
+                relationIds to store
+            }.collect { (relationIds, store) ->
+                Timber.d("RelationListWithValue: $relationIds")
+                if (store.isEmpty()) {
+                    handleEmptyFieldsState()
+                } else {
+                    initFieldsState(
+                        items = relationIds.toUiFieldsItem(storeOfRelations = storeOfRelations)
                     )
                 }
+            }
         }
     }
 
-    private fun proceedWithGettingDateObject() {
+    private fun observeDateIdForObject() {
         viewModelScope.launch {
-            _dateId
-                .filterNotNull()
-                .collect { id ->
-                    val params = GetObject.Params(
-                        target = id,
-                        space = vmParams.spaceId,
-                        saveAsLastOpened = true
+            _dateId.filterNotNull().collect { id ->
+                proceedWithGettingDateObject(id)
+            }
+        }
+    }
+
+    private fun observeDateIdForRelations() {
+        viewModelScope.launch {
+            _dateId.filterNotNull().collect { id ->
+                proceedWithGettingDateObjectRelationList(id)
+            }
+        }
+    }
+
+    private suspend fun proceedWithGettingDateObjectRelationList(id: Id) {
+        val params = GetObjectRelationListById.Params(
+            space = vmParams.spaceId,
+            value = id
+        )
+        getObjectRelationListById.async(params).fold(
+            onSuccess = { result ->
+                Timber.d("RelationListWithValue success: $result")
+                _dateObjectFieldIds.value = result
+            },
+            onFailure = { e ->
+                Timber.e(e, "RelationListWithValue Error")
+                errorState.value = UiErrorState.Show(
+                    Reason.ErrorGettingFields(
+                        msg = e.message ?: "Error getting fields"
                     )
-                    Timber.d("Start GetObject with params: $params")
-                    getObject.async(params).fold(
-                        onSuccess = { obj ->
-                            Timber.d("GetObject Success, obj:[$obj]")
-                            val timestampInSeconds =
-                                obj.details[id]?.getSingleValue<Double>(
-                                    Relations.TIMESTAMP
-                                )?.toLong()
-                            if (timestampInSeconds != null) {
-                                _dateTimestamp.value = timestampInSeconds
-                                val (formattedDate, _) = dateProvider.formatTimestampToDateAndTime(
-                                    timestamp = timestampInSeconds * 1000,
-                                )
-                                uiCalendarIconState.value = UiCalendarIconState.Visible(
-                                    timestampInSeconds = TimestampInSeconds(timestampInSeconds)
-                                )
-                                uiHeaderState.value = UiHeaderState.Content(
-                                    title = formattedDate,
-                                    relativeDate = dateProvider.calculateRelativeDates(
-                                        dateInSeconds = timestampInSeconds
-                                    )
-                                )
-                            }
-                        },
-                        onFailure = { e -> Timber.e(e, "GetObject Error") }
+                )
+            }
+        )
+    }
+
+    private suspend fun proceedWithGettingDateObject(id: Id) {
+        val params = GetObject.Params(
+            target = id,
+            space = vmParams.spaceId,
+            saveAsLastOpened = true
+        )
+        getObject.async(params).fold(
+            onSuccess = { obj ->
+                val timestampInSeconds =
+                    obj.details[id]?.getSingleValue<Double>(
+                        Relations.TIMESTAMP
+                    )?.toLong()
+                if (timestampInSeconds != null) {
+                    _dateTimestamp.value = timestampInSeconds
+                    val (formattedDate, _) = dateProvider.formatTimestampToDateAndTime(
+                        timestamp = timestampInSeconds * 1000,
+                    )
+                    uiCalendarIconState.value = UiCalendarIconState.Visible(
+                        timestampInSeconds = TimestampInSeconds(timestampInSeconds)
+                    )
+                    uiHeaderState.value = UiHeaderState.Content(
+                        title = formattedDate,
+                        relativeDate = dateProvider.calculateRelativeDates(
+                            dateInSeconds = timestampInSeconds
+                        )
+                    )
+                } else {
+                    Timber.e("Error getting timestamp")
+                    errorState.value = UiErrorState.Show(
+                        Reason.Other(msg = "Error getting timestamp from date object")
                     )
                 }
-        }
+            },
+            onFailure = { e ->
+                Timber.e(e, "GetObject Error")
+                errorState.value = UiErrorState.Show(
+                    Reason.Other(
+                        msg = "Error opening date object: ${e.message?.take(30) ?: "Unknown error"}"
+                    )
+                )
+            }
+        )
     }
     //endregion
 
     //region Subscription
-    private fun subscriptionId() = "date_object_subscription_${vmParams.spaceId}"
+    fun subscriptionId() = "date_object_subscription_${vmParams.spaceId}"
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun setupUiStateFlow() {
         viewModelScope.launch {
             combine(
-                _dateId.filterNotNull(),
-                _dateTimestamp.filterNotNull(),
-                _activeField.filterNotNull(),
+                _dateId,
+                _dateTimestamp,
+                _activeField,
                 restartSubscription
             ) { dateId, timestamp, activeField, _ ->
-                createSearchParams(
-                    dateId = dateId,
-                    timestamp = timestamp,
-                    space = vmParams.spaceId,
-                    itemsLimit = _itemsLimit,
-                    field = activeField
-                )
+                Timber.d("setupUiStateFlow, Combine: dateId: $dateId, timestamp: $timestamp, activeField: $activeField")
+
+                // If any of these are null, we return null to indicate we should skip loading data.
+                if (dateId == null || timestamp == null || activeField == null) {
+                    null
+                } else {
+                    createSearchParams(
+                        dateId = dateId,
+                        timestamp = timestamp,
+                        space = vmParams.spaceId,
+                        itemsLimit = _itemsLimit,
+                        field = activeField
+                    )
+                }
             }
                 .flatMapLatest { searchParams ->
-                    loadData(searchParams)
+                    if (searchParams == null) {
+                        Timber.d("Search params are null, skipping loadData")
+                        // If searchParams is null, we skip loadData and emit an empty list.
+                        flowOf(emptyList())
+                    } else {
+                        Timber.d("Search params are not null, loading data")
+                        loadData(searchParams)
+                    }
                 }
                 .catch {
                     errorState.value = UiErrorState.Show(
@@ -419,29 +485,6 @@ class DateObjectViewModel(
             }
         }
         return items
-    }
-
-    private fun createSearchParams(
-        dateId: Id,
-        timestamp: TimeInSeconds,
-        field: ActiveField,
-        space: SpaceId,
-        itemsLimit: Int
-    ): StoreSearchParams {
-        val (filters, sorts) = filtersAndSortsForSearch(
-            spaces = listOf(space.id),
-            field = field,
-            timestamp = timestamp,
-            dateId = dateId
-        )
-        return StoreSearchParams(
-            space = space,
-            filters = filters,
-            sorts = sorts,
-            keys = defaultKeys,
-            limit = itemsLimit,
-            subscription = subscriptionId()
-        )
     }
 
     /**
@@ -655,6 +698,7 @@ class DateObjectViewModel(
     }
 
     fun onDateEvent(event: DateEvent) {
+        Timber.d("onDateEvent: $event")
         when (event) {
             is DateEvent.Calendar -> onCalendarEvent(event)
             is DateEvent.TopToolbar -> onTopToolbarEvent(event)
@@ -693,7 +737,7 @@ class DateObjectViewModel(
     private fun onSyncStatusWidgetEvent(event: DateEvent.SyncStatusWidget) {
         when (event) {
             DateEvent.SyncStatusWidget.OnSyncStatusDismiss -> {
-                uiSyncStatusWidgetState.value = UiSyncStatusWidgetState.Hidden
+                uiSyncStatusWidgetState.value = SyncStatusWidgetState.Hidden
             }
         }
     }
@@ -719,9 +763,7 @@ class DateObjectViewModel(
 
             is DateEvent.TopToolbar.OnSyncStatusClick -> {
                 uiSyncStatusWidgetState.value =
-                    UiSyncStatusWidgetState.Visible(
-                        status = event.status.toSyncStatusWidgetState()
-                    )
+                    event.status.toSyncStatusWidgetState()
             }
         }
     }
@@ -904,28 +946,38 @@ class DateObjectViewModel(
     //endregion
 
     //region Ui State
-    private fun initFieldsState(relations: List<UiFieldsItem.Item>) {
-        val relation = relations.getOrNull(0)
-        if (relation == null) {
-            Timber.e("Error getting relation")
+    private fun initFieldsState(items: List<UiFieldsItem.Item>) {
+        Timber.d("Init fields state with items: $items")
+        if (items.isEmpty()) {
+            handleEmptyFieldsState()
             return
         }
+
+        val firstItem = items.first()
         _activeField.value = ActiveField(
-            key = relation.key,
-            format = relation.relationFormat
+            key = firstItem.key,
+            format = firstItem.relationFormat
         )
         restartSubscription.value++
         uiFieldsState.value = UiFieldsState(
             items = buildList {
                 add(UiFieldsItem.Settings())
-                addAll(relations)
+                addAll(items)
             },
             selectedRelationKey = _activeField.value?.key
         )
-        if (relations.isEmpty()) {
-            uiContentState.value = UiContentState.Empty
-            uiObjectsListState.value = UiObjectsListState.Empty
-        }
+    }
+
+    private fun handleEmptyFieldsState() {
+        uiFieldsState.value = UiFieldsState.Empty
+        uiContentState.value = UiContentState.Empty
+        uiObjectsListState.value = UiObjectsListState.Empty
+        _activeField.value = null
+        canPaginate.value = false
+        resetLimit()
+        shouldScrollToTopItems = true
+        uiFieldsSheetState.value = UiFieldsSheetState.Hidden
+        Timber.w("Error getting fields for date object:${_dateId.value}, fields are empty")
     }
 
     private fun updateHorizontalListState(selectedItem: UiFieldsItem.Item, needToScroll: Boolean = false) {

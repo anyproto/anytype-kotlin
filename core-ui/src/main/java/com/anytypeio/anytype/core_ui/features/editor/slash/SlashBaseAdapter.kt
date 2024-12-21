@@ -6,7 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderLeftBinding
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.SubheaderMenuHolder
+import com.anytypeio.anytype.core_ui.features.editor.slash.holders.SubheaderOnlyMenuHolder
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 
 abstract class SlashBaseAdapter(
@@ -58,6 +60,13 @@ abstract class SlashBaseAdapter(
                         clicks.invoke(SlashItem.Back)
                     }
                 }
+            }
+            R.layout.item_slash_widget_subheader_left -> {
+                SubheaderOnlyMenuHolder(
+                    binding = ItemSlashWidgetSubheaderLeftBinding.inflate(
+                        inflater, parent, false
+                    )
+                )
             }
             else -> throw IllegalArgumentException("Wrong viewtype:$viewType")
         }

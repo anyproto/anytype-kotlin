@@ -275,9 +275,11 @@ class DiscussionViewModel @Inject constructor(
                                 add(
                                     Chat.Message.Attachment(
                                         target = file.id,
-                                        type = Chat.Message.Attachment.Type.Image
+                                        type = Chat.Message.Attachment.Type.File
                                     )
                                 )
+                            }.onFailure {
+                                Timber.e(it, "Error while uploading file as attachment")
                             }
                         }
                     }

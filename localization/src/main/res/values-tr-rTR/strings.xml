@@ -1094,6 +1094,7 @@
     <string name="dates_days_ago">%1$s gün önce</string>
     <string name="dates_days_from">Şu andan itibaren %1$s gün</string>
     <string name="settings_use_yamux">Multiplex yedekleme kitaplığını kullanın</string>
+    <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban görünümü henüz mobil cihazlarda mevcut değil.\nVerilerinize erişmek için görünümü değiştirin (Ayarlar -&gt; Görünüm) veya yeni bir görünüm oluşturun.</string>
     <string name="error_calendar_view_not_supported">Takvim görünümü henüz mobil cihazlarda mevcut değil.\nVerilerinize erişmek için görünümü değiştirin (Ayarlar -&gt; Görünüm) veya yeni bir görünüm oluşturun.</string>

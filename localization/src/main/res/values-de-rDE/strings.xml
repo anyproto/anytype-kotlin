@@ -1094,6 +1094,7 @@
     <string name="dates_days_ago">Vor %1$s Tagen</string>
     <string name="dates_days_from">In %1$s Tagen</string>
     <string name="settings_use_yamux">Verwende eine reserve multiplex library</string>
+    <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban-Ansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>
     <string name="error_calendar_view_not_supported">Kalenderansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>

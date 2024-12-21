@@ -97,8 +97,7 @@ class CreateAccountTest {
                     name = name,
                     avatarPath = path,
                     icon = icon,
-                    networkMode = NetworkMode.DEFAULT,
-                    preferYamuxTransport = false
+                    networkMode = NetworkMode.DEFAULT
                 )
                 onBlocking { createAccount(command) } doReturn setup
             }
@@ -114,8 +113,7 @@ class CreateAccountTest {
                 name = name,
                 avatarPath = path,
                 icon = icon,
-                networkMode = NetworkMode.DEFAULT,
-                preferYamuxTransport = false
+                networkMode = NetworkMode.DEFAULT
             )
             verify(repo, times(1)).getNetworkMode()
             verify(repo, times(1)).createAccount(command)

@@ -16,7 +16,7 @@ class OpenFile(
         root.setOnClickListener {
             click(
                 ListenerType.File.View(
-                    target = item.id
+                    target = item.targetId,
                 )
             )
         }

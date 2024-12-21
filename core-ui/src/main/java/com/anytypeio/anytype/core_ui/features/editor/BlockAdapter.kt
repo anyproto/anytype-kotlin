@@ -56,6 +56,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTextBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTocBinding
@@ -151,6 +152,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_ONE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_THREE
@@ -362,6 +364,11 @@ class BlockAdapter(
                         )
                     }
                 }
+            }
+            HOLDER_FILE_TITLE -> {
+                Title.File(
+                    ItemBlockTitleFileBinding.inflate(inflater, parent, false)
+                )
             }
             HOLDER_TODO_TITLE -> {
                 Title.Todo(
@@ -1013,6 +1020,12 @@ class BlockAdapter(
                             item = blocks[position] as BlockView.Title.Todo
                         )
                     }
+                    is Title.File -> {
+                        holder.processPayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.Title.File
+                        )
+                    }
                     is Numbered -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1370,6 +1383,11 @@ class BlockAdapter(
                         onTitleTextInputClicked()
                     }
                     holder.content.clipboardInterceptor = clipboardInterceptor
+                }
+            }
+            is Title.File -> {
+                holder.apply {
+                    bind(item = blocks[position] as BlockView.Title.File,)
                 }
             }
             is Code -> {

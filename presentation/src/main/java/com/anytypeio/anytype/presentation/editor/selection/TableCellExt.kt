@@ -283,6 +283,7 @@ fun List<BlockView>.toggleTableMode(
             is BlockView.Title.Basic -> view.copy(
                 mode = cellsMode
             )
+            is BlockView.Title.File -> view
             is BlockView.Title.Profile -> view.copy(
                 mode = cellsMode
             )

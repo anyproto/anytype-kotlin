@@ -1565,4 +1565,5 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_friday">Jumat</string>
     <string name="day_of_week_saturday">Sabtu</string>
     <string name="day_of_week_sunday">Minggu</string>
+    <string name="file">Berkas</string>
 </resources>

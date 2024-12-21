@@ -61,7 +61,9 @@ sealed interface DiscussionView {
                 val uri: String
             ): ChatBoxAttachment()
             data class File(
-                val uri: String
+                val uri: String,
+                val name: String,
+                val size: Int
             ): ChatBoxAttachment()
             data class Link(
                 val target: Id,

@@ -592,7 +592,7 @@ private fun ChatBox(
                                         )
                                         .width(216.dp),
                                     title = attachment.name,
-                                    type = attachment.size.toString(),
+                                    type = stringResource(R.string.file),
                                     icon = ObjectIcon.File(
                                         mime = null,
                                         fileName = null

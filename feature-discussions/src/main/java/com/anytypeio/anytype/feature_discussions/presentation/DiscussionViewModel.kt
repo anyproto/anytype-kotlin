@@ -36,6 +36,7 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import java.sql.Types
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -45,6 +46,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class DiscussionViewModel @Inject constructor(
@@ -62,7 +64,8 @@ class DiscussionViewModel @Inject constructor(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -266,20 +269,26 @@ class DiscussionViewModel @Inject constructor(
                             }
                         }
                         is DiscussionView.Message.ChatBoxAttachment.File -> {
-                            uploadFile.async(
-                                UploadFile.Params(
-                                    space = vmParams.space,
-                                    path = attachment.uri
-                                )
-                            ).onSuccess { file ->
-                                add(
-                                    Chat.Message.Attachment(
-                                        target = file.id,
-                                        type = Chat.Message.Attachment.Type.File
+                            val path = withContext(dispatchers.io) {
+                                copyFileToCacheDirectory.copy(attachment.uri)
+                            }
+                            if (path != null) {
+                                uploadFile.async(
+                                    UploadFile.Params(
+                                        space = vmParams.space,
+                                        path = path
                                     )
-                                )
-                            }.onFailure {
-                                Timber.e(it, "Error while uploading file as attachment")
+                                ).onSuccess { file ->
+                                    // TODO delete file.
+                                    add(
+                                        Chat.Message.Attachment(
+                                            target = file.id,
+                                            type = Chat.Message.Attachment.Type.File
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while uploading file as attachment")
+                                }
                             }
                         }
                     }

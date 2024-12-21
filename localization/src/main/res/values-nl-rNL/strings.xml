@@ -1578,4 +1578,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="day_of_week_friday">Vrijdag</string>
     <string name="day_of_week_saturday">Zaterdag</string>
     <string name="day_of_week_sunday">Zondag</string>
+    <string name="file">Bestand</string>
 </resources>

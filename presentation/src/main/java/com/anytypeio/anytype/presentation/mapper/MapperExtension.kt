@@ -31,6 +31,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
 import timber.log.Timber
 
 fun Block.Content.File.toPictureView(
+    root: Block,
     blockId: String,
     urlBuilder: UrlBuilder,
     indent: Int,
@@ -62,22 +63,29 @@ fun Block.Content.File.toPictureView(
         val url = urlBuilder.getUrlForFileContent(this)
         val targetId = this.targetObjectId
         val struct = details.details[targetId]?.map
+        val currentObject = ObjectWrapper.Basic(details.details[root.id]?.map.orEmpty())
         if (url != null && targetId != null) {
             val targetObject = ObjectWrapper.File(struct.orEmpty())
-            BlockView.Media.Picture(
-                id = blockId,
-                targetObjectId = targetId,
-                url = url,
-                indent = indent,
-                mode = mode,
-                isSelected = isSelected,
-                background = background,
-                decorations = decorations,
-                size = targetObject.sizeInBytes?.toLong(),
-                name = targetObject.name,
-                mime = targetObject.fileMimeType
-            )
-
+            if (currentObject.layout == ObjectType.Layout.IMAGE) {
+                BlockView.OpenFile.Image(
+                    id = blockId,
+                    targetId = targetId
+                )
+            } else {
+                BlockView.Media.Picture(
+                    id = blockId,
+                    targetObjectId = targetId,
+                    url = url,
+                    indent = indent,
+                    mode = mode,
+                    isSelected = isSelected,
+                    background = background,
+                    decorations = decorations,
+                    size = targetObject.sizeInBytes?.toLong(),
+                    name = targetObject.name,
+                    mime = targetObject.fileMimeType
+                )
+            }
         } else {
             Timber.w("Could not build picture view for block $blockId")
             BlockView.Error.Picture(
@@ -175,6 +183,7 @@ fun Block.Content.File.toVideoView(
 }
 
 fun Block.Content.File.toFileView(
+    root: Block,
     blockId: String,
     urlBuilder: UrlBuilder,
     indent: Int,
@@ -203,6 +212,7 @@ fun Block.Content.File.toFileView(
         decorations = decorations
     )
     Block.Content.File.State.DONE -> {
+        val currentObject = ObjectWrapper.Basic(details.details[root.id]?.map.orEmpty())
         val url = urlBuilder.getUrlForFileContent(this)
         val targetId = this.targetObjectId
         val struct = details.details[targetId]?.map
@@ -218,20 +228,39 @@ fun Block.Content.File.toFileView(
                 )
             } else {
                 val targetObject = ObjectWrapper.File(struct)
-                BlockView.Media.File(
-                    id = blockId,
-                    targetObjectId = targetId,
-                    url = url,
-                    indent = indent,
-                    mode = mode,
-                    isSelected = isSelected,
-                    background = background,
-                    decorations = decorations,
-                    size = targetObject.sizeInBytes?.toLong(),
-                    name = targetObject.name,
-                    mime = targetObject.fileMimeType,
-                    fileExt = targetObject.fileExt
-                )
+                when (currentObject.layout) {
+                    ObjectType.Layout.IMAGE -> {
+                        BlockView.OpenFile.Image(
+                            id = blockId,
+                            targetId = targetId
+                        )
+                    }
+                    ObjectType.Layout.FILE,
+                    ObjectType.Layout.VIDEO,
+                    ObjectType.Layout.AUDIO,
+                    ObjectType.Layout.PDF -> {
+                        BlockView.OpenFile.File(
+                            id = blockId,
+                            targetId = targetId
+                        )
+                    }
+                    else -> {
+                        BlockView.Media.File(
+                            id = blockId,
+                            targetObjectId = targetId,
+                            url = url,
+                            indent = indent,
+                            mode = mode,
+                            isSelected = isSelected,
+                            background = background,
+                            decorations = decorations,
+                            size = targetObject.sizeInBytes?.toLong(),
+                            name = targetObject.name,
+                            mime = targetObject.fileMimeType,
+                            fileExt = targetObject.fileExt
+                        )
+                    }
+                }
             }
         } else {
             Timber.w("Could not build file view for block $blockId")

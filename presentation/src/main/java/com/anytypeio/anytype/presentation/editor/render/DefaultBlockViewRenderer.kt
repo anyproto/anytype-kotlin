@@ -623,54 +623,32 @@ class DefaultBlockViewRenderer @Inject constructor(
                     isPreviousBlockMedia = link is BlockView.LinkToObject.Default.Card
                 }
                 is Content.File -> {
-                    val detail = details.details.getOrDefault(root.id, Block.Fields.empty())
-                    val obj = ObjectWrapper.Basic(detail.map)
-                    if (SupportedLayouts.fileLayouts.contains(obj.layout)) {
-                        when (obj.layout) {
-                            ObjectType.Layout.IMAGE -> {
-                                result.add(
-                                    BlockView.OpenFile.Image(
-                                        id = block.id,
-                                        targetId = content.targetObjectId
-                                    )
-                                )
-                            }
-                            else -> {
-                                result.add(
-                                    BlockView.OpenFile.File(
-                                        id = block.id,
-                                        targetId = content.targetObjectId
-                                    )
-                                )
-                            }
-                        }
-                    } else {
-                        mCounter = 0
-                        val blockDecorationScheme = buildNestedDecorationData(
+                    mCounter = 0
+                    val blockDecorationScheme = buildNestedDecorationData(
+                        block = block,
+                        parentScheme = parentScheme,
+                        currentDecoration = DecorationData(
+                            style = if ((content.type == Content.File.Type.FILE || content.type == Content.File.Type.PDF) && content.state == Content.File.State.DONE)
+                                DecorationData.Style.None
+                            else
+                                DecorationData.Style.Card,
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    )
+                    result.add(
+                        file(
+                            root = root,
+                            mode = mode,
+                            content = content,
                             block = block,
-                            parentScheme = parentScheme,
-                            currentDecoration = DecorationData(
-                                style = if ((content.type == Content.File.Type.FILE || content.type == Content.File.Type.PDF) && content.state == Content.File.State.DONE)
-                                    DecorationData.Style.None
-                                else
-                                    DecorationData.Style.Card,
-                                background = block.parseThemeBackgroundColor()
-                            )
+                            indent = indent,
+                            selection = selection,
+                            isPreviousBlockMedia = isPreviousBlockMedia,
+                            schema = blockDecorationScheme,
+                            details = details
                         )
-                        result.add(
-                            file(
-                                mode = mode,
-                                content = content,
-                                block = block,
-                                indent = indent,
-                                selection = selection,
-                                isPreviousBlockMedia = isPreviousBlockMedia,
-                                schema = blockDecorationScheme,
-                                details = details
-                            )
-                        )
-                        isPreviousBlockMedia = true
-                    }
+                    )
+                    isPreviousBlockMedia = true
                 }
                 is Content.Layout -> {
                     isPreviousBlockMedia = false
@@ -1394,6 +1372,7 @@ class DefaultBlockViewRenderer @Inject constructor(
     }
 
     private fun file(
+        root: Block,
         mode: EditorMode,
         content: Content.File,
         block: Block,
@@ -1404,6 +1383,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         details: Block.Details
     ): BlockView = when (content.type) {
         Content.File.Type.IMAGE -> content.toPictureView(
+            root = root,
             blockId = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
@@ -1419,6 +1399,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             details = details
         )
         Content.File.Type.FILE -> content.toFileView(
+            root = root,
             blockId = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
@@ -1449,6 +1430,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             details = details
         )
         Content.File.Type.AUDIO -> content.toFileView(
+            root = root,
             blockId = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
@@ -1464,6 +1446,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             details = details
         )
         Content.File.Type.PDF -> content.toFileView(
+            root = root,
             blockId = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
@@ -1479,6 +1462,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             details = details
         )
         Content.File.Type.NONE -> content.toFileView(
+            root = root,
             blockId = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
@@ -1529,7 +1513,7 @@ class DefaultBlockViewRenderer @Inject constructor(
 
         val layoutCode = details.details[root.id]?.layout?.toInt()
 
-        val layout = ObjectType.Layout.values().find {
+        val layout = ObjectType.Layout.entries.find {
             it.code == layoutCode
         } ?: ObjectType.Layout.BASIC
 
@@ -1590,18 +1574,32 @@ class DefaultBlockViewRenderer @Inject constructor(
                 )
             }
             ObjectType.Layout.FILE,
-            ObjectType.Layout.IMAGE,
             ObjectType.Layout.BOOKMARK,
             ObjectType.Layout.VIDEO,
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF -> {
+                val objFile = ObjectWrapper.Basic(details.details[root.id]?.map.orEmpty())
+                BlockView.Title.File(
+                    mode = blockMode,
+                    id = block.id,
+                    text = content.text,
+                    isFocused = resolveIsFocused(focus, block),
+                    cursor = cursor,
+                    coverColor = coverContainer.coverColor,
+                    coverImage = coverContainer.coverImage,
+                    coverGradient = coverContainer.coverGradient,
+                    background = block.parseThemeBackgroundColor(),
+                    color = block.textColor(),
+                    icon = objFile.objectIcon(builder = urlBuilder)
+                )
+            }
+            ObjectType.Layout.IMAGE -> {
                 BlockView.Title.Basic(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    emoji = details.details[root.id]?.iconEmoji?.takeIf { it.isNotBlank() },
                     image = details.details[root.id]?.iconImage?.let { image ->
-                        if (image.isNotBlank() && layout != ObjectType.Layout.BOOKMARK)
+                        if (image.isNotBlank())
                             urlBuilder.thumbnail(image)
                         else
                             null

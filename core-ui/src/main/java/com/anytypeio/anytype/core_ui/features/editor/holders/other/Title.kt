@@ -561,14 +561,10 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val icon: ObjectIconWidget = binding.objectIconWidget
         override val image: ImageView = binding.cover
         override val selectionView: View = itemView
-
-        var isLocked: Boolean = true
-
         override val root: View = itemView
         override val content: TextInputWidget = binding.title
 
         init {
-            content.setSpannableFactory(DefaultSpannableFactory())
             icon.binding.ivImage.updateLayoutParams<LayoutParams> {
                 height = itemView.resources.getDimension(R.dimen.dp_80).toInt()
                 width = itemView.resources.getDimension(R.dimen.dp_64).toInt()

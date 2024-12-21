@@ -366,8 +366,6 @@ class EditorViewModel(
 
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
 
-    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
-
     val isUndoEnabled = MutableStateFlow(false)
     val isRedoEnabled = MutableStateFlow(false)
     val isUndoRedoToolbarIsVisible = MutableStateFlow(false)
@@ -442,7 +440,6 @@ class EditorViewModel(
     init {
         Timber.i("EditorViewModel, init")
         proceedWithObservingPermissions()
-        proceedWithObservingProfileIcon()
         startHandlingTextChanges()
         startProcessingFocusChanges()
         startProcessingControlPanelViewState()
@@ -486,35 +483,6 @@ class EditorViewModel(
                 .collect {
                     permission.value = it
                 }
-        }
-    }
-
-    private fun proceedWithObservingProfileIcon() {
-        viewModelScope.launch {
-            spaceManager
-                .observe()
-                .flatMapLatest { config ->
-                    storelessSubscriptionContainer.subscribe(
-                        StoreSearchByIdsParams(
-                            space = SpaceId(config.techSpace),
-                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                            targets = listOf(config.profile),
-                            keys = listOf(
-                                Relations.ID,
-                                Relations.NAME,
-                                Relations.ICON_EMOJI,
-                                Relations.ICON_IMAGE,
-                                Relations.ICON_OPTION
-                            )
-                        )
-                    ).map { result ->
-                        val obj = result.firstOrNull()
-                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
-                    }
-                }
-                .catch { Timber.e(it, "Error while observing space icon") }
-                .flowOn(dispatchers.io)
-                .collect { icon.value = it }
         }
     }
 

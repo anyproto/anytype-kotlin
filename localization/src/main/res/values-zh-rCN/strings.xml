@@ -1561,4 +1561,5 @@
     <string name="day_of_week_friday">星期五</string>
     <string name="day_of_week_saturday">星期六</string>
     <string name="day_of_week_sunday">星期天 </string>
+    <string name="file">文件</string>
 </resources>

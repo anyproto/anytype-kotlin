@@ -1578,4 +1578,5 @@ En concreto,
     <string name="day_of_week_friday">Viernes</string>
     <string name="day_of_week_saturday">Sábado</string>
     <string name="day_of_week_sunday">Domingo</string>
+    <string name="file">Archivo</string>
 </resources>

@@ -1575,4 +1575,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="day_of_week_friday">Vendredi</string>
     <string name="day_of_week_saturday">Samedi</string>
     <string name="day_of_week_sunday">Dimanche</string>
+    <string name="file">Fichier</string>
 </resources>

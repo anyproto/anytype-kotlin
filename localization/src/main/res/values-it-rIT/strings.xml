@@ -1579,4 +1579,5 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_friday">Venerdì</string>
     <string name="day_of_week_saturday">Sabato</string>
     <string name="day_of_week_sunday">Domenica</string>
+    <string name="file">File</string>
 </resources>

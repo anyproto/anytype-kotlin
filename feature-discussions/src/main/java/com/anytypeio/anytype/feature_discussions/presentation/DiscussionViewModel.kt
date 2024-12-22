@@ -30,7 +30,10 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.emojifier.data.Emoji
+import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -39,6 +42,7 @@ import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import java.sql.Types
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,7 +69,8 @@ class DiscussionViewModel @Inject constructor(
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
+    private val emojiProvider: EmojiProvider
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -74,6 +79,8 @@ class DiscussionViewModel @Inject constructor(
     val commands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
+
+    val emojis = MutableStateFlow<List<EmojiPickerView>>(emptyList())
 
     var chat: Id = ""
 
@@ -115,6 +122,10 @@ class DiscussionViewModel @Inject constructor(
                     }
                 }
             }
+        }
+
+        viewModelScope.launch {
+            emojis.value = loadEmojiWithCategories()
         }
     }
 
@@ -495,6 +506,29 @@ class DiscussionViewModel @Inject constructor(
     fun onExitEditMessageMode() {
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.Default
+        }
+    }
+
+    private suspend fun loadEmojiWithCategories() : List<EmojiPickerView> = withContext(dispatchers.io) {
+        buildList {
+            emojiProvider.emojis.forEachIndexed { categoryIndex, emojis ->
+                add(
+                    EmojiPickerView.GroupHeader(
+                        category = categoryIndex
+                    )
+                )
+                emojis.forEachIndexed { emojiIndex, emoji ->
+                    val skin = Emoji.COLORS.any { color -> emoji.contains(color) }
+                    if (!skin)
+                        add(
+                            EmojiPickerView.Emoji(
+                                unicode = emoji,
+                                page = categoryIndex,
+                                index = emojiIndex
+                            )
+                        )
+                }
+            }
         }
     }
 

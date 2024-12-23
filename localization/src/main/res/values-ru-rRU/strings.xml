@@ -469,6 +469,7 @@
     <string name="open_source">Открыть источник</string>
     <string name="reload_object_content">Перезагрузить содержимое объекта</string>
     <string name="open_link">Открыть ссылку</string>
+    <string name="open_file">Открыть файл</string>
     <string name="copy_email">Скопировать адрес электронной почты</string>
     <string name="copy_phone_number">Copy phone numbler</string>
     <string name="send_email">Отправить электронное письмо</string>
@@ -1608,4 +1609,6 @@
     <string name="day_of_week_saturday">Суббота</string>
     <string name="day_of_week_sunday">Воскресенье</string>
     <string name="file">Файл</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
+    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
 </resources>

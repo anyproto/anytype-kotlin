@@ -783,6 +783,7 @@ class EditorViewModel(
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 Timber.d("Rendering starting...")
                 val doc = models.asMap().render(
+                    context = context,
                     mode = mode,
                     root = root,
                     focus = focus,
@@ -4311,16 +4312,17 @@ class EditorViewModel(
 
         sendToast("Downloading file in background...")
 
+        val fileBlockView = (views.find { it.id == blockId } as? BlockView.Media.File)
+
         val fileBlock = blocks.firstOrNull { it.id == blockId }
         val fileContent = fileBlock?.content as? Content.File
-        val url = urlBuilder.getUrlForFileBlock(fileBlock)
-        
-        if (fileContent != null && url != null) {
+
+        if (fileBlockView != null && fileContent != null) {
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Media.DownloadFile(
-                        url = url,
-                        name = fileContent.name.orEmpty(),
+                        url = fileBlockView.url,
+                        name = fileBlockView.name.orEmpty(),
                         type = fileContent.type
                     )
                 )

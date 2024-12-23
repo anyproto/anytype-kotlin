@@ -25,6 +25,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Mode
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -1509,7 +1510,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectType.Layout.PDF -> {
                 val objFile = ObjectWrapper.Basic(details.details[root.id]?.map.orEmpty())
                 BlockView.Title.File(
-                    mode = blockMode,
+                    mode = Mode.READ,
                     id = block.id,
                     text = content.text,
                     isFocused = resolveIsFocused(focus, block),
@@ -1524,7 +1525,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             }
             ObjectType.Layout.IMAGE -> {
                 BlockView.Title.Basic(
-                    mode = blockMode,
+                    mode = Mode.READ,
                     id = block.id,
                     text = content.text,
                     image = details.details[root.id]?.iconImage?.let { image ->

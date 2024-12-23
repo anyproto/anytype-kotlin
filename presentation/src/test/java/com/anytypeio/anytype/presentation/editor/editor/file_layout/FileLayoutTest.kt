@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor.file_layout
 
+import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
@@ -10,9 +12,11 @@ import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSetup
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
@@ -27,12 +31,19 @@ import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Config(sdk = [Build.VERSION_CODES.P])
+@RunWith(RobolectricTestRunner::class)
 class FileLayoutTest : EditorPresentationTestSetup() {
 
     @get:Rule
@@ -50,16 +61,6 @@ class FileLayoutTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = DefaultCoroutineTestRule()
 
-    val title = StubTitle()
-    val header = StubHeader(children = listOf(title.id))
-    val fileBlock = StubFile(
-        id = "fileBlockId-${MockDataFactory.randomUuid()}",
-        targetObjectId = root,
-        state = Block.Content.File.State.DONE
-    )
-    val page = StubSmartBlock(id = root, children = listOf(header.id, fileBlock.id))
-    val document = listOf(page, header, title, fileBlock)
-
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -70,12 +71,25 @@ class FileLayoutTest : EditorPresentationTestSetup() {
     @Test
     fun `should change file block to file open block`() = runTest {
 
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val fileBlock = StubFile(
+            id = "fileBlockId-${MockDataFactory.randomUuid()}",
+            targetObjectId = root,
+            state = Block.Content.File.State.DONE,
+            type = Block.Content.File.Type.FILE
+        )
+        val page = StubSmartBlock(id = root, children = listOf(header.id, fileBlock.id))
+        val document = listOf(page, header, title, fileBlock)
+
+        val fileExt = "pdf"
+
         val fileObject = StubObject(
             id = root,
             space = defaultSpace,
             name = "fileObjectName-${RandomString.make(5)}",
             layout = ObjectType.Layout.FILE.code.toDouble(),
-            fileExt = "pdf"
+            fileExt = fileExt
         )
 
         val detailsList = Block.Details(
@@ -100,10 +114,16 @@ class FileLayoutTest : EditorPresentationTestSetup() {
 
         val firstTimeExpected = ViewState.Success(
             listOf(
-                BlockView.Title.Basic(
+                BlockView.Title.File(
+                    mode = BlockView.Mode.EDIT,
                     isFocused = false,
                     id = title.id,
-                    text = title.content<TXT>().text
+                    text = title.content<TXT>().text,
+                    icon = ObjectIcon.File(
+                        mime = fileObject.fileMimeType,
+                        fileName = fileObject.name,
+                        extensions = fileExt
+                    )
                 ),
                 BlockView.OpenFile.File(
                     id = fileBlock.id,
@@ -119,12 +139,25 @@ class FileLayoutTest : EditorPresentationTestSetup() {
     @Test
     fun `should change file block to image open block`() = runTest {
 
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val fileBlock = StubFile(
+            id = "fileBlockId-${MockDataFactory.randomUuid()}",
+            targetObjectId = root,
+            state = Block.Content.File.State.DONE,
+            type = Block.Content.File.Type.IMAGE
+        )
+        val page = StubSmartBlock(id = root, children = listOf(header.id, fileBlock.id))
+        val document = listOf(page, header, title, fileBlock)
+
+        val fileExt = "jpg"
+
         val fileObject = StubObject(
             id = root,
             space = defaultSpace,
-            name = "fileObjectName-${RandomString.make(5)}",
+            name = "fileObjectImageName-${RandomString.make(5)}",
             layout = ObjectType.Layout.IMAGE.code.toDouble(),
-            fileExt = "jpg"
+            fileExt = fileExt
         )
 
         val detailsList = Block.Details(
@@ -170,6 +203,17 @@ class FileLayoutTest : EditorPresentationTestSetup() {
     @Test
     fun `should start sharing file on open file click`() = runTest {
 
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val fileBlock = StubFile(
+            id = "fileBlockId-${MockDataFactory.randomUuid()}",
+            targetObjectId = root,
+            state = Block.Content.File.State.DONE,
+            type = Block.Content.File.Type.FILE
+        )
+        val page = StubSmartBlock(id = root, children = listOf(header.id, fileBlock.id))
+        val document = listOf(page, header, title, fileBlock)
+
         val fileObject = StubObject(
             id = root,
             space = defaultSpace,
@@ -189,6 +233,22 @@ class FileLayoutTest : EditorPresentationTestSetup() {
             details = detailsList
         )
 
+        val objName = fieldParser.getObjectName(fileObject)
+
+        val downloadParams = MiddlewareShareDownloader.Params(
+            objectId = root,
+            name = objName
+        )
+
+        documentFileShareDownloader.stub {
+            onBlocking { async(downloadParams) } doReturn Resultat.success(
+                MiddlewareShareDownloader.Response(
+                    Uri.EMPTY,
+                    ""
+                )
+            )
+        }
+
         val vm = buildViewModel()
         advanceUntilIdle()
         vm.onStart(id = fileObject.id, space = defaultSpace)
@@ -196,8 +256,6 @@ class FileLayoutTest : EditorPresentationTestSetup() {
 
         vm.startSharingFile(id = fileBlock.id)
         advanceUntilIdle()
-
-        val objName = fieldParser.getObjectName(fileObject)
 
         verify(documentFileShareDownloader, times(1)).async(
             params = eq(

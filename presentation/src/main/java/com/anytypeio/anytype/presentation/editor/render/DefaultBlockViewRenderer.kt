@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.ext.textColor
@@ -58,6 +57,7 @@ class DefaultBlockViewRenderer @Inject constructor(
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
     override suspend fun Map<Id, List<Block>>.render(
+        context: Id,
         mode: EditorMode,
         root: Block,
         focus: Focus,
@@ -119,6 +119,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -164,6 +165,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -201,6 +203,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (toggleStateHolder.isToggled(block.id)) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -241,6 +244,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -281,6 +285,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -321,6 +326,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -364,6 +370,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -400,6 +407,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -458,6 +466,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -497,6 +506,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -541,6 +551,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -635,19 +646,19 @@ class DefaultBlockViewRenderer @Inject constructor(
                             background = block.parseThemeBackgroundColor()
                         )
                     )
-                    result.add(
-                        file(
-                            root = root,
-                            mode = mode,
-                            content = content,
-                            block = block,
-                            indent = indent,
-                            selection = selection,
-                            isPreviousBlockMedia = isPreviousBlockMedia,
-                            schema = blockDecorationScheme,
-                            details = details
-                        )
+                    val fileBlock = file(
+                        context = context,
+                        mode = mode,
+                        content = content,
+                        block = block,
+                        indent = indent,
+                        selection = selection,
+                        isPreviousBlockMedia = isPreviousBlockMedia,
+                        schema = blockDecorationScheme,
+                        details = details,
+                        fieldParser = fieldParser
                     )
+                    result.add(fileBlock)
                     isPreviousBlockMedia = true
                 }
                 is Content.Layout -> {
@@ -662,6 +673,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     }
                     result.addAll(
                         render(
+                            context = context,
                             mode = mode,
                             root = root,
                             focus = focus,
@@ -1372,7 +1384,7 @@ class DefaultBlockViewRenderer @Inject constructor(
     }
 
     private fun file(
-        root: Block,
+        context: Id,
         mode: EditorMode,
         content: Content.File,
         block: Block,
@@ -1380,104 +1392,21 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
         schema: NestedDecorationData,
-        details: Block.Details
-    ): BlockView = when (content.type) {
-        Content.File.Type.IMAGE -> content.toPictureView(
-            root = root,
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPreviousBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        Content.File.Type.FILE -> content.toFileView(
-            root = root,
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        Content.File.Type.VIDEO -> content.toVideoView(
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        Content.File.Type.AUDIO -> content.toFileView(
-            root = root,
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        Content.File.Type.PDF -> content.toFileView(
-            root = root,
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        Content.File.Type.NONE -> content.toFileView(
-            root = root,
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        else -> throw IllegalStateException("Unexpected file type: ${content.type}")
+        details: Block.Details,
+        fieldParser: FieldParser
+    ): BlockView {
+
+        val blockViewMode =
+            if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+        val isSelected = checkIfSelected(mode, block, selection)
+        val background = block.parseThemeBackgroundColor()
+        val decorations = schema.toBlockViewDecoration(block)
+
+        return when (content.type) {
+            Content.File.Type.IMAGE -> content.toPictureView(context, block.id, urlBuilder, indent, blockViewMode, isSelected, background, isPreviousBlockMedia, decorations, details, fieldParser)
+            Content.File.Type.VIDEO -> content.toVideoView(context, block.id, urlBuilder, indent, blockViewMode, isSelected, background, isPreviousBlockMedia, decorations, details, fieldParser)
+            else -> content.toFileView(context, block.id, urlBuilder, indent, blockViewMode, isSelected, background, isPreviousBlockMedia, decorations, details, fieldParser)
+        }
     }
 
     private fun title(

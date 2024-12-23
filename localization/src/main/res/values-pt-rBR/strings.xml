@@ -467,6 +467,7 @@
     <string name="open_source">Código aberto</string>
     <string name="reload_object_content">Recarregar conteúdo do objeto</string>
     <string name="open_link">Abrir link</string>
+    <string name="open_file">Open file</string>
     <string name="copy_email">Copiar e-mail</string>
     <string name="copy_phone_number">Copiar número de telefone</string>
     <string name="send_email">Enviar email</string>
@@ -1576,4 +1577,6 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="day_of_week_saturday">Saturday</string>
     <string name="day_of_week_sunday">Sunday</string>
     <string name="file">Arquivo</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
+    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
 </resources>

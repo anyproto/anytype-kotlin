@@ -674,8 +674,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         testObserver.assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFileByDefaultApp(
-                id = fileBlockId,
-                uri = builder.file(targetObjectId)
+                id = fileBlockId
             )
         }
     }

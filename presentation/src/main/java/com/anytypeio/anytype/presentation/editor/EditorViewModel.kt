@@ -3789,8 +3789,8 @@ class EditorViewModel(
             }
             is ListenerType.File.View -> {
                 when (mode) {
-                    EditorMode.Edit -> onFileClicked(clicked.target)
-                    EditorMode.Locked, EditorMode.Read -> onFileClicked(clicked.target)
+                    EditorMode.Edit -> onFileBlockClicked(clicked.target)
+                    EditorMode.Locked, EditorMode.Read -> onFileBlockClicked(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -4246,7 +4246,7 @@ class EditorViewModel(
         }
     }
 
-    private fun onFileClicked(blockId: String) {
+    private fun onFileBlockClicked(blockId: String) {
         dispatch(
             Command.OpenFileByDefaultApp(
                 id = blockId

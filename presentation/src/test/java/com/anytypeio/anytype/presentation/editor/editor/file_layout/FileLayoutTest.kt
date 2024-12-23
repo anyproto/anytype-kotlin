@@ -180,7 +180,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
         vm.onStart(id = fileObject.id, space = defaultSpace)
         val loadingState = vm.state.test()
         assertEquals(ViewState.Loading, loadingState.value())
-
+        
         advanceUntilIdle()
 
         val firstTimeExpected = ViewState.Success(
@@ -188,7 +188,8 @@ class FileLayoutTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
-                    text = title.content<TXT>().text
+                    text = title.content<TXT>().text,
+                    mode = BlockView.Mode.READ //for Image Object title are always locked!
                 ),
                 BlockView.ButtonOpenFile.ImageButton(
                     id = fileBlock.id,

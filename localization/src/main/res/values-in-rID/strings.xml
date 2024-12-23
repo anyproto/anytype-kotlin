@@ -466,6 +466,7 @@
     <string name="open_source">Buka sumber</string>
     <string name="reload_object_content">Muat ulang konten objek</string>
     <string name="open_link">Buka tautan</string>
+    <string name="open_file">Buka berkas</string>
     <string name="copy_email">Salin email</string>
     <string name="copy_phone_number">Salin nomor telepon</string>
     <string name="send_email">Kirim email</string>
@@ -1566,4 +1567,6 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_saturday">Sabtu</string>
     <string name="day_of_week_sunday">Minggu</string>
     <string name="file">Berkas</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
+    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
 </resources>

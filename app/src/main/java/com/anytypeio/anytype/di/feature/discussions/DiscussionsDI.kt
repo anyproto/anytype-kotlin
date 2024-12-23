@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.discussions
 
+import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
@@ -21,11 +22,14 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
+import dagger.Provides
 
 @Component(
     dependencies = [DiscussionComponentDependencies::class],
@@ -68,6 +72,14 @@ interface SpaceLevelChatComponent {
 
 @Module
 object DiscussionModule {
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCopyFileToCache(
+        context: Context
+    ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
+
     @Module
     interface Declarations {
         @PerScreen
@@ -93,4 +105,5 @@ interface DiscussionComponentDependencies : ComponentDependencies {
     fun members(): ActiveSpaceMemberSubscriptionContainer
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
     fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun context(): Context
 }

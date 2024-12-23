@@ -118,7 +118,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
         val firstTimeExpected = ViewState.Success(
             listOf(
                 BlockView.Title.File(
-                    mode = BlockView.Mode.EDIT,
+                    mode = BlockView.Mode.READ, //in this case for a File Object title is always locked!
                     isFocused = false,
                     id = title.id,
                     text = title.content<TXT>().text,
@@ -188,7 +188,8 @@ class FileLayoutTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
-                    text = title.content<TXT>().text
+                    text = title.content<TXT>().text,
+                    mode = BlockView.Mode.READ //in this case for a Image Object title is always locked!
                 ),
                 BlockView.ButtonOpenFile.ImageButton(
                     id = fileBlock.id,

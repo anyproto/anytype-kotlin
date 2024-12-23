@@ -180,7 +180,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
         vm.onStart(id = fileObject.id, space = defaultSpace)
         val loadingState = vm.state.test()
         assertEquals(ViewState.Loading, loadingState.value())
-        
+
         advanceUntilIdle()
 
         val firstTimeExpected = ViewState.Success(

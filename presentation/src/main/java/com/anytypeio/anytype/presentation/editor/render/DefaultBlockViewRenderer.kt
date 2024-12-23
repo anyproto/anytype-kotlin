@@ -1510,7 +1510,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectType.Layout.PDF -> {
                 val objFile = ObjectWrapper.Basic(details.details[root.id]?.map.orEmpty())
                 BlockView.Title.File(
-                    mode = blockMode,
+                    mode = Mode.READ,
                     id = block.id,
                     text = content.text,
                     isFocused = resolveIsFocused(focus, block),

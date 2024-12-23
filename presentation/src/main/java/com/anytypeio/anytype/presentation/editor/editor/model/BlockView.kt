@@ -1023,7 +1023,7 @@ sealed class BlockView : ViewType {
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val decorations: List<Decoration> = emptyList(),
             val size: Long?,
-            val name: String?,
+            val name: String,
             val mime: String?,
             val targetObjectId: Id,
             val url: String,

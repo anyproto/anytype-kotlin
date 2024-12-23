@@ -3,11 +3,10 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 import android.text.Spannable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.postDelayed
 import androidx.core.view.updateLayoutParams
@@ -16,6 +15,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
@@ -23,7 +23,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
-import com.anytypeio.anytype.core_ui.widgets.RadialGradientComposeView
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -553,6 +553,39 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         override fun applyBackground(item: BlockView.Title) {
             content.setBlockBackgroundColor(item.background)
+        }
+    }
+
+    class File(val binding: ItemBlockTitleFileBinding) : Title(binding.root) {
+
+        override val icon: ObjectIconWidget = binding.objectIconWidget
+        override val image: ImageView = binding.cover
+        override val selectionView: View = itemView
+        override val root: View = itemView
+        override val content: TextInputWidget = binding.title
+
+        init {
+            icon.binding.ivImage.updateLayoutParams<LayoutParams> {
+                height = itemView.resources.getDimension(R.dimen.dp_80).toInt()
+                width = itemView.resources.getDimension(R.dimen.dp_64).toInt()
+            }
+        }
+
+        fun bind(
+            item: BlockView.Title.File,
+        ) {
+            super.bind(
+                item = item,
+                onCoverClicked = {}
+            )
+            icon.setIcon(item.icon)
+        }
+
+        override fun applyTextColor(item: BlockView.Title) {
+            //do nothing
+        }
+        override fun applyBackground(item: BlockView.Title) {
+            //do nothing
         }
     }
 }

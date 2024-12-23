@@ -76,6 +76,7 @@ class DefaultBlockViewRendererTest {
             details: Block.Details,
             schema: NestedDecorationData = emptyList()
         ): List<BlockView> = blocks.render(
+            context = root.id,
             root = root,
             focus = focus,
             anchor = anchor,
@@ -5754,24 +5755,38 @@ class DefaultBlockViewRendererTest {
     //endregion
 
     @Test
-    fun `should not render file block in case of file layout`() {
-
-        val file = StubFile(
-            backgroundColor = null,
-            state = Block.Content.File.State.DONE,
-            type = Block.Content.File.Type.FILE
+    fun `should render file open block in case of file, pdf, audio or video layouts`(){
+        val fileTypeExceptImage = listOf(
+            Block.Content.File.Type.FILE to Layout.FILE,
+            Block.Content.File.Type.PDF to Layout.PDF,
+            Block.Content.File.Type.VIDEO to Layout.VIDEO,
+            Block.Content.File.Type.AUDIO to Layout.AUDIO,
         )
+
+        fileTypeExceptImage.forEach { (fileType, layout) ->
+            testFileLayout(type = fileType, layout = layout)
+        }
+    }
+
+    private fun testFileLayout(type: Block.Content.File.Type, layout: Layout) {
+
+        val currentObjectId = MockDataFactory.randomUuid()
+
+        val file = StubFile(type = type, targetObjectId = currentObjectId)
 
         val paragraph = StubParagraph()
 
-        val page = StubSmartBlock(children = listOf(paragraph.id, file.id))
+        val page = StubSmartBlock(id = currentObjectId, children = listOf(paragraph.id, file.id))
 
-        val details = mapOf(page.id to Block.Fields(
-            mapOf(
-                Relations.NAME to "file-name",
-                Relations.LAYOUT to Layout.FILE.code.toDouble()
+        val details = mapOf(
+            page.id to Block.Fields(
+                mapOf(
+                    Relations.ID to currentObjectId,
+                    Relations.NAME to "file-name",
+                    Relations.LAYOUT to layout.code.toDouble()
+                )
             )
-        ))
+        )
 
         val blocks = listOf(page, paragraph, file)
 
@@ -5806,6 +5821,78 @@ class DefaultBlockViewRendererTest {
                         background = paragraph.parseThemeBackgroundColor()
                     )
                 ),
+            ),
+            BlockView.ButtonOpenFile.FileButton(
+                id = file.id,
+                targetId = currentObjectId
+            )
+        )
+
+        assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `should render image open block in case of image layout`() {
+
+        val currentObjectId = MockDataFactory.randomUuid()
+
+        val file = StubFile(
+            type = Block.Content.File.Type.IMAGE,
+            targetObjectId = currentObjectId,
+            state = Block.Content.File.State.DONE
+        )
+
+        val paragraph = StubParagraph()
+
+        val page = StubSmartBlock(id = currentObjectId, children = listOf(paragraph.id, file.id))
+
+        val details = mapOf(
+            page.id to Block.Fields(
+                mapOf(
+                    Relations.ID to currentObjectId,
+                    Relations.NAME to "image-name",
+                    Relations.LAYOUT to ObjectType.Layout.IMAGE.code.toDouble()
+                )
+            )
+        )
+
+        val blocks = listOf(page, paragraph, file)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = Block.Details(details)
+            )
+        }
+
+        val expected = listOf(
+            BlockView.Text.Paragraph(
+                indent = 0,
+                isFocused = false,
+                id = paragraph.id,
+                marks = emptyList(),
+                background = paragraph.parseThemeBackgroundColor(),
+                text = paragraph.content<Block.Content.Text>().text,
+                decorations = listOf(
+                    BlockView.Decoration(
+                        style = BlockView.Decoration.Style.None,
+                        background = paragraph.parseThemeBackgroundColor()
+                    )
+                ),
+            ),
+            BlockView.ButtonOpenFile.ImageButton(
+                id = file.id,
+                targetId = currentObjectId
             )
         )
 

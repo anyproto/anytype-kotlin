@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.ext.textColor
@@ -58,6 +57,7 @@ class DefaultBlockViewRenderer @Inject constructor(
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
     override suspend fun Map<Id, List<Block>>.render(
+        context: Id,
         mode: EditorMode,
         root: Block,
         focus: Focus,
@@ -119,6 +119,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -164,6 +165,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -201,6 +203,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (toggleStateHolder.isToggled(block.id)) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -241,6 +244,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -281,6 +285,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -321,6 +326,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -364,6 +370,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -400,6 +407,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -458,6 +466,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -497,6 +506,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -541,6 +551,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             if (block.children.isNotEmpty()) {
                                 result.addAll(
                                     render(
+                                        context = context,
                                         mode = mode,
                                         root = root,
                                         focus = focus,
@@ -623,11 +634,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                     isPreviousBlockMedia = link is BlockView.LinkToObject.Default.Card
                 }
                 is Content.File -> {
-                    val detail = details.details.getOrDefault(root.id, Block.Fields.empty())
-                    val obj = ObjectWrapper.Basic(detail.map)
-                    if (SupportedLayouts.fileLayouts.contains(obj.layout)) {
-                        return@forEach
-                    }
                     mCounter = 0
                     val blockDecorationScheme = buildNestedDecorationData(
                         block = block,
@@ -640,18 +646,19 @@ class DefaultBlockViewRenderer @Inject constructor(
                             background = block.parseThemeBackgroundColor()
                         )
                     )
-                    result.add(
-                        file(
-                            mode = mode,
-                            content = content,
-                            block = block,
-                            indent = indent,
-                            selection = selection,
-                            isPreviousBlockMedia = isPreviousBlockMedia,
-                            schema = blockDecorationScheme,
-                            details = details
-                        )
+                    val fileBlock = file(
+                        context = context,
+                        mode = mode,
+                        content = content,
+                        block = block,
+                        indent = indent,
+                        selection = selection,
+                        isPreviousBlockMedia = isPreviousBlockMedia,
+                        schema = blockDecorationScheme,
+                        details = details,
+                        fieldParser = fieldParser
                     )
+                    result.add(fileBlock)
                     isPreviousBlockMedia = true
                 }
                 is Content.Layout -> {
@@ -666,6 +673,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     }
                     result.addAll(
                         render(
+                            context = context,
                             mode = mode,
                             root = root,
                             focus = focus,
@@ -1376,6 +1384,7 @@ class DefaultBlockViewRenderer @Inject constructor(
     }
 
     private fun file(
+        context: Id,
         mode: EditorMode,
         content: Content.File,
         block: Block,
@@ -1383,99 +1392,21 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
         schema: NestedDecorationData,
-        details: Block.Details
-    ): BlockView = when (content.type) {
-        Content.File.Type.IMAGE -> content.toPictureView(
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPreviousBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        Content.File.Type.FILE -> content.toFileView(
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        Content.File.Type.VIDEO -> content.toVideoView(
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        Content.File.Type.AUDIO -> content.toFileView(
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        Content.File.Type.PDF -> content.toFileView(
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        Content.File.Type.NONE -> content.toFileView(
-            blockId = block.id,
-            urlBuilder = urlBuilder,
-            indent = indent,
-            mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
-            isSelected = checkIfSelected(
-                mode = mode,
-                block = block,
-                selection = selection
-            ),
-            background = block.parseThemeBackgroundColor(),
-            isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block),
-            details = details
-        )
-        else -> throw IllegalStateException("Unexpected file type: ${content.type}")
+        details: Block.Details,
+        fieldParser: FieldParser
+    ): BlockView {
+
+        val blockViewMode =
+            if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+        val isSelected = checkIfSelected(mode, block, selection)
+        val background = block.parseThemeBackgroundColor()
+        val decorations = schema.toBlockViewDecoration(block)
+
+        return when (content.type) {
+            Content.File.Type.IMAGE -> content.toPictureView(context, block.id, urlBuilder, indent, blockViewMode, isSelected, background, isPreviousBlockMedia, decorations, details, fieldParser)
+            Content.File.Type.VIDEO -> content.toVideoView(context, block.id, urlBuilder, indent, blockViewMode, isSelected, background, isPreviousBlockMedia, decorations, details, fieldParser)
+            else -> content.toFileView(context, block.id, urlBuilder, indent, blockViewMode, isSelected, background, isPreviousBlockMedia, decorations, details, fieldParser)
+        }
     }
 
     private fun title(
@@ -1511,7 +1442,7 @@ class DefaultBlockViewRenderer @Inject constructor(
 
         val layoutCode = details.details[root.id]?.layout?.toInt()
 
-        val layout = ObjectType.Layout.values().find {
+        val layout = ObjectType.Layout.entries.find {
             it.code == layoutCode
         } ?: ObjectType.Layout.BASIC
 
@@ -1572,18 +1503,32 @@ class DefaultBlockViewRenderer @Inject constructor(
                 )
             }
             ObjectType.Layout.FILE,
-            ObjectType.Layout.IMAGE,
             ObjectType.Layout.BOOKMARK,
             ObjectType.Layout.VIDEO,
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF -> {
+                val objFile = ObjectWrapper.Basic(details.details[root.id]?.map.orEmpty())
+                BlockView.Title.File(
+                    mode = blockMode,
+                    id = block.id,
+                    text = content.text,
+                    isFocused = resolveIsFocused(focus, block),
+                    cursor = cursor,
+                    coverColor = coverContainer.coverColor,
+                    coverImage = coverContainer.coverImage,
+                    coverGradient = coverContainer.coverGradient,
+                    background = block.parseThemeBackgroundColor(),
+                    color = block.textColor(),
+                    icon = objFile.objectIcon(builder = urlBuilder)
+                )
+            }
+            ObjectType.Layout.IMAGE -> {
                 BlockView.Title.Basic(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    emoji = details.details[root.id]?.iconEmoji?.takeIf { it.isNotBlank() },
                     image = details.details[root.id]?.iconImage?.let { image ->
-                        if (image.isNotBlank() && layout != ObjectType.Layout.BOOKMARK)
+                        if (image.isNotBlank())
                             urlBuilder.thumbnail(image)
                         else
                             null

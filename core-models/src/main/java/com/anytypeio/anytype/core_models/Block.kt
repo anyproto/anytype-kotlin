@@ -86,6 +86,7 @@ data class Block(
 
         fun asText() = this as Text
         fun asLink() = this as Link
+        fun asFile() = this as File
 
         /**
          * Smart block.
@@ -227,12 +228,13 @@ data class Block(
          * @property state file state
          */
         data class File(
-            val targetObjectId: Id? = null,
-            val name: String? = null,
-            val mime: String? = null,
-            val size: Long? = null,
-            val type: Type? = null,
-            val state: State? = null
+            val targetObjectId: Id,
+            val name: String,
+            val mime: String,
+            val size: Long,
+            val type: Type,
+            val state: State,
+            val addedAt: Long
         ) : Content() {
             enum class Type { NONE, FILE, IMAGE, VIDEO, AUDIO, PDF }
             enum class State { EMPTY, UPLOADING, DONE, ERROR }

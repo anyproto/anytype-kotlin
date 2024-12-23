@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor.styling
 
 import android.os.Build
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -140,12 +141,9 @@ class StyleToolbarExtKtTest {
             children = emptyList()
         )
 
-        val given2 = Block(
+        val given2 = StubFile(
             id = child,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.File(),
-            backgroundColor = backgroundTeal,
-            children = emptyList()
+            backgroundColor = backgroundTeal
         )
 
         val given3 = Block(
@@ -373,12 +371,9 @@ class StyleToolbarExtKtTest {
             children = emptyList()
         )
 
-        val given3 = Block(
+        val given3 = StubFile(
             id = child,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.File(),
-            backgroundColor = ThemeColor.LIME.code,
-            children = emptyList()
+            backgroundColor = ThemeColor.LIME.code
         )
 
         val result =

@@ -353,8 +353,8 @@ fun List<BlockView>.toggleTableMode(
             is BlockView.DataView.EmptyData -> view.copy(isSelected = false)
             is BlockView.DataView.EmptySource -> view.copy(isSelected = false)
             is BlockView.DataView.Deleted -> view.copy(isSelected = false)
-            is BlockView.OpenFile.Image -> view
-            is BlockView.OpenFile.File -> view
+            is BlockView.ButtonOpenFile.ImageButton -> view
+            is BlockView.ButtonOpenFile.FileButton -> view
         }
     }
 }

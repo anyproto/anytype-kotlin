@@ -168,8 +168,8 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_LOADING
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OPEN_FILE
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OPEN_IMAGE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BUTTON_OPEN_FILE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BUTTON_OPEN_IMAGE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
@@ -542,10 +542,10 @@ class BlockAdapter(
                     ItemBlockMediaErrorBinding.inflate(inflater, parent, false)
                 )
             }
-            HOLDER_OPEN_FILE -> {
+            HOLDER_BUTTON_OPEN_FILE -> {
                 OpenFile(ItemBlockOpenFileBinding.inflate(inflater, parent, false))
             }
-            HOLDER_OPEN_IMAGE -> {
+            HOLDER_BUTTON_OPEN_IMAGE -> {
                 OpenImage(ItemBlockOpenFileBinding.inflate(inflater, parent, false))
             }
             HOLDER_VIDEO -> {
@@ -1653,13 +1653,13 @@ class BlockAdapter(
             }
             is OpenFile -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.OpenFile.File,
+                    item = blocks[position] as BlockView.ButtonOpenFile.FileButton,
                     click = onClickListener
                 )
             }
             is OpenImage -> {
                 holder.bind(
-                    item = blocks[position] as BlockView.OpenFile.Image,
+                    item = blocks[position] as BlockView.ButtonOpenFile.ImageButton,
                     click = onClickListener
                 )
             }

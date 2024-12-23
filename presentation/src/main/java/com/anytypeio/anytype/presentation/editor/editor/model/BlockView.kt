@@ -44,11 +44,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_LOADING
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE_COLLECTION
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE_DELETED
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_TYPE_SET
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OPEN_FILE
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OPEN_IMAGE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BUTTON_OPEN_FILE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BUTTON_OPEN_IMAGE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
@@ -78,7 +76,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseSettingsView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 /**
  * UI-models for different types of blocks.
@@ -1296,25 +1293,25 @@ sealed class BlockView : ViewType {
         override fun getViewType(): Int = HOLDER_FEATURED_RELATION
     }
 
-    sealed class OpenFile(
+    sealed class ButtonOpenFile(
         override val id: String,
         val isSelected: Boolean = false
     ) : BlockView() {
 
         abstract val targetId: Id?
 
-        data class Image(
+        data class ImageButton(
             override val id: String,
             override val targetId: Id
-        ) : OpenFile(id) {
-            override fun getViewType(): Int = HOLDER_OPEN_IMAGE
+        ) : ButtonOpenFile(id) {
+            override fun getViewType(): Int = HOLDER_BUTTON_OPEN_IMAGE
         }
 
-        data class File(
+        data class FileButton(
             override val id: String,
             override val targetId: Id
-        ) : OpenFile(id) {
-            override fun getViewType(): Int = HOLDER_OPEN_FILE
+        ) : ButtonOpenFile(id) {
+            override fun getViewType(): Int = HOLDER_BUTTON_OPEN_FILE
         }
     }
 

@@ -581,7 +581,11 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             icon.setIcon(item.icon)
         }
 
-        override fun applyTextColor(item: BlockView.Title) {}
-        override fun applyBackground(item: BlockView.Title) {}
+        override fun applyTextColor(item: BlockView.Title) {
+            //do nothing
+        }
+        override fun applyBackground(item: BlockView.Title) {
+            //do nothing
+        }
     }
 }

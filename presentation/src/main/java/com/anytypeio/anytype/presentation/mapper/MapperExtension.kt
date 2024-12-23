@@ -69,7 +69,7 @@ fun Block.Content.File.toPictureView(
 
         if (url != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
             if (currentObject.layout == ObjectType.Layout.IMAGE) {
-                BlockView.OpenFile.Image(
+                BlockView.ButtonOpenFile.ImageButton(
                     id = blockId,
                     targetId = targetObjectId
                 )
@@ -149,7 +149,7 @@ fun Block.Content.File.toVideoView(
 
         if (url != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
             if (currentObject.layout == ObjectType.Layout.VIDEO) {
-                BlockView.OpenFile.File(
+                BlockView.ButtonOpenFile.FileButton(
                     id = blockId,
                     targetId = targetObjectId
                 )
@@ -229,7 +229,7 @@ fun Block.Content.File.toFileView(
 
         if (url != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
             if (SupportedLayouts.fileLayouts.contains(currentObject.layout)) {
-                BlockView.OpenFile.File(
+                BlockView.ButtonOpenFile.FileButton(
                     id = blockId,
                     targetId = targetObjectId
                 )

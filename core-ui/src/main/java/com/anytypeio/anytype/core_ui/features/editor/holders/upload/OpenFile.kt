@@ -12,7 +12,7 @@ class OpenFile(
 
     private val root: View = itemView
 
-    fun bind(item: BlockView.OpenFile.File, click: (ListenerType) -> Unit) {
+    fun bind(item: BlockView.ButtonOpenFile.FileButton, click: (ListenerType) -> Unit) {
         root.setOnClickListener {
             click(
                 ListenerType.File.View(
@@ -29,7 +29,7 @@ class OpenImage(
 
     private val root: View = itemView
 
-    fun bind(item: BlockView.OpenFile.Image, click: (ListenerType) -> Unit) {
+    fun bind(item: BlockView.ButtonOpenFile.ImageButton, click: (ListenerType) -> Unit) {
         root.setOnClickListener {
             click(
                 ListenerType.Picture.View(

@@ -5822,7 +5822,7 @@ class DefaultBlockViewRendererTest {
                     )
                 ),
             ),
-            BlockView.OpenFile.File(
+            BlockView.ButtonOpenFile.FileButton(
                 id = file.id,
                 targetId = currentObjectId
             )
@@ -5890,7 +5890,7 @@ class DefaultBlockViewRendererTest {
                     )
                 ),
             ),
-            BlockView.OpenFile.Image(
+            BlockView.ButtonOpenFile.ImageButton(
                 id = file.id,
                 targetId = currentObjectId
             )

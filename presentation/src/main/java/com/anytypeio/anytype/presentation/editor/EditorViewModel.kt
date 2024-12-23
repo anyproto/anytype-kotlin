@@ -4307,14 +4307,15 @@ class EditorViewModel(
 
     private fun proceedWithDownloadCurrentObjectAsFile() {
 
-        val details = orchestrator.stores.details.current()
-        val objectDetails = details.details[context]?.map ?: return
-        if (objectDetails.isEmpty()) return
-        val obj = ObjectWrapper.Basic(objectDetails)
+        val fileObject = orchestrator.stores.details.getAsObject(target = context)
+        if (fileObject == null) {
+            Timber.e("Object with id $context not found.")
+            return
+        }
 
-        Timber.d("startDownloadingFileAsObject, for object:[$obj]")
+        Timber.d("startDownloadingFileAsObject, for object:[$context]")
 
-        val layout = obj.layout
+        val layout = fileObject.layout
 
         if (layout == null || layout !in SupportedLayouts.fileLayouts) {
             Timber.e("Object with layout:$layout is not Media, can't proceed with download")
@@ -4325,7 +4326,7 @@ class EditorViewModel(
         sendToast("Downloading file in background...")
 
         val url = urlBuilder.getUrlBasedOnFileLayout(
-            obj = obj.id,
+            obj = fileObject.id,
             layout = layout
         )
 
@@ -4334,7 +4335,7 @@ class EditorViewModel(
                 orchestrator.proxies.intents.send(
                     Media.DownloadFile(
                         url = url,
-                        name = fieldParser.getObjectName(obj),
+                        name = fieldParser.getObjectName(fileObject),
                         type = null
                     )
                 )

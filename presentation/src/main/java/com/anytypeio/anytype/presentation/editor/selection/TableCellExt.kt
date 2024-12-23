@@ -283,6 +283,7 @@ fun List<BlockView>.toggleTableMode(
             is BlockView.Title.Basic -> view.copy(
                 mode = cellsMode
             )
+            is BlockView.Title.File -> view
             is BlockView.Title.Profile -> view.copy(
                 mode = cellsMode
             )
@@ -352,6 +353,8 @@ fun List<BlockView>.toggleTableMode(
             is BlockView.DataView.EmptyData -> view.copy(isSelected = false)
             is BlockView.DataView.EmptySource -> view.copy(isSelected = false)
             is BlockView.DataView.Deleted -> view.copy(isSelected = false)
+            is BlockView.ButtonOpenFile.ImageButton -> view
+            is BlockView.ButtonOpenFile.FileButton -> view
         }
     }
 }

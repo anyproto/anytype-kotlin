@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.DebugGoroutines
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -99,4 +100,5 @@ interface OnboardingMnemonicLoginDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun globalSubscriptionManager(): GlobalSubscriptionManager
     fun debugAccountSelectTrace(): DebugAccountSelectTrace
+    fun logger(): Logger
 }

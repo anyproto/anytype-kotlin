@@ -84,20 +84,6 @@ object MockBlockFactory {
         )
     )
 
-    fun makeFileBlock(): Block = Block(
-        id = MockDataFactory.randomUuid(),
-        fields = Block.Fields(emptyMap()),
-        content = Block.Content.File(
-            targetObjectId = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            state = Block.Content.File.State.DONE,
-            mime = MockDataFactory.randomString(),
-            size = MockDataFactory.randomLong(),
-            type = Block.Content.File.Type.FILE
-        ),
-        children = emptyList()
-    )
-
     fun makeTitleBlock(): Block = Block(
         id = MockDataFactory.randomUuid(),
         fields = Block.Fields(emptyMap()),

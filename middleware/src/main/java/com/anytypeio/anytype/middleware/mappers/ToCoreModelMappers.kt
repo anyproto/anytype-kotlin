@@ -376,7 +376,8 @@ fun MBlock.toCoreModelsFile(): Block.Content.File {
         mime = content.mime,
         size = content.size,
         type = content.type.toCoreModels(),
-        state = content.state.toCoreModels()
+        state = content.state.toCoreModels(),
+        addedAt = content.addedAt
     )
 }
 

@@ -94,6 +94,7 @@ class TemplateBlankViewModel(
 
         viewModelScope.launch {
             state.value = page.asMap().render(
+                context = DEFAULT_TEMPLATE_ID_BLANK,
                 mode = Editor.Mode.Read,
                 root = page.first(),
                 focus = com.anytypeio.anytype.domain.editor.Editor.Focus.empty(),

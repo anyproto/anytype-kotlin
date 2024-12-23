@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/fileName"
+        android:background="@drawable/bg_button_open_file"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="@dimen/dp_32"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:paddingStart="@dimen/dp_12"
+        android:paddingBottom="7dp"
+        android:paddingTop="7dp"
+        android:paddingEnd="@dimen/dp_12"
+        android:textColor="@color/text_primary"
+        style="@style/TextView.UXStyle.Body.Callout.Regular"
+        android:text="@string/open_file"/>
+
+</FrameLayout>

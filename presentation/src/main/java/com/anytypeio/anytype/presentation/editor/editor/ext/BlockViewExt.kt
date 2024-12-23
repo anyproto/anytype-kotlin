@@ -155,6 +155,9 @@ fun List<BlockView>.singleStylingMode(
         is BlockView.Title.Todo -> view.copy(
             mode = BlockView.Mode.READ
         )
+        is BlockView.Title.File -> view.copy(
+            mode = BlockView.Mode.READ
+        )
         is BlockView.Title.Profile -> view.copy(
             mode = BlockView.Mode.READ
         )
@@ -310,6 +313,9 @@ fun List<BlockView>.enterSAM(
             mode = BlockView.Mode.READ
         )
         is BlockView.Title.Todo -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.File -> view.copy(
             mode = BlockView.Mode.READ
         )
         is BlockView.Title.Archive -> view.copy(
@@ -494,6 +500,7 @@ fun List<BlockView>.updateCursorAndEditMode(
         )
         is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Todo -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.File -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
         else -> view.also {
@@ -516,6 +523,7 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
         is BlockView.Text.Callout -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Todo -> view.copy(mode = BlockView.Mode.READ)
+        is BlockView.Title.File -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Description -> view.copy(mode = BlockView.Mode.READ)
@@ -585,6 +593,7 @@ fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
         is BlockView.Title.Basic -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Todo -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.File -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
         else -> view.also { check(view !is BlockView.Permission) }
     }
@@ -605,6 +614,7 @@ fun List<BlockView>.clearSearchHighlights(): List<BlockView> = map { view ->
         is BlockView.Title.Basic -> view.copy(searchFields = emptyList())
         is BlockView.Title.Profile -> view.copy(searchFields = emptyList())
         is BlockView.Title.Todo -> view.copy(searchFields = emptyList())
+        is BlockView.Title.File -> view.copy(searchFields = emptyList())
         is BlockView.Media.Bookmark -> view.copy(searchFields = emptyList())
         is BlockView.Media.File -> view.copy(searchFields = emptyList())
         is BlockView.LinkToObject.Default.Text -> view.copy(searchFields = emptyList())
@@ -671,6 +681,10 @@ fun List<BlockView>.highlight(
             view.copy(searchFields = highlighter(fields))
         }
         is BlockView.Title.Todo -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.Title.File -> {
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
             view.copy(searchFields = highlighter(fields))
         }
@@ -781,6 +795,7 @@ fun BlockView.setHighlight(
     is BlockView.Title.Basic -> copy(searchFields = highlights)
     is BlockView.Title.Profile -> copy(searchFields = highlights)
     is BlockView.Title.Todo -> copy(searchFields = highlights)
+    is BlockView.Title.File -> copy(searchFields = highlights)
     is BlockView.Media.Bookmark -> copy(searchFields = highlights)
     is BlockView.Media.File -> copy(searchFields = highlights)
     is BlockView.LinkToObject.Default.Text -> copy(searchFields = highlights)

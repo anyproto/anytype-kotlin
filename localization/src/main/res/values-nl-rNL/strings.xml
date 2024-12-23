@@ -467,6 +467,7 @@
     <string name="open_source">Open bron</string>
     <string name="reload_object_content">Herlaad inhoud object</string>
     <string name="open_link">Open link</string>
+    <string name="open_file">Open bestand</string>
     <string name="copy_email">Kopieer e-mailadres</string>
     <string name="copy_phone_number">Telefoonnummer kopiëren</string>
     <string name="send_email">Verstuur e-mail</string>
@@ -1579,4 +1580,6 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="day_of_week_saturday">Zaterdag</string>
     <string name="day_of_week_sunday">Zondag</string>
     <string name="file">Bestand</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
+    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
 </resources>

@@ -33,8 +33,7 @@ sealed class Command {
      * @property [id] id of the file block
      */
     data class OpenFileByDefaultApp(
-        val id: String,
-        val uri: String
+        val id: String
     ) : Command()
 
     data class OpenObjectSnackbar(

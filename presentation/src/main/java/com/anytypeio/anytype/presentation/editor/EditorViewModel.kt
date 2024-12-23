@@ -254,6 +254,8 @@ import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.O
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDateSelected
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTomorrowClick
+import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
+import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -4245,54 +4247,21 @@ class EditorViewModel(
     }
 
     private fun onFileClicked(blockId: String) {
-        val fileBlock = blocks.find { it.id == blockId }
-        val url = urlBuilder.getUrlForFileBlock(
-            fileBlock = fileBlock
-        )
-        if (url != null) {
-            dispatch(
-                Command.OpenFileByDefaultApp(
-                    id = blockId,
-                    uri = url
-                )
+        dispatch(
+            Command.OpenFileByDefaultApp(
+                id = blockId
             )
-        } else {
-            Timber.e("Block is not File or with wrong state, can't proceed with open")
-            sendToast("Something went wrong. Couldn't open file.")
-        }
+        )
     }
 
     fun startSharingFile(id: String, onDownloaded: (Uri) -> Unit = {}) {
-        Timber.d("startSharingFile,  fileBlockId: [$id]")
+        Timber.d("startSharingFile, fileBlockId: [$id]")
         sendToast("Preparing file to share...")
 
-        val block = blocks.firstOrNull { it.id == id }
-        if (block == null) {
-            Timber.e("No block found with id $id")
-            return
-        }
+        val fileDetails = blocks.getFileDetailsForBlock(id, orchestrator, fieldParser) ?: return
+        val (content, targetObjectId, fileName) = fileDetails
 
-        val content = block.content
-        if (content !is Content.File || content.state != Content.File.State.DONE) {
-            Timber.e("Block content is not a file or is not in the DONE state; cannot proceed.")
-            return
-        }
-
-        val targetObjectId = content.targetObjectId
-        if (targetObjectId == null) {
-            Timber.e("Target object ID is null; cannot proceed with file sharing.")
-            return
-        }
-
-        val fileObject = orchestrator.stores.details.getAsObject(target = targetObjectId)
-        if (fileObject == null) {
-            Timber.e("Object with id $targetObjectId not found.")
-            return
-        }
-
-        val fileName = fieldParser.getObjectName(fileObject)
-
-        Timber.d("startDownloadingFile, fileObjectId: [$targetObjectId], fileName: [$fileName]")
+        Timber.d("startSharingFile, fileObjectId: [$targetObjectId], fileName: [$fileName]")
 
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
@@ -4306,29 +4275,32 @@ class EditorViewModel(
         }
     }
 
-    fun startDownloadingFileFromBlock(blockId: Id) {
-
-        Timber.d("startDownloadingFile, for block:[$blockId]")
-
+    fun startDownloadingFileFromBlock(id: Id) {
+        Timber.d("startDownloadingFile, for block:[$id]")
         sendToast("Downloading file in background...")
 
-        val fileBlockView = (views.find { it.id == blockId } as? BlockView.Media.File)
+        val fileDetails = blocks.getFileDetailsForBlock(id, orchestrator, fieldParser) ?: return
+        val (content, targetObjectId, fileName) = fileDetails
 
-        val fileBlock = blocks.firstOrNull { it.id == blockId }
-        val fileContent = fileBlock?.content as? Content.File
+        val url = urlBuilder.getUrlForFileContent(
+            fileContent = content,
+            isOriginalImage = true
+        )
 
-        if (fileBlockView != null && fileContent != null) {
+        Timber.d("startDownloadingFileFromBlock, fileObjectId: [$targetObjectId], fileName: [$fileName], url: [$url]")
+
+        if (url != null) {
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Media.DownloadFile(
-                        url = fileBlockView.url,
-                        name = fileBlockView.name.orEmpty(),
-                        type = fileContent.type
+                        url = url,
+                        name = fileName,
+                        type = content.type
                     )
                 )
             }
         } else {
-            Timber.e("Block is not File or with wrong state, can't proceed with download")
+            Timber.e("Couldn't proceed with downloading file, because url is null")
             sendToast("Something went wrong. Couldn't download file.")
         }
     }

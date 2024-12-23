@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.text.splitByMarks
+import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -35,6 +36,7 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import java.sql.Types
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -44,6 +46,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class DiscussionViewModel @Inject constructor(
@@ -61,7 +64,8 @@ class DiscussionViewModel @Inject constructor(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -265,18 +269,26 @@ class DiscussionViewModel @Inject constructor(
                             }
                         }
                         is DiscussionView.Message.ChatBoxAttachment.File -> {
-                            uploadFile.async(
-                                UploadFile.Params(
-                                    space = vmParams.space,
-                                    path = attachment.uri
-                                )
-                            ).onSuccess { file ->
-                                add(
-                                    Chat.Message.Attachment(
-                                        target = file.id,
-                                        type = Chat.Message.Attachment.Type.Image
+                            val path = withContext(dispatchers.io) {
+                                copyFileToCacheDirectory.copy(attachment.uri)
+                            }
+                            if (path != null) {
+                                uploadFile.async(
+                                    UploadFile.Params(
+                                        space = vmParams.space,
+                                        path = path
                                     )
-                                )
+                                ).onSuccess { file ->
+                                    // TODO delete file.
+                                    add(
+                                        Chat.Message.Attachment(
+                                            target = file.id,
+                                            type = Chat.Message.Attachment.Type.File
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while uploading file as attachment")
+                                }
                             }
                         }
                     }
@@ -469,11 +481,13 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    fun onChatBoxFilePicked(uris: List<String>) {
-        Timber.d("onChatBoxFilePicked: $uris")
-        chatBoxAttachments.value = chatBoxAttachments.value + uris.map {
+    fun onChatBoxFilePicked(infos: List<DefaultFileInfo>) {
+        Timber.d("onChatBoxFilePicked: $infos")
+        chatBoxAttachments.value = chatBoxAttachments.value + infos.map { info ->
             DiscussionView.Message.ChatBoxAttachment.File(
-                uri = it
+                uri = info.uri,
+                name = info.name,
+                size = info.size
             )
         }
     }

@@ -76,6 +76,7 @@ class DefaultBlockViewRendererTest {
             details: Block.Details,
             schema: NestedDecorationData = emptyList()
         ): List<BlockView> = blocks.render(
+            context = root.id,
             root = root,
             focus = focus,
             anchor = anchor,
@@ -5756,10 +5757,10 @@ class DefaultBlockViewRendererTest {
     @Test
     fun `should render file open block in case of file, pdf, audio or video layouts`(){
         val fileTypeExceptImage = listOf(
-            Block.Content.File.Type.FILE to ObjectType.Layout.FILE,
-            Block.Content.File.Type.PDF to ObjectType.Layout.PDF,
-            Block.Content.File.Type.VIDEO to ObjectType.Layout.VIDEO,
-            Block.Content.File.Type.AUDIO to ObjectType.Layout.AUDIO,
+            Block.Content.File.Type.FILE to Layout.FILE,
+            Block.Content.File.Type.PDF to Layout.PDF,
+            Block.Content.File.Type.VIDEO to Layout.VIDEO,
+            Block.Content.File.Type.AUDIO to Layout.AUDIO,
         )
 
         fileTypeExceptImage.forEach { (fileType, layout) ->
@@ -5769,22 +5770,23 @@ class DefaultBlockViewRendererTest {
 
     private fun testFileLayout(type: Block.Content.File.Type, layout: Layout) {
 
-        val file = StubFile(
-            backgroundColor = null,
-            state = Block.Content.File.State.DONE,
-            type = type
-        )
+        val currentObjectId = MockDataFactory.randomUuid()
+
+        val file = StubFile(type = type, targetObjectId = currentObjectId)
 
         val paragraph = StubParagraph()
 
-        val page = StubSmartBlock(children = listOf(paragraph.id, file.id))
+        val page = StubSmartBlock(id = currentObjectId, children = listOf(paragraph.id, file.id))
 
-        val details = mapOf(page.id to Block.Fields(
-            mapOf(
-                Relations.NAME to "file-name",
-                Relations.LAYOUT to layout.code.toDouble()
+        val details = mapOf(
+            page.id to Block.Fields(
+                mapOf(
+                    Relations.ID to currentObjectId,
+                    Relations.NAME to "file-name",
+                    Relations.LAYOUT to layout.code.toDouble()
+                )
             )
-        ))
+        )
 
         val blocks = listOf(page, paragraph, file)
 
@@ -5822,7 +5824,7 @@ class DefaultBlockViewRendererTest {
             ),
             BlockView.OpenFile.File(
                 id = file.id,
-                targetId = (file.content as Block.Content.File).targetObjectId
+                targetId = currentObjectId
             )
         )
 
@@ -5832,22 +5834,27 @@ class DefaultBlockViewRendererTest {
     @Test
     fun `should render image open block in case of image layout`() {
 
+        val currentObjectId = MockDataFactory.randomUuid()
+
         val file = StubFile(
-            backgroundColor = null,
-            state = Block.Content.File.State.DONE,
-            type = Block.Content.File.Type.IMAGE
+            type = Block.Content.File.Type.IMAGE,
+            targetObjectId = currentObjectId,
+            state = Block.Content.File.State.DONE
         )
 
         val paragraph = StubParagraph()
 
-        val page = StubSmartBlock(children = listOf(paragraph.id, file.id))
+        val page = StubSmartBlock(id = currentObjectId, children = listOf(paragraph.id, file.id))
 
-        val details = mapOf(page.id to Block.Fields(
-            mapOf(
-                Relations.NAME to "file-name",
-                Relations.LAYOUT to Layout.IMAGE.code.toDouble()
+        val details = mapOf(
+            page.id to Block.Fields(
+                mapOf(
+                    Relations.ID to currentObjectId,
+                    Relations.NAME to "image-name",
+                    Relations.LAYOUT to ObjectType.Layout.IMAGE.code.toDouble()
+                )
             )
-        ))
+        )
 
         val blocks = listOf(page, paragraph, file)
 
@@ -5885,7 +5892,7 @@ class DefaultBlockViewRendererTest {
             ),
             BlockView.OpenFile.Image(
                 id = file.id,
-                targetId = (file.content as Block.Content.File).targetObjectId
+                targetId = currentObjectId
             )
         )
 

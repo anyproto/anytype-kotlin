@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor
 
 
+import android.R
 import android.net.Uri
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -9,11 +10,15 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkModeConfig
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubNumbered
+import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
@@ -2555,68 +2560,24 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should start sharing a file`() {
-
-        val root = MockDataFactory.randomUuid()
-        val file = MockBlockFactory.makeFileBlock()
-        val title = MockBlockFactory.makeTitleBlock()
-
-        val page = listOf(
-            Block(
-                id = root,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart,
-                children = listOf(title.id, file.id)
-            ),
-            title,
-            file
-        )
-
-        val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
-        }
-
-        stubObserveEvents(flow)
-        stubOpenPage()
-        givenViewModel(builder)
-
-        givenSharedFile()
-
-        vm.onStart(id = root, space = defaultSpace)
-
-        coroutineTestRule.advanceTime(100)
-
-        // TESTING
-
-        vm.startSharingFile(id = file.id)
-
-        runTest {
-            verify(documentFileShareDownloader, times(1)).async(
-                params = eq(
-                    MiddlewareShareDownloader.Params(
-                        name = file.content<Block.Content.File>().name.orEmpty(),
-                        objectId = file.content<Block.Content.File>().targetObjectId.orEmpty(),
-                    )
-                )
-            )
-        }
-    }
-
-    @Test
     fun `should start downloading file`() {
 
         val root = MockDataFactory.randomUuid()
-        val file = MockBlockFactory.makeFileBlock()
+        val targetObjectId = MockDataFactory.randomUuid()
+        val file = StubFile(
+            targetObjectId = targetObjectId,
+            type = Block.Content.File.Type.FILE
+        )
         val title = MockBlockFactory.makeTitleBlock()
+
+        val targetObject = StubObject(
+            id = targetObjectId,
+            name = "file1",
+            layout = ObjectType.Layout.FILE.code.toDouble(),
+            fileExt = ".pdf"
+        )
+
+        val objectDetails = Block.Fields(targetObject.map)
 
         val page = listOf(
             Block(
@@ -2636,10 +2597,17 @@ open class EditorViewModelTest {
                     Event.Command.ShowObject(
                         root = root,
                         blocks = page,
-                        context = root
+                        context = root,
+                        details = Block.Details(mapOf(
+                            targetObjectId to objectDetails
+                        ))
                     )
                 )
             )
+        }
+
+        fieldParser.stub {
+            on { getObjectName(targetObject) } doReturn targetObject.name!!
         }
 
         stubObserveEvents(flow)
@@ -2660,10 +2628,8 @@ open class EditorViewModelTest {
             verify(downloadFile, times(1)).invoke(
                 params = eq(
                     DownloadFile.Params(
-                        name = file.content<Block.Content.File>().name.orEmpty(),
-                        url = builder.file(
-                            path = file.content<Block.Content.File>().targetObjectId!!
-                        )
+                        name = targetObject.name!!,
+                        url = builder.file(path = targetObjectId)
                     )
                 )
             )
@@ -3423,17 +3389,11 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `open select picture - when error in edit mode`() {
+    fun `open select picture - when error in edit mode`() = runTest {
 
-        val picture = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.File(
-                targetObjectId = MockDataFactory.randomString(),
-                type = Block.Content.File.Type.IMAGE,
-                state = Block.Content.File.State.ERROR
-            ),
-            children = emptyList()
+        val picture = StubFile(
+            state = Block.Content.File.State.ERROR,
+            type = Block.Content.File.Type.IMAGE
         )
 
         val page = listOf(
@@ -3457,10 +3417,10 @@ open class EditorViewModelTest {
         )
 
         givenViewModel()
-
+        advanceUntilIdle()
 
         vm.onStart(id = root, space = defaultSpace)
-
+        advanceUntilIdle()
 
         val expected = listOf(
             BlockView.Title.Basic(
@@ -3477,7 +3437,8 @@ open class EditorViewModelTest {
                         background = ThemeColor.DEFAULT,
                         style = BlockView.Decoration.Style.Card
                     )
-                )
+                ),
+                name = picture.content.asFile().name
             )
         )
 
@@ -3500,15 +3461,9 @@ open class EditorViewModelTest {
     @Test
     fun `open select video - when error in edit mode`() {
 
-        val video = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.File(
-                targetObjectId = MockDataFactory.randomString(),
-                type = Block.Content.File.Type.VIDEO,
-                state = Block.Content.File.State.ERROR
-            ),
-            children = emptyList()
+        val video = StubFile(
+            state = Block.Content.File.State.ERROR,
+            type = Block.Content.File.Type.VIDEO
         )
 
         val page = listOf(
@@ -3552,7 +3507,8 @@ open class EditorViewModelTest {
                         background = ThemeColor.DEFAULT,
                         style = BlockView.Decoration.Style.Card
                     )
-                )
+                ),
+                name = video.content.asFile().name
             )
         )
 

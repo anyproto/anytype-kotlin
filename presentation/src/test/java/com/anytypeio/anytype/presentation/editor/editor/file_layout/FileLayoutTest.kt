@@ -121,7 +121,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
                     mode = BlockView.Mode.READ, //in this case for a File Object title is always locked!
                     isFocused = false,
                     id = title.id,
-                    text = title.content<TXT>().text,
+                    text = "${fileObject.name}.$fileExt",
                     icon = ObjectIcon.File(
                         mime = fileObject.fileMimeType,
                         fileName = fileObject.name,
@@ -188,7 +188,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
-                    text = title.content<TXT>().text,
+                    text = "${fileObject.name}.$fileExt",
                     mode = BlockView.Mode.READ //in this case for a Image Object title is always locked!
                 ),
                 BlockView.ButtonOpenFile.ImageButton(

@@ -89,6 +89,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mCounter = 0
                             result.add(
                                 title(
+                                    context = context,
                                     mode = mode,
                                     block = block,
                                     content = content,
@@ -1411,6 +1412,7 @@ class DefaultBlockViewRenderer @Inject constructor(
     }
 
     private fun title(
+        context: Id,
         mode: EditorMode,
         block: Block,
         content: Content.Text,
@@ -1419,6 +1421,9 @@ class DefaultBlockViewRenderer @Inject constructor(
         details: Block.Details,
         restrictions: List<ObjectRestriction>
     ): BlockView.Title {
+
+        val currentObject = ObjectWrapper.Basic(details.details[context]?.map.orEmpty())
+
         val focusTarget = focus.target
 
         val cursor: Int? = if (focusTarget is Focus.Target.Block && focusTarget.id == block.id) {
@@ -1441,26 +1446,20 @@ class DefaultBlockViewRenderer @Inject constructor(
         val coverContainer = BlockFieldsCoverWrapper(rootDetails)
             .getCover(urlBuilder, coverImageHashProvider)
 
-        val layoutCode = details.details[root.id]?.layout?.toInt()
-
-        val layout = ObjectType.Layout.entries.find {
-            it.code == layoutCode
-        } ?: ObjectType.Layout.BASIC
-
         val blockMode = if (restrictions.contains(ObjectRestriction.DETAILS)) {
-            BlockView.Mode.READ
+            Mode.READ
         } else {
-            if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
+            if (mode == EditorMode.Edit) Mode.EDIT else Mode.READ
         }
 
-        return when (layout) {
+        return when (currentObject.layout) {
             ObjectType.Layout.BASIC -> {
                 BlockView.Title.Basic(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    emoji = details.details[root.id]?.iconEmoji?.takeIf { it.isNotBlank() },
-                    image = details.details[root.id]?.iconImage?.takeIf { it.isNotBlank() }
+                    emoji = currentObject.iconEmoji?.takeIf { it.isNotBlank() },
+                    image = currentObject.iconImage?.takeIf { it.isNotBlank() }
                         ?.let { urlBuilder.medium(it) },
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
@@ -1491,7 +1490,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    image = details.details[root.id]?.iconImage?.takeIf { it.isNotBlank() }?.let {
+                    image = currentObject.iconImage?.takeIf { it.isNotBlank() }?.let {
                         urlBuilder.medium(it)
                     },
                     isFocused = resolveIsFocused(focus, block),
@@ -1508,11 +1507,10 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectType.Layout.VIDEO,
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF -> {
-                val objFile = ObjectWrapper.Basic(details.details[root.id]?.map.orEmpty())
                 BlockView.Title.File(
                     mode = Mode.READ,
                     id = block.id,
-                    text = content.text,
+                    text = fieldParser.getObjectName(currentObject),
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
@@ -1520,15 +1518,15 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor(),
-                    icon = objFile.objectIcon(builder = urlBuilder)
+                    icon = currentObject.objectIcon(builder = urlBuilder)
                 )
             }
             ObjectType.Layout.IMAGE -> {
                 BlockView.Title.Basic(
                     mode = Mode.READ,
                     id = block.id,
-                    text = content.text,
-                    image = details.details[root.id]?.iconImage?.let { image ->
+                    text = fieldParser.getObjectName(currentObject),
+                    image = currentObject.iconImage?.let { image ->
                         if (image.isNotBlank())
                             urlBuilder.thumbnail(image)
                         else
@@ -1549,9 +1547,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    emoji = details.details[root.id]?.iconEmoji?.takeIf { it.isNotBlank() },
-                    image = details.details[root.id]?.iconImage?.takeIf { it.isNotBlank() }?.let {
-                        urlBuilder.thumbnail(it)
+                    emoji = currentObject.iconEmoji?.takeIf { it.isNotBlank() },
+                    image = currentObject.iconImage?.takeIf { it.isNotBlank() }?.let {
+                        urlBuilder.medium(it)
                     },
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
@@ -1561,7 +1559,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor()
                 ).also {
-                    Timber.w("Unexpected layout for title: $layout")
+                    Timber.w("Unexpected layout for title: ${currentObject.layout}")
                 }
             }
         }

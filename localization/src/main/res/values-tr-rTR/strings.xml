@@ -467,6 +467,7 @@
     <string name="open_source">Açık kaynak</string>
     <string name="reload_object_content">Nesne içeriğini yeniden yükle</string>
     <string name="open_link">Bağlantıyı aç</string>
+    <string name="open_file">Dosya aç</string>
     <string name="copy_email">E-postayı kopyala</string>
     <string name="copy_phone_number">Telefon numarasını kopyala</string>
     <string name="send_email">E-posta gönder</string>
@@ -1094,7 +1095,7 @@
     <string name="dates_days_ago">%1$s gün önce</string>
     <string name="dates_days_from">Şu andan itibaren %1$s gün</string>
     <string name="settings_use_yamux">Multiplex yedekleme kitaplığını kullanın</string>
-    <string name="settings_share_local_logs">Share local logs</string>
+    <string name="settings_share_local_logs">Yerel günlükleri paylaş</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban görünümü henüz mobil cihazlarda mevcut değil.\nVerilerinize erişmek için görünümü değiştirin (Ayarlar -&gt; Görünüm) veya yeni bir görünüm oluşturun.</string>
     <string name="error_calendar_view_not_supported">Takvim görünümü henüz mobil cihazlarda mevcut değil.\nVerilerinize erişmek için görünümü değiştirin (Ayarlar -&gt; Görünüm) veya yeni bir görünüm oluşturun.</string>
@@ -1578,4 +1579,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="day_of_week_friday">Cuma</string>
     <string name="day_of_week_saturday">Cumartesi</string>
     <string name="day_of_week_sunday">Pazar</string>
+    <string name="file">Dosya</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Başlamak için ilk alanınızı oluşturun</string>
+    <string name="space_list_empty_state_it_is_empty_here">Burası boş.</string>
 </resources>

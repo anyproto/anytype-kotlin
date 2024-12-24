@@ -467,6 +467,7 @@
     <string name="open_source">Ouvrir la source</string>
     <string name="reload_object_content">Recharger le contenu de l\'objet</string>
     <string name="open_link">Ouvrir le lien</string>
+    <string name="open_file">Ouvrir le fichier</string>
     <string name="copy_email">Copier l\'email</string>
     <string name="copy_phone_number">Copy phone numbler</string>
     <string name="send_email">Envoyer un e-mail</string>
@@ -1094,7 +1095,7 @@
     <string name="dates_days_ago">Il y a %1$s jours</string>
     <string name="dates_days_from">Dans %1$s jours</string>
     <string name="settings_use_yamux">Utiliser une bibliothèque multiplex de réserve</string>
-    <string name="settings_share_local_logs">Share local logs</string>
+    <string name="settings_share_local_logs">Partager les journaux locaux</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">La vue Kanban n\'est pas encore disponible sur mobile.\nChanger le type de vue (Paramètres -&gt; Voir) ou en créer un nouveau pour accéder à vos données.</string>
     <string name="error_calendar_view_not_supported">La vue calendrier n\'est pas encore disponible sur mobile.\nChanger le type de vue (Paramètres -&gt; Voir) ou en créer un nouveau pour accéder à vos données.</string>
@@ -1575,4 +1576,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="day_of_week_friday">Vendredi</string>
     <string name="day_of_week_saturday">Samedi</string>
     <string name="day_of_week_sunday">Dimanche</string>
+    <string name="file">Fichier</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Créez votre premier espace pour commencer</string>
+    <string name="space_list_empty_state_it_is_empty_here">C\'est vide ici.</string>
 </resources>

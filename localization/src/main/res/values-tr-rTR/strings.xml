@@ -1580,6 +1580,6 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="day_of_week_saturday">Cumartesi</string>
     <string name="day_of_week_sunday">Pazar</string>
     <string name="file">Dosya</string>
-    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
-    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Başlamak için ilk alanınızı oluşturun</string>
+    <string name="space_list_empty_state_it_is_empty_here">Burası boş.</string>
 </resources>

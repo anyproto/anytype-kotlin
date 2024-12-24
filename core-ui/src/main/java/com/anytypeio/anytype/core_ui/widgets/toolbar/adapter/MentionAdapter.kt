@@ -28,6 +28,10 @@ class MentionAdapter(
 
     fun updateFilter(filter: String) {
         mentionFilter = filter
+        val newPagePosition = currentList.indexOfFirst { it is NewObject }
+        if (newPagePosition != -1) {
+            notifyItemChanged(newPagePosition)
+        }
     }
 
     fun clear() {

@@ -28,9 +28,9 @@ class MentionAdapter(
 
     fun updateFilter(filter: String) {
         mentionFilter = filter
-        val newPagePosition = currentList.indexOfFirst { it is NewObject } // Find the position of TYPE_NEW_PAGE
+        val newPagePosition = currentList.indexOfFirst { it is NewObject }
         if (newPagePosition != -1) {
-            notifyItemChanged(newPagePosition) // Update only the relevant item
+            notifyItemChanged(newPagePosition)
         }
     }
 

@@ -1503,7 +1503,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                 )
             }
             ObjectType.Layout.FILE,
-            ObjectType.Layout.BOOKMARK,
             ObjectType.Layout.VIDEO,
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF -> {

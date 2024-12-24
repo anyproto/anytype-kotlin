@@ -320,7 +320,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
         vm.commands.test().assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFullScreenImage(
                 target = fileBlock.id,
-                url = builder.original(fileObject.id)
+                url = builder.large(fileObject.id)
             )
         }
     }

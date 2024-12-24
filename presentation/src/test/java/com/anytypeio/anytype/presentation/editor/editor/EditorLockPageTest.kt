@@ -780,7 +780,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         testObserver.assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFullScreenImage(
                 target = picture.id,
-                url = builder.original(targetObjectId)
+                url = builder.large(targetObjectId)
             )
         }
     }

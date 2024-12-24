@@ -3821,8 +3821,7 @@ class EditorViewModel(
                     EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         val fileBlock = blocks.find { it.id == clicked.target }
                         val url = urlBuilder.getUrlForFileBlock(
-                            fileBlock = fileBlock,
-                            isOriginalImage = true
+                            fileBlock = fileBlock
                         )
                         if (url != null ) {
                             dispatch(

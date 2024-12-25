@@ -5,6 +5,7 @@ object Types {
     const val HOLDER_TITLE = 1
     const val HOLDER_PROFILE_TITLE = 35
     const val HOLDER_ARCHIVE_TITLE = 36
+    const val HOLDER_FILE_TITLE = 37
     const val HOLDER_TODO_TITLE = 48
     const val HOLDER_HEADER_ONE = 2
     const val HOLDER_HEADER_TWO = 3
@@ -45,6 +46,8 @@ object Types {
     const val HOLDER_FILE_PLACEHOLDER = 32
     const val HOLDER_FILE_UPLOAD = 33
     const val HOLDER_FILE_ERROR = 34
+    const val HOLDER_BUTTON_OPEN_FILE = 134
+    const val HOLDER_BUTTON_OPEN_IMAGE = 135
 
     const val HOLDER_DIVIDER_LINE = 16
     const val HOLDER_DIVIDER_DOTS = 38

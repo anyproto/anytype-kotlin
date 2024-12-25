@@ -525,6 +525,7 @@
     <string name="open_source">Open source</string>
     <string name="reload_object_content">Reload object content</string>
     <string name="open_link">Open link</string>
+    <string name="open_file">Open file</string>
     <string name="copy_email">Copy email</string>
     <string name="copy_phone_number">Copy phone number</string>
     <string name="send_email">Send email</string>
@@ -1849,5 +1850,7 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_saturday">Saturday</string>
     <string name="day_of_week_sunday">Sunday</string>
     <string name="file">File</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
+    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
 
 </resources>

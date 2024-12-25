@@ -277,7 +277,11 @@
     <dialog
         android:id="@+id/spaceListScreen"
         android:name="com.anytypeio.anytype.ui.spaces.SpaceListFragment"
-        android:label="SpaceListScreen"/>
+        android:label="SpaceListScreen">
+        <action
+            android:id="@+id/actionCreateSpaceFromVault"
+            app:destination="@id/createSpaceScreen" />
+    </dialog>
 
     <dialog
         android:id="@+id/objectSetIconPickerScreenForSpace"

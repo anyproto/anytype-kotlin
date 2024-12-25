@@ -2,6 +2,10 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubFile
+import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -38,15 +42,26 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
 
         val consumed = mutableListOf<String>()
 
-        val file = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.File(
-                targetObjectId = MockDataFactory.randomUuid(),
-                type = Block.Content.File.Type.FILE,
-                state = Block.Content.File.State.DONE
-            ),
-            fields = Block.Fields.empty(),
-            children = emptyList()
+        val fileObjectId = MockDataFactory.randomUuid()
+
+        val fileBlock = StubFile(
+            type = Block.Content.File.Type.FILE,
+            state = Block.Content.File.State.DONE,
+            targetObjectId = fileObjectId
+        )
+
+        val details = Block.Details(
+            mapOf(
+                fileObjectId to Block.Fields(
+                    mapOf(
+                        Relations.ID to fileObjectId,
+                        Relations.NAME to "file object",
+                        Relations.SIZE_IN_BYTES to 10000.0,
+                        Relations.FILE_MIME_TYPE to "pdf",
+                        Relations.LAYOUT to ObjectType.Layout.FILE.code.toDouble()
+                    )
+                )
+            )
         )
 
         val doc = listOf(
@@ -54,16 +69,18 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
                 id = root,
                 fields = Block.Fields(emptyMap()),
                 content = Block.Content.Smart,
-                children = listOf(file.id)
+                children = listOf(fileBlock.id)
             ),
-            file
+            fileBlock
         )
 
-        stubOpenDocument(doc)
+        stubOpenDocument(doc, details)
         stubInterceptEvents()
         stubDownloadFile()
 
         val vm = buildViewModel()
+
+        advanceUntilIdle()
 
         vm.onStart(id = root, space = defaultSpace)
 
@@ -73,7 +90,7 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
 
         // Launching operation that triggers a toast
 
-        vm.startDownloadingFileFromBlock(blockId = file.id)
+        vm.startDownloadingFileFromBlock(id = fileBlock.id)
 
         advanceUntilIdle()
 

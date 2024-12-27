@@ -28,7 +28,7 @@
     <string name="dark">Donker</string>
     <string name="system">Systeem</string>
     <string name="settings">Instellingen</string>
-    <string name="have_you_back_up_your_recovery_phrase">Heb je een back-up van jouw sleutel gemaakt?</string>
+    <string name="have_you_back_up_your_recovery_phrase">Heb je je sleutel geback-upt?</string>
     <string name="you_will_need_to_sign_in">Je zult dit nodig hebben om in jouw kluis in te loggen. Bewaar het op een veilige plaats. Als je het verliest, heb je niet langer toegang tot jouw kluis.</string>
     <string name="about_help_and_community">Help &amp; Community</string>
     <string name="about_what_is_new">Wat is er nieuw</string>

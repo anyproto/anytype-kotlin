@@ -1095,7 +1095,7 @@
     <string name="dates_days_ago">%1$s dagen geleden</string>
     <string name="dates_days_from">%1$s dagen vanaf nu</string>
     <string name="settings_use_yamux">Gebruik een reserve multiplex bibliotheek</string>
-    <string name="settings_share_local_logs">Share local logs</string>
+    <string name="settings_share_local_logs">Deel lokale logbestanden</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban weergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
     <string name="error_calendar_view_not_supported">Agendaweergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
@@ -1580,6 +1580,6 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="day_of_week_saturday">Zaterdag</string>
     <string name="day_of_week_sunday">Zondag</string>
     <string name="file">Bestand</string>
-    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
-    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Maak je eerste ruimte om aan de slag te gaan</string>
+    <string name="space_list_empty_state_it_is_empty_here">Het is hier leeg.</string>
 </resources>

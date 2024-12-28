@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about">Info</string>
+    <string name="about">Over</string>
     <string name="app_version">App versie</string>
     <string name="library">Bibliotheek</string>
     <string name="user_id">Gebruiker ID</string>
@@ -1123,7 +1123,7 @@
     <string name="object_values_delete_description">Het object zal naar de prullenbak worden verplaatst.</string>
     <string name="hint_enter_name">Voer naam in...</string>
     <string name="create_object">Maak object</string>
-    <string name="msg_query_cannot_be_changed">Deze zoekopdracht kan alleen op het bureaublad worden gewijzigd</string>
+    <string name="msg_query_cannot_be_changed">Deze zoekopdracht kan alleen op desktop worden gewijzigd</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Ongeldige herstelsleutel</string>
     <string name="network">Netwerk</string>
@@ -1143,11 +1143,11 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Deel uitnodigingslink</string>
-    <string name="multiplayer_share_invite_link_description">Deel deze uitnodigingslink zodat anderen zich bij jouw ruimte kunnen aansluiten. Zodra ze op jouw link klikken en toegang vragen, kun je hun toegangsrechten instellen.</string>
+    <string name="multiplayer_share_invite_link_description">Deel deze uitnodigingslink zodat anderen zich kunnen aansluiten bij je ruimte. Zodra ze op je link klikken en toegang aanvragen, kun je hun toegangsrechten instellen.</string>
     <string name="multiplayer_invite_link">Uitnodigingslink</string>
     <string name="multiplayer_join_a_space">Deelnemen aan een ruimte</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Persoonlijk bericht voor een eigenaar van de ruimte</string>
-    <string name="multiplayer_request_to_join_explanation">Zodra de eigenaar van de ruimte jouw verzoek heeft goedgekeurd, zul je toetreden tot de ruimte met de toegangsrechten die door de eigenaar zijn bepaald.</string>
+    <string name="multiplayer_request_to_join_explanation">Zodra de eigenaar van de ruimte je verzoek goedkeurt, krijg je toegang tot de ruimte met de door de eigenaar bepaalde toegangsrechten.</string>
     <string name="multiplayer_space_request_to_join">Verzoek om deel te nemen</string>
     <string name="multiplayer_space_request_to_join_msg">Je bent uitgenodigd om deel te nemen aan de ruimte %1$s , aangemaakt door %2$s. Stuur een verzoek zodat de eigenaar van de ruimte je kan toelaten. </string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tik om je reactie te schrijven</string>
@@ -1189,9 +1189,9 @@
     <string name="multiplayer_generate_invite_link">Genereer uitnodigingslink</string>
     <string name="multiplayer_show_qr_code">Toon QR-code</string>
     <string name="multiplayer_how_to_share_space">Hoe deel je een ruimte?</string>
-    <string name="multiplayer_how_to_share_space_step_1">Geef alsjeblieft een link naar de persoon met wie je wilt samenwerken.</string>
+    <string name="multiplayer_how_to_share_space_step_1">Geef de link aan de persoon met wie je wilt samenwerken.</string>
     <string name="multiplayer_how_to_share_space_qr_code">Toon deze QR-code aan de persoon met wie je zou willen samenwerken.</string>
-    <string name="multiplayer_how_to_share_space_step_2">Door op de link te klikken, vraagt een persoon om aan de ruimte deel te nemen.</string>
+    <string name="multiplayer_how_to_share_space_step_2">Door op de link te klikken, vraagt een persoon toegang tot de ruimte aan.</string>
     <string name="multiplayer_how_to_share_space_step_3">Na goedkeuring van het verzoek, kun je de toegangsrechten voor deze persoon kiezen.</string>
     <string name="multiplayer_how_share_one">1.</string>
     <string name="multiplayer_how_share_two">2.</string>
@@ -1244,7 +1244,7 @@
     <string name="multiplayer_cancel_join_request">Annuleer deelnameverzoek</string>
     <string name="multiplayer_cancel_join_request_msg">Je zult opnieuw een deelnameverzoek moeten sturen</string>
     <string name="multiplayer_do_not_cancel_join_request">Niet annuleren</string>
-    <string name="multiplayer_error_invite_not_found">De uitnodiging bestaat niet. Zorg er alsjeblieft voor dat jouw apparaten worden gesynchroniseerd.</string>
+    <string name="multiplayer_error_invite_not_found">De uitnodiging bestaat niet. Zorg ervoor dat je apparaten gesynchroniseerd zijn.</string>
     <string name="multiplayer_error_invite_bad_content">De uitnodigingslink kon niet worden gelezen. Deze kan fouten in het formaat of ongeldige gegevens bevatten.</string>
     <string name="multiplayer_error_space_is_deleted">Het lijkt erop dat de ruimte is verwijderd. Zorg er alsjeblieft voor dat je apparaten worden gesynchroniseerd.</string>
     <string name="multiplayer_error_limit_reached">Limiet bereikt voor deze ruimte. Upgrade alsjeblieft je lidmaatschap of neem contact op met ondersteuning voor hulp.</string>
@@ -1321,7 +1321,7 @@
     <string name="payments_detials_button_submit">Verstuur</string>
     <string name="payments_details_whats_included">Wat is inbegrepen</string>
     <string name="payments_email_title">Ontvang updates en geniet van gratis voordelen!</string>
-    <string name="payments_email_subtitle">Het is op geen enkele manier gekoppeld met jouw account.</string>
+    <string name="payments_email_subtitle">Het is op geen enkele manier gekoppeld met je account.</string>
     <string name="payments_email_checkbox_text">Ik wil updates ontvangen over producten en genieten van gratis voordelen!</string>
     <string name="payments_email_hint">E-mailadres</string>
     <string name="payments_tier_current_title">Je huidige status:</string>
@@ -1441,7 +1441,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="multiplayer_space_join_request_current_user_error">Fout bij huidige gebruikersstatus</string>
     <string name="multiplayer_space_join_request_membership_status_error">Fout bij huidige lidmaatschapsstatus</string>
     <string name="membership_upgrade_title">Lidmaatschap upgrade</string>
-    <string name="membership_upgrade_description">Contacteer ons voor extra opslagruimte, ruimte bewerkers of meer gedeelde ruimten. Het team van Anytype zal details en voorwaarden geven die zijn afgestemd op jouw behoeften.</string>
+    <string name="membership_upgrade_description">Neem contact met ons op voor extra opslag, ruimtebewerkers of meer gedeelde ruimtes. Het Anytype-team zal details en voorwaarden bieden die zijn afgestemd op jouw behoeften.</string>
     <string name="membership_upgrade_button">Contacteer Anytype team</string>
     <string name="membership_space_settings_share_limit">Je hebt de limiet van %1$d gedeelde ruimtes bereikt</string>
     <plurals name="period_years">

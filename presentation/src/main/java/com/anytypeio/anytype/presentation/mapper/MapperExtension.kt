@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
 import timber.log.Timber
 
 fun Block.Content.File.toPictureView(
+    context: Id,
     blockId: String,
     urlBuilder: UrlBuilder,
     indent: Int,
@@ -39,7 +41,8 @@ fun Block.Content.File.toPictureView(
     background: ThemeColor,
     isPreviousBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>,
-    details: Block.Details = Block.Details()
+    details: Block.Details = Block.Details(),
+    fieldParser: FieldParser
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Picture(
         id = blockId,
@@ -59,25 +62,32 @@ fun Block.Content.File.toPictureView(
         decorations = decorations
     )
     Block.Content.File.State.DONE -> {
-        val url = urlBuilder.getUrlForFileContent(this)
-        val targetId = this.targetObjectId
-        val struct = details.details[targetId]?.map
-        if (url != null && targetId != null) {
-            val targetObject = ObjectWrapper.File(struct.orEmpty())
-            BlockView.Media.Picture(
-                id = blockId,
-                targetObjectId = targetId,
-                url = url,
-                indent = indent,
-                mode = mode,
-                isSelected = isSelected,
-                background = background,
-                decorations = decorations,
-                size = targetObject.sizeInBytes?.toLong(),
-                name = targetObject.name,
-                mime = targetObject.fileMimeType
-            )
 
+        val url = urlBuilder.getUrlForFileContent(this)
+        val currentObject = ObjectWrapper.Basic(details.details[context]?.map.orEmpty())
+        val targetObject = ObjectWrapper.Basic(details.details[targetObjectId]?.map.orEmpty())
+
+        if (url != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
+            if (currentObject.layout == ObjectType.Layout.IMAGE) {
+                BlockView.ButtonOpenFile.ImageButton(
+                    id = blockId,
+                    targetId = targetObjectId
+                )
+            } else {
+                BlockView.Media.Picture(
+                    id = blockId,
+                    targetObjectId = targetObjectId,
+                    url = url,
+                    indent = indent,
+                    mode = mode,
+                    isSelected = isSelected,
+                    background = background,
+                    decorations = decorations,
+                    size = targetObject.sizeInBytes?.toLong(),
+                    name = fieldParser.getObjectName(targetObject),
+                    mime = targetObject.fileMimeType
+                )
+            }
         } else {
             Timber.w("Could not build picture view for block $blockId")
             BlockView.Error.Picture(
@@ -99,10 +109,10 @@ fun Block.Content.File.toPictureView(
         decorations = decorations,
         name = name
     )
-    else -> throw IllegalStateException("Unexpected state: $state")
 }
 
 fun Block.Content.File.toVideoView(
+    context: Id,
     blockId: Id,
     urlBuilder: UrlBuilder,
     indent: Int,
@@ -111,7 +121,8 @@ fun Block.Content.File.toVideoView(
     background: ThemeColor,
     isPrevBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>,
-    details: Block.Details = Block.Details()
+    details: Block.Details = Block.Details(),
+    fieldParser: FieldParser
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Video(
         id = blockId,
@@ -131,25 +142,32 @@ fun Block.Content.File.toVideoView(
         decorations = decorations
     )
     Block.Content.File.State.DONE -> {
-        val url = urlBuilder.getUrlForFileContent(this)
-        val targetId = this.targetObjectId
-        val struct = details.details[targetId]?.map
-        if (url != null && targetId != null && !struct.isNullOrEmpty()) {
-            val targetObject = ObjectWrapper.File(struct)
-            BlockView.Media.Video(
-                id = blockId,
-                targetObjectId = targetId,
-                url = url,
-                indent = indent,
-                mode = mode,
-                isSelected = isSelected,
-                background = background,
-                decorations = decorations,
-                size = targetObject.sizeInBytes?.toLong(),
-                name = targetObject.name,
-                mime = targetObject.fileMimeType
-            )
 
+        val url = urlBuilder.getUrlForFileContent(this)
+        val currentObject = ObjectWrapper.Basic(details.details[context]?.map.orEmpty())
+        val targetObject = ObjectWrapper.Basic(details.details[targetObjectId]?.map.orEmpty())
+
+        if (url != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
+            if (currentObject.layout == ObjectType.Layout.VIDEO) {
+                BlockView.ButtonOpenFile.FileButton(
+                    id = blockId,
+                    targetId = targetObjectId
+                )
+            } else {
+                BlockView.Media.Video(
+                    id = blockId,
+                    targetObjectId = targetObjectId,
+                    url = url,
+                    indent = indent,
+                    mode = mode,
+                    isSelected = isSelected,
+                    background = background,
+                    decorations = decorations,
+                    size = targetObject.sizeInBytes?.toLong(),
+                    name = fieldParser.getObjectName(targetObject),
+                    mime = targetObject.fileMimeType
+                )
+            }
         } else {
             Timber.w("Could not build video view for block $blockId")
             BlockView.Error.Video(
@@ -171,10 +189,10 @@ fun Block.Content.File.toVideoView(
         decorations = decorations,
         name = name
     )
-    else -> throw IllegalStateException("Unexpected state: $state")
 }
 
 fun Block.Content.File.toFileView(
+    context: Id,
     blockId: String,
     urlBuilder: UrlBuilder,
     indent: Int,
@@ -183,7 +201,8 @@ fun Block.Content.File.toFileView(
     background: ThemeColor,
     isPrevBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>,
-    details: Block.Details = Block.Details()
+    details: Block.Details = Block.Details(),
+    fieldParser: FieldParser
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.File(
         id = blockId,
@@ -203,24 +222,21 @@ fun Block.Content.File.toFileView(
         decorations = decorations
     )
     Block.Content.File.State.DONE -> {
+
         val url = urlBuilder.getUrlForFileContent(this)
-        val targetId = this.targetObjectId
-        val struct = details.details[targetId]?.map
-        if (url != null && targetId != null) {
-            if (struct.isNullOrEmpty()) {
-                BlockView.Upload.File(
+        val currentObject = ObjectWrapper.Basic(details.details[context]?.map.orEmpty())
+        val targetObject = ObjectWrapper.Basic(details.details[targetObjectId]?.map.orEmpty())
+
+        if (url != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
+            if (SupportedLayouts.fileLayouts.contains(currentObject.layout)) {
+                BlockView.ButtonOpenFile.FileButton(
                     id = blockId,
-                    indent = indent,
-                    mode = mode,
-                    isSelected = isSelected,
-                    background = background,
-                    decorations = decorations
+                    targetId = targetObjectId
                 )
             } else {
-                val targetObject = ObjectWrapper.File(struct)
                 BlockView.Media.File(
                     id = blockId,
-                    targetObjectId = targetId,
+                    targetObjectId = targetObjectId,
                     url = url,
                     indent = indent,
                     mode = mode,
@@ -228,7 +244,7 @@ fun Block.Content.File.toFileView(
                     background = background,
                     decorations = decorations,
                     size = targetObject.sizeInBytes?.toLong(),
-                    name = targetObject.name,
+                    name = fieldParser.getObjectName(targetObject),
                     mime = targetObject.fileMimeType,
                     fileExt = targetObject.fileExt
                 )
@@ -254,7 +270,6 @@ fun Block.Content.File.toFileView(
         decorations = decorations,
         name = name
     )
-    else -> throw IllegalStateException("Unexpected state: $state")
 }
 
 fun Block.Align.toView(): Alignment = when (this) {

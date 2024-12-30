@@ -15,12 +15,14 @@ interface BlockViewRenderer {
 
     /**
      * Ext. function for recursively converting map to flattened view data structure.
+     * @param context object id
      * @param root root block, from which rendering starts
      * @param focus id of the current focus
      * @param anchor id of the current anchor (current rendering node)
      * @param indent current indent at this rendering node.
      */
     suspend fun Map<Id, List<Block>>.render(
+        context: Id,
         mode: EditorMode = EditorMode.Edit,
         root: Block,
         focus: Editor.Focus,

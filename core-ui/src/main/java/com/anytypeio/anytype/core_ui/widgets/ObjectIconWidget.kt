@@ -144,7 +144,6 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.None -> removeIcon()
             is ObjectIcon.File -> setFileImage(
                 mime = icon.mime,
-                fileName = icon.fileName,
                 extension = icon.extensions
             )
             ObjectIcon.Deleted -> setDeletedIcon()
@@ -220,7 +219,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    private fun setFileImage(mime: String?, fileName: String?, extension: String?) {
+    private fun setFileImage(mime: String?, extension: String?) {
         val icon = mime.getMimeIcon(extension)
         with(binding) {
             ivImage.visible()

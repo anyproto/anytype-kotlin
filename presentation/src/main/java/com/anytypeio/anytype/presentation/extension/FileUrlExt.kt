@@ -1,10 +1,14 @@
 package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
+import timber.log.Timber
 
 fun UrlBuilder.getUrlForFileBlock(
     fileBlock: Block?,
@@ -65,4 +69,53 @@ fun UrlBuilder.getUrlBasedOnFileLayout(
 
         else -> null
     }
+}
+
+
+data class FileDetails(
+    val content: Block.Content.File,
+    val targetObjectId: String,
+    val fileName: String,
+)
+
+/**
+ * Attempts to retrieve and validate the file details for a given block [blockId].
+ * Returns [FileDetails] if successful, or `null` if something went wrong.
+ */
+fun List<Block>.getFileDetailsForBlock(
+    blockId: String,
+    orchestrator: Orchestrator,
+    fieldParser: FieldParser
+): FileDetails? {
+
+    val block = firstOrNull { it.id == blockId } ?: run {
+        Timber.e("No block found with id $blockId")
+        return null
+    }
+
+    val content = block.content
+    if (content !is Content.File || content.state != Content.File.State.DONE) {
+        Timber.e("Block content is not a file or is not in the DONE state; cannot proceed.")
+        return null
+    }
+
+    val targetObjectId = content.targetObjectId
+    if (targetObjectId.isEmpty()) {
+        Timber.e("Target object ID is empty; cannot proceed with file sharing.")
+        return null
+    }
+
+    val fileObject = orchestrator.stores.details.getAsObject(target = targetObjectId)
+    if (fileObject == null) {
+        Timber.e("Object with id $targetObjectId not found.")
+        return null
+    }
+
+    val fileName = fieldParser.getObjectName(fileObject)
+
+    return FileDetails(
+        content = content,
+        targetObjectId = targetObjectId,
+        fileName = fileName,
+    )
 }

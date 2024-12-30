@@ -22,7 +22,8 @@ fun StubObject(
     isHidden: Boolean? = null,
     links: List<Id> = emptyList(),
     targetObjectType: Id? = null,
-    identity: Id? = null
+    identity: Id? = null,
+    fileExt: String? = null,
 ): ObjectWrapper.Basic = ObjectWrapper.Basic(
     map = mapOf(
         Relations.ID to id,
@@ -40,7 +41,8 @@ fun StubObject(
         Relations.LINKS to links,
         Relations.TARGET_OBJECT_TYPE to targetObjectType,
         Relations.UNIQUE_KEY to uniqueKey,
-        Relations.IDENTITY to identity
+        Relations.IDENTITY to identity,
+        Relations.FILE_EXT to fileExt
     )
 )
 

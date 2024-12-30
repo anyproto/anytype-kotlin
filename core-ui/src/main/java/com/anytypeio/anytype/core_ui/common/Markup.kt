@@ -3,14 +3,12 @@ package com.anytypeio.anytype.core_ui.common
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.Editable
-import android.text.Spannable
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ClickableSpan
 import android.text.style.ImageSpan
 import android.view.View
-import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.drawable
@@ -19,12 +17,6 @@ import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_ui.widgets.text.setBounds
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
-import java.lang.ref.WeakReference
 import timber.log.Timber
 
 fun Markup.toSpannable(
@@ -363,7 +355,12 @@ fun Editable.proceedWithSettingMentionSpan(
                 mark.to,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            if (!mark.isArchived) setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(
+                from = mark.from,
+                to = mark.to,
+                click = click,
+                mark = mark
+            )
         }
         is Markup.Mark.Mention.WithEmoji -> {
             setSpan(
@@ -380,7 +377,12 @@ fun Editable.proceedWithSettingMentionSpan(
                 mark.from + 2,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            if (!mark.isArchived) setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(
+                from = mark.from,
+                to = mark.to,
+                click = click,
+                mark = mark
+            )
         }
         is Markup.Mark.Mention.WithImage -> {
             setSpan(
@@ -397,7 +399,12 @@ fun Editable.proceedWithSettingMentionSpan(
                 mark.from + 2,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            if (!mark.isArchived) setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(
+                from = mark.from,
+                to = mark.to,
+                click = click,
+                mark = mark
+            )
         }
         is Markup.Mark.Mention.Task.Checked -> {
             setSpan(
@@ -411,10 +418,15 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.to,
+                mark.from + 2,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            if (!mark.isArchived) setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(
+                from = mark.from,
+                to = mark.to,
+                click = click,
+                mark = mark
+            )
         }
         is Markup.Mark.Mention.Task.Unchecked -> {
             setSpan(
@@ -428,10 +440,15 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.to,
+                mark.from + 2,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            if (!mark.isArchived) setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(
+                from = mark.from,
+                to = mark.to,
+                click = click,
+                mark = mark
+            )
         }
         is Markup.Mark.Mention.Profile.WithImage -> {
             setSpan(
@@ -445,10 +462,15 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.to,
+                mark.from + 2,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            if (!mark.isArchived) setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(
+                from = mark.from,
+                to = mark.to,
+                click = click,
+                mark = mark
+            )
         }
         is Markup.Mark.Mention.Profile.WithInitials -> {
             val placeholder =
@@ -469,10 +491,15 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.to,
+                mark.from + 2,
                 Markup.MENTION_SPANNABLE_FLAG
             )
-            if (!mark.isArchived) setClickableSpan(click, mark)
+            if (!mark.isArchived) setClickableSpan(
+                from = mark.from,
+                to = mark.to,
+                click = click,
+                mark = mark
+            )
         }
 
         is Markup.Mark.Mention.Date -> {
@@ -488,7 +515,7 @@ fun Editable.proceedWithSettingMentionSpan(
                     ImageSpan.ALIGN_BASELINE
                 ),
                 mark.from,
-                mark.from+1,
+                mark.from + 1,
                 Markup.MENTION_SPANNABLE_FLAG
             )
             val clickableSpan = object : ClickableSpan() {
@@ -509,7 +536,12 @@ fun Editable.proceedWithSettingMentionSpan(
     }
 }
 
-fun Editable.setClickableSpan(click: ((String) -> Unit)?, mark: Markup.Mark.Mention) {
+fun Editable.setClickableSpan(
+    from: Int,
+    to: Int,
+    click: ((String) -> Unit)?,
+    mark: Markup.Mark.Mention
+) {
     val clickableSpan = object : ClickableSpan() {
         override fun onClick(widget: View) {
             widget.cancelPendingInputEvents()
@@ -524,8 +556,8 @@ fun Editable.setClickableSpan(click: ((String) -> Unit)?, mark: Markup.Mark.Ment
     }
     setSpan(
         clickableSpan,
-        mark.from,
-        mark.to,
+        from,
+        to,
         Markup.MENTION_SPANNABLE_FLAG
     )
 }

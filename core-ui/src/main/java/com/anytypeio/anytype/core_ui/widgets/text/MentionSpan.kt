@@ -48,7 +48,7 @@ class MentionSpan constructor(
         override fun onLoadCleared(placeholder: Drawable?) = Unit
     }
 
-    private val endPaddingPx = 4
+    private val endPaddingPx = 0
     private var icon: Drawable? = null
     private var iconRef: WeakReference<Drawable>? = null
     private val textColorDeleted = context.color(R.color.text_tertiary)

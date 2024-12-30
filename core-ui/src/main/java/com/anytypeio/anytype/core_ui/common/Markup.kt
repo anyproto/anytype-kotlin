@@ -3,10 +3,13 @@ package com.anytypeio.anytype.core_ui.common
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.Editable
+import android.text.Spannable
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ClickableSpan
 import android.text.style.ImageSpan
 import android.view.View
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
@@ -18,6 +21,10 @@ import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.widgets.text.setBounds
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import java.lang.ref.WeakReference
 import timber.log.Timber
 
 fun Markup.toSpannable(
@@ -348,13 +355,9 @@ fun Editable.proceedWithSettingMentionSpan(
         }
         is Markup.Mark.Mention.Base -> {
             setSpan(
-                MentionSpan(
-                    onImageResourceReady = {},
-                    context = context,
-                    imageSize = mentionImageSize,
-                    imagePadding = mentionImagePadding,
-                    param = mark.param,
-                    isArchived = mark.isArchived
+                ImageSpan(
+                    context,
+                    R.drawable.ic_mention_loading_state
                 ),
                 mark.from,
                 mark.to,
@@ -374,7 +377,7 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.to,
+                mark.from + 2,
                 Markup.MENTION_SPANNABLE_FLAG
             )
             if (!mark.isArchived) setClickableSpan(click, mark)
@@ -391,7 +394,7 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.to,
+                mark.from + 2,
                 Markup.MENTION_SPANNABLE_FLAG
             )
             if (!mark.isArchived) setClickableSpan(click, mark)
@@ -509,8 +512,13 @@ fun Editable.proceedWithSettingMentionSpan(
 fun Editable.setClickableSpan(click: ((String) -> Unit)?, mark: Markup.Mark.Mention) {
     val clickableSpan = object : ClickableSpan() {
         override fun onClick(widget: View) {
-            // TODO consider pausing text watchers. Otherwise, redundant text watcher events will be triggered.
-            (widget as? TextInputWidget)?.enableReadMode()
+            widget.cancelPendingInputEvents()
+            widget.isEnabled = false
+            (widget as? TextInputWidget)?.apply {
+                pauseTextWatchers{
+                    enableReadMode()
+                }
+            }
             click?.invoke(mark.param)
         }
     }

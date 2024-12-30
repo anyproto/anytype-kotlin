@@ -149,20 +149,6 @@ class MentionSpan constructor(
                 it.color = textColorArchive
             }
         }
-
-        // Adjust starting position for text drawing based on presence of icon or placeholder
-        val textStartX = if (icon != null || placeholder != null) {
-            x + imageSize + imagePadding
-        } else {
-            x
-        }
-
-        canvas.drawText(
-            text.substring(start, end),
-            textStartX,
-            y.toFloat(),
-            paint
-        )
     }
 
     private fun getCachedDrawable(): Drawable? {

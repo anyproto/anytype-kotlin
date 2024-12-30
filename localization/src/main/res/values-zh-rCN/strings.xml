@@ -466,6 +466,7 @@
     <string name="open_source">开放源代码</string>
     <string name="reload_object_content">重新加载对象内容</string>
     <string name="open_link">打开链接</string>
+    <string name="open_file">Open file</string>
     <string name="copy_email">拷贝电子邮件</string>
     <string name="copy_phone_number">拷贝电话号码</string>
     <string name="send_email">发送电子邮件</string>
@@ -1561,4 +1562,7 @@
     <string name="day_of_week_friday">星期五</string>
     <string name="day_of_week_saturday">星期六</string>
     <string name="day_of_week_sunday">星期天 </string>
+    <string name="file">文件</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
+    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
 </resources>

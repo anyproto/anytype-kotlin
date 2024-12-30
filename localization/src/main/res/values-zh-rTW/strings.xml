@@ -466,6 +466,7 @@
     <string name="open_source">開源</string>
     <string name="reload_object_content">重新載入物件內容</string>
     <string name="open_link">開啟連結</string>
+    <string name="open_file">開啟檔案</string>
     <string name="copy_email">複製 email</string>
     <string name="copy_phone_number">複製電話號碼</string>
     <string name="send_email">傳送 email</string>
@@ -1565,4 +1566,7 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_friday">Friday</string>
     <string name="day_of_week_saturday">Saturday</string>
     <string name="day_of_week_sunday">Sunday</string>
+    <string name="file">檔案</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
+    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
 </resources>

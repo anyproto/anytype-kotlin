@@ -4,10 +4,13 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.text.Layout
+import android.text.style.ClickableSpan
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import com.anytypeio.anytype.core_ui.extensions.disable
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import timber.log.Timber
 import kotlin.math.abs
@@ -84,6 +87,24 @@ class EditorTouchProcessor(
                     moves.clear()
                     Timber.d("ACTION UP")
                     actionHandler.removeCallbacksAndMessages(null)
+
+                    if (v is TextInputWidget) {
+                        val x = (event.x - v.totalPaddingLeft + v.scrollX).toInt()
+                        val y = (event.y - v.totalPaddingTop + v.scrollY).toInt()
+
+                        val layout: Layout = v.layout
+                        val line = layout.getLineForVertical(y)
+                        val offset = layout.getOffsetForHorizontal(line, x.toFloat())
+
+                        val link =
+                            v.editableText.getSpans(offset, offset, ClickableSpan::class.java)
+                        if (link.isNotEmpty()) {
+                            v.disable()
+                            link[0].onClick(v)
+                            return true
+                        }
+                    }
+
                     return when (actionUpStartInMillis.untilNow()) {
                         in LONG_PRESS_TIMEOUT..DND_TIMEOUT -> {
                             onLongClick()

@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.text.style.DynamicDrawableSpan
@@ -157,6 +158,8 @@ class MentionSpan constructor(
             x
         }
 
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        paint.isAntiAlias = true
         canvas.drawText(
             text.substring(start, end),
             textStartX,

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ext
 
 import android.text.Editable
 import android.text.Spanned
+import android.util.Log
 import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.core_models.ext.overlap
 import com.anytypeio.anytype.core_models.misc.Overlap
@@ -9,6 +10,9 @@ import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 
 fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).mapNotNull { span ->
+    if (span is MentionSpan) {
+        Log.d("Test1983", "Mention span: $span, start:${getSpanStart(span)}, end: ${getSpanEnd(span)}")
+    }
     when (span) {
         is Span.Strikethrough -> {
             Mark(

@@ -3,7 +3,8 @@ package com.anytypeio.anytype.core_ui.features.editor
 import android.text.Editable
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.common.Underline
-import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
+import com.anytypeio.anytype.core_ui.widgets.text.MentionTextWithIconSpan
+import com.anytypeio.anytype.core_ui.widgets.text.MentionTextWithoutIconSpan
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 
 fun Editable.marks(): List<Markup.Mark> = getSpans(0, length, Span::class.java).mapNotNull { span ->
@@ -43,16 +44,28 @@ fun Editable.marks(): List<Markup.Mark> = getSpans(0, length, Span::class.java).
             to = getSpanEnd(span),
             param = span.url
         )
-        is MentionSpan -> Markup.Mark.Mention.Base(
+//        is MentionSpan -> Markup.Mark.Mention.Base(
+//            from = getSpanStart(span),
+//            to = getSpanEnd(span),
+//            param = span.param.orEmpty(),
+//            isArchived = false
+//        )
+        is Span.ObjectLink -> Markup.Mark.Object(
+            from = getSpanStart(span),
+            to = getSpanEnd(span),
+            param = span.link.orEmpty(),
+            isArchived = false
+        )
+        is MentionTextWithoutIconSpan -> Markup.Mark.Mention.Base(
             from = getSpanStart(span),
             to = getSpanEnd(span),
             param = span.param.orEmpty(),
             isArchived = false
         )
-        is Span.ObjectLink -> Markup.Mark.Object(
+        is MentionTextWithIconSpan -> Markup.Mark.Mention.Base(
             from = getSpanStart(span),
             to = getSpanEnd(span),
-            param = span.link.orEmpty(),
+            param = span.param.orEmpty(),
             isArchived = false
         )
         else -> null

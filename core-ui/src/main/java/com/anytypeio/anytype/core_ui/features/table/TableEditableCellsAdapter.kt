@@ -11,12 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableCellBinding
 import com.anytypeio.anytype.core_ui.features.editor.ItemProviderAdapter
-import com.anytypeio.anytype.core_ui.features.editor.marks
-import com.anytypeio.anytype.core_ui.features.editor.withBlock
 import com.anytypeio.anytype.core_ui.features.table.holders.EditableCellHolder
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -25,7 +24,7 @@ import timber.log.Timber
 class TableEditableCellsAdapter(
     private var items: List<BlockView.Table.Cell>,
     private val clicked: (ListenerType) -> Unit,
-    private val onTextBlockTextChanged: (BlockView.Text) -> Unit,
+    private val onTextBlockTextChanged: (BlockView.Text, String, List<Markup.Mark>) -> Unit,
     private val onMentionEvent: (MentionEvent) -> Unit,
     private val onCellSelectionChanged: (Id, IntRange) -> Unit,
     private val onFocusChanged: (Id, Boolean) -> Unit,
@@ -99,13 +98,13 @@ class TableEditableCellsAdapter(
             content.expandCellHitArea(root)
             this.setupViewHolder(
                 onTextChanged = { editable ->
-                    this.withBlock<BlockView.Text> { item ->
-                        item.apply {
-                            text = editable.toString()
-                            marks = editable.marks()
-                        }
-                        onTextBlockTextChanged(item)
-                    }
+//                    this.withBlock<BlockView.Text> { item ->
+//                        item.apply {
+//                            text = editable.toString()
+//                            marks = editable.marks()
+//                        }
+//                        onTextBlockTextChanged(item)
+//                    }
                 },
                 onEmptyBlockBackspaceClicked = {},
                 onSplitLineEnterClicked = { _, _, _ -> },

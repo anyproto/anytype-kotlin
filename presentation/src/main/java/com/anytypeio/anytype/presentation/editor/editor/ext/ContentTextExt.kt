@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.editor.editor.ext
 
+import android.text.Editable
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Id
@@ -43,8 +44,19 @@ fun Block.Content.Text.getTextAndMarks(
                 else -> details.details.getProperObjectName(id = mark.param) ?: return@forEach
             }
             val oldName = updatedText.substring(mark.from, mark.to)
-            val finalName =
-                if (newName.isNullOrBlank()) resourceProvider.getUntitledTitle() else newName
+
+            val finalName = when (mark) {
+                is Markup.Mark.Mention.Base -> {
+                    val actualName =
+                        if (newName.isNullOrBlank()) resourceProvider.getUntitledTitle() else newName
+                    actualName
+                }
+                else -> {
+                    val actualName =
+                        if (newName.isNullOrBlank()) resourceProvider.getUntitledTitle() else newName
+                    "\u200B$actualName"  //one space for image span
+                }
+            }
 
             if (finalName != oldName) {
                 val lengthDifference = finalName.length - oldName.length

@@ -1307,13 +1307,13 @@ class EditorViewModel(
         sendHideTypesWidgetEvent()
     }
 
-    fun onTextBlockTextChanged(view: BlockView.Text) {
+    fun onTextBlockTextChanged(view: BlockView.Text, newText: String, newMarks: List<Markup.Mark>) {
         Timber.d("onTextBlockTextChanged, view:[$view]")
 
         val update = TextUpdate.Pattern(
             target = view.id,
-            text = view.text,
-            markup = view.marks.map { it.mark() }
+            text = newText,
+            markup = newMarks.map { it.mark() }
         )
 
         val store = orchestrator.stores.views
@@ -6196,7 +6196,7 @@ class EditorViewModel(
         orchestrator.stores.document.update(update)
 
         viewModelScope.launch {
-            val position = mentionFrom + name.length + 1
+            val position = mentionFrom + name.length + 3
             orchestrator.stores.focus.update(
                 t = Editor.Focus(
                     target = Editor.Focus.Target.Block(new.id),

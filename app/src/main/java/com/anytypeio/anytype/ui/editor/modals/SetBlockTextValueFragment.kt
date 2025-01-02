@@ -65,7 +65,7 @@ class SetBlockTextValueFragment :
             onTogglePlaceholderClicked = {},
             onToggleClicked = {},
             onTitleTextInputClicked = {},
-            onTextBlockTextChanged = { block ->
+            onTextBlockTextChanged = { block,_,_ ->
                 vm.onTextBlockTextChanged(
                     textBlock = block,
                     cellId = this.block,

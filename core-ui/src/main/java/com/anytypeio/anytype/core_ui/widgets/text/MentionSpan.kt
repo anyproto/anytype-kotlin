@@ -48,7 +48,7 @@ class MentionSpan constructor(
         override fun onLoadCleared(placeholder: Drawable?) = Unit
     }
 
-    private val endPaddingPx = 4
+    private val endPaddingPx = 0
     private var icon: Drawable? = null
     private var iconRef: WeakReference<Drawable>? = null
     private val textColorDeleted = context.color(R.color.text_tertiary)
@@ -149,20 +149,6 @@ class MentionSpan constructor(
                 it.color = textColorArchive
             }
         }
-
-        // Adjust starting position for text drawing based on presence of icon or placeholder
-        val textStartX = if (icon != null || placeholder != null) {
-            x + imageSize + imagePadding
-        } else {
-            x
-        }
-
-        canvas.drawText(
-            text.substring(start, end),
-            textStartX,
-            y.toFloat(),
-            paint
-        )
     }
 
     private fun getCachedDrawable(): Drawable? {

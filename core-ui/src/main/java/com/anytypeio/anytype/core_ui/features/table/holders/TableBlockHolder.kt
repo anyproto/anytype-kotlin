@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_ui.layout.TableCellSelectionDecoration
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -36,7 +37,7 @@ import timber.log.Timber
 class TableBlockHolder(
     binding: ItemBlockTableBinding,
     clickListener: (ListenerType) -> Unit,
-    onTextBlockTextChanged: (BlockView.Text) -> Unit,
+    onTextBlockTextChanged: (BlockView.Text, String, List<Markup.Mark>) -> Unit,
     onMentionEvent: (MentionEvent) -> Unit,
     onCellSelectionChanged: (Id, IntRange) -> Unit,
     onFocusChanged: (Id, Boolean) -> Unit,

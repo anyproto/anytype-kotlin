@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
+import com.anytypeio.anytype.core_ui.widgets.text.MentionTextWithIconSpan
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.removeSpans
@@ -363,6 +364,17 @@ fun Editable.proceedWithSettingMentionSpan(
             )
         }
         is Markup.Mark.Mention.WithEmoji -> {
+            if (!mark.isArchived) {
+                setSpan(
+                    MentionTextWithIconSpan(
+                        click = click,
+                        param = mark.param
+                    ),
+                    mark.from,
+                    mark.to,
+                    Markup.MENTION_SPANNABLE_FLAG
+                )
+            }
             setSpan(
                 MentionSpan(
                     onImageResourceReady = onImageReady,
@@ -374,14 +386,8 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.from + 2,
+                mark.from + 1,
                 Markup.MENTION_SPANNABLE_FLAG
-            )
-            if (!mark.isArchived) setClickableSpan(
-                from = mark.from,
-                to = mark.to,
-                click = click,
-                mark = mark
             )
         }
         is Markup.Mark.Mention.WithImage -> {
@@ -396,7 +402,7 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.from + 2,
+                mark.from + 1,
                 Markup.MENTION_SPANNABLE_FLAG
             )
             if (!mark.isArchived) setClickableSpan(
@@ -418,7 +424,7 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.from + 2,
+                mark.from + 1,
                 Markup.MENTION_SPANNABLE_FLAG
             )
             if (!mark.isArchived) setClickableSpan(
@@ -440,7 +446,7 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.from + 2,
+                mark.from + 1,
                 Markup.MENTION_SPANNABLE_FLAG
             )
             if (!mark.isArchived) setClickableSpan(
@@ -462,7 +468,7 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.from + 2,
+                mark.from + 1,
                 Markup.MENTION_SPANNABLE_FLAG
             )
             if (!mark.isArchived) setClickableSpan(
@@ -491,7 +497,7 @@ fun Editable.proceedWithSettingMentionSpan(
                     isArchived = mark.isArchived
                 ),
                 mark.from,
-                mark.from + 2,
+                mark.from + 1,
                 Markup.MENTION_SPANNABLE_FLAG
             )
             if (!mark.isArchived) setClickableSpan(

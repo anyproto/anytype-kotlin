@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.editor.editor.ext
 
+import android.text.Editable
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Id
@@ -53,7 +54,7 @@ fun Block.Content.Text.getTextAndMarks(
                 else -> {
                     val actualName =
                         if (newName.isNullOrBlank()) resourceProvider.getUntitledTitle() else newName
-                    "  $actualName"  //two spaces for image span and to separate from the actual text
+                    "\u200B$actualName"  //one space for image span
                 }
             }
 

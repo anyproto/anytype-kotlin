@@ -44,7 +44,7 @@ class TemplateBlankFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fra
             restore = LinkedList(),
             initialBlock = mutableListOf(),
             onTextChanged = { _, _ -> },
-            onTextBlockTextChanged = {},
+            onTextBlockTextChanged = {_, _, _ ->},
             onDescriptionChanged = { },
             onTitleBlockTextChanged = { _, _ -> },
             onSelectionChanged = { _, _ -> },

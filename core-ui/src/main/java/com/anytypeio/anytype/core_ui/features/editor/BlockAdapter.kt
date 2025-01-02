@@ -128,6 +128,7 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.core_utils.text.OnNewLineActionListener
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType.LongClick
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -211,7 +212,7 @@ class BlockAdapter(
     private var restore: Queue<Editor.Restore>,
     initialBlock: List<BlockView>,
     private val onDescriptionChanged: (BlockView.Description) -> Unit = {},
-    private val onTextBlockTextChanged: (BlockView.Text) -> Unit = {},
+    private val onTextBlockTextChanged: (BlockView.Text, String, List<Markup.Mark>) -> Unit = { _, _, _ ->},
     private val onTextChanged: (String, Editable) -> Unit = { _, _ -> },
     private val onTitleBlockTextChanged: (Id, String) -> Unit = { _, _ -> },
     private val onTitleTextInputClicked: () -> Unit = {},
@@ -882,11 +883,14 @@ class BlockAdapter(
             holder.setupViewHolder(
                 onTextChanged = { editable ->
                     holder.withBlock<BlockView.Text> { item ->
+                        val (newText, newMarks) = extractStringAndMarksFromEditable(
+                            editable = editable
+                        )
                         item.apply {
                             text = editable.toString()
                             marks = editable.marks()
                         }
-                        onTextBlockTextChanged(item)
+                        onTextBlockTextChanged(item, newText, newMarks)
                     }
                 },
                 onEmptyBlockBackspaceClicked = onEmptyBlockBackspaceClicked,

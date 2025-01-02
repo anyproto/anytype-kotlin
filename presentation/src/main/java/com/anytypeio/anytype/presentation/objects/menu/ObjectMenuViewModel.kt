@@ -172,7 +172,7 @@ class ObjectMenuViewModel(
 
         if (layout in fileLayouts) {
             clear()
-            add(ObjectAction.MOVE_TO_BIN)
+            add(ObjectAction.DELETE)
             add(ObjectAction.DOWNLOAD_FILE)
             if (isFavorite) {
                 add(ObjectAction.REMOVE_FROM_FAVOURITE)

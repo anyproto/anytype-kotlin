@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
-import android.content.ContentResolver
 import android.content.res.Configuration
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -53,7 +52,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -100,7 +101,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -129,8 +129,6 @@ import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
-import com.anytypeio.anytype.core_utils.ext.parsePath
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
@@ -142,6 +140,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscussionScreenWrapper(
     isSpaceLevelChat: Boolean = false,
@@ -150,8 +149,11 @@ fun DiscussionScreenWrapper(
     onAttachObjectClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
-    onRequestOpenFullScreenImage: (String) -> Unit
+    onRequestOpenFullScreenImage: (String) -> Unit,
+    onChatReaction: (String) -> Unit
 ) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    var showReactionSheet by remember { mutableStateOf(false) }
     val context = LocalContext.current
     NavHost(
         navController = rememberNavController(),
@@ -235,7 +237,8 @@ fun DiscussionScreenWrapper(
                             }
                         }
                         vm.onChatBoxFilePicked(infos)
-                    }
+                    },
+                    onAddReactionClicked = onChatReaction
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -253,6 +256,21 @@ fun DiscussionScreenWrapper(
                     }
                 }
             }
+        }
+    }
+    if (showReactionSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showReactionSheet = false
+            },
+            sheetState = sheetState,
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            dragHandle = null
+        ) {
+            ChatReactionPicker(
+                onEmojiClicked = {}
+            )
         }
     }
 }
@@ -288,7 +306,8 @@ fun DiscussionScreen(
     onAttachFileClicked: () -> Unit,
     onUploadAttachmentClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
-    onChatBoxFilePicked: (List<Uri>) -> Unit
+    onChatBoxFilePicked: (List<Uri>) -> Unit,
+    onAddReactionClicked: (String) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -344,7 +363,8 @@ fun DiscussionScreen(
                     onReplyMessage(it)
                     chatBoxFocusRequester.requestFocus()
                 },
-                onMarkupLinkClicked = onMarkupLinkClicked
+                onMarkupLinkClicked = onMarkupLinkClicked,
+                onAddReactionClicked = onAddReactionClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -960,7 +980,8 @@ fun Messages(
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     onEditMessage: (DiscussionView.Message) -> Unit,
     onReplyMessage: (DiscussionView.Message) -> Unit,
-    onMarkupLinkClicked: (String) -> Unit
+    onMarkupLinkClicked: (String) -> Unit,
+    onAddReactionClicked: (String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     LazyColumn(
@@ -1024,6 +1045,9 @@ fun Messages(
                                 scrollState.animateScrollToItem(index = idx)
                             }
                         }
+                    },
+                    onAddReactionClicked = {
+                        onAddReactionClicked(msg.id)
                     }
                 )
                 if (msg.isUserAuthor) {
@@ -1149,7 +1173,8 @@ fun Bubble(
     onReply: () -> Unit,
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
-    onScrollToReplyClicked: (DiscussionView.Message.Reply) -> Unit
+    onScrollToReplyClicked: (DiscussionView.Message.Reply) -> Unit,
+    onAddReactionClicked: () -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
@@ -1318,6 +1343,18 @@ fun Bubble(
                     showDropdownMenu = false
                 }
             ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.chats_add_reaction),
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    onClick = {
+                        onAddReactionClicked()
+                        showDropdownMenu = false
+                    }
+                )
                 DropdownMenuItem(
                     text = {
                         Row {

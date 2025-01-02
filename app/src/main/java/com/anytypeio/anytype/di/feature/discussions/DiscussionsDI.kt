@@ -18,6 +18,8 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.emojifier.data.Emoji
+import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
@@ -79,6 +81,11 @@ object DiscussionModule {
     fun provideCopyFileToCache(
         context: Context
     ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
+
+    @Provides
+    @PerScreen
+    @JvmStatic
+    fun provideEmojiProvider(): EmojiProvider = Emoji
 
     @Module
     interface Declarations {

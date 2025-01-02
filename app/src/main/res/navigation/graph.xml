@@ -162,6 +162,11 @@
         android:name="com.anytypeio.anytype.di.feature.discussions.DiscussionFragment"
         android:label="Discussion" />
 
+    <dialog
+        android:id="@+id/chatReactionScreen"
+        android:name="com.anytypeio.anytype.ui.chats.ChatReactionFragment"
+        android:label="Chat reaction" />
+
     <fragment
         android:id="@+id/homeScreen"
         android:name="com.anytypeio.anytype.ui.home.HomeScreenFragment"

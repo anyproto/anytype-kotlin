@@ -1840,6 +1840,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Upload</string>
     <string name="chats_reply">Reply</string>
+    <string name="chats_add_reaction">Add Reaction</string>
 
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>
@@ -1851,5 +1852,14 @@ Please provide specific details of your needs here.</string>
     <string name="file">File</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
     <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
+
+    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
+    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
+    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
+    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
+    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_objects">Objects</string>
+    <string name="emoji_category_symbols">Symbols</string>
+    <string name="emoji_category_flags">Flags</string>
 
 </resources>

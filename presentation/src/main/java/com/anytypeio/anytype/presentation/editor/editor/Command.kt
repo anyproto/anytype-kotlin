@@ -17,9 +17,9 @@ sealed class Command {
 
     data class OpenTextBlockIconPicker(val block: Id) : Command()
 
-    data class OpenGallery(
-        val mimeType: Mimetype
-    ) : Command()
+    data object OpenPhotoPicker: Command()
+    data object OpenVideoPicker: Command()
+    data object OpenFilePicker: Command()
 
     data class OpenBookmarkSetter(
         val target: String,

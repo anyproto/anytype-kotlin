@@ -8,7 +8,7 @@ import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
+import com.anytypeio.anytype.ui.chats.ChatReactionFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
@@ -33,6 +33,7 @@ interface ChatReactionPickerComponent {
     }
 
     fun getViewModel(): ChatReactionViewModel
+    fun inject(fragment: ChatReactionFragment)
 }
 
 @Module

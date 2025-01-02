@@ -149,7 +149,8 @@ fun DiscussionScreenWrapper(
     onAttachObjectClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
-    onRequestOpenFullScreenImage: (String) -> Unit
+    onRequestOpenFullScreenImage: (String) -> Unit,
+    onChatReaction: (String) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var showReactionSheet by remember { mutableStateOf(false) }
@@ -238,7 +239,7 @@ fun DiscussionScreenWrapper(
                         vm.onChatBoxFilePicked(infos)
                     },
                     onAddReactionClicked = {
-                        showReactionSheet = true
+                        onChatReaction("test")
                     }
                 )
                 LaunchedEffect(Unit) {

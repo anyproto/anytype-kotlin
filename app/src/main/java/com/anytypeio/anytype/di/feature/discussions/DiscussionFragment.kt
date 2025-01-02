@@ -83,6 +83,9 @@ class DiscussionFragment : BaseComposeFragment() {
                         },
                         onRequestOpenFullScreenImage = {
                             // TODO
+                        },
+                        onChatReaction = {
+                            // TODO
                         }
                     )
 

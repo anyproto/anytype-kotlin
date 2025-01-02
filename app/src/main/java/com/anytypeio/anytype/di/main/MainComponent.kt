@@ -20,6 +20,7 @@ import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
+import com.anytypeio.anytype.di.feature.discussions.ChatReactionPickerDependencies
 import com.anytypeio.anytype.di.feature.discussions.DiscussionComponentDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
@@ -135,7 +136,8 @@ interface MainComponent :
     SelectWidgetTypeDependencies,
     LinkToObjectDependencies,
     MoveToDependencies,
-    DateObjectDependencies
+    DateObjectDependencies,
+    ChatReactionPickerDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -386,4 +388,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(DateObjectDependencies::class)
     abstract fun provideDateObjectDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(ChatReactionPickerDependencies::class)
+    abstract fun provideChatReactionPickerDependencies(component: MainComponent): ComponentDependencies
 }

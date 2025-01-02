@@ -174,7 +174,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                         ) { page ->
                             if (page == 0) {
                                 focus.clearFocus(force = true)
-                                PageWithWidgets()
+                                PageWithWidgets(showSpaceWidget = false)
                             } else {
                                 DiscussionScreenWrapper(
                                     isSpaceLevelChat = true,
@@ -264,10 +264,12 @@ class HomeScreenFragment : BaseComposeFragment(),
     }
 
     @Composable
-    fun PageWithWidgets() {
+    fun PageWithWidgets(
+        showSpaceWidget: Boolean = true
+    ) {
         HomeScreen(
             modifier = Modifier,
-            widgets = vm.views.collectAsState().value,
+            widgets = if (showSpaceWidget) vm.views.collectAsState().value else vm.views.collectAsState().value.filter { it !is WidgetView.SpaceWidget },
             mode = vm.mode.collectAsState().value,
             onExpand = { path -> vm.onExpand(path) },
             onCreateWidget = vm::onCreateWidgetClicked,

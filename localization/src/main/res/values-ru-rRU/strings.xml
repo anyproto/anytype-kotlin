@@ -469,6 +469,7 @@
     <string name="open_source">Открыть источник</string>
     <string name="reload_object_content">Перезагрузить содержимое объекта</string>
     <string name="open_link">Открыть ссылку</string>
+    <string name="open_file">Открыть файл</string>
     <string name="copy_email">Скопировать адрес электронной почты</string>
     <string name="copy_phone_number">Copy phone numbler</string>
     <string name="send_email">Отправить электронное письмо</string>
@@ -1102,7 +1103,7 @@
     <string name="dates_days_ago">%1$s дней назад</string>
     <string name="dates_days_from">%1$s дней спустя</string>
     <string name="settings_use_yamux">Use a reserve multiplex library</string>
-    <string name="settings_share_local_logs">Share local logs</string>
+    <string name="settings_share_local_logs">Поделиться локальными журналами</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
@@ -1591,7 +1592,7 @@
     <string name="chats_message_edited">отредактировано</string>
     <string name="chat_empty_state_message">Пока нет сообщений. \nБудьте первыми, кто начнет обсуждение.</string>
     <string name="write_a_message">Написать сообщение...</string>
-    <string name="date_layout_mentioned_in">Mentions</string>
+    <string name="date_layout_mentioned_in">Упоминания</string>
     <string name="date_layout_empty_items">Здесь пока ничего нет для этой даты</string>
     <string name="date_layout_alert_date_out_of_range">Выбранная дата вне допустимого диапазона (лет %1$d %2$d). Пожалуйста, выберите дату в этом диапазоне.</string>
     <string name="date_layout_item_created_by">от</string>
@@ -1607,4 +1608,7 @@
     <string name="day_of_week_friday">Пятница</string>
     <string name="day_of_week_saturday">Суббота</string>
     <string name="day_of_week_sunday">Воскресенье</string>
+    <string name="file">Файл</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Создайте свое первое место, чтобы начать</string>
+    <string name="space_list_empty_state_it_is_empty_here">Здесь пусто.</string>
 </resources>

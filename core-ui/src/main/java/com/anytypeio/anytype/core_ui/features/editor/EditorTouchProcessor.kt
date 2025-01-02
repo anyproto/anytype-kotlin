@@ -88,6 +88,15 @@ class EditorTouchProcessor(
                     Timber.d("ACTION UP")
                     actionHandler.removeCallbacksAndMessages(null)
 
+                    /**
+                     * When clicking on mention text, the code contains two separate logics
+                     * that handle clicks on this text: the EditorTouchProcessor,
+                     * which is responsible for triggering drag-and-drop or long-click mode,
+                     * and the ClickableSpan, which is applied to the mention text.
+                     * Since it is impossible to predict which listener will execute first,
+                     * the click on the mention is handled in two different places.
+                     * @see fun Editable.setClickableSpan(click: ((String) -> Unit)?, mark: Markup.Mark.Mention)
+                     */
                     if (v is TextInputWidget) {
                         val x = (event.x - v.totalPaddingLeft + v.scrollX).toInt()
                         val y = (event.y - v.totalPaddingTop + v.scrollY).toInt()

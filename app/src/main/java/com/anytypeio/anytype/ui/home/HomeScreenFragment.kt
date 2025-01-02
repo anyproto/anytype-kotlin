@@ -202,8 +202,8 @@ class HomeScreenFragment : BaseComposeFragment(),
                                             R.id.chatReactionScreen,
                                             ChatReactionFragment.args(
                                                 space = Space(space),
-                                                chat = "dd",
-                                                msg = ""
+                                                chat = spaceLevelChatViewModel.chat,
+                                                msg = it
                                             )
                                         )
                                     }

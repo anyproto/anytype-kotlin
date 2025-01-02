@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.feature_discussions.R
@@ -32,7 +33,8 @@ import com.bumptech.glide.integration.compose.GlideImage
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ChatReactionPicker(
-    views: List<ReactionPickerView> = emptyList()
+    views: List<ReactionPickerView> = emptyList(),
+    onEmojiClicked: (String) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -40,7 +42,6 @@ fun ChatReactionPicker(
         LazyVerticalGrid(
             columns = GridCells.Fixed(6),
             modifier = Modifier
-                .background(color = colorResource(R.color.background_secondary))
                 .systemBarsPadding()
                 .fillMaxSize()
                 .padding(
@@ -53,23 +54,28 @@ fun ChatReactionPicker(
             items(
                 views,
                 span = { item ->
-                    when(item) {
+                    when (item) {
                         is ReactionPickerView.Emoji -> {
                             GridItemSpan(1)
                         }
+
                         is ReactionPickerView.Category -> {
                             GridItemSpan(maxLineSpan)
                         }
                     }
                 }
             ) { item ->
-                when(item) {
+                when (item) {
                     is ReactionPickerView.Emoji -> {
                         if (item.emojified.isNotEmpty()) {
                             GlideImage(
                                 model = item.emojified,
                                 contentDescription = "",
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .noRippleClickable {
+                                        onEmojiClicked(item.unicode)
+                                    }
                             )
                         } else {
                             Text(
@@ -78,6 +84,7 @@ fun ChatReactionPicker(
                             )
                         }
                     }
+
                     is ReactionPickerView.Category -> {
                         Box(
                             modifier = Modifier
@@ -121,6 +128,7 @@ fun PickerPreview() {
                     index = 1
                 )
             )
-        }
+        },
+        onEmojiClicked = {}
     )
 }

@@ -238,9 +238,7 @@ fun DiscussionScreenWrapper(
                         }
                         vm.onChatBoxFilePicked(infos)
                     },
-                    onAddReactionClicked = {
-                        onChatReaction("test")
-                    }
+                    onAddReactionClicked = onChatReaction
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -270,7 +268,9 @@ fun DiscussionScreenWrapper(
             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             dragHandle = null
         ) {
-            ChatReactionPicker()
+            ChatReactionPicker(
+                onEmojiClicked = {}
+            )
         }
     }
 }
@@ -307,7 +307,7 @@ fun DiscussionScreen(
     onUploadAttachmentClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
-    onAddReactionClicked: () -> Unit
+    onAddReactionClicked: (String) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -981,7 +981,7 @@ fun Messages(
     onEditMessage: (DiscussionView.Message) -> Unit,
     onReplyMessage: (DiscussionView.Message) -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
-    onAddReactionClicked: () -> Unit
+    onAddReactionClicked: (String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     LazyColumn(
@@ -1047,7 +1047,7 @@ fun Messages(
                         }
                     },
                     onAddReactionClicked = {
-                        onAddReactionClicked()
+                        onAddReactionClicked(msg.id)
                     }
                 )
                 if (msg.isUserAuthor) {

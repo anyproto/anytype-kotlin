@@ -17,6 +17,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,7 +44,7 @@ fun ChatReactionPicker(
         LazyVerticalGrid(
             columns = GridCells.Fixed(6),
             modifier = Modifier
-                .systemBarsPadding()
+                .nestedScroll(rememberNestedScrollInteropConnection())
                 .fillMaxSize()
                 .padding(
                     start = 16.dp,
@@ -58,8 +60,7 @@ fun ChatReactionPicker(
                         is ReactionPickerView.Emoji -> {
                             GridItemSpan(1)
                         }
-
-                        is ReactionPickerView.Category -> {
+                        is ReactionPickerView.Category, is ReactionPickerView.RecentUsedSection -> {
                             GridItemSpan(maxLineSpan)
                         }
                     }
@@ -84,7 +85,6 @@ fun ChatReactionPicker(
                             )
                         }
                     }
-
                     is ReactionPickerView.Category -> {
                         Box(
                             modifier = Modifier
@@ -104,6 +104,20 @@ fun ChatReactionPicker(
                             }
                             Text(
                                 text = text,
+                                color = colorResource(R.color.text_secondary),
+                                modifier = Modifier.align(Alignment.Center),
+                                style = Caption1Medium
+                            )
+                        }
+                    }
+                    is ReactionPickerView.RecentUsedSection -> {
+                        Box(
+                            modifier = Modifier
+                                .height(48.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(R.string.emoji_recently_used_section),
                                 color = colorResource(R.color.text_secondary),
                                 modifier = Modifier.align(Alignment.Center),
                                 style = Caption1Medium

@@ -1572,6 +1572,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_attachment_media">Medien hochladen</string>
     <string name="chat_attachment_upload">Hochladen</string>
     <string name="chats_reply">Antworten</string>
+    <string name="chats_add_reaction">Reaktion hinzufügen</string>
     <string name="day_of_week_monday">Montag</string>
     <string name="day_of_week_tuesday">Dienstag</string>
     <string name="day_of_week_wednesday">Mittwoch</string>
@@ -1582,4 +1583,12 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="file">Datei</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
     <string name="space_list_empty_state_it_is_empty_here">Hier ist es leer.</string>
+    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
+    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
+    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
+    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
+    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_objects">Objekte</string>
+    <string name="emoji_category_symbols">Symbols</string>
+    <string name="emoji_category_flags">Flags</string>
 </resources>

@@ -58,8 +58,7 @@ fun ChatReactionPicker(
                         is ReactionPickerView.Emoji -> {
                             GridItemSpan(1)
                         }
-
-                        is ReactionPickerView.Category -> {
+                        is ReactionPickerView.Category, is ReactionPickerView.RecentUsedSection -> {
                             GridItemSpan(maxLineSpan)
                         }
                     }
@@ -84,7 +83,6 @@ fun ChatReactionPicker(
                             )
                         }
                     }
-
                     is ReactionPickerView.Category -> {
                         Box(
                             modifier = Modifier
@@ -104,6 +102,20 @@ fun ChatReactionPicker(
                             }
                             Text(
                                 text = text,
+                                color = colorResource(R.color.text_secondary),
+                                modifier = Modifier.align(Alignment.Center),
+                                style = Caption1Medium
+                            )
+                        }
+                    }
+                    is ReactionPickerView.RecentUsedSection -> {
+                        Box(
+                            modifier = Modifier
+                                .height(48.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(R.string.emoji_recently_used_section),
                                 color = colorResource(R.color.text_secondary),
                                 modifier = Modifier.align(Alignment.Center),
                                 style = Caption1Medium

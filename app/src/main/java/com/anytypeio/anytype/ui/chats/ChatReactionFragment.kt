@@ -45,7 +45,7 @@ class ChatReactionFragment : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 ChatReactionPicker(
-                    views = vm.default.collectAsStateWithLifecycle().value,
+                    views = vm.views.collectAsStateWithLifecycle(emptyList()).value,
                     onEmojiClicked = vm::onEmojiClicked
                 )
                 LaunchedEffect(Unit) {

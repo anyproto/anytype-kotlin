@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.chats.ObserveRecentlyUsedChatReactions
 import com.anytypeio.anytype.domain.chats.SetRecentlyUsedChatReactions
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
@@ -15,12 +15,13 @@ import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class ChatReactionViewModel @Inject constructor(
     private val vmParams: Params,
@@ -37,9 +38,37 @@ class ChatReactionViewModel @Inject constructor(
     /**
      * Default emoji list, including categories.
      */
-    val default = MutableStateFlow<List<ReactionPickerView>>(emptyList())
+    private val default = MutableStateFlow<List<ReactionPickerView>>(emptyList())
+
+    private val recentlyUsed = MutableStateFlow<List<String>>(emptyList())
+
+    val views = combine(default, recentlyUsed) { default, recentlyUsed ->
+        buildList<ReactionPickerView> {
+            if (recentlyUsed.isNotEmpty()) {
+                add(ReactionPickerView.RecentUsedSection)
+                addAll(
+                    recentlyUsed.map { unicode ->
+                        ReactionPickerView.Emoji(
+                            unicode = unicode,
+                            page = -1,
+                            index = -1,
+                            emojified = Emojifier.safeUri(unicode)
+                        )
+                    }
+                )
+            }
+            addAll(default)
+        }
+    }
 
     init {
+        viewModelScope.launch {
+            observeRecentlyUsedChatReactions
+                .flow()
+                .collect {
+                    recentlyUsed.value = it
+                }
+        }
         viewModelScope.launch {
             val loaded = loadEmojiWithCategories()
             default.value = loaded
@@ -76,13 +105,23 @@ class ChatReactionViewModel @Inject constructor(
 
     fun onEmojiClicked(emoji: String) {
         viewModelScope.launch {
-            toggleChatMessageReaction.execute(
+            setRecentlyUsedChatReactions.async(
+                params = (recentlyUsed.value + listOf(emoji))
+                    .toSet()
+                    .take(MAX_RECENTLY_USED_COUNT)
+                    .toSet()
+            ).onFailure {
+                Timber.e(it, "Error while saving recently used reactions")
+            }
+            toggleChatMessageReaction.async(
                 params = Command.ChatCommand.ToggleMessageReaction(
                     msg = vmParams.msg,
                     chat = vmParams.chat,
                     emoji = emoji
                 )
-            )
+            ).onFailure {
+                Timber.e(it, "Error while toggling chat message reaction")
+            }
             isDismissed.emit(true)
         }
     }
@@ -114,6 +153,7 @@ class ChatReactionViewModel @Inject constructor(
     )
 
     sealed class ReactionPickerView {
+        data object RecentUsedSection: ReactionPickerView()
         data class Category(val index: Int) : ReactionPickerView()
         data class Emoji(
             val unicode: String,
@@ -121,5 +161,9 @@ class ChatReactionViewModel @Inject constructor(
             val index: Int,
             val emojified: String = ""
         ) : ReactionPickerView()
+    }
+
+    companion object {
+        const val MAX_RECENTLY_USED_COUNT = 20
     }
 }

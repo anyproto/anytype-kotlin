@@ -7,6 +7,8 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.chats.ObserveRecentlyUsedChatReactions
+import com.anytypeio.anytype.domain.chats.SetRecentlyUsedChatReactions
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.emojifier.data.Emoji
@@ -25,7 +27,9 @@ class ChatReactionViewModel @Inject constructor(
     private val provider: EmojiProvider,
     private val suggester: EmojiSuggester,
     private val dispatchers: AppCoroutineDispatchers,
-    private val toggleChatMessageReaction: ToggleChatMessageReaction
+    private val toggleChatMessageReaction: ToggleChatMessageReaction,
+    private val setRecentlyUsedChatReactions: SetRecentlyUsedChatReactions,
+    private val observeRecentlyUsedChatReactions: ObserveRecentlyUsedChatReactions
 ) : BaseViewModel() {
 
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
@@ -88,7 +92,9 @@ class ChatReactionViewModel @Inject constructor(
         private val emojiProvider: EmojiProvider,
         private val emojiSuggester: EmojiSuggester,
         private val dispatchers: AppCoroutineDispatchers,
-        private val toggleChatMessageReaction: ToggleChatMessageReaction
+        private val toggleChatMessageReaction: ToggleChatMessageReaction,
+        private val setRecentlyUsedChatReactions: SetRecentlyUsedChatReactions,
+        private val observeRecentlyUsedChatReactions: ObserveRecentlyUsedChatReactions
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatReactionViewModel(
@@ -96,7 +102,9 @@ class ChatReactionViewModel @Inject constructor(
             provider = emojiProvider,
             suggester = emojiSuggester,
             dispatchers = dispatchers,
-            toggleChatMessageReaction = toggleChatMessageReaction
+            toggleChatMessageReaction = toggleChatMessageReaction,
+            setRecentlyUsedChatReactions = setRecentlyUsedChatReactions,
+            observeRecentlyUsedChatReactions = observeRecentlyUsedChatReactions
         ) as T
     }
 

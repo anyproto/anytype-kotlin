@@ -106,7 +106,7 @@ class ChatReactionViewModel @Inject constructor(
     fun onEmojiClicked(emoji: String) {
         viewModelScope.launch {
             setRecentlyUsedChatReactions.async(
-                params = (recentlyUsed.value + listOf(emoji))
+                params = (listOf(emoji) + recentlyUsed.value)
                     .toSet()
                     .take(MAX_RECENTLY_USED_COUNT)
                     .toSet()

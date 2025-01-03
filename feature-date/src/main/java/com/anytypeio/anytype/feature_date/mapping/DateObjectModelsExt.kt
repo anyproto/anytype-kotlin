@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -78,6 +79,6 @@ fun ObjectWrapper.Basic.toUiObjectsListItem(
         }?.name,
         layout = layout,
         icon = obj.objectIcon(builder = urlBuilder),
-        isPossibleToDelete = isOwnerOrEditor
+        isPossibleToDelete = isOwnerOrEditor && !restrictions.contains(ObjectRestriction.DELETE)
     )
 }

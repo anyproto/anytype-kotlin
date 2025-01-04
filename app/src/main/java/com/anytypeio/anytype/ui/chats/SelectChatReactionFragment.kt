@@ -68,7 +68,7 @@ class SelectChatReactionFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun releaseDependencies() {
-        // TODO
+        componentManager().selectChatReactionComponent.release(id = "$COMPONENT_PREFIX-$chat")
     }
 
     companion object {

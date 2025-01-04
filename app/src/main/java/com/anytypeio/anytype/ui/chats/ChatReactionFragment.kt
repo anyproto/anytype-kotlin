@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -17,8 +16,6 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.SelectChatReactionViewModel
-import com.anytypeio.anytype.feature_discussions.ui.ChatReactionPicker
 import com.anytypeio.anytype.feature_discussions.ui.ChatReactionScreen
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -66,7 +63,7 @@ class ChatReactionFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().chatReactionComponent.release(id = chat)
+        componentManager().chatReactionComponent.release(id = "$COMPONENT_PREFIX-$chat")
     }
 
     companion object {

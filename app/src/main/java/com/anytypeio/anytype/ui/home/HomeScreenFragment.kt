@@ -41,6 +41,7 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -64,6 +65,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.chats.ChatReactionFragment
 import com.anytypeio.anytype.ui.chats.SelectChatReactionFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
@@ -196,13 +198,24 @@ class HomeScreenFragment : BaseComposeFragment(),
                                             )
                                         )
                                     },
-                                    onChatReaction = {
+                                    onSelectChatReaction = {
                                         findNavController().navigate(
                                             R.id.selectChatReactionScreen,
                                             SelectChatReactionFragment.args(
                                                 space = Space(space),
                                                 chat = spaceLevelChatViewModel.chat,
                                                 msg = it
+                                            )
+                                        )
+                                    },
+                                    onViewChatReaction = { msg, emoji ->
+                                        findNavController().navigate(
+                                            R.id.chatReactionScreen,
+                                            ChatReactionFragment.args(
+                                                space = Space(space),
+                                                chat = spaceLevelChatViewModel.chat,
+                                                msg = msg,
+                                                emoji = emoji
                                             )
                                         )
                                     }

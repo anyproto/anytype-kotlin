@@ -22,7 +22,7 @@ import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlin.getValue
 
-class ChatReactionFragment : BaseBottomSheetComposeFragment() {
+class SelectChatReactionFragment : BaseBottomSheetComposeFragment() {
 
     private val chat: Id get() = arg<Id>(CHAT_ID_KEY)
     private val msg: Id get() = arg<Id>(MSG_ID_KEY)
@@ -56,7 +56,7 @@ class ChatReactionFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().chatReactionPickerComponent
+        componentManager().selectChatReactionComponent
             .get(
                 key = chat,
                 param = SelectChatReactionViewModel.Params(

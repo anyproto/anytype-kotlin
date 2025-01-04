@@ -11,7 +11,7 @@ import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.feature_discussions.presentation.SelectChatReactionViewModel
-import com.anytypeio.anytype.ui.chats.ChatReactionFragment
+import com.anytypeio.anytype.ui.chats.SelectChatReactionFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
@@ -26,17 +26,17 @@ import dagger.Provides
     ]
 )
 @PerScreen
-interface SelectChatReactionPickerComponent {
+interface SelectChatReactionComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
         fun withParams(params: SelectChatReactionViewModel.Params): Builder
         fun withDependencies(dependencies: SelectChatReactionDependencies): Builder
-        fun build(): SelectChatReactionPickerComponent
+        fun build(): SelectChatReactionComponent
     }
 
     fun getViewModel(): SelectChatReactionViewModel
-    fun inject(fragment: ChatReactionFragment)
+    fun inject(fragment: SelectChatReactionFragment)
 }
 
 @Module

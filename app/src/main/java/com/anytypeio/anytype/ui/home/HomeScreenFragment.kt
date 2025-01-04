@@ -65,7 +65,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
-import com.anytypeio.anytype.ui.chats.ChatReactionFragment
+import com.anytypeio.anytype.ui.chats.SelectChatReactionFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
@@ -200,7 +200,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                                     onChatReaction = {
                                         findNavController().navigate(
                                             R.id.chatReactionScreen,
-                                            ChatReactionFragment.args(
+                                            SelectChatReactionFragment.args(
                                                 space = Space(space),
                                                 chat = spaceLevelChatViewModel.chat,
                                                 msg = it

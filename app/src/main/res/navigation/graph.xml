@@ -164,7 +164,7 @@
 
     <dialog
         android:id="@+id/chatReactionScreen"
-        android:name="com.anytypeio.anytype.ui.chats.ChatReactionFragment"
+        android:name="com.anytypeio.anytype.ui.chats.SelectChatReactionFragment"
         android:label="Chat reaction" />
 
     <fragment

@@ -1591,4 +1591,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="emoji_category_objects">Objecten</string>
     <string name="emoji_category_symbols">Symbols</string>
     <string name="emoji_category_flags">Flags</string>
+    <string name="emoji_recently_used_section">Recently used</string>
 </resources>

@@ -19,20 +19,20 @@ import dagger.Module
 import dagger.Provides
 
 @Component(
-    dependencies = [ChatReactionPickerDependencies::class],
+    dependencies = [SelectChatReactionDependencies::class],
     modules = [
-        ChatReactionPickerModule::class,
-        ChatReactionPickerModule.Declarations::class
+        SelectChatReactionModule::class,
+        SelectChatReactionModule.Declarations::class
     ]
 )
 @PerScreen
-interface ChatReactionPickerComponent {
+interface SelectChatReactionPickerComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
         fun withParams(params: SelectChatReactionViewModel.Params): Builder
-        fun withDependencies(dependencies: ChatReactionPickerDependencies): Builder
-        fun build(): ChatReactionPickerComponent
+        fun withDependencies(dependencies: SelectChatReactionDependencies): Builder
+        fun build(): SelectChatReactionPickerComponent
     }
 
     fun getViewModel(): SelectChatReactionViewModel
@@ -40,7 +40,7 @@ interface ChatReactionPickerComponent {
 }
 
 @Module
-object ChatReactionPickerModule {
+object SelectChatReactionModule {
     @Provides
     @PerScreen
     @JvmStatic
@@ -56,7 +56,7 @@ object ChatReactionPickerModule {
     }
 }
 
-interface ChatReactionPickerDependencies : ComponentDependencies {
+interface SelectChatReactionDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun suggester(): EmojiSuggester
     fun repo(): BlockRepository

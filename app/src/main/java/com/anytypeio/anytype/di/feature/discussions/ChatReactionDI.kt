@@ -2,7 +2,6 @@ package com.anytypeio.anytype.di.feature.discussions
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -11,7 +10,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
-import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.SelectChatReactionViewModel
 import com.anytypeio.anytype.ui.chats.ChatReactionFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -31,12 +30,12 @@ interface ChatReactionPickerComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun withParams(params: ChatReactionViewModel.Params): Builder
+        fun withParams(params: SelectChatReactionViewModel.Params): Builder
         fun withDependencies(dependencies: ChatReactionPickerDependencies): Builder
         fun build(): ChatReactionPickerComponent
     }
 
-    fun getViewModel(): ChatReactionViewModel
+    fun getViewModel(): SelectChatReactionViewModel
     fun inject(fragment: ChatReactionFragment)
 }
 
@@ -52,7 +51,7 @@ object ChatReactionPickerModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: ChatReactionViewModel.Factory
+            factory: SelectChatReactionViewModel.Factory
         ): ViewModelProvider.Factory
     }
 }

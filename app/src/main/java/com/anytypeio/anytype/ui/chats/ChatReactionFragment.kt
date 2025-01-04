@@ -16,7 +16,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.SelectChatReactionViewModel
 import com.anytypeio.anytype.feature_discussions.ui.ChatReactionPicker
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -28,9 +28,9 @@ class ChatReactionFragment : BaseBottomSheetComposeFragment() {
     private val msg: Id get() = arg<Id>(MSG_ID_KEY)
 
     @Inject
-    lateinit var factory: ChatReactionViewModel.Factory
+    lateinit var factory: SelectChatReactionViewModel.Factory
 
-    private val vm by viewModels<ChatReactionViewModel> { factory }
+    private val vm by viewModels<SelectChatReactionViewModel> { factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,7 +59,7 @@ class ChatReactionFragment : BaseBottomSheetComposeFragment() {
         componentManager().chatReactionPickerComponent
             .get(
                 key = chat,
-                param = ChatReactionViewModel.Params(
+                param = SelectChatReactionViewModel.Params(
                     chat = chat,
                     msg = msg
                 )

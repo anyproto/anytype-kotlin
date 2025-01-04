@@ -103,7 +103,7 @@ import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetTypeComponent
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
-import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.SelectChatReactionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -1081,7 +1081,7 @@ class ComponentManager(
             .build()
     }
 
-    val chatReactionPickerComponent = ComponentMapWithParam { params: ChatReactionViewModel.Params ->
+    val chatReactionPickerComponent = ComponentMapWithParam { params: SelectChatReactionViewModel.Params ->
         DaggerChatReactionPickerComponent
             .builder()
             .withDependencies(findComponentDependencies())

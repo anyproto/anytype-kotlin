@@ -40,9 +40,7 @@ fun ChatReactionScreen(
                 .padding(vertical = 6.dp)
                 .align(Alignment.CenterHorizontally)
         )
-        EmojiToolbar(
-
-        )
+        EmojiToolbar(viewState)
         LazyColumn(
             modifier = Modifier.fillMaxSize().weight(1f)
         ) {
@@ -130,7 +128,9 @@ private fun Member(
 }
 
 @Composable
-private fun EmojiToolbar() {
+private fun EmojiToolbar(
+    viewState: ViewState
+) {
     Box(
         modifier = Modifier
             .height(48.dp)
@@ -140,12 +140,27 @@ private fun EmojiToolbar() {
             modifier = Modifier.align(Alignment.Center),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text( "😀")
+            Text(viewState.emoji)
             Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "0",
-                style = BodyRegular
-            )
+            when(viewState) {
+                is ViewState.Success -> {
+                    Text(
+                        text = viewState.members.size.toString(),
+                        style = BodyRegular,
+                        color = colorResource(R.color.text_primary)
+                    )
+                }
+                is ViewState.Empty -> {
+                    Text(
+                        text = "0",
+                        style = BodyRegular,
+                        color = colorResource(R.color.text_primary)
+                    )
+                }
+                else -> {
+                    // Do nothing.
+                }
+            }
         }
     }
 }
@@ -189,7 +204,11 @@ private fun MemberPreview() {
 @DefaultPreviews
 @Composable
 private fun EmojiToolbarPreview() {
-    EmojiToolbar()
+    EmojiToolbar(
+        viewState = ViewState.Empty(
+            emoji = "😀"
+        )
+    )
 }
 
 @DefaultPreviews

@@ -1620,4 +1620,5 @@
     <string name="emoji_category_objects">Объекты</string>
     <string name="emoji_category_symbols">Symbols</string>
     <string name="emoji_category_flags">Flags</string>
+    <string name="emoji_recently_used_section">Recently used</string>
 </resources>

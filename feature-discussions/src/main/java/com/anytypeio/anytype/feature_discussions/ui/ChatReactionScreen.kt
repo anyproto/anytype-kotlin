@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceMemberIcon
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel.ViewState
@@ -70,7 +71,18 @@ fun ChatReactionScreen(
                     }
                 }
                 is ViewState.Error.MessageNotFound -> {
-
+                    item {
+                        Box(
+                            modifier = Modifier.fillParentMaxSize()
+                        ) {
+                            Text(
+                                modifier = Modifier.align(Alignment.Center),
+                                color = colorResource(R.color.palette_system_red),
+                                text = "Message not found",
+                                style = BodyCallout
+                            )
+                        }
+                    }
                 }
                 is ViewState.Loading -> {
 

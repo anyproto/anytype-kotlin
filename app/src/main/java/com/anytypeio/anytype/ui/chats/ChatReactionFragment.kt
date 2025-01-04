@@ -73,7 +73,7 @@ class ChatReactionFragment : BaseBottomSheetComposeFragment() {
         private const val SPACE_ID_KEY = "chat.reaction.space"
         private const val CHAT_ID_KEY = "chat.reaction.chat"
         private const val MSG_ID_KEY = "chat.reaction.msg"
-        private const val EMOJI_KEY = "chat.reaction.msg"
+        private const val EMOJI_KEY = "chat.reaction.emoji"
 
         fun args(
             space: SpaceId,

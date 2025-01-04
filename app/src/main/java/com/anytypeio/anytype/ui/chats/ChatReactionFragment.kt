@@ -16,21 +16,24 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.SelectChatReactionViewModel
 import com.anytypeio.anytype.feature_discussions.ui.ChatReactionPicker
+import com.anytypeio.anytype.feature_discussions.ui.ChatReactionScreen
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlin.getValue
 
-class SelectChatReactionFragment : BaseBottomSheetComposeFragment() {
+class ChatReactionFragment : BaseBottomSheetComposeFragment() {
 
     private val chat: Id get() = arg<Id>(CHAT_ID_KEY)
     private val msg: Id get() = arg<Id>(MSG_ID_KEY)
+    private val emoji: String get() = arg<Id>(EMOJI_KEY)
 
     @Inject
-    lateinit var factory: SelectChatReactionViewModel.Factory
+    lateinit var factory: ChatReactionViewModel.Factory
 
-    private val vm by viewModels<SelectChatReactionViewModel> { factory }
+    private val vm by viewModels<ChatReactionViewModel> { factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,49 +45,49 @@ class SelectChatReactionFragment : BaseBottomSheetComposeFragment() {
             MaterialTheme(
                 typography = typography
             ) {
-                ChatReactionPicker(
-                    views = vm.views.collectAsStateWithLifecycle(emptyList()).value,
-                    onEmojiClicked = vm::onEmojiClicked
+                ChatReactionScreen(
+                    viewState = vm.viewState.collectAsStateWithLifecycle().value
                 )
-                LaunchedEffect(Unit) {
-                    vm.isDismissed.collect { isDismissed ->
-                        if (isDismissed) dismiss()
-                    }
-                }
             }
         }
     }
 
     override fun injectDependencies() {
-        componentManager().selectChatReactionComponent
+        componentManager().chatReactionComponent
             .get(
                 key = "$COMPONENT_PREFIX-$chat",
-                param = SelectChatReactionViewModel.Params(
+                param = ChatReactionViewModel.Params(
                     chat = chat,
-                    msg = msg
+                    msg = msg,
+                    emoji = emoji
                 )
             )
             .inject(this)
     }
 
     override fun releaseDependencies() {
-        // TODO
+        componentManager().chatReactionComponent.release(id = chat)
     }
 
     companion object {
-        private const val COMPONENT_PREFIX = "select-chat-reaction"
-        private const val SPACE_ID_KEY = "select-chat-reaction.space"
-        private const val CHAT_ID_KEY = "select-chat-reaction.chat"
-        private const val MSG_ID_KEY = "select-chat-reaction.msg"
+
+        private const val COMPONENT_PREFIX = "chat-reaction"
+
+        private const val SPACE_ID_KEY = "chat.reaction.space"
+        private const val CHAT_ID_KEY = "chat.reaction.chat"
+        private const val MSG_ID_KEY = "chat.reaction.msg"
+        private const val EMOJI_KEY = "chat.reaction.msg"
 
         fun args(
             space: SpaceId,
             chat: String,
-            msg: String
+            msg: String,
+            emoji: String
         ): Bundle = bundleOf(
             SPACE_ID_KEY to space.id,
             CHAT_ID_KEY to chat,
-            MSG_ID_KEY to msg
+            MSG_ID_KEY to msg,
+            EMOJI_KEY to emoji
         )
     }
 }

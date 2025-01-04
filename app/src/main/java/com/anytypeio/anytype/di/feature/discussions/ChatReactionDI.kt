@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel
+import com.anytypeio.anytype.ui.chats.ChatReactionFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
@@ -29,6 +30,8 @@ interface ChatReactionComponent {
         fun withDependencies(dependencies: ChatReactionDependencies): Builder
         fun build(): ChatReactionComponent
     }
+
+    fun inject(fragment: ChatReactionFragment)
 }
 
 @Module

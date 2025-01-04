@@ -41,7 +41,6 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -199,7 +198,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                                     },
                                     onChatReaction = {
                                         findNavController().navigate(
-                                            R.id.chatReactionScreen,
+                                            R.id.selectChatReactionScreen,
                                             SelectChatReactionFragment.args(
                                                 space = Space(space),
                                                 chat = spaceLevelChatViewModel.chat,

@@ -86,7 +86,8 @@ class DiscussionFragment : BaseComposeFragment() {
                         },
                         onSelectChatReaction = {
                             // TODO
-                        }
+                        },
+                        onViewChatReaction = { a, b -> }
                     )
 
                     if (showBottomSheet) {

@@ -49,4 +49,7 @@ interface UserSettingsCache {
 
     suspend fun setRelativeDates(account: Account, enabled: Boolean)
     suspend fun setDateFormat(account: Account, format: String)
+
+    suspend fun setRecentlyUsedChatReactions(account: Account, emojis: Set<String>)
+    fun observeRecentlyUsedChatReactions(account: Account): Flow<List<String>>
 }

@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -22,7 +21,6 @@ import com.anytypeio.anytype.feature_discussions.ui.ChatReactionPicker
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlin.getValue
-import okhttp3.internal.notify
 
 class ChatReactionFragment : BaseBottomSheetComposeFragment() {
 
@@ -45,7 +43,7 @@ class ChatReactionFragment : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 ChatReactionPicker(
-                    views = vm.default.collectAsStateWithLifecycle().value,
+                    views = vm.views.collectAsStateWithLifecycle(emptyList()).value,
                     onEmojiClicked = vm::onEmojiClicked
                 )
                 LaunchedEffect(Unit) {

@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
@@ -59,4 +61,6 @@ interface ChatReactionPickerDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun suggester(): EmojiSuggester
     fun repo(): BlockRepository
+    fun auth(): AuthRepository
+    fun prefs(): UserSettingsRepository
 }

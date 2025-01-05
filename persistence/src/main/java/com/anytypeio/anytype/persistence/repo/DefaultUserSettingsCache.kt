@@ -50,7 +50,8 @@ class DefaultUserSettingsCache(
         return VaultPreference(
             showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
             isRelativeDates = DEFAULT_RELATIVE_DATES,
-            dateFormat = appDefaultDateFormatProvider.provide()
+            dateFormat = appDefaultDateFormatProvider.provide(),
+            orderOfSpaces = emptyList()
         )
     }
     //endregion
@@ -484,6 +485,39 @@ class DefaultUserSettingsCache(
                 )
             )
         }
+    }
+
+    override suspend fun setRecentlyUsedChatReactions(
+        account: Account,
+        emojis: Set<String>
+    ) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        recentlyUsedChatReactions = emojis.toList()
+                    )
+                )
+            )
+        }
+    }
+
+    override fun observeRecentlyUsedChatReactions(account: Account): Flow<List<String>> {
+        return context
+            .vaultPrefsStore
+            .data
+            .map { existing ->
+                val settings = existing.preferences[account.id]
+                if (settings != null) {
+                    settings.recentlyUsedChatReactions
+                } else {
+                    emptyList()
+                }
+            }
     }
 
     override suspend fun setDateFormat(

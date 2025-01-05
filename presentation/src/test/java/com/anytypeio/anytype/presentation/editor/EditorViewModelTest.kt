@@ -3448,9 +3448,7 @@ open class EditorViewModelTest {
         vm.onClickListener(ListenerType.Picture.Error(picture.id))
 
         testObserver.assertValue { value ->
-            value is EventWrapper && value.peekContent() == Command.OpenPhotoPicker(
-                mimeType = Mimetype.MIME_IMAGE_ALL
-            )
+            value is EventWrapper && value.peekContent() == Command.OpenPhotoPicker
         }
     }
 
@@ -3519,9 +3517,7 @@ open class EditorViewModelTest {
         vm.onClickListener(ListenerType.Video.Error(video.id))
 
         testObserver.assertValue { value ->
-            value is EventWrapper && value.peekContent() == Command.OpenPhotoPicker(
-                mimeType = Mimetype.MIME_VIDEO_ALL
-            )
+            value is EventWrapper && value.peekContent() == Command.OpenVideoPicker
         }
     }
 
@@ -3589,9 +3585,7 @@ open class EditorViewModelTest {
         vm.onClickListener(ListenerType.File.Error(file.id))
 
         testObserver.assertValue { value ->
-            value is EventWrapper && value.peekContent() == Command.OpenPhotoPicker(
-                mimeType = Mimetype.MIME_FILE_ALL
-            )
+            value is EventWrapper && value.peekContent() == Command.OpenFilePicker
         }
     }
 

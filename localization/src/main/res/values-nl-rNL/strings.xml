@@ -1046,7 +1046,7 @@
     <string name="button_close">Sluiten</string>
     <!--endregion-->
     <!--region ALERTS -->
-    <string name="alert_gallery_unsupported_title">Galerij wordt binnenkort ondersteund</string>
+    <string name="alert_gallery_unsupported_title">Gallery wordt binnenkort ondersteund</string>
     <string name="alert_gallery_unsupported_description">Gebruik alsjeblieft voorlopig de desktop app</string>
     <!--endregion-->
     <!--region SHARING MENU -->
@@ -1594,5 +1594,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="emoji_recently_used_section">Onlangs gebruikt</string>
     <string name="chat_message_reactions_no_reactions_yet">Nog geen reacties</string>
     <string name="chat_message_reactions_no_reactions_message">Waarschijnlijk heeft iemand zojuist de reactie verwijderd of was er een technisch probleem</string>
-    <string name="object_types_human">Human</string>
+    <string name="object_types_human">Mens</string>
 </resources>

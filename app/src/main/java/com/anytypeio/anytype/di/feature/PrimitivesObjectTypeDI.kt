@@ -31,15 +31,17 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
+import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.Dispatchers
 
 @Component(
     dependencies = [ObjectTypeDependencies::class],
@@ -142,6 +144,11 @@ object ObjectTypeModule {
     ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
 
     @JvmStatic
+    @Provides
+    @PerScreen
+    fun coverHashProvider() : CoverImageHashProvider = DefaultCoverImageHashProvider()
+
+    @JvmStatic
     @PerScreen
     @Provides
     fun provideObjectWatcher(
@@ -190,4 +197,5 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun provideUserSettingsRepository(): UserSettingsRepository
     fun fieldParser(): FieldParser
     fun provideEventChannel(): EventChannel
+    fun templatesContainer(): ObjectTypeTemplatesContainer
 }

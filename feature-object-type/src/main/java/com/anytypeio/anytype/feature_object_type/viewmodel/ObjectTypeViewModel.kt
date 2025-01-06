@@ -18,10 +18,11 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.GetObjectRelationListById
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
@@ -49,13 +50,17 @@ class ObjectTypeViewModel(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val createObject: CreateObject,
     private val fieldParser: FieldParser,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val templatesContainer: ObjectTypeTemplatesContainer,
+    private val coverImageHashProvider: CoverImageHashProvider
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //todo update to ObjectWrapper.Type in feature
     private val _detailsState = MutableStateFlow<ObjectWrapper.Basic?>(null)
 
-    val uiHeaderState = MutableStateFlow<UiHeaderState>(UiHeaderState.Empty)
+    val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Hidden)
+    val uiIconState = MutableStateFlow<UiIconState>(UiIconState.Hidden)
+    val uiEditButtonState = MutableStateFlow<UiEditButton>(UiEditButton.Hidden)
     val uiSyncStatusWidgetState =
         MutableStateFlow<UiSyncStatusWidgetState>(UiSyncStatusWidgetState.Hidden)
     val uiSyncStatusBadgeState =
@@ -69,39 +74,9 @@ class ObjectTypeViewModel(
     init {
         proceedWithObservingSyncStatus()
         proceedWithObservingPermissions()
-        viewModelScope.launch {
-            _detailsState.collect { state ->
-                if (state != null && state.map.isNotEmpty()) {
-                    uiHeaderState.value = UiHeaderState.Content(
-                        //todo use fieldParser here later
-                        title = state.name.orEmpty(),
-                        icon = state.objectIcon(urlBuilder)
-                    )
-                }
-            }
-        }
         proceedWithObservingObjectType()
-    }
-
-    private fun proceedWithObservingObjectType() {
-        viewModelScope.launch {
-            objectWatcher.watch(
-                target = vmParams.objectId,
-                space = vmParams.spaceId
-            ).catch {
-                Timber.e(it, "Error while observing object")
-                _detailsState.value = null
-                errorState.value =
-                    UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects(it.message ?: ""))
-            }
-                .collect { result ->
-                    Timber.d("Object: $result")
-                    val objDetailsStruct =
-                        result.details.getOrDefault(vmParams.objectId, emptyMap())
-                    val objDetails = ObjectWrapper.Basic(objDetailsStruct)
-                    _detailsState.value = objDetails
-                }
-        }
+        proceedWithObservingObjectDetails()
+        proceedWithObservingTemplates()
     }
 
     override fun onCleared() {
@@ -128,6 +103,66 @@ class ObjectTypeViewModel(
     }
 
     //region Initialization
+    private fun proceedWithObservingTemplates() {
+        viewModelScope.launch {
+            templatesContainer.subscribeToTemplates(
+                type = vmParams.objectId,
+                space = vmParams.spaceId,
+                subscription = "${vmParams.objectId}$SUBSCRIPTION_TEMPLATES_ID"
+            ).catch {
+                Timber.e(it, "Error while observing templates")
+            }.collect { templates ->
+                val views = templates.map {
+                    it.toTemplateView(
+                        objectId = vmParams.objectId,
+                        urlBuilder = urlBuilder,
+                        coverImageHashProvider = coverImageHashProvider,
+                    )
+                }
+                Timber.d("Templates: ${templates.size}")
+            }
+        }
+    }
+    private fun proceedWithObservingObjectDetails() {
+        viewModelScope.launch {
+            _detailsState.collect { state ->
+                if (state?.isValid == true) {
+                    uiTitleState.value = UiTitleState.Title(
+                        title = fieldParser.getObjectName(
+                            objectWrapper = state
+                        )
+                    )
+                    uiIconState.value = UiIconState.Icon(
+                        icon = state.objectIcon(urlBuilder)
+                    )
+                    //todo check edit restrictions of object
+                    uiEditButtonState.value = UiEditButton.Visible
+                }
+            }
+        }
+    }
+
+    private fun proceedWithObservingObjectType() {
+        viewModelScope.launch {
+            objectWatcher.watch(
+                target = vmParams.objectId,
+                space = vmParams.spaceId
+            ).catch {
+                Timber.e(it, "Error while observing object")
+                _detailsState.value = null
+                errorState.value =
+                    UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects(it.message ?: ""))
+            }
+                .collect { result ->
+                    Timber.d("Object: $result")
+                    val objDetailsStruct =
+                        result.details.getOrDefault(vmParams.objectId, emptyMap())
+                    val objDetails = ObjectWrapper.Basic(objDetailsStruct)
+                    _detailsState.value = objDetails
+                }
+        }
+    }
+
     private fun proceedWithObservingPermissions() {
         viewModelScope.launch {
             userPermissionProvider
@@ -172,4 +207,8 @@ class ObjectTypeViewModel(
         errorState.value = UiErrorState.Hidden
     }
     //endregion
+
+    companion object {
+        private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
+    }
 }

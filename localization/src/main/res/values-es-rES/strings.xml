@@ -1095,7 +1095,7 @@
     <string name="dates_days_ago">Hace %1$s días</string>
     <string name="dates_days_from">Dentro de %1$s días</string>
     <string name="settings_use_yamux">Usar una biblioteca multiplex de reserva</string>
-    <string name="settings_share_local_logs">Share local logs</string>
+    <string name="settings_share_local_logs">Compartir registros locales</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">La vista de kanban aún no está disponible en dispositivos móviles.\nCambia el tipo de vista (Ajustes -&gt; Vista) o crea una nueva para acceder a tus datos.</string>
     <string name="error_calendar_view_not_supported">La vista de calendario aún no está disponible en dispositivos móviles.\nCambia el tipo de vista (Ajustes -&gt; Vista) o crea una nueva para acceder a tus datos.</string>
@@ -1581,18 +1581,18 @@ En concreto,
     <string name="day_of_week_saturday">Sábado</string>
     <string name="day_of_week_sunday">Domingo</string>
     <string name="file">Archivo</string>
-    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
-    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
-    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
-    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
-    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
-    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
-    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Crea tu primer espacio para empezar</string>
+    <string name="space_list_empty_state_it_is_empty_here">Aquí no hay nada.</string>
+    <string name="emoji_category_smileys_and_people">Emoticonos y personas</string>
+    <string name="emoji_category_animals_and_nature">Animales y naturaleza</string>
+    <string name="emoji_category_food_and_drink">Comida y bebida</string>
+    <string name="emoji_category_activity_and_sport">Actividades y deporte</string>
+    <string name="emoji_category_travel_and_places">Viajes y lugares</string>
     <string name="emoji_category_objects">Objetos</string>
-    <string name="emoji_category_symbols">Symbols</string>
-    <string name="emoji_category_flags">Flags</string>
-    <string name="emoji_recently_used_section">Recently used</string>
+    <string name="emoji_category_symbols">Símbolos</string>
+    <string name="emoji_category_flags">Banderas</string>
+    <string name="emoji_recently_used_section">Usado recientemente</string>
     <string name="chat_message_reactions_no_reactions_yet">No reactions yet</string>
     <string name="chat_message_reactions_no_reactions_message">Probably someone has just removed the reaction or technical issue happened</string>
-    <string name="object_types_human">Human</string>
+    <string name="object_types_human">Humano</string>
 </resources>

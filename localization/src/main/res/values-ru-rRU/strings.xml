@@ -1621,4 +1621,7 @@
     <string name="emoji_category_symbols">Символы</string>
     <string name="emoji_category_flags">Флаги</string>
     <string name="emoji_recently_used_section">Недавно использованные</string>
+    <string name="chat_message_reactions_no_reactions_yet">Пока нет реакций</string>
+    <string name="chat_message_reactions_no_reactions_message">Возможно, кто-то только что удалил реакцию или случился технический сбой</string>
+    <string name="object_types_human">Human</string>
 </resources>

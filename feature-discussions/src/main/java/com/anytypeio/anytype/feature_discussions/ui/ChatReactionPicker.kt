@@ -32,7 +32,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ChatReactionPicker(
+fun SelectChatReactionScreen(
     views: List<ReactionPickerView> = emptyList(),
     onEmojiClicked: (String) -> Unit
 ) {
@@ -131,7 +131,7 @@ fun ChatReactionPicker(
 @DefaultPreviews
 @Composable
 fun PickerPreview() {
-    ChatReactionPicker(
+    SelectChatReactionScreen(
         views = buildList {
             add(
                 ReactionPickerView.Emoji(

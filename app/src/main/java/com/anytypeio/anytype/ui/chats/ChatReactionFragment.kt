@@ -25,7 +25,7 @@ class ChatReactionFragment : BaseBottomSheetComposeFragment() {
 
     private val chat: Id get() = arg<Id>(CHAT_ID_KEY)
     private val msg: Id get() = arg<Id>(MSG_ID_KEY)
-    private val emoji: String get() = arg<Id>(EMOJI_KEY)
+    private val emoji: String get() = arg<String>(EMOJI_KEY)
 
     @Inject
     lateinit var factory: ChatReactionViewModel.Factory

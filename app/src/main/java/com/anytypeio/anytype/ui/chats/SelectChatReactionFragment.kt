@@ -17,7 +17,7 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_discussions.presentation.SelectChatReactionViewModel
-import com.anytypeio.anytype.feature_discussions.ui.ChatReactionPicker
+import com.anytypeio.anytype.feature_discussions.ui.SelectChatReactionScreen
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlin.getValue
@@ -42,8 +42,8 @@ class SelectChatReactionFragment : BaseBottomSheetComposeFragment() {
             MaterialTheme(
                 typography = typography
             ) {
-                ChatReactionPicker(
-                    views = vm.views.collectAsStateWithLifecycle(emptyList()).value,
+                SelectChatReactionScreen(
+                    views = vm.views.collectAsStateWithLifecycle(initialValue = emptyList()).value,
                     onEmojiClicked = vm::onEmojiClicked
                 )
                 LaunchedEffect(Unit) {

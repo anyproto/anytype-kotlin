@@ -272,7 +272,7 @@ fun DiscussionScreenWrapper(
             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             dragHandle = null
         ) {
-            ChatReactionPicker(
+            SelectChatReactionScreen(
                 onEmojiClicked = {}
             )
         }

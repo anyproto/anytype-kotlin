@@ -84,9 +84,10 @@ class DiscussionFragment : BaseComposeFragment() {
                         onRequestOpenFullScreenImage = {
                             // TODO
                         },
-                        onChatReaction = {
+                        onSelectChatReaction = {
                             // TODO
-                        }
+                        },
+                        onViewChatReaction = { a, b -> }
                     )
 
                     if (showBottomSheet) {

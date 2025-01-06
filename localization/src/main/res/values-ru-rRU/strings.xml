@@ -1612,12 +1612,13 @@
     <string name="file">Файл</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Создайте свое первое место, чтобы начать</string>
     <string name="space_list_empty_state_it_is_empty_here">Здесь пусто.</string>
-    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
-    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
-    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
-    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
-    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_smileys_and_people">Смайлы и люди</string>
+    <string name="emoji_category_animals_and_nature">Животные и природа</string>
+    <string name="emoji_category_food_and_drink">Еда и напитки</string>
+    <string name="emoji_category_activity_and_sport">Занятия и спорт</string>
+    <string name="emoji_category_travel_and_places">Путешествия и места</string>
     <string name="emoji_category_objects">Объекты</string>
-    <string name="emoji_category_symbols">Symbols</string>
-    <string name="emoji_category_flags">Flags</string>
+    <string name="emoji_category_symbols">Символы</string>
+    <string name="emoji_category_flags">Флаги</string>
+    <string name="emoji_recently_used_section">Недавно использованные</string>
 </resources>

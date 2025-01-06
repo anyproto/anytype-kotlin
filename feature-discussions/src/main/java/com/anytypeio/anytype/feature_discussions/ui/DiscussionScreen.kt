@@ -13,10 +13,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -150,7 +152,8 @@ fun DiscussionScreenWrapper(
     onBackButtonClicked: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onRequestOpenFullScreenImage: (String) -> Unit,
-    onChatReaction: (String) -> Unit
+    onSelectChatReaction: (String) -> Unit,
+    onViewChatReaction: (Id, String) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var showReactionSheet by remember { mutableStateOf(false) }
@@ -238,7 +241,8 @@ fun DiscussionScreenWrapper(
                         }
                         vm.onChatBoxFilePicked(infos)
                     },
-                    onAddReactionClicked = onChatReaction
+                    onAddReactionClicked = onSelectChatReaction,
+                    onViewChatReaction = onViewChatReaction
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -268,7 +272,7 @@ fun DiscussionScreenWrapper(
             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             dragHandle = null
         ) {
-            ChatReactionPicker(
+            SelectChatReactionScreen(
                 onEmojiClicked = {}
             )
         }
@@ -307,7 +311,8 @@ fun DiscussionScreen(
     onUploadAttachmentClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
-    onAddReactionClicked: (String) -> Unit
+    onAddReactionClicked: (String) -> Unit,
+    onViewChatReaction: (Id, String) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -364,7 +369,8 @@ fun DiscussionScreen(
                     chatBoxFocusRequester.requestFocus()
                 },
                 onMarkupLinkClicked = onMarkupLinkClicked,
-                onAddReactionClicked = onAddReactionClicked
+                onAddReactionClicked = onAddReactionClicked,
+                onViewChatReaction = onViewChatReaction
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -981,7 +987,8 @@ fun Messages(
     onEditMessage: (DiscussionView.Message) -> Unit,
     onReplyMessage: (DiscussionView.Message) -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
-    onAddReactionClicked: (String) -> Unit
+    onAddReactionClicked: (String) -> Unit,
+    onViewChatReaction: (Id, String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     LazyColumn(
@@ -1048,6 +1055,9 @@ fun Messages(
                     },
                     onAddReactionClicked = {
                         onAddReactionClicked(msg.id)
+                    },
+                    onViewChatReaction = { emoji ->
+                        onViewChatReaction(msg.id, emoji)
                     }
                 )
                 if (msg.isUserAuthor) {
@@ -1174,7 +1184,8 @@ fun Bubble(
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onScrollToReplyClicked: (DiscussionView.Message.Reply) -> Unit,
-    onAddReactionClicked: () -> Unit
+    onAddReactionClicked: () -> Unit,
+    onViewChatReaction: (String) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
@@ -1322,7 +1333,8 @@ fun Bubble(
         if (reactions.isNotEmpty()) {
             ReactionList(
                 reactions = reactions,
-                onReacted = onReacted
+                onReacted = onReacted,
+                onViewReaction = onViewChatReaction
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
@@ -1660,11 +1672,12 @@ fun GoToBottomButton(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ReactionList(
     reactions: List<DiscussionView.Message.Reaction>,
-    onReacted: (String) -> Unit
+    onReacted: (String) -> Unit,
+    onViewReaction: (String) -> Unit
 ) {
     FlowRow(
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
@@ -1694,9 +1707,14 @@ fun ReactionList(
                         else
                             Modifier
                     )
-                    .clickable {
-                        onReacted(reaction.emoji)
-                    }
+                    .combinedClickable(
+                        onClick = {
+                            onReacted(reaction.emoji)
+                        },
+                        onLongClick = {
+                            onViewReaction(reaction.emoji)
+                        }
+                    )
             ) {
                 Text(
                     text = reaction.emoji,
@@ -1766,7 +1784,8 @@ fun ReactionListPreview() {
                 isSelected = false
             )
         ),
-        onReacted = {}
+        onReacted = {},
+        onViewReaction = {}
     )
 }
 

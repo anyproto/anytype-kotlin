@@ -1583,12 +1583,13 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="file">Bestand</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Maak je eerste ruimte om aan de slag te gaan</string>
     <string name="space_list_empty_state_it_is_empty_here">Het is hier leeg.</string>
-    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
-    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
-    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
-    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
-    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_smileys_and_people">Smileys &amp; Mensen</string>
+    <string name="emoji_category_animals_and_nature">Dieren &amp; Natuur</string>
+    <string name="emoji_category_food_and_drink">Eten &amp; Drinken</string>
+    <string name="emoji_category_activity_and_sport">Activiteiten &amp; Sport</string>
+    <string name="emoji_category_travel_and_places">Reizen &amp; Plaatsen</string>
     <string name="emoji_category_objects">Objecten</string>
-    <string name="emoji_category_symbols">Symbols</string>
-    <string name="emoji_category_flags">Flags</string>
+    <string name="emoji_category_symbols">Symbolen</string>
+    <string name="emoji_category_flags">Vlaggen </string>
+    <string name="emoji_recently_used_section">Onlangs gebruikt</string>
 </resources>

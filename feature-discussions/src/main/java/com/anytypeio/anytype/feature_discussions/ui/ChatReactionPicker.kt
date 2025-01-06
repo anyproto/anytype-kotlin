@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -28,13 +26,13 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.feature_discussions.R
-import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel.ReactionPickerView
+import com.anytypeio.anytype.feature_discussions.presentation.SelectChatReactionViewModel.ReactionPickerView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ChatReactionPicker(
+fun SelectChatReactionScreen(
     views: List<ReactionPickerView> = emptyList(),
     onEmojiClicked: (String) -> Unit
 ) {
@@ -133,7 +131,7 @@ fun ChatReactionPicker(
 @DefaultPreviews
 @Composable
 fun PickerPreview() {
-    ChatReactionPicker(
+    SelectChatReactionScreen(
         views = buildList {
             add(
                 ReactionPickerView.Emoji(

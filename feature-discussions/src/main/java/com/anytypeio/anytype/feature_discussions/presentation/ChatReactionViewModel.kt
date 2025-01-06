@@ -5,165 +5,135 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.base.onFailure
-import com.anytypeio.anytype.domain.chats.ObserveRecentlyUsedChatReactions
-import com.anytypeio.anytype.domain.chats.SetRecentlyUsedChatReactions
-import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
-import com.anytypeio.anytype.emojifier.Emojifier
-import com.anytypeio.anytype.emojifier.data.Emoji
-import com.anytypeio.anytype.emojifier.data.EmojiProvider
-import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
+import com.anytypeio.anytype.domain.base.getOrDefault
+import com.anytypeio.anytype.domain.chats.GetChatMessagesByIds
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 class ChatReactionViewModel @Inject constructor(
     private val vmParams: Params,
-    private val provider: EmojiProvider,
-    private val suggester: EmojiSuggester,
-    private val dispatchers: AppCoroutineDispatchers,
-    private val toggleChatMessageReaction: ToggleChatMessageReaction,
-    private val setRecentlyUsedChatReactions: SetRecentlyUsedChatReactions,
-    private val observeRecentlyUsedChatReactions: ObserveRecentlyUsedChatReactions
+    private val getChatMessagesByIds: GetChatMessagesByIds,
+    private val members: ActiveSpaceMemberSubscriptionContainer,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
-    val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
-
-    /**
-     * Default emoji list, including categories.
-     */
-    private val default = MutableStateFlow<List<ReactionPickerView>>(emptyList())
-
-    private val recentlyUsed = MutableStateFlow<List<String>>(emptyList())
-
-    val views = combine(default, recentlyUsed) { default, recentlyUsed ->
-        buildList<ReactionPickerView> {
-            if (recentlyUsed.isNotEmpty()) {
-                add(ReactionPickerView.RecentUsedSection)
-                addAll(
-                    recentlyUsed.map { unicode ->
-                        ReactionPickerView.Emoji(
-                            unicode = unicode,
-                            page = -1,
-                            index = -1,
-                            emojified = Emojifier.safeUri(unicode)
-                        )
-                    }
-                )
-            }
-            addAll(default)
-        }
-    }
+    val viewState = MutableStateFlow<ViewState>(ViewState.Init(vmParams.emoji))
 
     init {
         viewModelScope.launch {
-            observeRecentlyUsedChatReactions
-                .flow()
-                .collect {
-                    recentlyUsed.value = it
-                }
-        }
-        viewModelScope.launch {
-            val loaded = loadEmojiWithCategories()
-            default.value = loaded
-        }
-    }
-
-
-    private suspend fun loadEmojiWithCategories() = withContext(dispatchers.io) {
-
-        val views = mutableListOf<ReactionPickerView>()
-
-        provider.emojis.forEachIndexed { categoryIndex, emojis ->
-            views.add(
-                ReactionPickerView.Category(
-                    index = categoryIndex
-                )
-            )
-            emojis.forEachIndexed { emojiIndex, emoji ->
-                val skin = Emoji.COLORS.any { color -> emoji.contains(color) }
-                if (!skin)
-                    views.add(
-                        ReactionPickerView.Emoji(
-                            unicode = emoji,
-                            page = categoryIndex,
-                            index = emojiIndex,
-                            emojified = Emojifier.safeUri(emoji)
-                        )
+            val result = getChatMessagesByIds
+                .async(
+                    Command.ChatCommand.GetMessagesByIds(
+                        chat = vmParams.chat,
+                        messages = listOf(vmParams.msg)
                     )
-            }
-        }
-
-        views
-    }
-
-    fun onEmojiClicked(emoji: String) {
-        viewModelScope.launch {
-            setRecentlyUsedChatReactions.async(
-                params = (listOf(emoji) + recentlyUsed.value)
-                    .toSet()
-                    .take(MAX_RECENTLY_USED_COUNT)
-                    .toSet()
-            ).onFailure {
-                Timber.e(it, "Error while saving recently used reactions")
-            }
-            toggleChatMessageReaction.async(
-                params = Command.ChatCommand.ToggleMessageReaction(
-                    msg = vmParams.msg,
-                    chat = vmParams.chat,
-                    emoji = emoji
                 )
-            ).onFailure {
-                Timber.e(it, "Error while toggling chat message reaction")
+            val msg = result.getOrDefault(emptyList()).firstOrNull()
+            if (msg != null) {
+                val identities = msg.reactions.getOrDefault(
+                    key = vmParams.emoji,
+                    defaultValue = emptyList()
+                )
+                if (identities.isNotEmpty()) {
+                    members.observe().map { store ->
+                        when(store) {
+                            is ActiveSpaceMemberSubscriptionContainer.Store.Data -> {
+                                identities.mapNotNull { identity ->
+                                    val member = store.members.firstOrNull { it.identity == identity }
+                                    if (member != null) {
+                                        ViewState.Member(
+                                            icon = SpaceMemberIconView.icon(
+                                                obj = member,
+                                                urlBuilder = urlBuilder
+                                            ),
+                                            name = member.name.orEmpty(),
+                                            isUser = false
+                                        )
+                                    } else {
+                                        null
+                                    }
+                                }
+                            }
+                            is ActiveSpaceMemberSubscriptionContainer.Store.Empty -> {
+                                emptyList<ViewState.Member>()
+                            }
+                        }
+                    }.collect {
+                        viewState.value = ViewState.Success(
+                            emoji = vmParams.emoji,
+                            members = it
+                        )
+                    }
+                } else {
+                    viewState.value = ViewState.Empty(
+                        emoji = vmParams.emoji
+                    )
+                }
+            } else {
+                viewState.value = ViewState.Error.MessageNotFound(
+                    emoji = vmParams.emoji
+                )
             }
-            isDismissed.emit(true)
         }
     }
 
     class Factory @Inject constructor(
-        private val params: Params,
-        private val emojiProvider: EmojiProvider,
-        private val emojiSuggester: EmojiSuggester,
-        private val dispatchers: AppCoroutineDispatchers,
-        private val toggleChatMessageReaction: ToggleChatMessageReaction,
-        private val setRecentlyUsedChatReactions: SetRecentlyUsedChatReactions,
-        private val observeRecentlyUsedChatReactions: ObserveRecentlyUsedChatReactions
+        private val vmParams: Params,
+        private val getChatMessagesByIds: GetChatMessagesByIds,
+        private val members: ActiveSpaceMemberSubscriptionContainer,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatReactionViewModel(
-            vmParams = params,
-            provider = emojiProvider,
-            suggester = emojiSuggester,
-            dispatchers = dispatchers,
-            toggleChatMessageReaction = toggleChatMessageReaction,
-            setRecentlyUsedChatReactions = setRecentlyUsedChatReactions,
-            observeRecentlyUsedChatReactions = observeRecentlyUsedChatReactions
+            vmParams = vmParams,
+            getChatMessagesByIds = getChatMessagesByIds,
+            members = members,
+            urlBuilder = urlBuilder
         ) as T
     }
 
     data class Params @Inject constructor(
         val chat: Id,
-        val msg: Id
+        val msg: Id,
+        val emoji: String
     )
 
-    sealed class ReactionPickerView {
-        data object RecentUsedSection: ReactionPickerView()
-        data class Category(val index: Int) : ReactionPickerView()
-        data class Emoji(
-            val unicode: String,
-            val page: Int,
-            val index: Int,
-            val emojified: String = ""
-        ) : ReactionPickerView()
-    }
+    sealed class ViewState {
+        abstract val emoji: String
 
-    companion object {
-        const val MAX_RECENTLY_USED_COUNT = 20
+        data class Init(
+            override val emoji: String
+        ) : ViewState()
+
+        sealed class Error : ViewState() {
+            data class MessageNotFound(
+                override val emoji: String
+            ) : Error()
+        }
+
+        data class Loading(
+            override val emoji: String
+        ) : ViewState()
+
+        data class Empty(
+            override val emoji: String
+        ): ViewState()
+
+        data class Success(
+            override val emoji: String,
+            val members: List<Member>
+        ) : ViewState()
+
+        data class Member(
+            val name: String,
+            val icon: SpaceMemberIconView,
+            val isUser: Boolean
+        )
     }
 }

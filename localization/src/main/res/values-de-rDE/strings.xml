@@ -1592,4 +1592,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="emoji_category_symbols">Symbols</string>
     <string name="emoji_category_flags">Flags</string>
     <string name="emoji_recently_used_section">Recently used</string>
+    <string name="chat_message_reactions_no_reactions_yet">Noch keine Reaktionen</string>
+    <string name="chat_message_reactions_no_reactions_message">Wahrscheinlich hat jemand gerade die Reaktion entfernt oder es ist ein technisches Problem aufgetreten</string>
+    <string name="object_types_human">Human</string>
 </resources>

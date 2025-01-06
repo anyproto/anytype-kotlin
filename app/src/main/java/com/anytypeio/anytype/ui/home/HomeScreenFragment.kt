@@ -199,25 +199,33 @@ class HomeScreenFragment : BaseComposeFragment(),
                                         )
                                     },
                                     onSelectChatReaction = {
-                                        findNavController().navigate(
-                                            R.id.selectChatReactionScreen,
-                                            SelectChatReactionFragment.args(
-                                                space = Space(space),
-                                                chat = spaceLevelChatViewModel.chat,
-                                                msg = it
+                                        runCatching {
+                                            findNavController().navigate(
+                                                R.id.selectChatReactionScreen,
+                                                SelectChatReactionFragment.args(
+                                                    space = Space(space),
+                                                    chat = spaceLevelChatViewModel.chat,
+                                                    msg = it
+                                                )
                                             )
-                                        )
+                                        }.onFailure {
+                                            Timber.e(it, "Error while opening chat-reaction picker")
+                                        }
                                     },
                                     onViewChatReaction = { msg, emoji ->
-                                        findNavController().navigate(
-                                            R.id.chatReactionScreen,
-                                            ChatReactionFragment.args(
-                                                space = Space(space),
-                                                chat = spaceLevelChatViewModel.chat,
-                                                msg = msg,
-                                                emoji = emoji
+                                        runCatching {
+                                            findNavController().navigate(
+                                                R.id.chatReactionScreen,
+                                                ChatReactionFragment.args(
+                                                    space = Space(space),
+                                                    chat = spaceLevelChatViewModel.chat,
+                                                    msg = msg,
+                                                    emoji = emoji
+                                                )
                                             )
-                                        )
+                                        }.onFailure {
+                                            Timber.e(it, "Error while opening a chat reaction")
+                                        }
                                     }
                                 )
                             }

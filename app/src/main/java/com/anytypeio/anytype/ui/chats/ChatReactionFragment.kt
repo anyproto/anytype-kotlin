@@ -52,7 +52,7 @@ class ChatReactionFragment : BaseBottomSheetComposeFragment() {
     override fun injectDependencies() {
         componentManager().chatReactionComponent
             .get(
-                key = "$COMPONENT_PREFIX-$chat",
+                key = getComponentKey(),
                 param = ChatReactionViewModel.Params(
                     chat = chat,
                     msg = msg,
@@ -63,8 +63,10 @@ class ChatReactionFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().chatReactionComponent.release(id = "$COMPONENT_PREFIX-$chat")
+        componentManager().chatReactionComponent.release(id = getComponentKey())
     }
+
+    private fun getComponentKey(): String = "$COMPONENT_PREFIX-$chat"
 
     companion object {
 

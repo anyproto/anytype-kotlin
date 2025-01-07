@@ -115,7 +115,6 @@ fun ObjectsScreen(
                             .animateItem()
                             .noRippleThrottledClickable {
                                 onObjectClicked(item)
-                                //onDateEvent(DateEvent.ObjectsList.OnObjectClicked(item))
                             },
                         item = item,
                         onObjectClicked = onObjectClicked,
@@ -276,7 +275,6 @@ fun SwipeToDismissListItems(
         if (isRemoved) {
             delay(animationDuration.toLong())
             onMoveToBin(item)
-            //onDateEvent(DateEvent.ObjectsList.OnObjectMoveToBin(item))
         }
     }
     AnimatedVisibility(
@@ -302,7 +300,6 @@ fun SwipeToDismissListItems(
                     modifier = Modifier
                         .noRippleThrottledClickable {
                             onObjectClicked(item)
-                            //onDateEvent(DateEvent.ObjectsList.OnObjectClicked(item))
                         },
                     item = item
                 )

@@ -1582,4 +1582,6 @@ Please provide specific details of your needs here.</string>
     <string name="chat_message_reactions_no_reactions_yet">No reactions yet</string>
     <string name="chat_message_reactions_no_reactions_message">Probably someone has just removed the reaction or technical issue happened</string>
     <string name="object_types_human">Human</string>
+    <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
+    <string name="chats_alert_delete_this_message">Delete this message?</string>
 </resources>

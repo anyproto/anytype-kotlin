@@ -2341,12 +2341,12 @@ class EditorViewModel(
 
     private fun onAddLocalVideoClicked(blockId: String) {
         currentMediaUploadDescription = Media.Upload.Description(blockId, Mimetype.MIME_VIDEO_ALL)
-        dispatch(Command.OpenGallery(mimeType = Mimetype.MIME_VIDEO_ALL))
+        dispatch(Command.OpenVideoPicker)
     }
 
     private fun onAddLocalPictureClicked(blockId: String) {
         currentMediaUploadDescription = Media.Upload.Description(blockId, Mimetype.MIME_IMAGE_ALL)
-        dispatch(Command.OpenGallery(mimeType = Mimetype.MIME_IMAGE_ALL))
+        dispatch(Command.OpenPhotoPicker)
     }
 
     fun onTogglePlaceholderClicked(target: Id) {
@@ -2377,7 +2377,7 @@ class EditorViewModel(
 
     private fun onAddLocalFileClicked(blockId: String) {
         currentMediaUploadDescription = Media.Upload.Description(blockId, Mimetype.MIME_FILE_ALL)
-        dispatch(Command.OpenGallery(mimeType = Mimetype.MIME_FILE_ALL))
+        dispatch(Command.OpenFilePicker)
     }
 
     fun onAddFileBlockClicked(type: Content.File.Type) {

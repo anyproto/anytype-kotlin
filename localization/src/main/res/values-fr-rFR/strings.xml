@@ -1592,4 +1592,6 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chat_message_reactions_no_reactions_yet">Aucune réaction pour l\'instant</string>
     <string name="chat_message_reactions_no_reactions_message">Probablement quelqu\'un vient de supprimer la réaction ou un problème technique est survenu</string>
     <string name="object_types_human">Humain</string>
+    <string name="chats_alert_delete_this_message_description">Il ne pourra pas être restauré après confirmation</string>
+    <string name="chats_alert_delete_this_message">Supprimer ce message ?</string>
 </resources>

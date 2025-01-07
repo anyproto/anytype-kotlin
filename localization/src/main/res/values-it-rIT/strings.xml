@@ -1593,4 +1593,7 @@ Please provide specific details of your needs here.</string>
     <string name="emoji_category_symbols">Symbols</string>
     <string name="emoji_category_flags">Flags</string>
     <string name="emoji_recently_used_section">Recently used</string>
+    <string name="chat_message_reactions_no_reactions_yet">Ancora nessuna reazione</string>
+    <string name="chat_message_reactions_no_reactions_message">Probabilmente qualcuno ha appena rimosso la reazione o si è verificato un problema tecnico</string>
+    <string name="object_types_human">Human</string>
 </resources>

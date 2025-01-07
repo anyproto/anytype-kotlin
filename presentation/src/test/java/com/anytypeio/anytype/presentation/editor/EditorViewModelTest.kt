@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.editor
 
 
-import android.R
 import android.net.Uri
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -11,11 +10,9 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubNumbered
 import com.anytypeio.anytype.core_models.StubObject
@@ -39,7 +36,6 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
 import com.anytypeio.anytype.domain.block.interactor.SetObjectType
@@ -3452,9 +3448,7 @@ open class EditorViewModelTest {
         vm.onClickListener(ListenerType.Picture.Error(picture.id))
 
         testObserver.assertValue { value ->
-            value is EventWrapper && value.peekContent() == Command.OpenGallery(
-                mimeType = Mimetype.MIME_IMAGE_ALL
-            )
+            value is EventWrapper && value.peekContent() == Command.OpenPhotoPicker
         }
     }
 
@@ -3523,9 +3517,7 @@ open class EditorViewModelTest {
         vm.onClickListener(ListenerType.Video.Error(video.id))
 
         testObserver.assertValue { value ->
-            value is EventWrapper && value.peekContent() == Command.OpenGallery(
-                mimeType = Mimetype.MIME_VIDEO_ALL
-            )
+            value is EventWrapper && value.peekContent() == Command.OpenVideoPicker
         }
     }
 
@@ -3593,9 +3585,7 @@ open class EditorViewModelTest {
         vm.onClickListener(ListenerType.File.Error(file.id))
 
         testObserver.assertValue { value ->
-            value is EventWrapper && value.peekContent() == Command.OpenGallery(
-                mimeType = Mimetype.MIME_FILE_ALL
-            )
+            value is EventWrapper && value.peekContent() == Command.OpenFilePicker
         }
     }
 

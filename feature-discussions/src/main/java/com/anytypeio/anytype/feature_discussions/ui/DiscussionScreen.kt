@@ -1006,7 +1006,7 @@ fun Messages(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 6.dp)
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
                     .animateItem(),
                 horizontalArrangement = if (msg.isUserAuthor)
                     Arrangement.End
@@ -1020,11 +1020,12 @@ fun Messages(
                         modifier = Modifier.align(Alignment.Bottom)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                } else {
-                    Spacer(modifier = Modifier.width(40.dp))
                 }
                 Bubble(
-                    modifier = Modifier,
+                    modifier = Modifier.padding(
+                        start = if (msg.isUserAuthor) 32.dp else 0.dp,
+                        end = if (msg.isUserAuthor) 0.dp else 32.dp
+                    ),
                     name = msg.author,
                     content = msg.content,
                     timestamp = msg.timestamp,
@@ -1066,11 +1067,6 @@ fun Messages(
                         onViewChatReaction(msg.id, emoji)
                     }
                 )
-                if (msg.isUserAuthor) {
-                    // Do nothing
-                } else {
-                    Spacer(modifier = Modifier.width(40.dp))
-                }
             }
             if (idx == messages.lastIndex) {
                 Spacer(modifier = Modifier.height(36.dp))
@@ -1195,7 +1191,7 @@ fun Bubble(
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
-        modifier = Modifier
+        modifier = modifier
             .width(IntrinsicSize.Max)
             .background(
                 color = if (isUserAuthor)

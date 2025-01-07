@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -1004,8 +1005,13 @@ fun Messages(
                 Spacer(modifier = Modifier.height(36.dp))
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp, vertical = 6.dp)
-                    .animateItem()
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                    .animateItem(),
+                horizontalArrangement = if (msg.isUserAuthor)
+                    Arrangement.End
+                else
+                    Arrangement.Start
             ) {
                 if (!msg.isUserAuthor) {
                     ChatUserAvatar(
@@ -1014,11 +1020,12 @@ fun Messages(
                         modifier = Modifier.align(Alignment.Bottom)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                } else {
-                    Spacer(modifier = Modifier.width(40.dp))
                 }
                 Bubble(
-                    modifier = Modifier.weight(1.0f),
+                    modifier = Modifier.padding(
+                        start = if (msg.isUserAuthor) 32.dp else 0.dp,
+                        end = if (msg.isUserAuthor) 0.dp else 32.dp
+                    ),
                     name = msg.author,
                     content = msg.content,
                     timestamp = msg.timestamp,
@@ -1060,11 +1067,6 @@ fun Messages(
                         onViewChatReaction(msg.id, emoji)
                     }
                 )
-                if (msg.isUserAuthor) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                } else {
-                    Spacer(modifier = Modifier.width(40.dp))
-                }
             }
             if (idx == messages.lastIndex) {
                 Spacer(modifier = Modifier.height(36.dp))
@@ -1190,7 +1192,7 @@ fun Bubble(
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .width(IntrinsicSize.Max)
             .background(
                 color = if (isUserAuthor)
                     colorResource(R.color.navigation_panel_icon)
@@ -1208,7 +1210,7 @@ fun Bubble(
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth()
-                    .height(54.dp)
+                    .height(52.dp)
                     .background(
                         color = colorResource(R.color.navigation_panel_icon),
                         shape = RoundedCornerShape(16.dp)
@@ -1242,11 +1244,14 @@ fun Bubble(
             }
         }
         Row(
-            modifier = Modifier.padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 12.dp
-            )
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = if (reply == null) 12.dp else 0.dp
+                ),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = name,
@@ -1255,10 +1260,11 @@ fun Bubble(
                     colorResource(id = R.color.text_white)
                 else
                     colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                modifier = Modifier.weight(1f)
+                maxLines = 1
             )
+            Spacer(Modifier.width(12.dp))
             Text(
+                modifier = Modifier.padding(top = 1.dp),
                 text = timestamp.formatTimeInMillis(
                     TIME_H24
                 ),
@@ -1273,8 +1279,8 @@ fun Bubble(
         Text(
             modifier = Modifier.padding(
                 top = 0.dp,
-                start = 16.dp,
-                end = 16.dp,
+                start = 12.dp,
+                end = 12.dp,
                 bottom = 0.dp
             ),
             text = buildAnnotatedString {
@@ -1367,54 +1373,7 @@ fun Bubble(
                         showDropdownMenu = false
                     }
                 )
-                DropdownMenuItem(
-                    text = {
-                        Row {
-                            Text(
-                                text = "\uD83D\uDC4D",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDC4D")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "❤\uFE0F",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("❤\uFE0F")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE02",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE02")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE2E",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE2E")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE22",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE22")
-                                    showDropdownMenu = false
-                                }
-                            )
-                        }
-                    },
-                    onClick = {
-                        // Do nothing.
-                    }
-                )
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -1428,6 +1387,7 @@ fun Bubble(
                     }
                 )
                 if (content.msg.isNotEmpty()) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -1442,6 +1402,7 @@ fun Bubble(
                     )
                 }
                 if (isUserAuthor) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -1456,6 +1417,7 @@ fun Bubble(
                     )
                 }
                 if (isUserAuthor) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -1488,7 +1450,6 @@ private fun BubbleAttachments(
                     contentDescription = "Attachment image",
                     modifier = Modifier
                         .padding(8.dp)
-                        .fillMaxWidth()
                         .clip(shape = RoundedCornerShape(16.dp))
                         .clickable {
                             onAttachmentClicked(attachment)
@@ -1601,7 +1562,7 @@ fun AttachedObject(
             }
         )
         Text(
-            text = title,
+            text = title.ifEmpty { stringResource(R.string.untitled) },
             modifier = Modifier.padding(
                 start = if (icon != ObjectIcon.None)
                     72.dp
@@ -1616,7 +1577,7 @@ fun AttachedObject(
             color = colorResource(id = R.color.text_primary)
         )
         Text(
-            text = type,
+            text = type.ifEmpty { stringResource(R.string.unknown_type) },
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(

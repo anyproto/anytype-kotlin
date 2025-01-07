@@ -1213,6 +1213,7 @@ fun Bubble(
             Box(
                 modifier = Modifier
                     .padding(4.dp)
+                    .fillMaxWidth()
                     .height(52.dp)
                     .background(
                         color = colorResource(R.color.navigation_panel_icon),
@@ -1497,7 +1498,6 @@ private fun BubbleAttachments(
                     contentDescription = "Attachment image",
                     modifier = Modifier
                         .padding(8.dp)
-                        .fillMaxWidth()
                         .clip(shape = RoundedCornerShape(16.dp))
                         .clickable {
                             onAttachmentClicked(attachment)

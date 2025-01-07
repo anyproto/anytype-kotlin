@@ -1595,4 +1595,6 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chat_message_reactions_no_reactions_yet">Nog geen reacties</string>
     <string name="chat_message_reactions_no_reactions_message">Waarschijnlijk heeft iemand zojuist de reactie verwijderd of was er een technisch probleem</string>
     <string name="object_types_human">Mens</string>
+    <string name="chats_alert_delete_this_message_description">Het kan niet worden hersteld na bevestiging</string>
+    <string name="chats_alert_delete_this_message">Verwijder dit bericht?</string>
 </resources>

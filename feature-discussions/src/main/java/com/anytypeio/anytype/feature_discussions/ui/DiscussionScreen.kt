@@ -1375,54 +1375,6 @@ fun Bubble(
                 )
                 DropdownMenuItem(
                     text = {
-                        Row {
-                            Text(
-                                text = "\uD83D\uDC4D",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDC4D")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "❤\uFE0F",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("❤\uFE0F")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE02",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE02")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE2E",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE2E")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE22",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE22")
-                                    showDropdownMenu = false
-                                }
-                            )
-                        }
-                    },
-                    onClick = {
-                        // Do nothing.
-                    }
-                )
-                DropdownMenuItem(
-                    text = {
                         Text(
                             text = stringResource(R.string.chats_reply),
                             color = colorResource(id = R.color.text_primary)

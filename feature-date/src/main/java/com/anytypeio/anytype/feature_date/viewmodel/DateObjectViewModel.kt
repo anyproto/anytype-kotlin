@@ -14,6 +14,10 @@ import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
+import com.anytypeio.anytype.core_ui.lists.objects.UiContentState
+import com.anytypeio.anytype.core_ui.lists.objects.UiContentState.Idle
+import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListItem
+import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListState
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -33,7 +37,6 @@ import com.anytypeio.anytype.feature_date.viewmodel.UiErrorState.Reason
 import com.anytypeio.anytype.feature_date.mapping.toUiFieldsItem
 import com.anytypeio.anytype.feature_date.mapping.toUiObjectsListItem
 import com.anytypeio.anytype.feature_date.ui.models.DateEvent
-import com.anytypeio.anytype.feature_date.viewmodel.UiContentState.*
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateBack
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateCalendarView
@@ -62,7 +65,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf

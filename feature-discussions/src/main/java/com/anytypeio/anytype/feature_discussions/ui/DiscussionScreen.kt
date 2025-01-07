@@ -1373,6 +1373,7 @@ fun Bubble(
                         showDropdownMenu = false
                     }
                 )
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -1386,6 +1387,7 @@ fun Bubble(
                     }
                 )
                 if (content.msg.isNotEmpty()) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -1400,6 +1402,7 @@ fun Bubble(
                     )
                 }
                 if (isUserAuthor) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -1414,6 +1417,7 @@ fun Bubble(
                     )
                 }
                 if (isUserAuthor) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(

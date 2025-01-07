@@ -1624,4 +1624,6 @@
     <string name="chat_message_reactions_no_reactions_yet">Пока нет реакций</string>
     <string name="chat_message_reactions_no_reactions_message">Возможно, кто-то только что удалил реакцию или случился технический сбой</string>
     <string name="object_types_human">Human</string>
+    <string name="chats_alert_delete_this_message_description">Его нельзя восстановить после подтверждения</string>
+    <string name="chats_alert_delete_this_message">Удалить это сообщение?</string>
 </resources>

@@ -112,10 +112,16 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
+import com.anytypeio.anytype.core_ui.foundation.Warning
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -1166,7 +1172,7 @@ private fun ChatUserAvatar(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun Bubble(
     modifier: Modifier = Modifier,
@@ -1190,6 +1196,38 @@ fun Bubble(
     onViewChatReaction: (String) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
+    var showDeleteMessageWarning by remember { mutableStateOf(false) }
+    if (showDeleteMessageWarning) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showDeleteMessageWarning = false
+            },
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            dragHandle = null
+        ) {
+            GenericAlert(
+                config = AlertConfig.WithTwoButtons(
+                    title = stringResource(R.string.chats_alert_delete_this_message),
+                    description = stringResource(R.string.chats_alert_delete_this_message_description),
+                    firstButtonText = stringResource(R.string.cancel),
+                    secondButtonText = stringResource(R.string.delete),
+                    secondButtonType = BUTTON_WARNING,
+                    firstButtonType = BUTTON_SECONDARY,
+                    icon = AlertConfig.Icon(
+                        gradient = GRADIENT_TYPE_RED,
+                        icon = R.drawable.ic_alert_question_warning
+                    )
+                ),
+                onFirstButtonClicked = {
+                    showDeleteMessageWarning = false
+                },
+                onSecondButtonClicked = {
+                    onDeleteMessage()
+                }
+            )
+        }
+    }
     Column(
         modifier = modifier
             .width(IntrinsicSize.Max)
@@ -1426,7 +1464,7 @@ fun Bubble(
                             )
                         },
                         onClick = {
-                            onDeleteMessage()
+                            showDeleteMessageWarning = true
                             showDropdownMenu = false
                         }
                     )

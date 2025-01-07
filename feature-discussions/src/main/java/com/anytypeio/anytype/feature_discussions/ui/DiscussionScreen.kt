@@ -1006,7 +1006,7 @@ fun Messages(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 6.dp)
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
                     .animateItem(),
                 horizontalArrangement = if (msg.isUserAuthor)
                     Arrangement.End
@@ -1020,11 +1020,12 @@ fun Messages(
                         modifier = Modifier.align(Alignment.Bottom)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                } else {
-                    Spacer(modifier = Modifier.width(40.dp))
                 }
                 Bubble(
-                    modifier = Modifier,
+                    modifier = Modifier.padding(
+                        start = if (msg.isUserAuthor) 32.dp else 0.dp,
+                        end = if (msg.isUserAuthor) 0.dp else 32.dp
+                    ),
                     name = msg.author,
                     content = msg.content,
                     timestamp = msg.timestamp,
@@ -1066,11 +1067,6 @@ fun Messages(
                         onViewChatReaction(msg.id, emoji)
                     }
                 )
-                if (msg.isUserAuthor) {
-                    // Do nothing
-                } else {
-                    Spacer(modifier = Modifier.width(40.dp))
-                }
             }
             if (idx == messages.lastIndex) {
                 Spacer(modifier = Modifier.height(36.dp))
@@ -1195,7 +1191,7 @@ fun Bubble(
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
-        modifier = Modifier
+        modifier = modifier
             .width(IntrinsicSize.Max)
             .background(
                 color = if (isUserAuthor)
@@ -1377,54 +1373,7 @@ fun Bubble(
                         showDropdownMenu = false
                     }
                 )
-                DropdownMenuItem(
-                    text = {
-                        Row {
-                            Text(
-                                text = "\uD83D\uDC4D",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDC4D")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "❤\uFE0F",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("❤\uFE0F")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE02",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE02")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE2E",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE2E")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE22",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE22")
-                                    showDropdownMenu = false
-                                }
-                            )
-                        }
-                    },
-                    onClick = {
-                        // Do nothing.
-                    }
-                )
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -1438,6 +1387,7 @@ fun Bubble(
                     }
                 )
                 if (content.msg.isNotEmpty()) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -1452,6 +1402,7 @@ fun Bubble(
                     )
                 }
                 if (isUserAuthor) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -1466,6 +1417,7 @@ fun Bubble(
                     )
                 }
                 if (isUserAuthor) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(

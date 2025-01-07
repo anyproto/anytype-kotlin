@@ -117,11 +117,13 @@ private fun Member(
             Text(
                 text = member.name.ifEmpty {
                     stringResource(R.string.untitled)
-                }
+                },
+                color = colorResource(R.color.text_primary)
             )
             Text(
                 text = stringResource(R.string.object_types_human),
-                style = Relations3
+                style = Relations3,
+                color = colorResource(R.color.text_secondary)
             )
         }
     }

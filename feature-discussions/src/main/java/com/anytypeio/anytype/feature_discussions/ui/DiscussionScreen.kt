@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -1004,8 +1005,13 @@ fun Messages(
                 Spacer(modifier = Modifier.height(36.dp))
             Row(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 6.dp)
-                    .animateItem()
+                    .animateItem(),
+                horizontalArrangement = if (msg.isUserAuthor)
+                    Arrangement.End
+                else
+                    Arrangement.Start
             ) {
                 if (!msg.isUserAuthor) {
                     ChatUserAvatar(
@@ -1018,7 +1024,7 @@ fun Messages(
                     Spacer(modifier = Modifier.width(40.dp))
                 }
                 Bubble(
-                    modifier = Modifier.weight(1.0f),
+                    modifier = Modifier,
                     name = msg.author,
                     content = msg.content,
                     timestamp = msg.timestamp,
@@ -1061,7 +1067,7 @@ fun Messages(
                     }
                 )
                 if (msg.isUserAuthor) {
-                    Spacer(modifier = Modifier.width(8.dp))
+                    // Do nothing
                 } else {
                     Spacer(modifier = Modifier.width(40.dp))
                 }
@@ -1189,8 +1195,8 @@ fun Bubble(
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = Modifier
+            .width(IntrinsicSize.Max)
             .background(
                 color = if (isUserAuthor)
                     colorResource(R.color.navigation_panel_icon)
@@ -1208,7 +1214,7 @@ fun Bubble(
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth()
-                    .height(54.dp)
+                    .height(52.dp)
                     .background(
                         color = colorResource(R.color.navigation_panel_icon),
                         shape = RoundedCornerShape(16.dp)
@@ -1242,11 +1248,14 @@ fun Bubble(
             }
         }
         Row(
-            modifier = Modifier.padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 12.dp
-            )
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = if (reply == null) 12.dp else 0.dp
+                ),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = name,
@@ -1255,10 +1264,11 @@ fun Bubble(
                     colorResource(id = R.color.text_white)
                 else
                     colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                modifier = Modifier.weight(1f)
+                maxLines = 1
             )
+            Spacer(Modifier.width(12.dp))
             Text(
+                modifier = Modifier.padding(top = 1.dp),
                 text = timestamp.formatTimeInMillis(
                     TIME_H24
                 ),
@@ -1273,8 +1283,8 @@ fun Bubble(
         Text(
             modifier = Modifier.padding(
                 top = 0.dp,
-                start = 16.dp,
-                end = 16.dp,
+                start = 12.dp,
+                end = 12.dp,
                 bottom = 0.dp
             ),
             text = buildAnnotatedString {
@@ -1488,7 +1498,6 @@ private fun BubbleAttachments(
                     contentDescription = "Attachment image",
                     modifier = Modifier
                         .padding(8.dp)
-                        .fillMaxWidth()
                         .clip(shape = RoundedCornerShape(16.dp))
                         .clickable {
                             onAttachmentClicked(attachment)
@@ -1601,7 +1610,7 @@ fun AttachedObject(
             }
         )
         Text(
-            text = title,
+            text = title.ifEmpty { stringResource(R.string.untitled) },
             modifier = Modifier.padding(
                 start = if (icon != ObjectIcon.None)
                     72.dp
@@ -1616,7 +1625,7 @@ fun AttachedObject(
             color = colorResource(id = R.color.text_primary)
         )
         Text(
-            text = type,
+            text = type.ifEmpty { stringResource(R.string.unknown_type) },
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(

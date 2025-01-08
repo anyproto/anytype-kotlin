@@ -1,10 +1,12 @@
 package com.anytypeio.anytype.presentation.objects
 
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -12,7 +14,18 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 
-sealed class AllContentSort {
+sealed class MenuSortsItem {
+    data class Container(val sort: ObjectsListSort) : MenuSortsItem()
+    data class Sort(val sort: ObjectsListSort) : MenuSortsItem()
+    data object Spacer : MenuSortsItem()
+    data class SortType(
+        val sort: ObjectsListSort,
+        val sortType: DVSortType,
+        val isSelected: Boolean
+    ) : MenuSortsItem()
+}
+
+sealed class ObjectsListSort {
     abstract val relationKey: RelationKey
     abstract val sortType: DVSortType
     abstract val canGroupByDate: Boolean
@@ -23,28 +36,60 @@ sealed class AllContentSort {
         override val sortType: DVSortType = DVSortType.ASC,
         override val canGroupByDate: Boolean = false,
         override val isSelected: Boolean = false
-    ) : AllContentSort()
+    ) : ObjectsListSort()
 
     data class ByDateUpdated(
         override val relationKey: RelationKey = RelationKey(Relations.LAST_MODIFIED_DATE),
         override val sortType: DVSortType = DVSortType.DESC,
         override val canGroupByDate: Boolean = true,
         override val isSelected: Boolean = false
-    ) : AllContentSort()
+    ) : ObjectsListSort()
 
     data class ByDateCreated(
         override val relationKey: RelationKey = RelationKey(Relations.CREATED_DATE),
         override val sortType: DVSortType = DVSortType.DESC,
         override val canGroupByDate: Boolean = true,
         override val isSelected: Boolean = false
-    ) : AllContentSort()
+    ) : ObjectsListSort()
 
     data class ByDateUsed(
         override val relationKey: RelationKey = RelationKey(Relations.LAST_USED_DATE),
         override val sortType: DVSortType = DVSortType.DESC,
         override val canGroupByDate: Boolean = false,
         override val isSelected: Boolean = false
-    ) : AllContentSort()
+    ) : ObjectsListSort()
+}
+
+fun ObjectsListSort.toDVSort(): DVSort {
+    return when (this) {
+        is ObjectsListSort.ByDateCreated -> DVSort(
+            relationKey = relationKey.key,
+            type = sortType,
+            relationFormat = RelationFormat.DATE,
+            includeTime = true,
+        )
+
+        is ObjectsListSort.ByDateUpdated -> DVSort(
+            relationKey = relationKey.key,
+            type = sortType,
+            relationFormat = RelationFormat.DATE,
+            includeTime = true,
+        )
+
+        is ObjectsListSort.ByName -> DVSort(
+            relationKey = relationKey.key,
+            type = sortType,
+            relationFormat = RelationFormat.LONG_TEXT,
+            includeTime = false
+        )
+
+        is ObjectsListSort.ByDateUsed -> DVSort(
+            relationKey = relationKey.key,
+            type = sortType,
+            relationFormat = RelationFormat.DATE,
+            includeTime = true,
+        )
+    }
 }
 
 sealed class UiObjectsListItem {

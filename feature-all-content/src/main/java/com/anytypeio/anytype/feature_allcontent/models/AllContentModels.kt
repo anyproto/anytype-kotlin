@@ -19,7 +19,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.AllContentSort
+import com.anytypeio.anytype.presentation.objects.MenuSortsItem
+import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getDescriptionOrSnippet
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -155,18 +156,6 @@ sealed class UiMenuState {
         val showBin: Boolean = true
     ) : UiMenuState()
 }
-
-
-sealed class MenuSortsItem {
-    data class Container(val sort: AllContentSort) : MenuSortsItem()
-    data class Sort(val sort: AllContentSort) : MenuSortsItem()
-    data object Spacer : MenuSortsItem()
-    data class SortType(
-        val sort: AllContentSort,
-        val sortType: DVSortType,
-        val isSelected: Boolean
-    ) : MenuSortsItem()
-}
 //endregion
 
 //region BOTTOM_MENU
@@ -182,14 +171,14 @@ sealed class UiSnackbarState {
 
 //region MAPPING
 
-fun RestoreAllContentState.Response.Success.mapToSort(): AllContentSort {
+fun RestoreAllContentState.Response.Success.mapToSort(): ObjectsListSort {
     val sortType = if (isAsc) DVSortType.ASC else DVSortType.DESC
     return when (activeSort) {
-        Relations.CREATED_DATE -> AllContentSort.ByDateCreated(sortType = sortType)
-        Relations.LAST_MODIFIED_DATE -> AllContentSort.ByDateUpdated(sortType = sortType)
-        Relations.NAME -> AllContentSort.ByName(sortType = sortType)
-        Relations.LAST_USED_DATE -> AllContentSort.ByDateUsed(sortType = sortType)
-        else -> AllContentSort.ByName(sortType = DVSortType.ASC)
+        Relations.CREATED_DATE -> ObjectsListSort.ByDateCreated(sortType = sortType)
+        Relations.LAST_MODIFIED_DATE -> ObjectsListSort.ByDateUpdated(sortType = sortType)
+        Relations.NAME -> ObjectsListSort.ByName(sortType = sortType)
+        Relations.LAST_USED_DATE -> ObjectsListSort.ByDateUsed(sortType = sortType)
+        else -> ObjectsListSort.ByName(sortType = DVSortType.ASC)
     }
 }
 
@@ -267,12 +256,12 @@ fun ObjectWrapper.Basic.toAllContentRelation(
     )
 }
 
-fun AllContentSort.toAnalyticsSortType(): Pair<String, String> {
+fun ObjectsListSort.toAnalyticsSortType(): Pair<String, String> {
     return when (this) {
-        is AllContentSort.ByName -> "Name" to sortType.toAnalyticsSortType()
-        is AllContentSort.ByDateUpdated -> "Updated" to sortType.toAnalyticsSortType()
-        is AllContentSort.ByDateCreated -> "Created" to sortType.toAnalyticsSortType()
-        is AllContentSort.ByDateUsed -> "Used" to sortType.toAnalyticsSortType()
+        is ObjectsListSort.ByName -> "Name" to sortType.toAnalyticsSortType()
+        is ObjectsListSort.ByDateUpdated -> "Updated" to sortType.toAnalyticsSortType()
+        is ObjectsListSort.ByDateCreated -> "Created" to sortType.toAnalyticsSortType()
+        is ObjectsListSort.ByDateUsed -> "Used" to sortType.toAnalyticsSortType()
     }
 }
 

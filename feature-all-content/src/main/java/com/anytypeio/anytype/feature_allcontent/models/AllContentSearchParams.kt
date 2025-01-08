@@ -7,11 +7,11 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
-import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchParams
-import com.anytypeio.anytype.presentation.objects.AllContentSort
+import com.anytypeio.anytype.presentation.objects.ObjectsListSort
+import com.anytypeio.anytype.presentation.objects.toDVSort
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeysObjectType
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultRelationKeys
@@ -46,7 +46,7 @@ fun createSubscriptionParams(
     spaceId: Id,
     activeMode: UiTitleState,
     activeTab: AllContentTab,
-    activeSort: AllContentSort,
+    activeSort: ObjectsListSort,
     limitedObjectIds: List<String>,
     limit: Int,
     subscriptionId: String
@@ -74,7 +74,7 @@ fun createSubscriptionParams(
 
 fun AllContentTab.filtersForSubscribe(
     spaces: List<Id>,
-    activeSort: AllContentSort,
+    activeSort: ObjectsListSort,
     limitedObjectIds: List<Id>,
     activeMode: UiTitleState
 ): Pair<List<DVFilter>, List<DVSort>> {
@@ -241,36 +241,4 @@ private fun buildDeletedFilter(): List<DVFilter> {
             value = true
         )
     )
-}
-
-fun AllContentSort.toDVSort(): DVSort {
-    return when (this) {
-        is AllContentSort.ByDateCreated -> DVSort(
-            relationKey = relationKey.key,
-            type = sortType,
-            relationFormat = RelationFormat.DATE,
-            includeTime = true,
-        )
-
-        is AllContentSort.ByDateUpdated -> DVSort(
-            relationKey = relationKey.key,
-            type = sortType,
-            relationFormat = RelationFormat.DATE,
-            includeTime = true,
-        )
-
-        is AllContentSort.ByName -> DVSort(
-            relationKey = relationKey.key,
-            type = sortType,
-            relationFormat = RelationFormat.LONG_TEXT,
-            includeTime = false
-        )
-
-        is AllContentSort.ByDateUsed -> DVSort(
-            relationKey = relationKey.key,
-            type = sortType,
-            relationFormat = RelationFormat.DATE,
-            includeTime = true,
-        )
-    }
 }

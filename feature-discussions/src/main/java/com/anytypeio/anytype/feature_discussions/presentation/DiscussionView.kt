@@ -9,6 +9,12 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
 sealed interface DiscussionView {
+
+    data class DateSection(
+        val formattedDate: String,
+        val timeInMillis: Long
+    ) : DiscussionView
+
     data class Message(
         val id: String,
         val content: Content,

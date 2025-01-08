@@ -298,7 +298,7 @@ fun DiscussionScreen(
     isInEditMessageMode: Boolean = false,
     lazyListState: LazyListState,
     title: String?,
-    messages: List<DiscussionView.Message>,
+    messages: List<DiscussionView>,
     attachments: List<DiscussionView.Message.ChatBoxAttachment>,
     onMessageSent: (String) -> Unit,
     onTitleChanged: (String) -> Unit,
@@ -986,7 +986,7 @@ fun Messages(
     title: String?,
     onTitleChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
-    messages: List<DiscussionView.Message>,
+    messages: List<DiscussionView>,
     scrollState: LazyListState,
     onTitleFocusChanged: (Boolean) -> Unit,
     onReacted: (Id, String) -> Unit,
@@ -1007,77 +1007,92 @@ fun Messages(
     ) {
         itemsIndexed(
             messages,
-            key = { _, msg -> msg.id }
-        ) { idx, msg ->
-            if (idx == 0)
-                Spacer(modifier = Modifier.height(36.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
-                    .animateItem(),
-                horizontalArrangement = if (msg.isUserAuthor)
-                    Arrangement.End
-                else
-                    Arrangement.Start
-            ) {
-                if (!msg.isUserAuthor) {
-                    ChatUserAvatar(
-                        msg = msg,
-                        avatar = msg.avatar,
-                        modifier = Modifier.align(Alignment.Bottom)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+            key = { _, msg ->
+                when(msg) {
+                    is DiscussionView.DateSection -> msg.timeInMillis
+                    is DiscussionView.Message -> msg.id
                 }
-                Bubble(
-                    modifier = Modifier.padding(
-                        start = if (msg.isUserAuthor) 32.dp else 0.dp,
-                        end = if (msg.isUserAuthor) 0.dp else 32.dp
-                    ),
-                    name = msg.author,
-                    content = msg.content,
-                    timestamp = msg.timestamp,
-                    attachments = msg.attachments,
-                    isUserAuthor = msg.isUserAuthor,
-                    isEdited = msg.isEdited,
-                    onReacted = { emoji ->
-                        onReacted(msg.id, emoji)
-                    },
-                    reactions = msg.reactions,
-                    onDeleteMessage = {
-                        onDeleteMessage(msg)
-                    },
-                    onCopyMessage = {
-                        onCopyMessage(msg)
-                    },
-                    onAttachmentClicked = onAttachmentClicked,
-                    onEditMessage = {
-                        onEditMessage(msg)
-                    },
-                    onMarkupLinkClicked = onMarkupLinkClicked,
-                    onReply = {
-                        onReplyMessage(msg)
-                    },
-                    reply = msg.reply,
-                    onScrollToReplyClicked = { reply ->
-                        // Naive implementation
-                        val idx = messages.indexOfFirst { it.id ==  reply.msg }
-                        if (idx != -1) {
-                            scope.launch {
-                                scrollState.animateScrollToItem(index = idx)
-                            }
-                        }
-                    },
-                    onAddReactionClicked = {
-                        onAddReactionClicked(msg.id)
-                    },
-                    onViewChatReaction = { emoji ->
-                        onViewChatReaction(msg.id, emoji)
-                    }
-                )
             }
-            if (idx == messages.lastIndex) {
-                Spacer(modifier = Modifier.height(36.dp))
+        ) { idx, msg ->
+            if (msg is DiscussionView.Message) {
+                if (idx == 0)
+                    Spacer(modifier = Modifier.height(36.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .animateItem(),
+                    horizontalArrangement = if (msg.isUserAuthor)
+                        Arrangement.End
+                    else
+                        Arrangement.Start
+                ) {
+                    if (!msg.isUserAuthor) {
+                        ChatUserAvatar(
+                            msg = msg,
+                            avatar = msg.avatar,
+                            modifier = Modifier.align(Alignment.Bottom)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    Bubble(
+                        modifier = Modifier.padding(
+                            start = if (msg.isUserAuthor) 32.dp else 0.dp,
+                            end = if (msg.isUserAuthor) 0.dp else 32.dp
+                        ),
+                        name = msg.author,
+                        content = msg.content,
+                        timestamp = msg.timestamp,
+                        attachments = msg.attachments,
+                        isUserAuthor = msg.isUserAuthor,
+                        isEdited = msg.isEdited,
+                        onReacted = { emoji ->
+                            onReacted(msg.id, emoji)
+                        },
+                        reactions = msg.reactions,
+                        onDeleteMessage = {
+                            onDeleteMessage(msg)
+                        },
+                        onCopyMessage = {
+                            onCopyMessage(msg)
+                        },
+                        onAttachmentClicked = onAttachmentClicked,
+                        onEditMessage = {
+                            onEditMessage(msg)
+                        },
+                        onMarkupLinkClicked = onMarkupLinkClicked,
+                        onReply = {
+                            onReplyMessage(msg)
+                        },
+                        reply = msg.reply,
+                        onScrollToReplyClicked = { reply ->
+                            // Naive implementation
+                            val idx = messages.indexOfFirst { it is DiscussionView.Message && it.id == reply.msg }
+                            if (idx != -1) {
+                                scope.launch {
+                                    scrollState.animateScrollToItem(index = idx)
+                                }
+                            }
+                        },
+                        onAddReactionClicked = {
+                            onAddReactionClicked(msg.id)
+                        },
+                        onViewChatReaction = { emoji ->
+                            onViewChatReaction(msg.id, emoji)
+                        }
+                    )
+                }
+                if (idx == messages.lastIndex) {
+                    Spacer(modifier = Modifier.height(36.dp))
+                }
+            } else if (msg is DiscussionView.DateSection) {
+                Text(
+                    text = msg.formattedDate,
+                    style = Caption1Medium,
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    textAlign = TextAlign.Center,
+                    color = colorResource(R.color.transparent_active)
+                )
             }
         }
         if (messages.isEmpty()) {

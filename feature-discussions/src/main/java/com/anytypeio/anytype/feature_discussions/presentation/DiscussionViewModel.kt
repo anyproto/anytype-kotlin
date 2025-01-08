@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_discussions.presentation
 
+import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
@@ -41,6 +42,8 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import java.sql.Types
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -74,13 +77,17 @@ class DiscussionViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
-    val messages = MutableStateFlow<List<DiscussionView.Message>>(emptyList())
+    val messages = MutableStateFlow<List<DiscussionView>>(emptyList())
     val chatBoxAttachments = MutableStateFlow<List<DiscussionView.Message.ChatBoxAttachment>>(emptyList())
     val commands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
 
     val emojis = MutableStateFlow<List<EmojiPickerView>>(emptyList())
+
+    private val dateFormatter = SimpleDateFormat(
+        "d MMMM YYYY"
+    )
 
     var chat: Id = ""
 
@@ -139,111 +146,118 @@ class DiscussionViewModel @Inject constructor(
             chatContainer.fetchAttachments(vmParams.space),
             chatContainer.fetchReplies(chat = chat)
         ) { result, dependencies, replies ->
-            result.map { msg ->
-                val allMembers = members.get()
-                val member = allMembers.let { type ->
-                    when (type) {
-                        is Store.Data -> type.members.find { member ->
-                            member.identity == msg.creator
-                        }
-
-                        is Store.Empty -> null
-                    }
-                }
-
-                val content = msg.content
-
-                val replyToId = msg.replyToMessageId
-
-                val reply = if (replyToId.isNullOrEmpty()) {
-                    null
-                } else {
-                    val msg = replies[replyToId]
-                    if (msg != null) {
-                        DiscussionView.Message.Reply(
-                            msg = msg.id,
-                            text = msg.content?.text.orEmpty(),
-                            author = allMembers.let { type ->
-                                when (type) {
-                                    is Store.Data -> type.members.find { member ->
-                                        member.identity == msg.creator
-                                    }?.name.orEmpty()
-
-                                    is Store.Empty -> ""
-                                }
+            var previousDate: DiscussionView.DateSection? = null
+            buildList<DiscussionView> {
+                result.forEach { msg ->
+                    val allMembers = members.get()
+                    val member = allMembers.let { type ->
+                        when (type) {
+                            is Store.Data -> type.members.find { member ->
+                                member.identity == msg.creator
                             }
-                        )
-                    } else {
+
+                            is Store.Empty -> null
+                        }
+                    }
+
+                    val content = msg.content
+
+                    val replyToId = msg.replyToMessageId
+
+                    val reply = if (replyToId.isNullOrEmpty()) {
                         null
-                    }
-                }
+                    } else {
+                        val msg = replies[replyToId]
+                        if (msg != null) {
+                            DiscussionView.Message.Reply(
+                                msg = msg.id,
+                                text = msg.content?.text.orEmpty(),
+                                author = allMembers.let { type ->
+                                    when (type) {
+                                        is Store.Data -> type.members.find { member ->
+                                            member.identity == msg.creator
+                                        }?.name.orEmpty()
 
-                DiscussionView.Message(
-                    id = msg.id,
-                    timestamp = msg.createdAt * 1000,
-                    content = DiscussionView.Message.Content(
-                        msg = content?.text.orEmpty(),
-                        parts = content?.text
-                            .orEmpty()
-                            .splitByMarks(marks = content?.marks.orEmpty())
-                            .map { (part, styles) ->
-                                DiscussionView.Message.Content.Part(
-                                    part = part,
-                                    styles = styles
-                                )
-                            }
-                    ),
-                    reply = reply,
-                    author = member?.name ?: msg.creator.takeLast(5),
-                    isUserAuthor = msg.creator == account,
-                    isEdited = msg.modifiedAt > msg.createdAt,
-                    reactions = msg.reactions.map { (emoji, ids) ->
-                        DiscussionView.Message.Reaction(
-                            emoji = emoji,
-                            count = ids.size,
-                            isSelected = ids.contains(account)
-                        )
-                    },
-                    attachments = msg.attachments.map { attachment ->
-                        when (attachment.type) {
-                            Chat.Message.Attachment.Type.Image -> DiscussionView.Message.Attachment.Image(
-                                target = attachment.target,
-                                url = urlBuilder.medium(path = attachment.target)
+                                        is Store.Empty -> ""
+                                    }
+                                }
                             )
-                            else -> {
-                                val wrapper = dependencies[attachment.target]
-                                if (wrapper?.layout == ObjectType.Layout.IMAGE) {
-                                    DiscussionView.Message.Attachment.Image(
-                                        target = attachment.target,
-                                        url = urlBuilder.large(path = attachment.target)
-                                    )
-                                } else {
-                                    val type = wrapper?.type?.firstOrNull()
-                                    DiscussionView.Message.Attachment.Link(
-                                        target = attachment.target,
-                                        wrapper = wrapper,
-                                        icon = wrapper?.objectIcon(urlBuilder) ?: ObjectIcon.None,
-                                        typeName = if (type != null)
-                                            storeOfObjectTypes.get(type)?.name.orEmpty()
-                                        else
-                                            ""
+                        } else {
+                            null
+                        }
+                    }
+
+                    val view = DiscussionView.Message(
+                        id = msg.id,
+                        timestamp = msg.createdAt * 1000,
+                        content = DiscussionView.Message.Content(
+                            msg = content?.text.orEmpty(),
+                            parts = content?.text
+                                .orEmpty()
+                                .splitByMarks(marks = content?.marks.orEmpty())
+                                .map { (part, styles) ->
+                                    DiscussionView.Message.Content.Part(
+                                        part = part,
+                                        styles = styles
                                     )
                                 }
+                        ),
+                        reply = reply,
+                        author = member?.name ?: msg.creator.takeLast(5),
+                        isUserAuthor = msg.creator == account,
+                        isEdited = msg.modifiedAt > msg.createdAt,
+                        reactions = msg.reactions.map { (emoji, ids) ->
+                            DiscussionView.Message.Reaction(
+                                emoji = emoji,
+                                count = ids.size,
+                                isSelected = ids.contains(account)
+                            )
+                        },
+                        attachments = msg.attachments.map { attachment ->
+                            when (attachment.type) {
+                                Chat.Message.Attachment.Type.Image -> DiscussionView.Message.Attachment.Image(
+                                    target = attachment.target,
+                                    url = urlBuilder.medium(path = attachment.target)
+                                )
+                                else -> {
+                                    val wrapper = dependencies[attachment.target]
+                                    if (wrapper?.layout == ObjectType.Layout.IMAGE) {
+                                        DiscussionView.Message.Attachment.Image(
+                                            target = attachment.target,
+                                            url = urlBuilder.large(path = attachment.target)
+                                        )
+                                    } else {
+                                        val type = wrapper?.type?.firstOrNull()
+                                        DiscussionView.Message.Attachment.Link(
+                                            target = attachment.target,
+                                            wrapper = wrapper,
+                                            icon = wrapper?.objectIcon(urlBuilder) ?: ObjectIcon.None,
+                                            typeName = if (type != null)
+                                                storeOfObjectTypes.get(type)?.name.orEmpty()
+                                            else
+                                                ""
+                                        )
+                                    }
+                                }
                             }
+                        },
+                        avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
+                            DiscussionView.Message.Avatar.Image(
+                                urlBuilder.thumbnail(member.iconImage!!)
+                            )
+                        } else {
+                            DiscussionView.Message.Avatar.Initials(member?.name.orEmpty())
                         }
-                    }.also {
-                        if (it.isNotEmpty()) {
-                            Timber.d("Chat attachments: $it")
-                        }
-                    },
-                    avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
-                        DiscussionView.Message.Avatar.Image(
-                            urlBuilder.thumbnail(member.iconImage!!)
-                        )
-                    } else {
-                        DiscussionView.Message.Avatar.Initials(member?.name.orEmpty())
+                    )
+                    val currDate = DiscussionView.DateSection(
+                        formattedDate = dateFormatter.format(msg.createdAt * 1000)
+                    )
+                    add(view)
+                    if (currDate != previousDate) {
+                        add(currDate)
+                        previousDate = currDate
                     }
-                )
+                }
             }.reversed()
         }.flowOn(dispatchers.io).collect {
             messages.value = it
@@ -419,7 +433,7 @@ class DiscussionViewModel @Inject constructor(
     fun onReacted(msg: Id, reaction: String) {
         Timber.d("onReacted")
         viewModelScope.launch {
-            val message = messages.value.find { it.id == msg }
+            val message = messages.value.find { it is DiscussionView.Message && it.id == msg }
             if (message != null) {
                 toggleChatMessageReaction.async(
                     Command.ChatCommand.ToggleMessageReaction(

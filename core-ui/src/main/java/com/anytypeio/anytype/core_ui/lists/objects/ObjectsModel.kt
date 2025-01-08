@@ -1,27 +1,6 @@
 package com.anytypeio.anytype.core_ui.lists.objects
 
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-
-sealed class UiObjectsListItem {
-
-    abstract val id: String
-
-    data class Loading(override val id: String) : UiObjectsListItem()
-
-    data class Item(
-        override val id: String,
-        val name: String,
-        val space: SpaceId,
-        val type: String? = null,
-        val typeName: String? = null,
-        val createdBy: String? = null,
-        val layout: ObjectType.Layout? = null,
-        val icon: ObjectIcon = ObjectIcon.None,
-        val isPossibleToDelete: Boolean = false
-    ) : UiObjectsListItem()
-}
+import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 
 sealed class UiContentState {
     data class Idle(val scrollToTop: Boolean = false) : UiContentState()

@@ -2,8 +2,8 @@ package com.anytypeio.anytype.core_ui.lists.objects.stubs
 
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListItem
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 
 val StubVerticalItems = listOf(
     UiObjectsListItem.Item(

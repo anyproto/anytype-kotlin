@@ -1,12 +1,10 @@
 package com.anytypeio.anytype.feature_object_type.viewmodel
 
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -39,41 +37,81 @@ sealed class ObjectTypeState {
     data class Content(val objectId: Id, val obj: ObjectWrapper.Type) : ObjectTypeState()
 }
 
+//region HEADER
+data class UiTitleState(val title: String, val isEditable: Boolean) {
+    companion object {
+        val EMPTY = UiTitleState(title = "", isEditable = false)
+    }
+}
+
+data class UiIconState(val icon: ObjectIcon, val isEditable: Boolean) {
+    companion object {
+        val EMPTY = UiIconState(icon = ObjectIcon.None, isEditable = false)
+    }
+}
+//endregion
+
 sealed class UiSettingsIcon {
     data object Hidden : UiSettingsIcon()
     data class Visible(val objectId: Id) : UiSettingsIcon()
+}
+
+//region TEMPLATES HEADER
+data class UiTemplatesHeaderState(val count: String) {
+    companion object {
+        val EMPTY = UiTemplatesHeaderState(count = "")
+    }
+}
+
+sealed class UiTemplatesAddIconState{
+    data object Hidden : UiTemplatesAddIconState()
+    data object Visible: UiTemplatesAddIconState()
+}
+//endregion
+
+//region TEMPLATES LIST
+data class UiTemplatesListState(
+    val items: List<TemplateView>
+) {
+    companion object {
+        val EMPTY = UiTemplatesListState(items = emptyList())
+    }
+}
+//endregion
+
+//region OBJECTS HEADER
+data class UiObjectsHeaderState(val count: String) {
+    companion object {
+        val EMPTY = UiObjectsHeaderState(count = "")
+    }
+}
+
+sealed class UiObjectsAddIconState{
+    data object Hidden : UiObjectsAddIconState()
+    data object Visible: UiObjectsAddIconState()
+}
+
+sealed class UiObjectsSettingsIconState{
+    data object Hidden : UiObjectsSettingsIconState()
+    data object Visible: UiObjectsSettingsIconState()
+}
+//endregion
+
+//region SYNC STATUS
+sealed class UiSyncStatusWidgetState {
+    data object Hidden : UiSyncStatusWidgetState()
+    data class Visible(val status: SyncStatusWidgetState) : UiSyncStatusWidgetState()
 }
 
 sealed class UiSyncStatusBadgeState {
     data object Hidden : UiSyncStatusBadgeState()
     data class Visible(val status: SpaceSyncAndP2PStatusState) : UiSyncStatusBadgeState()
 }
-
-sealed class UiTitleState {
-    data object Hidden : UiTitleState()
-    data class Title(val title: String) : UiTitleState()
-}
-
-sealed class UiIconState {
-    data object Hidden : UiIconState()
-    data class Icon(val icon: ObjectIcon) : UiIconState()
-}
+//endregion
 
 sealed class UiEditButton {
     data object Hidden : UiEditButton()
     data object Visible : UiEditButton()
-}
-
-sealed class UiSyncStatusWidgetState {
-    data object Hidden : UiSyncStatusWidgetState()
-    data class Visible(val status: SyncStatusWidgetState) : UiSyncStatusWidgetState()
-}
-
-sealed class UiTemplatesWidgetState {
-    data object Hidden : UiTemplatesWidgetState()
-    data class Visible(
-        val number: Int
-    ) : UiTemplatesWidgetState()
 }
 
 sealed class UiErrorState {
@@ -84,6 +122,17 @@ sealed class UiErrorState {
         data class ErrorGettingObjects(val msg: String) : Reason()
         data class Other(val msg: String) : Reason()
     }
+}
+
+sealed class UiLayoutButtonState{
+    data object Hidden : UiLayoutButtonState()
+    data class Visible(val layout: ObjectType.Layout) : UiLayoutButtonState()
+}
+
+sealed class UiFieldsButtonState{
+    data object Hidden : UiFieldsButtonState()
+    data class Visible(val count: Int) : UiFieldsButtonState()
+
 }
 
 //region Mapping

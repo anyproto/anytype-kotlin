@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeMainScreen
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
@@ -95,7 +96,23 @@ class ObjectTypeFragment : BaseComposeFragment() {
             startDestination = OBJ_TYPE_MAIN
         ) {
             composable(route = OBJ_TYPE_MAIN) {
-
+                ObjectTypeMainScreen(
+                    uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
+                    uiSyncStatusState = vm.uiSyncStatusWidgetState.collectAsStateWithLifecycle().value,
+                    uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
+                    uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
+                    uiFieldsButtonState = vm.uiFieldsButtonState.collectAsStateWithLifecycle().value,
+                    uiLayoutButtonState = vm.uiLayoutButtonState.collectAsStateWithLifecycle().value,
+                    uiTemplatesHeaderState = vm.uiTemplatesHeaderState.collectAsStateWithLifecycle().value,
+                    uiTemplatesAddIconState = vm.uiTemplatesAddIconState.collectAsStateWithLifecycle().value,
+                    uiTemplatesListState = vm.uiTemplatesListState.collectAsStateWithLifecycle().value,
+                    uiObjectsHeaderState = vm.uiObjectsHeaderState.collectAsStateWithLifecycle().value,
+                    uiObjectsAddIconState = vm.uiObjectsAddIconState.collectAsStateWithLifecycle().value,
+                    uiObjectsSettingsIconState = vm.uiObjectsSettingsIconState.collectAsStateWithLifecycle().value,
+                    uiObjectsListState = vm.uiObjectsListState.collectAsStateWithLifecycle().value,
+                    uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
+                    onTypeEvent = {}
+                )
             }
         }
     }

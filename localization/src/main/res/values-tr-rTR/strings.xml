@@ -1595,4 +1595,6 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_message_reactions_no_reactions_yet">Henüz tepki verilmemiş</string>
     <string name="chat_message_reactions_no_reactions_message">Muhtemelen birisi tepkisini kaldırdı veya teknik bir sorun oluştu</string>
     <string name="object_types_human">İnsan</string>
+    <string name="chats_alert_delete_this_message_description">Onaylandıktan sonra geri getirilemez</string>
+    <string name="chats_alert_delete_this_message">Bu mesaj silinsin mi?</string>
 </resources>

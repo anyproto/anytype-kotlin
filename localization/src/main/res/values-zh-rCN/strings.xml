@@ -248,7 +248,7 @@
     <string name="linked_to">链接到</string>
     <string name="remove_link">移除链接</string>
     <string name="mention_suggester_new_page">创建新对象</string>
-    <string name="mention_section_dates">Dates</string>
+    <string name="mention_section_dates">日期</string>
     <string name="mention_section_objects">对象</string>
     <string name="mention_suggester_create_object">创建对象</string>
     <string name="your_search_query">搜索</string>
@@ -466,7 +466,7 @@
     <string name="open_source">开放源代码</string>
     <string name="reload_object_content">重新加载对象内容</string>
     <string name="open_link">打开链接</string>
-    <string name="open_file">Open file</string>
+    <string name="open_file">打开文件</string>
     <string name="copy_email">拷贝电子邮件</string>
     <string name="copy_phone_number">拷贝电话号码</string>
     <string name="send_email">发送电子邮件</string>
@@ -1091,7 +1091,7 @@
     <string name="dates_days_ago">%1$s 天前</string>
     <string name="dates_days_from">%1$s 天后</string>
     <string name="settings_use_yamux">Use a reserve multiplex library</string>
-    <string name="settings_share_local_logs">Share local logs</string>
+    <string name="settings_share_local_logs">分享本地日志</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">看板视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
     <string name="error_calendar_view_not_supported">日历视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
@@ -1546,11 +1546,11 @@
     <string name="chats_message_edited">已编辑</string>
     <string name="chat_empty_state_message">还没有任何消息。\n成为第一个开始讨论的人。</string>
     <string name="write_a_message">写一段话…</string>
-    <string name="date_layout_mentioned_in">Mentions</string>
+    <string name="date_layout_mentioned_in">提及</string>
     <string name="date_layout_empty_items">此日期暂无任何内容</string>
     <string name="date_layout_alert_date_out_of_range">被选中的日期超过了有效范围（年 %1$d 到 %2$d）。请选择一个在此范围内的日期。</string>
     <string name="date_layout_item_created_by">由</string>
-    <string name="chat_attachment_object">Select existing object</string>
+    <string name="chat_attachment_object">选择现有对象</string>
     <string name="chat_attachment_file">上传文件</string>
     <string name="chat_attachment_media">上传媒体文件</string>
     <string name="chat_attachment_upload">上传</string>
@@ -1565,7 +1565,7 @@
     <string name="day_of_week_sunday">星期天 </string>
     <string name="file">文件</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
-    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
+    <string name="space_list_empty_state_it_is_empty_here">这里是空的</string>
     <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
     <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
     <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
@@ -1575,7 +1575,9 @@
     <string name="emoji_category_symbols">Symbols</string>
     <string name="emoji_category_flags">Flags</string>
     <string name="emoji_recently_used_section">Recently used</string>
-    <string name="chat_message_reactions_no_reactions_yet">No reactions yet</string>
+    <string name="chat_message_reactions_no_reactions_yet">暂无回应</string>
     <string name="chat_message_reactions_no_reactions_message">Probably someone has just removed the reaction or technical issue happened</string>
     <string name="object_types_human">Human</string>
+    <string name="chats_alert_delete_this_message_description">确认后无法恢复</string>
+    <string name="chats_alert_delete_this_message">删除此消息？</string>
 </resources>

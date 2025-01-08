@@ -1582,4 +1582,6 @@ Please provide specific details of your needs here.</string>
     <string name="chat_message_reactions_no_reactions_yet">Belum ada reaksi</string>
     <string name="chat_message_reactions_no_reactions_message">Mungkin seseorang menghapus reaksinya atau ada masalah teknis</string>
     <string name="object_types_human">Human</string>
+    <string name="chats_alert_delete_this_message_description">Pesan tak dapat dikembalikan lagi</string>
+    <string name="chats_alert_delete_this_message">Hapus pesan ini?</string>
 </resources>

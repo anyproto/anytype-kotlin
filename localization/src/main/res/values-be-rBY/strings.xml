@@ -469,6 +469,7 @@
     <string name="open_source">Адкрыць крыніцу</string>
     <string name="reload_object_content">Перазагрузіць змесціва аб\'екта</string>
     <string name="open_link">Адкрыць спасылку</string>
+    <string name="open_file">Open file</string>
     <string name="copy_email">Капіяваць эл. пошту</string>
     <string name="copy_phone_number">Капіяваць нумар тэлефона</string>
     <string name="send_email">Адаслаць ліст</string>
@@ -1102,6 +1103,7 @@
     <string name="dates_days_ago">%1$s дзён таму</string>
     <string name="dates_days_from">%1$s дзён праз</string>
     <string name="settings_use_yamux">Выкарыстоўвайце рэзервовую бібліятэку multiplex</string>
+    <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Выгляд канбан пакуль недаступны на мабільных прыладах.\nЗмяніце тып выгляду (Налады -&gt; Выгляд) або стварыце новы, каб атрымаць доступ да сваіх даных.</string>
     <string name="error_calendar_view_not_supported">Выгляд календара пакуль недаступны на мабільных прыладах.\nЗмяніце тып выгляду (Налады -&gt; Выгляд) або стварыце новы, каб атрымаць доступ да сваіх даных.</string>
@@ -1587,7 +1589,7 @@
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Напісаць паведамленне...</string>
-    <string name="date_layout_mentioned_in">Mentioned in</string>
+    <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">There is nothing here for this date yet</string>
     <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
     <string name="date_layout_item_created_by">by</string>
@@ -1596,6 +1598,7 @@
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Запампаваць</string>
     <string name="chats_reply">Reply</string>
+    <string name="chats_add_reaction">Дадаць рэакцыю</string>
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>
     <string name="day_of_week_wednesday">Wednesday</string>
@@ -1603,4 +1606,21 @@
     <string name="day_of_week_friday">Friday</string>
     <string name="day_of_week_saturday">Saturday</string>
     <string name="day_of_week_sunday">Sunday</string>
+    <string name="file">Файл</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
+    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
+    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
+    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
+    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
+    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
+    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_objects">Аб\'екты</string>
+    <string name="emoji_category_symbols">Symbols</string>
+    <string name="emoji_category_flags">Flags</string>
+    <string name="emoji_recently_used_section">Recently used</string>
+    <string name="chat_message_reactions_no_reactions_yet">No reactions yet</string>
+    <string name="chat_message_reactions_no_reactions_message">Probably someone has just removed the reaction or technical issue happened</string>
+    <string name="object_types_human">Human</string>
+    <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
+    <string name="chats_alert_delete_this_message">Delete this message?</string>
 </resources>

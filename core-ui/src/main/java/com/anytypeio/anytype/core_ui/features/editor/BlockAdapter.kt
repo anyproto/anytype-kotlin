@@ -43,6 +43,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIco
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconCoverBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkDeleteBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkLoadingBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockOpenFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationCheckboxBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDefaultBinding
@@ -55,6 +56,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationTagBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTextBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTocBinding
@@ -113,6 +115,8 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.text.Text
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Toggle
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.BookmarkUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.FileUpload
+import com.anytypeio.anytype.core_ui.features.editor.holders.upload.OpenFile
+import com.anytypeio.anytype.core_ui.features.editor.holders.upload.OpenImage
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.PictureUpload
 import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
 import com.anytypeio.anytype.core_ui.features.table.holders.TableBlockHolder
@@ -148,6 +152,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_FILE_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_ONE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_THREE
@@ -163,6 +168,8 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DEFAULT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_LOADING
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BUTTON_OPEN_FILE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BUTTON_OPEN_IMAGE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
@@ -358,6 +365,11 @@ class BlockAdapter(
                     }
                 }
             }
+            HOLDER_FILE_TITLE -> {
+                Title.File(
+                    ItemBlockTitleFileBinding.inflate(inflater, parent, false)
+                )
+            }
             HOLDER_TODO_TITLE -> {
                 Title.Todo(
                     ItemBlockTitleTodoBinding.inflate(inflater, parent, false)
@@ -529,6 +541,12 @@ class BlockAdapter(
                 FileError(
                     ItemBlockMediaErrorBinding.inflate(inflater, parent, false)
                 )
+            }
+            HOLDER_BUTTON_OPEN_FILE -> {
+                OpenFile(ItemBlockOpenFileBinding.inflate(inflater, parent, false))
+            }
+            HOLDER_BUTTON_OPEN_IMAGE -> {
+                OpenImage(ItemBlockOpenFileBinding.inflate(inflater, parent, false))
             }
             HOLDER_VIDEO -> {
                 Video(
@@ -1002,6 +1020,12 @@ class BlockAdapter(
                             item = blocks[position] as BlockView.Title.Todo
                         )
                     }
+                    is Title.File -> {
+                        holder.processPayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.Title.File
+                        )
+                    }
                     is Numbered -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1361,6 +1385,11 @@ class BlockAdapter(
                     holder.content.clipboardInterceptor = clipboardInterceptor
                 }
             }
+            is Title.File -> {
+                holder.apply {
+                    bind(item = blocks[position] as BlockView.Title.File,)
+                }
+            }
             is Code -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Code,
@@ -1620,6 +1649,18 @@ class BlockAdapter(
                 holder.bind(
                     item = blocks[position] as BlockView.DataView.Deleted,
                     clicked = onClickListener
+                )
+            }
+            is OpenFile -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.ButtonOpenFile.FileButton,
+                    click = onClickListener
+                )
+            }
+            is OpenImage -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.ButtonOpenFile.ImageButton,
+                    click = onClickListener
                 )
             }
         }

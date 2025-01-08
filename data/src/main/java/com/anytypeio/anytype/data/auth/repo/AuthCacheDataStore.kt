@@ -89,4 +89,8 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
     override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
         cache.setNetworkMode(modeConfig)
     }
+
+    override suspend fun debugExportLogs(dir: String): String {
+        throw UnsupportedOperationException()
+    }
 }

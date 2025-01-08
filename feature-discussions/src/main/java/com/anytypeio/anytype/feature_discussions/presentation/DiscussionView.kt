@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
@@ -31,6 +32,7 @@ sealed interface DiscussionView {
                 val isStrike = styles.any { it.type == Block.Content.Text.Mark.Type.STRIKETHROUGH }
                 val underline = styles.any { it.type == Block.Content.Text.Mark.Type.UNDERLINE }
                 val link = styles.find { it.type == Block.Content.Text.Mark.Type.LINK }
+                val isCode = styles.any { it.type == Block.Content.Text.Mark.Type.KEYBOARD }
             }
         }
 
@@ -49,7 +51,8 @@ sealed interface DiscussionView {
             data class Link(
                 val target: Id,
                 val wrapper: ObjectWrapper.Basic?,
-                val icon: ObjectIcon = ObjectIcon.None
+                val icon: ObjectIcon = ObjectIcon.None,
+                val typeName: String
             ): Attachment()
         }
 
@@ -58,7 +61,9 @@ sealed interface DiscussionView {
                 val uri: String
             ): ChatBoxAttachment()
             data class File(
-                val uri: String
+                val uri: String,
+                val name: String,
+                val size: Int
             ): ChatBoxAttachment()
             data class Link(
                 val target: Id,

@@ -89,4 +89,8 @@ class AuthRemoteDataStore(
     override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
         throw UnsupportedOperationException()
     }
+
+    override suspend fun debugExportLogs(dir: String): String {
+        return authRemote.debugExportLogs(dir)
+    }
 }

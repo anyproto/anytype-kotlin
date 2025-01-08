@@ -529,6 +529,7 @@ class VersionHistoryViewModel(
             defaultPayloadConsumer(payload)
             val root = event.blocks.first { it.id == vmParams.objectId }
             val blocks = event.blocks.asMap().render(
+                context = obj.id,
                 mode = Mode.Read,
                 root = root,
                 focus = Editor.Focus.empty(),
@@ -566,6 +567,7 @@ class VersionHistoryViewModel(
         } else {
             val root = event.blocks.first { it.id == vmParams.objectId }
             val blocks = event.blocks.asMap().render(
+                context = obj.id,
                 mode = Mode.Read,
                 root = root,
                 focus = Editor.Focus.empty(),

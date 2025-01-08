@@ -29,6 +29,8 @@ interface CopyFileToCacheDirectory {
      */
     fun execute(uri: Uri, scope: CoroutineScope, listener: CopyFileToCacheStatus)
 
+    suspend fun copy(uri: String): String?
+
     /**
      * Cancels the ongoing file copying operation.
      */
@@ -81,6 +83,10 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
             scope = scope,
             listener = listener,
         )
+    }
+
+    override suspend fun copy(uri: String): String? {
+        return copyFileToCacheDir(uri)
     }
 
     override fun cancel() {
@@ -145,6 +151,39 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         return null
     }
 
+    private fun copyFileToCacheDir(
+        uri: String
+    ): String? {
+        var newFile: File? = null
+        mContext?.get()?.let { context: Context ->
+            val cacheDir = context.getExternalFilesDirTemp()
+            if (cacheDir != null && !cacheDir.exists()) {
+                cacheDir.mkdirs()
+            }
+            try {
+                val inputStream = context.contentResolver.openInputStream(Uri.parse(uri))
+                inputStream?.use { input ->
+                    newFile = File(cacheDir?.path + "/" + getFileName(context, Uri.parse(uri)));
+                    Timber.d("Start copy file to cache : ${newFile.path}")
+                    FileOutputStream(newFile).use { output ->
+                        val buffer = ByteArray(1024)
+                        var read: Int = input.read(buffer)
+                        while (read != -1) {
+                            output.write(buffer, 0, read)
+                            read = input.read(buffer)
+                        }
+                    }
+                    return newFile.path
+                }
+            } catch (e: Exception) {
+                val deleteResult = newFile?.deleteRecursively()
+                Timber.d("Get exception while copying file, deleteRecursively success: $deleteResult")
+                Timber.e(e, "Error while coping file")
+            }
+        }
+        return null
+    }
+
     private fun getFileName(context: Context, uri: Uri): String? {
         var result: String? = null
         if (uri.scheme == SCHEME_CONTENT) {
@@ -197,6 +236,10 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
             scope = scope,
             listener = listener,
         )
+    }
+
+    override suspend fun copy(uri: String): String? {
+        throw UnsupportedOperationException()
     }
 
     override fun cancel() {

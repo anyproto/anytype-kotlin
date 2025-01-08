@@ -100,4 +100,8 @@ class AuthDataRepository(
     override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
         factory.cache.setNetworkMode(modeConfig)
     }
+
+    override suspend fun debugExportLogs(dir: String): String {
+        return factory.remote.debugExportLogs(dir)
+    }
 }

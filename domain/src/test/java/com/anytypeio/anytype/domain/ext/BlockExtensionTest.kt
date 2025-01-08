@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.ext
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.asRender
 import com.anytypeio.anytype.core_models.ext.getChildrenIdsList
@@ -1096,19 +1097,9 @@ class BlockExtensionTest {
 
         val root = MockDataFactory.randomUuid()
 
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.File()
-        )
+        val a = StubFile()
 
-        val b = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.File()
-        )
+        val b = StubFile()
 
         val document = listOf(a, b)
 

@@ -80,7 +80,14 @@ class DiscussionFragment : BaseComposeFragment() {
                         },
                         onMarkupLinkClicked = {
 
-                        }
+                        },
+                        onRequestOpenFullScreenImage = {
+                            // TODO
+                        },
+                        onSelectChatReaction = {
+                            // TODO
+                        },
+                        onViewChatReaction = { a, b -> }
                     )
 
                     if (showBottomSheet) {

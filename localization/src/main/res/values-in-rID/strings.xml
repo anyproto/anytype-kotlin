@@ -466,6 +466,7 @@
     <string name="open_source">Buka sumber</string>
     <string name="reload_object_content">Muat ulang konten objek</string>
     <string name="open_link">Buka tautan</string>
+    <string name="open_file">Buka berkas</string>
     <string name="copy_email">Salin email</string>
     <string name="copy_phone_number">Salin nomor telepon</string>
     <string name="send_email">Kirim email</string>
@@ -1090,6 +1091,7 @@
     <string name="dates_days_ago">%1$s hari yang lalu</string>
     <string name="dates_days_from">%1$s hari dari sekarang</string>
     <string name="settings_use_yamux">Use a reserve multiplex library</string>
+    <string name="settings_share_local_logs">Bagikan log lokal</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
@@ -1548,7 +1550,7 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Tulis pesan …</string>
-    <string name="date_layout_mentioned_in">Disebut di</string>
+    <string name="date_layout_mentioned_in">Sebutan</string>
     <string name="date_layout_empty_items">Belum ada apa-apa untuk tanggal ini</string>
     <string name="date_layout_alert_date_out_of_range">Tanggal terpilih di luar rentang valid (tahun %1$d hingga %2$d). Silakan pilih tanggal dalam rentang ini.</string>
     <string name="date_layout_item_created_by">by</string>
@@ -1557,6 +1559,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_media">Unggah media</string>
     <string name="chat_attachment_upload">Unggah</string>
     <string name="chats_reply">Balas</string>
+    <string name="chats_add_reaction">Tambahkan Reaksi</string>
     <string name="day_of_week_monday">Senin</string>
     <string name="day_of_week_tuesday">Selasa</string>
     <string name="day_of_week_wednesday">Rabu</string>
@@ -1564,4 +1567,21 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_friday">Jumat</string>
     <string name="day_of_week_saturday">Sabtu</string>
     <string name="day_of_week_sunday">Minggu</string>
+    <string name="file">Berkas</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Buat ruang pertamamu untuk memulai</string>
+    <string name="space_list_empty_state_it_is_empty_here">Di sini kosong.</string>
+    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
+    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
+    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
+    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
+    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_objects">Objek</string>
+    <string name="emoji_category_symbols">Symbols</string>
+    <string name="emoji_category_flags">Flags</string>
+    <string name="emoji_recently_used_section">Recently used</string>
+    <string name="chat_message_reactions_no_reactions_yet">Belum ada reaksi</string>
+    <string name="chat_message_reactions_no_reactions_message">Mungkin seseorang menghapus reaksinya atau ada masalah teknis</string>
+    <string name="object_types_human">Human</string>
+    <string name="chats_alert_delete_this_message_description">Pesan tak dapat dikembalikan lagi</string>
+    <string name="chats_alert_delete_this_message">Hapus pesan ini?</string>
 </resources>

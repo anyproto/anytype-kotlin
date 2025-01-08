@@ -43,23 +43,11 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
     fun bind(item: BlockView.Media.File, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
 
-        if (item.size != null && item.name != null) {
+        if (item.size != null) {
             val size = item.size?.readableFileSize() ?: ""
-            val spannable = if (item.fileExt.isNullOrBlank()) {
-                SpannableString("${item.name}  $size")
-            } else {
-                SpannableString("${item.name}.${item.fileExt}  $size")
-            }
-            val start = if (item.fileExt.isNullOrBlank()) {
-                item.name!!.length + 2
-            } else {
-                item.name!!.length + item.fileExt!!.length + 2
-            }
-            val end = if (item.fileExt.isNullOrBlank()) {
-                item.name!!.length + 2 + size.length
-            } else {
-                item.name!!.length + item.fileExt!!.length + 3 + size.length
-            }
+            val spannable = SpannableString("${item.name}  $size")
+            val start = item.name.length + 2
+            val end = item.name.length + 2 + size.length
             spannable.setSpan(
                 RelativeSizeSpan(0.87f),
                 start,

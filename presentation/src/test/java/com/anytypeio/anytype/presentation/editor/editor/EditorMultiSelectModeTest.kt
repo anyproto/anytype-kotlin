@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubLayoutColumns
 import com.anytypeio.anytype.core_models.StubLayoutRows
@@ -1081,14 +1082,11 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
         )
 
         val backgroundC = null
-        val c = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.File(
-                state = Block.Content.File.State.EMPTY
-            ),
-            backgroundColor = backgroundC
+
+
+        val c = StubFile(
+            backgroundColor = backgroundC,
+            state = Block.Content.File.State.EMPTY
         )
 
         val page = Block(

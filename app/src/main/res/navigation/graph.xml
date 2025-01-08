@@ -162,6 +162,16 @@
         android:name="com.anytypeio.anytype.di.feature.discussions.DiscussionFragment"
         android:label="Discussion" />
 
+    <dialog
+        android:id="@+id/selectChatReactionScreen"
+        android:name="com.anytypeio.anytype.ui.chats.SelectChatReactionFragment"
+        android:label="Select chat reaction" />
+
+    <dialog
+        android:id="@+id/chatReactionScreen"
+        android:name="com.anytypeio.anytype.ui.chats.ChatReactionFragment"
+        android:label="Chat reaction" />
+
     <fragment
         android:id="@+id/homeScreen"
         android:name="com.anytypeio.anytype.ui.home.HomeScreenFragment"
@@ -283,7 +293,11 @@
     <dialog
         android:id="@+id/spaceListScreen"
         android:name="com.anytypeio.anytype.ui.spaces.SpaceListFragment"
-        android:label="SpaceListScreen"/>
+        android:label="SpaceListScreen">
+        <action
+            android:id="@+id/actionCreateSpaceFromVault"
+            app:destination="@id/createSpaceScreen" />
+    </dialog>
 
     <dialog
         android:id="@+id/objectSetIconPickerScreenForSpace"
@@ -651,5 +665,9 @@
     <dialog
         android:id="@+id/multiplayerFeatureDialog"
         android:name="com.anytypeio.anytype.ui.multiplayer.IntroduceSpaceSharingFragment"/>
+
+    <action
+        android:id="@+id/actionOpenSpaceFromVault"
+        app:destination="@id/homeScreen" />
 
 </navigation>

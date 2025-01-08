@@ -20,10 +20,11 @@ import android.view.animation.OvershootInterpolator
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.addCallback
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -35,6 +36,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
@@ -93,6 +95,7 @@ import com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.ChooseTypeHorizontalWidget
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_PROFILE_IMAGE_CODE
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -107,6 +110,7 @@ import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.lastDecorator
+import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.screen
 import com.anytypeio.anytype.core_utils.ext.show
@@ -923,10 +927,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun execute(event: EventWrapper<Command>) {
+        Timber.d("Executing command: $event")
         event.getContentIfNotHandled()?.let { command ->
             when (command) {
                 is Command.OpenDocumentImagePicker -> {
-                    pickerDelegate.openFilePicker(command.mimeType, REQUEST_PROFILE_IMAGE_CODE)
+                    try {
+                        pickProfileIcon.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error while opening photo picker")
+                        toast("Error while opening photo picker")
+                        pickerDelegate.openFilePicker(Mimetype.MIME_IMAGE_ALL, REQUEST_PROFILE_IMAGE_CODE)
+                    }
                 }
                 is Command.OpenTextBlockIconPicker -> {
                     TextBlockIconPickerFragment.new(
@@ -952,8 +963,26 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         url = command.url
                     ).showChildFragment()
                 }
-                is Command.OpenGallery -> {
-                    pickerDelegate.openFilePicker(command.mimeType, null)
+                is Command.OpenPhotoPicker -> {
+                    try {
+                        pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error while opening photo picker")
+                        toast("Error while opening photo picker")
+                        pickerDelegate.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
+                    }
+                }
+                is Command.OpenVideoPicker -> {
+                    try {
+                        pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.VideoOnly))
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error while opening video picker")
+                        toast("Error while opening video picker")
+                        pickerDelegate.openFilePicker(Mimetype.MIME_VIDEO_ALL, null)
+                    }
+                }
+                is Command.OpenFilePicker -> {
+                    pickerDelegate.openFilePicker(Mimetype.MIME_FILE_ALL, null)
                 }
                 is Command.PopBackStack -> {
                     childFragmentManager.popBackStack()
@@ -2270,6 +2299,39 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     override fun releaseDependencies() {
         componentManager().editorComponent.release(ctx)
     }
+
+    //region Media Picker
+    val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
+        if (uri != null) {
+            try {
+                val path = uri.parseImagePath(requireContext())
+                vm.onProceedWithFilePath(path)
+            } catch (e: Exception) {
+                toast("Error while parsing path for media file")
+                Timber.e(e, "Error while parsing path for cover image")
+            }
+        } else {
+            Timber.i("No media selected")
+        }
+    }
+
+    val pickProfileIcon = registerForActivityResult(PickVisualMedia()) { uri ->
+        if (uri != null) {
+            try {
+                val path = uri.parseImagePath(requireContext())
+                vm.onPickedDocImageFromDevice(
+                    ctx = ctx,
+                    path = path
+                )
+            } catch (e: Exception) {
+                toast("Error while parsing path for media file")
+                Timber.e(e, "Error while parsing path for cover image")
+            }
+        } else {
+            Timber.i("No media selected")
+        }
+    }
+    //endregion
 
     companion object {
 

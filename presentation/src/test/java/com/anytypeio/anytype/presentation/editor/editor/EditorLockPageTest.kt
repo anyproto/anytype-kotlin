@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
-import android.R
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubBookmark
+import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
@@ -28,8 +28,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.stub
 import org.mockito.kotlin.whenever
 
 class EditorLockPageTest : EditorPresentationTestSetup() {
@@ -585,15 +583,11 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         val fileBlockId = MockDataFactory.randomUuid()
         val targetObjectId = MockDataFactory.randomUuid()
 
-        val file = Block(
+        val file = StubFile(
             id = fileBlockId,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.File(
-                targetObjectId = targetObjectId,
-                type = Block.Content.File.Type.FILE,
-                state = Block.Content.File.State.DONE
-            ),
-            children = emptyList()
+            type = Block.Content.File.Type.FILE,
+            state = Block.Content.File.State.DONE,
+            targetObjectId = targetObjectId
         )
 
         val page = listOf(
@@ -680,8 +674,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         testObserver.assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFileByDefaultApp(
-                id = fileBlockId,
-                uri = builder.file(targetObjectId)
+                id = fileBlockId
             )
         }
     }
@@ -697,15 +690,10 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         val fileName = "image.png"
         val fileSize = 1000.0
 
-        val picture = Block(
-            id = fileBlockId,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.File(
-                targetObjectId = targetObjectId,
-                type = Block.Content.File.Type.IMAGE,
-                state = Block.Content.File.State.DONE
-            ),
-            children = emptyList()
+        val picture = StubFile(
+            type = Block.Content.File.Type.IMAGE,
+            state = Block.Content.File.State.DONE,
+            targetObjectId = targetObjectId
         )
 
         val page = listOf(
@@ -792,7 +780,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         testObserver.assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFullScreenImage(
                 target = picture.id,
-                url = builder.original(targetObjectId)
+                url = builder.large(targetObjectId)
             )
         }
     }

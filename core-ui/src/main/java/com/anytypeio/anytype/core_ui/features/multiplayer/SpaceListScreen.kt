@@ -39,12 +39,15 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -57,7 +60,8 @@ fun SpaceListScreen(
     state: ViewState<List<SpaceListItemView>>,
     onDeleteSpaceClicked: (SpaceListItemView) -> Unit,
     onLeaveSpaceClicked: (SpaceListItemView) -> Unit,
-    onCancelJoinRequestClicked: (SpaceListItemView) -> Unit
+    onCancelJoinRequestClicked: (SpaceListItemView) -> Unit,
+    onCreateSpaceClicked: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -71,7 +75,9 @@ fun SpaceListScreen(
         )
         Header(text = stringResource(id = R.string.multiplayer_spaces))
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().weight(1.0f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1.0f)
         ) {
             if (state is ViewState.Success) {
                 itemsIndexed(
@@ -102,7 +108,45 @@ fun SpaceListScreen(
                     },
                     key = { _, item -> "space-list-item-${item.space.id}" }
                 )
+                if (state.data.isEmpty()) {
+                    item {
+                        SpaceListEmptyState(
+                            onCreateSpaceClicked = onCreateSpaceClicked,
+                            modifier = Modifier.fillParentMaxSize()
+                        )
+                    }
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun SpaceListEmptyState(
+    modifier: Modifier = Modifier,
+    onCreateSpaceClicked: () -> Unit
+) {
+    Box(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(R.string.space_list_empty_state_it_is_empty_here),
+                color = colorResource(R.color.text_primary)
+            )
+            Text(
+                text = stringResource(R.string.space_list_empty_state_create_your_first_space_to_get_started),
+                color = colorResource(R.color.text_secondary)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            ButtonSecondary(
+                onClick = onCreateSpaceClicked,
+                text = "Create space",
+                size = ButtonSize.SmallSecondary
+            )
         }
     }
 }
@@ -143,15 +187,15 @@ fun SpaceListCardItem(
             mainSize = 48.dp
         )
 
-        if (actions.isNotEmpty()) {
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .constrainAs(dots) {
-                        top.linkTo(parent.top, margin = 24.dp)
-                        end.linkTo(parent.end, margin = 12.dp)
-                    }
-            ) {
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .constrainAs(dots) {
+                    top.linkTo(parent.top, margin = 24.dp)
+                    end.linkTo(parent.end, margin = 12.dp)
+                }
+        ) {
+            if (actions.isNotEmpty()) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_space_list_dots),
                     contentDescription = "Three-dots button",
@@ -357,7 +401,8 @@ private fun SpaceListScreenPreview() {
         state = ViewState.Loading,
         onCancelJoinRequestClicked = {},
         onDeleteSpaceClicked = {},
-        onLeaveSpaceClicked = {}
+        onLeaveSpaceClicked = {},
+        onCreateSpaceClicked = {}
     )
 }
 
@@ -376,5 +421,12 @@ private fun SpaceCardItemPreview() {
     )
 }
 
+@DefaultPreviews
+@Composable
+private fun SpaceListEmptyStatePreview() {
+    SpaceListEmptyState(
+        onCreateSpaceClicked = {}
+    )
+}
 
 

@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_ui.extensions.disable
 import timber.log.Timber
 
 fun Markup.toSpannable(
@@ -498,8 +499,7 @@ fun Editable.proceedWithSettingMentionSpan(
 fun Editable.setClickableSpan(click: ((String) -> Unit)?, mark: Markup.Mark.Mention) {
     val clickableSpan = object : ClickableSpan() {
         override fun onClick(widget: View) {
-            // TODO consider pausing text watchers. Otherwise, redundant text watcher events will be triggered.
-            (widget as? TextInputWidget)?.enableReadMode()
+            (widget as? TextInputWidget)?.disable()
             click?.invoke(mark.param)
         }
     }

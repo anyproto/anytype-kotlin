@@ -55,6 +55,7 @@ class TableBlockRendererTest {
             indent: Int,
             details: Block.Details
         ): List<BlockView> = blocks.render(
+            context = root.id,
             root = root,
             anchor = anchor,
             focus = focus,

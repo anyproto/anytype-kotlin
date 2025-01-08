@@ -113,10 +113,6 @@ class ObjectMenuViewModel(
         val wrapper = ObjectWrapper.Basic(storage.details.current().details[ctx]?.map.orEmpty())
         val layout = wrapper.layout
 
-        if (layout in fileLayouts) {
-            add(ObjectAction.DOWNLOAD_FILE)
-        }
-
         if (!isTemplate) {
             if (isFavorite) {
                 add(ObjectAction.REMOVE_FROM_FAVOURITE)
@@ -172,6 +168,20 @@ class ObjectMenuViewModel(
                 }
             }
             add(ObjectAction.SEARCH_ON_PAGE)
+        }
+
+        if (layout in fileLayouts) {
+            clear()
+            add(ObjectAction.DELETE)
+            add(ObjectAction.DOWNLOAD_FILE)
+            if (isFavorite) {
+                add(ObjectAction.REMOVE_FROM_FAVOURITE)
+            } else {
+                add(ObjectAction.ADD_TO_FAVOURITE)
+            }
+            add(ObjectAction.CREATE_WIDGET)
+            add(ObjectAction.LINK_TO)
+            add(ObjectAction.COPY_LINK)
         }
     }
 

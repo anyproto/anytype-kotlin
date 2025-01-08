@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubBookmark
+import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.MainMenuHolder
 import com.anytypeio.anytype.core_ui.features.editor.slash.holders.MediaMenuHolder
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
@@ -526,14 +527,9 @@ class SlashWidgetTesting : EditorTestSetup() {
         val paragraph = paragraph(text = "FooBar")
         val paragraph2 = paragraph(text = "Second")
 
-        val file = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.File(
-                type = Block.Content.File.Type.FILE,
-                state = Block.Content.File.State.EMPTY
-            )
+        val file = StubFile(
+            type = Block.Content.File.Type.FILE,
+            state = Block.Content.File.State.EMPTY
         )
 
         val page = Block(
@@ -599,14 +595,9 @@ class SlashWidgetTesting : EditorTestSetup() {
         val paragraph = paragraph(text = "FooBar")
         val paragraph2 = paragraph(text = "Second")
 
-        val picture = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.File(
-                type = Block.Content.File.Type.IMAGE,
-                state = Block.Content.File.State.EMPTY
-            )
+        val picture = StubFile(
+            type = Block.Content.File.Type.IMAGE,
+            state = Block.Content.File.State.EMPTY
         )
 
         val page = Block(
@@ -678,14 +669,9 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         val paragraph2 = paragraph(text = "Second")
 
-        val video = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.File(
-                type = Block.Content.File.Type.VIDEO,
-                state = Block.Content.File.State.EMPTY
-            )
+        val video = StubFile(
+            type = Block.Content.File.Type.VIDEO,
+            state = Block.Content.File.State.EMPTY
         )
 
         val page = Block(

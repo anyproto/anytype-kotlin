@@ -90,8 +90,7 @@ class Middleware @Inject constructor(
             avatarLocalPath = command.avatarPath,
             icon = command.icon.toLong(),
             networkMode = command.networkMode.toMiddlewareModel(),
-            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty(),
-            preferYamuxTransport = command.preferYamuxTransport ?: false
+            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty()
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.accountCreate(request) }
@@ -2865,6 +2864,15 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.deviceNetworkStateSet(request) }
         logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun debugExportLogs(dir: String): String {
+        val request = Rpc.Debug.ExportLog.Request(dir = dir)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugExportLogs(request) }
+        logResponseIfDebug(response, time)
+        return response.path
     }
 
     private fun logRequestIfDebug(request: Any) {

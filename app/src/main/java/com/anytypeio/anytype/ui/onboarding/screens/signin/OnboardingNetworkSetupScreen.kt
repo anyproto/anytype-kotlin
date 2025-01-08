@@ -52,7 +52,7 @@ fun DefaultNetworkSetupScreenPreview() {
         onLocalOnlyClicked = {},
         onSelfHostNetworkClicked = {},
         onSetSelfHostConfigConfigClicked = {},
-        onUseYamuxToggled = {}
+        onExportLogsClick = {}
     )
 }
 
@@ -69,7 +69,7 @@ fun SelfHostNetworkSetupScreenPreview() {
         onLocalOnlyClicked = {},
         onSelfHostNetworkClicked = {},
         onSetSelfHostConfigConfigClicked = {},
-        onUseYamuxToggled = {}
+        onExportLogsClick = {}
     )
 }
 
@@ -86,7 +86,7 @@ fun SelfHostNetworkWithPathSetupScreenPreview() {
         onLocalOnlyClicked = {},
         onSelfHostNetworkClicked = {},
         onSetSelfHostConfigConfigClicked = {},
-        onUseYamuxToggled = {}
+        onExportLogsClick = {}
     )
 }
 
@@ -103,7 +103,7 @@ fun LocalNetworkWithPathSetupScreenPreview() {
         onLocalOnlyClicked = {},
         onSelfHostNetworkClicked = {},
         onSetSelfHostConfigConfigClicked = {},
-        onUseYamuxToggled = {}
+        onExportLogsClick = {}
     )
 }
 
@@ -114,7 +114,7 @@ fun NetworkSetupScreen(
     onAnytypeNetworkClicked: () -> Unit,
     onSelfHostNetworkClicked: () -> Unit,
     onSetSelfHostConfigConfigClicked: () -> Unit,
-    onUseYamuxToggled: () -> Unit
+    onExportLogsClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -148,19 +148,19 @@ fun NetworkSetupScreen(
             color = NetworkSettingDescriptionColor,
             textPaddingStart = 0.dp
         )
-        UseYamuxCard(config = config, onUseYamuxToggled = onUseYamuxToggled)
+        ExportLogs(onExportLogsClick = onExportLogsClick)
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
 @Composable
-private fun UseYamuxCard(config: NetworkModeConfig, onUseYamuxToggled: () -> Unit) {
+private fun ExportLogs(onExportLogsClick: () -> Unit) {
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .fillMaxWidth()
             .background(color = NetworkSettingCardColor)
-            .noRippleClickable { onUseYamuxToggled() }
+            .noRippleClickable { onExportLogsClick() }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -170,19 +170,11 @@ private fun UseYamuxCard(config: NetworkModeConfig, onUseYamuxToggled: () -> Uni
             )
         ) {
             Text(
-                text = stringResource(id = R.string.settings_use_yamux),
+                text = stringResource(id = R.string.settings_share_local_logs),
                 style = BodyCalloutRegular,
                 color = NetworkSettingTitleColor,
                 modifier = Modifier.weight(1.0f)
             )
-            if (config.useReserveMultiplexLib) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_network_settings_checked),
-                    contentDescription = "Check icon"
-                )
-            } else {
-                Spacer(modifier = Modifier.size(24.dp))
-            }
         }
     }
 }

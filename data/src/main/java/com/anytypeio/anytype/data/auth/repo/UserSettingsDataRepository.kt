@@ -131,4 +131,12 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
     ) {
         cache.setDateFormat(account, format)
     }
+
+    override suspend fun setRecentlyUsedChatReactions(account: Account, emojis: Set<String>) {
+        cache.setRecentlyUsedChatReactions(account, emojis)
+    }
+
+    override fun observeRecentlyUsedChatReactions(account: Account,): Flow<List<String>> {
+        return cache.observeRecentlyUsedChatReactions(account)
+    }
 }

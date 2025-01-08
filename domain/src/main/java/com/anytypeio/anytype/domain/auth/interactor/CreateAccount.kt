@@ -35,7 +35,6 @@ open class CreateAccount @Inject constructor(
             icon = params.iconGradientValue,
             networkMode = networkMode.networkMode,
             networkConfigFilePath = networkMode.storedFilePath,
-            preferYamuxTransport = networkMode.useReserveMultiplexLib
         )
         val setup = repository.createAccount(command)
         with(repository) {

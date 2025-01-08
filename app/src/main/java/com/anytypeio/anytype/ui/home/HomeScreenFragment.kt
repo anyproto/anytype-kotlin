@@ -65,7 +65,10 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.chats.ChatReactionFragment
+import com.anytypeio.anytype.ui.chats.SelectChatReactionFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -122,7 +125,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
-                if (featureToggles.isNewSpaceHomeEnabled || space == SPACE_WITH_SPACE_LEVEL_CHAT) {
+                if (featureToggles.isNewSpaceHomeEnabled || spacesWithSpaceLevelChat.contains(space)) {
                     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
 
@@ -160,7 +163,9 @@ class HomeScreenFragment : BaseComposeFragment(),
                                     pagerState.animateScrollToPage(1)
                                 }
                             },
-                            onSpaceIconClicked = vm::onSpaceSettingsClicked
+                            onSpaceIconClicked = vm::onSpaceSettingsClicked,
+                            membersCount = view?.membersCount ?: 0,
+                            name = view?.space?.name.orEmpty()
                         )
                         HorizontalPager(
                             modifier = Modifier
@@ -171,7 +176,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                         ) { page ->
                             if (page == 0) {
                                 focus.clearFocus(force = true)
-                                PageWithWidgets()
+                                PageWithWidgets(showSpaceWidget = false)
                             } else {
                                 DiscussionScreenWrapper(
                                     isSpaceLevelChat = true,
@@ -184,6 +189,43 @@ class HomeScreenFragment : BaseComposeFragment(),
                                     },
                                     onMarkupLinkClicked = {
                                         proceedWithAction(SystemAction.OpenUrl(it))
+                                    },
+                                    onRequestOpenFullScreenImage = { url ->
+                                        findNavController().navigate(
+                                            R.id.fullScreenImageFragment,
+                                            FullScreenPictureFragment.args(
+                                                url = url
+                                            )
+                                        )
+                                    },
+                                    onSelectChatReaction = {
+                                        runCatching {
+                                            findNavController().navigate(
+                                                R.id.selectChatReactionScreen,
+                                                SelectChatReactionFragment.args(
+                                                    space = Space(space),
+                                                    chat = spaceLevelChatViewModel.chat,
+                                                    msg = it
+                                                )
+                                            )
+                                        }.onFailure {
+                                            Timber.e(it, "Error while opening chat-reaction picker")
+                                        }
+                                    },
+                                    onViewChatReaction = { msg, emoji ->
+                                        runCatching {
+                                            findNavController().navigate(
+                                                R.id.chatReactionScreen,
+                                                ChatReactionFragment.args(
+                                                    space = Space(space),
+                                                    chat = spaceLevelChatViewModel.chat,
+                                                    msg = msg,
+                                                    emoji = emoji
+                                                )
+                                            )
+                                        }.onFailure {
+                                            Timber.e(it, "Error while opening a chat reaction")
+                                        }
                                     }
                                 )
                             }
@@ -253,10 +295,12 @@ class HomeScreenFragment : BaseComposeFragment(),
     }
 
     @Composable
-    fun PageWithWidgets() {
+    fun PageWithWidgets(
+        showSpaceWidget: Boolean = true
+    ) {
         HomeScreen(
             modifier = Modifier,
-            widgets = vm.views.collectAsState().value,
+            widgets = if (showSpaceWidget) vm.views.collectAsState().value else vm.views.collectAsState().value.filter { it !is WidgetView.SpaceWidget },
             mode = vm.mode.collectAsState().value,
             onExpand = { path -> vm.onExpand(path) },
             onCreateWidget = vm::onCreateWidgetClicked,
@@ -564,7 +608,9 @@ class HomeScreenFragment : BaseComposeFragment(),
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        if (!featureToggles.isNewSpaceHomeEnabled && space != SPACE_WITH_SPACE_LEVEL_CHAT) {
+        if (featureToggles.isNewSpaceHomeEnabled || spacesWithSpaceLevelChat.contains(space)) {
+            // Do nothing.
+        } else {
             super.onApplyWindowRootInsets(view)
         }
         // Do not apply window insets on fragment container.
@@ -576,9 +622,14 @@ class HomeScreenFragment : BaseComposeFragment(),
         const val SPACE_ID_KEY = "arg.home-screen.space-id"
 
         /**
-         * Temporary space for beta-testing space-level chat
+         * Spaces for beta-testing space-level chats
          */
-        const val SPACE_WITH_SPACE_LEVEL_CHAT = "bafyreiezhzb4ggnhjwejmh67pd5grilk6jn3jt7y2rnfpbkjwekilreola.1t123w9f2lgn5"
+
+        val spacesWithSpaceLevelChat = listOf(
+            "bafyreiezhzb4ggnhjwejmh67pd5grilk6jn3jt7y2rnfpbkjwekilreola.1t123w9f2lgn5",
+            "bafyreifikxj75r4duzhqxqelmi66rwlzqml5jnad35dnukxwlawtfrql5a.21584urzltddb",
+            "bafyreia4jsiobrq7ptpuxsv6nmpj4vis7o5p73yibjb5w4crhxl2oqocoq.9tkr2p3mb0pj"
+        )
 
         fun args(
             space: Id,

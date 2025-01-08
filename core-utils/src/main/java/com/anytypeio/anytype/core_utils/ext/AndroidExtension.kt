@@ -186,18 +186,6 @@ fun EditText.multilineIme(action: Int) {
     maxLines = Integer.MAX_VALUE
 }
 
-fun TextView.getCursorOffsetY(): Int? =
-    (parent as? ViewGroup)?.let { parentView ->
-        val start = selectionStart
-        with(layout) {
-            val line = getLineForOffset(start)
-            val baseLine = getLineBaseline(line)
-            val ascent = getLineAscent(line)
-            val y = baseLine + ascent
-            return y + parentView.top
-        }
-    }
-
 fun View.indentize(indent: Int, defIndent: Int, margin: Int) {
     updateLayoutParams<RecyclerView.LayoutParams> {
         apply {
@@ -347,10 +335,6 @@ class GetImageContract : ActivityResultContract<Int, Uri?>() {
     }
 }
 
-fun NavController.safeNavigate(direction: NavDirections) {
-    currentDestination?.getAction(direction.actionId)?.run { navigate(direction) }
-}
-
 fun NavController.safeNavigate(
     @IdRes currentDestinationId: Int,
     @IdRes id: Int,
@@ -379,6 +363,21 @@ fun Fragment.shareFirstFileFromPath(path: String, uriFileProvider: UriFileProvid
             }
         } else {
             toast("Directory does not exist or is not a directory.")
+        }
+    } catch (e: Exception) {
+        Timber.e(e, "Error while sharing file")
+        toast("Could not share file: ${e.message}")
+    }
+}
+
+fun Fragment.shareFileFromPath(path: String, uriFileProvider: UriFileProvider) {
+    try {
+        val dirPath = File(path)
+        if (dirPath.exists()) {
+            val uri = uriFileProvider.getUriForFile(dirPath)
+            shareFile(uri)
+        } else {
+            toast("File does not exist.")
         }
     } catch (e: Exception) {
         Timber.e(e, "Error while sharing file")
@@ -422,38 +421,6 @@ fun Intent.parseActionSendUri() : String? {
     } else {
         null
     }
-}
-
-inline fun <T1 : Any, T2 : Any, R : Any> Pair<T1?, T2?>.letNotNull(block: (T1, T2) -> R): R? {
-    return if (first != null && second != null) {
-        block(first!!, second!!)
-    } else {
-        null
-    }
-}
-
-fun getDeviceName(): String {
-    val manufacturer = Build.MANUFACTURER.capitalize()
-    val model = Build.MODEL.capitalize()
-    return if (model.startsWith(manufacturer, ignoreCase = true)) {
-        model
-    } else {
-        "$manufacturer $model"
-    }
-}
-
-fun bytesToHumanReadableSize(bytes: Long): String = when {
-    bytes >= 1 shl 30 -> "%d GB".format((bytes / (1 shl 30)).toInt())
-    bytes >= 1 shl 20 -> "%d MB".format((bytes / (1 shl 20)).toInt())
-    bytes >= 1 shl 10 -> "%d kB".format((bytes / (1 shl 10)).toInt())
-    else -> "$bytes bytes"
-}
-
-fun bytesToHumanReadableSizeFloatingPoint(bytes: Long): String = when {
-    bytes >= 1 shl 30 -> "%.1f GB".format((bytes / (1 shl 30).toDouble()))
-    bytes >= 1 shl 20 -> "%.1f MB".format((bytes / (1 shl 20).toDouble()))
-    bytes >= 1 shl 10 -> "%.1f kB".format((bytes / (1 shl 10).toDouble()))
-    else -> "$bytes bytes"
 }
 
 fun bytesToHumanReadableSizeLocal(bytes: Long): String = when {

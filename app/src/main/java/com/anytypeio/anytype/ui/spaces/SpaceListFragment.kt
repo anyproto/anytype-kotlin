@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceListScreen
 import com.anytypeio.anytype.core_ui.foundation.Warning
@@ -29,6 +30,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceListViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class SpaceListFragment : BaseBottomSheetComposeFragment() {
 
@@ -53,7 +55,16 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                     state = vm.state.collectAsStateWithLifecycle().value,
                     onDeleteSpaceClicked = vm::onDeleteSpaceClicked,
                     onLeaveSpaceClicked = vm::onLeaveSpaceClicked,
-                    onCancelJoinRequestClicked = vm::onCancelJoinSpaceClicked
+                    onCancelJoinRequestClicked = vm::onCancelJoinSpaceClicked,
+                    onCreateSpaceClicked = {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.actionCreateSpaceFromVault
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while opening create-space screen from vault")
+                        }
+                    }
                 )
             }
 

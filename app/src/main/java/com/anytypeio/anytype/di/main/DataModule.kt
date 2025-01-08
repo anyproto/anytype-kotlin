@@ -337,8 +337,9 @@ object DataModule {
     @Provides
     @Singleton
     fun provideFileProvider(
-        context: Context
-    ): UriFileProvider = DefaultUriFileProvider(context)
+        context: Context,
+        logger: Logger
+    ): UriFileProvider = DefaultUriFileProvider(context, logger)
 
     @JvmStatic
     @Provides

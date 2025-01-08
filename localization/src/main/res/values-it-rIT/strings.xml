@@ -467,6 +467,7 @@
     <string name="open_source">Apri fonte</string>
     <string name="reload_object_content">Ricarica contenuto dell\'oggetto</string>
     <string name="open_link">Apri collegamento</string>
+    <string name="open_file">Apri file</string>
     <string name="copy_email">Copia email</string>
     <string name="copy_phone_number">Copia numero di telefono</string>
     <string name="send_email">Invia email</string>
@@ -1094,6 +1095,7 @@
     <string name="dates_days_ago">%1$s giorni fa</string>
     <string name="dates_days_from">%1$s giorni da adesso</string>
     <string name="settings_use_yamux">Usa una libreria multiplex di riserva</string>
+    <string name="settings_share_local_logs">Condividi i log locali</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">La vista Kanban non è ancora disponibile su mobile.\nCambia tipo di visualizzazione (Impostazioni -&gt; Vista) o crea una nuova per accedere ai tuoi dati.</string>
     <string name="error_calendar_view_not_supported">La vista Calendario non è ancora disponibile su mobile.\nCambia tipo di visualizzazione (Impostazioni -&gt; Vista) o crea una nuova per accedere ai tuoi dati.\"</string>
@@ -1562,7 +1564,7 @@ Please provide specific details of your needs here.</string>
     <string name="chats_message_edited">modificato</string>
     <string name="chat_empty_state_message">Non ci sono ancora messaggi.\nSii il primo ad avviare una discussione.</string>
     <string name="write_a_message">Scrivi un messaggio...</string>
-    <string name="date_layout_mentioned_in">Menzionato in</string>
+    <string name="date_layout_mentioned_in">Menzioni</string>
     <string name="date_layout_empty_items">Non c\'è ancora nulla per questa data</string>
     <string name="date_layout_alert_date_out_of_range">La data selezionata non rientra nell\'intervallo valido (anni da %1$d a %2$d). Selezionare una data compresa in questo intervallo.</string>
     <string name="date_layout_item_created_by">da</string>
@@ -1571,6 +1573,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_media">Carica i media</string>
     <string name="chat_attachment_upload">Carica</string>
     <string name="chats_reply">Rispondi</string>
+    <string name="chats_add_reaction">Aggiungi una Reazione</string>
     <string name="day_of_week_monday">Lunedì</string>
     <string name="day_of_week_tuesday">Martedì</string>
     <string name="day_of_week_wednesday">Mercoledì</string>
@@ -1578,4 +1581,21 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_friday">Venerdì</string>
     <string name="day_of_week_saturday">Sabato</string>
     <string name="day_of_week_sunday">Domenica</string>
+    <string name="file">File</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Crea il tuo primo spazio per iniziare</string>
+    <string name="space_list_empty_state_it_is_empty_here">È vuoto qui.</string>
+    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
+    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
+    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
+    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
+    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_objects">Oggetti</string>
+    <string name="emoji_category_symbols">Symbols</string>
+    <string name="emoji_category_flags">Flags</string>
+    <string name="emoji_recently_used_section">Recently used</string>
+    <string name="chat_message_reactions_no_reactions_yet">Ancora nessuna reazione</string>
+    <string name="chat_message_reactions_no_reactions_message">Probabilmente qualcuno ha appena rimosso la reazione o si è verificato un problema tecnico</string>
+    <string name="object_types_human">Human</string>
+    <string name="chats_alert_delete_this_message_description">Non può essere ripristinato dopo la conferma</string>
+    <string name="chats_alert_delete_this_message">Eliminare questo messaggio?</string>
 </resources>

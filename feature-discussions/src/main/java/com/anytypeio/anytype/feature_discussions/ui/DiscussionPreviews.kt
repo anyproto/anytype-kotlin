@@ -68,7 +68,9 @@ fun DiscussionPreview() {
         onAttachmentClicked = {},
         onEditMessage = {},
         onMarkupLinkClicked = {},
-        onReplyMessage = {}
+        onReplyMessage = {},
+        onAddReactionClicked = {},
+        onViewChatReaction = { a, b -> }
     )
 }
 
@@ -123,7 +125,9 @@ fun DiscussionScreenPreview() {
         chatBoxMode = DiscussionViewModel.ChatBoxMode.Default,
         onClearReplyClicked = {},
         onChatBoxMediaPicked = {},
-        onChatBoxFilePicked = {}
+        onChatBoxFilePicked = {},
+        onAddReactionClicked = {},
+        onViewChatReaction = { a, b -> }
     )
 }
 
@@ -149,7 +153,9 @@ fun BubblePreview() {
         onEditMessage = {},
         onMarkupLinkClicked = {},
         onReply = {},
-        onScrollToReplyClicked = {}
+        onScrollToReplyClicked = {},
+        onAddReactionClicked = {},
+        onViewChatReaction = {}
     )
 }
 
@@ -176,7 +182,9 @@ fun BubbleEditedPreview() {
         onEditMessage = {},
         onMarkupLinkClicked = {},
         onReply = {},
-        onScrollToReplyClicked = {}
+        onScrollToReplyClicked = {},
+        onAddReactionClicked = {},
+        onViewChatReaction = {}
     )
 }
 
@@ -202,7 +210,8 @@ fun BubbleWithAttachmentPreview() {
             add(
                 DiscussionView.Message.Attachment.Link(
                     target = "ID",
-                    wrapper = null
+                    wrapper = null,
+                    typeName = "Page"
                 )
             )
         },
@@ -210,6 +219,8 @@ fun BubbleWithAttachmentPreview() {
         onEditMessage = {},
         onMarkupLinkClicked = {},
         onReply = {},
-        onScrollToReplyClicked = {}
+        onScrollToReplyClicked = {},
+        onAddReactionClicked = {},
+        onViewChatReaction = {}
     )
 }

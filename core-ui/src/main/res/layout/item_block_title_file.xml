@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/cover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/objectIconWidget"
+        android:layout_width="64dp"
+        android:layout_height="80dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="80dp"
+        app:imageSize="80dp"
+        tools:src="@drawable/ic_mime_pdf"
+        android:background="@drawable/bg_title_file_icon"
+        android:transitionName="@string/logo_transition"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+        android:id="@+id/title"
+        style="@style/BlockTitleContentStyle"
+        android:layout_width="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:hint="@string/untitled"
+        android:paddingTop="0dp"
+        app:ignoreDragAndDrop="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/objectIconWidget"
+        app:onlyPasteAsPlaneText="true"
+        app:layout_goneMarginTop="@dimen/dp_80"
+        tools:text="Check new Android version multiline"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

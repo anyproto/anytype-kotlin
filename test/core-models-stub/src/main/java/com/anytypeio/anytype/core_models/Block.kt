@@ -94,9 +94,11 @@ fun StubFile(
     backgroundColor: String? = null,
     targetObjectId: Id = MockDataFactory.randomString(),
     name: String = MockDataFactory.randomString(),
+    mime: String = MockDataFactory.randomString(),
     size: Long = MockDataFactory.randomLong(),
-    type: Block.Content.File.Type? = null,
-    state: Block.Content.File.State? = null,
+    type: Block.Content.File.Type = Block.Content.File.Type.FILE,
+    state: Block.Content.File.State = Block.Content.File.State.DONE,
+    addedAt: Long = MockDataFactory.randomLong()
 ) : Block = Block(
     id = id,
     children = children,
@@ -107,7 +109,9 @@ fun StubFile(
         name = name,
         targetObjectId = targetObjectId,
         type = type,
-        state = state
+        state = state,
+        mime = mime,
+        addedAt = addedAt
     )
 )
 

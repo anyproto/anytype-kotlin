@@ -74,19 +74,11 @@ sealed class ObjectWrapper {
 
         val featuredRelations: List<Key> get() = getValues(Relations.FEATURED_RELATIONS)
 
-        val smartBlockTypes: List<Double>
-            get() = when (val value = map[Relations.SMARTBLOCKTYPES]) {
-                is Double -> listOf(value)
-                is List<*> -> value.typeOf()
-                else -> emptyList()
-            }
-
         fun isEmpty(): Boolean = map.isEmpty()
 
         val relationKey: String by default
         val isFavorite: Boolean? by default
         val isHidden: Boolean? by default
-        val isReadonly: Boolean? by default
 
         val relationFormat: RelationFormat?
             get() = when (val value = map[Relations.RELATION_FORMAT]) {
@@ -145,9 +137,6 @@ sealed class ObjectWrapper {
         val targetSpaceId: Id? by default
 
         val backlinks get() = getValues<Id>(Relations.BACKLINKS)
-
-        val readersLimit: Double? by default
-        val writersLimit: Double? by default
     }
 
     /**

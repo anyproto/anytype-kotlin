@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsDictionary.Routes.objDate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.searchScreenShow
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
@@ -22,7 +21,6 @@ import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.COLLECTION_MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.Marketplace.SET_MARKETPLACE_ID
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
@@ -83,7 +81,6 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
-import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -223,7 +220,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectionMenuEvent
@@ -233,7 +229,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSlashMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.extension.sendHideKeyboardEvent
-import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.mark
@@ -259,13 +254,13 @@ import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.O
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDateSelected
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTomorrowClick
+import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
+import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
-import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
 import com.anytypeio.anytype.presentation.relations.getObjectRelations
@@ -296,8 +291,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -365,8 +358,6 @@ class EditorViewModel(
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
-
-    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
     val isUndoEnabled = MutableStateFlow(false)
     val isRedoEnabled = MutableStateFlow(false)
@@ -442,7 +433,6 @@ class EditorViewModel(
     init {
         Timber.i("EditorViewModel, init")
         proceedWithObservingPermissions()
-        proceedWithObservingProfileIcon()
         startHandlingTextChanges()
         startProcessingFocusChanges()
         startProcessingControlPanelViewState()
@@ -486,35 +476,6 @@ class EditorViewModel(
                 .collect {
                     permission.value = it
                 }
-        }
-    }
-
-    private fun proceedWithObservingProfileIcon() {
-        viewModelScope.launch {
-            spaceManager
-                .observe()
-                .flatMapLatest { config ->
-                    storelessSubscriptionContainer.subscribe(
-                        StoreSearchByIdsParams(
-                            space = SpaceId(config.techSpace),
-                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                            targets = listOf(config.profile),
-                            keys = listOf(
-                                Relations.ID,
-                                Relations.NAME,
-                                Relations.ICON_EMOJI,
-                                Relations.ICON_IMAGE,
-                                Relations.ICON_OPTION
-                            )
-                        )
-                    ).map { result ->
-                        val obj = result.firstOrNull()
-                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
-                    }
-                }
-                .catch { Timber.e(it, "Error while observing space icon") }
-                .flowOn(dispatchers.io)
-                .collect { icon.value = it }
         }
     }
 
@@ -824,6 +785,7 @@ class EditorViewModel(
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 Timber.d("Rendering starting...")
                 val doc = models.asMap().render(
+                    context = context,
                     mode = mode,
                     root = root,
                     focus = focus,
@@ -2379,12 +2341,12 @@ class EditorViewModel(
 
     private fun onAddLocalVideoClicked(blockId: String) {
         currentMediaUploadDescription = Media.Upload.Description(blockId, Mimetype.MIME_VIDEO_ALL)
-        dispatch(Command.OpenGallery(mimeType = Mimetype.MIME_VIDEO_ALL))
+        dispatch(Command.OpenVideoPicker)
     }
 
     private fun onAddLocalPictureClicked(blockId: String) {
         currentMediaUploadDescription = Media.Upload.Description(blockId, Mimetype.MIME_IMAGE_ALL)
-        dispatch(Command.OpenGallery(mimeType = Mimetype.MIME_IMAGE_ALL))
+        dispatch(Command.OpenPhotoPicker)
     }
 
     fun onTogglePlaceholderClicked(target: Id) {
@@ -2415,7 +2377,7 @@ class EditorViewModel(
 
     private fun onAddLocalFileClicked(blockId: String) {
         currentMediaUploadDescription = Media.Upload.Description(blockId, Mimetype.MIME_FILE_ALL)
-        dispatch(Command.OpenGallery(mimeType = Mimetype.MIME_FILE_ALL))
+        dispatch(Command.OpenFilePicker)
     }
 
     fun onAddFileBlockClicked(type: Content.File.Type) {
@@ -3827,8 +3789,8 @@ class EditorViewModel(
             }
             is ListenerType.File.View -> {
                 when (mode) {
-                    EditorMode.Edit -> onFileClicked(clicked.target)
-                    EditorMode.Locked, EditorMode.Read -> onFileClicked(clicked.target)
+                    EditorMode.Edit -> onFileBlockClicked(clicked.target)
+                    EditorMode.Locked, EditorMode.Read -> onFileBlockClicked(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -3859,8 +3821,7 @@ class EditorViewModel(
                     EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         val fileBlock = blocks.find { it.id == clicked.target }
                         val url = urlBuilder.getUrlForFileBlock(
-                            fileBlock = fileBlock,
-                            isOriginalImage = true
+                            fileBlock = fileBlock
                         )
                         if (url != null ) {
                             dispatch(
@@ -4284,85 +4245,76 @@ class EditorViewModel(
         }
     }
 
-    private fun onFileClicked(blockId: String) {
-        val fileBlock = blocks.find { it.id == blockId }
-        val url = urlBuilder.getUrlForFileBlock(
-            fileBlock = fileBlock
-        )
-        if (url != null) {
-            dispatch(
-                Command.OpenFileByDefaultApp(
-                    id = blockId,
-                    uri = url
-                )
+    private fun onFileBlockClicked(blockId: String) {
+        dispatch(
+            Command.OpenFileByDefaultApp(
+                id = blockId
             )
-        } else {
-            Timber.e("Block is not File or with wrong state, can't proceed with open")
-            sendToast("Something went wrong. Couldn't open file.")
-        }
+        )
     }
 
     fun startSharingFile(id: String, onDownloaded: (Uri) -> Unit = {}) {
-
-        Timber.d("startDownloadingFile, id:[$id]")
-
+        Timber.d("startSharingFile, fileBlockId: [$id]")
         sendToast("Preparing file to share...")
 
-        val block = blocks.firstOrNull { it.id == id }
-        val content = block?.content
+        val fileDetails = blocks.getFileDetailsForBlock(id, orchestrator, fieldParser) ?: return
+        val (content, targetObjectId, fileName) = fileDetails
 
-        if (content is Content.File && content.state == Content.File.State.DONE) {
-            viewModelScope.launch {
-                orchestrator.proxies.intents.send(
-                    Media.ShareFile(
-                        objectId = content.targetObjectId.orEmpty(),
-                        name = content.name.orEmpty(),
-                        type = content.type,
-                        onDownloaded = onDownloaded
-                    )
+        Timber.d("startSharingFile, fileObjectId: [$targetObjectId], fileName: [$fileName]")
+
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Media.ShareFile(
+                    objectId = targetObjectId,
+                    name = fileName,
+                    type = content.type,
+                    onDownloaded = onDownloaded
                 )
-            }
-        } else {
-            Timber.e("Block is not File or with wrong state, can't proceed with share!")
+            )
         }
     }
 
-    fun startDownloadingFileFromBlock(blockId: Id) {
-
-        Timber.d("startDownloadingFile, for block:[$blockId]")
-
+    fun startDownloadingFileFromBlock(id: Id) {
+        Timber.d("startDownloadingFile, for block:[$id]")
         sendToast("Downloading file in background...")
 
-        val fileBlock = blocks.firstOrNull { it.id == blockId }
-        val fileContent = fileBlock?.content as? Content.File
-        val url = urlBuilder.getUrlForFileBlock(fileBlock)
-        
-        if (fileContent != null && url != null) {
+        val fileDetails = blocks.getFileDetailsForBlock(id, orchestrator, fieldParser) ?: return
+        val (content, targetObjectId, fileName) = fileDetails
+
+        val url = urlBuilder.getUrlForFileContent(
+            fileContent = content,
+            isOriginalImage = true
+        )
+
+        Timber.d("startDownloadingFileFromBlock, fileObjectId: [$targetObjectId], fileName: [$fileName], url: [$url]")
+
+        if (url != null) {
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Media.DownloadFile(
                         url = url,
-                        name = fileContent.name.orEmpty(),
-                        type = fileContent.type
+                        name = fileName,
+                        type = content.type
                     )
                 )
             }
         } else {
-            Timber.e("Block is not File or with wrong state, can't proceed with download")
+            Timber.e("Couldn't proceed with downloading file, because url is null")
             sendToast("Something went wrong. Couldn't download file.")
         }
     }
 
     private fun proceedWithDownloadCurrentObjectAsFile() {
 
-        val details = orchestrator.stores.details.current()
-        val objectDetails = details.details[context]?.map ?: return
-        if (objectDetails.isEmpty()) return
-        val obj = ObjectWrapper.Basic(objectDetails)
+        val fileObject = orchestrator.stores.details.getAsObject(target = context)
+        if (fileObject == null) {
+            Timber.e("Object with id $context not found.")
+            return
+        }
 
-        Timber.d("startDownloadingFileAsObject, for object:[$obj]")
+        Timber.d("startDownloadingFileAsObject, for object:[$context]")
 
-        val layout = obj.layout
+        val layout = fileObject.layout
 
         if (layout == null || layout !in SupportedLayouts.fileLayouts) {
             Timber.e("Object with layout:$layout is not Media, can't proceed with download")
@@ -4373,7 +4325,7 @@ class EditorViewModel(
         sendToast("Downloading file in background...")
 
         val url = urlBuilder.getUrlBasedOnFileLayout(
-            obj = obj.id,
+            obj = fileObject.id,
             layout = layout
         )
 
@@ -4382,7 +4334,7 @@ class EditorViewModel(
                 orchestrator.proxies.intents.send(
                     Media.DownloadFile(
                         url = url,
-                        name = fieldParser.getObjectName(obj),
+                        name = fieldParser.getObjectName(fileObject),
                         type = null
                     )
                 )

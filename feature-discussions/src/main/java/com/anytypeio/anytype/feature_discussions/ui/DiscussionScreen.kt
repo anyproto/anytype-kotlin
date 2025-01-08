@@ -2,6 +2,7 @@ package com.anytypeio.anytype.feature_discussions.ui
 
 import android.content.res.Configuration
 import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,19 +13,23 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,7 +56,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -106,10 +113,16 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
+import com.anytypeio.anytype.core_ui.foundation.Warning
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -120,12 +133,12 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.fontIBM
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
-import com.anytypeio.anytype.core_utils.ext.parsePath
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
@@ -135,8 +148,10 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.Async
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscussionScreenWrapper(
     isSpaceLevelChat: Boolean = false,
@@ -145,7 +160,12 @@ fun DiscussionScreenWrapper(
     onAttachObjectClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
+    onRequestOpenFullScreenImage: (String) -> Unit,
+    onSelectChatReaction: (String) -> Unit,
+    onViewChatReaction: (Id, String) -> Unit
 ) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    var showReactionSheet by remember { mutableStateOf(false) }
     val context = LocalContext.current
     NavHost(
         navController = rememberNavController(),
@@ -207,8 +227,31 @@ fun DiscussionScreenWrapper(
                         vm.onChatBoxMediaPicked(uris.map { it.parseImagePath(context = context) })
                     },
                     onChatBoxFilePicked = { uris ->
-                        // TODO parse path and path it vm.
-                    }
+                        val infos = uris.mapNotNull { uri ->
+                            val cursor = context.contentResolver.query(
+                                uri,
+                                null,
+                                null,
+                                null,
+                                null
+                            )
+                            if (cursor != null) {
+                                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                                val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                                cursor.moveToFirst()
+                                DefaultFileInfo(
+                                    uri = uri.toString(),
+                                    name = cursor.getString(nameIndex),
+                                    size = cursor.getLong(sizeIndex).toInt()
+                                )
+                            } else {
+                                null
+                            }
+                        }
+                        vm.onChatBoxFilePicked(infos)
+                    },
+                    onAddReactionClicked = onSelectChatReaction,
+                    onViewChatReaction = onViewChatReaction
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -219,10 +262,28 @@ fun DiscussionScreenWrapper(
                             is UXCommand.SetChatBoxInput -> {
                                 // TODO
                             }
+                            is UXCommand.OpenFullScreenImage -> {
+                                onRequestOpenFullScreenImage(command.url)
+                            }
                         }
                     }
                 }
             }
+        }
+    }
+    if (showReactionSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showReactionSheet = false
+            },
+            sheetState = sheetState,
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            dragHandle = null
+        ) {
+            SelectChatReactionScreen(
+                onEmojiClicked = {}
+            )
         }
     }
 }
@@ -258,7 +319,9 @@ fun DiscussionScreen(
     onAttachFileClicked: () -> Unit,
     onUploadAttachmentClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
-    onChatBoxFilePicked: (List<Uri>) -> Unit
+    onChatBoxFilePicked: (List<Uri>) -> Unit,
+    onAddReactionClicked: (String) -> Unit,
+    onViewChatReaction: (Id, String) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -314,7 +377,9 @@ fun DiscussionScreen(
                     onReplyMessage(it)
                     chatBoxFocusRequester.requestFocus()
                 },
-                onMarkupLinkClicked = onMarkupLinkClicked
+                onMarkupLinkClicked = onMarkupLinkClicked,
+                onAddReactionClicked = onAddReactionClicked,
+                onViewChatReaction = onViewChatReaction
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -543,12 +608,8 @@ private fun ChatBox(
                                     painter = painterResource(R.drawable.ic_clear_chatbox_attachment),
                                     contentDescription = "Clear attachment icon",
                                     modifier = Modifier
-                                        .align(
-                                            Alignment.TopEnd
-                                        )
-                                        .padding(
-                                            top = 6.dp
-                                        )
+                                        .align(Alignment.TopEnd)
+                                        .padding(top = 6.dp)
                                         .noRippleClickable {
                                             onClearAttachmentClicked(attachment)
                                         }
@@ -558,7 +619,37 @@ private fun ChatBox(
                     }
                     is DiscussionView.Message.ChatBoxAttachment.File -> {
                         item {
-                            Text(text = attachment.uri)
+                            Box {
+                                AttachedObject(
+                                    modifier = Modifier
+                                        .padding(
+                                            top = 12.dp,
+                                            end = 4.dp
+                                        )
+                                        .width(216.dp),
+                                    title = attachment.name,
+                                    type = stringResource(R.string.file),
+                                    icon = ObjectIcon.File(
+                                        mime = null,
+                                        fileName = null
+                                    ),
+                                    onAttachmentClicked = {
+                                        // TODO
+                                    }
+                                )
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
+                                    contentDescription = "Close icon",
+                                    modifier = Modifier
+                                        .align(
+                                            Alignment.TopEnd
+                                        )
+                                        .padding(top = 6.dp)
+                                        .noRippleClickable {
+                                            onClearAttachmentClicked(attachment)
+                                        }
+                                )
+                            }
                         }
                     }
                 }
@@ -721,24 +812,24 @@ private fun ChatBox(
                                 )
                             }
                         )
-//                        Divider(
-//                            paddingStart = 0.dp,
-//                            paddingEnd = 0.dp
-//                        )
-//                        DropdownMenuItem(
-//                            text = {
-//                                Text(
-//                                    text = stringResource(R.string.chat_attachment_file),
-//                                    color = colorResource(id = R.color.text_primary)
-//                                )
-//                            },
-//                            onClick = {
-//                                showDropdownMenu = false
-//                                uploadFileLauncher.launch(
-//                                    arrayOf("*/*")
-//                                )
-//                            }
-//                        )
+                        Divider(
+                            paddingStart = 0.dp,
+                            paddingEnd = 0.dp
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chat_attachment_file),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                showDropdownMenu = false
+                                uploadFileLauncher.launch(
+                                    arrayOf("*/*")
+                                )
+                            }
+                        )
                     }
                 }
             }
@@ -904,7 +995,9 @@ fun Messages(
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     onEditMessage: (DiscussionView.Message) -> Unit,
     onReplyMessage: (DiscussionView.Message) -> Unit,
-    onMarkupLinkClicked: (String) -> Unit
+    onMarkupLinkClicked: (String) -> Unit,
+    onAddReactionClicked: (String) -> Unit,
+    onViewChatReaction: (Id, String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     LazyColumn(
@@ -920,8 +1013,13 @@ fun Messages(
                 Spacer(modifier = Modifier.height(36.dp))
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp, vertical = 6.dp)
-                    .animateItem()
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                    .animateItem(),
+                horizontalArrangement = if (msg.isUserAuthor)
+                    Arrangement.End
+                else
+                    Arrangement.Start
             ) {
                 if (!msg.isUserAuthor) {
                     ChatUserAvatar(
@@ -930,11 +1028,12 @@ fun Messages(
                         modifier = Modifier.align(Alignment.Bottom)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                } else {
-                    Spacer(modifier = Modifier.width(40.dp))
                 }
                 Bubble(
-                    modifier = Modifier.weight(1.0f),
+                    modifier = Modifier.padding(
+                        start = if (msg.isUserAuthor) 32.dp else 0.dp,
+                        end = if (msg.isUserAuthor) 0.dp else 32.dp
+                    ),
                     name = msg.author,
                     content = msg.content,
                     timestamp = msg.timestamp,
@@ -968,18 +1067,14 @@ fun Messages(
                                 scrollState.animateScrollToItem(index = idx)
                             }
                         }
+                    },
+                    onAddReactionClicked = {
+                        onAddReactionClicked(msg.id)
+                    },
+                    onViewChatReaction = { emoji ->
+                        onViewChatReaction(msg.id, emoji)
                     }
                 )
-                if (msg.isUserAuthor) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    ChatUserAvatar(
-                        msg = msg,
-                        avatar = msg.avatar,
-                        modifier = Modifier.align(Alignment.Bottom)
-                    )
-                } else {
-                    Spacer(modifier = Modifier.width(40.dp))
-                }
             }
             if (idx == messages.lastIndex) {
                 Spacer(modifier = Modifier.height(36.dp))
@@ -1079,10 +1174,7 @@ private fun ChatUserAvatar(
     }
 }
 
-val defaultBubbleColor = Color(0x99FFFFFF)
-val userMessageBubbleColor = Color(0x66000000)
-
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun Bubble(
     modifier: Modifier = Modifier,
@@ -1101,17 +1193,51 @@ fun Bubble(
     onReply: () -> Unit,
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
-    onScrollToReplyClicked: (DiscussionView.Message.Reply) -> Unit
+    onScrollToReplyClicked: (DiscussionView.Message.Reply) -> Unit,
+    onAddReactionClicked: () -> Unit,
+    onViewChatReaction: (String) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
+    var showDeleteMessageWarning by remember { mutableStateOf(false) }
+    if (showDeleteMessageWarning) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showDeleteMessageWarning = false
+            },
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            dragHandle = null
+        ) {
+            GenericAlert(
+                config = AlertConfig.WithTwoButtons(
+                    title = stringResource(R.string.chats_alert_delete_this_message),
+                    description = stringResource(R.string.chats_alert_delete_this_message_description),
+                    firstButtonText = stringResource(R.string.cancel),
+                    secondButtonText = stringResource(R.string.delete),
+                    secondButtonType = BUTTON_WARNING,
+                    firstButtonType = BUTTON_SECONDARY,
+                    icon = AlertConfig.Icon(
+                        gradient = GRADIENT_TYPE_RED,
+                        icon = R.drawable.ic_alert_question_warning
+                    )
+                ),
+                onFirstButtonClicked = {
+                    showDeleteMessageWarning = false
+                },
+                onSecondButtonClicked = {
+                    onDeleteMessage()
+                }
+            )
+        }
+    }
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .width(IntrinsicSize.Max)
             .background(
                 color = if (isUserAuthor)
-                    userMessageBubbleColor
+                    colorResource(R.color.navigation_panel_icon)
                 else
-                    defaultBubbleColor,
+                    colorResource(R.color.navigation_panel),
                 shape = RoundedCornerShape(20.dp)
             )
             .clip(RoundedCornerShape(20.dp))
@@ -1124,7 +1250,7 @@ fun Bubble(
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth()
-                    .height(54.dp)
+                    .height(52.dp)
                     .background(
                         color = colorResource(R.color.navigation_panel_icon),
                         shape = RoundedCornerShape(16.dp)
@@ -1158,11 +1284,14 @@ fun Bubble(
             }
         }
         Row(
-            modifier = Modifier.padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 12.dp
-            )
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = if (reply == null) 12.dp else 0.dp
+                ),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = name,
@@ -1171,10 +1300,11 @@ fun Bubble(
                     colorResource(id = R.color.text_white)
                 else
                     colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                modifier = Modifier.weight(1f)
+                maxLines = 1
             )
+            Spacer(Modifier.width(12.dp))
             Text(
+                modifier = Modifier.padding(top = 1.dp),
                 text = timestamp.formatTimeInMillis(
                     TIME_H24
                 ),
@@ -1189,8 +1319,8 @@ fun Bubble(
         Text(
             modifier = Modifier.padding(
                 top = 0.dp,
-                start = 16.dp,
-                end = 16.dp,
+                start = 12.dp,
+                end = 12.dp,
                 bottom = 0.dp
             ),
             text = buildAnnotatedString {
@@ -1222,6 +1352,7 @@ fun Bubble(
                                 else if (part.isStrike)
                                     TextDecoration.LineThrough
                                 else null,
+                                fontFamily = if (part.isCode) fontIBM else null,
                             )
                         ) {
                             append(part.part)
@@ -1244,42 +1375,12 @@ fun Bubble(
             else
                 colorResource(id = R.color.text_primary),
         )
-        attachments.forEach { attachment ->
-            when(attachment) {
-                is DiscussionView.Message.Attachment.Image -> {
-                    GlideImage(
-                        model = attachment.url,
-                        contentDescription = "Attachment image",
-                        contentScale = ContentScale.FillWidth,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .clip(shape = RoundedCornerShape(16.dp))
-                    )
-                }
-                is DiscussionView.Message.Attachment.Link -> {
-                    AttachedObject(
-                        modifier = Modifier
-                            .padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                top = 8.dp
-                            )
-                            .fillMaxWidth()
-                        ,
-                        title = attachment.wrapper?.name.orEmpty(),
-                        type = attachment.wrapper?.type?.firstOrNull().orEmpty(),
-                        icon = attachment.icon,
-                        onAttachmentClicked = {
-                            onAttachmentClicked(attachment)
-                        }
-                    )
-                }
-            }
-        }
+        BubbleAttachments(attachments, onAttachmentClicked)
         if (reactions.isNotEmpty()) {
             ReactionList(
                 reactions = reactions,
-                onReacted = onReacted
+                onReacted = onReacted,
+                onViewReaction = onViewChatReaction
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
@@ -1302,52 +1403,17 @@ fun Bubble(
             ) {
                 DropdownMenuItem(
                     text = {
-                        Row {
-                            Text(
-                                text = "\uD83D\uDC4D",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDC4D")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "❤\uFE0F",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("❤\uFE0F")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE02",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE02")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE2E",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE2E")
-                                    showDropdownMenu = false
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "\uD83D\uDE22",
-                                modifier = Modifier.noRippleClickable {
-                                    onReacted("\uD83D\uDE22")
-                                    showDropdownMenu = false
-                                }
-                            )
-                        }
+                        Text(
+                            text = stringResource(R.string.chats_add_reaction),
+                            color = colorResource(id = R.color.text_primary)
+                        )
                     },
                     onClick = {
-                        // Do nothing.
+                        onAddReactionClicked()
+                        showDropdownMenu = false
                     }
                 )
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -1360,19 +1426,23 @@ fun Bubble(
                         showDropdownMenu = false
                     }
                 )
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.copy),
-                            color = colorResource(id = R.color.text_primary)
-                        )
-                    },
-                    onClick = {
-                        onCopyMessage()
-                        showDropdownMenu = false
-                    }
-                )
+                if (content.msg.isNotEmpty()) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.copy),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            onCopyMessage()
+                            showDropdownMenu = false
+                        }
+                    )
+                }
                 if (isUserAuthor) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -1387,6 +1457,7 @@ fun Bubble(
                     )
                 }
                 if (isUserAuthor) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -1395,11 +1466,55 @@ fun Bubble(
                             )
                         },
                         onClick = {
-                            onDeleteMessage()
+                            showDeleteMessageWarning = true
                             showDropdownMenu = false
                         }
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalGlideComposeApi::class)
+private fun BubbleAttachments(
+    attachments: List<DiscussionView.Message.Attachment>,
+    onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit
+) {
+    attachments.forEach { attachment ->
+        when (attachment) {
+            is DiscussionView.Message.Attachment.Image -> {
+                GlideImage(
+                    model = attachment.url,
+                    contentDescription = "Attachment image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(8.dp)
+                        .clip(shape = RoundedCornerShape(16.dp))
+                        .clickable {
+                            onAttachmentClicked(attachment)
+                        }
+                )
+            }
+
+            is DiscussionView.Message.Attachment.Link -> {
+                AttachedObject(
+                    modifier = Modifier
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 8.dp
+                        )
+                        .fillMaxWidth(),
+                    title = attachment.wrapper?.name.orEmpty(),
+                    type = attachment.typeName,
+                    icon = attachment.icon,
+                    onAttachmentClicked = {
+                        onAttachmentClicked(attachment)
+                    }
+                )
             }
         }
     }
@@ -1489,7 +1604,7 @@ fun AttachedObject(
             }
         )
         Text(
-            text = title,
+            text = title.ifEmpty { stringResource(R.string.untitled) },
             modifier = Modifier.padding(
                 start = if (icon != ObjectIcon.None)
                     72.dp
@@ -1504,7 +1619,7 @@ fun AttachedObject(
             color = colorResource(id = R.color.text_primary)
         )
         Text(
-            text = type,
+            text = type.ifEmpty { stringResource(R.string.unknown_type) },
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(
@@ -1560,11 +1675,12 @@ fun GoToBottomButton(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ReactionList(
     reactions: List<DiscussionView.Message.Reaction>,
-    onReacted: (String) -> Unit
+    onReacted: (String) -> Unit,
+    onViewReaction: (String) -> Unit
 ) {
     FlowRow(
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
@@ -1594,9 +1710,14 @@ fun ReactionList(
                         else
                             Modifier
                     )
-                    .clickable {
-                        onReacted(reaction.emoji)
-                    }
+                    .combinedClickable(
+                        onClick = {
+                            onReacted(reaction.emoji)
+                        },
+                        onLongClick = {
+                            onViewReaction(reaction.emoji)
+                        }
+                    )
             ) {
                 Text(
                     text = reaction.emoji,
@@ -1666,7 +1787,8 @@ fun ReactionListPreview() {
                 isSelected = false
             )
         ),
-        onReacted = {}
+        onReacted = {},
+        onViewReaction = {}
     )
 }
 

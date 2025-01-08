@@ -467,6 +467,7 @@
     <string name="open_source">Quelle öffnen</string>
     <string name="reload_object_content">Objektinhalt neu laden</string>
     <string name="open_link">Link öffnen</string>
+    <string name="open_file">Datei öffnen</string>
     <string name="copy_email">E-Mail kopieren</string>
     <string name="copy_phone_number">Copy phone numbler</string>
     <string name="send_email">E-Mail senden</string>
@@ -1094,6 +1095,7 @@
     <string name="dates_days_ago">Vor %1$s Tagen</string>
     <string name="dates_days_from">In %1$s Tagen</string>
     <string name="settings_use_yamux">Verwende eine reserve multiplex library</string>
+    <string name="settings_share_local_logs">Lokale Protokolle teilen</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban-Ansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>
     <string name="error_calendar_view_not_supported">Kalenderansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>
@@ -1561,7 +1563,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chats_message_edited">bearbeitet</string>
     <string name="chat_empty_state_message">Es gibt noch keine Nachrichten.\nSei der Erste, der eine Diskussion beginnt.</string>
     <string name="write_a_message">Eine Nachricht schreiben...</string>
-    <string name="date_layout_mentioned_in">Erwähnt in</string>
+    <string name="date_layout_mentioned_in">Erwähnungen</string>
     <string name="date_layout_empty_items">Für dieses Datum ist hier noch nichts eingetragen</string>
     <string name="date_layout_alert_date_out_of_range">Das ausgewählte Datum liegt außerhalb des gültigen Bereichs (Jahre %1$d bis %2$d). Bitte wähle ein Datum innerhalb dieses Bereichs aus.</string>
     <string name="date_layout_item_created_by">von</string>
@@ -1570,6 +1572,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_attachment_media">Medien hochladen</string>
     <string name="chat_attachment_upload">Hochladen</string>
     <string name="chats_reply">Antworten</string>
+    <string name="chats_add_reaction">Reaktion hinzufügen</string>
     <string name="day_of_week_monday">Montag</string>
     <string name="day_of_week_tuesday">Dienstag</string>
     <string name="day_of_week_wednesday">Mittwoch</string>
@@ -1577,4 +1580,21 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="day_of_week_friday">Freitag</string>
     <string name="day_of_week_saturday">Samstag</string>
     <string name="day_of_week_sunday">Sonntag</string>
+    <string name="file">Datei</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
+    <string name="space_list_empty_state_it_is_empty_here">Hier ist es leer.</string>
+    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
+    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
+    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
+    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
+    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_objects">Objekte</string>
+    <string name="emoji_category_symbols">Symbols</string>
+    <string name="emoji_category_flags">Flags</string>
+    <string name="emoji_recently_used_section">Recently used</string>
+    <string name="chat_message_reactions_no_reactions_yet">Noch keine Reaktionen</string>
+    <string name="chat_message_reactions_no_reactions_message">Wahrscheinlich hat jemand gerade die Reaktion entfernt oder es ist ein technisches Problem aufgetreten</string>
+    <string name="object_types_human">Human</string>
+    <string name="chats_alert_delete_this_message_description">Sie kann nach der Bestätigung nicht wiederhergestellt werden</string>
+    <string name="chats_alert_delete_this_message">Diese Nachricht löschen?</string>
 </resources>

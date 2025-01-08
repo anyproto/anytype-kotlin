@@ -13,8 +13,7 @@ sealed class Command {
         val avatarPath: String?,
         val icon: Int,
         val networkMode: NetworkMode = NetworkMode.DEFAULT,
-        val networkConfigFilePath: String? = null,
-        val preferYamuxTransport: Boolean? = null
+        val networkConfigFilePath: String? = null
     ) : Command()
 
     data class AccountSelect(

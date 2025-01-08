@@ -525,6 +525,7 @@
     <string name="open_source">Open source</string>
     <string name="reload_object_content">Reload object content</string>
     <string name="open_link">Open link</string>
+    <string name="open_file">Open file</string>
     <string name="copy_email">Copy email</string>
     <string name="copy_phone_number">Copy phone number</string>
     <string name="send_email">Send email</string>
@@ -1273,6 +1274,7 @@
     <string name="dates_days_from">%1$s days from now</string>
 
     <string name="settings_use_yamux">Use a reserve multiplex library</string>
+    <string name="settings_share_local_logs">Share local logs</string>
 
     <!--endregion-->
 
@@ -1840,6 +1842,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Upload</string>
     <string name="chats_reply">Reply</string>
+    <string name="chats_add_reaction">Add Reaction</string>
 
     <string name="object_type_empty_items_title">It’s empty here.</string>
     <string name="object_type_empty_items_subtitle">Create your first objects to get started.</string>
@@ -1851,5 +1854,25 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_friday">Friday</string>
     <string name="day_of_week_saturday">Saturday</string>
     <string name="day_of_week_sunday">Sunday</string>
+    <string name="file">File</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
+    <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
+
+    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
+    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
+    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
+    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
+    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_objects">Objects</string>
+    <string name="emoji_category_symbols">Symbols</string>
+    <string name="emoji_category_flags">Flags</string>
+    <string name="emoji_recently_used_section">Recently used</string>
+    <string name="chat_message_reactions_no_reactions_yet">No reactions yet</string>
+    <string name="chat_message_reactions_no_reactions_message">Probably someone has just removed the reaction or technical issue happened</string>
+
+    <string name="object_types_human">Human</string>
+
+    <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
+    <string name="chats_alert_delete_this_message">Delete this message?</string>
 
 </resources>

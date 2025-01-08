@@ -52,21 +52,25 @@ interface DeepLinkToObjectDelegate {
                 )
                 .getOrNull()
             if (wrapper != null) {
-                val permission = userPermissionProvider.get(space = space)
-                return if (permission != null && permission.isAtLeastReader()) {
-                    if (switchSpaceIfObjectFound) {
-                        val switchSpaceResult = spaceManager.set(space = space.id)
-                        if (switchSpaceResult.isSuccess) {
-                            saveCurrentSpace.async(SaveCurrentSpace.Params(space = space))
-                            Result.Success(wrapper)
+                if (wrapper.notDeletedNorArchived) {
+                    val permission = userPermissionProvider.get(space = space)
+                    return if (permission != null && permission.isAtLeastReader()) {
+                        if (switchSpaceIfObjectFound) {
+                            val switchSpaceResult = spaceManager.set(space = space.id)
+                            if (switchSpaceResult.isSuccess) {
+                                saveCurrentSpace.async(SaveCurrentSpace.Params(space = space))
+                                Result.Success(wrapper)
+                            } else {
+                                Result.Error.CouldNotOpenSpace
+                            }
                         } else {
-                            Result.Error.CouldNotOpenSpace
+                            return Result.Success(wrapper)
                         }
                     } else {
-                        return Result.Success(wrapper)
+                        Result.Error.PermissionNeeded
                     }
                 } else {
-                    Result.Error.PermissionNeeded
+                    return Result.Error.ObjectNotFound
                 }
             } else {
                 return Result.Error.ObjectNotFound

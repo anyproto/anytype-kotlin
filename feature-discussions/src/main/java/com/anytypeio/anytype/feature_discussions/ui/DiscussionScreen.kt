@@ -1091,7 +1091,7 @@ fun Messages(
                     style = Caption1Medium,
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
                     textAlign = TextAlign.Center,
-                    color = colorResource(R.color.text_tertiary)
+                    color = colorResource(R.color.transparent_active)
                 )
             }
         }

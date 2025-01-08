@@ -177,7 +177,7 @@
 
     <color name="overlay_black_light_5">#0D000000</color>
     <color name="transparent_black">#00000000</color>
-    <color name="transparent_active">#00000066</color>
+    <color name="transparent_active">#66000000</color>
     <color name="background_light_gray">#F3F2EC</color>
     <color name="background_soft_beige">#DFDDD0</color>
     <color name="gradient_soft_gray_end_transparent">#00ACA996</color>

@@ -248,7 +248,7 @@
     <string name="linked_to">链接到</string>
     <string name="remove_link">移除链接</string>
     <string name="mention_suggester_new_page">创建新对象</string>
-    <string name="mention_section_dates">Dates</string>
+    <string name="mention_section_dates">日期</string>
     <string name="mention_section_objects">对象</string>
     <string name="mention_suggester_create_object">创建对象</string>
     <string name="your_search_query">搜索</string>
@@ -466,7 +466,7 @@
     <string name="open_source">开放源代码</string>
     <string name="reload_object_content">重新加载对象内容</string>
     <string name="open_link">打开链接</string>
-    <string name="open_file">Open file</string>
+    <string name="open_file">打开文件</string>
     <string name="copy_email">拷贝电子邮件</string>
     <string name="copy_phone_number">拷贝电话号码</string>
     <string name="send_email">发送电子邮件</string>

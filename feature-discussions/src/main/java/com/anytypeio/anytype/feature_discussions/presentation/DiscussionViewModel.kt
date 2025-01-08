@@ -250,7 +250,8 @@ class DiscussionViewModel @Inject constructor(
                         }
                     )
                     val currDate = DiscussionView.DateSection(
-                        formattedDate = dateFormatter.format(msg.createdAt * 1000)
+                        formattedDate = dateFormatter.format(msg.createdAt * 1000),
+                        timeInMillis = msg.createdAt * 1000L
                     )
                     add(view)
                     if (currDate != previousDate) {

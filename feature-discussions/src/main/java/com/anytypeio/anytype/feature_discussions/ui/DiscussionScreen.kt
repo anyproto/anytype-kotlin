@@ -1009,7 +1009,7 @@ fun Messages(
             messages,
             key = { _, msg ->
                 when(msg) {
-                    is DiscussionView.DateSection -> msg.formattedDate
+                    is DiscussionView.DateSection -> msg.timeInMillis
                     is DiscussionView.Message -> msg.id
                 }
             }

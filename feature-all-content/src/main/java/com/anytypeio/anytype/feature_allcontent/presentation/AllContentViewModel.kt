@@ -30,7 +30,6 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.feature_allcontent.models.AllContentBottomMenu
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
-import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
@@ -62,6 +61,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentToBin
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.objects.AllContentSort
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import java.time.Instant
 import java.time.LocalDate

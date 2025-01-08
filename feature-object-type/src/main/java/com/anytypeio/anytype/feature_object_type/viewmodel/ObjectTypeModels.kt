@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.feature_object_type.viewmodel
 
+import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.CoverType
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
@@ -11,6 +13,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.objects.AllContentSort
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.getCover
@@ -55,6 +58,53 @@ sealed class UiSettingsIcon {
     data object Hidden : UiSettingsIcon()
     data class Visible(val objectId: Id) : UiSettingsIcon()
 }
+
+//region MENU
+
+sealed class MenuSortsItem {
+    data class Container(val sort: AllContentSort) : MenuSortsItem()
+    data class Sort(val sort: AllContentSort) : MenuSortsItem()
+    data object Spacer : MenuSortsItem()
+    data class SortType(
+        val sort: AllContentSort,
+        val sortType: DVSortType,
+        val isSelected: Boolean
+    ) : MenuSortsItem()
+}
+
+@Immutable
+sealed class UiSettingsMenuState {
+    data object Hidden : UiSettingsMenuState()
+    @Immutable
+    data class Visible(
+        val menuItems: List<UiSettingsMenuItem>
+    ) : UiSettingsMenuState()
+}
+
+@Immutable
+sealed class UiTemplatesMenuState {
+    data object Hidden : UiTemplatesMenuState()
+    @Immutable
+    data class Visible(
+        val menuItems: List<UiTemplatesMenuItem>
+    ) : UiTemplatesMenuState()
+}
+
+@Immutable
+enum class UiSettingsMenuItem {
+    DELETE
+}
+
+@Immutable
+enum class UiTemplatesMenuItem {
+    DELETE, DUPLICATE
+}
+
+@Immutable
+enum class UiObjectsMenuItem {
+    OPEN_SET, SORT_BY,
+}
+//endregion
 
 //region TEMPLATES HEADER
 data class UiTemplatesHeaderState(val count: String) {

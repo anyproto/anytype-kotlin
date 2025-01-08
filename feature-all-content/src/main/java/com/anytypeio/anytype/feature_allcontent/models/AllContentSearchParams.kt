@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchParams
+import com.anytypeio.anytype.presentation.objects.AllContentSort
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeysObjectType
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultRelationKeys

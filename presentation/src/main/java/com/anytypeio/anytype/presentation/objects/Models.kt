@@ -1,13 +1,51 @@
 package com.anytypeio.anytype.presentation.objects
 
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+
+sealed class AllContentSort {
+    abstract val relationKey: RelationKey
+    abstract val sortType: DVSortType
+    abstract val canGroupByDate: Boolean
+    abstract val isSelected: Boolean
+
+    data class ByName(
+        override val relationKey: RelationKey = RelationKey(Relations.NAME),
+        override val sortType: DVSortType = DVSortType.ASC,
+        override val canGroupByDate: Boolean = false,
+        override val isSelected: Boolean = false
+    ) : AllContentSort()
+
+    data class ByDateUpdated(
+        override val relationKey: RelationKey = RelationKey(Relations.LAST_MODIFIED_DATE),
+        override val sortType: DVSortType = DVSortType.DESC,
+        override val canGroupByDate: Boolean = true,
+        override val isSelected: Boolean = false
+    ) : AllContentSort()
+
+    data class ByDateCreated(
+        override val relationKey: RelationKey = RelationKey(Relations.CREATED_DATE),
+        override val sortType: DVSortType = DVSortType.DESC,
+        override val canGroupByDate: Boolean = true,
+        override val isSelected: Boolean = false
+    ) : AllContentSort()
+
+    data class ByDateUsed(
+        override val relationKey: RelationKey = RelationKey(Relations.LAST_USED_DATE),
+        override val sortType: DVSortType = DVSortType.DESC,
+        override val canGroupByDate: Boolean = false,
+        override val isSelected: Boolean = false
+    ) : AllContentSort()
+}
 
 sealed class UiObjectsListItem {
 

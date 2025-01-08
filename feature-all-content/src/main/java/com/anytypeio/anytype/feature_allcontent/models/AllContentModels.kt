@@ -12,7 +12,6 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.ext.DateParser
-import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
@@ -20,6 +19,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.objects.AllContentSort
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getDescriptionOrSnippet
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -40,41 +40,6 @@ sealed class AllContentMenuMode {
     data class Unlinked(
         override val isSelected: Boolean = false
     ) : AllContentMenuMode()
-}
-
-sealed class AllContentSort {
-    abstract val relationKey: RelationKey
-    abstract val sortType: DVSortType
-    abstract val canGroupByDate: Boolean
-    abstract val isSelected: Boolean
-
-    data class ByName(
-        override val relationKey: RelationKey = RelationKey(Relations.NAME),
-        override val sortType: DVSortType = DVSortType.ASC,
-        override val canGroupByDate: Boolean = false,
-        override val isSelected: Boolean = false
-    ) : AllContentSort()
-
-    data class ByDateUpdated(
-        override val relationKey: RelationKey = RelationKey(Relations.LAST_MODIFIED_DATE),
-        override val sortType: DVSortType = DVSortType.DESC,
-        override val canGroupByDate: Boolean = true,
-        override val isSelected: Boolean = false
-    ) : AllContentSort()
-
-    data class ByDateCreated(
-        override val relationKey: RelationKey = RelationKey(Relations.CREATED_DATE),
-        override val sortType: DVSortType = DVSortType.DESC,
-        override val canGroupByDate: Boolean = true,
-        override val isSelected: Boolean = false
-    ) : AllContentSort()
-
-    data class ByDateUsed(
-        override val relationKey: RelationKey = RelationKey(Relations.LAST_USED_DATE),
-        override val sortType: DVSortType = DVSortType.DESC,
-        override val canGroupByDate: Boolean = false,
-        override val isSelected: Boolean = false
-    ) : AllContentSort()
 }
 //endregion
 

@@ -33,9 +33,9 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
-import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
+import com.anytypeio.anytype.presentation.objects.AllContentSort
 
 @Composable
 fun AllContentMenu(

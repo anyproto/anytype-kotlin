@@ -497,7 +497,7 @@ private fun TemplatesList(
 }
 
 @Composable
-private fun TemplateItemContent(item: TemplateView) {
+fun TemplateItemContent(item: TemplateView) {
     Column {
         when (item) {
             is TemplateView.Blank -> {

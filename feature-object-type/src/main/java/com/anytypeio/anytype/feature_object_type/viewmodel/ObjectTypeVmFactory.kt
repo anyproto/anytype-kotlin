@@ -17,6 +17,8 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.GetObjectRelationListById
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import javax.inject.Inject
 
 class ObjectTypeVMFactory @Inject constructor(
@@ -35,7 +37,9 @@ class ObjectTypeVMFactory @Inject constructor(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val createObject: CreateObject,
     private val fieldParser: FieldParser,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val templatesContainer: ObjectTypeTemplatesContainer,
+    private val coverImageHashProvider: CoverImageHashProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -56,6 +60,8 @@ class ObjectTypeVMFactory @Inject constructor(
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             createObject = createObject,
             fieldParser = fieldParser,
-            setObjectListIsArchived = setObjectListIsArchived
+            setObjectListIsArchived = setObjectListIsArchived,
+            templatesContainer = templatesContainer,
+            coverImageHashProvider = coverImageHashProvider
         ) as T
 }

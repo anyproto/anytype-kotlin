@@ -781,6 +781,8 @@
     <string name="set">Set</string>
     <string name="collection">Collection</string>
     <string name="layout">Layout</string>
+    <string name="button_fields">Fields</string>
+    <string name="button_layout">Layout</string>
     <string name="restore_from_archive">Restore from archive</string>
     <string name="icon">Icon</string>
     <string name="icon_description">Emoji or image for object</string>
@@ -1838,6 +1840,9 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Upload</string>
     <string name="chats_reply">Reply</string>
+
+    <string name="object_type_empty_items_title">It’s empty here.</string>
+    <string name="object_type_empty_items_subtitle">Create your first objects to get started.</string>
 
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>

@@ -1,19 +1,9 @@
 package com.anytypeio.anytype.feature_date.mapping
 
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem
-import com.anytypeio.anytype.feature_date.viewmodel.UiObjectsListItem
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.getProperType
 import timber.log.Timber
 
 suspend fun List<RelationListWithValueItem>.toUiFieldsItem(
@@ -51,33 +41,4 @@ suspend fun List<RelationListWithValueItem>.toUiFieldsItem(
                 )
             }
         }
-}
-
-fun ObjectWrapper.Basic.toUiObjectsListItem(
-    space: SpaceId,
-    urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
-    fieldParser: FieldParser,
-    isOwnerOrEditor: Boolean
-): UiObjectsListItem {
-    val obj = this
-    val typeUrl = obj.getProperType()
-    val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
-    val layout = obj.layout ?: ObjectType.Layout.BASIC
-    return UiObjectsListItem.Item(
-        id = obj.id,
-        space = space,
-        name = fieldParser.getObjectName(obj),
-        type = typeUrl,
-        typeName = objectTypes.firstOrNull { type ->
-            if (isProfile) {
-                type.uniqueKey == ObjectTypeUniqueKeys.PROFILE
-            } else {
-                type.id == typeUrl
-            }
-        }?.name,
-        layout = layout,
-        icon = obj.objectIcon(builder = urlBuilder),
-        isPossibleToDelete = isOwnerOrEditor
-    )
 }

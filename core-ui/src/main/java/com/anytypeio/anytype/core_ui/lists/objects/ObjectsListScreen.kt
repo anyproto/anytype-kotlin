@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_date.ui
+package com.anytypeio.anytype.core_ui.lists.objects
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -39,24 +39,21 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.lists.objects.stubs.StubVerticalItems
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.feature_date.R
-import com.anytypeio.anytype.feature_date.ui.models.DateEvent
-import com.anytypeio.anytype.feature_date.ui.models.StubVerticalItems
-import com.anytypeio.anytype.feature_date.viewmodel.UiContentState
-import com.anytypeio.anytype.feature_date.viewmodel.UiObjectsListItem
-import com.anytypeio.anytype.feature_date.viewmodel.UiObjectsListState
+import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -65,7 +62,9 @@ fun ObjectsScreen(
     state: UiObjectsListState,
     uiState: UiContentState,
     canPaginate: Boolean,
-    onDateEvent: (DateEvent) -> Unit
+    onLoadMore: () -> Unit,
+    onObjectClicked: (UiObjectsListItem.Item) -> Unit,
+    onMoveToBin: (UiObjectsListItem.Item) -> Unit,
 ) {
     val items = remember { mutableStateListOf<UiObjectsListItem>() }
     items.swapList(state.items)
@@ -88,7 +87,7 @@ fun ObjectsScreen(
 
     LaunchedEffect(key1 = shouldStartPaging.value) {
         if (shouldStartPaging.value && uiState is UiContentState.Idle) {
-            onDateEvent(DateEvent.ObjectsList.OnLoadMore)
+            onLoadMore()
         }
     }
 
@@ -116,10 +115,11 @@ fun ObjectsScreen(
                             .fillMaxWidth()
                             .animateItem()
                             .noRippleThrottledClickable {
-                                onDateEvent(DateEvent.ObjectsList.OnObjectClicked(item))
+                                onObjectClicked(item)
                             },
                         item = item,
-                        onDateEvent = onDateEvent
+                        onObjectClicked = onObjectClicked,
+                        onMoveToBin = onMoveToBin
                     )
                     Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                 }
@@ -248,7 +248,8 @@ fun SwipeToDismissListItems(
     item: UiObjectsListItem.Item,
     modifier: Modifier,
     animationDuration: Int = 500,
-    onDateEvent: (DateEvent) -> Unit,
+    onObjectClicked: (UiObjectsListItem.Item) -> Unit,
+    onMoveToBin: (UiObjectsListItem.Item) -> Unit,
 ) {
     var isRemoved by remember { mutableStateOf(false) }
     val dismissState = rememberSwipeToDismissBoxState(
@@ -274,7 +275,7 @@ fun SwipeToDismissListItems(
     LaunchedEffect(key1 = isRemoved) {
         if (isRemoved) {
             delay(animationDuration.toLong())
-            onDateEvent(DateEvent.ObjectsList.OnObjectMoveToBin(item))
+            onMoveToBin(item)
         }
     }
     AnimatedVisibility(
@@ -299,7 +300,7 @@ fun SwipeToDismissListItems(
                 ListItem(
                     modifier = Modifier
                         .noRippleThrottledClickable {
-                            onDateEvent(DateEvent.ObjectsList.OnObjectClicked(item))
+                            onObjectClicked(item)
                         },
                     item = item
                 )
@@ -332,6 +333,8 @@ fun ObjectsListScreenPreview() {
         state = contentListState,
         uiState = UiContentState.Idle(scrollToTop = false),
         canPaginate = true,
-        onDateEvent = {}
+        onObjectClicked = {},
+        onLoadMore = {},
+        onMoveToBin = {},
     )
 }

@@ -1325,62 +1325,64 @@ fun Bubble(
                 maxLines = 1
             )
         }
-        Text(
-            modifier = Modifier.padding(
-                top = 0.dp,
-                start = 12.dp,
-                end = 12.dp,
-                bottom = 0.dp
-            ),
-            text = buildAnnotatedString {
-                content.parts.forEach { part ->
-                    if (part.link != null && part.link.param != null) {
-                        withLink(
-                            LinkAnnotation.Clickable(
-                                tag = "link",
-                                styles = TextLinkStyles(
-                                    style = SpanStyle(
-                                        fontWeight = if (part.isBold) FontWeight.Bold else null,
-                                        fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                        textDecoration = TextDecoration.Underline
+        if (content.msg.isNotEmpty()) {
+            Text(
+                modifier = Modifier.padding(
+                    top = 0.dp,
+                    start = 12.dp,
+                    end = 12.dp,
+                    bottom = 0.dp
+                ),
+                text = buildAnnotatedString {
+                    content.parts.forEach { part ->
+                        if (part.link != null && part.link.param != null) {
+                            withLink(
+                                LinkAnnotation.Clickable(
+                                    tag = "link",
+                                    styles = TextLinkStyles(
+                                        style = SpanStyle(
+                                            fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                            fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                            textDecoration = TextDecoration.Underline
+                                        )
                                     )
+                                ) {
+                                    onMarkupLinkClicked(part.link.param.orEmpty())
+                                }
+                            ) {
+                                append(part.part)
+                            }
+                        } else {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                    fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                    textDecoration = if (part.underline)
+                                        TextDecoration.Underline
+                                    else if (part.isStrike)
+                                        TextDecoration.LineThrough
+                                    else null,
+                                    fontFamily = if (part.isCode) fontIBM else null,
                                 )
                             ) {
-                                onMarkupLinkClicked(part.link.param.orEmpty())
+                                append(part.part)
                             }
-                        ) {
-                            append(part.part)
                         }
-                    } else {
+                    }
+                    if (isEdited) {
                         withStyle(
-                            style = SpanStyle(
-                                fontWeight = if (part.isBold) FontWeight.Bold else null,
-                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                textDecoration = if (part.underline)
-                                    TextDecoration.Underline
-                                else if (part.isStrike)
-                                    TextDecoration.LineThrough
-                                else null,
-                                fontFamily = if (part.isCode) fontIBM else null,
-                            )
+                            style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
                         ) {
-                            append(part.part)
+                            append(
+                                " (${stringResource(R.string.chats_message_edited)})"
+                            )
                         }
                     }
-                }
-                if (isEdited) {
-                    withStyle(
-                        style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
-                    ) {
-                        append(
-                            " (${stringResource(R.string.chats_message_edited)})"
-                        )
-                    }
-                }
-            },
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-        )
+                },
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary),
+            )
+        }
         BubbleAttachments(
             attachments = attachments,
             isUserAuthor = isUserAuthor,
@@ -1502,7 +1504,7 @@ private fun BubbleAttachments(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(300.dp)
-                        .padding(8.dp)
+                        .padding(vertical = 8.dp, horizontal = 4.dp)
                         .clip(shape = RoundedCornerShape(16.dp))
                         .clickable {
                             onAttachmentClicked(attachment)
@@ -1514,8 +1516,8 @@ private fun BubbleAttachments(
                 AttachedObject(
                     modifier = Modifier
                         .padding(
-                            start = 16.dp,
-                            end = 16.dp,
+                            start = 4.dp,
+                            end = 4.dp,
                             top = 8.dp
                         )
                         .fillMaxWidth()
@@ -1639,7 +1641,8 @@ fun AttachedObject(
                         72.dp
                     else
                         12.dp,
-                    bottom = 17.5.dp
+                    bottom = 17.5.dp,
+                    end = 12.dp
                 ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

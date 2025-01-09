@@ -254,7 +254,7 @@ class DiscussionViewModel @Inject constructor(
                         timeInMillis = msg.createdAt * 1000L
                     )
                     add(view)
-                    if (currDate != previousDate) {
+                    if (currDate.formattedDate != previousDate?.formattedDate) {
                         add(currDate)
                         previousDate = currDate
                     }

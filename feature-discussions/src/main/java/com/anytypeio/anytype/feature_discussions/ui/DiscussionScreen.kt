@@ -55,6 +55,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -1271,10 +1273,19 @@ fun Bubble(
                         color = colorResource(R.color.shape_transparent_secondary),
                         shape = RoundedCornerShape(16.dp)
                     )
+                    .clip(RoundedCornerShape(16.dp))
                     .clickable {
                         onScrollToReplyClicked(reply)
                     }
             ) {
+                Box(
+                    modifier = Modifier
+                        .width(4.dp)
+                        .fillMaxHeight()
+                        .background(
+                            color = colorResource(R.color.shape_transparent_primary)
+                        )
+                )
                 Text(
                     text = reply.author,
                     modifier = Modifier.padding(

@@ -1343,7 +1343,7 @@ fun Bubble(
                     top = 0.dp,
                     start = 12.dp,
                     end = 12.dp,
-                    bottom = 12.dp
+                    bottom = if (reactions.isEmpty() && attachments.isEmpty()) 12.dp else 0.dp
                 ),
                 text = buildAnnotatedString {
                     content.parts.forEach { part ->
@@ -1731,15 +1731,18 @@ fun ReactionList(
     onViewReaction: (String) -> Unit
 ) {
     FlowRow(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
+        modifier = Modifier
+            .padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 4.dp)
+            .border(width = 1.dp, color = Color.Red)
+        ,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         reactions.forEach { reaction ->
             Box(
                 modifier = Modifier
-                    .height(32.dp)
-                    .width(60.dp)
+                    .height(28.dp)
+                    .width(52.dp)
                     .background(
                         color = if (reaction.isSelected)
                             colorResource(id = R.color.palette_very_light_orange)
@@ -1780,18 +1783,15 @@ fun ReactionList(
                 )
                 Text(
                     text = reaction.count.toString(),
-                    style = BodyCalloutMedium,
+                    style = Caption1Regular,
                     modifier = Modifier
                         .align(
                             alignment = Alignment.CenterEnd
                         )
                         .padding(
-                            end = 12.dp
+                            end = 8.dp
                         ),
-                    color = if (reaction.isSelected)
-                        colorResource(id = R.color.text_primary)
-                    else
-                        colorResource(id = R.color.text_white)
+                    color = colorResource(id = R.color.text_primary)
                 )
             }
         }

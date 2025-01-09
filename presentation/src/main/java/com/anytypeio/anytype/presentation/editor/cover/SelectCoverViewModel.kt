@@ -38,6 +38,7 @@ abstract class SelectCoverViewModel(
 
     init {
         render()
+        Timber.d("SelectCoverViewModel init")
     }
 
     private fun render() {

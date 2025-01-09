@@ -1731,10 +1731,7 @@ fun ReactionList(
     onViewReaction: (String) -> Unit
 ) {
     FlowRow(
-        modifier = Modifier
-            .padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 4.dp)
-            .border(width = 1.dp, color = Color.Red)
-        ,
+        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

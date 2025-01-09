@@ -1250,9 +1250,9 @@ fun Bubble(
             .width(IntrinsicSize.Max)
             .background(
                 color = if (isUserAuthor)
-                    colorResource(R.color.navigation_panel_icon)
+                    colorResource(R.color.background_primary)
                 else
-                    colorResource(R.color.navigation_panel),
+                    colorResource(R.color.shape_transparent_secondary),
                 shape = RoundedCornerShape(20.dp)
             )
             .clip(RoundedCornerShape(20.dp))
@@ -1267,7 +1267,7 @@ fun Bubble(
                     .fillMaxWidth()
                     .height(52.dp)
                     .background(
-                        color = colorResource(R.color.navigation_panel_icon),
+                        color = colorResource(R.color.shape_transparent_secondary),
                         shape = RoundedCornerShape(16.dp)
                     )
                     .clickable {
@@ -1283,7 +1283,7 @@ fun Bubble(
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = colorResource(id = R.color.text_white)
+                    color = colorResource(id = R.color.text_primary)
                 )
                 Text(
                     modifier = Modifier.padding(
@@ -1294,7 +1294,7 @@ fun Bubble(
                     text = reply.text,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = colorResource(id = R.color.text_white),
+                    color = colorResource(id = R.color.text_primary),
                 )
             }
         }
@@ -1311,10 +1311,7 @@ fun Bubble(
             Text(
                 text = name,
                 style = PreviewTitle2Medium,
-                color = if (isUserAuthor)
-                    colorResource(id = R.color.text_white)
-                else
-                    colorResource(id = R.color.text_primary),
+                color = colorResource(id = R.color.text_primary),
                 maxLines = 1
             )
             Spacer(Modifier.width(12.dp))
@@ -1324,10 +1321,7 @@ fun Bubble(
                     TIME_H24
                 ),
                 style = Caption1Regular,
-                color = if (isUserAuthor)
-                    colorResource(id = R.color.text_white)
-                else
-                    colorResource(id = R.color.text_secondary),
+                color = colorResource(id = R.color.text_secondary),
                 maxLines = 1
             )
         }
@@ -1385,10 +1379,7 @@ fun Bubble(
                 }
             },
             style = BodyRegular,
-            color = if (isUserAuthor)
-                colorResource(id = R.color.text_white)
-            else
-                colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.text_primary),
         )
         BubbleAttachments(attachments, onAttachmentClicked)
         if (reactions.isNotEmpty()) {

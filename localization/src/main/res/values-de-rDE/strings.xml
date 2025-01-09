@@ -1583,18 +1583,18 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="file">Datei</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
     <string name="space_list_empty_state_it_is_empty_here">Hier ist es leer.</string>
-    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
-    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
-    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
-    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
-    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_smileys_and_people">Smileys &amp; Leute</string>
+    <string name="emoji_category_animals_and_nature">Tiere &amp; Natur</string>
+    <string name="emoji_category_food_and_drink">Essen &amp; Trinken</string>
+    <string name="emoji_category_activity_and_sport">Aktivität &amp; Sport</string>
+    <string name="emoji_category_travel_and_places">Reisen &amp; Orte</string>
     <string name="emoji_category_objects">Objekte</string>
-    <string name="emoji_category_symbols">Symbols</string>
-    <string name="emoji_category_flags">Flags</string>
-    <string name="emoji_recently_used_section">Recently used</string>
+    <string name="emoji_category_symbols">Symbole</string>
+    <string name="emoji_category_flags">Flaggen</string>
+    <string name="emoji_recently_used_section">Zuletzt verwendet</string>
     <string name="chat_message_reactions_no_reactions_yet">Noch keine Reaktionen</string>
     <string name="chat_message_reactions_no_reactions_message">Wahrscheinlich hat jemand gerade die Reaktion entfernt oder es ist ein technisches Problem aufgetreten</string>
-    <string name="object_types_human">Human</string>
+    <string name="object_types_human">Mensch</string>
     <string name="chats_alert_delete_this_message_description">Sie kann nach der Bestätigung nicht wiederhergestellt werden</string>
     <string name="chats_alert_delete_this_message">Diese Nachricht löschen?</string>
 </resources>

@@ -22,6 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.emojifier.data.Emoji
@@ -37,14 +39,21 @@ fun SelectChatReactionScreen(
     onEmojiClicked: (String) -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
+        Dragger(
+            modifier = Modifier
+                .padding(vertical = 6.dp)
+                .align(Alignment.TopCenter)
+        )
         LazyVerticalGrid(
             columns = GridCells.Fixed(6),
             modifier = Modifier
-                .nestedScroll(rememberNestedScrollInteropConnection())
                 .fillMaxSize()
                 .padding(
+                    top = 16.dp,
                     start = 16.dp,
                     end = 16.dp
                 ),

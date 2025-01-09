@@ -1506,62 +1506,68 @@ private fun BubbleAttachments(
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     isUserAuthor: Boolean
 ) {
-    attachments.forEachIndexed { idx, attachment ->
-        when (attachment) {
-            is DiscussionView.Message.Attachment.Image -> {
-                Box(
-                    modifier = Modifier
-                        .padding(
-                            start = 4.dp,
-                            end = 4.dp,
-                            bottom = 4.dp,
-                            top = if (idx == 0) 4.dp else 0.dp
-                        )
-                        .size(300.dp)
-                        .background(
-                            color = colorResource(R.color.shape_tertiary),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                ) {
-                    CircularProgressIndicator(
+    if (attachments.all { it is DiscussionView.Message.Attachment.Image }) {
+        AttachmentGallery(
+            attachments.filterIsInstance<DiscussionView.Message.Attachment.Image>()
+        )
+    } else {
+        attachments.forEachIndexed { idx, attachment ->
+            when (attachment) {
+                is DiscussionView.Message.Attachment.Image -> {
+                    Box(
                         modifier = Modifier
-                            .align(alignment = Alignment.Center)
-                            .size(64.dp),
-                        color = colorResource(R.color.glyph_active),
-                        trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
-                        strokeWidth = 8.dp
-                    )
-                    GlideImage(
-                        model = attachment.url,
-                        contentDescription = "Attachment image",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
+                            .padding(
+                                start = 4.dp,
+                                end = 4.dp,
+                                bottom = 4.dp,
+                                top = if (idx == 0) 4.dp else 0.dp
+                            )
                             .size(300.dp)
-                            .clip(shape = RoundedCornerShape(16.dp))
-                            .clickable {
-                                onAttachmentClicked(attachment)
-                            }
+                            .background(
+                                color = colorResource(R.color.shape_tertiary),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(alignment = Alignment.Center)
+                                .size(64.dp),
+                            color = colorResource(R.color.glyph_active),
+                            trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                            strokeWidth = 8.dp
+                        )
+                        GlideImage(
+                            model = attachment.url,
+                            contentDescription = "Attachment image",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(300.dp)
+                                .clip(shape = RoundedCornerShape(16.dp))
+                                .clickable {
+                                    onAttachmentClicked(attachment)
+                                }
+                        )
+                    }
+                }
+
+                is DiscussionView.Message.Attachment.Link -> {
+                    AttachedObject(
+                        modifier = Modifier
+                            .padding(
+                                start = 4.dp,
+                                end = 4.dp,
+                                bottom = 4.dp,
+                                top = if (idx == 0) 4.dp else 0.dp
+                            )
+                            .fillMaxWidth(),
+                        title = attachment.wrapper?.name.orEmpty(),
+                        type = attachment.typeName,
+                        icon = attachment.icon,
+                        onAttachmentClicked = {
+                            onAttachmentClicked(attachment)
+                        }
                     )
                 }
-            }
-            is DiscussionView.Message.Attachment.Link -> {
-                AttachedObject(
-                    modifier = Modifier
-                        .padding(
-                            start = 4.dp,
-                            end = 4.dp,
-                            bottom = 4.dp,
-                            top = if (idx == 0) 4.dp else 0.dp
-                        )
-                        .fillMaxWidth()
-                    ,
-                    title = attachment.wrapper?.name.orEmpty(),
-                    type = attachment.typeName,
-                    icon = attachment.icon,
-                    onAttachmentClicked = {
-                        onAttachmentClicked(attachment)
-                    }
-                )
             }
         }
     }

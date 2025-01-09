@@ -51,9 +51,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -1270,10 +1273,19 @@ fun Bubble(
                         color = colorResource(R.color.shape_transparent_secondary),
                         shape = RoundedCornerShape(16.dp)
                     )
+                    .clip(RoundedCornerShape(16.dp))
                     .clickable {
                         onScrollToReplyClicked(reply)
                     }
             ) {
+                Box(
+                    modifier = Modifier
+                        .width(4.dp)
+                        .fillMaxHeight()
+                        .background(
+                            color = colorResource(R.color.shape_transparent_primary)
+                        )
+                )
                 Text(
                     text = reply.author,
                     modifier = Modifier.padding(
@@ -1325,62 +1337,64 @@ fun Bubble(
                 maxLines = 1
             )
         }
-        Text(
-            modifier = Modifier.padding(
-                top = 0.dp,
-                start = 12.dp,
-                end = 12.dp,
-                bottom = 0.dp
-            ),
-            text = buildAnnotatedString {
-                content.parts.forEach { part ->
-                    if (part.link != null && part.link.param != null) {
-                        withLink(
-                            LinkAnnotation.Clickable(
-                                tag = "link",
-                                styles = TextLinkStyles(
-                                    style = SpanStyle(
-                                        fontWeight = if (part.isBold) FontWeight.Bold else null,
-                                        fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                        textDecoration = TextDecoration.Underline
+        if (content.msg.isNotEmpty()) {
+            Text(
+                modifier = Modifier.padding(
+                    top = 0.dp,
+                    start = 12.dp,
+                    end = 12.dp,
+                    bottom = if (reactions.isEmpty() && attachments.isEmpty()) 12.dp else 0.dp
+                ),
+                text = buildAnnotatedString {
+                    content.parts.forEach { part ->
+                        if (part.link != null && part.link.param != null) {
+                            withLink(
+                                LinkAnnotation.Clickable(
+                                    tag = "link",
+                                    styles = TextLinkStyles(
+                                        style = SpanStyle(
+                                            fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                            fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                            textDecoration = TextDecoration.Underline
+                                        )
                                     )
+                                ) {
+                                    onMarkupLinkClicked(part.link.param.orEmpty())
+                                }
+                            ) {
+                                append(part.part)
+                            }
+                        } else {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                    fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                    textDecoration = if (part.underline)
+                                        TextDecoration.Underline
+                                    else if (part.isStrike)
+                                        TextDecoration.LineThrough
+                                    else null,
+                                    fontFamily = if (part.isCode) fontIBM else null,
                                 )
                             ) {
-                                onMarkupLinkClicked(part.link.param.orEmpty())
+                                append(part.part)
                             }
-                        ) {
-                            append(part.part)
                         }
-                    } else {
+                    }
+                    if (isEdited) {
                         withStyle(
-                            style = SpanStyle(
-                                fontWeight = if (part.isBold) FontWeight.Bold else null,
-                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                textDecoration = if (part.underline)
-                                    TextDecoration.Underline
-                                else if (part.isStrike)
-                                    TextDecoration.LineThrough
-                                else null,
-                                fontFamily = if (part.isCode) fontIBM else null,
-                            )
+                            style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
                         ) {
-                            append(part.part)
+                            append(
+                                " (${stringResource(R.string.chats_message_edited)})"
+                            )
                         }
                     }
-                }
-                if (isEdited) {
-                    withStyle(
-                        style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
-                    ) {
-                        append(
-                            " (${stringResource(R.string.chats_message_edited)})"
-                        )
-                    }
-                }
-            },
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-        )
+                },
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary),
+            )
+        }
         BubbleAttachments(
             attachments = attachments,
             isUserAuthor = isUserAuthor,
@@ -1393,7 +1407,6 @@ fun Bubble(
                 onViewReaction = onViewChatReaction
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
         MaterialTheme(
             shapes = MaterialTheme.shapes.copy(
                 medium = RoundedCornerShape(
@@ -1493,30 +1506,52 @@ private fun BubbleAttachments(
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     isUserAuthor: Boolean
 ) {
-    attachments.forEach { attachment ->
+    attachments.forEachIndexed { idx, attachment ->
         when (attachment) {
             is DiscussionView.Message.Attachment.Image -> {
-                GlideImage(
-                    model = attachment.url,
-                    contentDescription = "Attachment image",
-                    contentScale = ContentScale.Crop,
+                Box(
                     modifier = Modifier
+                        .padding(
+                            start = 4.dp,
+                            end = 4.dp,
+                            bottom = 4.dp,
+                            top = if (idx == 0) 4.dp else 0.dp
+                        )
                         .size(300.dp)
-                        .padding(8.dp)
-                        .clip(shape = RoundedCornerShape(16.dp))
-                        .clickable {
-                            onAttachmentClicked(attachment)
-                        }
-                )
+                        .background(
+                            color = colorResource(R.color.shape_tertiary),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(alignment = Alignment.Center)
+                            .size(64.dp),
+                        color = colorResource(R.color.glyph_active),
+                        trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                        strokeWidth = 8.dp
+                    )
+                    GlideImage(
+                        model = attachment.url,
+                        contentDescription = "Attachment image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(300.dp)
+                            .clip(shape = RoundedCornerShape(16.dp))
+                            .clickable {
+                                onAttachmentClicked(attachment)
+                            }
+                    )
+                }
             }
-
             is DiscussionView.Message.Attachment.Link -> {
                 AttachedObject(
                     modifier = Modifier
                         .padding(
-                            start = 16.dp,
-                            end = 16.dp,
-                            top = 8.dp
+                            start = 4.dp,
+                            end = 4.dp,
+                            bottom = 4.dp,
+                            top = if (idx == 0) 4.dp else 0.dp
                         )
                         .fillMaxWidth()
                     ,
@@ -1590,11 +1625,11 @@ fun AttachedObject(
     Box(
         modifier = modifier
             .height(72.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(18.dp))
             .border(
                 width = 1.dp,
                 color = colorResource(id = R.color.shape_transparent_secondary),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(18.dp)
             )
             .background(
                 color = colorResource(id = R.color.background_secondary)
@@ -1639,7 +1674,8 @@ fun AttachedObject(
                         72.dp
                     else
                         12.dp,
-                    bottom = 17.5.dp
+                    bottom = 17.5.dp,
+                    end = 12.dp
                 ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -1695,15 +1731,15 @@ fun ReactionList(
     onViewReaction: (String) -> Unit
 ) {
     FlowRow(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
+        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         reactions.forEach { reaction ->
             Box(
                 modifier = Modifier
-                    .height(32.dp)
-                    .width(60.dp)
+                    .height(28.dp)
+                    .width(52.dp)
                     .background(
                         color = if (reaction.isSelected)
                             colorResource(id = R.color.palette_very_light_orange)
@@ -1744,18 +1780,15 @@ fun ReactionList(
                 )
                 Text(
                     text = reaction.count.toString(),
-                    style = BodyCalloutMedium,
+                    style = Caption1Regular,
                     modifier = Modifier
                         .align(
                             alignment = Alignment.CenterEnd
                         )
                         .padding(
-                            end = 12.dp
+                            end = 8.dp
                         ),
-                    color = if (reaction.isSelected)
-                        colorResource(id = R.color.text_primary)
-                    else
-                        colorResource(id = R.color.text_white)
+                    color = colorResource(id = R.color.text_primary)
                 )
             }
         }

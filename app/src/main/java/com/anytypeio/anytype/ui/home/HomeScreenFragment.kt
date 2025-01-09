@@ -80,6 +80,7 @@ import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
@@ -277,6 +278,19 @@ class HomeScreenFragment : BaseComposeFragment(),
                                         )
                                     }.onFailure {
                                         Timber.w("Error while opening editor from chat.")
+                                    }
+                                }
+                                is OpenObjectNavigation.OpenDataView -> {
+                                    runCatching {
+                                        findNavController().navigate(
+                                            R.id.dataViewNavigation,
+                                            ObjectSetFragment.args(
+                                                ctx = nav.target,
+                                                space = nav.space
+                                            )
+                                        )
+                                    }.onFailure {
+                                        Timber.w("Error while opening set from chat.")
                                     }
                                 }
                                 else -> toast("TODO")

@@ -51,6 +51,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -1497,20 +1498,41 @@ private fun BubbleAttachments(
     attachments.forEachIndexed { idx, attachment ->
         when (attachment) {
             is DiscussionView.Message.Attachment.Image -> {
-                GlideImage(
-                    model = attachment.url,
-                    contentDescription = "Attachment image",
-                    contentScale = ContentScale.Crop,
+                Box(
                     modifier = Modifier
+                        .padding(
+                            start = 4.dp,
+                            end = 4.dp,
+                            bottom = 4.dp,
+                            top = if (idx == 0) 4.dp else 0.dp
+                        )
                         .size(300.dp)
-                        .padding(vertical = 4.dp, horizontal = 4.dp)
-                        .clip(shape = RoundedCornerShape(16.dp))
-                        .clickable {
-                            onAttachmentClicked(attachment)
-                        }
-                )
+                        .background(
+                            color = colorResource(R.color.shape_tertiary),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(alignment = Alignment.Center)
+                            .size(64.dp),
+                        color = colorResource(R.color.glyph_active),
+                        trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                        strokeWidth = 8.dp
+                    )
+                    GlideImage(
+                        model = attachment.url,
+                        contentDescription = "Attachment image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(300.dp)
+                            .clip(shape = RoundedCornerShape(16.dp))
+                            .clickable {
+                                onAttachmentClicked(attachment)
+                            }
+                    )
+                }
             }
-
             is DiscussionView.Message.Attachment.Link -> {
                 AttachedObject(
                     modifier = Modifier
@@ -1698,7 +1720,7 @@ fun ReactionList(
     onViewReaction: (String) -> Unit
 ) {
     FlowRow(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

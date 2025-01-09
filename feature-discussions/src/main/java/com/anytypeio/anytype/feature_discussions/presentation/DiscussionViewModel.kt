@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_discussions.presentation
 
-import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
@@ -11,7 +10,6 @@ import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
-import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
@@ -22,7 +20,6 @@ import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
-import com.anytypeio.anytype.domain.media.FileDrop
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -31,26 +28,19 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.emojifier.data.Emoji
-import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import java.sql.Types
 import java.text.SimpleDateFormat
-import java.util.Date
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.combineLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,8 +62,7 @@ class DiscussionViewModel @Inject constructor(
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
-    private val emojiProvider: EmojiProvider
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -83,11 +72,8 @@ class DiscussionViewModel @Inject constructor(
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
 
-    val emojis = MutableStateFlow<List<EmojiPickerView>>(emptyList())
-
-    private val dateFormatter = SimpleDateFormat(
-        "d MMMM YYYY"
-    )
+    private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
+    private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
 
     var chat: Id = ""
 
@@ -130,10 +116,6 @@ class DiscussionViewModel @Inject constructor(
                 }
             }
         }
-
-        viewModelScope.launch {
-            emojis.value = loadEmojiWithCategories()
-        }
     }
 
     private suspend fun proceedWithObservingChatMessages(
@@ -146,6 +128,7 @@ class DiscussionViewModel @Inject constructor(
             chatContainer.fetchAttachments(vmParams.space),
             chatContainer.fetchReplies(chat = chat)
         ) { result, dependencies, replies ->
+            data.value = result
             var previousDate: DiscussionView.DateSection? = null
             buildList<DiscussionView> {
                 result.forEach { msg ->
@@ -341,13 +324,16 @@ class DiscussionViewModel @Inject constructor(
                     }
                 }
                 is ChatBoxMode.EditMessage -> {
+                    val editedMessage = data.value.find {
+                        it.id == mode.msg
+                    }
                     editChatMessage.async(
                         params = Command.ChatCommand.EditMessage(
                             chat = chat,
                             message = Chat.Message.updated(
                                 id = mode.msg,
                                 text = msg,
-                                attachments = attachments
+                                attachments = editedMessage?.attachments.orEmpty()
                             )
                         )
                     ).onSuccess {
@@ -521,29 +507,6 @@ class DiscussionViewModel @Inject constructor(
     fun onExitEditMessageMode() {
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.Default
-        }
-    }
-
-    private suspend fun loadEmojiWithCategories() : List<EmojiPickerView> = withContext(dispatchers.io) {
-        buildList {
-            emojiProvider.emojis.forEachIndexed { categoryIndex, emojis ->
-                add(
-                    EmojiPickerView.GroupHeader(
-                        category = categoryIndex
-                    )
-                )
-                emojis.forEachIndexed { emojiIndex, emoji ->
-                    val skin = Emoji.COLORS.any { color -> emoji.contains(color) }
-                    if (!skin)
-                        add(
-                            EmojiPickerView.Emoji(
-                                unicode = emoji,
-                                page = categoryIndex,
-                                index = emojiIndex
-                            )
-                        )
-                }
-            }
         }
     }
 

@@ -398,7 +398,7 @@ fun DiscussionScreen(
 
             GoToBottomButton(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .align(Alignment.BottomEnd)
                     .padding(end = 12.dp),
                 onGoToBottomClicked = {
                     scope.launch {

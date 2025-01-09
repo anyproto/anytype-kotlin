@@ -4185,7 +4185,7 @@ class EditorViewModel(
                 return
             }
             val exclude = listOf(ObjectTypeUniqueKeys.SET, ObjectTypeUniqueKeys.COLLECTION)
-            proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude)
+            proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude, fromFeatured = true)
         } else {
             sendToast("Your object is locked. To change its type, simply unlock it.")
         }
@@ -4625,7 +4625,7 @@ class EditorViewModel(
             is TypesWidgetItem.Type -> {
                 val objType = _objectTypes.firstOrNull { item.item.id == it.id }
                 if (objType != null) {
-                    onObjectTypeChanged(objType)
+                    onObjectTypeChanged(objType, false)
                 } else {
                     Timber.e("Error while getting object type from objectTypes list")
                 }
@@ -4644,25 +4644,26 @@ class EditorViewModel(
     }
 
     fun onObjectTypeChanged(
-        objType: ObjectWrapper.Type
+        objType: ObjectWrapper.Type,
+        fromFeatured: Boolean
     ) {
         Timber.d("onObjectTypeChanged, item:[$objType]")
         viewModelScope.launch {
             when (objType.uniqueKey) {
                 ObjectTypeIds.SET -> {
-                    proceedWithConvertingToSet()
+                    proceedWithConvertingToSet(fromFeatured)
                 }
                 ObjectTypeIds.COLLECTION -> {
-                    proceedWithConvertingToCollection()
+                    proceedWithConvertingToCollection(fromFeatured)
                 }
                 else -> {
-                    proceedWithObjectTypeChangeAndApplyTemplate(objType)
+                    proceedWithObjectTypeChangeAndApplyTemplate(objType, fromFeatured)
                 }
             }
         }
     }
 
-    private suspend fun proceedWithConvertingToSet() {
+    private suspend fun proceedWithConvertingToSet(fromFeature: Boolean) {
         val startTime = System.currentTimeMillis()
         objectToSet.async(
             ConvertObjectToSet.Params(
@@ -4677,19 +4678,24 @@ class EditorViewModel(
                     space = vmParams.space,
                     isPopUpToDashboard = true
                 )
+                val route = if (fromFeature) {
+                    EventsDictionary.Routes.featuredRelations
+                } else {
+                    EventsDictionary.Routes.navigation
+                }
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
                     sourceObject = SET_MARKETPLACE_ID,
                     containsFlagType = true,
-                    route = EventsDictionary.Routes.navigation,
+                    route = route,
                     spaceParams = provideParams(vmParams.space.id)
                 )
             }
         )
     }
 
-    private suspend fun proceedWithConvertingToCollection() {
+    private suspend fun proceedWithConvertingToCollection(fromFeature: Boolean) {
         val startTime = System.currentTimeMillis()
         objectToCollection.async(
             ConvertObjectToCollection.Params(ctx = context)
@@ -4701,12 +4707,17 @@ class EditorViewModel(
                     space = vmParams.space,
                     isPopUpToDashboard = true
                 )
+                val route = if (fromFeature) {
+                    EventsDictionary.Routes.featuredRelations
+                } else {
+                    EventsDictionary.Routes.navigation
+                }
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
                     sourceObject = COLLECTION_MARKETPLACE_ID,
                     containsFlagType = true,
-                    route = EventsDictionary.Routes.navigation
+                    route = route
                 )
             }
         )
@@ -6366,7 +6377,7 @@ class EditorViewModel(
 
     private fun onTypesWidgetSearchClicked() {
         Timber.d("onObjectTypesWidgetSearchClicked, ")
-        proceedWithOpeningSelectingObjectTypeScreen()
+        proceedWithOpeningSelectingObjectTypeScreen(fromFeatured = false)
     }
 
     private fun proceedWithGettingObjectTypesForTypesWidget() {
@@ -6407,7 +6418,10 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithOpeningSelectingObjectTypeScreen(exclude: List<Id> = emptyList()) {
+    private fun proceedWithOpeningSelectingObjectTypeScreen(
+        exclude: List<Id> = emptyList(),
+        fromFeatured: Boolean
+    ) {
         val list = buildList {
             val types = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
             if (types.isNotEmpty()) {
@@ -6418,7 +6432,8 @@ class EditorViewModel(
             }
         }
         val command = Command.OpenObjectSelectTypeScreen(
-            excludedTypes = list
+            excludedTypes = list,
+            fromFeatured = fromFeatured
         )
         dispatch(command)
     }
@@ -6427,7 +6442,11 @@ class EditorViewModel(
         setTypesWidgetVisibility(false)
     }
 
-    private fun proceedWithObjectTypeChange(objType: ObjectWrapper.Type, onSuccess: (() -> Unit)? = null) {
+    private fun proceedWithObjectTypeChange(
+        objType: ObjectWrapper.Type,
+        fromFeature: Boolean,
+        onSuccess: (() -> Unit)? = null
+    ) {
         val startTime = System.currentTimeMillis()
         val internalFlags = getInternalFlagsFromDetails()
         val containsTypeFlag = internalFlags.contains(InternalFlags.ShouldSelectType)
@@ -6438,16 +6457,26 @@ class EditorViewModel(
                     objectTypeKey = objType.uniqueKey
                 )
             ).fold(
-                onFailure = { Timber.e(it, "Error while updating object type: [${objType.uniqueKey}]") },
+                onFailure = {
+                    Timber.e(
+                        it,
+                        "Error while updating object type: [${objType.uniqueKey}]"
+                    )
+                },
                 onSuccess = { response ->
                     Timber.d("proceedWithObjectTypeChange success, key:[${objType.uniqueKey}]")
+                    val route = if (fromFeature) {
+                        EventsDictionary.Routes.featuredRelations
+                    } else {
+                        EventsDictionary.Routes.navigation
+                    }
                     dispatcher.send(response)
                     sendAnalyticsObjectTypeSelectOrChangeEvent(
                         analytics = analytics,
                         startTime = startTime,
                         sourceObject = objType.sourceObject,
                         containsFlagType = containsTypeFlag,
-                        route = EventsDictionary.Routes.navigation
+                        route = route
                     )
                     onSuccess?.invoke()
                 }
@@ -6455,8 +6484,8 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithObjectTypeChangeAndApplyTemplate(objType: ObjectWrapper.Type) {
-        proceedWithObjectTypeChange(objType) {
+    private fun proceedWithObjectTypeChangeAndApplyTemplate(objType: ObjectWrapper.Type, fromFeatured: Boolean) {
+        proceedWithObjectTypeChange(objType, fromFeatured) {
             val internalFlags = getInternalFlagsFromDetails()
             if (internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
                 onProceedWithApplyingTemplateByObjectId(

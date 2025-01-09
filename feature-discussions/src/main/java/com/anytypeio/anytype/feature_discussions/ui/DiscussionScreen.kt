@@ -1381,7 +1381,11 @@ fun Bubble(
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
         )
-        BubbleAttachments(attachments, onAttachmentClicked)
+        BubbleAttachments(
+            attachments = attachments,
+            isUserAuthor = isUserAuthor,
+            onAttachmentClicked = onAttachmentClicked
+        )
         if (reactions.isNotEmpty()) {
             ReactionList(
                 reactions = reactions,
@@ -1486,7 +1490,8 @@ fun Bubble(
 @OptIn(ExperimentalGlideComposeApi::class)
 private fun BubbleAttachments(
     attachments: List<DiscussionView.Message.Attachment>,
-    onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit
+    onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
+    isUserAuthor: Boolean
 ) {
     attachments.forEach { attachment ->
         when (attachment) {
@@ -1513,7 +1518,8 @@ private fun BubbleAttachments(
                             end = 16.dp,
                             top = 8.dp
                         )
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                    ,
                     title = attachment.wrapper?.name.orEmpty(),
                     type = attachment.typeName,
                     icon = attachment.icon,
@@ -1587,7 +1593,7 @@ fun AttachedObject(
             .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
-                color = colorResource(id = R.color.shape_tertiary),
+                color = colorResource(id = R.color.shape_transparent_secondary),
                 shape = RoundedCornerShape(12.dp)
             )
             .background(

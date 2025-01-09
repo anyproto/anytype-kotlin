@@ -1250,9 +1250,9 @@ fun Bubble(
             .width(IntrinsicSize.Max)
             .background(
                 color = if (isUserAuthor)
-                    colorResource(R.color.navigation_panel_icon)
+                    colorResource(R.color.background_primary)
                 else
-                    colorResource(R.color.navigation_panel),
+                    colorResource(R.color.shape_transparent_secondary),
                 shape = RoundedCornerShape(20.dp)
             )
             .clip(RoundedCornerShape(20.dp))
@@ -1267,7 +1267,7 @@ fun Bubble(
                     .fillMaxWidth()
                     .height(52.dp)
                     .background(
-                        color = colorResource(R.color.navigation_panel_icon),
+                        color = colorResource(R.color.shape_transparent_secondary),
                         shape = RoundedCornerShape(16.dp)
                     )
                     .clickable {
@@ -1283,7 +1283,7 @@ fun Bubble(
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = colorResource(id = R.color.text_white)
+                    color = colorResource(id = R.color.text_primary)
                 )
                 Text(
                     modifier = Modifier.padding(
@@ -1294,7 +1294,7 @@ fun Bubble(
                     text = reply.text,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = colorResource(id = R.color.text_white),
+                    color = colorResource(id = R.color.text_primary),
                 )
             }
         }
@@ -1311,10 +1311,7 @@ fun Bubble(
             Text(
                 text = name,
                 style = PreviewTitle2Medium,
-                color = if (isUserAuthor)
-                    colorResource(id = R.color.text_white)
-                else
-                    colorResource(id = R.color.text_primary),
+                color = colorResource(id = R.color.text_primary),
                 maxLines = 1
             )
             Spacer(Modifier.width(12.dp))
@@ -1324,10 +1321,7 @@ fun Bubble(
                     TIME_H24
                 ),
                 style = Caption1Regular,
-                color = if (isUserAuthor)
-                    colorResource(id = R.color.text_white)
-                else
-                    colorResource(id = R.color.text_secondary),
+                color = colorResource(id = R.color.text_secondary),
                 maxLines = 1
             )
         }
@@ -1385,12 +1379,13 @@ fun Bubble(
                 }
             },
             style = BodyRegular,
-            color = if (isUserAuthor)
-                colorResource(id = R.color.text_white)
-            else
-                colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.text_primary),
         )
-        BubbleAttachments(attachments, onAttachmentClicked)
+        BubbleAttachments(
+            attachments = attachments,
+            isUserAuthor = isUserAuthor,
+            onAttachmentClicked = onAttachmentClicked
+        )
         if (reactions.isNotEmpty()) {
             ReactionList(
                 reactions = reactions,
@@ -1495,7 +1490,8 @@ fun Bubble(
 @OptIn(ExperimentalGlideComposeApi::class)
 private fun BubbleAttachments(
     attachments: List<DiscussionView.Message.Attachment>,
-    onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit
+    onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
+    isUserAuthor: Boolean
 ) {
     attachments.forEach { attachment ->
         when (attachment) {
@@ -1522,7 +1518,8 @@ private fun BubbleAttachments(
                             end = 16.dp,
                             top = 8.dp
                         )
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                    ,
                     title = attachment.wrapper?.name.orEmpty(),
                     type = attachment.typeName,
                     icon = attachment.icon,
@@ -1596,7 +1593,7 @@ fun AttachedObject(
             .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
-                color = colorResource(id = R.color.shape_tertiary),
+                color = colorResource(id = R.color.shape_transparent_secondary),
                 shape = RoundedCornerShape(12.dp)
             )
             .background(

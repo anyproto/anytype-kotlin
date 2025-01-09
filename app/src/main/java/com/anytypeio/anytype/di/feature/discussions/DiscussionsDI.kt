@@ -82,11 +82,6 @@ object DiscussionModule {
         context: Context
     ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
 
-    @Provides
-    @PerScreen
-    @JvmStatic
-    fun provideEmojiProvider(): EmojiProvider = Emoji
-
     @Module
     interface Declarations {
         @PerScreen

@@ -38,8 +38,7 @@ class DiscussionViewModelFactory @Inject constructor(
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
-    private val emojiProvider: EmojiProvider
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = DiscussionViewModel(
@@ -58,7 +57,6 @@ class DiscussionViewModelFactory @Inject constructor(
         dispatchers = dispatchers,
         uploadFile = uploadFile,
         storeOfObjectTypes = storeOfObjectTypes,
-        copyFileToCacheDirectory = copyFileToCacheDirectory,
-        emojiProvider = emojiProvider
+        copyFileToCacheDirectory = copyFileToCacheDirectory
     ) as T
 }

@@ -1331,7 +1331,7 @@ fun Bubble(
                     top = 0.dp,
                     start = 12.dp,
                     end = 12.dp,
-                    bottom = 0.dp
+                    bottom = 12.dp
                 ),
                 text = buildAnnotatedString {
                     content.parts.forEach { part ->
@@ -1395,7 +1395,6 @@ fun Bubble(
                 onViewReaction = onViewChatReaction
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
         MaterialTheme(
             shapes = MaterialTheme.shapes.copy(
                 medium = RoundedCornerShape(
@@ -1495,7 +1494,7 @@ private fun BubbleAttachments(
     onAttachmentClicked: (DiscussionView.Message.Attachment) -> Unit,
     isUserAuthor: Boolean
 ) {
-    attachments.forEach { attachment ->
+    attachments.forEachIndexed { idx, attachment ->
         when (attachment) {
             is DiscussionView.Message.Attachment.Image -> {
                 GlideImage(
@@ -1504,7 +1503,7 @@ private fun BubbleAttachments(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(300.dp)
-                        .padding(vertical = 8.dp, horizontal = 4.dp)
+                        .padding(vertical = 4.dp, horizontal = 4.dp)
                         .clip(shape = RoundedCornerShape(16.dp))
                         .clickable {
                             onAttachmentClicked(attachment)
@@ -1518,7 +1517,8 @@ private fun BubbleAttachments(
                         .padding(
                             start = 4.dp,
                             end = 4.dp,
-                            top = 8.dp
+                            bottom = 4.dp,
+                            top = if (idx == 0) 4.dp else 0.dp
                         )
                         .fillMaxWidth()
                     ,
@@ -1592,11 +1592,11 @@ fun AttachedObject(
     Box(
         modifier = modifier
             .height(72.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(18.dp))
             .border(
                 width = 1.dp,
                 color = colorResource(id = R.color.shape_transparent_secondary),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(18.dp)
             )
             .background(
                 color = colorResource(id = R.color.background_secondary)

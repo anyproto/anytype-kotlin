@@ -934,7 +934,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     try {
                         pickProfileIcon.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
                     } catch (e: Exception) {
-                        Timber.e(e, "Error while opening photo picker")
+                        Timber.w(e, "Error while opening photo picker")
                         toast("Error while opening photo picker")
                         pickerDelegate.openFilePicker(Mimetype.MIME_IMAGE_ALL, REQUEST_PROFILE_IMAGE_CODE)
                     }
@@ -967,7 +967,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     try {
                         pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
                     } catch (e: Exception) {
-                        Timber.e(e, "Error while opening photo picker")
+                        Timber.w(e, "Error while opening photo picker")
                         toast("Error while opening photo picker")
                         pickerDelegate.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
                     }

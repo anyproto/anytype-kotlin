@@ -142,7 +142,7 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
         try {
             pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
         } catch (e: Exception) {
-            Timber.e(e, "Error while opening photo picker")
+            Timber.w(e, "Error while opening photo picker")
             toast("Error while opening photo picker")
             permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
         }

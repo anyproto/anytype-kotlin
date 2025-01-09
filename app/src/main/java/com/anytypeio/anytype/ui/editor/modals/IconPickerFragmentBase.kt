@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -82,7 +84,15 @@ abstract class IconPickerFragmentBase<T> :
             filterInputField.doAfterTextChanged { vm.onQueryChanged(it.toString()) }
             btnRemoveIcon.setOnClickListener { vm.onRemoveClicked(target) }
             tvTabRandom.setOnClickListener { vm.onRandomEmoji(target) }
-            tvTabUpload.setOnClickListener { permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, 0) }
+            tvTabUpload.setOnClickListener {
+                try {
+                    pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                } catch (e: Exception) {
+                    Timber.w(e, "Error while opening photo picker")
+                    toast("Error while opening photo picker")
+                    permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, 0)
+                }
+            }
         }
         skipCollapsed()
         expand()
@@ -170,6 +180,24 @@ abstract class IconPickerFragmentBase<T> :
     ): FragmentPageIconPickerBinding = FragmentPageIconPickerBinding.inflate(
         inflater, container, false
     )
+
+    val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
+        if (uri != null) {
+            try {
+                val path = uri.parseImagePath(requireContext())
+                vm.onPickedFromDevice(
+                    iconable = target,
+                    path = path,
+                    space = space
+                )
+            } catch (e: Exception) {
+                toast("Error while parsing path for media file")
+                Timber.e(e, "Error while parsing path for cover image")
+            }
+        } else {
+            Timber.i("No media selected")
+        }
+    }
 
     companion object {
         private const val EMPTY_FILTER_TEXT = ""

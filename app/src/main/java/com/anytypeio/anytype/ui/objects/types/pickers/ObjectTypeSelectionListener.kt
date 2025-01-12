@@ -8,7 +8,7 @@ interface ObjectTypeSelectionListener {
 }
 
 interface ObjectTypeUpdateListener {
-    fun onUpdateObjectType(objType: ObjectWrapper.Type)
+    fun onUpdateObjectType(objType: ObjectWrapper.Type, fromFeatured: Boolean = false)
 }
 
 interface WidgetObjectTypeListener {

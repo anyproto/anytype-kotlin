@@ -145,9 +145,14 @@ class ObjectTypeSelectionFragment : SelectObjectTypeBaseFragment() {
  */
 class ObjectTypeUpdateFragment : SelectObjectTypeBaseFragment() {
 
+    private val fromFeatured get() = argOrNull<Boolean>(OPEN_FROM_FEATURED_ARG) == true
+
     override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
         withParentSafe<ObjectTypeUpdateListener> {
-            onUpdateObjectType(objType = objType)
+            onUpdateObjectType(
+                objType = objType,
+                fromFeatured = fromFeatured
+            )
         }
     }
 
@@ -156,10 +161,13 @@ class ObjectTypeUpdateFragment : SelectObjectTypeBaseFragment() {
     }
 
     companion object {
-        fun new(space: Id, excludedTypeKeys: List<Key>) = ObjectTypeUpdateFragment().apply {
+        const val OPEN_FROM_FEATURED_ARG = "arg.object_type_choose_open_from"
+
+        fun new(space: Id, excludedTypeKeys: List<Key>, fromFeatured: Boolean = false) = ObjectTypeUpdateFragment().apply {
             arguments = bundleOf(
                 SPACE_ID_KEY to space,
-                EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys
+                EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys,
+                OPEN_FROM_FEATURED_ARG to fromFeatured
             )
         }
     }

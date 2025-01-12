@@ -311,6 +311,7 @@ object EventsDictionary {
         const val sharingExtension = "SharingExtension"
         const val gallery = "Gallery"
         const val notification = "Notification"
+        const val featuredRelations = "FeaturedRelations"
     }
 
     object Type {

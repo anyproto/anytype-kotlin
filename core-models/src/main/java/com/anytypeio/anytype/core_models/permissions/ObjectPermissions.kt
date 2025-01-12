@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
  * @property canEditBlocks Indicates whether blocks in this object can be edited.
  * @property canEditDetails Indicates whether general details on this object can be edited.
  * @property editBlocks Specifies the permission level regarding block editing (e.g., read-only vs. editable).
+ * @property canCreateObjectThisType Indicates whether object with this type can be created.
  */
 data class ObjectPermissions(
     val canArchive: Boolean = false,
@@ -51,7 +52,8 @@ data class ObjectPermissions(
     val canEditRelationsList: Boolean = false,
     val canEditBlocks: Boolean = false,
     val canEditDetails: Boolean = false,
-    val editBlocks: EditBlocksPermission
+    val editBlocks: EditBlocksPermission,
+    val canCreateObjectThisType: Boolean = false
 )
 
 /**
@@ -133,7 +135,8 @@ fun ObjectView.toObjectPermissions(
                 !objectRestrictions.contains(ObjectRestriction.RELATIONS),
         canEditBlocks = (editBlocksPermission == EditBlocksPermission.Edit),
         canEditDetails = canEditDetails && canEdit,
-        editBlocks = editBlocksPermission
+        editBlocks = editBlocksPermission,
+        canCreateObjectThisType = !objectRestrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && canApplyUneditableActions
     )
 }
 

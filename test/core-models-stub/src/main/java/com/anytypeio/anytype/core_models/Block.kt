@@ -254,11 +254,12 @@ fun StubBookmark(
 
 fun StubSmartBlock(
     id: Id = MockDataFactory.randomString(),
-    children: List<Id> = emptyList()
+    children: List<Id> = emptyList(),
+    fields: Block.Fields = Block.Fields.empty(),
 ): Block = Block(
     id = id,
     children = children,
-    fields = Block.Fields.empty(),
+    fields = fields,
     content = Block.Content.Smart
 )
 

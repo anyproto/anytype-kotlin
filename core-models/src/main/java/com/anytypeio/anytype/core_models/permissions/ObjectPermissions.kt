@@ -104,9 +104,7 @@ fun ObjectView.toObjectPermissions(
 
     return ObjectPermissions(
         canArchive = participantCanEdit && !objectRestrictions.contains(ObjectRestriction.DELETE) && !isArchived,
-        canDelete = isArchived && participantCanEdit && !objectRestrictions.contains(
-            ObjectRestriction.DELETE
-        ),
+        canDelete =  participantCanEdit && !objectRestrictions.contains(ObjectRestriction.DELETE),
         canChangeType = canEdit &&
                 !isTemplateObject &&
                 !objectRestrictions.contains(ObjectRestriction.TYPE_CHANGE),

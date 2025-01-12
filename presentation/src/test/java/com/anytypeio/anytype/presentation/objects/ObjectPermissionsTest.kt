@@ -43,7 +43,7 @@ class ObjectPermissionsTest {
 
         // THEN
         assertTrue(permissions.canArchive)
-        assertFalse(permissions.canDelete)
+        assertTrue(permissions.canDelete)
         assertTrue(permissions.canChangeType)
         assertTrue(permissions.canUndoRedo)
         assertTrue(permissions.canChangeLayout)
@@ -143,7 +143,7 @@ class ObjectPermissionsTest {
         // THEN
         // Because the block is locked, editing blocks is read-only, but other actions may be allowed.
         assertTrue(permissions.canArchive)
-        assertFalse(permissions.canDelete)
+        assertTrue(permissions.canDelete)
         assertFalse(permissions.canEditBlocks)
         assertTrue(permissions.editBlocks == EditBlocksPermission.ReadOnly)
         assertFalse(permissions.canChangeType)
@@ -251,7 +251,7 @@ class ObjectPermissionsTest {
         // THEN
         // NOTE layout is part of undoRedoLayouts, so undo/redo is allowed if unlocked & not archived.
         assertTrue(permissions.canArchive, "Unlocked + participant can edit => can archive.")
-        assertFalse(permissions.canDelete, "Not archived => can't delete.")
+        assertTrue(permissions.canDelete, "archived or not => can't delete.")
         assertTrue(permissions.canUndoRedo, "NOTE layout supports undo/redo.")
         assertTrue(permissions.canEditBlocks, "Not locked + not archived + can edit => can edit blocks.")
         assertTrue(permissions.canEditDetails, "No restrictions => can edit details.")

@@ -8,12 +8,6 @@ sealed class BlocksReadonlyReason {
 }
 
 sealed class EditBlocksPermission {
-    object Edit : EditBlocksPermission()
-    data class ReadOnly(val reason: BlocksReadonlyReason) : EditBlocksPermission()
-
-    val canEdit: Boolean
-        get() = when (this) {
-            is Edit -> true
-            is ReadOnly -> false
-        }
+    data object Edit : EditBlocksPermission()
+    data object ReadOnly: EditBlocksPermission()
 }

@@ -1555,6 +1555,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="all_content_unlinked_description">Niet-gelinkte objecten die geen directe link of teruglink hebben met andere objecten in de weergave.</string>
     <string name="all_content_snackbar_title">verplaatst naar prullenmand</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_search_button">Zoek objecten knop</string>
     <string name="main_navigation_content_desc_create_button">Maak object knop</string>
     <string name="chat">Chat</string>

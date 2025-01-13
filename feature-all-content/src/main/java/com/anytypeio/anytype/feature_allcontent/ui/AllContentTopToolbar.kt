@@ -27,6 +27,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -78,7 +79,8 @@ fun AllContentTopBarContainer(
     uiMenuState: UiMenuState,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
-    onBinClick: () -> Unit
+    onBinClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -86,6 +88,18 @@ fun AllContentTopBarContainer(
         modifier = Modifier.fillMaxWidth(),
         expandedHeight = 48.dp,
         title = { AllContentTitle(state = titleState) },
+        navigationIcon = {
+            Image(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .noRippleClickable {
+                        onBackClick()
+                    }
+                ,
+                painter = painterResource(R.drawable.ic_default_top_back),
+                contentDescription = stringResource(R.string.content_desc_back_button)
+            )
+        },
         actions = {
             AllContentMenuButton(
                 onClick = { isMenuExpanded = true }
@@ -147,7 +161,8 @@ private fun AllContentTopBarContainerPreview() {
         ),
         onModeClick = {},
         onSortClick = {},
-        onBinClick = {}
+        onBinClick = {},
+        onBackClick = {}
     )
 }
 //endregion

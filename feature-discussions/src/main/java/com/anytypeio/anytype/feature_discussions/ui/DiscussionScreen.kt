@@ -763,7 +763,7 @@ private fun ChatBox(
                     }
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_nav_panel_plus),
+                    painter = painterResource(id = R.drawable.ic_chat_box_add_attachment),
                     contentDescription = "Plus button",
                     modifier = Modifier
                         .align(Alignment.Center)

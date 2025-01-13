@@ -103,6 +103,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenShareScreen
 import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
@@ -1604,6 +1605,16 @@ class ObjectSetViewModel(
             dispatch(
                 AppNavigation.Command.OpenGlobalSearch(
                     space = vmParams.space.id
+                )
+            )
+        }
+    }
+
+    fun onShareButtonClicked() {
+        viewModelScope.launch {
+            dispatch(
+                AppNavigation.Command.OpenShareScreen(
+                    vmParams.space
                 )
             )
         }

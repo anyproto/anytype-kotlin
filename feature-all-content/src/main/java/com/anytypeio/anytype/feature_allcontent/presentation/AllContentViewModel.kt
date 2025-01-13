@@ -763,6 +763,12 @@ class AllContentViewModel(
         proceedWithCreateDoc(objType)
     }
 
+    fun onMemberButtonClicked() {
+        viewModelScope.launch {
+            commands.emit(OpenShareScreen(vmParams.spaceId))
+        }
+    }
+
     private fun proceedWithCreateDoc(
         objType: ObjectWrapper.Type? = null
     ) {
@@ -993,6 +999,7 @@ class AllContentViewModel(
             )
         }
     }
+
     //endregion
 
     sealed class Command {
@@ -1010,6 +1017,7 @@ class AllContentViewModel(
         }
         data class OpenTypeEditing(val item: UiContentItem.Type) : Command()
         data object OpenTypeCreation: Command()
+        data class OpenShareScreen(val space: SpaceId): Command()
         data class OpenRelationEditing(
             val typeName: String,
             val id: Id,

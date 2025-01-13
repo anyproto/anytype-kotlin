@@ -143,6 +143,7 @@ import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.feature_discussions.R
+import com.anytypeio.anytype.feature_discussions.presentation.ChatConfig
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.ChatBoxMode
@@ -522,12 +523,16 @@ private fun ChatBox(
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
 ) {
-    val uploadMediaLauncher = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) {
+    val uploadMediaLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia(maxItems = ChatConfig.MAX_ATTACHMENT_COUNT)
+    ) {
         onChatBoxMediaPicked(it)
     }
 
-    val uploadFileLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) {
-        onChatBoxFilePicked(it)
+    val uploadFileLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris ->
+        onChatBoxFilePicked(uris.take(ChatConfig.MAX_ATTACHMENT_COUNT))
     }
 
     var showDropdownMenu by remember { mutableStateOf(false) }

@@ -65,7 +65,7 @@ fun BottomNavigationMenu(
     modifier: Modifier = Modifier,
     backClick: () -> Unit = {},
     backLongClick: () -> Unit = {},
-    onMemberClicked: () -> Unit = {},
+    onShareButtonClicked: () -> Unit = {},
     searchClick: () -> Unit = {},
     addDocClick: () -> Unit = {},
     addDocLongClick: () -> Unit = {},
@@ -89,7 +89,7 @@ fun BottomNavigationMenu(
             modifier = Modifier.width(72.dp).height(52.dp),
             contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
             res = BottomNavigationItem.MEMBERS.res,
-            onClick = onMemberClicked
+            onClick = onShareButtonClicked
         )
         MenuItem(
             modifier = Modifier.width(72.dp).height(52.dp),

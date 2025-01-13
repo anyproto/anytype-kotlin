@@ -132,7 +132,7 @@ fun AllContentWrapperScreen(
     moveToBin: (UiContentItem.Item) -> Unit,
     undoMoveToBin: (Id) -> Unit,
     onDismissSnackbar: () -> Unit,
-    onMemberButtonClicked: () -> Unit
+    onShareButtonClicked: () -> Unit
 ) {
 
     AllContentMainScreen(
@@ -161,7 +161,7 @@ fun AllContentWrapperScreen(
         onDismissSnackbar = onDismissSnackbar,
         canPaginate = canPaginate,
         onUpdateLimitSearch = onUpdateLimitSearch,
-        onMemberButtonClicked = onMemberButtonClicked
+        onShareButtonClicked = onShareButtonClicked
     )
 }
 
@@ -193,7 +193,7 @@ fun AllContentMainScreen(
     onDismissSnackbar: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
-    onMemberButtonClicked: () -> Unit
+    onShareButtonClicked: () -> Unit
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -239,7 +239,7 @@ fun AllContentMainScreen(
                     onBackClicked = onBackClicked,
                     onBackLongClicked = onBackLongClicked,
                     uiBottomMenu = uiBottomMenu,
-                    onMemberButtonClicked = onMemberButtonClicked
+                    onShareButtonClicked = onShareButtonClicked
                 )
             }
         },
@@ -342,7 +342,7 @@ fun BottomMenu(
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onBackLongClicked: () -> Unit,
-    onMemberButtonClicked: () -> Unit
+    onShareButtonClicked: () -> Unit
 ) {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     if (isImeVisible) return
@@ -354,7 +354,7 @@ fun BottomMenu(
         addDocClick = onAddDocClicked,
         addDocLongClick = onCreateObjectLongClicked,
         isOwnerOrEditor = uiBottomMenu.isOwnerOrEditor,
-        onMemberClicked = onMemberButtonClicked
+        onShareButtonClicked = onShareButtonClicked
     )
 }
 
@@ -625,7 +625,7 @@ fun PreviewMainScreen() {
         onDismissSnackbar = {},
         canPaginate = true,
         onUpdateLimitSearch = {},
-        onMemberButtonClicked = {}
+        onShareButtonClicked = {}
     )
 }
 

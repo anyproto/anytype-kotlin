@@ -41,7 +41,6 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -349,7 +348,7 @@ class HomeScreenFragment : BaseComposeFragment(),
             onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
             onCreateDataViewObject = vm::onCreateDataViewObject,
             onBackLongClicked = vm::onBackLongClicked,
-            onMemberClicked = vm::onSpaceShareIconClicked
+            onShareButtonClicked = vm::onSpaceShareIconClicked
         )
     }
 

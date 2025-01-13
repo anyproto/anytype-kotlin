@@ -151,7 +151,7 @@ fun ScreenContent(
                     addDocLongClick = onCreateObjectLongClicked,
                     backLongClick = vm::onBackLongClicked,
                     isOwnerOrEditor = uiState.isActionButtonVisible,
-                    onMemberClicked = vm::onShareButtonClicked
+                    onShareButtonClicked = vm::onShareButtonClicked
                 )
             }
         }

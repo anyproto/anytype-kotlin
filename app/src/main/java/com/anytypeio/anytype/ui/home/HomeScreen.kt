@@ -89,7 +89,7 @@ fun HomeScreen(
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
-    onMemberClicked: () -> Unit,
+    onShareButtonClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
@@ -163,7 +163,7 @@ fun HomeScreen(
                 addDocClick = onCreateNewObjectClicked,
                 addDocLongClick = onCreateNewObjectLongClicked,
                 isOwnerOrEditor = mode !is InteractionMode.ReadOnly,
-                onMemberClicked = onMemberClicked
+                onShareButtonClicked = onShareButtonClicked
             )
         }
     }

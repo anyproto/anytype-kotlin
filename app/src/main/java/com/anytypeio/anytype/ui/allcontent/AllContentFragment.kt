@@ -324,7 +324,7 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     undoMoveToBin = vm::proceedWithUndoMoveToBin,
                     onDismissSnackbar = vm::proceedWithDismissSnackbar,
                     uiBottomMenu = vm.uiBottomMenu.collectAsStateWithLifecycle().value,
-                    onMemberButtonClicked = vm::onMemberButtonClicked
+                    onShareButtonClicked = vm::onMemberButtonClicked
                 )
             }
         }

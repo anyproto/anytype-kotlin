@@ -1584,18 +1584,18 @@ Please provide specific details of your needs here.</string>
     <string name="file">File</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Crea il tuo primo spazio per iniziare</string>
     <string name="space_list_empty_state_it_is_empty_here">È vuoto qui.</string>
-    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
-    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
-    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
-    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
-    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_smileys_and_people">Faccine &amp; Persone</string>
+    <string name="emoji_category_animals_and_nature">Animali &amp; Natura</string>
+    <string name="emoji_category_food_and_drink">Cibo &amp; Bevande</string>
+    <string name="emoji_category_activity_and_sport">Attività &amp; Sport</string>
+    <string name="emoji_category_travel_and_places">Viaggi &amp; Luoghi</string>
     <string name="emoji_category_objects">Oggetti</string>
-    <string name="emoji_category_symbols">Symbols</string>
-    <string name="emoji_category_flags">Flags</string>
-    <string name="emoji_recently_used_section">Recently used</string>
+    <string name="emoji_category_symbols">Simboli</string>
+    <string name="emoji_category_flags">Bandiere</string>
+    <string name="emoji_recently_used_section">Utilizzato di recente</string>
     <string name="chat_message_reactions_no_reactions_yet">Ancora nessuna reazione</string>
     <string name="chat_message_reactions_no_reactions_message">Probabilmente qualcuno ha appena rimosso la reazione o si è verificato un problema tecnico</string>
-    <string name="object_types_human">Human</string>
+    <string name="object_types_human">Umano</string>
     <string name="chats_alert_delete_this_message_description">Non può essere ripristinato dopo la conferma</string>
     <string name="chats_alert_delete_this_message">Eliminare questo messaggio?</string>
 </resources>

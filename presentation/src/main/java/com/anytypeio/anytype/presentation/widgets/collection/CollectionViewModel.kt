@@ -852,7 +852,7 @@ class CollectionViewModel(
     }
 
     fun onShareButtonClicked() {
-        launch { commands.emit(ExitToSpaceWidgets) }
+        launch { commands.emit(OpenShareScreen(vmParams.spaceId)) }
     }
 
     fun onBackLongClicked() {

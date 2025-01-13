@@ -6,6 +6,7 @@ import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.di.feature.discussions.DiscussionFragment
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
@@ -14,6 +15,7 @@ import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
 import com.anytypeio.anytype.ui.relations.RelationEditFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
@@ -174,6 +176,13 @@ class Navigator : AppNavigation {
             args = GlobalSearchFragment.args(
                 space = space
             )
+        )
+    }
+
+    override fun openShareScreen(space: SpaceId) {
+        navController?.navigate(
+            R.id.shareSpaceScreen,
+            args = ShareSpaceFragment.args(space)
         )
     }
 

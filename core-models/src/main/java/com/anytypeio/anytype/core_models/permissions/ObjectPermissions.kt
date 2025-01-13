@@ -138,13 +138,13 @@ fun ObjectView.toObjectPermissions(
     )
 }
 
-val templatesAllowedLayouts = listOf(
+private val templatesAllowedLayouts = listOf(
     ObjectType.Layout.BASIC,
     ObjectType.Layout.PROFILE,
     ObjectType.Layout.TODO
 )
 
-val undoRedoLayouts = listOf(
+private val undoRedoLayouts = listOf(
     ObjectType.Layout.BASIC,
     ObjectType.Layout.PROFILE,
     ObjectType.Layout.TODO,
@@ -152,7 +152,7 @@ val undoRedoLayouts = listOf(
     ObjectType.Layout.BOOKMARK
 )
 
-val lockLayouts = listOf(
+private val lockLayouts = listOf(
     ObjectType.Layout.BASIC,
     ObjectType.Layout.PROFILE,
     ObjectType.Layout.TODO,
@@ -160,7 +160,7 @@ val lockLayouts = listOf(
     ObjectType.Layout.BOOKMARK
 )
 
-val layoutsWithIcon = listOf(
+private val layoutsWithIcon = listOf(
     ObjectType.Layout.FILE,
     ObjectType.Layout.IMAGE,
     ObjectType.Layout.VIDEO,
@@ -174,12 +174,12 @@ val layoutsWithIcon = listOf(
     ObjectType.Layout.PROFILE
 )
 
-val layoutsWithCover = layoutsWithIcon + listOf(
+private val layoutsWithCover = layoutsWithIcon + listOf(
     ObjectType.Layout.TODO,
     ObjectType.Layout.BOOKMARK
 )
 
-val possibleToChangeLayoutLayouts = listOf(
+private val possibleToChangeLayoutLayouts = listOf(
     ObjectType.Layout.BASIC,
     ObjectType.Layout.PROFILE,
     ObjectType.Layout.TODO,

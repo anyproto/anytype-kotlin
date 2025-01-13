@@ -113,16 +113,7 @@ fun SpaceIconView(
             }
         }
         else -> {
-            Box(
-                modifier = modifier
-                    .size(mainSize)
-                    .background(
-                        color = colorResource(id = R.color.palette_system_yellow),
-                        shape = RoundedCornerShape(radius)
-                    )
-                    .clip(RoundedCornerShape(radius))
-                    .noRippleClickable { onSpaceIconClick.invoke() }
-            )
+            // Draw nothing
         }
     }
 }

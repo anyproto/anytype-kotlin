@@ -150,7 +150,8 @@ fun ScreenContent(
                     addDocClick = { vm.onAddClicked(null) },
                     addDocLongClick = onCreateObjectLongClicked,
                     backLongClick = vm::onBackLongClicked,
-                    isOwnerOrEditor = uiState.isActionButtonVisible
+                    isOwnerOrEditor = uiState.isActionButtonVisible,
+                    onMemberClicked = vm::onShareButtonClicked
                 )
             }
         }
@@ -175,6 +176,13 @@ fun TopBar(
             .fillMaxWidth()
             .height(48.dp)
     ) {
+        Image(
+            painter = painterResource(R.drawable.ic_default_top_back),
+            contentDescription = stringResource(R.string.content_desc_back_button),
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .noRippleClickable { vm.onPrevClicked() }
+        )
         Text(
             modifier = Modifier.align(Alignment.Center),
             text = uiState.collectionName,

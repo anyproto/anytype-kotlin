@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -35,6 +36,7 @@ fun HomeScreenToolbar(
     onWidgetTabClicked: () -> Unit,
     onChatTabClicked: () -> Unit,
     onSpaceIconClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit,
     name: String,
     membersCount: Int
 ) {
@@ -42,19 +44,29 @@ fun HomeScreenToolbar(
         modifier = Modifier
             .systemBarsPadding()
             .fillMaxWidth()
-            .height(64.dp)
-            .padding(horizontal = 20.dp)
+            .height(52.dp)
     ) {
 
+        Image(
+            painter = painterResource(R.drawable.ic_home_top_toolbar_back),
+            contentDescription = "Back button",
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .align(Alignment.CenterStart)
+                .noRippleClickable {
+                    onBackButtonClicked()
+                }
+        )
 
         SpaceIconView(
             modifier = Modifier
+                .padding(start = 60.dp)
                 .align(Alignment.CenterStart),
             icon = spaceIconView,
             onSpaceIconClick = {
                 onSpaceIconClicked()
             },
-            mainSize = 40.dp
+            mainSize = 32.dp
         )
 
         Text(
@@ -62,8 +74,8 @@ fun HomeScreenToolbar(
             style = PreviewTitle2Medium,
             color = colorResource(R.color.text_primary),
             modifier = Modifier.padding(
-                start = 52.dp,
-                top = 13.dp
+                start = 104.dp,
+                top = 8.dp
             )
         )
 
@@ -77,20 +89,20 @@ fun HomeScreenToolbar(
                 )
             } else
                 stringResource(id = R.string.three_dots_text_placeholder),
-            style = Relations3,
+            style = Relations2,
             color = colorResource(R.color.text_secondary),
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(
-                    start = 52.dp,
-                    bottom = 13.dp
+                    start = 104.dp,
+                    bottom = 8.dp
                 )
         )
 
         Image(
             painter = painterResource(id = R.drawable.ic_home_toolbar_widgets),
             modifier = Modifier
-                .padding(end = 48.dp)
+                .padding(end = 64.dp)
                 .size(32.dp)
                 .align(Alignment.CenterEnd)
                 .alpha(
@@ -105,6 +117,7 @@ fun HomeScreenToolbar(
         Image(
             painter = painterResource(id = R.drawable.ic_home_toolbar_chat),
             modifier = Modifier
+                .padding(end = 16.dp)
                 .size(32.dp)
                 .align(Alignment.CenterEnd)
                 .alpha(
@@ -125,9 +138,10 @@ fun HomeScreenToolbarPreview() {
         onWidgetTabClicked = {},
         onChatTabClicked = {},
         isChatActive = false,
-        spaceIconView = SpaceIconView.Loading,
+        spaceIconView = SpaceIconView.Placeholder(name = "A"),
         onSpaceIconClicked = {},
         membersCount = 74,
-        name = "Test space"
+        name = "Test space",
+        onBackButtonClicked = {}
     )
 }

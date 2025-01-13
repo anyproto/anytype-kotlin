@@ -166,7 +166,8 @@ class HomeScreenFragment : BaseComposeFragment(),
                             },
                             onSpaceIconClicked = vm::onSpaceSettingsClicked,
                             membersCount = view?.membersCount ?: 0,
-                            name = view?.space?.name.orEmpty()
+                            name = view?.space?.name.orEmpty(),
+                            onBackButtonClicked = vm::onBackClicked
                         )
                         HorizontalPager(
                             modifier = Modifier
@@ -347,7 +348,8 @@ class HomeScreenFragment : BaseComposeFragment(),
             onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
             onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
             onCreateDataViewObject = vm::onCreateDataViewObject,
-            onBackLongClicked = vm::onBackLongClicked
+            onBackLongClicked = vm::onBackLongClicked,
+            onMemberClicked = vm::onSpaceShareIconClicked
         )
     }
 
@@ -473,11 +475,15 @@ class HomeScreenFragment : BaseComposeFragment(),
                 )
             }
             is Command.Deeplink.MembershipScreen -> {
-                findNavController().navigate(
-                    R.id.paymentsScreen,
-                    MembershipFragment.args(command.tierId),
-                    NavOptions.Builder().setLaunchSingleTop(true).build()
-                )
+                runCatching {
+                    findNavController().navigate(
+                        R.id.paymentsScreen,
+                        MembershipFragment.args(command.tierId),
+                        NavOptions.Builder().setLaunchSingleTop(true).build()
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening membership screen")
+                }
             }
             is Command.Deeplink.DeepLinkToObjectNotWorking -> {
                 toast(
@@ -485,10 +491,14 @@ class HomeScreenFragment : BaseComposeFragment(),
                 )
             }
             is Command.ShareSpace -> {
-                findNavController().navigate(
-                    R.id.shareSpaceScreen,
-                    args = ShareSpaceFragment.args(command.space)
-                )
+                runCatching {
+                    findNavController().navigate(
+                        R.id.shareSpaceScreen,
+                        args = ShareSpaceFragment.args(command.space)
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening share screen")
+                }
             }
             is Command.CreateSourceForNewWidget -> {
                 val dialog = WidgetSourceTypeFragment.new(

@@ -65,6 +65,7 @@ fun BottomNavigationMenu(
     modifier: Modifier = Modifier,
     backClick: () -> Unit = {},
     backLongClick: () -> Unit = {},
+    onMemberClicked: () -> Unit = {},
     searchClick: () -> Unit = {},
     addDocClick: () -> Unit = {},
     addDocLongClick: () -> Unit = {},
@@ -86,10 +87,15 @@ fun BottomNavigationMenu(
     ) {
         MenuItem(
             modifier = Modifier.width(72.dp).height(52.dp),
-            contentDescription = stringResource(id = R.string.main_navigation_content_desc_back_button),
-            res = BottomNavigationItem.BACK.res,
-            onClick = backClick,
-            onLongClick = backLongClick
+            contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
+            res = BottomNavigationItem.MEMBERS.res,
+            onClick = onMemberClicked
+        )
+        MenuItem(
+            modifier = Modifier.width(72.dp).height(52.dp),
+            contentDescription = stringResource(id = R.string.main_navigation_content_desc_search_button),
+            res = BottomNavigationItem.SEARCH.res,
+            onClick = searchClick
         )
         if (isOwnerOrEditor) {
             MenuItem(
@@ -100,12 +106,6 @@ fun BottomNavigationMenu(
                 onLongClick = addDocLongClick
             )
         }
-        MenuItem(
-            modifier = Modifier.width(72.dp).height(52.dp),
-            contentDescription = stringResource(id = R.string.main_navigation_content_desc_search_button),
-            res = BottomNavigationItem.SEARCH.res,
-            onClick = searchClick
-        )
     }
 }
 
@@ -196,7 +196,7 @@ private fun ProfileMenuItem(
 
 private enum class BottomNavigationItem(@DrawableRes val res: Int) {
     BACK(R.drawable.ic_nav_panel_back),
-    HOME(R.drawable.ic_nav_panel_vault),
+    MEMBERS(R.drawable.ic_nav_panel_members),
     SEARCH(R.drawable.ic_nav_panel_search),
     ADD_DOC(R.drawable.ic_nav_panel_plus)
 }

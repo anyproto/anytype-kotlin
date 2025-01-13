@@ -165,6 +165,9 @@ open class ObjectSetFragment :
     private val header: LinearLayout
         get() = binding.objectHeader.root
 
+    private val topBackButton: View
+        get() = binding.topToolbar.root.findViewById(R.id.topBackButton)
+
     private val topToolbarTitle: TextView
         get() = binding.topToolbar.root.findViewById(R.id.tvTopToolbarTitle)
 
@@ -277,6 +280,7 @@ open class ObjectSetFragment :
                     vm.hideTitleToolbar()
                 }
             }
+            subscribe(topBackButton.clicks().throttleFirst()) { vm.onBackButtonClicked() }
             subscribe(menuButton.clicks().throttleFirst()) { vm.onMenuClicked() }
             subscribe(customizeViewButton.clicks().throttleFirst()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(viewerTitle.clicks().throttleFirst()) { vm.onExpandViewerMenuClicked() }

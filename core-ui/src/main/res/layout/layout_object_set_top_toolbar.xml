@@ -6,12 +6,28 @@
     android:layout_width="match_parent"
     android:layout_height="48dp">
 
+    <FrameLayout
+        android:id="@+id/topBackButton"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp">
+
+        <ImageView
+            android:id="@+id/ivTopBackButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_default_top_back" />
+
+    </FrameLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/statusContainer"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="center_vertical|end"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginEnd="54dp"
         android:layout_width="wrap_content"
         android:layout_height="28dp">
 

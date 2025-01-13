@@ -523,6 +523,7 @@ private fun ChatBox(
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
 ) {
+
     val uploadMediaLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickMultipleVisualMedia(maxItems = ChatConfig.MAX_ATTACHMENT_COUNT)
     ) {
@@ -768,76 +769,78 @@ private fun ChatBox(
                         .align(Alignment.Center)
                         .padding(horizontal = 4.dp, vertical = 4.dp)
                 )
-                MaterialTheme(
-                    shapes = MaterialTheme.shapes.copy(
-                        medium = RoundedCornerShape(
-                            12.dp
-                        )
-                    ),
-                    colors = MaterialTheme.colors.copy(
-                        surface = colorResource(id = R.color.background_secondary)
-                    )
-                ) {
-                    DropdownMenu(
-                        offset = DpOffset(8.dp, 40.dp),
-                        expanded = showDropdownMenu,
-                        onDismissRequest = {
-                            showDropdownMenu = false
-                        },
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .defaultMinSize(
-                                minWidth = 252.dp
+                if (attachments.size < ChatConfig.MAX_ATTACHMENT_COUNT) {
+                    MaterialTheme(
+                        shapes = MaterialTheme.shapes.copy(
+                            medium = RoundedCornerShape(
+                                12.dp
                             )
+                        ),
+                        colors = MaterialTheme.colors.copy(
+                            surface = colorResource(id = R.color.background_secondary)
+                        )
                     ) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.chat_attachment_object),
-                                    color = colorResource(id = R.color.text_primary)
-                                )
-                            },
-                            onClick = {
+                        DropdownMenu(
+                            offset = DpOffset(8.dp, 40.dp),
+                            expanded = showDropdownMenu,
+                            onDismissRequest = {
                                 showDropdownMenu = false
-                                onAttachObjectClicked()
-                            }
-                        )
-                        Divider(
-                            paddingStart = 0.dp,
-                            paddingEnd = 0.dp
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.chat_attachment_media),
-                                    color = colorResource(id = R.color.text_primary)
-                                )
                             },
-                            onClick = {
-                                showDropdownMenu = false
-                                uploadMediaLauncher.launch(
-                                    PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .defaultMinSize(
+                                    minWidth = 252.dp
                                 )
-                            }
-                        )
-                        Divider(
-                            paddingStart = 0.dp,
-                            paddingEnd = 0.dp
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.chat_attachment_file),
-                                    color = colorResource(id = R.color.text_primary)
-                                )
-                            },
-                            onClick = {
-                                showDropdownMenu = false
-                                uploadFileLauncher.launch(
-                                    arrayOf("*/*")
-                                )
-                            }
-                        )
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = stringResource(R.string.chat_attachment_object),
+                                        color = colorResource(id = R.color.text_primary)
+                                    )
+                                },
+                                onClick = {
+                                    showDropdownMenu = false
+                                    onAttachObjectClicked()
+                                }
+                            )
+                            Divider(
+                                paddingStart = 0.dp,
+                                paddingEnd = 0.dp
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = stringResource(R.string.chat_attachment_media),
+                                        color = colorResource(id = R.color.text_primary)
+                                    )
+                                },
+                                onClick = {
+                                    showDropdownMenu = false
+                                    uploadMediaLauncher.launch(
+                                        PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                }
+                            )
+                            Divider(
+                                paddingStart = 0.dp,
+                                paddingEnd = 0.dp
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = stringResource(R.string.chat_attachment_file),
+                                        color = colorResource(id = R.color.text_primary)
+                                    )
+                                },
+                                onClick = {
+                                    showDropdownMenu = false
+                                    uploadFileLauncher.launch(
+                                        arrayOf("*/*")
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }

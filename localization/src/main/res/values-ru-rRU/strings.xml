@@ -1584,6 +1584,7 @@
     <string name="all_content_unlinked_description">Непривязанные объекты, не имеющие прямой связи или обратной связи с другими объектами на графике.</string>
     <string name="all_content_snackbar_title">перемещен в корзину</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_search_button">Кнопка поиска объектов</string>
     <string name="main_navigation_content_desc_create_button">Кнопка создания объекта</string>
     <string name="chat">Чат</string>

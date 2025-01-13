@@ -632,6 +632,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onDocumentMenuClicked() }
             .launchIn(lifecycleScope)
 
+        binding.topToolbar.back
+            .clicks()
+            .throttleFirst()
+            .onEach { vm.onBackButtonPressed() }
+            .launchIn(lifecycleScope)
+
         binding.markupToolbar
             .highlightClicks()
             .onEach { vm.onMarkupHighlightToggleClicked() }

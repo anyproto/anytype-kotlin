@@ -1555,6 +1555,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_unlinked_description"></string>
     <string name="all_content_snackbar_title">in den  Papierkorb verschoben</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_search_button">Schaltfläche zum Suchen von Objekten</string>
     <string name="main_navigation_content_desc_create_button">Schaltfläche zum Erstellen eines Objekts</string>
     <string name="chat">Chat</string>

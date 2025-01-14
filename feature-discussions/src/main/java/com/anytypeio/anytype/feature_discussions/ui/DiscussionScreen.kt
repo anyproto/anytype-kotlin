@@ -153,6 +153,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Async
+import timber.log.Timber
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -193,6 +194,7 @@ fun DiscussionScreenWrapper(
             ) {
                 val clipboard = LocalClipboardManager.current
                 val lazyListState = rememberLazyListState()
+
                 DiscussionScreen(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
                     isSpaceLevelChat = isSpaceLevelChat,
@@ -343,7 +345,19 @@ fun DiscussionScreen(
             }
         }
     }
+
     val scope = rememberCoroutineScope()
+
+
+    // Scrolling to bottom when list size changes and we are at the bottom of the list
+    LaunchedEffect(messages.size) {
+        if (lazyListState.firstVisibleItemScrollOffset == 0) {
+            scope.launch {
+                lazyListState.animateScrollToItem(0)
+            }
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -422,8 +436,10 @@ fun DiscussionScreen(
             onMessageSent = onMessageSent,
             onAttachClicked = onAttachClicked,
             resetScroll = {
-                scope.launch {
-                    lazyListState.animateScrollToItem(index = 0)
+                if (lazyListState.firstVisibleItemScrollOffset > 0) {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
                 }
             },
             isTitleFocused = isTitleFocused,

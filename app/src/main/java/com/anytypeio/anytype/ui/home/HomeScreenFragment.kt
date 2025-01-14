@@ -153,15 +153,15 @@ class HomeScreenFragment : BaseComposeFragment(),
                     ) {
                         HomeScreenToolbar(
                             spaceIconView = view?.icon ?: SpaceIconView.Loading,
-                            isChatActive = pagerState.targetPage == 1,
+                            isChatActive = pagerState.targetPage == 0,
                             onWidgetTabClicked = {
                                 coroutineScope.launch {
-                                    pagerState.animateScrollToPage(0)
+                                    pagerState.animateScrollToPage(1)
                                 }
                             },
                             onChatTabClicked = {
                                 coroutineScope.launch {
-                                    pagerState.animateScrollToPage(1)
+                                    pagerState.animateScrollToPage(0)
                                 }
                             },
                             onSpaceIconClicked = vm::onSpaceSettingsClicked,
@@ -176,10 +176,10 @@ class HomeScreenFragment : BaseComposeFragment(),
                             state = pagerState,
                             userScrollEnabled = false
                         ) { page ->
-                            if (page == 0) {
+                            if (page == 1) {
                                 focus.clearFocus(force = true)
                                 PageWithWidgets(showSpaceWidget = false)
-                            } else {
+                            } else if (page == 0) {
                                 DiscussionScreenWrapper(
                                     isSpaceLevelChat = true,
                                     vm = spaceLevelChatViewModel,

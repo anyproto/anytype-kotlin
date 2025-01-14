@@ -412,16 +412,6 @@ fun DiscussionScreen(
                 enabled = jumpToBottomButtonEnabled
             )
         }
-        if (isInEditMessageMode) {
-            EditMessageToolbar(
-                onExitClicked = {
-                    onExitEditMessageMode().also {
-                        textState = TextFieldValue()
-                    }
-                }
-            )
-        }
-
         ChatBox(
             mode = chatBoxMode,
             modifier = Modifier
@@ -452,7 +442,12 @@ fun DiscussionScreen(
             onClearAttachmentClicked = onClearAttachmentClicked,
             onClearReplyClicked = onClearReplyClicked,
             onChatBoxMediaPicked = onChatBoxMediaPicked,
-            onChatBoxFilePicked = onChatBoxFilePicked
+            onChatBoxFilePicked = onChatBoxFilePicked,
+            onExitEditMessageMode = {
+                onExitEditMessageMode().also {
+                    textState = TextFieldValue()
+                }
+            }
         )
     }
 }
@@ -522,6 +517,7 @@ private fun ChatBox(
     onClearReplyClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
+    onExitEditMessageMode: () -> Unit
 ) {
 
     val uploadMediaLauncher = rememberLauncherForActivityResult(
@@ -556,6 +552,11 @@ private fun ChatBox(
                 shape = RoundedCornerShape(16.dp)
             )
     ) {
+        if (mode is ChatBoxMode.EditMessage) {
+            EditMessageToolbar(
+                onExitClicked = onExitEditMessageMode
+            )
+        }
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -862,7 +863,11 @@ fun EditMessageToolbar(
             .height(40.dp)
             .fillMaxWidth()
             .background(
-                color = colorResource(id = R.color.background_highlighted_light)
+                color = colorResource(id = R.color.background_highlighted_light),
+                shape = RoundedCornerShape(
+                    topStart = 16.dp,
+                    topEnd = 16.dp
+                )
             )
     ) {
         Text(

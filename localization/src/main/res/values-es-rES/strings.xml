@@ -1555,6 +1555,7 @@ En concreto,
     <string name="all_content_unlinked_description">Objetos desconectados que no tienen un enlace a o desde otro objeto del gráfico.</string>
     <string name="all_content_snackbar_title">se ha movido a la papelera</string>
     <string name="main_navigation_content_desc_back_button">Botón Atrás</string>
+    <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_search_button">Botón Buscar objetos</string>
     <string name="main_navigation_content_desc_create_button">Botón Crear objeto</string>
     <string name="chat">Chat</string>

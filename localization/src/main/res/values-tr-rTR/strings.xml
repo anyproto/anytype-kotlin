@@ -1555,6 +1555,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="all_content_unlinked_description">Grafikteki diğer nesnelerle doğrudan bağlantısı veya geri bağlantısı olmayan bağlantısız nesneler.</string>
     <string name="all_content_snackbar_title">çöp kutusuna taşındı</string>
     <string name="main_navigation_content_desc_back_button">Geri düğmesi</string>
+    <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_search_button">Nesneleri ara butonu</string>
     <string name="main_navigation_content_desc_create_button">Nesne oluştur butonu</string>
     <string name="chat">Sohbet</string>

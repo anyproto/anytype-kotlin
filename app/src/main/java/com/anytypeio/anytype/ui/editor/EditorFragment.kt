@@ -1132,7 +1132,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         hideKeyboard()
                         val dialog = ObjectTypeUpdateFragment.new(
                             excludedTypeKeys = command.excludedTypes,
-                            space = space
+                            space = space,
+                            fromFeatured = command.fromFeatured
                         )
                         dialog.show(childFragmentManager, null)
                     }
@@ -2232,8 +2233,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.proceedToCreateObjectAndAddToTextAsLink(name)
     }
 
-    override fun onUpdateObjectType(objType: ObjectWrapper.Type) {
-        vm.onObjectTypeChanged(objType = objType)
+    override fun onUpdateObjectType(objType: ObjectWrapper.Type, fromFeatured: Boolean) {
+        vm.onObjectTypeChanged(objType = objType, fromFeatured = fromFeatured)
     }
 
     override fun onSelectObjectType(objType: ObjectWrapper.Type) {

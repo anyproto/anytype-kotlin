@@ -193,12 +193,6 @@ sealed class Event {
         ) : Command()
 
         sealed class ObjectRelation : Command() {
-            data class Amend(
-                override val context: String,
-                val id: Id,
-                val relationLinks: List<RelationLink>
-            ) : ObjectRelation()
-
             data class Remove(
                 override val context: String,
                 val id: Id,

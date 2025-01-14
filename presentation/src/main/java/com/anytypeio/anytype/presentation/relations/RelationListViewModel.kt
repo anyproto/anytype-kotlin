@@ -82,9 +82,8 @@ class RelationListViewModel(
         jobs += viewModelScope.launch {
             combine(
                 storeOfRelations.trackChanges(),
-                relationListProvider.links,
                 relationListProvider.details
-            ) { _, relationLinks, details ->
+            ) { _, details ->
                 constructViews(ctx, details)
             }.collect { views.value = it }
         }
@@ -240,7 +239,7 @@ class RelationListViewModel(
     }
 
     private suspend fun checkRelationIsInObject(view: ObjectRelationView): Boolean {
-        val relationLinks = relationListProvider.links.stateIn(viewModelScope).value
+        val relationLinks = relationListProvider.details.stateIn(viewModelScope).value
         return relationLinks.any { it.key == view.key }
     }
 

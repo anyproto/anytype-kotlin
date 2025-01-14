@@ -71,13 +71,13 @@ class SetOrCollectionRelationProvider(
         return objectState.map { set ->
             when (set) {
                 is ObjectState.DataView.Collection -> {
-                    set.objectRelationLinks.mapNotNull {
-                        storeOfRelations.getByKey(it.key)
+                    set.details.keys.mapNotNull {
+                        storeOfRelations.getByKey(it)
                     }
                 }
                 is ObjectState.DataView.Set ->
-                    set.objectRelationLinks.mapNotNull {
-                        storeOfRelations.getByKey(it.key)
+                    set.details.keys.mapNotNull {
+                        storeOfRelations.getByKey(it)
                     }
                 ObjectState.ErrorLayout -> emptyList()
                 ObjectState.Init -> emptyList()

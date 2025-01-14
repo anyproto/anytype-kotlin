@@ -237,15 +237,6 @@ fun anytype.Event.Message.toCoreModels(
             key = event.key?.value_
         )
     }
-    objectRelationsAmend != null -> {
-        val event = objectRelationsAmend
-        checkNotNull(event)
-        Event.Command.ObjectRelation.Amend(
-            context = context,
-            id = event.id,
-            relationLinks = event.relationLinks.map { it.toCoreModels() }
-        )
-    }
     objectRelationsRemove != null -> {
         val event = objectRelationsRemove
         checkNotNull(event)

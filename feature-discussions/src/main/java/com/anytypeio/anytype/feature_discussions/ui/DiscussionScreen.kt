@@ -1303,7 +1303,8 @@ fun Bubble(
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = colorResource(id = R.color.text_primary)
+                    color = colorResource(id = R.color.text_primary),
+                    style = Caption1Medium
                 )
                 Text(
                     modifier = Modifier.padding(
@@ -1315,6 +1316,7 @@ fun Bubble(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     color = colorResource(id = R.color.text_primary),
+                    style = Caption1Regular
                 )
             }
         }
@@ -1747,7 +1749,7 @@ fun ReactionList(
             Box(
                 modifier = Modifier
                     .height(28.dp)
-                    .width(52.dp)
+                    .width(46.dp)
                     .background(
                         color = if (reaction.isSelected)
                             colorResource(id = R.color.palette_very_light_orange)

@@ -60,7 +60,7 @@ include ':app',
         ':libs',
         ':feature-date'
 
-include ':ui-settings'
+include ':feature-ui-settings'
 include ':crash-reporting'
 include ':localization'
 include ':payments'

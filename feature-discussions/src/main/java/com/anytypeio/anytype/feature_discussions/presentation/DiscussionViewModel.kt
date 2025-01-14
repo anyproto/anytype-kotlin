@@ -154,13 +154,27 @@ class DiscussionViewModel @Inject constructor(
                         if (msg != null) {
                             DiscussionView.Message.Reply(
                                 msg = msg.id,
-                                text = msg.content?.text.orEmpty(),
+                                text = msg.content?.text.orEmpty().ifEmpty {
+                                    // Fallback to attachment name if empty
+                                    if (msg.attachments.isNotEmpty()) {
+                                        val attachment = msg.attachments.last()
+                                        val dependency = dependencies[attachment.target]
+                                        val name = dependency?.name.orEmpty()
+                                        val ext = dependency?.fileExt
+                                        if (!ext.isNullOrEmpty()) {
+                                            "$name.$ext"
+                                        } else {
+                                            name
+                                        }
+                                    } else {
+                                        ""
+                                    }
+                                },
                                 author = allMembers.let { type ->
                                     when (type) {
                                         is Store.Data -> type.members.find { member ->
                                             member.identity == msg.creator
                                         }?.name.orEmpty()
-
                                         is Store.Empty -> ""
                                     }
                                 }
@@ -198,16 +212,23 @@ class DiscussionViewModel @Inject constructor(
                         },
                         attachments = msg.attachments.map { attachment ->
                             when (attachment.type) {
-                                Chat.Message.Attachment.Type.Image -> DiscussionView.Message.Attachment.Image(
-                                    target = attachment.target,
-                                    url = urlBuilder.medium(path = attachment.target)
-                                )
+                                Chat.Message.Attachment.Type.Image -> {
+                                    val wrapper = dependencies[attachment.target]
+                                    DiscussionView.Message.Attachment.Image(
+                                        target = attachment.target,
+                                        url = urlBuilder.medium(path = attachment.target),
+                                        name =  wrapper?.name.orEmpty(),
+                                        ext = wrapper?.fileExt.orEmpty()
+                                    )
+                                }
                                 else -> {
                                     val wrapper = dependencies[attachment.target]
                                     if (wrapper?.layout == ObjectType.Layout.IMAGE) {
                                         DiscussionView.Message.Attachment.Image(
                                             target = attachment.target,
-                                            url = urlBuilder.large(path = attachment.target)
+                                            url = urlBuilder.large(path = attachment.target),
+                                            name = wrapper.name.orEmpty(),
+                                            ext = wrapper.fileExt.orEmpty()
                                         )
                                     } else {
                                         val type = wrapper?.type?.firstOrNull()
@@ -441,7 +462,26 @@ class DiscussionViewModel @Inject constructor(
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.Reply(
                 msg = msg.id,
-                text = msg.content.msg,
+                text = msg.content.msg.ifEmpty {
+                    // Fallback to attachment name if empty
+                    if (msg.attachments.isNotEmpty()) {
+                        val attachment = msg.attachments.last()
+                        when(attachment) {
+                            is DiscussionView.Message.Attachment.Image -> {
+                                if (attachment.ext.isNotEmpty()) {
+                                    "${attachment.name}.${attachment.ext}"
+                                } else {
+                                    attachment.name
+                                }
+                            }
+                            is DiscussionView.Message.Attachment.Link -> {
+                                attachment.wrapper?.name.orEmpty()
+                            }
+                        }
+                    } else {
+                        ""
+                    }
+                },
                 author = msg.author
             )
         }

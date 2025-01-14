@@ -723,41 +723,6 @@ private fun ChatBox(
                     .clickable {
                         scope.launch {
                             focus.clearFocus(force = true)
-                            onBackButtonClicked()
-                        }
-                    }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_nav_panel_back),
-                    contentDescription = "Back button",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 4.dp, vertical = 4.dp)
-                )
-            }
-            ChatBoxUserInput(
-                textState = textState,
-                onMessageSent = {
-                    onMessageSent(it)
-                    clearText()
-                    resetScroll()
-                },
-                onTextChanged = { value ->
-                    updateValue(value)
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .align(Alignment.Bottom)
-                    .focusRequester(chatBoxFocusRequester)
-            )
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 4.dp, vertical = 8.dp)
-                    .clip(CircleShape)
-                    .align(Alignment.Bottom)
-                    .clickable {
-                        scope.launch {
-                            focus.clearFocus(force = true)
                             showDropdownMenu = true
                         }
                     }
@@ -844,6 +809,21 @@ private fun ChatBox(
                     }
                 }
             }
+            ChatBoxUserInput(
+                textState = textState,
+                onMessageSent = {
+                    onMessageSent(it)
+                    clearText()
+                    resetScroll()
+                },
+                onTextChanged = { value ->
+                    updateValue(value)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.Bottom)
+                    .focusRequester(chatBoxFocusRequester)
+            )
             AnimatedVisibility(
                 visible = attachments.isNotEmpty() || textState.text.isNotEmpty(),
                 exit = fadeOut() + scaleOut(),

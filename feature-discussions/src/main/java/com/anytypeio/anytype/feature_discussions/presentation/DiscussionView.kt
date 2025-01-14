@@ -88,3 +88,7 @@ sealed interface DiscussionView {
         }
     }
 }
+
+object ChatConfig {
+    const val MAX_ATTACHMENT_COUNT = 10
+}

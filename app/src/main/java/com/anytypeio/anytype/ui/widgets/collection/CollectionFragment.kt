@@ -28,6 +28,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import javax.inject.Inject
@@ -129,6 +130,16 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening date object from Collection screen")
+                }
+            }
+            is Command.OpenShareScreen -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.shareSpaceScreen,
+                        args = ShareSpaceFragment.args(command.space)
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening share screen")
                 }
             }
         }

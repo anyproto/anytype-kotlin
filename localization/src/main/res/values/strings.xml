@@ -1820,6 +1820,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_snackbar_title">moved to bin</string>
 
     <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
 

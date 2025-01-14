@@ -847,14 +847,16 @@ class CollectionViewModel(
     fun onPrevClicked() {
         launch {
             analytics.sendScreenHomeEvent()
-            commands.emit(Command.Exit)
+            commands.emit(Exit)
         }
     }
 
+    fun onShareButtonClicked() {
+        launch { commands.emit(OpenShareScreen(vmParams.spaceId)) }
+    }
+
     fun onBackLongClicked() {
-        launch {
-            commands.emit(Command.ExitToSpaceWidgets)
-        }
+        launch { commands.emit(ExitToSpaceWidgets) }
     }
 
     fun onSearchClicked(space: Id) {
@@ -1044,6 +1046,7 @@ class CollectionViewModel(
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
         data class OpenChat(val target: Id, val space: Id) : Command()
         data class OpenDateObject(val target: Id, val space: Id) : Command()
+        data class OpenShareScreen(val space: SpaceId) : Command()
 
         data object ToDesktop : Command()
         data class ToSearch(val space: Id) : Command()

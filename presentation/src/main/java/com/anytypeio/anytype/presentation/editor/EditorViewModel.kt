@@ -1197,6 +1197,12 @@ class EditorViewModel(
         proceedWithExitingBack()
     }
 
+    fun onShareButtonClicked() {
+        dispatch(
+            Command.OpenShareScreen(vmParams.space)
+        )
+    }
+
     fun onHomeButtonClicked() {
         Timber.d("onHomeButtonClicked, ")
         if (stateData.value == ViewState.NotExist) {

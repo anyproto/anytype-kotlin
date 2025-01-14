@@ -1750,6 +1750,14 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSpaceShareIconClicked() {
+        viewModelScope.launch {
+            commands.emit(
+                Command.ShareSpace(SpaceId(spaceManager.get()))
+            )
+        }
+    }
+
     fun onSpaceSettingsClicked() {
         viewModelScope.launch {
             commands.emit(

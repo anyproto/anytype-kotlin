@@ -85,14 +85,13 @@ class RelationListViewModel(
                 relationListProvider.links,
                 relationListProvider.details
             ) { _, relationLinks, details ->
-                constructViews(ctx, relationLinks, details)
+                constructViews(ctx, details)
             }.collect { views.value = it }
         }
     }
 
     private suspend fun constructViews(
         ctx: Id,
-        relationLinks: List<RelationLink>,
         details: Block.Details
     ): List<Model> {
 
@@ -108,7 +107,6 @@ class RelationListViewModel(
         val objectRelationViews = getObjectRelationsView(
             ctx = ctx,
             objectDetails = objectDetails,
-            relationLinks = relationLinks,
             details = details,
             objectWrapper = objectWrapper
         )
@@ -116,7 +114,6 @@ class RelationListViewModel(
         val recommendedRelationViews = getRecommendedRelations(
             ctx = ctx,
             objectDetails = objectDetails,
-            relationLinks = relationLinks,
             objectTypeWrapper = objectTypeWrapper,
             details = details
         )
@@ -127,13 +124,12 @@ class RelationListViewModel(
     private suspend fun getObjectRelationsView(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
-        relationLinks: List<RelationLink>,
         details: Block.Details,
         objectWrapper: ObjectWrapper.Basic
     ): List<Model.Item> {
         return getObjectRelations(
             systemRelations = listOf(),
-            relationLinks = relationLinks,
+            relationKeys = objectDetails.keys,
             storeOfRelations = storeOfRelations
         ).views(
             context = ctx,
@@ -153,12 +149,11 @@ class RelationListViewModel(
     private suspend fun getRecommendedRelations(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
-        relationLinks: List<RelationLink>,
         objectTypeWrapper: ObjectWrapper.Type,
         details: Block.Details
     ): List<Model.Item> {
         return getNotIncludedRecommendedRelations(
-            relationLinks = relationLinks,
+            relationKeys = objectDetails.keys,
             recommendedRelations = objectTypeWrapper.recommendedRelations,
             storeOfRelations = storeOfRelations
         ).views(

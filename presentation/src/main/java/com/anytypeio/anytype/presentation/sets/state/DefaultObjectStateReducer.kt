@@ -61,12 +61,12 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             is Command.ShowObject -> {
                 handleShowObject(event)
             }
-            is Command.ObjectRelationLinks.Amend -> {
-                amendObjectRelationLinks(state, event)
-            }
-            is Command.ObjectRelationLinks.Remove -> {
-                removeObjectRelationLinks(state, event)
-            }
+//            is Command.ObjectRelationLinks.Amend -> {
+//               amendObjectRelationLinks(state, event)
+//            }
+//            is Command.ObjectRelationLinks.Remove -> {
+//                removeObjectRelationLinks(state, event)
+//            }
             is Command.DataView.SetView -> {
                 handleSetView(state, event)
             }
@@ -118,47 +118,47 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         )
     }
 
-    private fun removeObjectRelationLinks(
-        state: ObjectState,
-        event: Command.ObjectRelationLinks.Remove
-    ) = when (state) {
-        is ObjectState.DataView.Collection -> {
-            state.copy(
-                objectRelationLinks = state.objectRelationLinks.remove(
-                    event.keys
-                )
-            )
-        }
-        is ObjectState.DataView.Set -> {
-            state.copy(
-                objectRelationLinks = state.objectRelationLinks.remove(
-                    event.keys
-                )
-            )
-        }
-        else -> state
-    }
+//    private fun removeObjectRelationLinks(
+//        state: ObjectState,
+//        event: Command.ObjectRelationLinks.Remove
+//    ) = when (state) {
+//        is ObjectState.DataView.Collection -> {
+//            state.copy(
+//                objectRelationLinks = state.objectRelationLinks.remove(
+//                    event.keys
+//                )
+//            )
+//        }
+//        is ObjectState.DataView.Set -> {
+//            state.copy(
+//                objectRelationLinks = state.objectRelationLinks.remove(
+//                    event.keys
+//                )
+//            )
+//        }
+//        else -> state
+//    }
 
-    private fun amendObjectRelationLinks(
-        state: ObjectState,
-        event: Command.ObjectRelationLinks.Amend
-    ) = when (state) {
-        is ObjectState.DataView.Collection -> {
-            state.copy(
-                objectRelationLinks = state.objectRelationLinks.amend(
-                    event.relationLinks
-                )
-            )
-        }
-        is ObjectState.DataView.Set -> {
-            state.copy(
-                objectRelationLinks = state.objectRelationLinks.amend(
-                    event.relationLinks
-                )
-            )
-        }
-        else -> state
-    }
+//    private fun amendObjectRelationLinks(
+//        state: ObjectState,
+//        event: Command.ObjectRelationLinks.Amend
+//    ) = when (state) {
+//        is ObjectState.DataView.Collection -> {
+//            state.copy(
+//                objectRelationLinks = state.objectRelationLinks.amend(
+//                    event.relationLinks
+//                )
+//            )
+//        }
+//        is ObjectState.DataView.Set -> {
+//            state.copy(
+//                objectRelationLinks = state.objectRelationLinks.amend(
+//                    event.relationLinks
+//                )
+//            )
+//        }
+//        else -> state
+//    }
 
 
     //region EVENTS
@@ -171,17 +171,13 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 root = event.root,
                 blocks = event.blocks,
                 details = event.details.details,
-                objectRestrictions = event.objectRestrictions,
-                dataViewRestrictions = event.dataViewRestrictions,
-                objectRelationLinks = event.relationLinks
+                dataViewRestrictions = event.dataViewRestrictions
             )
             ObjectType.Layout.SET.code -> ObjectState.DataView.Set(
                 root = event.root,
                 blocks = event.blocks,
                 details = event.details.details,
-                objectRestrictions = event.objectRestrictions,
-                dataViewRestrictions = event.dataViewRestrictions,
-                objectRelationLinks = event.relationLinks
+                dataViewRestrictions = event.dataViewRestrictions
             )
             else -> {
                 Timber.e("Wrong layout type: $layout")
@@ -368,8 +364,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                     blocks = blocks,
                     details = state.details,
                     objectRestrictions = state.objectRestrictions,
-                    dataViewRestrictions = state.dataViewRestrictions,
-                    objectRelationLinks = state.objectRelationLinks
+                    dataViewRestrictions = state.dataViewRestrictions
                 )
             }
             else -> state

@@ -25,7 +25,6 @@ sealed class Event {
             val details: Block.Details = Block.Details(emptyMap()),
             val blocks: List<Block>,
             val relations: List<Relation> = emptyList(),
-            val relationLinks: List<RelationLink> = emptyList(),
             val objectRestrictions: List<ObjectRestriction> = emptyList(),
             val dataViewRestrictions: List<DataViewRestrictions> = emptyList()
         ) : Command()
@@ -193,32 +192,17 @@ sealed class Event {
             val style: Block.Content.Divider.Style
         ) : Command()
 
-        sealed class ObjectRelationLinks : Command() {
+        sealed class ObjectRelation : Command() {
             data class Amend(
                 override val context: String,
                 val id: Id,
                 val relationLinks: List<RelationLink>
-            ) : ObjectRelationLinks()
-
-            data class Remove(
-                override val context: String,
-                val id: Id,
-                val keys: List<Key>
-            ) : ObjectRelationLinks()
-        }
-
-        sealed class ObjectRelation : Command() {
-            data class Set(
-                override val context: String,
-                val id: Id,
-                val key: Id,
-                val relations: List<Relation>
             ) : ObjectRelation()
 
             data class Remove(
                 override val context: String,
                 val id: Id,
-                val key: Id
+                val keys: List<Key>
             ) : ObjectRelation()
         }
 

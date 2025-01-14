@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
-import com.anytypeio.anytype.middleware.mappers.MRelationLink
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -351,7 +350,7 @@ class MiddlewareEventChannelTest {
         }
 
         val expected = listOf(
-            Event.Command.ObjectRelationLinks.Amend(
+            Event.Command.ObjectRelation.Amend(
                 context = context,
                 id = id,
                 relationLinks = listOf(
@@ -397,7 +396,7 @@ class MiddlewareEventChannelTest {
         }
 
         val expected = listOf(
-            Event.Command.ObjectRelationLinks.Remove(
+            Event.Command.ObjectRelation.Remove(
                 context = context,
                 id = id,
                 keys = listOf(id1, id2, id3)

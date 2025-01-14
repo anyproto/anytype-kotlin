@@ -599,14 +599,10 @@ class EditorViewModel(
             when (event) {
                 is Event.Command.ShowObject -> {
                     orchestrator.stores.details.update(event.details)
-                    orchestrator.stores.relationLinks.update(event.relationLinks)
                     orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
                 }
                 is Event.Command.Details -> {
                     orchestrator.stores.details.apply { update(current().process(event)) }
-                }
-                is Event.Command.ObjectRelationLinks -> {
-                    orchestrator.stores.relationLinks.apply { update(current().process(event)) }
                 }
                 else -> {
                     // do nothing
@@ -792,7 +788,6 @@ class EditorViewModel(
                     anchor = context,
                     indent = INITIAL_INDENT,
                     details = details,
-                    relationLinks = orchestrator.stores.relationLinks.current(),
                     restrictions = orchestrator.stores.objectRestrictions.current(),
                     selection = currentSelection()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
@@ -5220,13 +5215,11 @@ class EditorViewModel(
         val objectDetails = details.details[context]?.map ?: emptyMap()
         val objectWrapper = ObjectWrapper.Basic(objectDetails)
         val objectType = objectWrapper.getProperType()
-        val relationLinks = orchestrator.stores.relationLinks.current()
 
         viewModelScope.launch {
             val objectRelationViews = getObjectRelationsView(
                 ctx = context,
                 objectDetails = objectDetails,
-                relationLinks = relationLinks,
                 details = details,
                 objectWrapper = objectWrapper
             )
@@ -5234,7 +5227,6 @@ class EditorViewModel(
             val recommendedRelationViews = getRecommendedRelations(
                 ctx = context,
                 objectDetails = objectDetails,
-                relationLinks = relationLinks,
                 objectTypeStruct = details.details[objectType]?.map,
                 details = details
             )
@@ -5248,14 +5240,13 @@ class EditorViewModel(
     private suspend fun getObjectRelationsView(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
-        relationLinks: List<RelationLink>,
         details: Block.Details,
         objectWrapper: ObjectWrapper.Basic
     ): List<ObjectRelationView> {
         return getObjectRelations(
             systemRelations = listOf(),
-            relationLinks = relationLinks,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            relationKeys = objectDetails.keys
         ).views(
             context = ctx,
             details = details,
@@ -5269,16 +5260,15 @@ class EditorViewModel(
     private suspend fun getRecommendedRelations(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
-        relationLinks: List<RelationLink>,
         objectTypeStruct: Struct?,
         details: Block.Details
     ): List<ObjectRelationView> {
         val objType = objectTypeStruct?.mapToObjectWrapperType()
         val recommendedRelations = objType?.recommendedRelations ?: emptyList()
         return getNotIncludedRecommendedRelations(
-            relationLinks = relationLinks,
             recommendedRelations = recommendedRelations,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            relationKeys = objectDetails.keys
         ).views(
             context = ctx,
             details = details,

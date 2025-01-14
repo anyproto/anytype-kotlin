@@ -22,8 +22,6 @@ sealed class ObjectState {
         abstract val objectRestrictions: List<ObjectRestriction>
         abstract val dataViewRestrictions: List<DataViewRestrictions>
 
-        abstract val objectRelationLinks: List<RelationLink>
-
         abstract val dataViewContent: DV
         abstract val dataViewBlock: Block
         abstract val viewers: List<DVViewer>
@@ -34,7 +32,6 @@ sealed class ObjectState {
             override val details: Map<Id, Block.Fields> = emptyMap(),
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
-            override val objectRelationLinks: List<RelationLink> = emptyList(),
         ) : DataView() {
 
             override val isInitialized get() = blocks.any { it.content is DV }
@@ -49,7 +46,6 @@ sealed class ObjectState {
             override val details: Map<Id, Block.Fields> = emptyMap(),
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
-            override val objectRelationLinks: List<RelationLink> = emptyList()
         ) : DataView() {
 
             override val isInitialized get() = blocks.any { it.content is DV }

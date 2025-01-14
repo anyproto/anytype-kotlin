@@ -95,7 +95,6 @@ fun MObjectView.toPayload(): Payload {
                         details.id to details.details.toCoreModel()
                     }
                 ),
-                relationLinks = relationLinks.map { it.toCoreModels() },
                 objectRestrictions = restrictions?.object_?.map { it.toCoreModel() }.orEmpty(),
                 dataViewRestrictions = restrictions?.dataview?.map { it.toCoreModel() }.orEmpty()
             )
@@ -108,7 +107,6 @@ fun MObjectView.toCore(): ObjectView {
         root = rootId,
         blocks = blocks.toCoreModels(),
         details = details.associate { d -> d.id to d.details.orEmpty() },
-        relations = relationLinks.map { it.toCoreModels() },
         objectRestrictions = restrictions?.object_?.map { it.toCoreModel() }.orEmpty(),
         dataViewRestrictions = restrictions?.dataview?.map { it.toCoreModel() }.orEmpty(),
     )

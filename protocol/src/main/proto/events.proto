@@ -15,6 +15,7 @@ message Event {
     string traceId = 4;
 
     message Message {
+        string spaceId = 132;
         oneof value {
             Account.Show accountShow = 1;
             Account.Details accountDetails = 201;

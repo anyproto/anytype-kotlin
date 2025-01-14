@@ -193,12 +193,15 @@ class HomeScreenFragment : BaseComposeFragment(),
                                         proceedWithAction(SystemAction.OpenUrl(it))
                                     },
                                     onRequestOpenFullScreenImage = { url ->
-                                        findNavController().navigate(
-                                            R.id.fullScreenImageFragment,
-                                            FullScreenPictureFragment.args(
-                                                url = url
+                                        runCatching {
+                                            findNavController().navigate(
+                                                R.id.fullScreenImageFragment,
+                                                FullScreenPictureFragment.args(
+                                                    url = url,
+                                                    ignoreRootWindowInsets = true
+                                                )
                                             )
-                                        )
+                                        }
                                     },
                                     onSelectChatReaction = {
                                         runCatching {

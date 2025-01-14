@@ -2,13 +2,21 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:background="@color/background_primary"
     android:id="@+id/root"
     android:layout_height="match_parent">
+
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:layout_gravity="center"
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleSmall"
+        android:theme="@style/GreyProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/picture"
         android:layout_width="match_parent"
-        android:background="@color/background_primary"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -25,7 +25,7 @@ class MainBottomToolbar @JvmOverloads constructor(
 
     fun searchClicks() = binding.btnSearch.clicks()
     fun addDocClicks() = binding.btnAddDoc.clicks()
-    fun backClicks() = binding.btnBack.clicks()
+    fun shareClicks() = binding.btnShare.clicks()
 
 
     fun setIsReadOnly(isReadOnly: Boolean) {

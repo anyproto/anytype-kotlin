@@ -23,7 +23,6 @@ import androidx.activity.addCallback
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -166,6 +165,9 @@ open class ObjectSetFragment :
     private val header: LinearLayout
         get() = binding.objectHeader.root
 
+    private val topBackButton: View
+        get() = binding.topToolbar.root.findViewById(R.id.topBackButton)
+
     private val topToolbarTitle: TextView
         get() = binding.topToolbar.root.findViewById(R.id.tvTopToolbarTitle)
 
@@ -278,6 +280,7 @@ open class ObjectSetFragment :
                     vm.hideTitleToolbar()
                 }
             }
+            subscribe(topBackButton.clicks().throttleFirst()) { vm.onBackButtonClicked() }
             subscribe(menuButton.clicks().throttleFirst()) { vm.onMenuClicked() }
             subscribe(customizeViewButton.clicks().throttleFirst()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(viewerTitle.clicks().throttleFirst()) { vm.onExpandViewerMenuClicked() }
@@ -306,21 +309,8 @@ open class ObjectSetFragment :
             subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 
             subscribe(
-                binding.bottomToolbar.backClicks().throttleFirst()
-            ) { vm.onBackButtonClicked() }
-
-            binding.bottomToolbar
-                .binding
-                .btnBack
-                .longClicks(withHaptic = true)
-                .onEach {
-                    runCatching {
-                        findNavController().navigate(R.id.actionExitToSpaceWidgets)
-                    }.onFailure {
-                        Timber.e(it, "Error while opening space switcher from editor")
-                    }
-                }
-                .launchIn(lifecycleScope)
+                binding.bottomToolbar.shareClicks().throttleFirst()
+            ) { vm.onShareButtonClicked() }
 
             subscribe(
                 binding.bottomToolbar.searchClicks().throttleFirst()

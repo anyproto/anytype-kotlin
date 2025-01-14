@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
@@ -20,6 +21,8 @@ sealed class Command {
     data object OpenPhotoPicker: Command()
     data object OpenVideoPicker: Command()
     data object OpenFilePicker: Command()
+
+    data class OpenShareScreen(val space: SpaceId) : Command()
 
     data class OpenBookmarkSetter(
         val target: String,
@@ -130,7 +133,8 @@ sealed class Command {
     object AddMentionWidgetTriggerToFocusedBlock : Command()
 
     data class OpenObjectSelectTypeScreen(
-        val excludedTypes: List<Key>
+        val excludedTypes: List<Key>,
+        val fromFeatured: Boolean
     ) : Command()
 
     data class OpenMoveToScreen(

@@ -47,6 +47,9 @@ class NavigationRouter(
                 is AppNavigation.Command.OpenGlobalSearch -> navigation.openGlobalSearch(
                     space = command.space
                 )
+                is AppNavigation.Command.OpenShareScreen -> navigation.openShareScreen(
+                    space = command.space
+                )
                 is AppNavigation.Command.OpenUpdateAppScreen -> navigation.openUpdateAppScreen()
                 is AppNavigation.Command.DeletedAccountScreen -> navigation.deletedAccountScreen(
                     command.deadline

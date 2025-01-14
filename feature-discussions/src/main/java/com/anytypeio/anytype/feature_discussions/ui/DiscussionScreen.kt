@@ -1439,7 +1439,8 @@ fun Bubble(
                     text = {
                         Text(
                             text = stringResource(R.string.chats_add_reaction),
-                            color = colorResource(id = R.color.text_primary)
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.padding(end = 64.dp)
                         )
                     },
                     onClick = {
@@ -1452,7 +1453,8 @@ fun Bubble(
                     text = {
                         Text(
                             text = stringResource(R.string.chats_reply),
-                            color = colorResource(id = R.color.text_primary)
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.padding(end = 64.dp)
                         )
                     },
                     onClick = {
@@ -1466,7 +1468,8 @@ fun Bubble(
                         text = {
                             Text(
                                 text = stringResource(R.string.copy),
-                                color = colorResource(id = R.color.text_primary)
+                                color = colorResource(id = R.color.text_primary),
+                                modifier = Modifier.padding(end = 64.dp)
                             )
                         },
                         onClick = {
@@ -1481,7 +1484,8 @@ fun Bubble(
                         text = {
                             Text(
                                 text = stringResource(R.string.edit),
-                                color = colorResource(id = R.color.text_primary)
+                                color = colorResource(id = R.color.text_primary),
+                                modifier = Modifier.padding(end = 64.dp)
                             )
                         },
                         onClick = {
@@ -1496,7 +1500,8 @@ fun Bubble(
                         text = {
                             Text(
                                 text = stringResource(id = R.string.delete),
-                                color = colorResource(id = R.color.palette_system_red)
+                                color = colorResource(id = R.color.palette_system_red),
+                                modifier = Modifier.padding(end = 64.dp)
                             )
                         },
                         onClick = {

@@ -174,14 +174,14 @@ class ChatFragment : BaseComposeFragment() {
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
                         when(command) {
-                            is ChatViewModel.Command.Exit -> {
+                            is ChatViewModel.ViewModelCommand.Exit -> {
                                 runCatching {
                                     findNavController().popBackStack()
                                 }.onFailure {
                                     Timber.e(it, "Error while exiting chat")
                                 }
                             }
-                            is ChatViewModel.Command.OpenWidgets -> {
+                            is ChatViewModel.ViewModelCommand.OpenWidgets -> {
                                 runCatching {
                                     findNavController().navigate(
                                         R.id.actionOpenWidgetsFromChat,
@@ -194,7 +194,7 @@ class ChatFragment : BaseComposeFragment() {
                                     Timber.e(it, "Error while opening widgets from chats")
                                 }
                             }
-                            is ChatViewModel.Command.MediaPreview -> {
+                            is ChatViewModel.ViewModelCommand.MediaPreview -> {
                                 runCatching {
                                     findNavController().navigate(
                                         R.id.fullScreenImageFragment,
@@ -205,7 +205,7 @@ class ChatFragment : BaseComposeFragment() {
                                     )
                                 }
                             }
-                            is ChatViewModel.Command.SelectChatReaction -> {
+                            is ChatViewModel.ViewModelCommand.SelectChatReaction -> {
                                 runCatching {
                                     findNavController().navigate(
                                         R.id.selectChatReactionScreen,
@@ -219,7 +219,7 @@ class ChatFragment : BaseComposeFragment() {
                                     Timber.e(it, "Error while opening chat-reaction picker")
                                 }
                             }
-                            is ChatViewModel.Command.ViewChatReaction -> {
+                            is ChatViewModel.ViewModelCommand.ViewChatReaction -> {
                                 runCatching {
                                     findNavController().navigate(
                                         R.id.chatReactionScreen,

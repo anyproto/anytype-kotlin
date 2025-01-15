@@ -7,14 +7,11 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.relations.model.RelationItemView
 import com.anytypeio.anytype.presentation.relations.model.RelationView
@@ -43,10 +40,10 @@ import timber.log.Timber
  */
 abstract class RelationAddViewModelBase(
     relationsProvider: ObjectRelationProvider,
+    private val vmParams: VmParams,
     private val getRelations: GetRelations,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val addObjectToWorkspace: AddObjectToWorkspace,
-    private val spaceManager: SpaceManager
 ) : BaseViewModel() {
 
     private val userInput = MutableStateFlow(DEFAULT_INPUT)
@@ -64,6 +61,7 @@ abstract class RelationAddViewModelBase(
     }
 
     init {
+        Timber.d("RelationAddViewModelBase init, objectId: ${vmParams.objectId}")
         viewModelScope.launch {
             combine(
                 searchQuery,
@@ -161,7 +159,7 @@ abstract class RelationAddViewModelBase(
     ): List<ObjectWrapper.Relation> {
         val params = GetRelations.Params(
             // TODO DROID-2916 Provide space id to vm params
-            space = SpaceId(spaceManager.get()),
+            space = vmParams.space,
             sorts = defaultObjectSearchSorts(),
             filters = buildList {
                 addAll(filterMyRelations())
@@ -193,7 +191,7 @@ abstract class RelationAddViewModelBase(
                 addObjectToWorkspace(
                     AddObjectToWorkspace.Params(
                         objects = listOf(relation.id),
-                        space = spaceManager.get()
+                        space = vmParams.space.id
                     )
                 ).proceed(
                     success = {
@@ -235,6 +233,11 @@ abstract class RelationAddViewModelBase(
             val relation: Key
         ) : Command()
     }
+
+    data class VmParams(
+        val objectId: Id,
+        val space: SpaceId
+    )
 
     companion object {
         const val ERROR_MESSAGE = "Error while adding relation to object"

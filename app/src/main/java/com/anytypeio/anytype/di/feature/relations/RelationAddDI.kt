@@ -11,10 +11,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
+import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
@@ -23,6 +23,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationAddToDataViewFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectFragment
+import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -35,6 +36,8 @@ interface RelationAddToObjectSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
+        @BindsInstance
+        fun withVmParams(vmParams: RelationAddViewModelBase.VmParams) : Builder
         fun module(module: RelationAddToObjectModule): Builder
         fun build(): RelationAddToObjectSubComponent
     }
@@ -49,6 +52,7 @@ object RelationAddToObjectModule {
     @Provides
     @PerDialog
     fun provideViewModelFactory(
+        vmParams: RelationAddViewModelBase.VmParams,
         addRelationToObject: AddRelationToObject,
         storeOfRelations: StoreOfRelations,
         dispatcher: Dispatcher<Payload>,
@@ -57,9 +61,9 @@ object RelationAddToObjectModule {
         getRelations: GetRelations,
         appCoroutineDispatchers: AppCoroutineDispatchers,
         addObjectToWorkspace: AddObjectToWorkspace,
-        spaceManager: SpaceManager,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): RelationAddToObjectViewModel.Factory = RelationAddToObjectViewModel.Factory(
+        vmParams = vmParams,
         storeOfRelations = storeOfRelations,
         addRelationToObject = addRelationToObject,
         dispatcher = dispatcher,
@@ -68,7 +72,6 @@ object RelationAddToObjectModule {
         getRelations = getRelations,
         appCoroutineDispatchers = appCoroutineDispatchers,
         addObjectToWorkspace = addObjectToWorkspace,
-        spaceManager = spaceManager,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 
@@ -95,6 +98,8 @@ interface RelationAddToDataViewSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
+        @BindsInstance
+        fun withVmParams(vmParams: RelationAddViewModelBase.VmParams) : Builder
         fun module(module: RelationAddToDataViewModule): Builder
         fun build(): RelationAddToDataViewSubComponent
     }
@@ -109,6 +114,7 @@ object RelationAddToDataViewModule {
     @Provides
     @PerDialog
     fun provideViewModelFactory(
+        vmParams: RelationAddViewModelBase.VmParams,
         addRelationToDataView: AddRelationToDataView,
         dispatcher: Dispatcher<Payload>,
         state: MutableStateFlow<ObjectState>,
@@ -118,7 +124,6 @@ object RelationAddToDataViewModule {
         appCoroutineDispatchers: AppCoroutineDispatchers,
         getRelations: GetRelations,
         addObjectToWorkspace: AddObjectToWorkspace,
-        spaceManager: SpaceManager,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         storeOfRelations: StoreOfRelations
     ): RelationAddToDataViewViewModel.Factory = RelationAddToDataViewViewModel.Factory(
@@ -131,9 +136,9 @@ object RelationAddToDataViewModule {
         appCoroutineDispatchers = appCoroutineDispatchers,
         getRelations = getRelations,
         addObjectToWorkspace = addObjectToWorkspace,
-        spaceManager = spaceManager,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        vmParams = vmParams
     )
 
     @JvmStatic

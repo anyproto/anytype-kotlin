@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -1096,7 +1097,7 @@ class HomeScreenViewModel(
             val space = spaceView.space.targetSpaceId
             if (chat != null && space != null) {
                 navigation(
-                    Navigation.OpenDiscussion(
+                    Navigation.OpenChat(
                         space = space,
                         ctx = chat
                     )
@@ -1423,7 +1424,7 @@ class HomeScreenViewModel(
             }
             is OpenObjectNavigation.OpenChat -> {
                 navigate(
-                    Navigation.OpenDiscussion(
+                    Navigation.OpenChat(
                         ctx = navigation.target,
                         space = navigation.space
                     )
@@ -2167,7 +2168,7 @@ class HomeScreenViewModel(
 
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
-        data class OpenDiscussion(val ctx: Id, val space: Id) : Navigation()
+        data class OpenChat(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data object OpenSpaceSwitcher: Navigation()

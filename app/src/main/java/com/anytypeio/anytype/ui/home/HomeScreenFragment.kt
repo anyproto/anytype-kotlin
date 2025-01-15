@@ -568,7 +568,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     view = destination.view
                 )
             }
-            is Navigation.OpenDiscussion -> runCatching {
+            is Navigation.OpenChat -> runCatching {
                 navigation().openDiscussion(
                     target = destination.ctx,
                     space = destination.space

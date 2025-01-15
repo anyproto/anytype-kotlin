@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.di.feature.discussions
+package com.anytypeio.anytype.di.feature.chats
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
-import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel
 import com.anytypeio.anytype.ui.chats.ChatReactionFragment
 import dagger.Binds
 import dagger.BindsInstance

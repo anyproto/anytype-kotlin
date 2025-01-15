@@ -1,19 +1,18 @@
-package com.anytypeio.anytype.feature_discussions.presentation
+package com.anytypeio.anytype.feature_chats.presentation
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
-sealed interface DiscussionView {
+sealed interface ChatView {
 
     data class DateSection(
         val formattedDate: String,
         val timeInMillis: Long
-    ) : DiscussionView
+    ) : ChatView
 
     data class Message(
         val id: String,
@@ -26,7 +25,7 @@ sealed interface DiscussionView {
         val isEdited: Boolean = false,
         val avatar: Avatar = Avatar.Initials(),
         val reply: Reply? = null
-    ) : DiscussionView {
+    ) : ChatView {
 
         data class Content(val msg: String, val parts: List<Part>) {
             data class Part(
@@ -51,7 +50,9 @@ sealed interface DiscussionView {
         sealed class Attachment {
             data class Image(
                 val target: Id,
-                val url: String
+                val url: String,
+                val name: String,
+                val ext: String
             ): Attachment()
 
             data class Link(

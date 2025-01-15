@@ -18,7 +18,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptions.*
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
@@ -226,7 +225,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                             Timber.e(it, "Error while editor navigation")
                                         }
                                     }
-                                    is OpenObjectNavigation.OpenDiscussion -> {
+                                    is OpenObjectNavigation.OpenChat -> {
                                         toast("Cannot open chat from here")
                                     }
                                     is OpenObjectNavigation.UnexpectedLayoutError -> {

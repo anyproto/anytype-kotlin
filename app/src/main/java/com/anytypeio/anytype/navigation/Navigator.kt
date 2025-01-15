@@ -7,7 +7,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.di.feature.discussions.DiscussionFragment
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.allcontent.AllContentFragment
@@ -44,7 +44,7 @@ class Navigator : AppNavigation {
     override fun openChat(target: Id, space: Id) {
         navController?.navigate(
             R.id.chatScreen,
-            DiscussionFragment.args(
+            ChatFragment.args(
                 ctx = target,
                 space = space
             )
@@ -64,7 +64,7 @@ class Navigator : AppNavigation {
     override fun openDiscussion(target: Id, space: Id) {
         navController?.navigate(
             R.id.chatScreen,
-            DiscussionFragment.args(
+            ChatFragment.args(
                 ctx = target,
                 space = space
             )

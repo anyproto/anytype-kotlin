@@ -159,7 +159,7 @@
 
     <fragment
         android:id="@+id/chatScreen"
-        android:name="com.anytypeio.anytype.di.feature.discussions.DiscussionFragment"
+        android:name="com.anytypeio.anytype.ui.chats.ChatFragment"
         android:label="Discussion" />
 
     <dialog

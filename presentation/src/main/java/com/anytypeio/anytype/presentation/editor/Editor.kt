@@ -101,8 +101,6 @@ interface Editor {
         val focus: Store<Focus> = Store.Focus()
         val details: Store.Details = Store.Details()
 
-        @Deprecated("legacy")
-        val relations: Store.Relations = Store.Relations()
         val textSelection: Store<Editor.TextSelection> = Store.TextSelection()
         val objectRestrictions: Store.ObjectRestrictions = Store.ObjectRestrictions()
         val relationLinks: Store.RelationLinks = Store.RelationLinks()

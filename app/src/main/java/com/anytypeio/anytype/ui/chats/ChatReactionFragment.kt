@@ -15,8 +15,8 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel
-import com.anytypeio.anytype.feature_discussions.ui.ChatReactionScreen
+import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel
+import com.anytypeio.anytype.feature_chats.ui.ChatReactionScreen
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlin.getValue

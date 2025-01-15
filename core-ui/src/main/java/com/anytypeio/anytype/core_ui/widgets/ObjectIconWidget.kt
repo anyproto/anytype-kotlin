@@ -363,7 +363,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     private fun ObjectIcon.Empty.setEmptyIcon() {
         val (drawable, containerBackground) = when (this) {
             ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link to true
-            ObjectIcon.Empty.Discussion -> R.drawable.ic_empty_state_chat to true
+            ObjectIcon.Empty.Chat -> R.drawable.ic_empty_state_chat to true
             ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list to true
             ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type to true
             ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page to true

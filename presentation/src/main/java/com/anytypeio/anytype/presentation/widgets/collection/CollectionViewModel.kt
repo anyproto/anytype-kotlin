@@ -920,7 +920,7 @@ class CollectionViewModel(
                     )
                 )
             }
-            is OpenObjectNavigation.OpenDiscussion -> {
+            is OpenObjectNavigation.OpenChat -> {
                 commands.emit(
                     Command.OpenChat(
                         target = navigation.target,

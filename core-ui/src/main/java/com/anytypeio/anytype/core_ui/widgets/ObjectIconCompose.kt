@@ -197,7 +197,7 @@ fun cornerRadius(size: Dp): Dp {
 fun imageAsset(emptyType: ObjectIcon.Empty): Int {
     return when (emptyType) {
         ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link
-        ObjectIcon.Empty.Discussion -> R.drawable.ic_empty_state_chat
+        ObjectIcon.Empty.Chat -> R.drawable.ic_empty_state_chat
         ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list
         ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type
         ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page

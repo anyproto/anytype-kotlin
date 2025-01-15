@@ -47,7 +47,7 @@ fun ObjectType.Layout?.emptyType(): ObjectIcon.Empty {
         ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> ObjectIcon.Empty.List
         ObjectType.Layout.OBJECT_TYPE -> ObjectIcon.Empty.ObjectType
         ObjectType.Layout.BOOKMARK -> ObjectIcon.Empty.Bookmark
-        ObjectType.Layout.CHAT, ObjectType.Layout.CHAT_DERIVED -> ObjectIcon.Empty.Discussion
+        ObjectType.Layout.CHAT, ObjectType.Layout.CHAT_DERIVED -> ObjectIcon.Empty.Chat
         ObjectType.Layout.DATE -> ObjectIcon.Empty.Date
         else -> ObjectIcon.Empty.Page
     }

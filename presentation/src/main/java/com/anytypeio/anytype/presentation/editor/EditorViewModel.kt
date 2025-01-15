@@ -4456,7 +4456,7 @@ class EditorViewModel(
                     )
                 )
             }
-            is OpenObjectNavigation.OpenDiscussion -> {
+            is OpenObjectNavigation.OpenChat -> {
                 sendToast("not implemented")
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {

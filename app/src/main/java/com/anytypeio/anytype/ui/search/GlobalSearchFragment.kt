@@ -92,7 +92,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                                 )
                             )
                         }
-                        is OpenObjectNavigation.OpenDiscussion -> {
+                        is OpenObjectNavigation.OpenChat -> {
                             findNavController().navigate(
                                 R.id.chatScreen,
                                 ChatFragment.args(

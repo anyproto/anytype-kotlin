@@ -30,29 +30,29 @@ import dagger.Module
 import dagger.Provides
 
 @Component(
-    dependencies = [DiscussionComponentDependencies::class],
+    dependencies = [ChatComponentDependencies::class],
     modules = [
-        DiscussionModule::class,
-        DiscussionModule.Declarations::class
+        ChatModule::class,
+        ChatModule.Declarations::class
     ]
 )
 @PerScreen
-interface DiscussionComponent {
+interface ChatComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
         fun withParams(params: ChatViewModel.Params): Builder
-        fun withDependencies(dependencies: DiscussionComponentDependencies): Builder
-        fun build(): DiscussionComponent
+        fun withDependencies(dependencies: ChatComponentDependencies): Builder
+        fun build(): ChatComponent
     }
     fun inject(fragment: ChatFragment)
 }
 
 @Component(
-    dependencies = [DiscussionComponentDependencies::class],
+    dependencies = [ChatComponentDependencies::class],
     modules = [
-        DiscussionModule::class,
-        DiscussionModule.Declarations::class
+        ChatModule::class,
+        ChatModule.Declarations::class
     ]
 )
 @PerScreen
@@ -61,7 +61,7 @@ interface SpaceLevelChatComponent {
     interface Builder {
         @BindsInstance
         fun withParams(params: ChatViewModel.Params): Builder
-        fun withDependencies(dependencies: DiscussionComponentDependencies): Builder
+        fun withDependencies(dependencies: ChatComponentDependencies): Builder
         fun build(): SpaceLevelChatComponent
     }
 
@@ -69,7 +69,7 @@ interface SpaceLevelChatComponent {
 }
 
 @Module
-object DiscussionModule {
+object ChatModule {
 
     @JvmStatic
     @Provides
@@ -88,7 +88,7 @@ object DiscussionModule {
     }
 }
 
-interface DiscussionComponentDependencies : ComponentDependencies {
+interface ChatComponentDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun authRepo(): AuthRepository
     fun appCoroutineDispatchers(): AppCoroutineDispatchers

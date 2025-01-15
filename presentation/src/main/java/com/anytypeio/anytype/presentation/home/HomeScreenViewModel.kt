@@ -11,7 +11,6 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -1422,7 +1421,7 @@ class HomeScreenViewModel(
                     )
                 )
             }
-            is OpenObjectNavigation.OpenDiscussion -> {
+            is OpenObjectNavigation.OpenChat -> {
                 navigate(
                     Navigation.OpenDiscussion(
                         ctx = navigation.target,
@@ -2403,7 +2402,7 @@ sealed class OpenObjectNavigation {
     data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
     data object NonValidObject: OpenObjectNavigation()
-    data class OpenDiscussion(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenChat(val target: Id, val space: Id): OpenObjectNavigation()
     data class OpenDataObject(val target: Id, val space: Id): OpenObjectNavigation()
 }
 
@@ -2448,7 +2447,7 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
             )
         }
         ObjectType.Layout.CHAT_DERIVED -> {
-            OpenObjectNavigation.OpenDiscussion(
+            OpenObjectNavigation.OpenChat(
                 target = id,
                 space = requireNotNull(spaceId)
             )
@@ -2500,7 +2499,7 @@ fun ObjectType.Layout.navigation(
             )
         }
         ObjectType.Layout.CHAT_DERIVED -> {
-            OpenObjectNavigation.OpenDiscussion(
+            OpenObjectNavigation.OpenChat(
                 target = target,
                 space = space
             )

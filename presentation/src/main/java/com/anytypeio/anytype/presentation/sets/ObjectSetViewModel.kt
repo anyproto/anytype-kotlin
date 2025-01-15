@@ -76,6 +76,7 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
+import com.anytypeio.anytype.presentation.editor.editor.getObject
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
@@ -1014,9 +1015,7 @@ class ObjectSetViewModel(
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
         } else {
-            val setObject = ObjectWrapper.Basic(
-                currentState.details[vmParams.ctx]?.map ?: emptyMap()
-            )
+            val setObject = currentState.details.getObject(vmParams.ctx)
             val viewer = currentState.viewerByIdOrFirst(session.currentViewerId.value)
             if (viewer == null) {
                 Timber.e("onCreateNewDataViewObject, Viewer is empty")
@@ -1031,13 +1030,12 @@ class ObjectSetViewModel(
 
             val objectTypeUniqueKey = defaultObjectType?.uniqueKey
 
-            val sourceId = setObject.setOf.singleOrNull()
-            if (objectTypeUniqueKey == null) {
+            val sourceId = setObject?.setOf?.singleOrNull()
+            if (sourceId == null || objectTypeUniqueKey == null) {
                 toast("Unable to define a source for a new object.")
             } else {
-                val sourceDetails = currentState.details[sourceId]
-                if (sourceDetails != null && sourceDetails.map.isNotEmpty()) {
-                    val wrapper = ObjectWrapper.Basic(sourceDetails.map)
+                val wrapper = currentState.details.getObject(sourceId)
+                if (wrapper != null) {
                     when (wrapper.layout) {
                         ObjectType.Layout.OBJECT_TYPE -> {
                             val uniqueKey = wrapper.getValue<Key>(Relations.UNIQUE_KEY)
@@ -1085,7 +1083,7 @@ class ObjectSetViewModel(
                                     storeOfRelations = storeOfRelations,
                                     dateProvider = dateProvider,
                                     dataViewRelationLinks = currentState.dataViewContent.relationLinks,
-                                    objSetByRelation = ObjectWrapper.Relation(sourceDetails.map)
+                                    objSetByRelation = ObjectWrapper.Relation(wrapper.map)
                                 )
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByRelation(
@@ -1241,8 +1239,7 @@ class ObjectSetViewModel(
     fun onMenuClicked() {
         Timber.d("onMenuClicked, ")
         val state = stateReducer.state.value.dataViewState() ?: return
-        val struct = state.details[vmParams.ctx]?.map ?: return
-        val wrapper = ObjectWrapper.Basic(struct)
+        val wrapper = state.details.getObject(vmParams.ctx) ?: return
         Timber.d("Wrapper: $wrapper")
         val space = wrapper.spaceId
         if (space != null) {
@@ -1250,8 +1247,8 @@ class ObjectSetViewModel(
                 ObjectSetCommand.Modal.Menu(
                     ctx = vmParams.ctx,
                     space = space,
-                    isArchived = state.details[vmParams.ctx]?.isArchived ?: false,
-                    isFavorite = state.details[vmParams.ctx]?.isFavorite ?: false,
+                    isArchived = wrapper.isArchived == true,
+                    isFavorite = wrapper.isFavorite == true
                 )
             )
         } else {
@@ -1264,9 +1261,8 @@ class ObjectSetViewModel(
     fun onObjectIconClicked() {
         Timber.d("onIconClicked, ")
         val state = stateReducer.state.value.dataViewState() ?: return
-        val struct = state.details[vmParams.ctx]
-        val wrapper = ObjectWrapper.Basic(struct?.map.orEmpty())
-        val space = wrapper.spaceId
+        val wrapper = state.details.getObject(vmParams.ctx)
+        val space = wrapper?.spaceId
         if (space != null) {
             dispatch(
                 ObjectSetCommand.Modal.OpenIconActionMenu(

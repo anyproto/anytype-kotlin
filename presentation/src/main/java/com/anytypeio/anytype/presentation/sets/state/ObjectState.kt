@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 
 sealed class ObjectState {
 
@@ -18,7 +19,7 @@ sealed class ObjectState {
 
         abstract val root: Id
         abstract val blocks: List<Block>
-        abstract val details: Map<Id, Block.Fields>
+        abstract val details: AllObjectsDetails
         abstract val objectRestrictions: List<ObjectRestriction>
         abstract val dataViewRestrictions: List<DataViewRestrictions>
 
@@ -31,7 +32,7 @@ sealed class ObjectState {
         data class Set(
             override val root: Id,
             override val blocks: List<Block> = emptyList(),
-            override val details: Map<Id, Block.Fields> = emptyMap(),
+            override val details: AllObjectsDetails,
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
             override val objectRelationLinks: List<RelationLink> = emptyList(),
@@ -46,7 +47,7 @@ sealed class ObjectState {
         data class Collection(
             override val root: Id,
             override val blocks: List<Block> = emptyList(),
-            override val details: Map<Id, Block.Fields> = emptyMap(),
+            override val details: AllObjectsDetails,
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
             override val objectRelationLinks: List<RelationLink> = emptyList()

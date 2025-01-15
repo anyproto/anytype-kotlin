@@ -90,11 +90,7 @@ fun MObjectView.toPayload(): Payload {
                 context = rootId,
                 root = rootId,
                 blocks = blocks.toCoreModels(),
-                details = Block.Details(
-                    details.associate { details ->
-                        details.id to details.details.toCoreModel()
-                    }
-                ),
+                details = details.associate { d -> d.id to d.details.orEmpty() },
                 relationLinks = relationLinks.map { it.toCoreModels() },
                 objectRestrictions = restrictions?.object_?.map { it.toCoreModel() }.orEmpty(),
                 dataViewRestrictions = restrictions?.dataview?.map { it.toCoreModel() }.orEmpty()
@@ -302,7 +298,9 @@ fun List<MBlock>.toCoreModels(): List<Block> = mapNotNull { block ->
     }
 }
 
-fun Map<String, *>?.toCoreModel(): Block.Fields = Block.Fields(this?.toMap().orEmpty())
+fun Map<String, *>?.toCoreFieldsModel(): Block.Fields = Block.Fields(this?.toMap().orEmpty())
+
+fun Map<String, *>?.toCoreModel(): Map<String, Any?> = this?.toMap().orEmpty()
 
 fun MBlock.toCoreModelsText(): Block.Content.Text {
     val content = checkNotNull(text)

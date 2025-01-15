@@ -6,10 +6,13 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Event.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.amend
 import com.anytypeio.anytype.core_models.ext.remove
 import com.anytypeio.anytype.core_models.ext.unset
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_utils.ext.replace
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.updateFields
 import com.anytypeio.anytype.presentation.sets.updateFilters
 import com.anytypeio.anytype.presentation.sets.updateSorts
@@ -166,11 +169,12 @@ class DefaultObjectStateReducer : ObjectStateReducer {
      * @see Command.ShowObject
      */
     private fun handleShowObject(event: Command.ShowObject): ObjectState {
-        val objectState = when (val layout = event.details.details[event.root]?.layout?.toInt()) {
+        val objectState = when (val layout = event.details[event.root]?.getSingleValue<Double>(
+            Relations.LAYOUT)?.toInt()) {
             ObjectType.Layout.COLLECTION.code -> ObjectState.DataView.Collection(
                 root = event.root,
                 blocks = event.blocks,
-                details = event.details.details,
+                details = AllObjectsDetails(event.details),
                 objectRestrictions = event.objectRestrictions,
                 dataViewRestrictions = event.dataViewRestrictions,
                 objectRelationLinks = event.relationLinks
@@ -178,7 +182,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             ObjectType.Layout.SET.code -> ObjectState.DataView.Set(
                 root = event.root,
                 blocks = event.blocks,
-                details = event.details.details,
+                details = AllObjectsDetails(event.details),
                 objectRestrictions = event.objectRestrictions,
                 dataViewRestrictions = event.dataViewRestrictions,
                 objectRelationLinks = event.relationLinks
@@ -423,16 +427,24 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         event: Command.Details.Set
     ): ObjectState {
         return when (state) {
-            is ObjectState.DataView.Collection -> state.copy(
-                details = state.details.toMutableMap().apply {
-                    put(event.target, event.details)
-                }
-            )
-            is ObjectState.DataView.Set -> state.copy(
-                details = state.details.toMutableMap().apply {
-                    put(event.target, event.details)
-                }
-            )
+            is ObjectState.DataView.Collection -> {
+                state.copy(
+                    details = AllObjectsDetails(
+                        details = state.details.details.toMutableMap().apply {
+                            put(event.target, event.details)
+                        }
+                    )
+                )
+            }
+            is ObjectState.DataView.Set -> {
+                state.copy(
+                    details = AllObjectsDetails(
+                        details = state.details.details.toMutableMap().apply {
+                            put(event.target, event.details)
+                        }
+                    )
+                )
+            }
             else -> state
         }
     }
@@ -446,15 +458,19 @@ class DefaultObjectStateReducer : ObjectStateReducer {
     ): ObjectState {
         return when (state) {
             is ObjectState.DataView.Collection -> state.copy(
-                details = state.details.amend(
-                    target = event.target,
-                    slice = event.details
+                details = state.details.copy(
+                    details = state.details.details.amend(
+                        target = event.target,
+                        slice = event.details
+                    )
                 )
             )
             is ObjectState.DataView.Set -> state.copy(
-                details = state.details.amend(
-                    target = event.target,
-                    slice = event.details
+                details = state.details.copy(
+                    details = state.details.details.amend(
+                        target = event.target,
+                        slice = event.details
+                    )
                 )
             )
             else -> state
@@ -470,15 +486,19 @@ class DefaultObjectStateReducer : ObjectStateReducer {
     ): ObjectState {
         return when (state) {
             is ObjectState.DataView.Collection -> state.copy(
-                details = state.details.unset(
-                    target = event.target,
-                    keys = event.keys
+                details = state.details.copy(
+                    details = state.details.details.unset(
+                        target = event.target,
+                        keys = event.keys
+                    )
                 )
             )
             is ObjectState.DataView.Set -> state.copy(
-                details = state.details.unset(
-                    target = event.target,
-                    keys = event.keys
+                details = state.details.copy(
+                    details = state.details.details.unset(
+                        target = event.target,
+                        keys = event.keys
+                    )
                 )
             )
             else -> state

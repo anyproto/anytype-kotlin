@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.ext.textColor
@@ -21,7 +22,11 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.presentation.editor.editor.Store
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
+import com.anytypeio.anytype.presentation.editor.editor.getBookmarkObject
+import com.anytypeio.anytype.presentation.editor.editor.getObject
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
@@ -35,8 +40,9 @@ import com.anytypeio.anytype.presentation.mapper.toVideoView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
+import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
-import com.anytypeio.anytype.presentation.relations.BlockFieldsCoverWrapper
+import com.anytypeio.anytype.presentation.relations.BlockFieldsCoverWrapperProper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
@@ -64,7 +70,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         anchor: Id,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         relationLinks: List<RelationLink>,
         restrictions: List<ObjectRestriction>,
         selection: Set<Id>,
@@ -426,10 +432,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                             }
                         }
                         Content.Text.Style.DESCRIPTION -> {
-                            val detail = details.details.getOrDefault(root.id, Block.Fields.empty())
-                            val obj = ObjectWrapper.Basic(detail.map)
-                            val featured = obj.featuredRelations
-                            if (featured.contains(Relations.DESCRIPTION)) {
+                            val obj = details.getObject(id = context)
+                            val featured = obj?.featuredRelations
+                            if (featured?.contains(Relations.DESCRIPTION) == true) {
                                 if (obj.layout == ObjectType.Layout.PARTICIPANT && content.text.isEmpty()) {
                                     Timber.d("Skipping description rendering for object with participant layout: text is empty")
                                 } else {
@@ -619,9 +624,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 }
                 is Content.Link -> {
                     mCounter = 0
-                    val obj = ObjectWrapper.Basic(
-                        map = details.details[content.target]?.map ?: emptyMap()
-                    )
+                    val obj = details.getObject(content.target)
                     val link = toLinks(
                         block = block,
                         content = content,
@@ -812,7 +815,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         focus: Focus,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Paragraph {
@@ -875,7 +878,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Header.Three {
@@ -912,7 +915,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Header.Two {
@@ -949,7 +952,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Header.One {
@@ -986,7 +989,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         focus: Focus,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Checkbox {
@@ -1023,7 +1026,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         focus: Focus,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Bulleted {
@@ -1084,7 +1087,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         scheme: NestedDecorationData
     ): BlockView.Text.Highlight {
@@ -1128,7 +1131,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         scheme: NestedDecorationData
     ): BlockView.Text.Callout {
@@ -1183,7 +1186,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         indent: Int,
         focus: Focus,
         isEmpty: Boolean,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         scheme: NestedDecorationData
     ): BlockView.Text.Toggle {
@@ -1222,7 +1225,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         number: Int,
         focus: Focus,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Numbered {
@@ -1261,7 +1264,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
         schema: NestedDecorationData,
-        details: Block.Details
+        details: AllObjectsDetails,
     ): BlockView = when (content.state) {
         Content.Bookmark.State.EMPTY -> {
             BlockView.MediaPlaceholder.Bookmark(
@@ -1295,10 +1298,14 @@ class DefaultBlockViewRenderer @Inject constructor(
             )
         }
         Content.Bookmark.State.DONE -> {
-            val obj = ObjectWrapper.Bookmark(
-                details.details[content.targetObjectId]?.map ?: emptyMap()
-            )
-            if (obj.isDeleted == true) {
+            val targetObjectId = content.targetObjectId
+            val obj = if (targetObjectId != null) {
+                details.getBookmarkObject(targetObjectId)
+            } else {
+                null
+            }
+
+            if (obj == null || obj.isDeleted == true) {
                 linkDeleted(
                     block = block,
                     indent = indent,
@@ -1394,7 +1401,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
         schema: NestedDecorationData,
-        details: Block.Details,
+        details: AllObjectsDetails,
         fieldParser: FieldParser
     ): BlockView {
 
@@ -1418,11 +1425,11 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         root: Block,
         focus: Focus,
-        details: Block.Details,
+        details: AllObjectsDetails,
         restrictions: List<ObjectRestriction>
     ): BlockView.Title {
 
-        val currentObject = ObjectWrapper.Basic(details.details[context]?.map.orEmpty())
+        val currentObject = details.getObject(id = context)
 
         val focusTarget = focus.target
 
@@ -1439,11 +1446,10 @@ class DefaultBlockViewRenderer @Inject constructor(
         }
 
         val rootContent = root.content
-        val rootDetails = details.details[root.id]
 
         check(rootContent is Content.Smart)
 
-        val coverContainer = BlockFieldsCoverWrapper(rootDetails)
+        val coverContainer = BlockFieldsCoverWrapperProper(currentObject)
             .getCover(urlBuilder, coverImageHashProvider)
 
         val blockMode = if (restrictions.contains(ObjectRestriction.DETAILS)) {
@@ -1452,7 +1458,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             if (mode == EditorMode.Edit) Mode.EDIT else Mode.READ
         }
 
-        return when (currentObject.layout) {
+        return when (currentObject?.layout) {
             ObjectType.Layout.BASIC -> {
                 BlockView.Title.Basic(
                     mode = blockMode,
@@ -1541,13 +1547,13 @@ class DefaultBlockViewRenderer @Inject constructor(
                 )
             }
             else -> {
-                // Fallback to basic title in case of unexpected layout
+                // Fallback to basic title in case of unexpected layout or when wrapper is null
                 BlockView.Title.Basic(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    emoji = currentObject.iconEmoji?.takeIf { it.isNotBlank() },
-                    image = currentObject.iconImage?.takeIf { it.isNotBlank() }?.let {
+                    emoji = currentObject?.iconEmoji?.takeIf { it.isNotBlank() },
+                    image = currentObject?.iconImage?.takeIf { it.isNotBlank() }?.let {
                         urlBuilder.medium(it)
                     },
                     isFocused = resolveIsFocused(focus, block),
@@ -1558,7 +1564,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor()
                 ).also {
-                    Timber.w("Unexpected layout for title: ${currentObject.layout}")
+                    Timber.w("Unexpected layout for title: ${currentObject?.layout}")
                 }
             }
         }
@@ -1581,21 +1587,13 @@ class DefaultBlockViewRenderer @Inject constructor(
         block: Block,
         content: Content.Link,
         indent: Int,
-        obj: ObjectWrapper.Basic,
+        obj: ObjectWrapper.Basic?,
         mode: EditorMode,
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
         parentSchema: NestedDecorationData
     ): BlockView.LinkToObject {
-        if (obj.isEmpty()) {
-            return BlockView.LinkToObject.Loading(
-                id = block.id,
-                indent = indent
-            )
-        }
-        val isDeleted = obj.isDeleted
-        val isArchived = obj.isArchived
-        return if (isDeleted == true) {
+        return if (obj == null || obj.isDeleted == true) {
             linkDeleted(
                 block = block,
                 indent = indent,
@@ -1604,7 +1602,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 parentSchema = parentSchema
             )
         } else {
-            if (isArchived == true) {
+            if (obj.isArchived == true) {
                 linkArchive(
                     block = block,
                     indent = indent,
@@ -1921,7 +1919,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         block: Block,
         focus: Focus,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         blocks: Map<String, List<Block>>,
         decorations: List<BlockView.Decoration>
@@ -1988,7 +1986,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         mode: EditorMode,
         focus: Focus,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>
     ): List<BlockView.Table.Cell> {
         val cells = mutableListOf<BlockView.Table.Cell>()
@@ -2037,7 +2035,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         block: Block,
         content: Content.RelationBlock,
         indent: Int,
-        details: Block.Details,
+        details: AllObjectsDetails,
         urlBuilder: UrlBuilder,
         schema: NestedDecorationData,
         fieldParser: FieldParser
@@ -2053,9 +2051,10 @@ class DefaultBlockViewRenderer @Inject constructor(
         } else {
             val relation = storeOfRelations.getByKey(relationKey)
             if (relation != null) {
+                val values = details.getObject(ctx)?.map.orEmpty()
                 val view = relation.view(
-                    details = details.details,
-                    values = details.details[ctx]?.map ?: emptyMap(),
+                    details = details,
+                    values = values,
                     urlBuilder = urlBuilder,
                     fieldParser = fieldParser
                 )
@@ -2080,12 +2079,11 @@ class DefaultBlockViewRenderer @Inject constructor(
     private suspend fun featured(
         ctx: Id,
         block: Block,
-        details: Block.Details,
+        details: AllObjectsDetails,
         fieldParser: FieldParser,
     ): BlockView.FeaturedRelation {
-        val map = details.details[ctx]?.map ?: emptyMap()
-        val obj = ObjectWrapper.Basic(map)
-        val featuredKeys = workaroundGlobalNameOrIdentityRelation(obj.featuredRelations, map)
+        val obj = details.getObject(ctx)
+        val featuredKeys = workaroundGlobalNameOrIdentityRelation(obj?.featuredRelations.orEmpty(), obj?.map.orEmpty())
         val views = mapFeaturedRelations(
             ctx = ctx,
             keys = featuredKeys,
@@ -2096,8 +2094,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         return BlockView.FeaturedRelation(
             id = block.id,
             relations = views,
-            allowChangingObjectType = !obj.type.contains(BOOKMARK),
-            isTodoLayout = obj.layout == ObjectType.Layout.TODO
+            allowChangingObjectType = obj?.type?.contains(BOOKMARK) != true,
+            isTodoLayout = obj?.layout == ObjectType.Layout.TODO
         )
     }
 
@@ -2127,13 +2125,13 @@ class DefaultBlockViewRenderer @Inject constructor(
     private suspend fun mapFeaturedRelations(
         ctx: Id,
         keys: List<Key>,
-        details: Block.Details,
+        details: AllObjectsDetails,
         fieldParser: FieldParser
     ): List<ObjectRelationView> = keys.mapNotNull { key ->
         when (key) {
             Relations.DESCRIPTION -> null
             Relations.TYPE -> {
-                val objectTypeId = details.details[ctx]?.type?.firstOrNull()
+                val objectTypeId = details.getObject(ctx)?.getProperType()
                 if (objectTypeId != null) {
                     details.objectTypeRelation(
                         relationKey = key,
@@ -2154,9 +2152,10 @@ class DefaultBlockViewRenderer @Inject constructor(
             }
             else -> {
                 val relation = storeOfRelations.getByKey(key)
+                val values = details.getObject(ctx)?.map.orEmpty()
                 relation?.view(
-                    details = details.details,
-                    values = details.details[ctx]?.map ?: emptyMap(),
+                    details = details,
+                    values = values,
                     urlBuilder = urlBuilder,
                     isFeatured = true,
                     fieldParser = fieldParser
@@ -2191,7 +2190,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         mode: EditorMode,
         block: Block,
         content: Content.DataView,
-        details: Block.Details,
+        details: AllObjectsDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.DataView {
@@ -2222,10 +2221,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                 isCollection = isCollection
             )
         } else {
-            val targetSet = ObjectWrapper.Basic(
-                map = details.details[content.targetObjectId]?.map ?: emptyMap()
-            )
-            if (targetSet.isDeleted == true) {
+            val targetSet = details.getObject(targetObjectId)
+            if (targetSet == null || targetSet.isDeleted == true) {
                 return BlockView.DataView.Deleted(
                     id = block.id,
                     decorations = decorations,
@@ -2237,7 +2234,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 )
             }
             val icon = targetSet.objectIcon(urlBuilder)
-            val isSetNoQuery = targetSet.setOf.all { it.isNullOrBlank() }
+            val isSetNoQuery = targetSet.setOf.all { it.isBlank() }
             if (isSetNoQuery && !content.isCollection) {
                 return BlockView.DataView.EmptyData(
                     id = block.id,

@@ -247,9 +247,13 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
+import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.*
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
+import com.anytypeio.anytype.presentation.editor.editor.getInternalFlagsObject
+import com.anytypeio.anytype.presentation.editor.editor.getObject
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDatePickerDismiss
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDateSelected
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
@@ -598,12 +602,18 @@ class EditorViewModel(
         events.forEach { event ->
             when (event) {
                 is Event.Command.ShowObject -> {
-                    orchestrator.stores.details.update(event.details)
+                    orchestrator.stores.details.update(
+                        AllObjectsDetails(
+                            details = event.details
+                        )
+                    )
                     orchestrator.stores.relationLinks.update(event.relationLinks)
                     orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
                 }
                 is Event.Command.Details -> {
-                    orchestrator.stores.details.apply { update(current().process(event)) }
+                    orchestrator.stores.details.apply {
+                        update(AllObjectsDetails(details = current().details.process(event)))
+                    }
                 }
                 is Event.Command.ObjectRelationLinks -> {
                     orchestrator.stores.relationLinks.apply { update(current().process(event)) }
@@ -758,6 +768,7 @@ class EditorViewModel(
                 orchestrator.stores.focus.stream(),
                 orchestrator.stores.details.stream()
             ) { models, focus, details ->
+                val currentObj = details.details[context].toObject()
                 val permission = permission.value
                 val root = models.first { it.id == context }
                 if (mode == EditorMode.Locked) {
@@ -781,7 +792,7 @@ class EditorViewModel(
                     }
                 }
 
-                footers.value = getFooterState(root, details)
+                footers.value = getFooterState(root, currentObj)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 Timber.d("Rendering starting...")
                 val doc = models.asMap().render(
@@ -1129,8 +1140,8 @@ class EditorViewModel(
                     }
                 }
                 root.children.size == 2 -> {
-                    val layout = event.details.details[root.id]?.layout
-                    if (layout == ObjectType.Layout.NOTE.code.toDouble()) {
+                    val layout = event.details[root.id].toObject()?.layout
+                    if (layout == ObjectType.Layout.NOTE) {
                         val block = event.blocks.firstOrNull { it.content is Content.Text }
                         if (block != null && block.content<Content.Text>().text.isEmpty()) {
                             val focus = Editor.Focus(
@@ -1545,25 +1556,15 @@ class EditorViewModel(
     }
 
     private fun proceedWithOpeningObjectMenu() {
-        if (context.isEmpty()) {
-            sendToast("Your object is not initialized. Please, try again later.")
-            return
-        }
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
-        val details = orchestrator.stores.details.current().details
-        val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
+        val wrapper = orchestrator.stores.details.getAsObject(context)
         val isTemplate = isObjectTemplate()
-        val space = wrapper.spaceId
-        if (space == null) {
-            sendToast("Space not found")
-            return
-        }
         when {
             isTemplate -> {
                 dispatch(
                     command = Command.OpenDocumentMenu(
                         ctx = context,
-                        space = space,
+                        space = vmParams.space.id,
                         isArchived = false,
                         isFavorite = false,
                         isLocked = false,
@@ -1575,9 +1576,9 @@ class EditorViewModel(
                 dispatch(
                     command = Command.OpenDocumentMenu(
                         ctx = context,
-                        space = space,
-                        isArchived = details[context]?.isArchived ?: false,
-                        isFavorite = details[context]?.isFavorite ?: false,
+                        space = vmParams.space.id,
+                        isArchived = wrapper?.isArchived == true,
+                        isFavorite = wrapper?.isFavorite == true,
                         isLocked = mode == EditorMode.Locked,
                         isTemplate = isObjectTemplate()
                     )
@@ -1873,19 +1874,21 @@ class EditorViewModel(
                     is Content.Bookmark -> {
                         excludedActions.add(ActionItemType.Download)
                         if (!isMultiMode) {
-                            if (content.targetObjectId != null) {
-                                val details = orchestrator.stores.details.current().details
-                                val obj = ObjectWrapper.Basic(
-                                    details[content.targetObjectId]?.map ?: emptyMap()
+                            val targetObjectId = content.targetObjectId
+                            if (targetObjectId != null) {
+                                val obj = orchestrator.stores.details.getAsObject(
+                                    target = targetObjectId
                                 )
-                                val isReady = content.state == Content.Bookmark.State.DONE
-                                val isActive = obj.isArchived != true && obj.isDeleted != true
-                                val idx = targetActions.indexOf(ActionItemType.OpenObject)
-                                if (idx == NO_POSITION && isReady && isActive) {
-                                    targetActions.add(
-                                        OPEN_OBJECT_POSITION,
-                                        ActionItemType.OpenObject
-                                    )
+                                if (obj != null) {
+                                    val isReady = content.state == Content.Bookmark.State.DONE
+                                    val isActive = obj.isArchived != true && obj.isDeleted != true
+                                    val idx = targetActions.indexOf(ActionItemType.OpenObject)
+                                    if (idx == NO_POSITION && isReady && isActive) {
+                                        targetActions.add(
+                                            OPEN_OBJECT_POSITION,
+                                            ActionItemType.OpenObject
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -3164,12 +3167,9 @@ class EditorViewModel(
             }
             is Content.Bookmark -> {
                 val target = content.targetObjectId
-                val details = orchestrator.stores.details.current().details[target]
                 if (target != null) {
-                    val obj = ObjectWrapper.Bookmark(details?.map ?: mapOf())
-                    if (obj.isArchived != true && obj.isDeleted != true) {
-                        proceedWithOpeningObjectByLayout(target = target)
-                    } else {
+                    val obj = orchestrator.stores.details.getAsBookmarkObject(target)
+                    if (obj?.isArchived == true || obj?.isDeleted == true) {
                         val source = obj.source
                         if (!source.isNullOrBlank()) {
                             commands.postValue(
@@ -3180,6 +3180,8 @@ class EditorViewModel(
                         } else {
                             sendToast("Source is missing for this object")
                         }
+                    } else {
+                        proceedWithOpeningObjectByLayout(target = target)
                     }
                 } else {
                     sendToast("Couldn't find the target of the link")
@@ -3196,15 +3198,8 @@ class EditorViewModel(
 
     private fun proceedWithOpeningDataViewBlock(dv: Content.DataView) {
         if (dv.targetObjectId.isNotEmpty()) {
-            val targetSpace = orchestrator.stores.details.current().let { details ->
-                val detail = details.details[dv.targetObjectId]
-                if (detail != null && detail.map.isNotEmpty()) {
-                    val wrapper = ObjectWrapper.Basic(detail.map)
-                    wrapper.spaceId ?: vmParams.space.id
-                } else {
-                    vmParams.space.id
-                }
-            }
+            val targetSpace = orchestrator.stores.details.getAsObject(dv.targetObjectId)?.spaceId
+                ?: vmParams.space.id
             proceedWithOpeningDataViewObject(
                 target = dv.targetObjectId,
                 space = SpaceId(targetSpace)
@@ -3225,9 +3220,8 @@ class EditorViewModel(
 
     private fun proceedWithOpeningObjectByLayout(target: String) {
         proceedWithClearingFocus()
-        val details = orchestrator.stores.details.current()
-        val wrapper = ObjectWrapper.Basic(map = details.details[target]?.map ?: emptyMap())
-        when (wrapper.layout) {
+        val wrapper = orchestrator.stores.details.getAsObject(target)
+        when (wrapper?.layout) {
             ObjectType.Layout.BASIC,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.TODO,
@@ -3266,7 +3260,7 @@ class EditorViewModel(
                 )
             }
             else -> {
-                sendToast("Cannot open object with layout: ${wrapper.layout}")
+                sendToast("Cannot open object with layout: ${wrapper?.layout}")
             }
         }
     }
@@ -5233,77 +5227,75 @@ class EditorViewModel(
     }
 
     private fun getRelations(action: (List<SlashRelationView.Item>) -> Unit) {
-        val details = orchestrator.stores.details.current()
-        val objectDetails = details.details[context]?.map ?: emptyMap()
-        val objectWrapper = ObjectWrapper.Basic(objectDetails)
-        val objectType = objectWrapper.getProperType()
+        val objectWrapper = orchestrator.stores.details.getAsObject(vmParams.ctx)
+        val objectType = objectWrapper?.getProperType()
         val relationLinks = orchestrator.stores.relationLinks.current()
 
-        viewModelScope.launch {
-            val objectRelationViews = getObjectRelationsView(
-                ctx = context,
-                objectDetails = objectDetails,
-                relationLinks = relationLinks,
-                details = details,
-                objectWrapper = objectWrapper
-            )
-
-            val recommendedRelationViews = getRecommendedRelations(
-                ctx = context,
-                objectDetails = objectDetails,
-                relationLinks = relationLinks,
-                objectTypeStruct = details.details[objectType]?.map,
-                details = details
-            )
-            val update =
-                (objectRelationViews + recommendedRelationViews).map { SlashRelationView.Item(it) }
-
-            action.invoke(update)
-        }
+//        viewModelScope.launch {
+//            val objectRelationViews = getObjectRelationsView(
+//                ctx = vmParams.ctx,
+//                objectDetails = objectWrapper?.map,
+//                relationLinks = relationLinks,
+//                details = details,
+//                objectWrapper = objectWrapper
+//            )
+//
+//            val recommendedRelationViews = getRecommendedRelations(
+//                ctx = vmParams.ctx,
+//                objectDetails = objectDetails,
+//                relationLinks = relationLinks,
+//                objectTypeStruct = details.details[objectType]?.map,
+//                details = details
+//            )
+//            val update =
+//                (objectRelationViews + recommendedRelationViews).map { SlashRelationView.Item(it) }
+//
+//            action.invoke(update)
+//        }
     }
 
-    private suspend fun getObjectRelationsView(
-        ctx: Id,
-        objectDetails: Map<Key, Any?>,
-        relationLinks: List<RelationLink>,
-        details: Block.Details,
-        objectWrapper: ObjectWrapper.Basic
-    ): List<ObjectRelationView> {
-        return getObjectRelations(
-            systemRelations = listOf(),
-            relationLinks = relationLinks,
-            storeOfRelations = storeOfRelations
-        ).views(
-            context = ctx,
-            details = details,
-            values = objectDetails,
-            urlBuilder = urlBuilder,
-            featured = objectWrapper.featuredRelations,
-            fieldParser = fieldParser
-        )
-    }
-
-    private suspend fun getRecommendedRelations(
-        ctx: Id,
-        objectDetails: Map<Key, Any?>,
-        relationLinks: List<RelationLink>,
-        objectTypeStruct: Struct?,
-        details: Block.Details
-    ): List<ObjectRelationView> {
-        val objType = objectTypeStruct?.mapToObjectWrapperType()
-        val recommendedRelations = objType?.recommendedRelations ?: emptyList()
-        return getNotIncludedRecommendedRelations(
-            relationLinks = relationLinks,
-            recommendedRelations = recommendedRelations,
-            storeOfRelations = storeOfRelations
-        ).views(
-            context = ctx,
-            details = details,
-            values = objectDetails,
-            urlBuilder = urlBuilder,
-            fieldParser = fieldParser
-        )
-    }
+//    private suspend fun getObjectRelationsView(
+//        ctx: Id,
+//        objectDetails: Map<String, Any?>,
+//        relationLinks: List<RelationLink>,
+//        details: Block.Details,
+//        objectWrapper: ObjectWrapper.Basic
+//    ): List<ObjectRelationView> {
+//        return getObjectRelations(
+//            systemRelations = listOf(),
+//            relationLinks = relationLinks,
+//            storeOfRelations = storeOfRelations
+//        ).views(
+//            context = ctx,
+//            details = details,
+//            values = objectDetails,
+//            urlBuilder = urlBuilder,
+//            featured = objectWrapper.featuredRelations,
+//            fieldParser = fieldParser
+//        )
+//    }
+//
+//    private suspend fun getRecommendedRelations(
+//        ctx: Id,
+//        objectDetails: Map<Key, Any?>,
+//        relationLinks: List<RelationLink>,
+//        objectTypeStruct: Struct?,
+//        details: Block.Details
+//    ): List<ObjectRelationView> {
+//        val objType = objectTypeStruct?.mapToObjectWrapperType()
+//        val recommendedRelations = objType?.recommendedRelations ?: emptyList()
+//        return getNotIncludedRecommendedRelations(
+//            relationLinks = relationLinks,
+//            recommendedRelations = recommendedRelations,
+//            storeOfRelations = storeOfRelations
+//        ).views(
+//            context = ctx,
+//            details = details,
+//            values = objectDetails,
+//            urlBuilder = urlBuilder,
+//            fieldParser = fieldParser
+//        )
+//    }
 
     private fun proceedWithObjectTypes(objectTypes: List<ObjectTypeView>) {
         onSlashWidgetStateChanged(
@@ -6236,10 +6228,8 @@ class EditorViewModel(
 
     fun onMentionClicked(target: String) {
         if (isObjectTemplate()) return
-        val details = orchestrator.stores.details.current()
-        val objectDetails = details.details[target]?.map ?: return
-        if (objectDetails.isEmpty()) return
-        val obj = ObjectWrapper.Basic(objectDetails)
+        val obj = orchestrator.stores.details.getAsObject(target)
+        if (obj == null) return
         proceedWithClearingFocus()
         proceedWithOpeningObject(obj)
     }
@@ -6388,7 +6378,7 @@ class EditorViewModel(
 
     private fun proceedWithGettingObjectTypesForTypesWidget() {
         viewModelScope.launch {
-            val excludeTypes = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
+            val excludeTypes = orchestrator.stores.details.getAsObject(context)?.type.orEmpty()
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
@@ -6429,7 +6419,7 @@ class EditorViewModel(
         fromFeatured: Boolean
     ) {
         val list = buildList {
-            val types = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
+            val types = orchestrator.stores.details.getAsObject(vmParams.ctx)?.type.orEmpty()
             if (types.isNotEmpty()) {
                 addAll(types)
             }
@@ -6675,9 +6665,9 @@ class EditorViewModel(
     //endregion
 
     //region FOOTER
-    private fun getFooterState(root: Block, details: Block.Details): EditorFooter {
-        return when (details.details[root.id]?.layout?.toInt()) {
-            ObjectType.Layout.NOTE.code -> EditorFooter.Note
+    private fun getFooterState(root: Block, currentObj: ObjectWrapper.Basic?): EditorFooter {
+        return when (currentObj?.layout) {
+            ObjectType.Layout.NOTE -> EditorFooter.Note
             else -> EditorFooter.None
         }
     }
@@ -6754,19 +6744,18 @@ class EditorViewModel(
     }
 
     private fun getObjectTypeUniqueKeyFromDetails(): Id? {
-        val details = orchestrator.stores.details.current()
-        val currentObject = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
-        val currentObjectTypeId = currentObject.getProperType() ?: return null
-        val currentObjectType = ObjectWrapper.Basic(details.details[currentObjectTypeId]?.map ?: emptyMap())
-        return currentObjectType.uniqueKey
+        val details = orchestrator.stores.details
+        val currentObject = details.getAsObject(context)
+        val currentObjectTypeId = currentObject?.getProperType() ?: return null
+        val currentObjectType = details.getAsTypeObject(currentObjectTypeId)
+        return currentObjectType?.uniqueKey
     }
 
     private fun getObjectTypeFromDetails(): ObjectWrapper.Type? {
-        val details = orchestrator.stores.details.current()
-        val currentObject = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
-        val currentObjectTypeId = currentObject.getProperType() ?: return null
-        val struct = details.details[currentObjectTypeId]?.map
-        return struct?.mapToObjectWrapperType()
+        val details = orchestrator.stores.details
+        val currentObject = details.getAsObject(context)
+        val currentObjectTypeId = currentObject?.getProperType() ?: return null
+        return details.getAsTypeObject(currentObjectTypeId)
     }
 
     fun isObjectTemplate(): Boolean {
@@ -7602,7 +7591,7 @@ class EditorViewModel(
                 if (blocks.isAllowedToShowTypesWidget(
                         objectRestrictions = orchestrator.stores.objectRestrictions.current(),
                         isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true,
-                        objectLayout = orchestrator.stores.details.current().details[context]?.layout?.toInt()
+                        objectLayout = orchestrator.stores.details.getAsObject(context)?.layout
                     )
                 ) {
                     setTypesWidgetVisibility(true)
@@ -7625,9 +7614,8 @@ class EditorViewModel(
     }
 
     private fun getInternalFlagsFromDetails(): List<InternalFlags> {
-        val details = orchestrator.stores.details.current()
-        val obj = ObjectWrapper.ObjectInternalFlags(details.details[context]?.map ?: emptyMap())
-        return obj.internalFlags
+        val obj = orchestrator.stores.details.current().getInternalFlagsObject(context)
+        return obj?.internalFlags ?: emptyList()
     }
     //endregion
 
@@ -7650,11 +7638,11 @@ class EditorViewModel(
                 spaceSyncAndP2PStatusProvider.observe(),
                 orchestrator.stores.details.stream()
             ) { state, details ->
-                state to details.details[context]?.map
+                state to details.getObject(context)
             }.catch {
                 Timber.e(it, "Error while observing sync status")
-            }.collect { (syncAndP2pState, struct) ->
-                if (!struct.isNullOrEmpty() && !struct.isObjectParticipant()) {
+            }.collect { (syncAndP2pState, obj) ->
+                if (obj != null && obj.layout != ObjectType.Layout.PARTICIPANT) {
                     spaceSyncStatus.value = syncAndP2pState
                     syncStatusWidget.value =
                         syncStatusWidget.value.updateStatus(syncAndP2pState)

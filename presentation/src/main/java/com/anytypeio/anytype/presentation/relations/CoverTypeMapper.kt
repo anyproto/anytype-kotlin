@@ -146,6 +146,13 @@ class BlockFieldsCoverWrapper(val fields: Block.Fields?) : CoverWrapper {
     override val coverId = fields?.coverId
 }
 
+class BlockFieldsCoverWrapperProper(val obj: ObjectWrapper.Basic?) : CoverWrapper {
+    override val coverType: CoverType
+        get() = obj?.coverType ?: CoverType.NONE
+    override val coverId: String?
+        get() = obj?.coverId
+}
+
 class BasicObjectCoverWrapper(val obj: ObjectWrapper.Basic?) : CoverWrapper {
     override val coverType = obj?.coverType ?: CoverType.NONE
     override val coverId = obj?.coverId

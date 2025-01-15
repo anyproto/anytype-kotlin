@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToCollectionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToFavoritesEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBackLinkAddEvent
@@ -305,15 +307,15 @@ abstract class ObjectMenuViewModelBase(
                         startTime = startTime,
                         spaceParams = provideParams(space)
                     )
-                    commands.emit(
-                        Command.OpenSnackbar(
-                            id = addTo,
-                            currentObjectName = fromName,
-                            targetObjectName = fieldParser.getObjectName(obj),
-                            icon = obj.objectIcon(urlBuilder),
-                            space = space
-                        )
-                    )
+//                    commands.emit(
+//                        Command.OpenSnackbar(
+//                            id = addTo,
+//                            currentObjectName = fromName,
+//                            targetObjectName = fieldParser.getObjectName(obj),
+//                            icon = obj.objectIcon(urlBuilder),
+//                            space = space
+//                        )
+//                    )
                 },
                 onFailure = {
                     Timber.e(it, "Error while adding link from object to object")
@@ -347,7 +349,7 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
-    fun proceedWithDuplication(ctx: Id, space: Id, details: Map<Id, Block.Fields>?) {
+    fun proceedWithDuplication(ctx: Id, space: Id, details: Map<Id, Struct>) {
         Timber.d("proceedWithDuplication, ctx:[$ctx]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {

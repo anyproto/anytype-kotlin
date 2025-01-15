@@ -6,6 +6,8 @@ import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.presentation.editor.editor.getOptionObject
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.*
@@ -14,14 +16,14 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import java.util.*
 
 fun List<ObjectWrapper.Relation>.views(
-    details: Block.Details,
+    details: AllObjectsDetails,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     featured: List<Id> = emptyList(),
     fieldParser: FieldParser
 ): List<ObjectRelationView> = mapNotNull { relation ->
     relation.view(
-        details = details.details,
+        details = details,
         values = values,
         urlBuilder = urlBuilder,
         isFeatured = featured.contains(relation.key),
@@ -32,7 +34,7 @@ fun List<ObjectWrapper.Relation>.views(
 fun Key.isSystemKey() : Boolean = Relations.systemRelationKeys.contains(this)
 
 fun ObjectWrapper.Relation.view(
-    details: Map<Id, Block.Fields>,
+    details: AllObjectsDetails,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false,
@@ -86,24 +88,11 @@ fun ObjectWrapper.Relation.view(
         }
         RelationFormat.STATUS -> {
             val options = buildList {
-                when(val value = values[relation.key]) {
-                    is Id -> {
-                        val status = details[value]
-                        if (status != null && status.map.isNotEmpty()) {
-                            add(
-                                ObjectWrapper.Option(status.map)
-                            )
-                        }
-                    }
-                    is List<*> -> {
-                        value.forEach { id ->
-                            val status = details[id]
-                            if (status != null && status.map.isNotEmpty()) {
-                                add(
-                                    ObjectWrapper.Option(status.map)
-                                )
-                            }
-                        }
+                val statusValue = values.getSingleValue<String>(relation.key)
+                if (statusValue != null) {
+                    val status = details.getOptionObject(statusValue)
+                    if (status != null) {
+                        add(status)
                     }
                 }
             }
@@ -123,25 +112,9 @@ fun ObjectWrapper.Relation.view(
         }
         RelationFormat.TAG -> {
             val options = buildList {
-                when(val value = values[relation.key]) {
-                    is Id -> {
-                        val status = details[value]
-                        if (status != null && status.map.isNotEmpty()) {
-                            add(
-                                ObjectWrapper.Option(status.map)
-                            )
-                        }
-                    }
-                    is List<*> -> {
-                        value.forEach { id ->
-                            val status = details[id]
-                            if (status != null && status.map.isNotEmpty()) {
-                                add(
-                                    ObjectWrapper.Option(status.map)
-                                )
-                            }
-                        }
-                    }
+                values[relation.key].values<String>().forEach { id ->
+                    val status = details.getOptionObject(id)
+                    if (status != null) add(status)
                 }
             }
             val tags = values.buildTagViews(

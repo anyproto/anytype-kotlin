@@ -44,6 +44,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -202,21 +203,33 @@ class SplashViewModel(
                         }
                         is CreateObjectByTypeAndTemplate.Result.Success -> {
                             val target = result.objectId
-                            if (type == COLLECTION || type == SET) {
-                                commands.emit(
-                                    Command.NavigateToObjectSet(
-                                        id = target,
-                                        space = spaceId
-                                    )
-                                )
-                            } else {
-                                commands.emit(
-                                    Command.NavigateToObject(
-                                        id = target,
-                                        space = spaceId
-                                    )
-                                )
-                            }
+                            spaceManager
+                                .observe()
+                                .take(1)
+                                .flatMapLatest { config ->
+                                    spaceViews
+                                        .observe(SpaceId(spaceId))
+                                        .take(1)
+                                }
+                                .collect { view ->
+                                    if (type == COLLECTION || type == SET) {
+                                        commands.emit(
+                                            Command.NavigateToObjectSet(
+                                                id = target,
+                                                space = spaceId,
+                                                chat = view.chatId
+                                            )
+                                        )
+                                    } else {
+                                        commands.emit(
+                                            Command.NavigateToObject(
+                                                id = target,
+                                                space = spaceId,
+                                                chat = view.chatId
+                                            )
+                                        )
+                                    }
+                                }
                         }
                     }
                 }
@@ -250,30 +263,43 @@ class SplashViewModel(
                             if (SupportedLayouts.lastOpenObjectLayouts.contains(response.obj.layout)) {
                                 val id = response.obj.id
                                 val space = requireNotNull(response.obj.spaceId)
-                                when (response.obj.layout) {
-                                    ObjectType.Layout.SET, ObjectType.Layout.COLLECTION ->
-                                        commands.emit(
-                                            Command.NavigateToObjectSet(
-                                                id = id,
-                                                space = space
-                                            )
-                                        )
-                                    ObjectType.Layout.DATE -> {
-                                        commands.emit(
-                                            Command.NavigateToDateObject(
-                                                id = id,
-                                                space = space
-                                            )
-                                        )
+                                spaceManager
+                                    .observe()
+                                    .take(1)
+                                    .flatMapLatest { config ->
+                                        spaceViews
+                                            .observe(SpaceId(space))
+                                            .take(1)
                                     }
-                                    else ->
-                                        commands.emit(
-                                            Command.NavigateToObject(
-                                                id = id,
-                                                space = space
-                                            )
-                                        )
-                                }
+                                    .collect { view ->
+                                        when (response.obj.layout) {
+                                            ObjectType.Layout.SET, ObjectType.Layout.COLLECTION ->
+                                                commands.emit(
+                                                    Command.NavigateToObjectSet(
+                                                        id = id,
+                                                        space = space,
+                                                        chat = view.chatId
+                                                    )
+                                                )
+                                            ObjectType.Layout.DATE -> {
+                                                commands.emit(
+                                                    Command.NavigateToDateObject(
+                                                        id = id,
+                                                        space = space,
+                                                        chat = view.chatId
+                                                    )
+                                                )
+                                            }
+                                            else ->
+                                                commands.emit(
+                                                    Command.NavigateToObject(
+                                                        id = id,
+                                                        space = space,
+                                                        chat = view.chatId
+                                                    )
+                                                )
+                                        }
+                                    }
                             } else {
                                 proceedWithVaultNavigation()
                             }
@@ -359,9 +385,9 @@ class SplashViewModel(
         data object NavigateToAuthStart : Command()
         data object NavigateToMigration: Command()
         data object CheckAppStartIntent : Command()
-        data class NavigateToObject(val id: Id, val space: Id) : Command()
-        data class NavigateToObjectSet(val id: Id, val space: Id) : Command()
-        data class NavigateToDateObject(val id: Id, val space: Id) : Command()
+        data class NavigateToObject(val id: Id, val space: Id, val chat: Id?) : Command()
+        data class NavigateToObjectSet(val id: Id, val space: Id, val chat: Id?) : Command()
+        data class NavigateToDateObject(val id: Id, val space: Id, val chat: Id?) : Command()
         data class Toast(val message: String) : Command()
     }
 

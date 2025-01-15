@@ -151,13 +151,24 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             is SplashViewModel.Command.NavigateToObject -> {
                 runCatching {
                     findNavController().navigate(R.id.actionOpenVaultFromSplash)
-                    findNavController().navigate(
-                        R.id.actionOpenSpaceFromVault,
-                        args = HomeScreenFragment.args(
-                            space = command.space,
-                            deeplink = null
+                    val chat = command.chat
+                    if (chat == null) {
+                        findNavController().navigate(
+                            R.id.actionOpenSpaceFromVault,
+                            args = HomeScreenFragment.args(
+                                space = command.space,
+                                deeplink = null
+                            )
                         )
-                    )
+                    } else {
+                        findNavController().navigate(
+                            R.id.actionOpenChatFromVault,
+                            args = ChatFragment.args(
+                                space = command.space,
+                                ctx = chat
+                            )
+                        )
+                    }
                     findNavController().navigate(
                         resId = R.id.objectNavigation,
                         args = EditorFragment.args(
@@ -172,13 +183,24 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             is SplashViewModel.Command.NavigateToObjectSet -> {
                 runCatching {
                     findNavController().navigate(R.id.actionOpenVaultFromSplash)
-                    findNavController().navigate(
-                        R.id.actionOpenSpaceFromVault,
-                        args = HomeScreenFragment.args(
-                            space = command.space,
-                            deeplink = null
+                    val chat = command.chat
+                    if (chat == null) {
+                        findNavController().navigate(
+                            R.id.actionOpenSpaceFromVault,
+                            args = HomeScreenFragment.args(
+                                space = command.space,
+                                deeplink = null
+                            )
                         )
-                    )
+                    } else {
+                        findNavController().navigate(
+                            R.id.actionOpenChatFromVault,
+                            args = ChatFragment.args(
+                                space = command.space,
+                                ctx = chat
+                            )
+                        )
+                    }
                     findNavController().navigate(
                         resId = R.id.dataViewNavigation,
                         args = ObjectSetFragment.args(
@@ -193,13 +215,24 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             is SplashViewModel.Command.NavigateToDateObject -> {
                 runCatching {
                     findNavController().navigate(R.id.actionOpenVaultFromSplash)
-                    findNavController().navigate(
-                        R.id.actionOpenSpaceFromVault,
-                        args = HomeScreenFragment.args(
-                            space = command.space,
-                            deeplink = null
+                    val chat = command.chat
+                    if (chat == null) {
+                        findNavController().navigate(
+                            R.id.actionOpenSpaceFromVault,
+                            args = HomeScreenFragment.args(
+                                space = command.space,
+                                deeplink = null
+                            )
                         )
-                    )
+                    } else {
+                        findNavController().navigate(
+                            R.id.actionOpenChatFromVault,
+                            args = ChatFragment.args(
+                                space = command.space,
+                                ctx = chat
+                            )
+                        )
+                    }
                     findNavController().navigate(
                         resId = R.id.dateObjectScreen,
                         args = DateObjectFragment.args(

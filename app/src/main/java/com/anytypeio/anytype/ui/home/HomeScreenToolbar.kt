@@ -100,24 +100,9 @@ fun HomeScreenToolbar(
         )
 
         Image(
-            painter = painterResource(id = R.drawable.ic_home_toolbar_widgets),
-            modifier = Modifier
-                .padding(end = 64.dp)
-                .size(32.dp)
-                .align(Alignment.CenterEnd)
-                .alpha(
-                    if (isChatActive) 0.5f else 1f
-                )
-                .noRippleClickable {
-                    onWidgetTabClicked()
-                },
-            contentDescription = "Widgets button"
-        )
-
-        Image(
             painter = painterResource(id = R.drawable.ic_home_toolbar_chat),
             modifier = Modifier
-                .padding(end = 16.dp)
+                .padding(end = 64.dp)
                 .size(32.dp)
                 .align(Alignment.CenterEnd)
                 .alpha(
@@ -127,6 +112,21 @@ fun HomeScreenToolbar(
                     onChatTabClicked()
                 },
             contentDescription = "Chats button"
+        )
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_home_toolbar_widgets),
+            modifier = Modifier
+                .padding(end = 16.dp)
+                .size(32.dp)
+                .align(Alignment.CenterEnd)
+                .alpha(
+                    if (isChatActive) 0.5f else 1f
+                )
+                .noRippleClickable {
+                    onWidgetTabClicked()
+                },
+            contentDescription = "Widgets button"
         )
     }
 }

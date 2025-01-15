@@ -1538,6 +1538,7 @@
     <string name="all_content_unlinked_description">在图中没有与其他对象直接链接或反向链接的未链接对象。</string>
     <string name="all_content_snackbar_title">已移至回收站</string>
     <string name="main_navigation_content_desc_back_button">返回按钮</string>
+    <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_search_button">搜索对象按钮</string>
     <string name="main_navigation_content_desc_create_button">创建对象按钮</string>
     <string name="chat">聊天</string>

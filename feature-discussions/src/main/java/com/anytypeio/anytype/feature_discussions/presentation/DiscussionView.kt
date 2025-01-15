@@ -51,7 +51,9 @@ sealed interface DiscussionView {
         sealed class Attachment {
             data class Image(
                 val target: Id,
-                val url: String
+                val url: String,
+                val name: String,
+                val ext: String
             ): Attachment()
 
             data class Link(

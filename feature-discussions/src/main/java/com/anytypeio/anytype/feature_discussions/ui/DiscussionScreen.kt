@@ -153,6 +153,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Async
+import timber.log.Timber
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -193,6 +194,7 @@ fun DiscussionScreenWrapper(
             ) {
                 val clipboard = LocalClipboardManager.current
                 val lazyListState = rememberLazyListState()
+
                 DiscussionScreen(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
                     isSpaceLevelChat = isSpaceLevelChat,
@@ -343,7 +345,19 @@ fun DiscussionScreen(
             }
         }
     }
+
     val scope = rememberCoroutineScope()
+
+
+    // Scrolling to bottom when list size changes and we are at the bottom of the list
+    LaunchedEffect(messages.size) {
+        if (lazyListState.firstVisibleItemScrollOffset == 0) {
+            scope.launch {
+                lazyListState.animateScrollToItem(0)
+            }
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -412,16 +426,6 @@ fun DiscussionScreen(
                 enabled = jumpToBottomButtonEnabled
             )
         }
-        if (isInEditMessageMode) {
-            EditMessageToolbar(
-                onExitClicked = {
-                    onExitEditMessageMode().also {
-                        textState = TextFieldValue()
-                    }
-                }
-            )
-        }
-
         ChatBox(
             mode = chatBoxMode,
             modifier = Modifier
@@ -432,8 +436,10 @@ fun DiscussionScreen(
             onMessageSent = onMessageSent,
             onAttachClicked = onAttachClicked,
             resetScroll = {
-                scope.launch {
-                    lazyListState.animateScrollToItem(index = 0)
+                if (lazyListState.firstVisibleItemScrollOffset > 0) {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
                 }
             },
             isTitleFocused = isTitleFocused,
@@ -452,7 +458,12 @@ fun DiscussionScreen(
             onClearAttachmentClicked = onClearAttachmentClicked,
             onClearReplyClicked = onClearReplyClicked,
             onChatBoxMediaPicked = onChatBoxMediaPicked,
-            onChatBoxFilePicked = onChatBoxFilePicked
+            onChatBoxFilePicked = onChatBoxFilePicked,
+            onExitEditMessageMode = {
+                onExitEditMessageMode().also {
+                    textState = TextFieldValue()
+                }
+            }
         )
     }
 }
@@ -522,6 +533,7 @@ private fun ChatBox(
     onClearReplyClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
+    onExitEditMessageMode: () -> Unit
 ) {
 
     val uploadMediaLauncher = rememberLauncherForActivityResult(
@@ -556,6 +568,11 @@ private fun ChatBox(
                 shape = RoundedCornerShape(16.dp)
             )
     ) {
+        if (mode is ChatBoxMode.EditMessage) {
+            EditMessageToolbar(
+                onExitClicked = onExitEditMessageMode
+            )
+        }
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -723,41 +740,6 @@ private fun ChatBox(
                     .clickable {
                         scope.launch {
                             focus.clearFocus(force = true)
-                            onBackButtonClicked()
-                        }
-                    }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_nav_panel_back),
-                    contentDescription = "Back button",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 4.dp, vertical = 4.dp)
-                )
-            }
-            ChatBoxUserInput(
-                textState = textState,
-                onMessageSent = {
-                    onMessageSent(it)
-                    clearText()
-                    resetScroll()
-                },
-                onTextChanged = { value ->
-                    updateValue(value)
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .align(Alignment.Bottom)
-                    .focusRequester(chatBoxFocusRequester)
-            )
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 4.dp, vertical = 8.dp)
-                    .clip(CircleShape)
-                    .align(Alignment.Bottom)
-                    .clickable {
-                        scope.launch {
-                            focus.clearFocus(force = true)
                             showDropdownMenu = true
                         }
                     }
@@ -844,6 +826,21 @@ private fun ChatBox(
                     }
                 }
             }
+            ChatBoxUserInput(
+                textState = textState,
+                onMessageSent = {
+                    onMessageSent(it)
+                    clearText()
+                    resetScroll()
+                },
+                onTextChanged = { value ->
+                    updateValue(value)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.Bottom)
+                    .focusRequester(chatBoxFocusRequester)
+            )
             AnimatedVisibility(
                 visible = attachments.isNotEmpty() || textState.text.isNotEmpty(),
                 exit = fadeOut() + scaleOut(),
@@ -882,7 +879,11 @@ fun EditMessageToolbar(
             .height(40.dp)
             .fillMaxWidth()
             .background(
-                color = colorResource(id = R.color.background_highlighted_light)
+                color = colorResource(id = R.color.background_highlighted_light),
+                shape = RoundedCornerShape(
+                    topStart = 16.dp,
+                    topEnd = 16.dp
+                )
             )
     ) {
         Text(
@@ -1303,7 +1304,8 @@ fun Bubble(
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = colorResource(id = R.color.text_primary)
+                    color = colorResource(id = R.color.text_primary),
+                    style = Caption1Medium
                 )
                 Text(
                     modifier = Modifier.padding(
@@ -1315,6 +1317,7 @@ fun Bubble(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     color = colorResource(id = R.color.text_primary),
+                    style = Caption1Regular
                 )
             }
         }
@@ -1436,7 +1439,8 @@ fun Bubble(
                     text = {
                         Text(
                             text = stringResource(R.string.chats_add_reaction),
-                            color = colorResource(id = R.color.text_primary)
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.padding(end = 64.dp)
                         )
                     },
                     onClick = {
@@ -1449,7 +1453,8 @@ fun Bubble(
                     text = {
                         Text(
                             text = stringResource(R.string.chats_reply),
-                            color = colorResource(id = R.color.text_primary)
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.padding(end = 64.dp)
                         )
                     },
                     onClick = {
@@ -1463,7 +1468,8 @@ fun Bubble(
                         text = {
                             Text(
                                 text = stringResource(R.string.copy),
-                                color = colorResource(id = R.color.text_primary)
+                                color = colorResource(id = R.color.text_primary),
+                                modifier = Modifier.padding(end = 64.dp)
                             )
                         },
                         onClick = {
@@ -1478,7 +1484,8 @@ fun Bubble(
                         text = {
                             Text(
                                 text = stringResource(R.string.edit),
-                                color = colorResource(id = R.color.text_primary)
+                                color = colorResource(id = R.color.text_primary),
+                                modifier = Modifier.padding(end = 64.dp)
                             )
                         },
                         onClick = {
@@ -1493,7 +1500,8 @@ fun Bubble(
                         text = {
                             Text(
                                 text = stringResource(id = R.string.delete),
-                                color = colorResource(id = R.color.palette_system_red)
+                                color = colorResource(id = R.color.palette_system_red),
+                                modifier = Modifier.padding(end = 64.dp)
                             )
                         },
                         onClick = {
@@ -1747,7 +1755,7 @@ fun ReactionList(
             Box(
                 modifier = Modifier
                     .height(28.dp)
-                    .width(52.dp)
+                    .width(46.dp)
                     .background(
                         color = if (reaction.isSelected)
                             colorResource(id = R.color.palette_very_light_orange)

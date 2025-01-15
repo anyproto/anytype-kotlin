@@ -160,7 +160,11 @@
     <fragment
         android:id="@+id/chatScreen"
         android:name="com.anytypeio.anytype.ui.chats.ChatFragment"
-        android:label="Chat" />
+        android:label="Chat" >
+        <action
+            android:id="@+id/actionOpenWidgetsFromChat"
+            app:destination="@id/homeScreen" />
+    </fragment>
 
     <dialog
         android:id="@+id/selectChatReactionScreen"

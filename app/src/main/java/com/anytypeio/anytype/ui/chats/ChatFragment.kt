@@ -44,9 +44,9 @@ import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -89,10 +89,22 @@ class ChatFragment : BaseComposeFragment() {
                             onBackButtonClicked = {
                                 runCatching {
                                     findNavController().popBackStack()
+                                }.onFailure {
+                                    Timber.e(it, "Error while exiting chat")
                                 }
                             },
                             onSpaceIconClicked = {
-                                // TODO
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.actionOpenWidgetsFromChat,
+                                        args = HomeScreenFragment.args(
+                                            space = space,
+                                            deeplink = null
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while opening widgets from chats")
+                                }
                             }
                         )
                         ChatScreenWrapper(
@@ -124,7 +136,7 @@ class ChatFragment : BaseComposeFragment() {
                                         R.id.selectChatReactionScreen,
                                         SelectChatReactionFragment.args(
                                             space = Space(space),
-                                            chat = vm.chat,
+                                            chat = ctx,
                                             msg = it
                                         )
                                     )
@@ -138,7 +150,7 @@ class ChatFragment : BaseComposeFragment() {
                                         R.id.chatReactionScreen,
                                         ChatReactionFragment.args(
                                             space = Space(space),
-                                            chat = vm.chat,
+                                            chat = ctx,
                                             msg = msg,
                                             emoji = emoji
                                         )

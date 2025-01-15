@@ -48,9 +48,9 @@ import com.anytypeio.anytype.di.feature.TextBlockIconPickerModule
 import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
+import com.anytypeio.anytype.di.feature.chats.DaggerChatComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.chats.DaggerChatReactionComponent
-import com.anytypeio.anytype.di.feature.chats.DaggerDiscussionComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatReactionComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerSpaceLevelChatComponent
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
@@ -1068,7 +1068,7 @@ class ComponentManager(
         }
 
     val chatComponent = ComponentMapWithParam { params: ChatViewModel.Params ->
-        DaggerDiscussionComponent
+        DaggerChatComponent
             .builder()
             .withDependencies(findComponentDependencies())
             .withParams(params)

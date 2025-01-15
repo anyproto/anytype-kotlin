@@ -75,7 +75,6 @@ fun ChatPreview() {
 @Composable
 fun ChatScreenPreview() {
     ChatScreen(
-        title = "Conversations with friends",
         messages = buildList {
             repeat(30) { idx ->
                 add(
@@ -99,7 +98,6 @@ fun ChatScreenPreview() {
             }
         }.reversed(),
         onMessageSent = {},
-        onTitleChanged = {},
         onAttachClicked = {},
         attachments = emptyList(),
         onClearAttachmentClicked = {},

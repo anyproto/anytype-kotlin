@@ -34,6 +34,9 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -42,6 +45,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -65,7 +69,7 @@ class ChatViewModel @Inject constructor(
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory
 ) : BaseViewModel() {
 
-    val name = MutableStateFlow<String?>(null)
+    val header = MutableStateFlow<HeaderView>(HeaderView.Init)
     val messages = MutableStateFlow<List<ChatView>>(emptyList())
     val chatBoxAttachments = MutableStateFlow<List<ChatView.Message.ChatBoxAttachment>>(emptyList())
     val commands = MutableSharedFlow<UXCommand>()
@@ -75,32 +79,34 @@ class ChatViewModel @Inject constructor(
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
 
+    @Deprecated("to be replaced by vm params")
     var chat: Id = ""
 
     init {
+        viewModelScope.launch {
+            spaceViews
+                .observe(
+                    vmParams.space
+                ).map { view ->
+                    HeaderView.Default(
+                        title = view.name.orEmpty(),
+                        icon = view.spaceIcon(
+                            builder = urlBuilder,
+                            spaceGradientProvider = SpaceGradientProvider.Default
+                        )
+                    )
+                }.collect {
+                    header.value = it
+                }
+        }
         viewModelScope.launch {
             val account = requireNotNull(getAccount.async(Unit).getOrNull())
             when (vmParams) {
                 is Params.Default -> {
                     chat = vmParams.ctx
-                    openObject.async(
-                        OpenObject.Params(
-                            spaceId = vmParams.space,
-                            obj = vmParams.ctx,
-                            saveAsLastOpened = false
-                        )
-                    ).fold(
-                        onSuccess = { obj ->
-                            val root = ObjectWrapper.Basic(obj.details[vmParams.ctx].orEmpty())
-                            name.value = root.name
-                            proceedWithObservingChatMessages(
-                                account = account.id,
-                                chat = vmParams.ctx
-                            )
-                        },
-                        onFailure = {
-                            Timber.e(it, "Error while opening chat object")
-                        }
+                    proceedWithObservingChatMessages(
+                        account = account.id,
+                        chat = vmParams.ctx
                     )
                 }
                 is Params.SpaceLevelChat -> {
@@ -398,25 +404,6 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onTitleChanged(input: String) {
-        Timber.d("DROID-2635 OnTitleChanged: $input")
-        viewModelScope.launch {
-            name.value = input
-            setObjectDetails.async(
-                params = SetObjectDetails.Params(
-                    ctx = chat,
-                    details = mapOf(
-                        Relations.NAME to input
-                    )
-                )
-            ).onSuccess {
-                Timber.d("Updated chat title successfully")
-            }.onFailure {
-                Timber.e(it, "Error while updating chat title")
-            }
-        }
-    }
-
     fun onAttachObject(obj: GlobalSearchItemView) {
         chatBoxAttachments.value = chatBoxAttachments.value + listOf(
             ChatView.Message.ChatBoxAttachment.Link(
@@ -564,6 +551,14 @@ class ChatViewModel @Inject constructor(
             val text: String,
             val author: String
         ): ChatBoxMode()
+    }
+
+    sealed class HeaderView {
+        data object Init : HeaderView()
+        data class Default(
+            val icon: SpaceIconView,
+            val title: String
+        ) : HeaderView()
     }
 
     sealed class Params {

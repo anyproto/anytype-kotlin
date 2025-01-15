@@ -32,12 +32,12 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.feature_chats.R
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
 fun ChatTopToolbar(
-    icon: SpaceIconView,
-    title: String,
+    header: ChatViewModel.HeaderView,
     onSpaceIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit
 ) {
@@ -62,7 +62,10 @@ fun ChatTopToolbar(
             )
         }
         Text(
-            text = title,
+            text = when(header) {
+                is ChatViewModel.HeaderView.Default -> header.title
+                is ChatViewModel.HeaderView.Init -> ""
+            },
             color = colorResource(R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -80,7 +83,10 @@ fun ChatTopToolbar(
             com.anytypeio.anytype.core_ui.features.SpaceIconView(
                 modifier = Modifier.align(Alignment.Center),
                 mainSize = 28.dp,
-                icon = icon,
+                icon = when(header) {
+                    is ChatViewModel.HeaderView.Default -> header.icon
+                    is ChatViewModel.HeaderView.Init -> SpaceIconView.Loading
+                },
                 onSpaceIconClick = {
                     // Do nothing.
                 }
@@ -93,8 +99,10 @@ fun ChatTopToolbar(
 @Composable
 fun ChatTopToolbarPreview() {
     ChatTopToolbar(
-        title = LoremIpsum(words = 10).values.joinToString(),
-        icon = SpaceIconView.Placeholder(name = "Us"),
+        header = ChatViewModel.HeaderView.Default(
+            title = LoremIpsum(words = 10).values.joinToString(),
+            icon = SpaceIconView.Placeholder(name = "Us")
+        ),
         onSpaceIconClicked = {},
         onBackButtonClicked = {}
     )

@@ -109,11 +109,9 @@ fun ChatScreenWrapper(
 
                 ChatScreen(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
-                    title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
                     attachments = vm.chatBoxAttachments.collectAsState().value,
                     onMessageSent = vm::onMessageSent,
-                    onTitleChanged = vm::onTitleChanged,
                     onAttachClicked = onAttachObjectClicked,
                     onClearAttachmentClicked = vm::onClearAttachmentClicked,
                     lazyListState = lazyListState,
@@ -124,7 +122,6 @@ fun ChatScreenWrapper(
                     onDeleteMessage = vm::onDeleteMessage,
                     onEditMessage = vm::onRequestEditMessageClicked,
                     onAttachmentClicked = vm::onAttachmentClicked,
-                    isInEditMessageMode = vm.chatBoxMode.collectAsState().value is ChatBoxMode.EditMessage,
                     onExitEditMessageMode = vm::onExitEditMessageMode,
                     onBackButtonClicked = onBackButtonClicked,
                     onMarkupLinkClicked = onMarkupLinkClicked,
@@ -211,13 +208,10 @@ fun ChatScreenWrapper(
 @Composable
 fun ChatScreen(
     chatBoxMode: ChatBoxMode,
-    isInEditMessageMode: Boolean = false,
     lazyListState: LazyListState,
-    title: String?,
     messages: List<ChatView>,
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     onMessageSent: (String) -> Unit,
-    onTitleChanged: (String) -> Unit,
     onAttachClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,

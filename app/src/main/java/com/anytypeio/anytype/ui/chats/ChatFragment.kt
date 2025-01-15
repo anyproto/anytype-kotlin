@@ -85,14 +85,15 @@ class ChatFragment : BaseComposeFragment() {
                             .systemBarsPadding()
                     ) {
                         ChatTopToolbar(
+                            header = vm.header.collectAsStateWithLifecycle().value,
                             onBackButtonClicked = {
                                 runCatching {
                                     findNavController().popBackStack()
                                 }
                             },
-                            onSpaceIconClicked = {},
-                            title = "Test",
-                            icon = SpaceIconView.Loading
+                            onSpaceIconClicked = {
+                                // TODO
+                            }
                         )
                         ChatScreenWrapper(
                             modifier = Modifier.weight(1f),

@@ -126,7 +126,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
-                if (featureToggles.isNewSpaceHomeEnabled || spacesWithSpaceLevelChat.contains(space)) {
+                if (false) {
                     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
 
@@ -301,7 +301,33 @@ class HomeScreenFragment : BaseComposeFragment(),
                         }
                     }
                 } else {
-                    PageWithWidgets()
+                    val view = (vm.views.collectAsStateWithLifecycle().value.find {
+                        it is WidgetView.SpaceWidget.View
+                    } as? WidgetView.SpaceWidget.View)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .systemBarsPadding()
+                    ) {
+                        HomeScreenToolbar(
+                            spaceIconView = view?.icon ?: SpaceIconView.Loading,
+                            isChatActive = false,
+                            onWidgetTabClicked = {
+                                //
+                            },
+                            onChatTabClicked = {
+                                //
+                            },
+                            onSpaceIconClicked = vm::onSpaceSettingsClicked,
+                            membersCount = view?.membersCount ?: 0,
+                            name = view?.space?.name.orEmpty(),
+                            onBackButtonClicked = vm::onBackClicked
+                        )
+                        PageWithWidgets(
+                            modifier = Modifier.padding(top = 52.dp),
+                            showSpaceWidget = false
+                        )
+                    }
                 }
             }
 
@@ -313,10 +339,11 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     @Composable
     fun PageWithWidgets(
+        modifier: Modifier = Modifier,
         showSpaceWidget: Boolean = true
     ) {
         HomeScreen(
-            modifier = Modifier,
+            modifier = modifier,
             widgets = if (showSpaceWidget) vm.views.collectAsState().value else vm.views.collectAsState().value.filter { it !is WidgetView.SpaceWidget },
             mode = vm.mode.collectAsState().value,
             onExpand = { path -> vm.onExpand(path) },
@@ -547,6 +574,13 @@ class HomeScreenFragment : BaseComposeFragment(),
                     findNavController().navigate(R.id.action_open_vault)
                 }.onFailure {
                     Timber.e(it, "Error while opening vault from home screen")
+                }
+            }
+            is Command.Exit -> {
+                runCatching {
+                    findNavController().popBackStack()
+                }.onFailure {
+                    Timber.e(it, "Error exiting home screen")
                 }
             }
         }

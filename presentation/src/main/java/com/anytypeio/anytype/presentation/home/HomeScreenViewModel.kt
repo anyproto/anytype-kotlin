@@ -1797,7 +1797,7 @@ class HomeScreenViewModel(
                     }
                 )
             }
-            commands.emit(Command.OpenVault)
+            commands.emit(Command.Exit)
         }
     }
 
@@ -2331,6 +2331,7 @@ sealed class Command {
     data class OpenGlobalSearchScreen(val space: Id) : Command()
 
     data object OpenVault: Command()
+    data object Exit: Command()
 
     data class SelectWidgetType(
         val ctx: Id,

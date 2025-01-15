@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.Event.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ext.amend
-import com.anytypeio.anytype.core_models.ext.remove
 import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.presentation.sets.updateFields
@@ -61,12 +60,6 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             is Command.ShowObject -> {
                 handleShowObject(event)
             }
-//            is Command.ObjectRelationLinks.Amend -> {
-//               amendObjectRelationLinks(state, event)
-//            }
-//            is Command.ObjectRelationLinks.Remove -> {
-//                removeObjectRelationLinks(state, event)
-//            }
             is Command.DataView.SetView -> {
                 handleSetView(state, event)
             }
@@ -117,49 +110,6 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             effects = effects
         )
     }
-
-//    private fun removeObjectRelationLinks(
-//        state: ObjectState,
-//        event: Command.ObjectRelationLinks.Remove
-//    ) = when (state) {
-//        is ObjectState.DataView.Collection -> {
-//            state.copy(
-//                objectRelationLinks = state.objectRelationLinks.remove(
-//                    event.keys
-//                )
-//            )
-//        }
-//        is ObjectState.DataView.Set -> {
-//            state.copy(
-//                objectRelationLinks = state.objectRelationLinks.remove(
-//                    event.keys
-//                )
-//            )
-//        }
-//        else -> state
-//    }
-
-//    private fun amendObjectRelationLinks(
-//        state: ObjectState,
-//        event: Command.ObjectRelationLinks.Amend
-//    ) = when (state) {
-//        is ObjectState.DataView.Collection -> {
-//            state.copy(
-//                objectRelationLinks = state.objectRelationLinks.amend(
-//                    event.relationLinks
-//                )
-//            )
-//        }
-//        is ObjectState.DataView.Set -> {
-//            state.copy(
-//                objectRelationLinks = state.objectRelationLinks.amend(
-//                    event.relationLinks
-//                )
-//            )
-//        }
-//        else -> state
-//    }
-
 
     //region EVENTS
     /**

@@ -121,7 +121,6 @@ class MentionUpdateTesting : EditorTestSetup() {
                                 context = root,
                                 root = root,
                                 details = customDetails,
-                                relations = emptyList(),
                                 blocks = document,
                                 objectRestrictions = emptyList()
                             ),

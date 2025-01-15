@@ -845,7 +845,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                 context = root,
                                 root = root,
                                 details = Block.Details(),
-                                relations = emptyList(),
                                 blocks = document,
                                 objectRestrictions = emptyList()
                             ),
@@ -1004,7 +1003,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                 context = root,
                                 root = root,
                                 details = Block.Details(detailsAmend),
-                                relations = emptyList(),
                                 blocks = document,
                                 objectRestrictions = emptyList()
                             ),
@@ -1291,7 +1289,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                 context = root,
                                 root = root,
                                 details = Block.Details(detailsAmend),
-                                relations = emptyList(),
                                 blocks = document,
                                 objectRestrictions = emptyList()
                             ),
@@ -1450,7 +1447,6 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                 context = root,
                                 root = root,
                                 details = Block.Details(detailsAmend),
-                                relations = emptyList(),
                                 blocks = document,
                                 objectRestrictions = emptyList()
                             ),

@@ -547,7 +547,6 @@ open class EditorTestSetup {
                                 root = root,
                                 details = details,
                                 blocks = document,
-                                relations = relations
                             )
                         )
                     )

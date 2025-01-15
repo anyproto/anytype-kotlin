@@ -3605,7 +3605,6 @@ open class EditorViewModelTest {
                                 context = root,
                                 root = root,
                                 details = details,
-                                relations = relations,
                                 blocks = document,
                                 objectRestrictions = objectRestrictions
                             )

@@ -24,7 +24,6 @@ sealed class Event {
             val root: Id,
             val details: Block.Details = Block.Details(emptyMap()),
             val blocks: List<Block>,
-            val relations: List<Relation> = emptyList(),
             val objectRestrictions: List<ObjectRestriction> = emptyList(),
             val dataViewRestrictions: List<DataViewRestrictions> = emptyList()
         ) : Command()

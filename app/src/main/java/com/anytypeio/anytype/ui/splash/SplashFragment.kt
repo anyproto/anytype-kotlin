@@ -24,6 +24,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
@@ -117,6 +118,23 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     )
                 }.onFailure {
                     Timber.e(it, "Error while navigating to widgets from splash")
+                }
+            }
+            is SplashViewModel.Command.NavigateToSpaceLevelChat -> {
+                runCatching {
+                    findNavController().navigate(
+                        resId = R.id.actionOpenVaultFromSplash,
+                        args = VaultFragment.args(deeplink = null)
+                    )
+                    findNavController().navigate(
+                        R.id.actionOpenChatFromVault,
+                        args = ChatFragment.args(
+                            space = command.space,
+                            ctx = command.chat
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigating to space-level chat from splash")
                 }
             }
             is SplashViewModel.Command.NavigateToVault -> {

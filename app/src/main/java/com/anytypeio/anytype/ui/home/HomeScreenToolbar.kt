@@ -69,11 +69,17 @@ fun HomeScreenToolbar(
             text = name.ifEmpty { stringResource(R.string.untitled) },
             style = PreviewTitle2Medium,
             color = colorResource(R.color.text_primary),
-            modifier = Modifier.padding(
-                start = 104.dp,
-                top = 8.dp,
-                end = 56.dp
-            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 104.dp,
+                    top = 8.dp,
+                    end = 56.dp
+                )
+                .noRippleClickable {
+                    onSettingsClicked()
+                }
+            ,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -96,6 +102,9 @@ fun HomeScreenToolbar(
                     start = 104.dp,
                     bottom = 8.dp
                 )
+                .noRippleClickable {
+                    onSettingsClicked()
+                }
         )
 
         Image(

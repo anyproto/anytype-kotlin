@@ -168,7 +168,6 @@ dependencies {
     implementation project(':core-ui')
     implementation project(':library-page-icon-picker-widget')
     implementation project(':library-emojifier')
-    implementation project(':library-syntax-highlighter')
     implementation project(':analytics')
     implementation project(':ui-settings')
     implementation project(':crash-reporting')

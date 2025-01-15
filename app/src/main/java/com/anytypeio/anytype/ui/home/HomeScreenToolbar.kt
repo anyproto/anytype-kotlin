@@ -17,6 +17,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
@@ -29,11 +30,9 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 @Composable
 fun HomeScreenToolbar(
     spaceIconView: SpaceIconView,
-    isChatActive: Boolean,
-    onWidgetTabClicked: () -> Unit,
-    onChatTabClicked: () -> Unit,
     onSpaceIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
+    onSettingsClicked: () -> Unit,
     name: String,
     membersCount: Int
 ) {
@@ -72,8 +71,11 @@ fun HomeScreenToolbar(
             color = colorResource(R.color.text_primary),
             modifier = Modifier.padding(
                 start = 104.dp,
-                top = 8.dp
-            )
+                top = 8.dp,
+                end = 56.dp
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
 
         Text(
@@ -97,33 +99,14 @@ fun HomeScreenToolbar(
         )
 
         Image(
-            painter = painterResource(id = R.drawable.ic_home_toolbar_chat),
+            painter = painterResource(id = com.anytypeio.anytype.R.drawable.ic_vault_settings),
+            contentDescription = "Settings icon",
             modifier = Modifier
-                .padding(end = 64.dp)
-                .size(32.dp)
                 .align(Alignment.CenterEnd)
-                .alpha(
-                    if (isChatActive) 1f else 0.5f
-                )
-                .noRippleClickable {
-                    onChatTabClicked()
-                },
-            contentDescription = "Chats button"
-        )
-
-        Image(
-            painter = painterResource(id = R.drawable.ic_home_toolbar_widgets),
-            modifier = Modifier
                 .padding(end = 16.dp)
-                .size(32.dp)
-                .align(Alignment.CenterEnd)
-                .alpha(
-                    if (isChatActive) 0.5f else 1f
-                )
                 .noRippleClickable {
-                    onWidgetTabClicked()
-                },
-            contentDescription = "Widgets button"
+                    onSettingsClicked()
+                }
         )
     }
 }
@@ -132,13 +115,11 @@ fun HomeScreenToolbar(
 @Composable
 fun HomeScreenToolbarPreview() {
     HomeScreenToolbar(
-        onWidgetTabClicked = {},
-        onChatTabClicked = {},
-        isChatActive = false,
         spaceIconView = SpaceIconView.Placeholder(name = "A"),
         onSpaceIconClicked = {},
         membersCount = 74,
         name = "Test space",
-        onBackButtonClicked = {}
+        onBackButtonClicked = {},
+        onSettingsClicked = {}
     )
 }

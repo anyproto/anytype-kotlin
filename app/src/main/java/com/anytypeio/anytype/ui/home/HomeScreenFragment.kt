@@ -153,21 +153,13 @@ class HomeScreenFragment : BaseComposeFragment(),
                     ) {
                         HomeScreenToolbar(
                             spaceIconView = view?.icon ?: SpaceIconView.Loading,
-                            isChatActive = pagerState.targetPage == 0,
-                            onWidgetTabClicked = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(1)
-                                }
-                            },
-                            onChatTabClicked = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(0)
-                                }
-                            },
                             onSpaceIconClicked = vm::onSpaceSettingsClicked,
                             membersCount = view?.membersCount ?: 0,
                             name = view?.space?.name.orEmpty(),
-                            onBackButtonClicked = vm::onBackClicked
+                            onBackButtonClicked = vm::onBackClicked,
+                            onSettingsClicked = {
+                                // Do nothing.
+                            }
                         )
                         HorizontalPager(
                             modifier = Modifier
@@ -311,17 +303,23 @@ class HomeScreenFragment : BaseComposeFragment(),
                     ) {
                         HomeScreenToolbar(
                             spaceIconView = view?.icon ?: SpaceIconView.Loading,
-                            isChatActive = false,
-                            onWidgetTabClicked = {
-                                //
-                            },
-                            onChatTabClicked = {
-                                //
-                            },
                             onSpaceIconClicked = vm::onSpaceSettingsClicked,
                             membersCount = view?.membersCount ?: 0,
                             name = view?.space?.name.orEmpty(),
-                            onBackButtonClicked = vm::onBackClicked
+                            onBackButtonClicked = vm::onBackClicked,
+                            onSettingsClicked = {
+                                runCatching {
+                                    findNavController()
+                                        .navigate(
+                                            R.id.spaceSettingsScreen,
+                                            SpaceSettingsFragment.args(
+                                                space = SpaceId(space)
+                                            )
+                                        )
+                                }.onFailure {
+                                    Timber.e(it, "Error while opening space settings")
+                                }
+                            }
                         )
                         PageWithWidgets(
                             modifier = Modifier.padding(top = 52.dp),

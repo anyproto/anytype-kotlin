@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.di.feature.discussions
+package com.anytypeio.anytype.di.feature.chats
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
-import com.anytypeio.anytype.feature_discussions.presentation.SelectChatReactionViewModel
+import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel
 import com.anytypeio.anytype.ui.chats.SelectChatReactionFragment
 import dagger.Binds
 import dagger.BindsInstance

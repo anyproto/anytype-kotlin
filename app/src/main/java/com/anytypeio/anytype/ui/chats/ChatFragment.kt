@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.di.feature.discussions
+package com.anytypeio.anytype.ui.chats
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -32,9 +32,9 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
-import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
+import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -43,12 +43,12 @@ import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import timber.log.Timber
 
-class DiscussionFragment : BaseComposeFragment() {
+class ChatFragment : BaseComposeFragment() {
 
     @Inject
-    lateinit var factory: DiscussionViewModelFactory
+    lateinit var factory: ChatViewModelFactory
 
-    private val vm by viewModels<DiscussionViewModel> { factory }
+    private val vm by viewModels<ChatViewModel> { factory }
 
     private val ctx get() = arg<Id>(CTX_KEY)
     private val space get() = arg<Id>(SPACE_KEY)
@@ -70,7 +70,7 @@ class DiscussionFragment : BaseComposeFragment() {
 
                     var showBottomSheet by remember { mutableStateOf(false) }
 
-                    DiscussionScreenWrapper(
+                    ChatScreenWrapper(
                         vm = vm,
                         onAttachObjectClicked = {
                             showBottomSheet = true
@@ -160,10 +160,10 @@ class DiscussionFragment : BaseComposeFragment() {
 
     override fun injectDependencies() {
         componentManager()
-            .discussionComponent
+            .chatComponent
             .get(
                 key = ctx,
-                param = DiscussionViewModel.Params.Default(
+                param = ChatViewModel.Params.Default(
                     ctx = ctx,
                     space = SpaceId(space)
                 )
@@ -172,7 +172,7 @@ class DiscussionFragment : BaseComposeFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().discussionComponent.release(ctx)
+        componentManager().chatComponent.release(ctx)
     }
 
     override fun onApplyWindowRootInsets(view: View) {

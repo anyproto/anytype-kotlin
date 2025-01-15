@@ -48,11 +48,11 @@ import com.anytypeio.anytype.di.feature.TextBlockIconPickerModule
 import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
+import com.anytypeio.anytype.di.feature.chats.DaggerChatComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
-import com.anytypeio.anytype.di.feature.discussions.DaggerChatReactionComponent
-import com.anytypeio.anytype.di.feature.discussions.DaggerDiscussionComponent
-import com.anytypeio.anytype.di.feature.discussions.DaggerSelectChatReactionComponent
-import com.anytypeio.anytype.di.feature.discussions.DaggerSpaceLevelChatComponent
+import com.anytypeio.anytype.di.feature.chats.DaggerChatReactionComponent
+import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatReactionComponent
+import com.anytypeio.anytype.di.feature.chats.DaggerSpaceLevelChatComponent
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
@@ -104,9 +104,9 @@ import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetTypeComponent
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
-import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.SelectChatReactionViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
+import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
@@ -1096,15 +1096,15 @@ class ComponentManager(
                 .build()
         }
 
-    val discussionComponent = ComponentMapWithParam { params: DiscussionViewModel.Params ->
-        DaggerDiscussionComponent
+    val chatComponent = ComponentMapWithParam { params: ChatViewModel.Params ->
+        DaggerChatComponent
             .builder()
             .withDependencies(findComponentDependencies())
             .withParams(params)
             .build()
     }
 
-    val spaceLevelChatComponent = ComponentMapWithParam { params: DiscussionViewModel.Params ->
+    val spaceLevelChatComponent = ComponentMapWithParam { params: ChatViewModel.Params ->
         DaggerSpaceLevelChatComponent
             .builder()
             .withDependencies(findComponentDependencies())

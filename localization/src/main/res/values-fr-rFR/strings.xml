@@ -1552,7 +1552,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="all_content_unlinked_description">Objets non liés qui n\'ont pas de lien direct ou de lien en retour avec d\'autres objets dans le graphique.</string>
     <string name="all_content_snackbar_title">déplacé vers la corbeille</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
-    <string name="main_navigation_content_desc_members_button">Share and members button</string>
+    <string name="main_navigation_content_desc_members_button">Bouton de partage et membres</string>
     <string name="main_navigation_content_desc_search_button">Bouton de recherche d\'objets</string>
     <string name="main_navigation_content_desc_create_button">Créer un bouton objet</string>
     <string name="chat">Messagerie</string>

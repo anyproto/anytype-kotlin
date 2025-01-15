@@ -1097,7 +1097,7 @@ class HomeScreenViewModel(
             val space = spaceView.space.targetSpaceId
             if (chat != null && space != null) {
                 navigation(
-                    Navigation.OpenDiscussion(
+                    Navigation.OpenChat(
                         space = space,
                         ctx = chat
                     )
@@ -1422,9 +1422,9 @@ class HomeScreenViewModel(
                     )
                 )
             }
-            is OpenObjectNavigation.OpenDiscussion -> {
+            is OpenObjectNavigation.OpenChat -> {
                 navigate(
-                    Navigation.OpenDiscussion(
+                    Navigation.OpenChat(
                         ctx = navigation.target,
                         space = navigation.space
                     )
@@ -2168,7 +2168,7 @@ class HomeScreenViewModel(
 
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
-        data class OpenDiscussion(val ctx: Id, val space: Id) : Navigation()
+        data class OpenChat(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data object OpenSpaceSwitcher: Navigation()
@@ -2403,7 +2403,7 @@ sealed class OpenObjectNavigation {
     data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
     data object NonValidObject: OpenObjectNavigation()
-    data class OpenDiscussion(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenChat(val target: Id, val space: Id): OpenObjectNavigation()
     data class OpenDataObject(val target: Id, val space: Id): OpenObjectNavigation()
 }
 
@@ -2448,7 +2448,7 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
             )
         }
         ObjectType.Layout.CHAT_DERIVED -> {
-            OpenObjectNavigation.OpenDiscussion(
+            OpenObjectNavigation.OpenChat(
                 target = id,
                 space = requireNotNull(spaceId)
             )
@@ -2500,7 +2500,7 @@ fun ObjectType.Layout.navigation(
             )
         }
         ObjectType.Layout.CHAT_DERIVED -> {
-            OpenObjectNavigation.OpenDiscussion(
+            OpenObjectNavigation.OpenChat(
                 target = target,
                 space = space
             )

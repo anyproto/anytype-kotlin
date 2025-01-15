@@ -53,8 +53,8 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
-import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
+import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
@@ -140,7 +140,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     val spaceLevelChatViewModel = daggerViewModel {
                         component.get(
                             key = space,
-                            param = DiscussionViewModel.Params.SpaceLevelChat(
+                            param = ChatViewModel.Params.SpaceLevelChat(
                                 space = Space(space)
                             )
                         ).getViewModel()
@@ -180,7 +180,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                                 focus.clearFocus(force = true)
                                 PageWithWidgets(showSpaceWidget = false)
                             } else if (page == 0) {
-                                DiscussionScreenWrapper(
+                                ChatScreenWrapper(
                                     isSpaceLevelChat = true,
                                     vm = spaceLevelChatViewModel,
                                     onAttachObjectClicked = {
@@ -569,7 +569,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     view = destination.view
                 )
             }
-            is Navigation.OpenDiscussion -> runCatching {
+            is Navigation.OpenChat -> runCatching {
                 navigation().openDiscussion(
                     target = destination.ctx,
                     space = destination.space
@@ -655,7 +655,10 @@ class HomeScreenFragment : BaseComposeFragment(),
         val spacesWithSpaceLevelChat = listOf(
             "bafyreiezhzb4ggnhjwejmh67pd5grilk6jn3jt7y2rnfpbkjwekilreola.1t123w9f2lgn5",
             "bafyreifikxj75r4duzhqxqelmi66rwlzqml5jnad35dnukxwlawtfrql5a.21584urzltddb",
-            "bafyreia4jsiobrq7ptpuxsv6nmpj4vis7o5p73yibjb5w4crhxl2oqocoq.9tkr2p3mb0pj"
+            "bafyreia4jsiobrq7ptpuxsv6nmpj4vis7o5p73yibjb5w4crhxl2oqocoq.9tkr2p3mb0pj",
+            "bafyreibj7du7epctmeiwix7ccjiyogfew36eztgfob4mgmi6ulcwzqatcy.2t4tpsucpkt93",
+            "bafyreihzeo4dd3zvw7pkoztwit6edjku6w3jfrfnserxm6slmc6qiu2sim.3rqqcnrgm797n",
+            "bafyreig67rszl52id767endswgzordgg4pj6hpx7dw3cjrvoimehqonb4q.2t4tpsucpkt93"
         )
 
         fun args(

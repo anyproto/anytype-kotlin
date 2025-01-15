@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class DiscussionViewModel @Inject constructor(
+class ChatViewModel @Inject constructor(
     private val vmParams: Params,
     private val setObjectDetails: SetObjectDetails,
     private val openObject: OpenObject,
@@ -66,8 +66,8 @@ class DiscussionViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
-    val messages = MutableStateFlow<List<DiscussionView>>(emptyList())
-    val chatBoxAttachments = MutableStateFlow<List<DiscussionView.Message.ChatBoxAttachment>>(emptyList())
+    val messages = MutableStateFlow<List<ChatView>>(emptyList())
+    val chatBoxAttachments = MutableStateFlow<List<ChatView.Message.ChatBoxAttachment>>(emptyList())
     val commands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
@@ -129,8 +129,8 @@ class DiscussionViewModel @Inject constructor(
             chatContainer.fetchReplies(chat = chat)
         ) { result, dependencies, replies ->
             data.value = result
-            var previousDate: DiscussionView.DateSection? = null
-            buildList<DiscussionView> {
+            var previousDate: ChatView.DateSection? = null
+            buildList<ChatView> {
                 result.forEach { msg ->
                     val allMembers = members.get()
                     val member = allMembers.let { type ->
@@ -152,7 +152,7 @@ class DiscussionViewModel @Inject constructor(
                     } else {
                         val msg = replies[replyToId]
                         if (msg != null) {
-                            DiscussionView.Message.Reply(
+                            ChatView.Message.Reply(
                                 msg = msg.id,
                                 text = msg.content?.text.orEmpty().ifEmpty {
                                     // Fallback to attachment name if empty
@@ -184,16 +184,16 @@ class DiscussionViewModel @Inject constructor(
                         }
                     }
 
-                    val view = DiscussionView.Message(
+                    val view = ChatView.Message(
                         id = msg.id,
                         timestamp = msg.createdAt * 1000,
-                        content = DiscussionView.Message.Content(
+                        content = ChatView.Message.Content(
                             msg = content?.text.orEmpty(),
                             parts = content?.text
                                 .orEmpty()
                                 .splitByMarks(marks = content?.marks.orEmpty())
                                 .map { (part, styles) ->
-                                    DiscussionView.Message.Content.Part(
+                                    ChatView.Message.Content.Part(
                                         part = part,
                                         styles = styles
                                     )
@@ -204,7 +204,7 @@ class DiscussionViewModel @Inject constructor(
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,
                         reactions = msg.reactions.map { (emoji, ids) ->
-                            DiscussionView.Message.Reaction(
+                            ChatView.Message.Reaction(
                                 emoji = emoji,
                                 count = ids.size,
                                 isSelected = ids.contains(account)
@@ -214,7 +214,7 @@ class DiscussionViewModel @Inject constructor(
                             when (attachment.type) {
                                 Chat.Message.Attachment.Type.Image -> {
                                     val wrapper = dependencies[attachment.target]
-                                    DiscussionView.Message.Attachment.Image(
+                                    ChatView.Message.Attachment.Image(
                                         target = attachment.target,
                                         url = urlBuilder.medium(path = attachment.target),
                                         name =  wrapper?.name.orEmpty(),
@@ -224,7 +224,7 @@ class DiscussionViewModel @Inject constructor(
                                 else -> {
                                     val wrapper = dependencies[attachment.target]
                                     if (wrapper?.layout == ObjectType.Layout.IMAGE) {
-                                        DiscussionView.Message.Attachment.Image(
+                                        ChatView.Message.Attachment.Image(
                                             target = attachment.target,
                                             url = urlBuilder.large(path = attachment.target),
                                             name = wrapper.name.orEmpty(),
@@ -232,7 +232,7 @@ class DiscussionViewModel @Inject constructor(
                                         )
                                     } else {
                                         val type = wrapper?.type?.firstOrNull()
-                                        DiscussionView.Message.Attachment.Link(
+                                        ChatView.Message.Attachment.Link(
                                             target = attachment.target,
                                             wrapper = wrapper,
                                             icon = wrapper?.objectIcon(urlBuilder) ?: ObjectIcon.None,
@@ -246,14 +246,14 @@ class DiscussionViewModel @Inject constructor(
                             }
                         },
                         avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
-                            DiscussionView.Message.Avatar.Image(
+                            ChatView.Message.Avatar.Image(
                                 urlBuilder.thumbnail(member.iconImage!!)
                             )
                         } else {
-                            DiscussionView.Message.Avatar.Initials(member?.name.orEmpty())
+                            ChatView.Message.Avatar.Initials(member?.name.orEmpty())
                         }
                     )
-                    val currDate = DiscussionView.DateSection(
+                    val currDate = ChatView.DateSection(
                         formattedDate = dateFormatter.format(msg.createdAt * 1000),
                         timeInMillis = msg.createdAt * 1000L
                     )
@@ -275,7 +275,7 @@ class DiscussionViewModel @Inject constructor(
             val attachments = buildList {
                 chatBoxAttachments.value.forEach { attachment ->
                     when(attachment) {
-                        is DiscussionView.Message.ChatBoxAttachment.Link -> {
+                        is ChatView.Message.ChatBoxAttachment.Link -> {
                             add(
                                 Chat.Message.Attachment(
                                     target = attachment.target,
@@ -283,7 +283,7 @@ class DiscussionViewModel @Inject constructor(
                                 )
                             )
                         }
-                        is DiscussionView.Message.ChatBoxAttachment.Media -> {
+                        is ChatView.Message.ChatBoxAttachment.Media -> {
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
@@ -298,7 +298,7 @@ class DiscussionViewModel @Inject constructor(
                                 )
                             }
                         }
-                        is DiscussionView.Message.ChatBoxAttachment.File -> {
+                        is ChatView.Message.ChatBoxAttachment.File -> {
                             val path = withContext(dispatchers.io) {
                                 copyFileToCacheDirectory.copy(attachment.uri)
                             }
@@ -391,7 +391,7 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    fun onRequestEditMessageClicked(msg: DiscussionView.Message) {
+    fun onRequestEditMessageClicked(msg: ChatView.Message) {
         Timber.d("onRequestEditMessageClicked")
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.EditMessage(msg.id)
@@ -419,14 +419,14 @@ class DiscussionViewModel @Inject constructor(
 
     fun onAttachObject(obj: GlobalSearchItemView) {
         chatBoxAttachments.value = chatBoxAttachments.value + listOf(
-            DiscussionView.Message.ChatBoxAttachment.Link(
+            ChatView.Message.ChatBoxAttachment.Link(
                 target = obj.id,
                 wrapper = obj
             )
         )
     }
 
-    fun onClearAttachmentClicked(attachment: DiscussionView.Message.ChatBoxAttachment) {
+    fun onClearAttachmentClicked(attachment: ChatView.Message.ChatBoxAttachment) {
         chatBoxAttachments.value = chatBoxAttachments.value.filter {
             it != attachment
         }
@@ -441,7 +441,7 @@ class DiscussionViewModel @Inject constructor(
     fun onReacted(msg: Id, reaction: String) {
         Timber.d("onReacted")
         viewModelScope.launch {
-            val message = messages.value.find { it is DiscussionView.Message && it.id == msg }
+            val message = messages.value.find { it is ChatView.Message && it.id == msg }
             if (message != null) {
                 toggleChatMessageReaction.async(
                     Command.ChatCommand.ToggleMessageReaction(
@@ -458,7 +458,7 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    fun onReplyMessage(msg: DiscussionView.Message) {
+    fun onReplyMessage(msg: ChatView.Message) {
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.Reply(
                 msg = msg.id,
@@ -467,14 +467,14 @@ class DiscussionViewModel @Inject constructor(
                     if (msg.attachments.isNotEmpty()) {
                         val attachment = msg.attachments.last()
                         when(attachment) {
-                            is DiscussionView.Message.Attachment.Image -> {
+                            is ChatView.Message.Attachment.Image -> {
                                 if (attachment.ext.isNotEmpty()) {
                                     "${attachment.name}.${attachment.ext}"
                                 } else {
                                     attachment.name
                                 }
                             }
-                            is DiscussionView.Message.Attachment.Link -> {
+                            is ChatView.Message.Attachment.Link -> {
                                 attachment.wrapper?.name.orEmpty()
                             }
                         }
@@ -487,7 +487,7 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    fun onDeleteMessage(msg: DiscussionView.Message) {
+    fun onDeleteMessage(msg: ChatView.Message) {
         Timber.d("onDeleteMessageClicked")
         viewModelScope.launch {
             deleteChatMessage.async(
@@ -501,18 +501,18 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    fun onAttachmentClicked(attachment: DiscussionView.Message.Attachment) {
+    fun onAttachmentClicked(attachment: ChatView.Message.Attachment) {
         Timber.d("onAttachmentClicked")
         viewModelScope.launch {
             when(attachment) {
-                is DiscussionView.Message.Attachment.Image -> {
+                is ChatView.Message.Attachment.Image -> {
                     commands.emit(
                         UXCommand.OpenFullScreenImage(
                             url = urlBuilder.original(attachment.target)
                         )
                     )
                 }
-                is DiscussionView.Message.Attachment.Link -> {
+                is ChatView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper
                     if (wrapper != null) {
                         navigation.emit(wrapper.navigation())
@@ -527,7 +527,7 @@ class DiscussionViewModel @Inject constructor(
     fun onChatBoxMediaPicked(uris: List<String>) {
         Timber.d("onChatBoxMediaPicked: $uris")
         chatBoxAttachments.value = chatBoxAttachments.value + uris.map {
-            DiscussionView.Message.ChatBoxAttachment.Media(
+            ChatView.Message.ChatBoxAttachment.Media(
                 uri = it
             )
         }
@@ -536,7 +536,7 @@ class DiscussionViewModel @Inject constructor(
     fun onChatBoxFilePicked(infos: List<DefaultFileInfo>) {
         Timber.d("onChatBoxFilePicked: $infos")
         chatBoxAttachments.value = chatBoxAttachments.value + infos.map { info ->
-            DiscussionView.Message.ChatBoxAttachment.File(
+            ChatView.Message.ChatBoxAttachment.File(
                 uri = info.uri,
                 name = info.name,
                 size = info.size

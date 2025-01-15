@@ -5,10 +5,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.feature_discussions.R
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.ChatView
+import com.anytypeio.anytype.feature_discussions.presentation.ChatViewModel
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -18,12 +17,12 @@ import kotlin.time.toDuration
 fun DiscussionPreview() {
     Messages(
         messages = listOf(
-            DiscussionView.Message(
+            ChatView.Message(
                 id = "1",
-                content = DiscussionView.Message.Content(
+                content = ChatView.Message.Content(
                     msg = stringResource(id = R.string.default_text_placeholder),
                     parts = listOf(
-                        DiscussionView.Message.Content.Part(
+                        ChatView.Message.Content.Part(
                             part = stringResource(id = R.string.default_text_placeholder)
                         )
                     )
@@ -31,12 +30,12 @@ fun DiscussionPreview() {
                 author = "Walter",
                 timestamp = System.currentTimeMillis()
             ),
-            DiscussionView.Message(
+            ChatView.Message(
                 id = "2",
-                content = DiscussionView.Message.Content(
+                content = ChatView.Message.Content(
                     msg = stringResource(id = R.string.default_text_placeholder),
                     parts = listOf(
-                        DiscussionView.Message.Content.Part(
+                        ChatView.Message.Content.Part(
                             part = stringResource(id = R.string.default_text_placeholder)
                         )
                     )
@@ -44,12 +43,12 @@ fun DiscussionPreview() {
                 author = "Leo",
                 timestamp = System.currentTimeMillis()
             ),
-            DiscussionView.Message(
+            ChatView.Message(
                 id = "3",
-                content = DiscussionView.Message.Content(
+                content = ChatView.Message.Content(
                     msg = stringResource(id = R.string.default_text_placeholder),
                     parts = listOf(
-                        DiscussionView.Message.Content.Part(
+                        ChatView.Message.Content.Part(
                             part = stringResource(id = R.string.default_text_placeholder)
                         )
                     )
@@ -78,17 +77,17 @@ fun DiscussionPreview() {
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
 fun DiscussionScreenPreview() {
-    DiscussionScreen(
+    ChatScreen(
         title = "Conversations with friends",
         messages = buildList {
             repeat(30) { idx ->
                 add(
-                    DiscussionView.Message(
+                    ChatView.Message(
                         id = idx.toString(),
-                        content = DiscussionView.Message.Content(
+                        content = ChatView.Message.Content(
                             msg = stringResource(id = R.string.default_text_placeholder),
                             parts = listOf(
-                                DiscussionView.Message.Content.Part(
+                                ChatView.Message.Content.Part(
                                     part = stringResource(id = R.string.default_text_placeholder)
                                 )
                             )
@@ -122,7 +121,7 @@ fun DiscussionScreenPreview() {
         onAttachMediaClicked = {},
         onAttachObjectClicked = {},
         onReplyMessage = {},
-        chatBoxMode = DiscussionViewModel.ChatBoxMode.Default,
+        chatBoxMode = ChatViewModel.ChatBoxMode.Default,
         onClearReplyClicked = {},
         onChatBoxMediaPicked = {},
         onChatBoxFilePicked = {},
@@ -137,10 +136,10 @@ fun DiscussionScreenPreview() {
 fun BubblePreview() {
     Bubble(
         name = "Leo Marx",
-        content = DiscussionView.Message.Content(
+        content = ChatView.Message.Content(
             msg = stringResource(id = R.string.default_text_placeholder),
             parts = listOf(
-                DiscussionView.Message.Content.Part(
+                ChatView.Message.Content.Part(
                     part = stringResource(id = R.string.default_text_placeholder)
                 )
             )
@@ -165,10 +164,10 @@ fun BubblePreview() {
 fun BubbleEditedPreview() {
     Bubble(
         name = "Leo Marx",
-        content = DiscussionView.Message.Content(
+        content = ChatView.Message.Content(
             msg = stringResource(id = R.string.default_text_placeholder),
             parts = listOf(
-                DiscussionView.Message.Content.Part(
+                ChatView.Message.Content.Part(
                     part = stringResource(id = R.string.default_text_placeholder)
                 )
             )
@@ -194,10 +193,10 @@ fun BubbleEditedPreview() {
 fun BubbleWithAttachmentPreview() {
     Bubble(
         name = "Leo Marx",
-        content = DiscussionView.Message.Content(
+        content = ChatView.Message.Content(
             msg = stringResource(id = R.string.default_text_placeholder),
             parts = listOf(
-                DiscussionView.Message.Content.Part(
+                ChatView.Message.Content.Part(
                     part = stringResource(id = R.string.default_text_placeholder)
                 )
             )
@@ -208,7 +207,7 @@ fun BubbleWithAttachmentPreview() {
         onCopyMessage = {},
         attachments = buildList {
             add(
-                DiscussionView.Message.Attachment.Link(
+                ChatView.Message.Attachment.Link(
                     target = "ID",
                     wrapper = null,
                     typeName = "Page"

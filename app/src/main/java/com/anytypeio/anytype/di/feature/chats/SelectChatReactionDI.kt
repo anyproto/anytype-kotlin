@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.di.feature.discussions
+package com.anytypeio.anytype.di.feature.chats
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen

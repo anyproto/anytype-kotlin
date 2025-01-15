@@ -1067,7 +1067,7 @@ class ComponentManager(
                 .build()
         }
 
-    val discussionComponent = ComponentMapWithParam { params: ChatViewModel.Params ->
+    val chatComponent = ComponentMapWithParam { params: ChatViewModel.Params ->
         DaggerDiscussionComponent
             .builder()
             .withDependencies(findComponentDependencies())

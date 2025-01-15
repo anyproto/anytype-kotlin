@@ -160,7 +160,7 @@ class ChatFragment : BaseComposeFragment() {
 
     override fun injectDependencies() {
         componentManager()
-            .discussionComponent
+            .chatComponent
             .get(
                 key = ctx,
                 param = ChatViewModel.Params.Default(
@@ -172,7 +172,7 @@ class ChatFragment : BaseComposeFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().discussionComponent.release(ctx)
+        componentManager().chatComponent.release(ctx)
     }
 
     override fun onApplyWindowRootInsets(view: View) {

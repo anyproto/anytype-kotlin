@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -79,10 +80,16 @@ class ChatFragment : BaseComposeFragment() {
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
 
                     Column(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .systemBarsPadding()
                     ) {
                         ChatTopToolbar(
-                            onBackButtonClicked = {},
+                            onBackButtonClicked = {
+                                runCatching {
+                                    findNavController().popBackStack()
+                                }
+                            },
                             onSpaceIconClicked = {},
                             title = "Test",
                             icon = SpaceIconView.Loading

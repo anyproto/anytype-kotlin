@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -239,10 +240,10 @@ class RelationListViewModel(
             ctx = ctx,
             relationKey = view.key
         )
-        addRelationToObject.run(params).process(
-            failure = { Timber.e(it, "Error while adding relation to object") },
-            success = {
-                dispatcher.send(it)
+        addRelationToObject.async(params).fold(
+            onFailure = { Timber.e(it, "Error while adding relation to object") },
+            onSuccess = { payload ->
+                if (payload != null) dispatcher.send(payload)
                 analytics.sendAnalyticsRelationEvent(
                     eventName = EventsDictionary.relationAdd,
                     storeOfRelations = storeOfRelations,

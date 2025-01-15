@@ -7409,10 +7409,10 @@ class EditorViewModel(
             ctx = ctx,
             relationKey = view.key
         )
-        addRelationToObject.run(params).process(
-            failure = { Timber.e(it, "Error while adding relation to object") },
-            success = {
-                dispatcher.send(it)
+        addRelationToObject.async(params).fold(
+            onFailure = { e -> Timber.e(e, "Error while adding relation to object") },
+            onSuccess = { payload ->
+                if (payload != null) dispatcher.send(payload)
                 analytics.sendAnalyticsRelationEvent(
                     eventName = EventsDictionary.relationAdd,
                     storeOfRelations = storeOfRelations,

@@ -1010,7 +1010,8 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideAddRelationToObject(repo: BlockRepository) = AddRelationToObject(repo)
+    fun provideAddRelationToObject(repo: BlockRepository, dispatchers: AppCoroutineDispatchers) =
+        AddRelationToObject(repo, dispatchers)
 
     @JvmStatic
     @Provides

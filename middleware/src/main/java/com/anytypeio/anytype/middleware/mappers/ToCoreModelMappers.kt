@@ -46,7 +46,6 @@ import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceUsage
-import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse

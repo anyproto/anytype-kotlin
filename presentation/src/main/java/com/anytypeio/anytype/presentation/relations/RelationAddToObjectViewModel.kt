@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.GetRelations
@@ -48,26 +49,24 @@ class RelationAddToObjectViewModel(
         screenType: String
     ) {
         viewModelScope.launch {
-            addRelationToObject(
-                AddRelationToObject.Params(
-                    ctx = ctx,
-                    relationKey = relation
-                )
-            ).process(
-                success = {
-                    dispatcher.send(it).also {
-                        commands.emit(Command.OnRelationAdd(relation = relation))
-                        analytics.sendAnalyticsRelationEvent(
-                            eventName = EventsDictionary.relationAdd,
-                            storeOfRelations = storeOfRelations,
-                            relationKey = relation,
-                            type = screenType,
-                            spaceParams = provideParams(vmParams.space.id)
-                        )
-                        isDismissed.value = true
-                    }
+            val params = AddRelationToObject.Params(
+                ctx = ctx,
+                relationKey = relation
+            )
+            addRelationToObject.async(params).fold(
+                onSuccess = { payload ->
+                    if (payload != null) dispatcher.send(payload)
+                    commands.emit(Command.OnRelationAdd(relation = relation))
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationAdd,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = relation,
+                        type = screenType,
+                        spaceParams = provideParams(vmParams.space.id)
+                    )
+                    isDismissed.value = true
                 },
-                failure = {
+                onFailure = {
                     Timber.e(it, ERROR_MESSAGE)
                     _toasts.emit("$ERROR_MESSAGE: ${it.localizedMessage}")
                 }

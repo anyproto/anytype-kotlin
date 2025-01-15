@@ -80,6 +80,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreenWrapper(
+    modifier: Modifier = Modifier,
     vm: ChatViewModel,
     // TODO move to view model
     onAttachObjectClicked: () -> Unit,
@@ -93,6 +94,7 @@ fun ChatScreenWrapper(
     var showReactionSheet by remember { mutableStateOf(false) }
     val context = LocalContext.current
     NavHost(
+        modifier = modifier,
         navController = rememberNavController(),
         startDestination = "discussions"
     ) {

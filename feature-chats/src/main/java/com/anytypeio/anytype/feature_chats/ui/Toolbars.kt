@@ -6,11 +6,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,10 +24,81 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.feature_chats.R
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+
+@Composable
+fun ChatTopToolbar(
+    icon: SpaceIconView,
+    title: String,
+    onSpaceIconClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .width(56.dp)
+                .fillMaxHeight()
+                .noRippleClickable {
+                    onBackButtonClicked()
+                }
+        ) {
+            Image(
+                modifier = Modifier.align(Alignment.Center),
+                painter = painterResource(R.drawable.ic_home_top_toolbar_back),
+                contentDescription = stringResource(R.string.content_desc_back_button)
+            )
+        }
+        Text(
+            text = title,
+            color = colorResource(R.color.text_primary),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+        Box(
+            modifier = Modifier
+                .width(60.dp)
+                .fillMaxHeight()
+                .noRippleClickable {
+                    onSpaceIconClicked()
+                }
+        ) {
+            com.anytypeio.anytype.core_ui.features.SpaceIconView(
+                modifier = Modifier.align(Alignment.Center),
+                mainSize = 28.dp,
+                icon = icon,
+                onSpaceIconClick = {
+                    // Do nothing.
+                }
+            )
+        }
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun ChatTopToolbarPreview() {
+    ChatTopToolbar(
+        title = LoremIpsum(words = 10).values.joinToString(),
+        icon = SpaceIconView.Placeholder(name = "Us"),
+        onSpaceIconClicked = {},
+        onBackButtonClicked = {}
+    )
+}
 
 @Composable
 fun EditMessageToolbar(

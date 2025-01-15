@@ -654,7 +654,7 @@ class HomeScreenFragment : BaseComposeFragment(),
         val spacesWithSpaceLevelChat = listOf(
             "bafyreiezhzb4ggnhjwejmh67pd5grilk6jn3jt7y2rnfpbkjwekilreola.1t123w9f2lgn5",
             "bafyreifikxj75r4duzhqxqelmi66rwlzqml5jnad35dnukxwlawtfrql5a.21584urzltddb",
-            "bafyreia4jsiobrq7ptpuxsv6nmpj4vis7o5p73yibjb5w4crhxl2oqocoq.9tkr2p3mb0pj"
+            "bafyreia4jsiobrq7ptpuxsv6nmpj4vis7o5p73yibjb5w4crhxl2oqocoq.9tkr2p3mb0pj",
         )
 
         fun args(

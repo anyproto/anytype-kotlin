@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -38,8 +40,10 @@ import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
+import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
@@ -74,58 +78,69 @@ class ChatFragment : BaseComposeFragment() {
                     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
 
-                    ChatScreenWrapper(
-                        vm = vm,
-                        onAttachObjectClicked = {
-                            showGlobalSearchBottomSheet = true
-                        },
-                        onBackButtonClicked = {
-                            findNavController().popBackStack()
-                        },
-                        onMarkupLinkClicked = {
-                            proceedWithAction(SystemAction.OpenUrl(it))
-                        },
-                        onRequestOpenFullScreenImage = { url ->
-                            runCatching {
-                                findNavController().navigate(
-                                    R.id.fullScreenImageFragment,
-                                    FullScreenPictureFragment.args(
-                                        url = url,
-                                        ignoreRootWindowInsets = true
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        ChatTopToolbar(
+                            onBackButtonClicked = {},
+                            onSpaceIconClicked = {},
+                            title = "Test",
+                            icon = SpaceIconView.Loading
+                        )
+                        ChatScreenWrapper(
+                            modifier = Modifier.weight(1f),
+                            vm = vm,
+                            onAttachObjectClicked = {
+                                showGlobalSearchBottomSheet = true
+                            },
+                            onBackButtonClicked = {
+                                findNavController().popBackStack()
+                            },
+                            onMarkupLinkClicked = {
+                                proceedWithAction(SystemAction.OpenUrl(it))
+                            },
+                            onRequestOpenFullScreenImage = { url ->
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.fullScreenImageFragment,
+                                        FullScreenPictureFragment.args(
+                                            url = url,
+                                            ignoreRootWindowInsets = true
+                                        )
                                     )
-                                )
-                            }
-                        },
-                        onSelectChatReaction = {
-                            runCatching {
-                                findNavController().navigate(
-                                    R.id.selectChatReactionScreen,
-                                    SelectChatReactionFragment.args(
-                                        space = Space(space),
-                                        chat = vm.chat,
-                                        msg = it
+                                }
+                            },
+                            onSelectChatReaction = {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.selectChatReactionScreen,
+                                        SelectChatReactionFragment.args(
+                                            space = Space(space),
+                                            chat = vm.chat,
+                                            msg = it
+                                        )
                                     )
-                                )
-                            }.onFailure {
-                                Timber.e(it, "Error while opening chat-reaction picker")
-                            }
-                        },
-                        onViewChatReaction = { msg, emoji ->
-                            runCatching {
-                                findNavController().navigate(
-                                    R.id.chatReactionScreen,
-                                    ChatReactionFragment.args(
-                                        space = Space(space),
-                                        chat = vm.chat,
-                                        msg = msg,
-                                        emoji = emoji
+                                }.onFailure {
+                                    Timber.e(it, "Error while opening chat-reaction picker")
+                                }
+                            },
+                            onViewChatReaction = { msg, emoji ->
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.chatReactionScreen,
+                                        ChatReactionFragment.args(
+                                            space = Space(space),
+                                            chat = vm.chat,
+                                            msg = msg,
+                                            emoji = emoji
+                                        )
                                     )
-                                )
-                            }.onFailure {
-                                Timber.e(it, "Error while opening a chat reaction")
+                                }.onFailure {
+                                    Timber.e(it, "Error while opening a chat reaction")
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
 
                     if (showGlobalSearchBottomSheet) {
                         ModalBottomSheet(

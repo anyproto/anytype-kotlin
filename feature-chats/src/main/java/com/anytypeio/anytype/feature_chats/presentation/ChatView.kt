@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_discussions.presentation
+package com.anytypeio.anytype.feature_chats.presentation
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash

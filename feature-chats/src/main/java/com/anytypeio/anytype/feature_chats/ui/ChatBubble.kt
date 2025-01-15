@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_discussions.ui
+package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -63,8 +63,8 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.fontIBM
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
-import com.anytypeio.anytype.feature_discussions.R
-import com.anytypeio.anytype.feature_discussions.presentation.ChatView
+import com.anytypeio.anytype.feature_chats.R
+import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)

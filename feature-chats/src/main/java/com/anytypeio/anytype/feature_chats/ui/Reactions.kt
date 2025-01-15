@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_discussions.ui
+package com.anytypeio.anytype.feature_chats.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -23,8 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.feature_discussions.R
-import com.anytypeio.anytype.feature_discussions.presentation.ChatView
+import com.anytypeio.anytype.feature_chats.R
+import com.anytypeio.anytype.feature_chats.presentation.ChatView
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable

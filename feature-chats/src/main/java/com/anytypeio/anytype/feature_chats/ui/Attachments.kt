@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_discussions.ui
+package com.anytypeio.anytype.feature_chats.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.feature_discussions.R
-import com.anytypeio.anytype.feature_discussions.presentation.ChatView
+import com.anytypeio.anytype.feature_chats.R
+import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage

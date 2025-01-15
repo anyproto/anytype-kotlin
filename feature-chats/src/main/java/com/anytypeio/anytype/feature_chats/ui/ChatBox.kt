@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_discussions.ui
+package com.anytypeio.anytype.feature_chats.ui
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -60,10 +60,10 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.feature_discussions.R
-import com.anytypeio.anytype.feature_discussions.presentation.ChatConfig
-import com.anytypeio.anytype.feature_discussions.presentation.ChatView
-import com.anytypeio.anytype.feature_discussions.presentation.ChatViewModel.ChatBoxMode
+import com.anytypeio.anytype.feature_chats.R
+import com.anytypeio.anytype.feature_chats.presentation.ChatConfig
+import com.anytypeio.anytype.feature_chats.presentation.ChatView
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlin.collections.forEach
 import kotlinx.coroutines.launch

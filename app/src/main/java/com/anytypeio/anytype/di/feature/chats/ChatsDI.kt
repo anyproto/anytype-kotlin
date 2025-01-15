@@ -17,8 +17,8 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.feature_discussions.presentation.ChatViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.ChatViewModelFactory
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory

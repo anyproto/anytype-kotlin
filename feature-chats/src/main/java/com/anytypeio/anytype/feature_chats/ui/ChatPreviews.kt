@@ -1,13 +1,13 @@
-package com.anytypeio.anytype.feature_discussions.ui
+package com.anytypeio.anytype.feature_chats.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.anytypeio.anytype.feature_discussions.R
-import com.anytypeio.anytype.feature_discussions.presentation.ChatView
-import com.anytypeio.anytype.feature_discussions.presentation.ChatViewModel
+import com.anytypeio.anytype.feature_chats.R
+import com.anytypeio.anytype.feature_chats.presentation.ChatView
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 

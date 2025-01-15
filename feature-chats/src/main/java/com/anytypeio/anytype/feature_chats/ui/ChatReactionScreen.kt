@@ -1,6 +1,6 @@
-package com.anytypeio.anytype.feature_discussions.ui
+package com.anytypeio.anytype.feature_chats.ui
 
-import com.anytypeio.anytype.feature_discussions.R
+import com.anytypeio.anytype.feature_chats.R
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +25,7 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Relations3
-import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel.ViewState
+import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel.ViewState
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @Composable

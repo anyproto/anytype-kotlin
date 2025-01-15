@@ -52,8 +52,8 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.ChatViewModel
-import com.anytypeio.anytype.feature_discussions.ui.ChatScreenWrapper
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
+import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel

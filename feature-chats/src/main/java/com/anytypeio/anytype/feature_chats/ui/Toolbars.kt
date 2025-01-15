@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_discussions.ui
+package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
-import com.anytypeio.anytype.feature_discussions.R
+import com.anytypeio.anytype.feature_chats.R
 
 @Composable
 fun EditMessageToolbar(

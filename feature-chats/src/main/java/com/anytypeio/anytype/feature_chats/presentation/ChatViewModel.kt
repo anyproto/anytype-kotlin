@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_discussions.presentation
+package com.anytypeio.anytype.feature_chats.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command

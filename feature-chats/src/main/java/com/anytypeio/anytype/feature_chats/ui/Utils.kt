@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_discussions.ui
+package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
-import com.anytypeio.anytype.feature_discussions.R
+import com.anytypeio.anytype.feature_chats.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

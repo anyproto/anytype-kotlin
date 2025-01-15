@@ -32,9 +32,9 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.ChatViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.ChatViewModelFactory
-import com.anytypeio.anytype.feature_discussions.ui.ChatScreenWrapper
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
+import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment

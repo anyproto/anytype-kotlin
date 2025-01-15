@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -39,7 +38,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -64,7 +62,6 @@ class RelationListViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    private val isInAddMode = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(replay = 0)
     val views = MutableStateFlow<List<Model>>(emptyList())
 
@@ -74,7 +71,6 @@ class RelationListViewModel(
 
     fun onStartListMode(ctx: Id) {
         Timber.d("onStartListMode, ctx: $ctx")
-        isInAddMode.value = false
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = relationsScreenShow
@@ -191,11 +187,6 @@ class RelationListViewModel(
         }
     }
 
-    fun onStartAddMode(ctx: Id) {
-        isInAddMode.value = true
-        getRelations(ctx)
-    }
-
     fun onStop() {
         jobs.apply {
             forEach { it.cancel() }
@@ -206,15 +197,11 @@ class RelationListViewModel(
     fun onRelationClicked(ctx: Id, target: Id?, view: ObjectRelationView) {
         Timber.d("onRelationClicked, ctx: $ctx, target: $target, view: $view")
         viewModelScope.launch {
-            if (isInAddMode.value) {
-                onRelationClickedAddMode(target = target, view = view)
+            if (checkRelationIsInObject(view)) {
+                onRelationClickedListMode(ctx, view)
             } else {
-                if (checkRelationIsInObject(view)) {
+                proceedWithAddingRelationToObject(ctx, view) {
                     onRelationClickedListMode(ctx, view)
-                } else {
-                    proceedWithAddingRelationToObject(ctx, view) {
-                        onRelationClickedListMode(ctx, view)
-                    }
                 }
             }
         }
@@ -238,9 +225,9 @@ class RelationListViewModel(
         }
     }
 
-    private suspend fun checkRelationIsInObject(view: ObjectRelationView): Boolean {
-        val relationLinks = relationListProvider.details.stateIn(viewModelScope).value
-        return relationLinks.any { it.key == view.key }
+    private fun checkRelationIsInObject(view: ObjectRelationView): Boolean {
+        val objectRelations = relationListProvider.getDetails().details[vmParams.objectId]?.map?.keys
+        return objectRelations?.any { it == view.key } == true
     }
 
     private suspend fun proceedWithAddingRelationToObject(
@@ -517,21 +504,6 @@ class RelationListViewModel(
         }
     }
 
-    private fun getRelations(ctx: Id) {
-        viewModelScope.launch {
-            val relations =
-                relationListProvider.getLinks().mapNotNull { storeOfRelations.getByKey(it.key) }
-            val details = relationListProvider.getDetails()
-            val values = details.details[ctx]?.map ?: emptyMap()
-            views.value = relations.views(
-                details = details,
-                values = values,
-                urlBuilder = urlBuilder,
-                fieldParser = fieldParser
-            ).map { Model.Item(it) }
-        }
-    }
-
     fun onRelationTextValueChanged(
         ctx: Id,
         value: Any?,
@@ -647,6 +619,7 @@ class RelationListViewModel(
     }
 
     data class VmParams(
+        val objectId: Id,
         val spaceId: SpaceId
     )
 

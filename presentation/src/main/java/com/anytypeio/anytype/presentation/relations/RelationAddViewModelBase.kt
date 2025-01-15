@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -56,12 +55,20 @@ abstract class RelationAddViewModelBase(
     val isDismissed = MutableStateFlow(false)
     val results = MutableStateFlow(emptyList<RelationItemView>())
 
-    private val objectRelationKeys = relationsProvider.observeAll().map { relations ->
-        relations.map { r -> r.key }
-    }
+    private val objectRelationKeys = MutableStateFlow<List<Key>>(emptyList())
 
     init {
         Timber.d("RelationAddViewModelBase init, objectId: ${vmParams.objectId}")
+        viewModelScope.launch {
+            relationsProvider.observeAll(id = vmParams.objectId)
+                .catch {
+                    Timber.e(it, "Error while observing relations")
+                }
+                .collect { relations ->
+                    Timber.d("Object all relations: ${relations.size}")
+                    objectRelationKeys.value = relations.map { it.key }
+                }
+        }
         viewModelScope.launch {
             combine(
                 searchQuery,

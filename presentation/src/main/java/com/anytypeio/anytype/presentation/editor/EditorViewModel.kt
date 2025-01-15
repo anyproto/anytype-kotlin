@@ -3989,12 +3989,9 @@ class EditorViewModel(
             }
             is ListenerType.Relation.Placeholder -> {
                 when (mode) {
-                    EditorMode.Edit -> dispatch(
-                        Command.OpenObjectRelationScreen.RelationAdd(
-                            ctx = context,
-                            target = clicked.target
-                        )
-                    )
+                    EditorMode.Edit -> {
+                        sendToast(NOT_ALLOWED_FOR_RELATION)
+                    }
                     else -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
@@ -7399,8 +7396,8 @@ class EditorViewModel(
     private fun checkRelationIsInObject(
         view: ObjectRelationView
     ): Boolean {
-        val relationLinks = orchestrator.stores.relationLinks.current()
-        return relationLinks.any { it.key == view.key }
+        val currentObjectDetails = orchestrator.stores.details.getAsObject(vmParams.ctx)
+        return currentObjectDetails?.map?.keys?.any { it == view.key } ?: false
     }
 
     private suspend fun proceedWithAddingRelationToObject(

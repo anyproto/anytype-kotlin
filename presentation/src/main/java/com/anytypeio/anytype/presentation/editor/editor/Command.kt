@@ -92,7 +92,6 @@ sealed class Command {
             val isLocked: Boolean
         ) : OpenObjectRelationScreen()
 
-        data class RelationAdd(val ctx: String, val target: String) : OpenObjectRelationScreen()
         sealed class Value : OpenObjectRelationScreen() {
             abstract val isReadOnlyValue: Boolean
             data class Text(

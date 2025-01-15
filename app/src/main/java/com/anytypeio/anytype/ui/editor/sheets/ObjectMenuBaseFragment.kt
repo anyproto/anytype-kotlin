@@ -229,7 +229,6 @@ abstract class ObjectMenuBaseFragment :
                 ObjectRelationListFragment.ARG_SPACE to space,
                 ObjectRelationListFragment.ARG_TARGET to null,
                 ObjectRelationListFragment.ARG_LOCKED to isLocked,
-                ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
                 ObjectRelationListFragment.ARG_SET_FLOW to false
             )
         )
@@ -243,7 +242,6 @@ abstract class ObjectMenuBaseFragment :
                 ObjectRelationListFragment.ARG_SPACE to space,
                 ObjectRelationListFragment.ARG_TARGET to null,
                 ObjectRelationListFragment.ARG_LOCKED to isLocked,
-                ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
                 ObjectRelationListFragment.ARG_SET_FLOW to true
             )
         )

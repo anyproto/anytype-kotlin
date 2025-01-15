@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -12,7 +11,6 @@ import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
@@ -72,7 +70,8 @@ class ChatViewModel @Inject constructor(
     val header = MutableStateFlow<HeaderView>(HeaderView.Init)
     val messages = MutableStateFlow<List<ChatView>>(emptyList())
     val chatBoxAttachments = MutableStateFlow<List<ChatView.Message.ChatBoxAttachment>>(emptyList())
-    val commands = MutableSharedFlow<UXCommand>()
+    val commands = MutableSharedFlow<ViewModelCommand>()
+    val uXCommands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
 
@@ -345,7 +344,7 @@ class ChatViewModel @Inject constructor(
                         chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
-                        commands.emit(UXCommand.JumpToBottom)
+                        uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
@@ -365,7 +364,7 @@ class ChatViewModel @Inject constructor(
                         )
                     ).onSuccess {
                         delay(JUMP_TO_BOTTOM_DELAY)
-                        commands.emit(UXCommand.JumpToBottom)
+                        uXCommands.emit(UXCommand.JumpToBottom)
                         chatBoxAttachments.value = emptyList()
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
@@ -387,7 +386,7 @@ class ChatViewModel @Inject constructor(
                         chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
-                        commands.emit(UXCommand.JumpToBottom)
+                        uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
@@ -493,7 +492,7 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             when(attachment) {
                 is ChatView.Message.Attachment.Image -> {
-                    commands.emit(
+                    uXCommands.emit(
                         UXCommand.OpenFullScreenImage(
                             url = urlBuilder.original(attachment.target)
                         )
@@ -535,6 +534,58 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.Default
         }
+    }
+
+    fun onBackButtonPressed() {
+        viewModelScope.launch {
+            commands.emit(ViewModelCommand.Exit)
+        }
+    }
+
+    fun onSpaceIconClicked() {
+        viewModelScope.launch {
+            commands.emit(ViewModelCommand.OpenWidgets)
+        }
+    }
+
+    fun onMediaPreview(url: String) {
+        viewModelScope.launch {
+            commands.emit(
+                ViewModelCommand.MediaPreview(url = url)
+            )
+        }
+    }
+
+    fun onSelectChatReaction(msg: Id) {
+        viewModelScope.launch {
+            commands.emit(
+                ViewModelCommand.SelectChatReaction(
+                    msg = msg
+                )
+            )
+        }
+    }
+
+    fun onViewChatReaction(
+        msg: Id,
+        emoji: String
+    ) {
+        viewModelScope.launch {
+            commands.emit(
+                ViewModelCommand.ViewChatReaction(
+                    msg = msg,
+                    emoji = emoji
+                )
+            )
+        }
+    }
+
+    sealed class ViewModelCommand {
+        data object Exit : ViewModelCommand()
+        data object OpenWidgets : ViewModelCommand()
+        data class MediaPreview(val url: String) : ViewModelCommand()
+        data class SelectChatReaction(val msg: Id) : ViewModelCommand()
+        data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
     }
 
     sealed class UXCommand {

@@ -66,7 +66,6 @@ import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
-import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.feature_chats.R
@@ -168,7 +167,7 @@ fun ChatScreenWrapper(
                     onViewChatReaction = onViewChatReaction
                 )
                 LaunchedEffect(Unit) {
-                    vm.commands.collect { command ->
+                    vm.uXCommands.collect { command ->
                         when(command) {
                             is UXCommand.JumpToBottom -> {
                                 lazyListState.animateScrollToItem(0)

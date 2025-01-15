@@ -26,9 +26,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.SystemAction
+import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
@@ -38,7 +41,9 @@ import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import timber.log.Timber
@@ -67,33 +72,65 @@ class ChatFragment : BaseComposeFragment() {
                 MaterialTheme(typography = typography) {
 
                     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-                    var showBottomSheet by remember { mutableStateOf(false) }
+                    var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
 
                     ChatScreenWrapper(
                         vm = vm,
                         onAttachObjectClicked = {
-                            showBottomSheet = true
+                            showGlobalSearchBottomSheet = true
                         },
                         onBackButtonClicked = {
-                            // TODO
+                            findNavController().popBackStack()
                         },
                         onMarkupLinkClicked = {
-
+                            proceedWithAction(SystemAction.OpenUrl(it))
                         },
-                        onRequestOpenFullScreenImage = {
-                            // TODO
+                        onRequestOpenFullScreenImage = { url ->
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.fullScreenImageFragment,
+                                    FullScreenPictureFragment.args(
+                                        url = url,
+                                        ignoreRootWindowInsets = true
+                                    )
+                                )
+                            }
                         },
                         onSelectChatReaction = {
-                            // TODO
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.selectChatReactionScreen,
+                                    SelectChatReactionFragment.args(
+                                        space = Space(space),
+                                        chat = vm.chat,
+                                        msg = it
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while opening chat-reaction picker")
+                            }
                         },
-                        onViewChatReaction = { a, b -> }
+                        onViewChatReaction = { msg, emoji ->
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.chatReactionScreen,
+                                    ChatReactionFragment.args(
+                                        space = Space(space),
+                                        chat = vm.chat,
+                                        msg = msg,
+                                        emoji = emoji
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while opening a chat reaction")
+                            }
+                        }
                     )
 
-                    if (showBottomSheet) {
+                    if (showGlobalSearchBottomSheet) {
                         ModalBottomSheet(
                             onDismissRequest = {
-                                showBottomSheet = false
+                                showGlobalSearchBottomSheet = false
                             },
                             sheetState = sheetState,
                             containerColor = colorResource(id = R.color.background_secondary),
@@ -117,13 +154,7 @@ class ChatFragment : BaseComposeFragment() {
                                 onQueryChanged = searchViewModel::onQueryChanged,
                                 onObjectClicked = {
                                     vm.onAttachObject(it)
-                                    showBottomSheet = false
-                                },
-                                onShowRelatedClicked = {
-                                    // Do nothing.
-                                },
-                                onClearRelatedClicked = {
-
+                                    showGlobalSearchBottomSheet = false
                                 },
                                 focusOnStart = false
                             )
@@ -146,6 +177,19 @@ class ChatFragment : BaseComposeFragment() {
                                     )
                                 }.onFailure {
                                     Timber.w("Error while opening editor from chat.")
+                                }
+                            }
+                            is OpenObjectNavigation.OpenDataView -> {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.dataViewNavigation,
+                                        ObjectSetFragment.args(
+                                            ctx = nav.target,
+                                            space = nav.space
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.w("Error while opening set from chat.")
                                 }
                             }
                             else -> toast("TODO")

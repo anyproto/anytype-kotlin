@@ -160,7 +160,7 @@
     <fragment
         android:id="@+id/chatScreen"
         android:name="com.anytypeio.anytype.ui.chats.ChatFragment"
-        android:label="Discussion" />
+        android:label="Chat" />
 
     <dialog
         android:id="@+id/selectChatReactionScreen"
@@ -257,6 +257,9 @@
         <action
             android:id="@+id/actionOpenSpaceFromVault"
             app:destination="@id/homeScreen" />
+        <action
+            android:id="@+id/actionOpenChatFromVault"
+            app:destination="@id/chatScreen" />
         <action
             android:id="@+id/actionCreateSpaceFromVault"
             app:destination="@id/createSpaceScreen" />

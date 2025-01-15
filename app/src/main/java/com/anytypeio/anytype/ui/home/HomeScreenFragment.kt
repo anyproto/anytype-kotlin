@@ -181,7 +181,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                                 PageWithWidgets(showSpaceWidget = false)
                             } else if (page == 0) {
                                 ChatScreenWrapper(
-                                    isSpaceLevelChat = true,
                                     vm = spaceLevelChatViewModel,
                                     onAttachObjectClicked = {
                                         showGlobalSearchBottomSheet = true

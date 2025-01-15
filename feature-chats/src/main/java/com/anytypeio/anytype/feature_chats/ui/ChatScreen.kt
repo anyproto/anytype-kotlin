@@ -80,7 +80,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreenWrapper(
-    isSpaceLevelChat: Boolean = false,
     vm: ChatViewModel,
     // TODO move to view model
     onAttachObjectClicked: () -> Unit,
@@ -101,24 +100,13 @@ fun ChatScreenWrapper(
             route = "discussions"
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(
-                        if (!isSpaceLevelChat) {
-                            Modifier.background(
-                                color = colorResource(id = R.color.background_primary)
-                            )
-                        } else {
-                            Modifier
-                        }
-                    )
+                modifier = Modifier.fillMaxSize()
             ) {
                 val clipboard = LocalClipboardManager.current
                 val lazyListState = rememberLazyListState()
 
                 ChatScreen(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
-                    isSpaceLevelChat = isSpaceLevelChat,
                     title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
                     attachments = vm.chatBoxAttachments.collectAsState().value,
@@ -221,7 +209,6 @@ fun ChatScreenWrapper(
 @Composable
 fun ChatScreen(
     chatBoxMode: ChatBoxMode,
-    isSpaceLevelChat: Boolean,
     isInEditMessageMode: Boolean = false,
     lazyListState: LazyListState,
     title: String?,
@@ -282,23 +269,11 @@ fun ChatScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        if (!isSpaceLevelChat) {
-            TopDiscussionToolbar(
-                title = title,
-                isHeaderVisible = isHeaderVisible
-            )
-        }
         Box(modifier = Modifier.weight(1f)) {
             Messages(
-                isSpaceLevelChat = isSpaceLevelChat,
                 modifier = Modifier.fillMaxSize(),
                 messages = messages,
                 scrollState = lazyListState,
-                onTitleChanged = onTitleChanged,
-                title = title,
-                onTitleFocusChanged = {
-                    isTitleFocused = it
-                },
                 onReacted = onReacted,
                 onCopyMessage = onCopyMessage,
                 onDeleteMessage = onDeleteMessage,
@@ -391,13 +366,9 @@ fun ChatScreen(
 
 @Composable
 fun Messages(
-    isSpaceLevelChat: Boolean = true,
-    title: String?,
-    onTitleChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
     messages: List<ChatView>,
     scrollState: LazyListState,
-    onTitleFocusChanged: (Boolean) -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (ChatView.Message) -> Unit,
     onCopyMessage: (ChatView.Message) -> Unit,
@@ -534,25 +505,6 @@ fun Messages(
                                 )
                         )
                     }
-                }
-            }
-        }
-        if (!isSpaceLevelChat) {
-            item(key = HEADER_KEY) {
-                Column {
-                    DiscussionTitle(
-                        title = title,
-                        onTitleChanged = onTitleChanged,
-                        onFocusChanged = onTitleFocusChanged
-                    )
-                    Text(
-                        style = Relations2,
-                        text = stringResource(R.string.chat),
-                        color = colorResource(id = R.color.text_secondary),
-                        modifier = Modifier.padding(
-                            start = 20.dp
-                        )
-                    )
                 }
             }
         }

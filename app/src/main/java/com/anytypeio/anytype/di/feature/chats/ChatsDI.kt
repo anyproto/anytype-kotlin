@@ -17,11 +17,14 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -78,6 +81,17 @@ object ChatModule {
         context: Context
     ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
 
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideExitToVaultDelegate(
+        spaceManager: SpaceManager,
+        clearLastOpenedSpace: ClearLastOpenedSpace
+    ) : ExitToVaultDelegate = ExitToVaultDelegate.Default(
+        spaceManager = spaceManager,
+        clearLastOpenedSpace = clearLastOpenedSpace
+    )
+
     @Module
     interface Declarations {
         @PerScreen
@@ -104,4 +118,5 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun context(): Context
+    fun spaceManager(): SpaceManager
 }

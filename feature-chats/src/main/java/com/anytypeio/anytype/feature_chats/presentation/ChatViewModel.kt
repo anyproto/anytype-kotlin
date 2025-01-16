@@ -36,6 +36,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -50,8 +51,6 @@ import timber.log.Timber
 
 class ChatViewModel @Inject constructor(
     private val vmParams: Params,
-    private val setObjectDetails: SetObjectDetails,
-    private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
     private val editChatMessage: EditChatMessage,
@@ -64,8 +63,9 @@ class ChatViewModel @Inject constructor(
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
-) : BaseViewModel() {
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
+    private val exitToVaultDelegate: ExitToVaultDelegate
+) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     val header = MutableStateFlow<HeaderView>(HeaderView.Init)
     val messages = MutableStateFlow<List<ChatView>>(emptyList())
@@ -536,8 +536,11 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onBackButtonPressed() {
+    fun onBackButtonPressed(isSpaceRoot: Boolean = false) {
         viewModelScope.launch {
+            if (isSpaceRoot) {
+                proceedWithClearingSpaceBeforeExitingToVault()
+            }
             commands.emit(ViewModelCommand.Exit)
         }
     }

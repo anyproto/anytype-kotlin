@@ -203,31 +203,30 @@ class SplashViewModel(
                         }
                         is CreateObjectByTypeAndTemplate.Result.Success -> {
                             val target = result.objectId
-                            spaceManager
-                                .observe()
+                            spaceViews
+                                .observe(SpaceId(spaceId))
                                 .take(1)
-                                .flatMapLatest { config ->
-                                    spaceViews
-                                        .observe(SpaceId(spaceId))
-                                        .take(1)
-                                }
                                 .collect { view ->
-                                    if (type == COLLECTION || type == SET) {
-                                        commands.emit(
-                                            Command.NavigateToObjectSet(
-                                                id = target,
-                                                space = spaceId,
-                                                chat = view.chatId
+                                    if (view.isActive) {
+                                        if (type == COLLECTION || type == SET) {
+                                            commands.emit(
+                                                Command.NavigateToObjectSet(
+                                                    id = target,
+                                                    space = spaceId,
+                                                    chat = view.chatId
+                                                )
                                             )
-                                        )
+                                        } else {
+                                            commands.emit(
+                                                Command.NavigateToObject(
+                                                    id = target,
+                                                    space = spaceId,
+                                                    chat = view.chatId
+                                                )
+                                            )
+                                        }
                                     } else {
-                                        commands.emit(
-                                            Command.NavigateToObject(
-                                                id = target,
-                                                space = spaceId,
-                                                chat = view.chatId
-                                            )
-                                        )
+                                        proceedWithVaultNavigation()
                                     }
                                 }
                         }
@@ -263,41 +262,40 @@ class SplashViewModel(
                             if (SupportedLayouts.lastOpenObjectLayouts.contains(response.obj.layout)) {
                                 val id = response.obj.id
                                 val space = requireNotNull(response.obj.spaceId)
-                                spaceManager
-                                    .observe()
+                                spaceViews
+                                    .observe(SpaceId(space))
                                     .take(1)
-                                    .flatMapLatest { config ->
-                                        spaceViews
-                                            .observe(SpaceId(space))
-                                            .take(1)
-                                    }
                                     .collect { view ->
-                                        when (response.obj.layout) {
-                                            ObjectType.Layout.SET, ObjectType.Layout.COLLECTION ->
-                                                commands.emit(
-                                                    Command.NavigateToObjectSet(
-                                                        id = id,
-                                                        space = space,
-                                                        chat = view.chatId
+                                        if (view.isActive) {
+                                            when (response.obj.layout) {
+                                                ObjectType.Layout.SET, ObjectType.Layout.COLLECTION ->
+                                                    commands.emit(
+                                                        Command.NavigateToObjectSet(
+                                                            id = id,
+                                                            space = space,
+                                                            chat = view.chatId
+                                                        )
                                                     )
-                                                )
-                                            ObjectType.Layout.DATE -> {
-                                                commands.emit(
-                                                    Command.NavigateToDateObject(
-                                                        id = id,
-                                                        space = space,
-                                                        chat = view.chatId
+                                                ObjectType.Layout.DATE -> {
+                                                    commands.emit(
+                                                        Command.NavigateToDateObject(
+                                                            id = id,
+                                                            space = space,
+                                                            chat = view.chatId
+                                                        )
                                                     )
-                                                )
+                                                }
+                                                else ->
+                                                    commands.emit(
+                                                        Command.NavigateToObject(
+                                                            id = id,
+                                                            space = space,
+                                                            chat = view.chatId
+                                                        )
+                                                    )
                                             }
-                                            else ->
-                                                commands.emit(
-                                                    Command.NavigateToObject(
-                                                        id = id,
-                                                        space = space,
-                                                        chat = view.chatId
-                                                    )
-                                                )
+                                        } else {
+                                            proceedWithVaultNavigation()
                                         }
                                     }
                             } else {

@@ -21,7 +21,7 @@ import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import javax.inject.Inject
 
 class ChatViewModelFactory @Inject constructor(
-    private val params: ChatViewModel.Params,
+    private val params: ChatViewModel.Params.Default,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
     private val editChatMessage: EditChatMessage,

@@ -50,7 +50,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class ChatViewModel @Inject constructor(
-    private val vmParams: Params,
+    private val vmParams: Params.Default,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
     private val editChatMessage: EditChatMessage,
@@ -78,9 +78,6 @@ class ChatViewModel @Inject constructor(
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
 
-    @Deprecated("to be replaced by vm params")
-    var chat: Id = ""
-
     init {
         viewModelScope.launch {
             spaceViews
@@ -100,26 +97,10 @@ class ChatViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val account = requireNotNull(getAccount.async(Unit).getOrNull())
-            when (vmParams) {
-                is Params.Default -> {
-                    chat = vmParams.ctx
-                    proceedWithObservingChatMessages(
-                        account = account.id,
-                        chat = vmParams.ctx
-                    )
-                }
-                is Params.SpaceLevelChat -> {
-                    val targetSpaceView = spaceViews.get(vmParams.space)
-                    val spaceLevelChat = targetSpaceView?.getValue<Id>(Relations.CHAT_ID)
-                    if (spaceLevelChat != null) {
-                        chat = spaceLevelChat
-                        proceedWithObservingChatMessages(
-                            account = account.id,
-                            chat = spaceLevelChat
-                        )
-                    }
-                }
-            }
+            proceedWithObservingChatMessages(
+                account = account.id,
+                chat = vmParams.ctx
+            )
         }
     }
 
@@ -334,7 +315,7 @@ class ChatViewModel @Inject constructor(
                     // TODO consider moving this use-case inside chat container
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
-                            chat = chat,
+                            chat = vmParams.ctx,
                             message = Chat.Message.new(
                                 text = msg,
                                 attachments = attachments
@@ -355,7 +336,7 @@ class ChatViewModel @Inject constructor(
                     }
                     editChatMessage.async(
                         params = Command.ChatCommand.EditMessage(
-                            chat = chat,
+                            chat = vmParams.ctx,
                             message = Chat.Message.updated(
                                 id = mode.msg,
                                 text = msg,
@@ -375,7 +356,7 @@ class ChatViewModel @Inject constructor(
                 is ChatBoxMode.Reply -> {
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
-                            chat = chat,
+                            chat = vmParams.ctx,
                             message = Chat.Message.new(
                                 text = msg,
                                 replyToMessageId = mode.msg,
@@ -431,7 +412,7 @@ class ChatViewModel @Inject constructor(
             if (message != null) {
                 toggleChatMessageReaction.async(
                     Command.ChatCommand.ToggleMessageReaction(
-                        chat = chat,
+                        chat = vmParams.ctx,
                         msg = msg,
                         emoji = reaction
                     )
@@ -478,7 +459,7 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             deleteChatMessage.async(
                 Command.ChatCommand.DeleteMessage(
-                    chat = chat,
+                    chat = vmParams.ctx,
                     msg = msg.id
                 )
             ).onFailure {
@@ -616,15 +597,9 @@ class ChatViewModel @Inject constructor(
     }
 
     sealed class Params {
-
         abstract val space: Space
-
         data class Default(
             val ctx: Id,
-            override val space: Space
-        ) : Params()
-
-        data class SpaceLevelChat(
             override val space: Space
         ) : Params()
     }

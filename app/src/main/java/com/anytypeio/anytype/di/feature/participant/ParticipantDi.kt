@@ -33,6 +33,7 @@ import dagger.Provides
         ParticipantModule.Declarations::class
     ]
 )
+@PerScreen
 interface ParticipantComponent {
 
     @Component.Factory
@@ -91,7 +92,6 @@ object ParticipantModule {
             factory: ParticipantViewModel.Factory
         ): ViewModelProvider.Factory
     }
-
 }
 
 interface ParticipantComponentDependencies : ComponentDependencies {

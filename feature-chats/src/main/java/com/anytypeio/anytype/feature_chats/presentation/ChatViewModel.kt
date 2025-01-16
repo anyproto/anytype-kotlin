@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_chats.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -273,7 +274,8 @@ class ChatViewModel @Inject constructor(
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
-                                    path = attachment.uri
+                                    path = attachment.uri,
+                                    type = Block.Content.File.Type.IMAGE
                                 )
                             ).onSuccess { file ->
                                 add(
@@ -292,7 +294,8 @@ class ChatViewModel @Inject constructor(
                                 uploadFile.async(
                                     UploadFile.Params(
                                         space = vmParams.space,
-                                        path = path
+                                        path = path,
+                                        type = Block.Content.File.Type.NONE
                                     )
                                 ).onSuccess { file ->
                                     // TODO delete file.

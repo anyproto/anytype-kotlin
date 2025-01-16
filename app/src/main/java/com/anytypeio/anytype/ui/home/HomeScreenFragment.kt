@@ -497,32 +497,10 @@ class HomeScreenFragment : BaseComposeFragment(),
         componentManager().homeScreenComponent.release()
     }
 
-    override fun onApplyWindowRootInsets(view: View) {
-        if (featureToggles.isNewSpaceHomeEnabled || spacesWithSpaceLevelChat.contains(space)) {
-            // Do nothing.
-        } else {
-            super.onApplyWindowRootInsets(view)
-        }
-        // Do not apply window insets on fragment container.
-    }
-
     companion object {
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
         const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
         const val SPACE_ID_KEY = "arg.home-screen.space-id"
-
-        /**
-         * Spaces for beta-testing space-level chats
-         */
-
-        val spacesWithSpaceLevelChat = listOf(
-            "bafyreiezhzb4ggnhjwejmh67pd5grilk6jn3jt7y2rnfpbkjwekilreola.1t123w9f2lgn5",
-            "bafyreifikxj75r4duzhqxqelmi66rwlzqml5jnad35dnukxwlawtfrql5a.21584urzltddb",
-            "bafyreia4jsiobrq7ptpuxsv6nmpj4vis7o5p73yibjb5w4crhxl2oqocoq.9tkr2p3mb0pj",
-            "bafyreibj7du7epctmeiwix7ccjiyogfew36eztgfob4mgmi6ulcwzqatcy.2t4tpsucpkt93",
-            "bafyreihzeo4dd3zvw7pkoztwit6edjku6w3jfrfnserxm6slmc6qiu2sim.3rqqcnrgm797n",
-            "bafyreig67rszl52id767endswgzordgg4pj6hpx7dw3cjrvoimehqonb4q.2t4tpsucpkt93"
-        )
 
         fun args(
             space: Id,

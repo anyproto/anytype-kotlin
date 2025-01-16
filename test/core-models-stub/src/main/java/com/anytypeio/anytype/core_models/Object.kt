@@ -80,14 +80,12 @@ fun StubObjectView(
     root: Id,
     blocks: List<Block> = emptyList(),
     details: Map<Id, Struct> = emptyMap(),
-    relations: List<RelationLink> = emptyList(),
     objectRestrictions: List<ObjectRestriction> = emptyList(),
     dataViewRestrictions: List<DataViewRestrictions> = emptyList()
 ): ObjectView = ObjectView(
     root = root,
     blocks = blocks,
     details = details,
-    relations = relations,
     objectRestrictions = objectRestrictions,
     dataViewRestrictions = dataViewRestrictions
 )

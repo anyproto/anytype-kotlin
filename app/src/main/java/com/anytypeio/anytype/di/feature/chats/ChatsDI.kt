@@ -44,31 +44,11 @@ interface ChatComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun withParams(params: ChatViewModel.Params): Builder
+        fun withParams(params: ChatViewModel.Params.Default): Builder
         fun withDependencies(dependencies: ChatComponentDependencies): Builder
         fun build(): ChatComponent
     }
     fun inject(fragment: ChatFragment)
-}
-
-@Component(
-    dependencies = [ChatComponentDependencies::class],
-    modules = [
-        ChatModule::class,
-        ChatModule.Declarations::class
-    ]
-)
-@PerScreen
-interface SpaceLevelChatComponent {
-    @Component.Builder
-    interface Builder {
-        @BindsInstance
-        fun withParams(params: ChatViewModel.Params): Builder
-        fun withDependencies(dependencies: ChatComponentDependencies): Builder
-        fun build(): SpaceLevelChatComponent
-    }
-
-    fun getViewModel(): ChatViewModel
 }
 
 @Module

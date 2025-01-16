@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.home
 
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -25,8 +23,7 @@ import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
-import com.anytypeio.anytype.core_ui.views.Relations3
-import com.anytypeio.anytype.feature_discussions.R
+import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
@@ -100,24 +97,9 @@ fun HomeScreenToolbar(
         )
 
         Image(
-            painter = painterResource(id = R.drawable.ic_home_toolbar_widgets),
-            modifier = Modifier
-                .padding(end = 64.dp)
-                .size(32.dp)
-                .align(Alignment.CenterEnd)
-                .alpha(
-                    if (isChatActive) 0.5f else 1f
-                )
-                .noRippleClickable {
-                    onWidgetTabClicked()
-                },
-            contentDescription = "Widgets button"
-        )
-
-        Image(
             painter = painterResource(id = R.drawable.ic_home_toolbar_chat),
             modifier = Modifier
-                .padding(end = 16.dp)
+                .padding(end = 64.dp)
                 .size(32.dp)
                 .align(Alignment.CenterEnd)
                 .alpha(
@@ -127,6 +109,21 @@ fun HomeScreenToolbar(
                     onChatTabClicked()
                 },
             contentDescription = "Chats button"
+        )
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_home_toolbar_widgets),
+            modifier = Modifier
+                .padding(end = 16.dp)
+                .size(32.dp)
+                .align(Alignment.CenterEnd)
+                .alpha(
+                    if (isChatActive) 0.5f else 1f
+                )
+                .noRippleClickable {
+                    onWidgetTabClicked()
+                },
+            contentDescription = "Widgets button"
         )
     }
 }

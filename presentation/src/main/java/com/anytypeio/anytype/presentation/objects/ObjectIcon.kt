@@ -13,7 +13,7 @@ sealed class ObjectIcon {
         data object Page : Empty()
         data object List : Empty()
         data object Bookmark : Empty()
-        data object Discussion : Empty()
+        data object Chat : Empty()
         data object ObjectType : Empty()
         data object Date : Empty()
     }

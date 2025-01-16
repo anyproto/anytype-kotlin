@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.di.feature.discussions
+package com.anytypeio.anytype.di.feature.chats
 
 import android.content.Context
 import androidx.lifecycle.ViewModelProvider
@@ -6,7 +6,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
-import com.anytypeio.anytype.di.feature.EditorSubComponent.Builder
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -18,15 +17,12 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.emojifier.data.Emoji
-import com.anytypeio.anytype.emojifier.data.EmojiProvider
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
-import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
@@ -34,29 +30,29 @@ import dagger.Module
 import dagger.Provides
 
 @Component(
-    dependencies = [DiscussionComponentDependencies::class],
+    dependencies = [ChatComponentDependencies::class],
     modules = [
-        DiscussionModule::class,
-        DiscussionModule.Declarations::class
+        ChatModule::class,
+        ChatModule.Declarations::class
     ]
 )
 @PerScreen
-interface DiscussionComponent {
+interface ChatComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun withParams(params: DiscussionViewModel.Params): Builder
-        fun withDependencies(dependencies: DiscussionComponentDependencies): Builder
-        fun build(): DiscussionComponent
+        fun withParams(params: ChatViewModel.Params): Builder
+        fun withDependencies(dependencies: ChatComponentDependencies): Builder
+        fun build(): ChatComponent
     }
-    fun inject(fragment: DiscussionFragment)
+    fun inject(fragment: ChatFragment)
 }
 
 @Component(
-    dependencies = [DiscussionComponentDependencies::class],
+    dependencies = [ChatComponentDependencies::class],
     modules = [
-        DiscussionModule::class,
-        DiscussionModule.Declarations::class
+        ChatModule::class,
+        ChatModule.Declarations::class
     ]
 )
 @PerScreen
@@ -64,16 +60,16 @@ interface SpaceLevelChatComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun withParams(params: DiscussionViewModel.Params): Builder
-        fun withDependencies(dependencies: DiscussionComponentDependencies): Builder
+        fun withParams(params: ChatViewModel.Params): Builder
+        fun withDependencies(dependencies: ChatComponentDependencies): Builder
         fun build(): SpaceLevelChatComponent
     }
 
-    fun getViewModel(): DiscussionViewModel
+    fun getViewModel(): ChatViewModel
 }
 
 @Module
-object DiscussionModule {
+object ChatModule {
 
     @JvmStatic
     @Provides
@@ -87,12 +83,12 @@ object DiscussionModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: DiscussionViewModelFactory
+            factory: ChatViewModelFactory
         ): ViewModelProvider.Factory
     }
 }
 
-interface DiscussionComponentDependencies : ComponentDependencies {
+interface ChatComponentDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun authRepo(): AuthRepository
     fun appCoroutineDispatchers(): AppCoroutineDispatchers

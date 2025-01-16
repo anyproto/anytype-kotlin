@@ -173,7 +173,7 @@ dependencies {
     implementation project(':feature-ui-settings')
     implementation project(':crash-reporting')
     implementation project(':payments')
-    implementation project(':feature-discussions')
+    implementation project(':feature-chats')
     implementation project(':gallery-experience')
     implementation project(':feature-all-content')
     implementation project(':feature-date')

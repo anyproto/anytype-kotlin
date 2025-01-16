@@ -20,9 +20,9 @@ import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
-import com.anytypeio.anytype.di.feature.discussions.ChatReactionDependencies
-import com.anytypeio.anytype.di.feature.discussions.SelectChatReactionDependencies
-import com.anytypeio.anytype.di.feature.discussions.DiscussionComponentDependencies
+import com.anytypeio.anytype.di.feature.chats.ChatReactionDependencies
+import com.anytypeio.anytype.di.feature.chats.SelectChatReactionDependencies
+import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
@@ -132,7 +132,7 @@ interface MainComponent :
     MembershipUpdateComponentDependencies,
     VaultComponentDependencies,
     AllContentDependencies,
-    DiscussionComponentDependencies,
+    ChatComponentDependencies,
     SelectWidgetSourceDependencies,
     SelectWidgetTypeDependencies,
     LinkToObjectDependencies,
@@ -353,7 +353,7 @@ abstract class ComponentDependenciesModule {
 
     @Binds
     @IntoMap
-    @ComponentDependenciesKey(DiscussionComponentDependencies::class)
+    @ComponentDependenciesKey(ChatComponentDependencies::class)
     abstract fun provideDiscussionComponentDependencies(component: MainComponent): ComponentDependencies
 
     @Binds

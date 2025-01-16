@@ -27,7 +27,6 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
 import com.anytypeio.anytype.domain.block.interactor.SetObjectType
@@ -403,7 +402,7 @@ open class EditorTestSetup {
         )
 
         featureToggles = mock<DefaultFeatureToggles>()
-        addRelationToObject = AddRelationToObject(repo)
+        addRelationToObject = AddRelationToObject(repo, dispatchers)
 
         interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
 

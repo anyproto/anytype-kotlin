@@ -123,7 +123,11 @@ fun ObjectWrapper.Basic.mapFileObjectToView(fieldParser: FieldParser): Collectio
 
 private fun ObjectWrapper.Basic.getFileObjectIcon(fieldParser: FieldParser): ObjectIcon {
     return when (layout) {
-        ObjectType.Layout.FILE, ObjectType.Layout.IMAGE ->
+        ObjectType.Layout.FILE,
+        ObjectType.Layout.IMAGE,
+        ObjectType.Layout.VIDEO,
+        ObjectType.Layout.AUDIO,
+        ObjectType.Layout.PDF ->
             ObjectIcon.File(
                 mime = fileMimeType,
                 fileName = fieldParser.getObjectName(this),

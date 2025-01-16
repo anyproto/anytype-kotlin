@@ -52,7 +52,6 @@ import com.anytypeio.anytype.di.feature.chats.DaggerChatComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.chats.DaggerChatReactionComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatReactionComponent
-import com.anytypeio.anytype.di.feature.chats.DaggerSpaceLevelChatComponent
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
@@ -1096,16 +1095,8 @@ class ComponentManager(
                 .build()
         }
 
-    val chatComponent = ComponentMapWithParam { params: ChatViewModel.Params ->
+    val chatComponent = ComponentMapWithParam { params: ChatViewModel.Params.Default ->
         DaggerChatComponent
-            .builder()
-            .withDependencies(findComponentDependencies())
-            .withParams(params)
-            .build()
-    }
-
-    val spaceLevelChatComponent = ComponentMapWithParam { params: ChatViewModel.Params ->
-        DaggerSpaceLevelChatComponent
             .builder()
             .withDependencies(findComponentDependencies())
             .withParams(params)

@@ -95,7 +95,7 @@ class VaultFragment : BaseComposeFragment() {
             is Command.OpenProfileSettings -> {
                 runCatching {
                     findNavController().navigate(
-                        R.id.profileScreen,
+                        R.id.profileSettingsScreen,
                         null
                     )
                 }.onFailure {

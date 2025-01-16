@@ -16,9 +16,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.relations.DocumentRelationAdapter
-import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.argInt
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.argStringOrNull
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -41,8 +39,6 @@ import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import javax.inject.Inject
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
 import timber.log.Timber
 
 open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelationListBinding>(),
@@ -60,7 +56,6 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
     private val ctx: String get() = argString(ARG_CTX)
     private val space: String get() = argString(ARG_SPACE)
     private val target: String? get() = argStringOrNull(ARG_TARGET)
-    private val mode: Int get() = argInt(ARG_MODE)
     private val isLocked: Boolean get() = arg(ARG_LOCKED)
     private val isSetFlow: Boolean get() = arg(ARG_SET_FLOW)
 
@@ -214,37 +209,10 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 binding.btnEditOrDone.setText(R.string.edit)
             }
         }
-        if (mode == MODE_ADD) {
-            binding.searchBar.root.visible()
-            val queries = searchRelationInput.textChanges()
-                .onStart { emit(searchRelationInput.text.toString()) }
-            val views = vm.views.combine(queries) { views, query ->
-                if (views.isEmpty()) {
-                    views
-                } else {
-                    views.filter { model ->
-                        if (model is RelationListViewModel.Model.Item) {
-                            model.view.name.contains(query, true)
-                        } else {
-                            true
-                        }
-                    }
-                }
-            }
-            jobs += lifecycleScope.subscribe(searchRelationInput.textChanges()) {
-                if (it.isEmpty()) clearSearchText.invisible() else clearSearchText.visible()
-            }
-            jobs += lifecycleScope.subscribe(views) { docRelationAdapter.update(it) }
-        } else {
-            binding.searchBar.root.gone()
-            jobs += lifecycleScope.subscribe(vm.views) { docRelationAdapter.update(it) }
-        }
+        binding.searchBar.root.gone()
+        jobs += lifecycleScope.subscribe(vm.views) { docRelationAdapter.update(it) }
         super.onStart()
-        if (mode == MODE_LIST) {
-            vm.onStartListMode(ctx)
-        } else {
-            vm.onStartAddMode(ctx)
-        }
+        vm.onStartListMode(ctx)
     }
 
     override fun onStop() {
@@ -325,7 +293,6 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
             ctx: Id,
             space: Id,
             target: String?,
-            mode: Int,
             locked: Boolean = false,
             isSetFlow: Boolean = false,
         ) = ObjectRelationListFragment().apply {
@@ -333,7 +300,6 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 ARG_CTX to ctx,
                 ARG_SPACE to space,
                 ARG_TARGET to target,
-                ARG_MODE to mode,
                 ARG_LOCKED to locked,
                 ARG_SET_FLOW to isSetFlow
             )
@@ -341,11 +307,8 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
 
         const val ARG_CTX = "arg.document-relation.ctx"
         const val ARG_SPACE = "arg.document-relation.space"
-        const val ARG_MODE = "arg.document-relation.mode"
         const val ARG_TARGET = "arg.document-relation.target"
         const val ARG_LOCKED = "arg.document-relation.locked"
-        const val MODE_ADD = 1
-        const val MODE_LIST = 2
         const val ARG_SET_FLOW = "arg.document-relation.set-flow"
     }
 }

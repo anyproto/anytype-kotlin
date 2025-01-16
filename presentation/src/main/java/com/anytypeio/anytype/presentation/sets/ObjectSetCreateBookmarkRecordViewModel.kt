@@ -53,7 +53,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
                     val prefilled = viewer.prefillNewObjectDetails(
                         dateProvider = dateProvider,
                         storeOfRelations = storeOfRelations,
-                        dataViewRelationLinks = state.objectRelationLinks
+                        dataViewRelationLinks = state.dataViewContent.relationLinks
                     )
                     createBookmark(
                         input = input,
@@ -70,7 +70,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
                             val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                             val details = viewer.resolveSetByRelationPrefilledObjectData(
                                 objSetByRelation = sourceObject,
-                                dataViewRelationLinks = state.objectRelationLinks,
+                                dataViewRelationLinks = state.dataViewContent.relationLinks,
                                 dateProvider = dateProvider,
                                 storeOfRelations = storeOfRelations
                             )
@@ -84,7 +84,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
                         val prefilled = viewer.prefillNewObjectDetails(
                             dateProvider = dateProvider,
                             storeOfRelations = storeOfRelations,
-                            dataViewRelationLinks = state.objectRelationLinks
+                            dataViewRelationLinks = state.dataViewContent.relationLinks
                         )
                         createBookmark(
                             input = input,

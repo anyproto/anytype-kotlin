@@ -360,7 +360,6 @@ abstract class TestObjectSetSetup {
                             root = ctx,
                             details = details,
                             blocks = set,
-                            relations = relations
                         )
                     )
                 )
@@ -383,7 +382,6 @@ abstract class TestObjectSetSetup {
                             root = ctx,
                             details = details,
                             blocks = set,
-                            relations = relations,
                         )
                     )
                 )

@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.*
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -138,14 +137,14 @@ class RelationCreateFromScratchForObjectViewModel(
 
     private fun proceedWithAddingRelationToObject(ctx: Id, relation: Key) {
         viewModelScope.launch {
-            addRelationToObject(
-                AddRelationToObject.Params(
-                    ctx = ctx,
-                    relationKey = relation
-                )
-            ).process(
-                success = { payload ->
-                    dispatcher.send(payload).also { isDismissed.value = true }
+            val params = AddRelationToObject.Params(
+                ctx = ctx,
+                relationKey = relation
+            )
+            addRelationToObject.async(params).fold(
+                onSuccess = { payload ->
+                    if (payload != null) dispatcher.send(payload)
+                    isDismissed.value = true
                     analytics.sendAnalyticsRelationEvent(
                         eventName = EventsDictionary.relationAdd,
                         storeOfRelations = storeOfRelations,
@@ -153,7 +152,7 @@ class RelationCreateFromScratchForObjectViewModel(
                         spaceParams = provideParams(spaceManager.get())
                     )
                 },
-                failure = {
+                onFailure = {
                     Timber.e(it, ACTION_FAILED_ERROR).also { _toasts.emit(ACTION_FAILED_ERROR) }
                 }
             )
@@ -244,14 +243,14 @@ class RelationCreateFromScratchForObjectBlockViewModel(
 
     private fun proceedWithAddingRelationToObject(ctx: Id, relationKey: Id) {
         viewModelScope.launch {
-            addRelationToObject(
-                AddRelationToObject.Params(
-                    ctx = ctx,
-                    relationKey = relationKey
-                )
-            ).process(
-                success = { payload ->
-                    dispatcher.send(payload).also { commands.emit(Command.OnSuccess(relationKey)) }
+            val params = AddRelationToObject.Params(
+                ctx = ctx,
+                relationKey = relationKey
+            )
+            addRelationToObject.async(params).fold(
+                onSuccess = { payload ->
+                    if (payload != null) dispatcher.send(payload)
+                    commands.emit(Command.OnSuccess(relationKey))
                     analytics.sendAnalyticsRelationEvent(
                         eventName = EventsDictionary.relationAdd,
                         storeOfRelations = storeOfRelations,
@@ -259,7 +258,7 @@ class RelationCreateFromScratchForObjectBlockViewModel(
                         spaceParams = provideParams(spaceManager.get())
                     )
                 },
-                failure = {
+                onFailure = {
                     Timber.e(it, ACTION_FAILED_ERROR).also { _toasts.emit(ACTION_FAILED_ERROR) }
                 }
             )

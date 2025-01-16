@@ -1122,7 +1122,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectRelationAdd(ctx: Id, relation: Key): Payload {
+    fun objectRelationAdd(ctx: Id, relation: Key): Payload? {
         val request = Rpc.ObjectRelation.Add.Request(
             contextId = ctx,
             relationKeys = listOf(relation)
@@ -1130,7 +1130,7 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectRelationAdd(request) }
         logResponseIfDebug(response, time)
-        return response.event.toPayload()
+        return response.event?.toPayload()
     }
 
     @Throws(Exception::class)

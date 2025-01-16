@@ -631,6 +631,15 @@ class DateObjectViewModel(
                     )
                 }
 
+                is OpenObjectNavigation.OpenParticipant -> {
+                    effects.emit(
+                        DateObjectCommand.NavigateToParticipant(
+                            objectId = navigation.target,
+                            space = SpaceId(navigation.space)
+                        )
+                    )
+                }
+
                 is OpenObjectNavigation.OpenEditor -> {
                     effects.emit(
                         DateObjectCommand.NavigateToEditor(
@@ -658,7 +667,7 @@ class DateObjectViewModel(
                     Timber.e("Object id is missing")
                 }
 
-                is OpenObjectNavigation.OpenDataObject -> {
+                is OpenObjectNavigation.OpenDateObject -> {
                     effects.emit(
                         DateObjectCommand.NavigateToEditor(
                             id = navigation.target,

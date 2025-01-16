@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.profile.ProfileScreenFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -92,6 +93,19 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                                 )
                             )
                         }
+                        is OpenObjectNavigation.OpenParticipant -> {
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.profileScreen,
+                                    ProfileScreenFragment.args(
+                                        objectId = nav.target,
+                                        space = nav.space
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.w("Error while opening participant screen")
+                            }
+                        }
                         is OpenObjectNavigation.OpenChat -> {
                             findNavController().navigate(
                                 R.id.chatScreen,
@@ -104,7 +118,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                         OpenObjectNavigation.NonValidObject -> {
                             toast(getString(R.string.error_non_valid_object))
                         }
-                        is OpenObjectNavigation.OpenDataObject -> {
+                        is OpenObjectNavigation.OpenDateObject -> {
                             runCatching {
                                 findNavController().navigate(
                                     R.id.dateObjectScreen,

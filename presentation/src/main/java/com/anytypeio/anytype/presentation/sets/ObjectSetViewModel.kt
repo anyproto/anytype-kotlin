@@ -1468,11 +1468,20 @@ class ObjectSetViewModel(
             ObjectType.Layout.VIDEO,
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF,
-            ObjectType.Layout.BOOKMARK,
-            ObjectType.Layout.PARTICIPANT -> proceedWithOpeningObject(
+            ObjectType.Layout.BOOKMARK -> proceedWithOpeningObject(
                 target = target,
                 space = space
             )
+            ObjectType.Layout.PARTICIPANT -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenParticipant(
+                            objectId = target,
+                            space = space
+                        )
+                    )
+                )
+            }
             ObjectType.Layout.PROFILE -> proceedWithOpeningObject(
                 target = identityProfileLink ?: target,
                 space = space

@@ -110,6 +110,9 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
             is CollectionViewModel.Command.OpenShareScreen -> {
                 // Do nothing
             }
+            is CollectionViewModel.Command.OpenParticipant -> {
+                // Do nothing
+            }
         }
     }
 

@@ -38,6 +38,7 @@ import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
+import com.anytypeio.anytype.ui.profile.ProfileScreenFragment
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_MODIFY_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_UNINSTALL_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_ID
@@ -276,6 +277,20 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         )
                     }.onFailure { e ->
                         Timber.e(e, "Error while opening date object from All Objects screen")
+                    }
+                }
+
+                is AllContentViewModel.Command.NavigateToParticipant -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.profileScreen,
+                            ProfileScreenFragment.args(
+                                objectId = command.objectId,
+                                space = command.space
+                            )
+                        )
+                    }.onFailure {
+                        Timber.w("Error while opening participant screen")
                     }
                 }
             }

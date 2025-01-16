@@ -79,6 +79,7 @@ import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListene
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
+import com.anytypeio.anytype.ui.profile.ProfileScreenFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
@@ -295,6 +296,19 @@ class HomeScreenFragment : BaseComposeFragment(),
                                         )
                                     }.onFailure {
                                         Timber.w("Error while opening set from chat.")
+                                    }
+                                }
+                                is OpenObjectNavigation.OpenParticipant -> {
+                                    runCatching {
+                                        findNavController().navigate(
+                                            R.id.profileScreen,
+                                            ProfileScreenFragment.args(
+                                                objectId = nav.target,
+                                                space = nav.space
+                                            )
+                                        )
+                                    }.onFailure {
+                                        Timber.w("Error while opening participant screen")
                                     }
                                 }
                                 else -> toast("TODO")
@@ -599,6 +613,16 @@ class HomeScreenFragment : BaseComposeFragment(),
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening date object from widgets")
+                }
+            }
+            is Navigation.OpenParticipant -> {
+                runCatching {
+                    navigation().openParticipantObject(
+                        objectId = destination.objectId,
+                        space = destination.space
+                    )
+                    }.onFailure { e ->
+                    Timber.e(e, "Error while opening participant from widgets")
                 }
             }
         }

@@ -172,6 +172,11 @@
         android:name="com.anytypeio.anytype.ui.chats.ChatReactionFragment"
         android:label="Chat reaction" />
 
+    <dialog
+        android:id="@+id/profileScreen"
+        android:name="com.anytypeio.anytype.ui.profile.ProfileScreenFragment"
+        android:label="Profile screen" />
+
     <fragment
         android:id="@+id/homeScreen"
         android:name="com.anytypeio.anytype.ui.home.HomeScreenFragment"

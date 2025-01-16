@@ -1436,10 +1436,18 @@ class HomeScreenViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
             }
-            is OpenObjectNavigation.OpenDataObject -> {
+            is OpenObjectNavigation.OpenDateObject -> {
                 navigate(
                     destination = Navigation.OpenDateObject(
                         ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
+            is OpenObjectNavigation.OpenParticipant -> {
+                navigate(
+                    Navigation.OpenParticipant(
+                        objectId = navigation.target,
                         space = navigation.space
                     )
                 )
@@ -2174,6 +2182,7 @@ class HomeScreenViewModel(
         data object OpenSpaceSwitcher: Navigation()
         data class OpenAllContent(val space: Id) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
+        data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()
     }
 
     class Factory @Inject constructor(
@@ -2404,7 +2413,8 @@ sealed class OpenObjectNavigation {
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
     data object NonValidObject: OpenObjectNavigation()
     data class OpenChat(val target: Id, val space: Id): OpenObjectNavigation()
-    data class OpenDataObject(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenDateObject(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenParticipant(val target: Id, val space: Id): OpenObjectNavigation()
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
@@ -2413,8 +2423,7 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,
         ObjectType.Layout.TODO,
-        ObjectType.Layout.BOOKMARK,
-        ObjectType.Layout.PARTICIPANT -> {
+        ObjectType.Layout.BOOKMARK -> {
             OpenObjectNavigation.OpenEditor(
                 target = id,
                 space = requireNotNull(spaceId)
@@ -2454,7 +2463,13 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
             )
         }
         ObjectType.Layout.DATE -> {
-            OpenObjectNavigation.OpenDataObject(
+            OpenObjectNavigation.OpenDateObject(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
+        }
+        ObjectType.Layout.PARTICIPANT -> {
+            OpenObjectNavigation.OpenParticipant(
                 target = id,
                 space = requireNotNull(spaceId)
             )
@@ -2473,8 +2488,7 @@ fun ObjectType.Layout.navigation(
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,
         ObjectType.Layout.TODO,
-        ObjectType.Layout.BOOKMARK,
-        ObjectType.Layout.PARTICIPANT -> {
+        ObjectType.Layout.BOOKMARK -> {
             OpenObjectNavigation.OpenEditor(
                 target = target,
                 space = space
@@ -2506,7 +2520,13 @@ fun ObjectType.Layout.navigation(
             )
         }
         ObjectType.Layout.DATE -> {
-            OpenObjectNavigation.OpenDataObject(
+            OpenObjectNavigation.OpenDateObject(
+                target = target,
+                space = space
+            )
+        }
+        ObjectType.Layout.PARTICIPANT -> {
+            OpenObjectNavigation.OpenParticipant(
                 target = target,
                 space = space
             )

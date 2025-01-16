@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
@@ -23,8 +22,6 @@ sealed class ObjectState {
         abstract val objectRestrictions: List<ObjectRestriction>
         abstract val dataViewRestrictions: List<DataViewRestrictions>
 
-        abstract val objectRelationLinks: List<RelationLink>
-
         abstract val dataViewContent: DV
         abstract val dataViewBlock: Block
         abstract val viewers: List<DVViewer>
@@ -35,7 +32,6 @@ sealed class ObjectState {
             override val details: AllObjectsDetails,
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
-            override val objectRelationLinks: List<RelationLink> = emptyList(),
         ) : DataView() {
 
             override val isInitialized get() = blocks.any { it.content is DV }
@@ -50,7 +46,6 @@ sealed class ObjectState {
             override val details: AllObjectsDetails,
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
-            override val objectRelationLinks: List<RelationLink> = emptyList()
         ) : DataView() {
 
             override val isInitialized get() = blocks.any { it.content is DV }

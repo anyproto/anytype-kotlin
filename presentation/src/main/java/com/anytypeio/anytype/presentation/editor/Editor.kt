@@ -101,7 +101,6 @@ interface Editor {
 
         val textSelection: Store<Editor.TextSelection> = Store.TextSelection()
         val objectRestrictions: Store.ObjectRestrictions = Store.ObjectRestrictions()
-        val relationLinks: Store.RelationLinks = Store.RelationLinks()
     }
 
     class Proxer(

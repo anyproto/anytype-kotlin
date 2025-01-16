@@ -607,16 +607,12 @@ class EditorViewModel(
                             details = event.details
                         )
                     )
-                    orchestrator.stores.relationLinks.update(event.relationLinks)
                     orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
                 }
                 is Event.Command.Details -> {
                     orchestrator.stores.details.apply {
                         update(AllObjectsDetails(details = current().details.process(event)))
                     }
-                }
-                is Event.Command.ObjectRelationLinks -> {
-                    orchestrator.stores.relationLinks.apply { update(current().process(event)) }
                 }
                 else -> {
                     // do nothing
@@ -803,7 +799,6 @@ class EditorViewModel(
                     anchor = context,
                     indent = INITIAL_INDENT,
                     details = details,
-                    relationLinks = orchestrator.stores.relationLinks.current(),
                     restrictions = orchestrator.stores.objectRestrictions.current(),
                     selection = currentSelection()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
@@ -3988,12 +3983,9 @@ class EditorViewModel(
             }
             is ListenerType.Relation.Placeholder -> {
                 when (mode) {
-                    EditorMode.Edit -> dispatch(
-                        Command.OpenObjectRelationScreen.RelationAdd(
-                            ctx = context,
-                            target = clicked.target
-                        )
-                    )
+                    EditorMode.Edit -> {
+                        sendToast(NOT_ALLOWED_FOR_RELATION)
+                    }
                     else -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
@@ -4450,7 +4442,7 @@ class EditorViewModel(
                     )
                 )
             }
-            is OpenObjectNavigation.OpenDiscussion -> {
+            is OpenObjectNavigation.OpenChat -> {
                 sendToast("not implemented")
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
@@ -5229,7 +5221,6 @@ class EditorViewModel(
     private fun getRelations(action: (List<SlashRelationView.Item>) -> Unit) {
         val objectWrapper = orchestrator.stores.details.getAsObject(vmParams.ctx)
         val objectType = objectWrapper?.getProperType()
-        val relationLinks = orchestrator.stores.relationLinks.current()
 
 //        viewModelScope.launch {
 //            val objectRelationViews = getObjectRelationsView(
@@ -5252,6 +5243,45 @@ class EditorViewModel(
 //
 //            action.invoke(update)
 //        }
+        viewModelScope.launch {
+            val objectRelationViews = getObjectRelationsView(
+                ctx = context,
+                objectDetails = objectDetails,
+                details = details,
+                objectWrapper = objectWrapper
+            )
+
+            val recommendedRelationViews = getRecommendedRelations(
+                ctx = context,
+                objectDetails = objectDetails,
+                objectTypeStruct = details.details[objectType]?.map,
+                details = details
+            )
+            val update =
+                (objectRelationViews + recommendedRelationViews).map { SlashRelationView.Item(it) }
+
+            action.invoke(update)
+        }
+    }
+
+    private suspend fun getObjectRelationsView(
+        ctx: Id,
+        objectDetails: Map<Key, Any?>,
+        details: Block.Details,
+        objectWrapper: ObjectWrapper.Basic
+    ): List<ObjectRelationView> {
+        return getObjectRelations(
+            systemRelations = listOf(),
+            storeOfRelations = storeOfRelations,
+            relationKeys = objectDetails.keys
+        ).views(
+            context = ctx,
+            details = details,
+            values = objectDetails,
+            urlBuilder = urlBuilder,
+            featured = objectWrapper.featuredRelations,
+            fieldParser = fieldParser
+        )
     }
 
 //    private suspend fun getObjectRelationsView(
@@ -5296,6 +5326,26 @@ class EditorViewModel(
 //            fieldParser = fieldParser
 //        )
 //    }
+    private suspend fun getRecommendedRelations(
+        ctx: Id,
+        objectDetails: Map<Key, Any?>,
+        objectTypeStruct: Struct?,
+        details: Block.Details
+    ): List<ObjectRelationView> {
+        val objType = objectTypeStruct?.mapToObjectWrapperType()
+        val recommendedRelations = objType?.recommendedRelations ?: emptyList()
+        return getNotIncludedRecommendedRelations(
+            recommendedRelations = recommendedRelations,
+            storeOfRelations = storeOfRelations,
+            relationKeys = objectDetails.keys
+        ).views(
+            context = ctx,
+            details = details,
+            values = objectDetails,
+            urlBuilder = urlBuilder,
+            fieldParser = fieldParser
+        )
+    }
 
     private fun proceedWithObjectTypes(objectTypes: List<ObjectTypeView>) {
         onSlashWidgetStateChanged(
@@ -7398,8 +7448,8 @@ class EditorViewModel(
     private fun checkRelationIsInObject(
         view: ObjectRelationView
     ): Boolean {
-        val relationLinks = orchestrator.stores.relationLinks.current()
-        return relationLinks.any { it.key == view.key }
+        val currentObjectDetails = orchestrator.stores.details.getAsObject(vmParams.ctx)
+        return currentObjectDetails?.map?.keys?.any { it == view.key } ?: false
     }
 
     private suspend fun proceedWithAddingRelationToObject(
@@ -7411,10 +7461,10 @@ class EditorViewModel(
             ctx = ctx,
             relationKey = view.key
         )
-        addRelationToObject.run(params).process(
-            failure = { Timber.e(it, "Error while adding relation to object") },
-            success = {
-                dispatcher.send(it)
+        addRelationToObject.async(params).fold(
+            onFailure = { e -> Timber.e(e, "Error while adding relation to object") },
+            onSuccess = { payload ->
+                if (payload != null) dispatcher.send(payload)
                 analytics.sendAnalyticsRelationEvent(
                     eventName = EventsDictionary.relationAdd,
                     storeOfRelations = storeOfRelations,

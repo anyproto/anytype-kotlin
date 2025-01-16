@@ -101,7 +101,6 @@ class TemplateBlankViewModel(
                 anchor = page.first().id,
                 indent = EditorViewModel.INITIAL_INDENT,
                 details = customDetails,
-                relationLinks = emptyList(),
                 restrictions = emptyList(),
                 selection = emptySet()
             )

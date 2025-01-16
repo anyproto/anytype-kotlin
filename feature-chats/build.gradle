@@ -9,7 +9,7 @@ android {
         compose true
     }
 
-    namespace 'com.anytypeio.anytype.feature_discussions'
+    namespace 'com.anytypeio.anytype.feature_chats'
 
     testOptions {
         unitTests.returnDefaultValues = true

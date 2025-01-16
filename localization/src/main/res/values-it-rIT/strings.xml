@@ -1556,6 +1556,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_unlinked_description">Oggetti non collegati che non hanno un collegamento diretto o un backlink con altri oggetti nel grafo.</string>
     <string name="all_content_snackbar_title">spostato nel cestino</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_search_button">Pulsante cerca oggetti</string>
     <string name="main_navigation_content_desc_create_button">Pulsante crea oggetti</string>
     <string name="chat">Chat</string>

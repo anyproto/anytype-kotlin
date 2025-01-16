@@ -62,7 +62,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -646,7 +645,7 @@ class DateObjectViewModel(
                     effects.emit(DateObjectCommand.SendToast.UnexpectedLayout(navigation.layout?.name.orEmpty()))
                 }
 
-                is OpenObjectNavigation.OpenDiscussion -> {
+                is OpenObjectNavigation.OpenChat -> {
                     effects.emit(
                         DateObjectCommand.OpenChat(
                             target = navigation.target,

@@ -3605,7 +3605,6 @@ open class EditorViewModelTest {
                                 context = root,
                                 root = root,
                                 details = details,
-                                relations = relations,
                                 blocks = document,
                                 objectRestrictions = objectRestrictions
                             )
@@ -3818,7 +3817,7 @@ open class EditorViewModelTest {
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()
         )
-        addRelationToObject = AddRelationToObject(repo)
+        addRelationToObject = AddRelationToObject(repo, dispatchers)
         objectToSet = ConvertObjectToSet(repo, dispatchers)
         updateDetail = UpdateDetail(repo)
         setDocCoverImage = SetDocCoverImage(repo)

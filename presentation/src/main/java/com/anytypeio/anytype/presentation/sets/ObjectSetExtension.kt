@@ -645,7 +645,11 @@ suspend fun DVViewer.resolveSetByRelationPrefilledObjectData(
         val defaultValue = resolveDefaultValueByFormat(relationFormat)
         put(objSetByRelation.key, defaultValue)
     }
-    val prefillNewObjectDetails = prefillNewObjectDetails(storeOfRelations, dateProvider, dataViewRelationLinks)
+    val prefillNewObjectDetails = prefillNewObjectDetails(
+        storeOfRelations = storeOfRelations,
+        dateProvider = dateProvider,
+        dataViewRelationLinks = dataViewRelationLinks
+    )
     return prefillWithSetOf + prefillNewObjectDetails
 }
 

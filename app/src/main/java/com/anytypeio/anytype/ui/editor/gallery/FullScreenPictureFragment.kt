@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.databinding.FragmentFullScreenPictureBinding
 import com.bumptech.glide.Glide
@@ -14,6 +15,10 @@ class FullScreenPictureFragment : BaseFragment<FragmentFullScreenPictureBinding>
 
     private val url: String
         get() = requireArguments().getString(ARG_URL_KEY) ?: throw IllegalStateException()
+
+    private val ignoreRootWindowInsets
+        get() = argOrNull<Boolean>(ARG_IGNORE_INSETS_KEY)
+
 
     companion object {
 
@@ -24,10 +29,14 @@ class FullScreenPictureFragment : BaseFragment<FragmentFullScreenPictureBinding>
             )
         }
 
-        fun args(url: String) : Bundle = bundleOf(ARG_URL_KEY to url)
+        fun args(
+            url: String,
+            ignoreRootWindowInsets: Boolean = false
+        ) : Bundle = bundleOf(ARG_URL_KEY to url, ARG_IGNORE_INSETS_KEY to ignoreRootWindowInsets)
 
         const val ARG_URL_KEY = "arg.full_screen_picture.url"
         const val ARG_TARGET_KEY = "arg.full_screen_picture.target"
+        private const val ARG_IGNORE_INSETS_KEY = "arg.full_screen_picture.ignore-insets"
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,6 +47,14 @@ class FullScreenPictureFragment : BaseFragment<FragmentFullScreenPictureBinding>
 
     override fun injectDependencies() {}
     override fun releaseDependencies() {}
+
+    override fun onApplyWindowRootInsets() {
+        if (ignoreRootWindowInsets != true) {
+            super.onApplyWindowRootInsets()
+        } else {
+            // DO nothing.
+        }
+    }
 
     override fun inflateBinding(
         inflater: LayoutInflater,

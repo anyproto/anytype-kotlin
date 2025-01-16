@@ -535,7 +535,6 @@ class VersionHistoryViewModel(
                 anchor = vmParams.objectId,
                 indent = INITIAL_INDENT,
                 details = AllObjectsDetails(event.details),
-                relationLinks = event.relationLinks,
                 restrictions = event.objectRestrictions,
                 selection = emptySet()
             ).filterNot { it is BlockView.DataView }
@@ -573,7 +572,6 @@ class VersionHistoryViewModel(
                 anchor = vmParams.objectId,
                 indent = INITIAL_INDENT,
                 details = AllObjectsDetails(event.details),
-                relationLinks = event.relationLinks,
                 restrictions = event.objectRestrictions,
                 selection = emptySet()
             )

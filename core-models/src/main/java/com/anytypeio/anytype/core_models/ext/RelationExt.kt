@@ -1,16 +1,8 @@
 package com.anytypeio.anytype.core_models.ext
 
-import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.RelationLink
-
-//fun List<RelationLink>.process(
-//    event: Event.Command.ObjectRelationLinks
-//): List<RelationLink> = when (event) {
-//    is Event.Command.ObjectRelationLinks.Amend -> amend(event.relationLinks)
-//    is Event.Command.ObjectRelationLinks.Remove -> remove(event.keys)
-//}
 
 fun List<RelationLink>.amend(relationLinks: List<RelationLink>): List<RelationLink> {
     val map = this.associateBy { it.key }.toMutableMap()

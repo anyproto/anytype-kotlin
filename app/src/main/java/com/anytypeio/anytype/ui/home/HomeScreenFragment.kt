@@ -79,7 +79,7 @@ import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListene
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
-import com.anytypeio.anytype.ui.profile.ProfileScreenFragment
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
@@ -302,7 +302,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                                     runCatching {
                                         findNavController().navigate(
                                             R.id.profileScreen,
-                                            ProfileScreenFragment.args(
+                                            ParticipantFragment.args(
                                                 objectId = nav.target,
                                                 space = nav.space
                                             )

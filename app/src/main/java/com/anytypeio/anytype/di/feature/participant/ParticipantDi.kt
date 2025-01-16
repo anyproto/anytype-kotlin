@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.di.feature.profile
+package com.anytypeio.anytype.di.feature.participant
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -14,14 +14,12 @@ import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
-import com.anytypeio.anytype.presentation.profile.ProfileViewModel
-import com.anytypeio.anytype.ui.profile.ProfileScreenFragment
+import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
@@ -29,28 +27,28 @@ import dagger.Module
 import dagger.Provides
 
 @Component(
-    dependencies = [ProfileScreenComponentDependencies::class],
+    dependencies = [ParticipantComponentDependencies::class],
     modules = [
-        ProfileScreenModule::class,
-        ProfileScreenModule.Declarations::class
+        ParticipantModule::class,
+        ParticipantModule.Declarations::class
     ]
 )
-interface ProfileScreenComponent {
+interface ParticipantComponent {
 
     @Component.Factory
     interface Factory {
         fun create(
-            @BindsInstance vmParams: ProfileViewModel.VmParams,
-            dependencies: ProfileScreenComponentDependencies
-        ): ProfileScreenComponent
+            @BindsInstance vmParams: ParticipantViewModel.VmParams,
+            dependencies: ParticipantComponentDependencies
+        ): ParticipantComponent
     }
 
-    fun inject(fragment: ProfileScreenFragment)
+    fun inject(fragment: ParticipantFragment)
 
 }
 
 @Module
-object ProfileScreenModule {
+object ParticipantModule {
 
     @JvmStatic
     @Provides
@@ -90,13 +88,13 @@ object ProfileScreenModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: ProfileViewModel.Factory
+            factory: ParticipantViewModel.Factory
         ): ViewModelProvider.Factory
     }
 
 }
 
-interface ProfileScreenComponentDependencies : ComponentDependencies {
+interface ParticipantComponentDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun analytics(): Analytics
     fun urlBuilder(): UrlBuilder

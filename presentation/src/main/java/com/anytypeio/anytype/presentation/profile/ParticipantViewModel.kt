@@ -13,23 +13,23 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class ProfileViewModel(
+class ParticipantViewModel(
     private val vmParams: VmParams,
     private val analytics: Analytics,
     private val setObjectDetails: SetObjectDetails,
     private val urlBuilder: UrlBuilder,
     private val setImageIcon: SetDocumentImageIcon,
     private val membershipProvider: MembershipProvider,
-    private val profileContainer: ProfileSubscriptionManager,
+    private val subscriptionContainer: StorelessSubscriptionContainer,
     private val fieldsParser: FieldParser
 ) : ViewModel() {
 
@@ -47,12 +47,12 @@ class ProfileViewModel(
             }
         }
         viewModelScope.launch {
-            profileContainer.observe().collect { profile ->
-                AccountProfile.Data(
-                    name = fieldsParser.getObjectName(profile),
-                    icon = profile.profileIcon(urlBuilder)
-                )
-            }
+//            profileContainer.observe().collect { profile ->
+//                AccountProfile.Data(
+//                    name = fieldsParser.getObjectName(profile),
+//                    icon = profile.profileIcon(urlBuilder)
+//                )
+//            }
         }
     }
 
@@ -60,7 +60,7 @@ class ProfileViewModel(
         Timber.d("onNameChange, name:[$name]")
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
-                ctx = vmParams.ctx,
+                ctx = vmParams.objectId,
                 details = mapOf(Relations.NAME to name)
             )
             setObjectDetails.async(params).fold(
@@ -78,7 +78,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             setImageIcon(
                 SetImageIcon.Params(
-                    target = vmParams.ctx,
+                    target = vmParams.objectId,
                     path = path,
                     spaceId = vmParams.space
                 )
@@ -102,8 +102,8 @@ class ProfileViewModel(
     }
 
     data class VmParams(
-        val space: SpaceId,
-        val ctx: Id
+        val objectId: Id,
+        val space: SpaceId
     )
 
     class Factory(
@@ -113,19 +113,19 @@ class ProfileViewModel(
         private val urlBuilder: UrlBuilder,
         private val setDocumentImageIcon: SetDocumentImageIcon,
         private val membershipProvider: MembershipProvider,
-        private val profileSubscriptionManager: ProfileSubscriptionManager,
+        private val subscriptionContainer: StorelessSubscriptionContainer,
         private val fieldsParser: FieldParser
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ProfileViewModel(
+            return ParticipantViewModel(
                 vmParams = vmParams,
                 analytics = analytics,
                 setObjectDetails = setObjectDetails,
                 urlBuilder = urlBuilder,
                 setImageIcon = setDocumentImageIcon,
                 membershipProvider = membershipProvider,
-                profileContainer = profileSubscriptionManager,
+                subscriptionContainer = subscriptionContainer,
                 fieldsParser = fieldsParser
             ) as T
         }

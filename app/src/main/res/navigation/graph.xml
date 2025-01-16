@@ -174,7 +174,7 @@
 
     <dialog
         android:id="@+id/profileScreen"
-        android:name="com.anytypeio.anytype.ui.profile.ProfileScreenFragment"
+        android:name="com.anytypeio.anytype.ui.profile.ParticipantFragment"
         android:label="Profile screen" />
 
     <fragment

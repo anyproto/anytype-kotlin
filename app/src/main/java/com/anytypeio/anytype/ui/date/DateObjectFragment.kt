@@ -39,7 +39,7 @@ import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
-import com.anytypeio.anytype.ui.profile.ProfileScreenFragment
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
@@ -168,7 +168,7 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     runCatching {
                         findNavController().navigate(
                             R.id.profileScreen,
-                            ProfileScreenFragment.args(
+                            ParticipantFragment.args(
                                 objectId = effect.objectId,
                                 space = effect.space.id
                             )

@@ -27,7 +27,7 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.profile.ProfileScreenFragment
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -97,7 +97,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                             runCatching {
                                 findNavController().navigate(
                                     R.id.profileScreen,
-                                    ProfileScreenFragment.args(
+                                    ParticipantFragment.args(
                                         objectId = nav.target,
                                         space = nav.space
                                     )

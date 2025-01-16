@@ -60,7 +60,7 @@ import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
 import com.anytypeio.anytype.ui.notifications.NotificationsFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
-import com.anytypeio.anytype.ui.profile.ProfileScreenFragment
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         runCatching {
                                             findNavController(R.id.fragment).navigate(
                                                 R.id.profileScreen,
-                                                ProfileScreenFragment.args(
+                                                ParticipantFragment.args(
                                                     objectId = dest.target,
                                                     space = dest.space
                                                 )

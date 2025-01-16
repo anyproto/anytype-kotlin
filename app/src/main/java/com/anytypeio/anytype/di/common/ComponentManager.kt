@@ -67,7 +67,7 @@ import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponen
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemonicLoginComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationComponent
-import com.anytypeio.anytype.di.feature.profile.DaggerProfileScreenComponent
+import com.anytypeio.anytype.di.feature.participant.DaggerParticipantComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -117,7 +117,7 @@ import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
-import com.anytypeio.anytype.presentation.profile.ProfileViewModel
+import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
@@ -345,8 +345,8 @@ class ComponentManager(
             .create(params, findComponentDependencies())
     }
 
-    val profileScreenComponent = ComponentWithParams { params: ProfileViewModel.VmParams ->
-        DaggerProfileScreenComponent
+    val participantScreenComponent = ComponentWithParams { params: ParticipantViewModel.VmParams ->
+        DaggerParticipantComponent
             .factory()
             .create(params, findComponentDependencies())
     }

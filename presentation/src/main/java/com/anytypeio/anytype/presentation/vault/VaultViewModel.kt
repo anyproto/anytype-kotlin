@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
@@ -258,7 +259,7 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                if (chat != null) {
+                if (chat != null && ChatConfig.isChatAllowed(space = targetSpace)) {
                     commands.emit(
                         Command.EnterSpaceLevelChat(
                             space = Space(targetSpace),

@@ -240,7 +240,6 @@ class HomeScreenViewModel(
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
     private val allContentWidget = AllContentWidgetContainer()
-    private val spaceChatWidget = SpaceChatWidgetContainer()
 
     private val spaceWidgetView = spaceWidgetContainer.view
 
@@ -414,9 +413,6 @@ class HomeScreenViewModel(
                     combine(
                         flows = buildList<Flow<WidgetView>> {
                             add(spaceWidgetView)
-                            if (featureToggles.isSpaceLevelChatWidgetEnabled) {
-                                add(spaceChatWidget.view)
-                            }
                             add(allContentWidget.view)
                             addAll(list.map { m -> m.view })
                         }

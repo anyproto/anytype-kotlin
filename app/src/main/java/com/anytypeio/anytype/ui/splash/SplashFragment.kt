@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.FragmentSplashBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
+import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.chats.ChatFragment
@@ -152,7 +153,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 runCatching {
                     findNavController().navigate(R.id.actionOpenVaultFromSplash)
                     val chat = command.chat
-                    if (chat == null) {
+                    if (chat == null || !ChatConfig.isChatAllowed(space = command.space)) {
                         findNavController().navigate(
                             R.id.actionOpenSpaceFromVault,
                             args = HomeScreenFragment.args(
@@ -184,7 +185,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 runCatching {
                     findNavController().navigate(R.id.actionOpenVaultFromSplash)
                     val chat = command.chat
-                    if (chat == null) {
+                    if (chat == null || !ChatConfig.isChatAllowed(space = command.space)) {
                         findNavController().navigate(
                             R.id.actionOpenSpaceFromVault,
                             args = HomeScreenFragment.args(
@@ -216,7 +217,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 runCatching {
                     findNavController().navigate(R.id.actionOpenVaultFromSplash)
                     val chat = command.chat
-                    if (chat == null) {
+                    if (chat == null || !ChatConfig.isChatAllowed(space = command.space)) {
                         findNavController().navigate(
                             R.id.actionOpenSpaceFromVault,
                             args = HomeScreenFragment.args(

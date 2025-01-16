@@ -118,6 +118,7 @@ import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
+import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
@@ -373,7 +374,12 @@ class ComponentManager(
         editorComponent
             .get(key = param.ctx, param = param)
             .objectRelationListComponent()
-            .withVmParams(RelationListViewModel.VmParams(param.space))
+            .withVmParams(
+                RelationListViewModel.VmParams(
+                    objectId = param.ctx,
+                    spaceId = param.space
+                )
+            )
             .module(ObjectRelationListModule)
             .build()
     }
@@ -382,7 +388,12 @@ class ComponentManager(
         objectSetComponent
             .get(key = param.ctx, param = param)
             .objectRelationListComponent()
-            .withVmParams(RelationListViewModel.VmParams(param.space))
+            .withVmParams(
+                RelationListViewModel.VmParams(
+                    objectId = param.ctx,
+                    spaceId = param.space
+                )
+            )
             .module(ObjectRelationListModule)
             .build()
     }
@@ -585,6 +596,12 @@ class ComponentManager(
         editorComponent
             .get(key = param.ctx, param = param)
             .relationAddToObjectComponent()
+            .withVmParams(
+                vmParams = RelationAddViewModelBase.VmParams(
+                    objectId = param.ctx,
+                    space = param.space
+                )
+            )
             .module(RelationAddToObjectModule)
             .build()
     }
@@ -593,6 +610,12 @@ class ComponentManager(
         objectSetComponent
             .get(key = param.ctx, param = param)
             .relationAddToObjectComponent()
+            .withVmParams(
+                vmParams = RelationAddViewModelBase.VmParams(
+                    objectId = param.ctx,
+                    space = param.space
+                )
+            )
             .module(RelationAddToObjectModule)
             .build()
     }
@@ -601,6 +624,12 @@ class ComponentManager(
         objectSetComponent
             .get(key = param.ctx, param = param)
             .relationAddToDataViewComponent()
+            .withVmParams(
+                vmParams = RelationAddViewModelBase.VmParams(
+                    objectId = param.ctx,
+                    space = param.space
+                )
+            )
             .module(RelationAddToDataViewModule)
             .build()
     }

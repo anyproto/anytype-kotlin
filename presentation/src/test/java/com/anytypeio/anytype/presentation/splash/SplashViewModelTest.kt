@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
@@ -85,6 +86,9 @@ class SplashViewModelTest {
     @Mock
     lateinit var createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate
 
+    @Mock
+    lateinit var spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
+
     lateinit var vm: SplashViewModel
 
     private val defaultSpaceConfig = StubConfig()
@@ -114,7 +118,8 @@ class SplashViewModelTest {
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             globalSubscriptionManager = globalSubscriptionManager,
             getLastOpenedSpace = getLastOpenedSpace,
-            createObjectByTypeAndTemplate = createObjectByTypeAndTemplate
+            createObjectByTypeAndTemplate = createObjectByTypeAndTemplate,
+            spaceViews = spaceViewSubscriptionContainer
         )
     }
 

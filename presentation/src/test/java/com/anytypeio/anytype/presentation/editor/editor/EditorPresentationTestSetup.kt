@@ -561,8 +561,6 @@ open class EditorPresentationTestSetup {
                                 context = root,
                                 root = root,
                                 details = details,
-                                relations = relations,
-                                relationLinks = relationLinks,
                                 blocks = document,
                                 objectRestrictions = objectRestrictions
                             )

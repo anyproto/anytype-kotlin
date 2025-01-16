@@ -82,7 +82,6 @@ class DefaultBlockViewRendererTest {
             anchor = anchor,
             indent = indent,
             details = details,
-            relationLinks = emptyList(),
             restrictions = restrictions,
             selection = emptySet(),
             parentScheme = schema

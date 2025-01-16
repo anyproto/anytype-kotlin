@@ -14,7 +14,7 @@ import kotlin.time.toDuration
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
-fun DiscussionPreview() {
+fun ChatPreview() {
     Messages(
         messages = listOf(
             ChatView.Message(
@@ -58,9 +58,6 @@ fun DiscussionPreview() {
             )
         ),
         scrollState = LazyListState(),
-        title = "Conversations with friends",
-        onTitleChanged = {},
-        onTitleFocusChanged = {},
         onReacted = { a, b -> },
         onDeleteMessage = {},
         onCopyMessage = {},
@@ -76,9 +73,8 @@ fun DiscussionPreview() {
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
-fun DiscussionScreenPreview() {
+fun ChatScreenPreview() {
     ChatScreen(
-        title = "Conversations with friends",
         messages = buildList {
             repeat(30) { idx ->
                 add(
@@ -102,7 +98,6 @@ fun DiscussionScreenPreview() {
             }
         }.reversed(),
         onMessageSent = {},
-        onTitleChanged = {},
         onAttachClicked = {},
         attachments = emptyList(),
         onClearAttachmentClicked = {},
@@ -113,7 +108,6 @@ fun DiscussionScreenPreview() {
         onAttachmentClicked = {},
         onEditMessage = {},
         onExitEditMessageMode = {},
-        isSpaceLevelChat = true,
         onBackButtonClicked = {},
         onMarkupLinkClicked = {},
         onAttachFileClicked = {},

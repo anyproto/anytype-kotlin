@@ -300,6 +300,9 @@ class RelationAddViewModelBaseTest {
             repo = repo,
             dispatchers = appCoroutineDispatchers
         ),
-        spaceManager = spaceManager
+        vmParams = VmParams(
+            objectId = MockDataFactory.randomUuid(),
+            space = SpaceId(spaceId)
+        )
     ) {}
 }

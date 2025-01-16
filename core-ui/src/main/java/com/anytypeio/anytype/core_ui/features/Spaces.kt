@@ -37,7 +37,8 @@ fun SpaceIconView(
     onSpaceIconClick: () -> Unit,
 ) {
     val radius = when(mainSize) {
-        20.dp -> 4.dp
+        20.dp -> 2.dp
+        28.dp, 32. dp -> 4.dp
         40.dp -> 5.dp
         48.dp -> 6.dp
         64.dp -> 8.dp
@@ -46,7 +47,8 @@ fun SpaceIconView(
     }
 
     val fontSize = when(mainSize) {
-        20.dp -> 16.sp
+        20.dp -> 13.sp
+        28.dp, 32.dp -> 20.sp
         40.dp -> 24.sp
         48.dp -> 28.sp
         64.dp -> 40.sp

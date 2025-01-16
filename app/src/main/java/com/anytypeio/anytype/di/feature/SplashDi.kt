@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
@@ -202,4 +203,5 @@ interface SplashDependencies : ComponentDependencies {
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
     fun globalSubscriptionManager(): GlobalSubscriptionManager
     fun logger(): Logger
+    fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
 }

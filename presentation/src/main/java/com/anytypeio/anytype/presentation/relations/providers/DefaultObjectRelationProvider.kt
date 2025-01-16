@@ -5,38 +5,49 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.Editor
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 
 class DefaultObjectRelationProvider(
     private val storeOfRelations: StoreOfRelations,
     private val storage: Editor.Storage
 ) : ObjectRelationProvider {
 
-    override suspend fun getById(relation: Id): ObjectWrapper.Relation {
-        return storeOfRelations.getById(relation) ?: throw IllegalStateException("Could not find relation by id: $relation")
-    }
-
-    override suspend fun get(relation: Key): ObjectWrapper.Relation {
-        return storeOfRelations.getByKey(relation) ?: throw IllegalStateException("Could not find relation by key: $relation")
-    }
-
     override suspend fun getOrNull(relation: Key): ObjectWrapper.Relation? {
         return storeOfRelations.getByKey(relation)
     }
 
-    override fun observeAll(): Flow<List<ObjectWrapper.Relation>> {
-        return storage.relationLinks.stream().map { links ->
-            links.mapNotNull { relationLink ->
-                storeOfRelations.getByKey(relationLink.key)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun observeAll(id: Id): Flow<List<ObjectWrapper.Relation>> =
+        combine(
+            storeOfRelations.trackChanges(),
+            storage.details.stream()
+        ) { _, details ->
+            details
+        }.flatMapLatest { details ->
+            val objectKeys = details.details[id]?.map?.keys ?: emptyList()
+            flow {
+                objectKeys.mapNotNull {
+                    storeOfRelations.getByKey(it)
+                }
             }
         }
-    }
 
-    override fun observe(relation: Key): Flow<ObjectWrapper.Relation> {
-        return observeAll().mapNotNull { relations ->
-            relations.find { it.key == relation }
-        }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun observeRelation(relation: Key): Flow<ObjectWrapper.Relation> {
+        return storeOfRelations.trackChanges()
+            .flatMapLatest { _ ->
+                val relation = storeOfRelations.getByKey(relation)
+                if (relation != null) {
+                    flowOf(relation)
+                } else {
+                    emptyFlow()
+                }
+            }
     }
 }

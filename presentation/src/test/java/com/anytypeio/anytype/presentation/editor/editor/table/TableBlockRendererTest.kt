@@ -61,7 +61,6 @@ class TableBlockRendererTest {
             focus = focus,
             indent = indent,
             details = details,
-            relationLinks = emptyList(),
             restrictions = restrictions,
             selection = selections
         )

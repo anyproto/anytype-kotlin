@@ -52,7 +52,6 @@ import com.anytypeio.anytype.di.feature.chats.DaggerChatComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.chats.DaggerChatReactionComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatReactionComponent
-import com.anytypeio.anytype.di.feature.chats.DaggerSpaceLevelChatComponent
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
@@ -116,6 +115,7 @@ import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
+import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
@@ -365,7 +365,12 @@ class ComponentManager(
         editorComponent
             .get(key = param.ctx, param = param)
             .objectRelationListComponent()
-            .withVmParams(RelationListViewModel.VmParams(param.space))
+            .withVmParams(
+                RelationListViewModel.VmParams(
+                    objectId = param.ctx,
+                    spaceId = param.space
+                )
+            )
             .module(ObjectRelationListModule)
             .build()
     }
@@ -374,7 +379,12 @@ class ComponentManager(
         objectSetComponent
             .get(key = param.ctx, param = param)
             .objectRelationListComponent()
-            .withVmParams(RelationListViewModel.VmParams(param.space))
+            .withVmParams(
+                RelationListViewModel.VmParams(
+                    objectId = param.ctx,
+                    spaceId = param.space
+                )
+            )
             .module(ObjectRelationListModule)
             .build()
     }
@@ -577,6 +587,12 @@ class ComponentManager(
         editorComponent
             .get(key = param.ctx, param = param)
             .relationAddToObjectComponent()
+            .withVmParams(
+                vmParams = RelationAddViewModelBase.VmParams(
+                    objectId = param.ctx,
+                    space = param.space
+                )
+            )
             .module(RelationAddToObjectModule)
             .build()
     }
@@ -585,6 +601,12 @@ class ComponentManager(
         objectSetComponent
             .get(key = param.ctx, param = param)
             .relationAddToObjectComponent()
+            .withVmParams(
+                vmParams = RelationAddViewModelBase.VmParams(
+                    objectId = param.ctx,
+                    space = param.space
+                )
+            )
             .module(RelationAddToObjectModule)
             .build()
     }
@@ -593,6 +615,12 @@ class ComponentManager(
         objectSetComponent
             .get(key = param.ctx, param = param)
             .relationAddToDataViewComponent()
+            .withVmParams(
+                vmParams = RelationAddViewModelBase.VmParams(
+                    objectId = param.ctx,
+                    space = param.space
+                )
+            )
             .module(RelationAddToDataViewModule)
             .build()
     }
@@ -1067,16 +1095,8 @@ class ComponentManager(
                 .build()
         }
 
-    val chatComponent = ComponentMapWithParam { params: ChatViewModel.Params ->
+    val chatComponent = ComponentMapWithParam { params: ChatViewModel.Params.Default ->
         DaggerChatComponent
-            .builder()
-            .withDependencies(findComponentDependencies())
-            .withParams(params)
-            .build()
-    }
-
-    val spaceLevelChatComponent = ComponentMapWithParam { params: ChatViewModel.Params ->
-        DaggerSpaceLevelChatComponent
             .builder()
             .withDependencies(findComponentDependencies())
             .withParams(params)

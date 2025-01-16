@@ -390,6 +390,7 @@ message Block {
                 TimeFormat timeFormat = 6;
                 DateFormat dateFormat = 7;
                 FormulaType formula = 8;
+                Block.Align align = 9;
 
                 enum DateFormat {
                     MonthAbbrBeforeDay = 0; // Jul 30, 2020

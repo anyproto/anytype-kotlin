@@ -13,11 +13,11 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -39,7 +39,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -64,7 +63,6 @@ class RelationListViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    private val isInAddMode = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(replay = 0)
     val views = MutableStateFlow<List<Model>>(emptyList())
 
@@ -74,7 +72,6 @@ class RelationListViewModel(
 
     fun onStartListMode(ctx: Id) {
         Timber.d("onStartListMode, ctx: $ctx")
-        isInAddMode.value = false
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = relationsScreenShow
@@ -82,17 +79,15 @@ class RelationListViewModel(
         jobs += viewModelScope.launch {
             combine(
                 storeOfRelations.trackChanges(),
-                relationListProvider.links,
                 relationListProvider.details
-            ) { _, relationLinks, details ->
-                constructViews(ctx, relationLinks, details)
+            ) { _, details ->
+                constructViews(ctx, details)
             }.collect { views.value = it }
         }
     }
 
     private suspend fun constructViews(
         ctx: Id,
-        relationLinks: List<RelationLink>,
         details: Block.Details
     ): List<Model> {
 
@@ -108,7 +103,6 @@ class RelationListViewModel(
         val objectRelationViews = getObjectRelationsView(
             ctx = ctx,
             objectDetails = objectDetails,
-            relationLinks = relationLinks,
             details = details,
             objectWrapper = objectWrapper
         )
@@ -116,7 +110,6 @@ class RelationListViewModel(
         val recommendedRelationViews = getRecommendedRelations(
             ctx = ctx,
             objectDetails = objectDetails,
-            relationLinks = relationLinks,
             objectTypeWrapper = objectTypeWrapper,
             details = details
         )
@@ -127,13 +120,12 @@ class RelationListViewModel(
     private suspend fun getObjectRelationsView(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
-        relationLinks: List<RelationLink>,
         details: Block.Details,
         objectWrapper: ObjectWrapper.Basic
     ): List<Model.Item> {
         return getObjectRelations(
             systemRelations = listOf(),
-            relationLinks = relationLinks,
+            relationKeys = objectDetails.keys,
             storeOfRelations = storeOfRelations
         ).views(
             context = ctx,
@@ -153,12 +145,11 @@ class RelationListViewModel(
     private suspend fun getRecommendedRelations(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
-        relationLinks: List<RelationLink>,
         objectTypeWrapper: ObjectWrapper.Type,
         details: Block.Details
     ): List<Model.Item> {
         return getNotIncludedRecommendedRelations(
-            relationLinks = relationLinks,
+            relationKeys = objectDetails.keys,
             recommendedRelations = objectTypeWrapper.recommendedRelations,
             storeOfRelations = storeOfRelations
         ).views(
@@ -197,11 +188,6 @@ class RelationListViewModel(
         }
     }
 
-    fun onStartAddMode(ctx: Id) {
-        isInAddMode.value = true
-        getRelations(ctx)
-    }
-
     fun onStop() {
         jobs.apply {
             forEach { it.cancel() }
@@ -212,15 +198,11 @@ class RelationListViewModel(
     fun onRelationClicked(ctx: Id, target: Id?, view: ObjectRelationView) {
         Timber.d("onRelationClicked, ctx: $ctx, target: $target, view: $view")
         viewModelScope.launch {
-            if (isInAddMode.value) {
-                onRelationClickedAddMode(target = target, view = view)
+            if (checkRelationIsInObject(view)) {
+                onRelationClickedListMode(ctx, view)
             } else {
-                if (checkRelationIsInObject(view)) {
+                proceedWithAddingRelationToObject(ctx, view) {
                     onRelationClickedListMode(ctx, view)
-                } else {
-                    proceedWithAddingRelationToObject(ctx, view) {
-                        onRelationClickedListMode(ctx, view)
-                    }
                 }
             }
         }
@@ -244,9 +226,9 @@ class RelationListViewModel(
         }
     }
 
-    private suspend fun checkRelationIsInObject(view: ObjectRelationView): Boolean {
-        val relationLinks = relationListProvider.links.stateIn(viewModelScope).value
-        return relationLinks.any { it.key == view.key }
+    private fun checkRelationIsInObject(view: ObjectRelationView): Boolean {
+        val objectRelations = relationListProvider.getDetails().details[vmParams.objectId]?.map?.keys
+        return objectRelations?.any { it == view.key } == true
     }
 
     private suspend fun proceedWithAddingRelationToObject(
@@ -258,10 +240,10 @@ class RelationListViewModel(
             ctx = ctx,
             relationKey = view.key
         )
-        addRelationToObject.run(params).process(
-            failure = { Timber.e(it, "Error while adding relation to object") },
-            success = {
-                dispatcher.send(it)
+        addRelationToObject.async(params).fold(
+            onFailure = { Timber.e(it, "Error while adding relation to object") },
+            onSuccess = { payload ->
+                if (payload != null) dispatcher.send(payload)
                 analytics.sendAnalyticsRelationEvent(
                     eventName = EventsDictionary.relationAdd,
                     storeOfRelations = storeOfRelations,
@@ -523,21 +505,6 @@ class RelationListViewModel(
         }
     }
 
-    private fun getRelations(ctx: Id) {
-        viewModelScope.launch {
-            val relations =
-                relationListProvider.getLinks().mapNotNull { storeOfRelations.getByKey(it.key) }
-            val details = relationListProvider.getDetails()
-            val values = details.details[ctx]?.map ?: emptyMap()
-            views.value = relations.views(
-                details = details,
-                values = values,
-                urlBuilder = urlBuilder,
-                fieldParser = fieldParser
-            ).map { Model.Item(it) }
-        }
-    }
-
     fun onRelationTextValueChanged(
         ctx: Id,
         value: Any?,
@@ -653,6 +620,7 @@ class RelationListViewModel(
     }
 
     data class VmParams(
+        val objectId: Id,
         val spaceId: SpaceId
     )
 

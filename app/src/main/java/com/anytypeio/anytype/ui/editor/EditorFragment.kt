@@ -1069,17 +1069,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     SelectProgrammingLanguageFragment.new(command.target)
                         .showChildFragment()
                 }
-                is Command.OpenObjectRelationScreen.RelationAdd -> {
-                    hideKeyboard()
-                    ObjectRelationListFragment
-                        .new(
-                            ctx = command.ctx,
-                            space = space,
-                            target = command.target,
-                            mode = ObjectRelationListFragment.MODE_ADD,
-                        )
-                        .showChildFragment()
-                }
                 is Command.OpenObjectRelationScreen.RelationList -> {
                     hideKeyboard()
                     findNavController().safeNavigate(
@@ -1090,7 +1079,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             ObjectRelationListFragment.ARG_SPACE to space,
                             ObjectRelationListFragment.ARG_TARGET to command.target,
                             ObjectRelationListFragment.ARG_LOCKED to command.isLocked,
-                            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
                         )
                     )
                 }

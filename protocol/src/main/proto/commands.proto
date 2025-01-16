@@ -2628,6 +2628,8 @@ message Rpc {
                 bool isJson = 7;
                 // for migration
                 bool includeArchived = 9;
+                // for integrations like raycast and web publishing
+                bool noProgress = 11;
             }
 
             message Response {

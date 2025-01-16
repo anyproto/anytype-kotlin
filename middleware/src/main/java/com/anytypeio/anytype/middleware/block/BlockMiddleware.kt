@@ -413,7 +413,7 @@ class BlockMiddleware(
 
     override suspend fun addRelationToObject(
         ctx: Id, relation: Key
-    ): Payload = middleware.objectRelationAdd(ctx, relation)
+    ): Payload? = middleware.objectRelationAdd(ctx, relation)
 
     override suspend fun deleteRelationFromObject(
         ctx: Id,

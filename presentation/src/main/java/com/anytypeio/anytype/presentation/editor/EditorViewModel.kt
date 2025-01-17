@@ -7581,7 +7581,7 @@ class EditorViewModel(
                 .run(Unit)
                 .collect { event ->
                     if (event.any { it is FileLimitsEvent.FileLimitReached }) {
-                        _toasts.emit("You exceeded file limit upload")
+                        //_toasts.emit("You exceeded file limit upload")
                     }
                 }
         }

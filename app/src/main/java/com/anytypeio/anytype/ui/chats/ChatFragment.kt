@@ -96,9 +96,6 @@ class ChatFragment : BaseComposeFragment() {
                             modifier = Modifier.weight(1f),
                             vm = vm,
                             onAttachObjectClicked = { showGlobalSearchBottomSheet = true },
-                            onBackButtonClicked = {
-                                vm.onBackButtonPressed(isSpaceRootScreen())
-                            },
                             onMarkupLinkClicked = { proceedWithAction(SystemAction.OpenUrl(it)) },
                             onRequestOpenFullScreenImage = { url -> vm.onMediaPreview(url) },
                             onSelectChatReaction = vm::onSelectChatReaction,

@@ -1236,6 +1236,7 @@
     <string name="multiplayer_collaborate_step_1">1. Нажмите на виджет Пространства, чтобы получить доступ к настройкам</string>
     <string name="multiplayer_collaborate_step_2">2. Откройте раздел «Доступ»</string>
     <string name="multiplayer_collaborate_step_3">3. Создайте ссылку для приглашения и поделитесь ею</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d участник</item>
         <item quantity="few">%1$d участника</item>

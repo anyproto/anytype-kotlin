@@ -1768,7 +1768,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onBackClicked(isSpaceRoot: Boolean = false) {
+    fun onBackClicked(isSpaceRoot: Boolean) {
         viewModelScope.launch {
             if (spaceManager.getState() is SpaceManager.State.Space) {
                 // Proceed with releasing resources before exiting
@@ -1788,6 +1788,7 @@ class HomeScreenViewModel(
                         }
                 }
                 if (isSpaceRoot) {
+                    Timber.d("Root space screen. Releasing resources...")
                     proceedWithClearingSpaceBeforeExitingToVault()
                 }
             }

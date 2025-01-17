@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -139,7 +141,11 @@ class HomeScreenFragment : BaseComposeFragment(),
                         onSpaceIconClicked = vm::onSpaceSettingsClicked,
                         membersCount = view?.membersCount ?: 0,
                         name = view?.space?.name.orEmpty(),
-                        onBackButtonClicked = vm::onBackClicked,
+                        onBackButtonClicked = {
+                            vm.onBackClicked(
+                                isSpaceRoot = isSpaceRootScreen()
+                            )
+                        },
                         onSettingsClicked = {
                             runCatching {
                                 findNavController()
@@ -162,7 +168,9 @@ class HomeScreenFragment : BaseComposeFragment(),
             }
 
             BackHandler {
-                vm.onBackClicked()
+                vm.onBackClicked(
+                    isSpaceRoot = isSpaceRootScreen()
+                )
             }
         }
     }
@@ -195,7 +203,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                 onClick = { vm.onCreateNewObjectLongClicked() }
             ),
             onBackClicked = throttledClick(
-                onClick = vm::onBackClicked
+                onClick = { vm.onBackClicked(isSpaceRootScreen()) }
             ),
             onSpaceWidgetClicked = throttledClick(
                 onClick = vm::onSpaceSettingsClicked
@@ -510,4 +518,9 @@ class HomeScreenFragment : BaseComposeFragment(),
             SPACE_ID_KEY to space
         )
     }
+}
+
+fun Fragment.isSpaceRootScreen() : Boolean {
+    val previous = findNavController().previousBackStackEntry
+    return previous?.destination?.id == R.id.vaultScreen
 }

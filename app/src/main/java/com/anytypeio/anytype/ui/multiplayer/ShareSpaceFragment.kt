@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.Command
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import timber.log.Timber
@@ -69,7 +70,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onDeleteLinkClicked = vm::onDeleteLinkClicked,
                         incentiveState = vm.showIncentive.collectAsStateWithLifecycle().value,
                         onIncentiveClicked = vm::onIncentiveClicked,
-                        isLoadingInProgress = vm.isLoadingInProgress.collectAsStateWithLifecycle().value
+                        isLoadingInProgress = vm.isLoadingInProgress.collectAsStateWithLifecycle().value,
+                        onMemberClicked = vm::onMemberClicked
                     )
                 }
                 LaunchedEffect(Unit) {
@@ -213,6 +215,19 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     is MultiplayerError.Generic.SpaceIsDeleted -> {
                         toast(resources.getString(R.string.multiplayer_error_space_is_deleted))
                     }
+                }
+            }
+            is Command.OpenParticipantObject -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.profileScreen,
+                        ParticipantFragment.args(
+                            space = command.space.id,
+                            objectId = command.objectId
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation: $command")
                 }
             }
         }

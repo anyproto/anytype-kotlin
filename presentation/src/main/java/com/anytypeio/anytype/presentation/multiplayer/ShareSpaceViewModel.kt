@@ -465,6 +465,17 @@ class ShareSpaceViewModel(
         }
     }
 
+    fun onMemberClicked(member: ObjectWrapper.SpaceMember) {
+        viewModelScope.launch {
+            commands.emit(
+                Command.OpenParticipantObject(
+                    objectId = member.id,
+                    space = vmParams.space
+                )
+            )
+        }
+    }
+
     fun onIncentiveClicked() {
         val activeTier = (_activeTier.value as? ActiveTierState.Success) ?: return
         val isPossibleToUpgrade = activeTier.tierId.isPossibleToUpgradeNumberOfSpaceMembers()
@@ -599,6 +610,7 @@ class ShareSpaceViewModel(
         data object Dismiss : Command()
         data object ShowMembershipScreen : Command()
         data object ShowMembershipUpgradeScreen : Command()
+        data class OpenParticipantObject(val objectId: Id, val space: SpaceId) : Command()
     }
 
     sealed class ShareSpaceIncentiveState {

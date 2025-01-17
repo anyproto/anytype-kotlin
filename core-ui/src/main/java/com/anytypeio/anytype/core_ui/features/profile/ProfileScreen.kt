@@ -1,11 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -29,33 +25,37 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
-import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.relations.CircleIcon
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
-import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
-import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.presentation.profile.ParticipantEvent
+import com.anytypeio.anytype.presentation.profile.ParticipantViewModel.UiParticipantScreenState
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    uiState: UiParticipantScreenState,
+    onEvent: (ParticipantEvent) -> Unit
+) {
 
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
 
     ModalBottomSheet(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp, end = 12.dp, bottom = 32.dp),
         dragHandle = {
             Column {
                 Spacer(modifier = Modifier.height(6.dp))
@@ -65,44 +65,70 @@ fun ProfileScreen() {
         },
         scrimColor = colorResource(id = R.color.modal_screen_outside_background),
         containerColor = colorResource(id = R.color.background_secondary),
-        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        shape = RoundedCornerShape(20.dp),
         sheetState = bottomSheetState,
         onDismissRequest = {
-            //onDateEvent(DateEvent.FieldsSheet.OnSheetDismiss)
+            onEvent(ParticipantEvent.OnDismiss)
         },
         content = {
-            ProfileTitle(
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            ProfileAnyTitle(
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            ProfileDescription(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            ProfileButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-                    .padding(bottom = 32.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
+            if (uiState is UiParticipantScreenState.Data) {
+                val (spacer, iconSize) = if (uiState.description.isNullOrBlank()) {
+                    68.dp to 184.dp
+                } else {
+                    48.dp to 128.dp
+                }
+                Spacer(modifier = Modifier.height(spacer))
+                ProfileImageBlock(
+                    modifier = Modifier
+                        .size(iconSize)
+                        .align(Alignment.CenterHorizontally),
+                    name = uiState.name,
+                    icon = uiState.icon,
+                ) { }
+                Spacer(modifier = Modifier.height(12.dp))
+                ProfileTitle(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    name = uiState.name
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                if (uiState.identity != null) {
+                    ProfileAnyTitle(
+                        modifier = Modifier
+                            .padding(horizontal = 32.dp)
+                            .align(Alignment.CenterHorizontally),
+                        identity = uiState.identity!!
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                if (!uiState.description.isNullOrBlank()) {
+                    ProfileDescription(
+                        modifier = Modifier
+                            .padding(horizontal = 32.dp)
+                            .align(Alignment.CenterHorizontally),
+                        description = uiState.description!!
+                    )
+                }
+                if (uiState.isOwner) {
+                    ButtonSecondary(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 32.dp)
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally),
+                        text = stringResource(R.string.profile_view_edit_button),
+                        size = ButtonSize.LargeSecondary,
+                        onClick = { onEvent(ParticipantEvent.OnButtonClick) }
+                    )
+                } else {
+                    Spacer(
+                        modifier = Modifier
+                            .height(64.dp)
+                            .background(color = colorResource(R.color.palette_dark_teal))
+                    )
+                }
+            }
         },
     )
-}
-
-@Composable
-private fun ProfileContent() {
-//    ProfileImageBlock(
-//        modifier = Modifier.size(112.dp),
-//        name =
-//
-//    )
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -111,7 +137,7 @@ fun ProfileImageBlock(
     modifier: Modifier,
     name: String,
     icon: ProfileIconView,
-    fontSize: TextUnit,
+    fontSize: TextUnit = 24.sp,
     onProfileIconClick: () -> Unit
 ) {
     when (icon) {
@@ -127,6 +153,7 @@ fun ProfileImageBlock(
                     }
             )
         }
+
         else -> {
             val nameFirstChar = if (name.isEmpty()) {
                 stringResource(id = R.string.account_default_name)
@@ -155,53 +182,49 @@ fun ProfileImageBlock(
 }
 
 @Composable
-private fun ProfileIcon() {
-
-}
-
-@Composable
-private fun ProfileTitle(modifier: Modifier) {
+private fun ProfileTitle(modifier: Modifier, name: String) {
     Text(
         modifier = modifier,
-        text = "Ivanov Konstantin",
+        text = name,
         style = HeadlineHeading,
-        color = colorResource(id = R.color.text_primary)
+        color = colorResource(id = R.color.text_primary),
+        maxLines = 3
     )
 }
 
 @Composable
-private fun ProfileAnyTitle(modifier: Modifier) {
+private fun ProfileAnyTitle(modifier: Modifier, identity: String) {
     Text(
         modifier = modifier,
-        text = "ivanov.any",
+        text = identity,
         style = Caption1Regular,
-        color = colorResource(id = R.color.text_secondary)
+        color = colorResource(id = R.color.text_secondary),
+        maxLines = 2,
+        textAlign = TextAlign.Center
     )
 }
 
 @Composable
-private fun ProfileDescription(modifier: Modifier) {
+private fun ProfileDescription(modifier: Modifier, description: String) {
     Text(
         modifier = modifier,
-        text = "Web3 activist growing a digital garden of knowledge for decentralization and digital rights. Sharing insights on blockchain, transparency, and open data.",
+        text = description,
         style = PreviewTitle2Regular,
         color = colorResource(id = R.color.text_primary),
         textAlign = TextAlign.Center
     )
 }
 
-@Composable
-private fun ProfileButton(modifier: Modifier) {
-    ButtonSecondary(
-        modifier = modifier,
-        text = stringResource(R.string.profile_view_edit_button),
-        size = ButtonSize.LargeSecondary,
-        onClick = {}
-    )
-}
-
 @DefaultPreviews
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen()
+    ProfileScreen(
+        uiState = UiParticipantScreenState.Data(
+            name = "Ivanov Konstantin",
+            icon = ProfileIconView.Emoji(""),
+            description = "some desc",
+            isOwner = true
+        ),
+        onEvent = {}
+    )
 }

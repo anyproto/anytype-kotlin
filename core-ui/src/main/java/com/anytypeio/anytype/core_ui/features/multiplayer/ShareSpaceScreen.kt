@@ -76,6 +76,7 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -111,7 +112,8 @@ fun ShareSpaceScreen(
     onMoreInfoClicked: () -> Unit,
     onShareQrCodeClicked: () -> Unit,
     onDeleteLinkClicked: () -> Unit,
-    onIncentiveClicked: () -> Unit
+    onIncentiveClicked: () -> Unit,
+    onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit
 ) {
     val nestedScrollInteropConnection = rememberNestedScrollInteropConnection()
     Box(
@@ -237,7 +239,8 @@ fun ShareSpaceScreen(
                                     icon = member.icon,
                                     canEditEnabled = member.canEditEnabled,
                                     canReadEnabled = member.canReadEnabled,
-                                    isUser = member.isUser
+                                    isUser = member.isUser,
+                                    onMemberClicked = onMemberClicked
                                 )
                             }
 
@@ -403,6 +406,7 @@ private fun SpaceMember(
     config: ShareSpaceMemberView.Config.Member,
     onCanEditClicked: () -> Unit,
     onCanViewClicked: () -> Unit,
+    onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit,
     onRemoveMemberClicked: () -> Unit,
     canEditEnabled: Boolean,
     canReadEnabled: Boolean
@@ -412,6 +416,7 @@ private fun SpaceMember(
         modifier = Modifier
             .height(72.dp)
             .fillMaxWidth()
+            .noRippleThrottledClickable{ onMemberClicked(member) }
     ) {
         Spacer(modifier = Modifier.width(16.dp))
         SpaceMemberIcon(
@@ -838,7 +843,8 @@ fun ShareSpaceScreenPreview() {
         spaceAccessType = null,
         incentiveState = ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders,
         onIncentiveClicked = {},
-        isLoadingInProgress = false
+        isLoadingInProgress = false,
+        onMemberClicked = {}
     )
 }
 
@@ -860,7 +866,8 @@ private fun SpaceOwnerMemberPreview() {
         isCurrentUserOwner = true,
         canEditEnabled = true,
         canReadEnabled = true,
-        isUser = true
+        isUser = true,
+        onMemberClicked = {}
     )
 }
 
@@ -882,7 +889,8 @@ private fun SpaceEditorMemberPreview() {
         isCurrentUserOwner = true,
         canReadEnabled = true,
         canEditEnabled = true,
-        isUser = true
+        isUser = true,
+        onMemberClicked = {}
     )
 }
 
@@ -904,6 +912,7 @@ private fun SpaceMemberLongNamePreview() {
         isCurrentUserOwner = true,
         canReadEnabled = true,
         canEditEnabled = true,
-        isUser = true
+        isUser = true,
+        onMemberClicked = {}
     )
 }

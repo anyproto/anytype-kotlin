@@ -10,32 +10,39 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.icon.SetImageIcon
+import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class ParticipantViewModel(
     private val vmParams: VmParams,
     private val analytics: Analytics,
-    private val setObjectDetails: SetObjectDetails,
     private val urlBuilder: UrlBuilder,
-    private val setImageIcon: SetDocumentImageIcon,
     private val membershipProvider: MembershipProvider,
     private val subscriptionContainer: StorelessSubscriptionContainer,
-    private val fieldsParser: FieldParser
+    private val fieldsParser: FieldParser,
+    private val userPermissionProvider: UserPermissionProvider,
+    private val configStorage: ConfigStorage
 ) : ViewModel() {
 
+    val uiState = MutableStateFlow<UiParticipantScreenState>(UiParticipantScreenState.Idle)
+
     val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
+    val commands = MutableSharedFlow<Command>(0)
+
+    private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.space))
 
     init {
+        proceedWithObservingPermissions()
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.screenSettingsAccount
@@ -46,59 +53,79 @@ class ParticipantViewModel(
                 membershipStatusState.value = status
             }
         }
-        viewModelScope.launch {
-//            profileContainer.observe().collect { profile ->
-//                AccountProfile.Data(
-//                    name = fieldsParser.getObjectName(profile),
-//                    icon = profile.profileIcon(urlBuilder)
-//                )
-//            }
-        }
     }
 
-    fun onNameChange(name: String) {
-        Timber.d("onNameChange, name:[$name]")
+    fun onStart() {
         viewModelScope.launch {
-            val params = SetObjectDetails.Params(
-                ctx = vmParams.objectId,
-                details = mapOf(Relations.NAME to name)
+            val params = StoreSearchByIdsParams(
+                space = vmParams.space,
+                subscription = "Participant-subscription-${vmParams.objectId}",
+                targets = listOf(vmParams.objectId),
+                keys = ObjectSearchConstants.spaceMemberKeys
             )
-            setObjectDetails.async(params).fold(
-                onFailure = {
-                    Timber.e(it, "Error while updating object details")
-                },
-                onSuccess = {
-                    // do nothing
+            subscriptionContainer.subscribe(params)
+                .collect { participant ->
+                    if (participant.isNotEmpty()) {
+                        val obj = participant.first()
+                        val identityProfileLink = obj.getSingleValue<String>(Relations.IDENTITY_PROFILE_LINK)
+                        uiState.value = UiParticipantScreenState.Data(
+                            name = fieldsParser.getObjectName(obj),
+                            icon = obj.profileIcon(urlBuilder),
+                            isOwner = configStorage.getOrNull()?.profile == identityProfileLink,
+                            identity = obj.getSingleValue<String>(Relations.IDENTITY),
+                            description = if (obj.description?.isBlank() == true) {
+                                null
+                            } else {
+                                obj.description
+                            }
+                        )
+                    }
                 }
-            )
         }
     }
 
-    fun onPickedImageFromDevice(path: String) {
+    private fun proceedWithObservingPermissions() {
         viewModelScope.launch {
-            setImageIcon(
-                SetImageIcon.Params(
-                    target = vmParams.objectId,
-                    path = path,
-                    spaceId = vmParams.space
-                )
-            ).process(
-                failure = {
-                    Timber.e("Error while setting image icon")
-                },
-                success = {
-                    // do nothing
+            userPermissionProvider
+                .observe(space = vmParams.space)
+                .collect { result ->
+                    permission.value = result
                 }
-            )
         }
     }
 
-    sealed class AccountProfile {
-        data object Idle : AccountProfile()
+    fun onStop() {
+        viewModelScope.launch{
+            subscriptionContainer.unsubscribe(listOf("Participant-subscription-${vmParams.objectId}"))
+        }
+    }
+
+    fun onEvent(event: ParticipantEvent) {
+        when (event) {
+            ParticipantEvent.OnDismiss -> {
+                viewModelScope.launch {
+                    commands.emit(Command.Dismiss)
+                }
+            }
+
+            is ParticipantEvent.OnNameUpdate -> TODO()
+            ParticipantEvent.OnButtonClick -> {
+                viewModelScope.launch {
+                    commands.emit(Command.OpenSettingsProfile)
+                }
+            }
+        }
+    }
+
+    sealed class UiParticipantScreenState {
+        data object Idle : UiParticipantScreenState()
         class Data(
             val name: String,
-            val icon: ProfileIconView
-        ) : AccountProfile()
+            val icon: ProfileIconView,
+            val description: String? = null,
+            val identity: String? = null,
+            val isOwner: Boolean
+        ) : UiParticipantScreenState()
     }
 
     data class VmParams(
@@ -106,27 +133,36 @@ class ParticipantViewModel(
         val space: SpaceId
     )
 
-    class Factory(
+    sealed class Command {
+        sealed class Toast : Command() {
+            data class Error(val msg: String) : Toast()
+        }
+
+        data object Dismiss : Command()
+        data object OpenSettingsProfile : Command()
+    }
+
+    class Factory @Inject constructor(
         private val vmParams: VmParams,
         private val analytics: Analytics,
-        private val setObjectDetails: SetObjectDetails,
         private val urlBuilder: UrlBuilder,
-        private val setDocumentImageIcon: SetDocumentImageIcon,
         private val membershipProvider: MembershipProvider,
         private val subscriptionContainer: StorelessSubscriptionContainer,
-        private val fieldsParser: FieldParser
+        private val fieldsParser: FieldParser,
+        private val userPermissionProvider: UserPermissionProvider,
+        private val configStorage: ConfigStorage
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ParticipantViewModel(
                 vmParams = vmParams,
                 analytics = analytics,
-                setObjectDetails = setObjectDetails,
                 urlBuilder = urlBuilder,
-                setImageIcon = setDocumentImageIcon,
                 membershipProvider = membershipProvider,
                 subscriptionContainer = subscriptionContainer,
-                fieldsParser = fieldsParser
+                fieldsParser = fieldsParser,
+                userPermissionProvider = userPermissionProvider,
+                configStorage = configStorage
             ) as T
         }
     }

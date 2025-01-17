@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
@@ -107,4 +108,5 @@ interface ParticipantComponentDependencies : ComponentDependencies {
     fun fieldsProvider(): FieldParser
     fun provideMembershipProvider(): MembershipProvider
     fun subEventChannel(): SubscriptionEventChannel
+    fun provideConfigStorage(): ConfigStorage
 }

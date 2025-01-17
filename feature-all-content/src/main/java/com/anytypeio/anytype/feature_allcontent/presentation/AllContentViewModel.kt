@@ -697,6 +697,15 @@ class AllContentViewModel(
                     )
                 }
 
+                is OpenObjectNavigation.OpenParticipant -> {
+                    commands.emit(
+                        NavigateToParticipant(
+                            objectId = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
+
                 is OpenObjectNavigation.OpenEditor -> {
                     commands.emit(
                         Command.NavigateToEditor(
@@ -721,7 +730,7 @@ class AllContentViewModel(
                 OpenObjectNavigation.NonValidObject -> {
                     Timber.e("Object id is missing")
                 }
-                is OpenObjectNavigation.OpenDataObject -> {
+                is OpenObjectNavigation.OpenDateObject -> {
                     commands.emit(
                         NavigateToEditor(
                             id = navigation.target,
@@ -1007,6 +1016,7 @@ class AllContentViewModel(
         data class NavigateToEditor(val id: Id, val space: Id) : Command()
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
         data class NavigateToBin(val space: Id) : Command()
+        data class NavigateToParticipant(val objectId: Id, val space: Id) : Command()
         data class NavigateToDateObject(val objectId: Id, val space: Id) : Command()
         sealed class SendToast: Command() {
             data class Error(val message: String) : SendToast()

@@ -250,6 +250,8 @@ sealed class ObjectWrapper {
         // N.B. Only used for space view objects
         val targetSpaceId: String? by default
 
+        val chatId: Id? by default
+
         val spaceAccountStatus: SpaceStatus
             get() {
                 val code = getValue<Double?>(Relations.SPACE_ACCOUNT_STATUS)

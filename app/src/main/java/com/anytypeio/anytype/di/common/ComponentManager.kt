@@ -52,7 +52,6 @@ import com.anytypeio.anytype.di.feature.chats.DaggerChatComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.chats.DaggerChatReactionComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatReactionComponent
-import com.anytypeio.anytype.di.feature.chats.DaggerSpaceLevelChatComponent
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
@@ -67,6 +66,7 @@ import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponen
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemonicLoginComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationComponent
+import com.anytypeio.anytype.di.feature.participant.DaggerParticipantComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -116,6 +116,7 @@ import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
+import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
@@ -340,6 +341,12 @@ class ComponentManager(
 
     val allContentComponent = ComponentWithParams { params: AllContentViewModel.VmParams ->
         DaggerAllContentComponent
+            .factory()
+            .create(params, findComponentDependencies())
+    }
+
+    val participantScreenComponent = ComponentWithParams { params: ParticipantViewModel.VmParams ->
+        DaggerParticipantComponent
             .factory()
             .create(params, findComponentDependencies())
     }
@@ -1096,16 +1103,8 @@ class ComponentManager(
                 .build()
         }
 
-    val chatComponent = ComponentMapWithParam { params: ChatViewModel.Params ->
+    val chatComponent = ComponentMapWithParam { params: ChatViewModel.Params.Default ->
         DaggerChatComponent
-            .builder()
-            .withDependencies(findComponentDependencies())
-            .withParams(params)
-            .build()
-    }
-
-    val spaceLevelChatComponent = ComponentMapWithParam { params: ChatViewModel.Params ->
-        DaggerSpaceLevelChatComponent
             .builder()
             .withDependencies(findComponentDependencies())
             .withParams(params)

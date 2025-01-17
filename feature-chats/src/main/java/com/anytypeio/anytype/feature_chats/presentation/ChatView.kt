@@ -18,6 +18,7 @@ sealed interface ChatView {
         val id: String,
         val content: Content,
         val author: String,
+        val creator: Id?,
         val timestamp: Long,
         val attachments: List<Attachment> = emptyList(),
         val reactions: List<Reaction> = emptyList(),
@@ -88,8 +89,4 @@ sealed interface ChatView {
             data class Image(val hash: Hash): Avatar()
         }
     }
-}
-
-object ChatConfig {
-    const val MAX_ATTACHMENT_COUNT = 10
 }

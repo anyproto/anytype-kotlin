@@ -37,6 +37,11 @@ interface AppNavigation {
         space: Id
     )
 
+    fun openParticipantObject(
+        objectId: Id,
+        space: Id
+    )
+
     fun launchDocument(target: String, space: Id)
     fun launchCollections(subscription: Subscription, space: Id)
     fun launchObjectSet(target: Id, space: Id)
@@ -102,6 +107,11 @@ interface AppNavigation {
             val objectId: Id,
             val space: Id
         ) : Command()
+
+        data class OpenParticipant(
+            val objectId: Id,
+            val space: Id
+        ): Command()
 
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
 

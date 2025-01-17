@@ -1,18 +1,17 @@
 package com.anytypeio.anytype.feature_chats.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
@@ -25,8 +24,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
-import com.anytypeio.anytype.domain.`object`.OpenObject
-import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -34,7 +31,11 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -42,14 +43,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class ChatViewModel @Inject constructor(
-    private val vmParams: Params,
-    private val setObjectDetails: SetObjectDetails,
-    private val openObject: OpenObject,
+    private val vmParams: Params.Default,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
     private val editChatMessage: EditChatMessage,
@@ -62,59 +62,44 @@ class ChatViewModel @Inject constructor(
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
-) : BaseViewModel() {
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
+    private val exitToVaultDelegate: ExitToVaultDelegate
+) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
-    val name = MutableStateFlow<String?>(null)
+    val header = MutableStateFlow<HeaderView>(HeaderView.Init)
     val messages = MutableStateFlow<List<ChatView>>(emptyList())
     val chatBoxAttachments = MutableStateFlow<List<ChatView.Message.ChatBoxAttachment>>(emptyList())
-    val commands = MutableSharedFlow<UXCommand>()
+    val commands = MutableSharedFlow<ViewModelCommand>()
+    val uXCommands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
 
-    var chat: Id = ""
-
     init {
         viewModelScope.launch {
-            val account = requireNotNull(getAccount.async(Unit).getOrNull())
-            when (vmParams) {
-                is Params.Default -> {
-                    chat = vmParams.ctx
-                    openObject.async(
-                        OpenObject.Params(
-                            spaceId = vmParams.space,
-                            obj = vmParams.ctx,
-                            saveAsLastOpened = false
+            spaceViews
+                .observe(
+                    vmParams.space
+                ).map { view ->
+                    HeaderView.Default(
+                        title = view.name.orEmpty(),
+                        icon = view.spaceIcon(
+                            builder = urlBuilder,
+                            spaceGradientProvider = SpaceGradientProvider.Default
                         )
-                    ).fold(
-                        onSuccess = { obj ->
-                            val root = ObjectWrapper.Basic(obj.details[vmParams.ctx].orEmpty())
-                            name.value = root.name
-                            proceedWithObservingChatMessages(
-                                account = account.id,
-                                chat = vmParams.ctx
-                            )
-                        },
-                        onFailure = {
-                            Timber.e(it, "Error while opening chat object")
-                        }
                     )
+                }.collect {
+                    header.value = it
                 }
-                is Params.SpaceLevelChat -> {
-                    val targetSpaceView = spaceViews.get(vmParams.space)
-                    val spaceLevelChat = targetSpaceView?.getValue<Id>(Relations.CHAT_ID)
-                    if (spaceLevelChat != null) {
-                        chat = spaceLevelChat
-                        proceedWithObservingChatMessages(
-                            account = account.id,
-                            chat = spaceLevelChat
-                        )
-                    }
-                }
-            }
+        }
+        viewModelScope.launch {
+            val account = requireNotNull(getAccount.async(Unit).getOrNull())
+            proceedWithObservingChatMessages(
+                account = account.id,
+                chat = vmParams.ctx
+            )
         }
     }
 
@@ -201,6 +186,7 @@ class ChatViewModel @Inject constructor(
                         ),
                         reply = reply,
                         author = member?.name ?: msg.creator.takeLast(5),
+                        creator = member?.id,
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,
                         reactions = msg.reactions.map { (emoji, ids) ->
@@ -287,7 +273,8 @@ class ChatViewModel @Inject constructor(
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
-                                    path = attachment.uri
+                                    path = attachment.uri,
+                                    type = Block.Content.File.Type.IMAGE
                                 )
                             ).onSuccess { file ->
                                 add(
@@ -306,7 +293,8 @@ class ChatViewModel @Inject constructor(
                                 uploadFile.async(
                                     UploadFile.Params(
                                         space = vmParams.space,
-                                        path = path
+                                        path = path,
+                                        type = Block.Content.File.Type.NONE
                                     )
                                 ).onSuccess { file ->
                                     // TODO delete file.
@@ -329,7 +317,7 @@ class ChatViewModel @Inject constructor(
                     // TODO consider moving this use-case inside chat container
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
-                            chat = chat,
+                            chat = vmParams.ctx,
                             message = Chat.Message.new(
                                 text = msg,
                                 attachments = attachments
@@ -339,7 +327,7 @@ class ChatViewModel @Inject constructor(
                         chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
-                        commands.emit(UXCommand.JumpToBottom)
+                        uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
@@ -350,7 +338,7 @@ class ChatViewModel @Inject constructor(
                     }
                     editChatMessage.async(
                         params = Command.ChatCommand.EditMessage(
-                            chat = chat,
+                            chat = vmParams.ctx,
                             message = Chat.Message.updated(
                                 id = mode.msg,
                                 text = msg,
@@ -359,7 +347,7 @@ class ChatViewModel @Inject constructor(
                         )
                     ).onSuccess {
                         delay(JUMP_TO_BOTTOM_DELAY)
-                        commands.emit(UXCommand.JumpToBottom)
+                        uXCommands.emit(UXCommand.JumpToBottom)
                         chatBoxAttachments.value = emptyList()
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
@@ -370,7 +358,7 @@ class ChatViewModel @Inject constructor(
                 is ChatBoxMode.Reply -> {
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
-                            chat = chat,
+                            chat = vmParams.ctx,
                             message = Chat.Message.new(
                                 text = msg,
                                 replyToMessageId = mode.msg,
@@ -381,7 +369,7 @@ class ChatViewModel @Inject constructor(
                         chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
-                        commands.emit(UXCommand.JumpToBottom)
+                        uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
@@ -395,25 +383,6 @@ class ChatViewModel @Inject constructor(
         Timber.d("onRequestEditMessageClicked")
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.EditMessage(msg.id)
-        }
-    }
-
-    fun onTitleChanged(input: String) {
-        Timber.d("DROID-2635 OnTitleChanged: $input")
-        viewModelScope.launch {
-            name.value = input
-            setObjectDetails.async(
-                params = SetObjectDetails.Params(
-                    ctx = chat,
-                    details = mapOf(
-                        Relations.NAME to input
-                    )
-                )
-            ).onSuccess {
-                Timber.d("Updated chat title successfully")
-            }.onFailure {
-                Timber.e(it, "Error while updating chat title")
-            }
         }
     }
 
@@ -445,7 +414,7 @@ class ChatViewModel @Inject constructor(
             if (message != null) {
                 toggleChatMessageReaction.async(
                     Command.ChatCommand.ToggleMessageReaction(
-                        chat = chat,
+                        chat = vmParams.ctx,
                         msg = msg,
                         emoji = reaction
                     )
@@ -492,7 +461,7 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             deleteChatMessage.async(
                 Command.ChatCommand.DeleteMessage(
-                    chat = chat,
+                    chat = vmParams.ctx,
                     msg = msg.id
                 )
             ).onFailure {
@@ -506,7 +475,7 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             when(attachment) {
                 is ChatView.Message.Attachment.Image -> {
-                    commands.emit(
+                    uXCommands.emit(
                         UXCommand.OpenFullScreenImage(
                             url = urlBuilder.original(attachment.target)
                         )
@@ -550,6 +519,78 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onBackButtonPressed(isSpaceRoot: Boolean) {
+        viewModelScope.launch {
+            if (isSpaceRoot) {
+                Timber.d("Root space screen. Releasing resources...")
+                proceedWithClearingSpaceBeforeExitingToVault()
+            }
+            commands.emit(ViewModelCommand.Exit)
+        }
+    }
+
+    fun onSpaceIconClicked() {
+        viewModelScope.launch {
+            commands.emit(ViewModelCommand.OpenWidgets)
+        }
+    }
+
+    fun onMediaPreview(url: String) {
+        viewModelScope.launch {
+            commands.emit(
+                ViewModelCommand.MediaPreview(url = url)
+            )
+        }
+    }
+
+    fun onSelectChatReaction(msg: Id) {
+        viewModelScope.launch {
+            commands.emit(
+                ViewModelCommand.SelectChatReaction(
+                    msg = msg
+                )
+            )
+        }
+    }
+
+    fun onViewChatReaction(
+        msg: Id,
+        emoji: String
+    ) {
+        viewModelScope.launch {
+            commands.emit(
+                ViewModelCommand.ViewChatReaction(
+                    msg = msg,
+                    emoji = emoji
+                )
+            )
+        }
+    }
+
+    fun onMemberIconClicked(member: Id?) {
+        viewModelScope.launch {
+            if (member != null) {
+                commands.emit(
+                    ViewModelCommand.ViewMemberCard(
+                        member = member,
+                        space = vmParams.space
+                    )
+                )
+            } else {
+                Timber.e("Space member not found in space-level chat")
+            }
+        }
+    }
+
+    sealed class ViewModelCommand {
+        data object Exit : ViewModelCommand()
+        data object OpenWidgets : ViewModelCommand()
+        data class MediaPreview(val url: String) : ViewModelCommand()
+        data class SelectChatReaction(val msg: Id) : ViewModelCommand()
+        data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
+        data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
+    }
+
     sealed class UXCommand {
         data object JumpToBottom : UXCommand()
         data class SetChatBoxInput(val input: String) : UXCommand()
@@ -566,16 +607,18 @@ class ChatViewModel @Inject constructor(
         ): ChatBoxMode()
     }
 
+    sealed class HeaderView {
+        data object Init : HeaderView()
+        data class Default(
+            val icon: SpaceIconView,
+            val title: String
+        ) : HeaderView()
+    }
+
     sealed class Params {
-
         abstract val space: Space
-
         data class Default(
             val ctx: Id,
-            override val space: Space
-        ) : Params()
-
-        data class SpaceLevelChat(
             override val space: Space
         ) : Params()
     }

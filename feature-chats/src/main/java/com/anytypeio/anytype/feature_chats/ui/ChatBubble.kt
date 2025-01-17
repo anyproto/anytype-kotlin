@@ -390,6 +390,7 @@ fun ChatUserAvatar(
     Box(
         modifier = modifier
             .size(32.dp)
+            .clip(CircleShape)
             .background(
                 color = colorResource(id = R.color.text_tertiary),
                 shape = CircleShape

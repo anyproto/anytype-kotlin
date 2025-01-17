@@ -14,7 +14,7 @@ import kotlin.time.toDuration
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
-fun DiscussionPreview() {
+fun ChatPreview() {
     Messages(
         messages = listOf(
             ChatView.Message(
@@ -28,7 +28,8 @@ fun DiscussionPreview() {
                     )
                 ),
                 author = "Walter",
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                creator = ""
             ),
             ChatView.Message(
                 id = "2",
@@ -41,7 +42,8 @@ fun DiscussionPreview() {
                     )
                 ),
                 author = "Leo",
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                creator = ""
             ),
             ChatView.Message(
                 id = "3",
@@ -54,13 +56,11 @@ fun DiscussionPreview() {
                     )
                 ),
                 author = "Gilbert",
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                creator = ""
             )
         ),
         scrollState = LazyListState(),
-        title = "Conversations with friends",
-        onTitleChanged = {},
-        onTitleFocusChanged = {},
         onReacted = { a, b -> },
         onDeleteMessage = {},
         onCopyMessage = {},
@@ -69,16 +69,16 @@ fun DiscussionPreview() {
         onMarkupLinkClicked = {},
         onReplyMessage = {},
         onAddReactionClicked = {},
-        onViewChatReaction = { a, b -> }
+        onViewChatReaction = { a, b -> },
+        onMemberIconClicked = {}
     )
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
-fun DiscussionScreenPreview() {
+fun ChatScreenPreview() {
     ChatScreen(
-        title = "Conversations with friends",
         messages = buildList {
             repeat(30) { idx ->
                 add(
@@ -96,14 +96,13 @@ fun DiscussionScreenPreview() {
                         timestamp =
                         System.currentTimeMillis()
                                 - 30.toDuration(DurationUnit.DAYS).inWholeMilliseconds
-                                + idx.toDuration(DurationUnit.DAYS).inWholeMilliseconds
+                                + idx.toDuration(DurationUnit.DAYS).inWholeMilliseconds,
+                        creator = "random id"
                     )
                 )
             }
         }.reversed(),
         onMessageSent = {},
-        onTitleChanged = {},
-        onAttachClicked = {},
         attachments = emptyList(),
         onClearAttachmentClicked = {},
         lazyListState = LazyListState(),
@@ -113,12 +112,7 @@ fun DiscussionScreenPreview() {
         onAttachmentClicked = {},
         onEditMessage = {},
         onExitEditMessageMode = {},
-        isSpaceLevelChat = true,
-        onBackButtonClicked = {},
         onMarkupLinkClicked = {},
-        onAttachFileClicked = {},
-        onUploadAttachmentClicked = {},
-        onAttachMediaClicked = {},
         onAttachObjectClicked = {},
         onReplyMessage = {},
         chatBoxMode = ChatViewModel.ChatBoxMode.Default,
@@ -126,7 +120,8 @@ fun DiscussionScreenPreview() {
         onChatBoxMediaPicked = {},
         onChatBoxFilePicked = {},
         onAddReactionClicked = {},
-        onViewChatReaction = { a, b -> }
+        onViewChatReaction = { a, b -> },
+        onMemberIconClicked = {}
     )
 }
 

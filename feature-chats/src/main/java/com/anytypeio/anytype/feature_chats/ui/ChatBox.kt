@@ -61,9 +61,9 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.feature_chats.R
-import com.anytypeio.anytype.feature_chats.presentation.ChatConfig
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
+import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlin.collections.forEach
 import kotlinx.coroutines.launch
@@ -72,20 +72,14 @@ import kotlinx.coroutines.launch
 fun ChatBox(
     mode: ChatBoxMode = ChatBoxMode.Default,
     modifier: Modifier = Modifier,
-    onBackButtonClicked: () -> Unit,
     chatBoxFocusRequester: FocusRequester,
     textState: TextFieldValue,
     onMessageSent: (String) -> Unit = {},
-    onAttachClicked: () -> Unit = {},
     resetScroll: () -> Unit = {},
-    isTitleFocused: Boolean,
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     clearText: () -> Unit,
     updateValue: (TextFieldValue) -> Unit,
     onAttachObjectClicked: () -> Unit,
-    onAttachMediaClicked: () -> Unit,
-    onAttachFileClicked: () -> Unit,
-    onUploadAttachmentClicked: () -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,

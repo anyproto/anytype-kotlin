@@ -5,6 +5,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -66,7 +68,6 @@ import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
-import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.feature_chats.R
@@ -80,11 +81,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreenWrapper(
-    isSpaceLevelChat: Boolean = false,
+    modifier: Modifier = Modifier,
     vm: ChatViewModel,
-    // TODO move to view model
     onAttachObjectClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onRequestOpenFullScreenImage: (String) -> Unit,
     onSelectChatReaction: (String) -> Unit,
@@ -94,6 +93,7 @@ fun ChatScreenWrapper(
     var showReactionSheet by remember { mutableStateOf(false) }
     val context = LocalContext.current
     NavHost(
+        modifier = modifier,
         navController = rememberNavController(),
         startDestination = "discussions"
     ) {
@@ -101,30 +101,16 @@ fun ChatScreenWrapper(
             route = "discussions"
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(
-                        if (!isSpaceLevelChat) {
-                            Modifier.background(
-                                color = colorResource(id = R.color.background_primary)
-                            )
-                        } else {
-                            Modifier
-                        }
-                    )
+                modifier = Modifier.fillMaxSize()
             ) {
                 val clipboard = LocalClipboardManager.current
                 val lazyListState = rememberLazyListState()
 
                 ChatScreen(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
-                    isSpaceLevelChat = isSpaceLevelChat,
-                    title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
                     attachments = vm.chatBoxAttachments.collectAsState().value,
                     onMessageSent = vm::onMessageSent,
-                    onTitleChanged = vm::onTitleChanged,
-                    onAttachClicked = onAttachObjectClicked,
                     onClearAttachmentClicked = vm::onClearAttachmentClicked,
                     lazyListState = lazyListState,
                     onReacted = vm::onReacted,
@@ -134,20 +120,9 @@ fun ChatScreenWrapper(
                     onDeleteMessage = vm::onDeleteMessage,
                     onEditMessage = vm::onRequestEditMessageClicked,
                     onAttachmentClicked = vm::onAttachmentClicked,
-                    isInEditMessageMode = vm.chatBoxMode.collectAsState().value is ChatBoxMode.EditMessage,
                     onExitEditMessageMode = vm::onExitEditMessageMode,
-                    onBackButtonClicked = onBackButtonClicked,
                     onMarkupLinkClicked = onMarkupLinkClicked,
                     onAttachObjectClicked = onAttachObjectClicked,
-                    onAttachMediaClicked = {
-
-                    },
-                    onAttachFileClicked = {
-
-                    },
-                    onUploadAttachmentClicked = {
-
-                    },
                     onReplyMessage = vm::onReplyMessage,
                     onClearReplyClicked = vm::onClearReplyClicked,
                     onChatBoxMediaPicked = { uris ->
@@ -178,10 +153,11 @@ fun ChatScreenWrapper(
                         vm.onChatBoxFilePicked(infos)
                     },
                     onAddReactionClicked = onSelectChatReaction,
-                    onViewChatReaction = onViewChatReaction
+                    onViewChatReaction = onViewChatReaction,
+                    onMemberIconClicked = vm::onMemberIconClicked
                 )
                 LaunchedEffect(Unit) {
-                    vm.commands.collect { command ->
+                    vm.uXCommands.collect { command ->
                         when(command) {
                             is UXCommand.JumpToBottom -> {
                                 lazyListState.animateScrollToItem(0)
@@ -221,16 +197,10 @@ fun ChatScreenWrapper(
 @Composable
 fun ChatScreen(
     chatBoxMode: ChatBoxMode,
-    isSpaceLevelChat: Boolean,
-    isInEditMessageMode: Boolean = false,
     lazyListState: LazyListState,
-    title: String?,
     messages: List<ChatView>,
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     onMessageSent: (String) -> Unit,
-    onTitleChanged: (String) -> Unit,
-    onAttachClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
@@ -242,30 +212,17 @@ fun ChatScreen(
     onExitEditMessageMode: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onAttachObjectClicked: () -> Unit,
-    onAttachMediaClicked: () -> Unit,
-    onAttachFileClicked: () -> Unit,
-    onUploadAttachmentClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
     onAddReactionClicked: (String) -> Unit,
-    onViewChatReaction: (Id, String) -> Unit
+    onViewChatReaction: (Id, String) -> Unit,
+    onMemberIconClicked: (Id?) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
     }
     var isTitleFocused by remember { mutableStateOf(false) }
     val chatBoxFocusRequester = FocusRequester()
-    val isHeaderVisible by remember {
-        derivedStateOf {
-            val layoutInfo = lazyListState.layoutInfo
-            val visibleItems = layoutInfo.visibleItemsInfo
-            if (visibleItems.isEmpty()) {
-                false
-            } else {
-                visibleItems.last().key == HEADER_KEY
-            }
-        }
-    }
 
     val scope = rememberCoroutineScope()
 
@@ -282,23 +239,11 @@ fun ChatScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        if (!isSpaceLevelChat) {
-            TopDiscussionToolbar(
-                title = title,
-                isHeaderVisible = isHeaderVisible
-            )
-        }
         Box(modifier = Modifier.weight(1f)) {
             Messages(
-                isSpaceLevelChat = isSpaceLevelChat,
                 modifier = Modifier.fillMaxSize(),
                 messages = messages,
                 scrollState = lazyListState,
-                onTitleChanged = onTitleChanged,
-                title = title,
-                onTitleFocusChanged = {
-                    isTitleFocused = it
-                },
                 onReacted = onReacted,
                 onCopyMessage = onCopyMessage,
                 onDeleteMessage = onDeleteMessage,
@@ -318,7 +263,8 @@ fun ChatScreen(
                 },
                 onMarkupLinkClicked = onMarkupLinkClicked,
                 onAddReactionClicked = onAddReactionClicked,
-                onViewChatReaction = onViewChatReaction
+                onViewChatReaction = onViewChatReaction,
+                onMemberIconClicked = onMemberIconClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -355,7 +301,6 @@ fun ChatScreen(
             chatBoxFocusRequester = chatBoxFocusRequester,
             textState = textState,
             onMessageSent = onMessageSent,
-            onAttachClicked = onAttachClicked,
             resetScroll = {
                 if (lazyListState.firstVisibleItemScrollOffset > 0) {
                     scope.launch {
@@ -363,7 +308,6 @@ fun ChatScreen(
                     }
                 }
             },
-            isTitleFocused = isTitleFocused,
             attachments = attachments,
             updateValue = {
                 textState = it
@@ -371,10 +315,6 @@ fun ChatScreen(
             clearText = {
                 textState = TextFieldValue()
             },
-            onBackButtonClicked = onBackButtonClicked,
-            onAttachFileClicked = onAttachFileClicked,
-            onAttachMediaClicked = onAttachMediaClicked,
-            onUploadAttachmentClicked = onUploadAttachmentClicked,
             onAttachObjectClicked = onAttachObjectClicked,
             onClearAttachmentClicked = onClearAttachmentClicked,
             onClearReplyClicked = onClearReplyClicked,
@@ -391,13 +331,9 @@ fun ChatScreen(
 
 @Composable
 fun Messages(
-    isSpaceLevelChat: Boolean = true,
-    title: String?,
-    onTitleChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
     messages: List<ChatView>,
     scrollState: LazyListState,
-    onTitleFocusChanged: (Boolean) -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (ChatView.Message) -> Unit,
     onCopyMessage: (ChatView.Message) -> Unit,
@@ -406,7 +342,8 @@ fun Messages(
     onReplyMessage: (ChatView.Message) -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onAddReactionClicked: (String) -> Unit,
-    onViewChatReaction: (Id, String) -> Unit
+    onViewChatReaction: (Id, String) -> Unit,
+    onMemberIconClicked: (Id?) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     LazyColumn(
@@ -440,7 +377,9 @@ fun Messages(
                         ChatUserAvatar(
                             msg = msg,
                             avatar = msg.avatar,
-                            modifier = Modifier.align(Alignment.Bottom)
+                            modifier = Modifier
+                                .align(Alignment.Bottom)
+                                .clickable { onMemberIconClicked(msg.creator) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                     }
@@ -534,25 +473,6 @@ fun Messages(
                                 )
                         )
                     }
-                }
-            }
-        }
-        if (!isSpaceLevelChat) {
-            item(key = HEADER_KEY) {
-                Column {
-                    DiscussionTitle(
-                        title = title,
-                        onTitleChanged = onTitleChanged,
-                        onFocusChanged = onTitleFocusChanged
-                    )
-                    Text(
-                        style = Relations2,
-                        text = stringResource(R.string.chat),
-                        color = colorResource(id = R.color.text_secondary),
-                        modifier = Modifier.padding(
-                            start = 20.dp
-                        )
-                    )
                 }
             }
         }

@@ -3220,8 +3220,7 @@ class EditorViewModel(
             ObjectType.Layout.BASIC,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.TODO,
-            ObjectType.Layout.BOOKMARK,
-            ObjectType.Layout.PARTICIPANT -> {
+            ObjectType.Layout.BOOKMARK -> {
                 proceedWithOpeningObject(target = target)
             }
             in SupportedLayouts.fileLayouts -> {
@@ -3248,6 +3247,16 @@ class EditorViewModel(
                 navigate(
                     EventWrapper(
                         OpenDateObject(
+                            objectId = target,
+                            space = vmParams.space.id
+                        )
+                    )
+                )
+            }
+            ObjectType.Layout.PARTICIPANT -> {
+                navigate(
+                    EventWrapper(
+                        OpenParticipant(
                             objectId = target,
                             space = vmParams.space.id
                         )
@@ -4432,6 +4441,16 @@ class EditorViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenParticipant -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenParticipant(
+                            objectId = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                )
+            }
             is OpenObjectNavigation.OpenEditor -> {
                 navigate(
                     EventWrapper(
@@ -4451,7 +4470,7 @@ class EditorViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
             }
-            is OpenObjectNavigation.OpenDataObject -> {
+            is OpenObjectNavigation.OpenDateObject -> {
                 navigate(
                     EventWrapper(
                         OpenDateObject(

@@ -186,7 +186,7 @@ class ChatViewModel @Inject constructor(
                         ),
                         reply = reply,
                         author = member?.name ?: msg.creator.takeLast(5),
-                        creator = member?.id.orEmpty(),
+                        creator = member?.id,
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,
                         reactions = msg.reactions.map { (emoji, ids) ->
@@ -567,14 +567,18 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onMemberIconClicked(member: Id) {
+    fun onMemberIconClicked(member: Id?) {
         viewModelScope.launch {
-            commands.emit(
-                ViewModelCommand.ViewMemberCard(
-                    member = member,
-                    space = vmParams.space
+            if (member != null) {
+                commands.emit(
+                    ViewModelCommand.ViewMemberCard(
+                        member = member,
+                        space = vmParams.space
+                    )
                 )
-            )
+            } else {
+                Timber.e("Space member not found in space-level chat")
+            }
         }
     }
 

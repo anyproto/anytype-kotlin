@@ -216,7 +216,7 @@ fun ChatScreen(
     onChatBoxFilePicked: (List<Uri>) -> Unit,
     onAddReactionClicked: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
-    onMemberIconClicked: (Id) -> Unit
+    onMemberIconClicked: (Id?) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -343,7 +343,7 @@ fun Messages(
     onMarkupLinkClicked: (String) -> Unit,
     onAddReactionClicked: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
-    onMemberIconClicked: (Id) -> Unit
+    onMemberIconClicked: (Id?) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     LazyColumn(

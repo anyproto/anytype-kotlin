@@ -1276,7 +1276,9 @@ object ObjectSearchConstants {
         Relations.SPACE_ID,
         Relations.TARGET_SPACE_ID,
         Relations.IDENTITY,
+        Relations.IDENTITY_PROFILE_LINK,
         Relations.NAME,
+        Relations.DESCRIPTION,
         Relations.ICON_IMAGE,
         Relations.PARTICIPANT_STATUS,
         Relations.PARTICIPANT_PERMISSIONS,
@@ -1301,29 +1303,6 @@ object ObjectSearchConstants {
     )
 
     //region SPACE VIEW
-
-    fun getSpaceViewSearchParams(
-        techSpaceId: Id,
-        subscription: String,
-        targetSpaceId: Id
-    ): StoreSearchParams {
-        return StoreSearchParams(
-            space = SpaceId(techSpaceId),
-            subscription = subscription,
-            keys = spaceViewKeys,
-            limit = 1,
-            filters = buildList {
-                add(
-                    DVFilter(
-                        relation = Relations.TARGET_SPACE_ID,
-                        value = targetSpaceId,
-                        condition = DVFilterCondition.EQUAL
-                    )
-                )
-            }
-        )
-    }
-
     fun getSpaceMembersSearchParams(
         subscription: String,
         space: SpaceId,

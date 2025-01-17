@@ -142,6 +142,17 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     Timber.e(it, "Error while opening share screen")
                 }
             }
+
+            is Command.OpenParticipant -> {
+                runCatching {
+                    navigation().openParticipantObject(
+                        objectId = command.target,
+                        space = command.space
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening participant object from Collection screen")
+                }
+            }
         }
     }
 

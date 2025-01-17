@@ -62,6 +62,10 @@ class NavigationRouter(
                     objectId = command.objectId,
                     space = command.space
                 )
+                is AppNavigation.Command.OpenParticipant -> navigation.openParticipantObject(
+                    objectId = command.objectId,
+                    space = command.space
+                )
                 else -> Timber.d("Nav command ignored: $command")
             }
         } catch (e: Exception) {

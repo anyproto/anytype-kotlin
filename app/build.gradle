@@ -169,7 +169,7 @@ dependencies {
     implementation project(':library-page-icon-picker-widget')
     implementation project(':library-emojifier')
     implementation project(':analytics')
-    implementation project(':ui-settings')
+    implementation project(':feature-ui-settings')
     implementation project(':crash-reporting')
     implementation project(':payments')
     implementation project(':feature-chats')

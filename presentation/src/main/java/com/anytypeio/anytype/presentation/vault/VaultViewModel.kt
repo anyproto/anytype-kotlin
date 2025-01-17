@@ -37,6 +37,7 @@ import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
+import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation.*
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -281,7 +282,7 @@ class VaultViewModel(
         when(navigation) {
             is OpenObjectNavigation.OpenDataView -> {
                 navigate(
-                    Navigation.OpenSet(
+                    OpenSet(
                         ctx = navigation.target,
                         space = navigation.space,
                         view = null
@@ -290,7 +291,7 @@ class VaultViewModel(
             }
             is OpenObjectNavigation.OpenEditor -> {
                 navigate(
-                    Navigation.OpenObject(
+                    OpenObject(
                         ctx = navigation.target,
                         space = navigation.space
                     )
@@ -298,7 +299,7 @@ class VaultViewModel(
             }
             is OpenObjectNavigation.OpenChat -> {
                 navigate(
-                    Navigation.OpenChat(
+                    OpenChat(
                         ctx = navigation.target,
                         space = navigation.space
                     )
@@ -310,9 +311,17 @@ class VaultViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
             }
-            is OpenObjectNavigation.OpenDataObject -> {
+            is OpenObjectNavigation.OpenDateObject -> {
                 navigate(
-                    Navigation.OpenDateObject(
+                    OpenDateObject(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
+            is OpenObjectNavigation.OpenParticipant -> {
+                navigate(
+                    OpenParticipant(
                         ctx = navigation.target,
                         space = navigation.space
                     )
@@ -385,6 +394,7 @@ class VaultViewModel(
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
+        data class OpenParticipant(val ctx: Id, val space: Id) : Navigation()
     }
 
     companion object {

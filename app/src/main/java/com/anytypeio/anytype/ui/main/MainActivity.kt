@@ -60,6 +60,7 @@ import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
 import com.anytypeio.anytype.ui.notifications.NotificationsFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
@@ -209,6 +210,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                             Timber.e(it, "Error while data view navigation")
                                         }
                                     }
+                                    is OpenObjectNavigation.OpenParticipant -> {
+                                        runCatching {
+                                            findNavController(R.id.fragment).navigate(
+                                                R.id.participantScreen,
+                                                ParticipantFragment.args(
+                                                    objectId = dest.target,
+                                                    space = dest.space
+                                                )
+                                            )
+                                        }.onFailure {
+                                            Timber.w("Error while opening participant screen")
+                                        }
+                                    }
                                     is OpenObjectNavigation.OpenEditor -> {
                                         runCatching {
                                             findNavController(R.id.fragment).navigate(
@@ -234,7 +248,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     OpenObjectNavigation.NonValidObject -> {
                                         toast(getString(R.string.error_non_valid_object))
                                     }
-                                    is OpenObjectNavigation.OpenDataObject -> {
+                                    is OpenObjectNavigation.OpenDateObject -> {
                                         runCatching {
                                             findNavController(R.id.fragment).navigate(
                                                 R.id.dateObjectScreen,

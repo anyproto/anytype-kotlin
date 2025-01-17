@@ -176,6 +176,11 @@
         android:name="com.anytypeio.anytype.ui.chats.ChatReactionFragment"
         android:label="Chat reaction" />
 
+    <dialog
+        android:id="@+id/participantScreen"
+        android:name="com.anytypeio.anytype.ui.profile.ParticipantFragment"
+        android:label="Profile screen" />
+
     <fragment
         android:id="@+id/homeScreen"
         android:name="com.anytypeio.anytype.ui.home.HomeScreenFragment"
@@ -306,7 +311,7 @@
         android:label="Object-Set-Icon-Picker-Screen" />
 
     <dialog
-        android:id="@+id/profileScreen"
+        android:id="@+id/profileSettingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.ProfileSettingsFragment">
     </dialog>
 

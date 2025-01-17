@@ -37,6 +37,7 @@ import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
+import com.anytypeio.anytype.di.feature.participant.ParticipantComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
@@ -139,7 +140,8 @@ interface MainComponent :
     MoveToDependencies,
     DateObjectDependencies,
     SelectChatReactionDependencies,
-    ChatReactionDependencies
+    ChatReactionDependencies,
+    ParticipantComponentDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -400,4 +402,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(ChatReactionDependencies::class)
     abstract fun provideChatReactionDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(ParticipantComponentDependencies::class)
+    abstract fun provideParticipantComponentDependencies(component: MainComponent): ComponentDependencies
 }

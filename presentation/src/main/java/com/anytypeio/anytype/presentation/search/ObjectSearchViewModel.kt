@@ -169,8 +169,7 @@ open class ObjectSearchViewModel(
             ObjectType.Layout.NOTE,
             ObjectType.Layout.FILE,
             ObjectType.Layout.IMAGE,
-            ObjectType.Layout.BOOKMARK,
-            ObjectType.Layout.PARTICIPANT -> {
+            ObjectType.Layout.BOOKMARK -> {
                 val obj = objects
                     .value
                     .getOrNull()
@@ -179,6 +178,20 @@ open class ObjectSearchViewModel(
                     EventWrapper(
                         AppNavigation.Command.LaunchDocument(
                             target = target,
+                            space = requireNotNull(obj?.spaceId)
+                        )
+                    )
+                )
+            }
+            ObjectType.Layout.PARTICIPANT -> {
+                val obj = objects
+                    .value
+                    .getOrNull()
+                    ?.find { obj -> obj.id == view.id }
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenParticipant(
+                            objectId = target,
                             space = requireNotNull(obj?.spaceId)
                         )
                     )

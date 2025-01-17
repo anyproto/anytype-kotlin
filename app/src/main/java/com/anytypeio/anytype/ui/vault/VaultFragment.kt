@@ -109,7 +109,7 @@ class VaultFragment : BaseComposeFragment() {
             is Command.OpenProfileSettings -> {
                 runCatching {
                     findNavController().navigate(
-                        R.id.profileScreen,
+                        R.id.profileSettingsScreen,
                         null
                     )
                 }.onFailure {
@@ -190,6 +190,18 @@ class VaultFragment : BaseComposeFragment() {
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening date object from widgets")
+                }
+            }
+
+            is Navigation.OpenParticipant -> {
+                runCatching {
+                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                    navigation().openParticipantObject(
+                        objectId = destination.ctx,
+                        space = destination.space
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening participant object from widgets")
                 }
             }
         }

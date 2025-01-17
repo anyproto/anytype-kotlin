@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -47,6 +48,7 @@ import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.isSpaceRootScreen
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -85,14 +87,15 @@ class ChatFragment : BaseComposeFragment() {
                     ) {
                         ChatTopToolbar(
                             header = vm.header.collectAsStateWithLifecycle().value,
-                            onBackButtonClicked = vm::onBackButtonPressed,
+                            onBackButtonClicked = {
+                                vm.onBackButtonPressed(isSpaceRootScreen())
+                            },
                             onSpaceIconClicked = vm::onSpaceIconClicked
                         )
                         ChatScreenWrapper(
                             modifier = Modifier.weight(1f),
                             vm = vm,
                             onAttachObjectClicked = { showGlobalSearchBottomSheet = true },
-                            onBackButtonClicked = vm::onBackButtonPressed,
                             onMarkupLinkClicked = { proceedWithAction(SystemAction.OpenUrl(it)) },
                             onRequestOpenFullScreenImage = { url -> vm.onMediaPreview(url) },
                             onSelectChatReaction = vm::onSelectChatReaction,
@@ -236,6 +239,11 @@ class ChatFragment : BaseComposeFragment() {
                             }
                         }
                     }
+                }
+                BackHandler {
+                    vm.onBackButtonPressed(
+                        isSpaceRoot = isSpaceRootScreen()
+                    )
                 }
             }
         }

@@ -520,9 +520,10 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onBackButtonPressed(isSpaceRoot: Boolean = false) {
+    fun onBackButtonPressed(isSpaceRoot: Boolean) {
         viewModelScope.launch {
             if (isSpaceRoot) {
+                Timber.d("Root space screen. Releasing resources...")
                 proceedWithClearingSpaceBeforeExitingToVault()
             }
             commands.emit(ViewModelCommand.Exit)

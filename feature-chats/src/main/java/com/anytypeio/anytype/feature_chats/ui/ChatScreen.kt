@@ -81,9 +81,7 @@ import kotlinx.coroutines.launch
 fun ChatScreenWrapper(
     modifier: Modifier = Modifier,
     vm: ChatViewModel,
-    // TODO move to view model
     onAttachObjectClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onRequestOpenFullScreenImage: (String) -> Unit,
     onSelectChatReaction: (String) -> Unit,
@@ -111,7 +109,6 @@ fun ChatScreenWrapper(
                     messages = vm.messages.collectAsState().value,
                     attachments = vm.chatBoxAttachments.collectAsState().value,
                     onMessageSent = vm::onMessageSent,
-                    onAttachClicked = onAttachObjectClicked,
                     onClearAttachmentClicked = vm::onClearAttachmentClicked,
                     lazyListState = lazyListState,
                     onReacted = vm::onReacted,
@@ -122,18 +119,8 @@ fun ChatScreenWrapper(
                     onEditMessage = vm::onRequestEditMessageClicked,
                     onAttachmentClicked = vm::onAttachmentClicked,
                     onExitEditMessageMode = vm::onExitEditMessageMode,
-                    onBackButtonClicked = onBackButtonClicked,
                     onMarkupLinkClicked = onMarkupLinkClicked,
                     onAttachObjectClicked = onAttachObjectClicked,
-                    onAttachMediaClicked = {
-
-                    },
-                    onAttachFileClicked = {
-
-                    },
-                    onUploadAttachmentClicked = {
-
-                    },
                     onReplyMessage = vm::onReplyMessage,
                     onClearReplyClicked = vm::onClearReplyClicked,
                     onChatBoxMediaPicked = { uris ->
@@ -211,8 +198,6 @@ fun ChatScreen(
     messages: List<ChatView>,
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     onMessageSent: (String) -> Unit,
-    onAttachClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
@@ -224,9 +209,6 @@ fun ChatScreen(
     onExitEditMessageMode: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onAttachObjectClicked: () -> Unit,
-    onAttachMediaClicked: () -> Unit,
-    onAttachFileClicked: () -> Unit,
-    onUploadAttachmentClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
     onAddReactionClicked: (String) -> Unit,
@@ -237,17 +219,6 @@ fun ChatScreen(
     }
     var isTitleFocused by remember { mutableStateOf(false) }
     val chatBoxFocusRequester = FocusRequester()
-    val isHeaderVisible by remember {
-        derivedStateOf {
-            val layoutInfo = lazyListState.layoutInfo
-            val visibleItems = layoutInfo.visibleItemsInfo
-            if (visibleItems.isEmpty()) {
-                false
-            } else {
-                visibleItems.last().key == HEADER_KEY
-            }
-        }
-    }
 
     val scope = rememberCoroutineScope()
 
@@ -325,7 +296,6 @@ fun ChatScreen(
             chatBoxFocusRequester = chatBoxFocusRequester,
             textState = textState,
             onMessageSent = onMessageSent,
-            onAttachClicked = onAttachClicked,
             resetScroll = {
                 if (lazyListState.firstVisibleItemScrollOffset > 0) {
                     scope.launch {
@@ -333,7 +303,6 @@ fun ChatScreen(
                     }
                 }
             },
-            isTitleFocused = isTitleFocused,
             attachments = attachments,
             updateValue = {
                 textState = it
@@ -341,10 +310,6 @@ fun ChatScreen(
             clearText = {
                 textState = TextFieldValue()
             },
-            onBackButtonClicked = onBackButtonClicked,
-            onAttachFileClicked = onAttachFileClicked,
-            onAttachMediaClicked = onAttachMediaClicked,
-            onUploadAttachmentClicked = onUploadAttachmentClicked,
             onAttachObjectClicked = onAttachObjectClicked,
             onClearAttachmentClicked = onClearAttachmentClicked,
             onClearReplyClicked = onClearReplyClicked,

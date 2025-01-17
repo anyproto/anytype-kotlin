@@ -1,7 +1,8 @@
 package com.anytypeio.anytype.library_syntax_highlighter
 
 import android.content.Context
-import android.graphics.Color
+import androidx.core.content.ContextCompat
+import com.anytypeio.anytype.core_ui.R
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -16,7 +17,7 @@ fun Context.obtainSyntaxRules(language: String): List<Syntax> {
         rules.map { s ->
             Syntax(
                 regex = s.pattern,
-                color = Color.parseColor(s.color)
+                color = getColorForKey(s.key)
             )
         }
     } else {
@@ -41,4 +42,16 @@ fun Context.obtainJsonDataFromAsset(path: String): String? = try {
 } catch (e: IOException) {
     e.printStackTrace()
     null
+}
+
+fun Context.getColorForKey(key: String): Int {
+    return when (key) {
+        "keyword" -> ContextCompat.getColor(this, R.color.palette_dark_red)
+        "operator" -> ContextCompat.getColor(this, R.color.palette_dark_red)
+        "function" -> ContextCompat.getColor(this, R.color.palette_dark_purple)
+        "comment" -> ContextCompat.getColor(this, R.color.palette_dark_grey)
+        "number" -> ContextCompat.getColor(this, R.color.palette_dark_teal)
+        "string" -> ContextCompat.getColor(this, R.color.palette_dark_blue)
+        else -> ContextCompat.getColor(this, R.color.palette_dark_default)
+    }
 }

@@ -59,7 +59,7 @@ class ParticipantViewModel(
         viewModelScope.launch {
             val params = StoreSearchByIdsParams(
                 space = vmParams.space,
-                subscription = "Participant-subscription-${vmParams.objectId}",
+                subscription = "$SUB_ID-${vmParams.objectId}",
                 targets = listOf(vmParams.objectId),
                 keys = ObjectSearchConstants.spaceMemberKeys
             )
@@ -96,7 +96,7 @@ class ParticipantViewModel(
 
     fun onStop() {
         viewModelScope.launch{
-            subscriptionContainer.unsubscribe(listOf("Participant-subscription-${vmParams.objectId}"))
+            subscriptionContainer.unsubscribe(listOf("$SUB_ID-${vmParams.objectId}"))
         }
     }
 
@@ -108,7 +108,6 @@ class ParticipantViewModel(
                 }
             }
 
-            is ParticipantEvent.OnNameUpdate -> TODO()
             ParticipantEvent.OnButtonClick -> {
                 viewModelScope.launch {
                     commands.emit(Command.OpenSettingsProfile)
@@ -140,6 +139,10 @@ class ParticipantViewModel(
 
         data object Dismiss : Command()
         data object OpenSettingsProfile : Command()
+    }
+
+    companion object {
+        const val SUB_ID = "Participant-subscription"
     }
 
     class Factory @Inject constructor(

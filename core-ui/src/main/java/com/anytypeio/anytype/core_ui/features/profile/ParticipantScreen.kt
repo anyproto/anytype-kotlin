@@ -43,7 +43,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
+fun ParticipantScreen(
     uiState: UiParticipantScreenState,
     onEvent: (ParticipantEvent) -> Unit
 ) {
@@ -78,7 +78,7 @@ fun ProfileScreen(
                     48.dp to 128.dp
                 }
                 Spacer(modifier = Modifier.height(spacer))
-                ProfileImageBlock(
+                ImageBlock(
                     modifier = Modifier
                         .size(iconSize)
                         .align(Alignment.CenterHorizontally),
@@ -86,13 +86,13 @@ fun ProfileScreen(
                     icon = uiState.icon,
                 ) { }
                 Spacer(modifier = Modifier.height(12.dp))
-                ProfileTitle(
+                Title(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     name = uiState.name
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 if (uiState.identity != null) {
-                    ProfileAnyTitle(
+                    AnyIdentity(
                         modifier = Modifier
                             .padding(horizontal = 32.dp)
                             .align(Alignment.CenterHorizontally),
@@ -101,7 +101,7 @@ fun ProfileScreen(
                     Spacer(modifier = Modifier.height(4.dp))
                 }
                 if (!uiState.description.isNullOrBlank()) {
-                    ProfileDescription(
+                    Description(
                         modifier = Modifier
                             .padding(horizontal = 32.dp)
                             .align(Alignment.CenterHorizontally),
@@ -133,7 +133,7 @@ fun ProfileScreen(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ProfileImageBlock(
+private fun ImageBlock(
     modifier: Modifier,
     name: String,
     icon: ProfileIconView,
@@ -182,7 +182,7 @@ fun ProfileImageBlock(
 }
 
 @Composable
-private fun ProfileTitle(modifier: Modifier, name: String) {
+private fun Title(modifier: Modifier, name: String) {
     Text(
         modifier = modifier,
         text = name,
@@ -193,7 +193,7 @@ private fun ProfileTitle(modifier: Modifier, name: String) {
 }
 
 @Composable
-private fun ProfileAnyTitle(modifier: Modifier, identity: String) {
+private fun AnyIdentity(modifier: Modifier, identity: String) {
     Text(
         modifier = modifier,
         text = identity,
@@ -205,7 +205,7 @@ private fun ProfileAnyTitle(modifier: Modifier, identity: String) {
 }
 
 @Composable
-private fun ProfileDescription(modifier: Modifier, description: String) {
+private fun Description(modifier: Modifier, description: String) {
     Text(
         modifier = modifier,
         text = description,
@@ -217,8 +217,8 @@ private fun ProfileDescription(modifier: Modifier, description: String) {
 
 @DefaultPreviews
 @Composable
-fun ProfileScreenPreview() {
-    ProfileScreen(
+fun ParticipantScreenPreview() {
+    ParticipantScreen(
         uiState = UiParticipantScreenState.Data(
             name = "Ivanov Konstantin",
             icon = ProfileIconView.Emoji(""),

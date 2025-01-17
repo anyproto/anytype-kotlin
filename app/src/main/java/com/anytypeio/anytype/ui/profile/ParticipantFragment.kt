@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.features.profile.ProfileScreen
+import com.anytypeio.anytype.core_ui.features.profile.ParticipantScreen
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -35,7 +35,7 @@ class ParticipantFragment: BaseBottomSheetComposeFragment() {
         savedInstanceState: Bundle?
     ) = content {
         MaterialTheme {
-            ProfileScreen(
+            ParticipantScreen(
                 uiState = vm.uiState.collectAsStateWithLifecycle().value,
                 onEvent = vm::onEvent
             )
@@ -91,8 +91,8 @@ class ParticipantFragment: BaseBottomSheetComposeFragment() {
     }
 
     companion object ProfileScreenNavigation {
-        const val ARG_SPACE = "arg.profile.screen.space"
-        const val ARG_OBJECT_ID = "arg.profile.screen.object_id"
+        const val ARG_SPACE = "arg.participant.screen.space"
+        const val ARG_OBJECT_ID = "arg.participant.screen.object_id"
 
         fun args(space: Id, objectId: Id) = bundleOf(
             ARG_SPACE to space,

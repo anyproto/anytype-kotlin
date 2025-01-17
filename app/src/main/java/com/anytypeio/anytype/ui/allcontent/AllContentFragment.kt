@@ -283,7 +283,7 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                 is AllContentViewModel.Command.NavigateToParticipant -> {
                     runCatching {
                         findNavController().navigate(
-                            R.id.profileScreen,
+                            R.id.participantScreen,
                             ParticipantFragment.args(
                                 objectId = command.objectId,
                                 space = command.space

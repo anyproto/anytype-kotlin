@@ -96,7 +96,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                         is OpenObjectNavigation.OpenParticipant -> {
                             runCatching {
                                 findNavController().navigate(
-                                    R.id.profileScreen,
+                                    R.id.participantScreen,
                                     ParticipantFragment.args(
                                         objectId = nav.target,
                                         space = nav.space

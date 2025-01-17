@@ -349,7 +349,7 @@ class Navigator : AppNavigation {
         space: Id
     ) {
         navController?.navigate(
-            resId = R.id.profileScreen,
+            resId = R.id.participantScreen,
             args = ParticipantFragment.args(
                 objectId = objectId,
                 space = space

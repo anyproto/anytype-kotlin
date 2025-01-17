@@ -177,7 +177,7 @@
         android:label="Chat reaction" />
 
     <dialog
-        android:id="@+id/profileScreen"
+        android:id="@+id/participantScreen"
         android:name="com.anytypeio.anytype.ui.profile.ParticipantFragment"
         android:label="Profile screen" />
 

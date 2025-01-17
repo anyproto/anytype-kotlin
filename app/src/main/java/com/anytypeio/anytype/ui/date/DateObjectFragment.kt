@@ -167,7 +167,7 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                 is DateObjectCommand.NavigateToParticipant -> {
                     runCatching {
                         findNavController().navigate(
-                            R.id.profileScreen,
+                            R.id.participantScreen,
                             ParticipantFragment.args(
                                 objectId = effect.objectId,
                                 space = effect.space.id

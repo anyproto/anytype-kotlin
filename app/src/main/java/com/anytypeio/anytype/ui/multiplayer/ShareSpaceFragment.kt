@@ -220,7 +220,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             is Command.OpenParticipantObject -> {
                 runCatching {
                     findNavController().navigate(
-                        R.id.profileScreen,
+                        R.id.participantScreen,
                         ParticipantFragment.args(
                             space = command.space.id,
                             objectId = command.objectId

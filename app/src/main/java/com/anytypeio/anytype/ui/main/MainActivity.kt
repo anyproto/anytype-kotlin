@@ -213,7 +213,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     is OpenObjectNavigation.OpenParticipant -> {
                                         runCatching {
                                             findNavController(R.id.fragment).navigate(
-                                                R.id.profileScreen,
+                                                R.id.participantScreen,
                                                 ParticipantFragment.args(
                                                     objectId = dest.target,
                                                     space = dest.space

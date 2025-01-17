@@ -49,6 +49,7 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.home.isSpaceRootScreen
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -235,6 +236,19 @@ class ChatFragment : BaseComposeFragment() {
                                     )
                                 }.onFailure {
                                     Timber.e(it, "Error while opening a chat reaction")
+                                }
+                            }
+                            is ChatViewModel.ViewModelCommand.ViewMemberCard -> {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.participantScreen,
+                                        ParticipantFragment.args(
+                                            space = command.space.id,
+                                            objectId = command.member
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while opening space member card")
                                 }
                             }
                         }

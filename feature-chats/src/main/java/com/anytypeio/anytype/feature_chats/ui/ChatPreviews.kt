@@ -28,7 +28,8 @@ fun ChatPreview() {
                     )
                 ),
                 author = "Walter",
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                creator = ""
             ),
             ChatView.Message(
                 id = "2",
@@ -41,7 +42,8 @@ fun ChatPreview() {
                     )
                 ),
                 author = "Leo",
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                creator = ""
             ),
             ChatView.Message(
                 id = "3",
@@ -54,7 +56,8 @@ fun ChatPreview() {
                     )
                 ),
                 author = "Gilbert",
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                creator = ""
             )
         ),
         scrollState = LazyListState(),
@@ -66,7 +69,8 @@ fun ChatPreview() {
         onMarkupLinkClicked = {},
         onReplyMessage = {},
         onAddReactionClicked = {},
-        onViewChatReaction = { a, b -> }
+        onViewChatReaction = { a, b -> },
+        onMemberIconClicked = {}
     )
 }
 
@@ -92,7 +96,8 @@ fun ChatScreenPreview() {
                         timestamp =
                         System.currentTimeMillis()
                                 - 30.toDuration(DurationUnit.DAYS).inWholeMilliseconds
-                                + idx.toDuration(DurationUnit.DAYS).inWholeMilliseconds
+                                + idx.toDuration(DurationUnit.DAYS).inWholeMilliseconds,
+                        creator = "random id"
                     )
                 )
             }
@@ -115,7 +120,8 @@ fun ChatScreenPreview() {
         onChatBoxMediaPicked = {},
         onChatBoxFilePicked = {},
         onAddReactionClicked = {},
-        onViewChatReaction = { a, b -> }
+        onViewChatReaction = { a, b -> },
+        onMemberIconClicked = {}
     )
 }
 

@@ -5,9 +5,9 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
@@ -24,8 +24,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
-import com.anytypeio.anytype.domain.`object`.OpenObject
-import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -188,6 +186,7 @@ class ChatViewModel @Inject constructor(
                         ),
                         reply = reply,
                         author = member?.name ?: msg.creator.takeLast(5),
+                        creator = member?.id.orEmpty(),
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,
                         reactions = msg.reactions.map { (emoji, ids) ->
@@ -568,12 +567,24 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onMemberIconClicked(member: Id) {
+        viewModelScope.launch {
+            commands.emit(
+                ViewModelCommand.ViewMemberCard(
+                    member = member,
+                    space = vmParams.space
+                )
+            )
+        }
+    }
+
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
         data class MediaPreview(val url: String) : ViewModelCommand()
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()
         data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
+        data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
     }
 
     sealed class UXCommand {

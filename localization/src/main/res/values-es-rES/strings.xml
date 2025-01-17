@@ -1228,6 +1228,7 @@
     <string name="multiplayer_collaborate_step_1">1. Toca el widget del espacio para acceder a los ajustes.</string>
     <string name="multiplayer_collaborate_step_2">2. Abre la sección Compartir.</string>
     <string name="multiplayer_collaborate_step_3">3. Genera un enlace de invitación y compártelo.</string>
+    <string name="profile_view_edit_button">Editar perfil</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d miembro</item>
         <item quantity="other">%1$d miembros</item>

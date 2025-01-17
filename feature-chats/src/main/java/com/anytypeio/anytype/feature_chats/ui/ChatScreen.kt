@@ -66,7 +66,6 @@ import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
-import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.feature_chats.R
@@ -80,7 +79,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreenWrapper(
-    isSpaceLevelChat: Boolean = false,
+    modifier: Modifier = Modifier,
     vm: ChatViewModel,
     // TODO move to view model
     onAttachObjectClicked: () -> Unit,
@@ -94,6 +93,7 @@ fun ChatScreenWrapper(
     var showReactionSheet by remember { mutableStateOf(false) }
     val context = LocalContext.current
     NavHost(
+        modifier = modifier,
         navController = rememberNavController(),
         startDestination = "discussions"
     ) {
@@ -101,29 +101,16 @@ fun ChatScreenWrapper(
             route = "discussions"
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(
-                        if (!isSpaceLevelChat) {
-                            Modifier.background(
-                                color = colorResource(id = R.color.background_primary)
-                            )
-                        } else {
-                            Modifier
-                        }
-                    )
+                modifier = Modifier.fillMaxSize()
             ) {
                 val clipboard = LocalClipboardManager.current
                 val lazyListState = rememberLazyListState()
 
                 ChatScreen(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
-                    isSpaceLevelChat = isSpaceLevelChat,
-                    title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
                     attachments = vm.chatBoxAttachments.collectAsState().value,
                     onMessageSent = vm::onMessageSent,
-                    onTitleChanged = vm::onTitleChanged,
                     onAttachClicked = onAttachObjectClicked,
                     onClearAttachmentClicked = vm::onClearAttachmentClicked,
                     lazyListState = lazyListState,
@@ -134,7 +121,6 @@ fun ChatScreenWrapper(
                     onDeleteMessage = vm::onDeleteMessage,
                     onEditMessage = vm::onRequestEditMessageClicked,
                     onAttachmentClicked = vm::onAttachmentClicked,
-                    isInEditMessageMode = vm.chatBoxMode.collectAsState().value is ChatBoxMode.EditMessage,
                     onExitEditMessageMode = vm::onExitEditMessageMode,
                     onBackButtonClicked = onBackButtonClicked,
                     onMarkupLinkClicked = onMarkupLinkClicked,
@@ -181,7 +167,7 @@ fun ChatScreenWrapper(
                     onViewChatReaction = onViewChatReaction
                 )
                 LaunchedEffect(Unit) {
-                    vm.commands.collect { command ->
+                    vm.uXCommands.collect { command ->
                         when(command) {
                             is UXCommand.JumpToBottom -> {
                                 lazyListState.animateScrollToItem(0)
@@ -221,14 +207,10 @@ fun ChatScreenWrapper(
 @Composable
 fun ChatScreen(
     chatBoxMode: ChatBoxMode,
-    isSpaceLevelChat: Boolean,
-    isInEditMessageMode: Boolean = false,
     lazyListState: LazyListState,
-    title: String?,
     messages: List<ChatView>,
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     onMessageSent: (String) -> Unit,
-    onTitleChanged: (String) -> Unit,
     onAttachClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
@@ -282,23 +264,11 @@ fun ChatScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        if (!isSpaceLevelChat) {
-            TopDiscussionToolbar(
-                title = title,
-                isHeaderVisible = isHeaderVisible
-            )
-        }
         Box(modifier = Modifier.weight(1f)) {
             Messages(
-                isSpaceLevelChat = isSpaceLevelChat,
                 modifier = Modifier.fillMaxSize(),
                 messages = messages,
                 scrollState = lazyListState,
-                onTitleChanged = onTitleChanged,
-                title = title,
-                onTitleFocusChanged = {
-                    isTitleFocused = it
-                },
                 onReacted = onReacted,
                 onCopyMessage = onCopyMessage,
                 onDeleteMessage = onDeleteMessage,
@@ -391,13 +361,9 @@ fun ChatScreen(
 
 @Composable
 fun Messages(
-    isSpaceLevelChat: Boolean = true,
-    title: String?,
-    onTitleChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
     messages: List<ChatView>,
     scrollState: LazyListState,
-    onTitleFocusChanged: (Boolean) -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (ChatView.Message) -> Unit,
     onCopyMessage: (ChatView.Message) -> Unit,
@@ -534,25 +500,6 @@ fun Messages(
                                 )
                         )
                     }
-                }
-            }
-        }
-        if (!isSpaceLevelChat) {
-            item(key = HEADER_KEY) {
-                Column {
-                    DiscussionTitle(
-                        title = title,
-                        onTitleChanged = onTitleChanged,
-                        onFocusChanged = onTitleFocusChanged
-                    )
-                    Text(
-                        style = Relations2,
-                        text = stringResource(R.string.chat),
-                        color = colorResource(id = R.color.text_secondary),
-                        modifier = Modifier.padding(
-                            start = 20.dp
-                        )
-                    )
                 }
             }
         }

@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.Command
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
@@ -81,6 +82,19 @@ class VaultFragment : BaseComposeFragment() {
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening space from vault")
+                }
+            }
+            is Command.EnterSpaceLevelChat -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.actionOpenChatFromVault,
+                        ChatFragment.args(
+                            space = command.space.id,
+                            ctx = command.chat
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening space-level chat from vault")
                 }
             }
             is Command.CreateNewSpace -> {

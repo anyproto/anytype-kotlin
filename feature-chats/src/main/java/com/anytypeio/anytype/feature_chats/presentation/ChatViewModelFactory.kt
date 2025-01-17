@@ -17,12 +17,11 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import javax.inject.Inject
 
 class ChatViewModelFactory @Inject constructor(
-    private val params: ChatViewModel.Params,
-    private val setObjectDetails: SetObjectDetails,
-    private val openObject: OpenObject,
+    private val params: ChatViewModel.Params.Default,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
     private val editChatMessage: EditChatMessage,
@@ -35,13 +34,12 @@ class ChatViewModelFactory @Inject constructor(
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
+    private val exitToVaultDelegate: ExitToVaultDelegate
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
         vmParams = params,
-        setObjectDetails = setObjectDetails,
-        openObject = openObject,
         chatContainer = chatContainer,
         addChatMessage = addChatMessage,
         toggleChatMessageReaction = toggleChatMessageReaction,
@@ -54,6 +52,7 @@ class ChatViewModelFactory @Inject constructor(
         dispatchers = dispatchers,
         uploadFile = uploadFile,
         storeOfObjectTypes = storeOfObjectTypes,
-        copyFileToCacheDirectory = copyFileToCacheDirectory
+        copyFileToCacheDirectory = copyFileToCacheDirectory,
+        exitToVaultDelegate = exitToVaultDelegate
     ) as T
 }

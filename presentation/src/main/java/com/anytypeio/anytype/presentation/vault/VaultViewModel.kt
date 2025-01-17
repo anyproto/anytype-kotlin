@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
@@ -124,7 +125,10 @@ class VaultViewModel(
                         Timber.e(it, "Could not select space")
                     },
                     onSuccess = {
-                        proceedWithSavingCurrentSpace(targetSpace)
+                        proceedWithSavingCurrentSpace(
+                            targetSpace = targetSpace,
+                            chat = view.space.chatId?.ifEmpty { null }
+                        )
                     }
                 )
             } else {
@@ -245,7 +249,10 @@ class VaultViewModel(
         }
     }
 
-    private suspend fun proceedWithSavingCurrentSpace(targetSpace: String) {
+    private suspend fun proceedWithSavingCurrentSpace(
+        targetSpace: String,
+        chat: Id?
+    ) {
         saveCurrentSpace.async(
             SaveCurrentSpace.Params(SpaceId(targetSpace))
         ).fold(
@@ -253,11 +260,20 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                commands.emit(
-                    Command.EnterSpaceHomeScreen(
-                        space = Space(targetSpace)
+                if (chat != null && ChatConfig.isChatAllowed(space = targetSpace)) {
+                    commands.emit(
+                        Command.EnterSpaceLevelChat(
+                            space = Space(targetSpace),
+                            chat = chat
+                        )
                     )
-                )
+                } else {
+                    commands.emit(
+                        Command.EnterSpaceHomeScreen(
+                            space = Space(targetSpace)
+                        )
+                    )
+                }
             }
         )
     }
@@ -357,6 +373,7 @@ class VaultViewModel(
 
     sealed class Command {
         data class EnterSpaceHomeScreen(val space: Space): Command()
+        data class EnterSpaceLevelChat(val space: Space, val chat: Id): Command()
         data object CreateNewSpace: Command()
         data object OpenProfileSettings: Command()
         data object ShowIntroduceVault : Command()

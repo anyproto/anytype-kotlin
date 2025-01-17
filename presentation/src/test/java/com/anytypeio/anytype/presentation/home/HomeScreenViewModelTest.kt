@@ -86,6 +86,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -267,6 +268,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var getSpaceInviteLink: GetSpaceInviteLink
+
+    @Mock
+    lateinit var exitToVaultDelegate: ExitToVaultDelegate
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -3060,7 +3064,8 @@ class HomeScreenViewModelTest {
         ),
         featureToggles = featureToggles,
         fieldParser = fieldParser,
-        spaceInviteResolver = spaceInviteResolver
+        spaceInviteResolver = spaceInviteResolver,
+        exitToVaultDelegate = exitToVaultDelegate
     )
 
     companion object {

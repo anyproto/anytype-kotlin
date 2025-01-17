@@ -98,6 +98,7 @@ import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
@@ -209,7 +210,8 @@ class HomeScreenViewModel(
     private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
     private val featureToggles: FeatureToggles,
     private val fieldParser: FieldParser,
-    private val spaceInviteResolver: SpaceInviteResolver
+    private val spaceInviteResolver: SpaceInviteResolver,
+    private val exitToVaultDelegate: ExitToVaultDelegate
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -217,7 +219,9 @@ class HomeScreenViewModel(
     CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate,
     Unsubscriber by unsubscriber,
-    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
+    ExitToVaultDelegate by exitToVaultDelegate
+{
 
     private val jobs = mutableListOf<Job>()
     private val mutex = Mutex()
@@ -236,7 +240,6 @@ class HomeScreenViewModel(
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
     private val allContentWidget = AllContentWidgetContainer()
-    private val spaceChatWidget = SpaceChatWidgetContainer()
 
     private val spaceWidgetView = spaceWidgetContainer.view
 
@@ -410,9 +413,6 @@ class HomeScreenViewModel(
                     combine(
                         flows = buildList<Flow<WidgetView>> {
                             add(spaceWidgetView)
-                            if (featureToggles.isSpaceLevelChatWidgetEnabled) {
-                                add(spaceChatWidget.view)
-                            }
                             add(allContentWidget.view)
                             addAll(list.map { m -> m.view })
                         }
@@ -1776,7 +1776,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onBackClicked() {
+    fun onBackClicked(isSpaceRoot: Boolean = false) {
         viewModelScope.launch {
             if (spaceManager.getState() is SpaceManager.State.Space) {
                 // Proceed with releasing resources before exiting
@@ -1795,17 +1795,11 @@ class HomeScreenViewModel(
                             Timber.e(it, "Error while closing object from history")
                         }
                 }
-                spaceManager.clear()
-                clearLastOpenedSpace.async(Unit).fold(
-                    onSuccess = {
-                        Timber.d("Cleared last opened space before opening vault")
-                    },
-                    onFailure = {
-                        Timber.e(it, "Error while clearing last opened space before opening vault")
-                    }
-                )
+                if (isSpaceRoot) {
+                    proceedWithClearingSpaceBeforeExitingToVault()
+                }
             }
-            commands.emit(Command.OpenVault)
+            commands.emit(Command.Exit)
         }
     }
 
@@ -2235,7 +2229,8 @@ class HomeScreenViewModel(
         private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
         private val featureToggles: FeatureToggles,
         private val fieldParser: FieldParser,
-        private val spaceInviteResolver: SpaceInviteResolver
+        private val spaceInviteResolver: SpaceInviteResolver,
+        private val exitToVaultDelegate: ExitToVaultDelegate,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2288,7 +2283,8 @@ class HomeScreenViewModel(
             spaceBinWidgetContainer = spaceBinWidgetContainer,
             featureToggles = featureToggles,
             fieldParser = fieldParser,
-            spaceInviteResolver = spaceInviteResolver
+            spaceInviteResolver = spaceInviteResolver,
+            exitToVaultDelegate = exitToVaultDelegate
         ) as T
     }
 
@@ -2340,6 +2336,7 @@ sealed class Command {
     data class OpenGlobalSearchScreen(val space: Id) : Command()
 
     data object OpenVault: Command()
+    data object Exit: Command()
 
     data class SelectWidgetType(
         val ctx: Id,

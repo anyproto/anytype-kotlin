@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
@@ -19,6 +18,7 @@ sealed interface ChatView {
         val id: String,
         val content: Content,
         val author: String,
+        val creator: Id?,
         val timestamp: Long,
         val attachments: List<Attachment> = emptyList(),
         val reactions: List<Reaction> = emptyList(),

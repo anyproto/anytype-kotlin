@@ -241,6 +241,8 @@ fun Bubble(
                             ) {
                                 append(part.part)
                             }
+                        } else if (part.emoji != null && part.emoji.param != null) {
+                            append(part.emoji.param)
                         } else {
                             withStyle(
                                 style = SpanStyle(

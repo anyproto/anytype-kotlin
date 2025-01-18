@@ -113,6 +113,7 @@ class ChatViewModel @Inject constructor(
             chatContainer.fetchAttachments(vmParams.space),
             chatContainer.fetchReplies(chat = chat)
         ) { result, dependencies, replies ->
+            Timber.d("Got chat results: $result")
             data.value = result
             var previousDate: ChatView.DateSection? = null
             buildList<ChatView> {
@@ -243,11 +244,11 @@ class ChatViewModel @Inject constructor(
                         formattedDate = dateFormatter.format(msg.createdAt * 1000),
                         timeInMillis = msg.createdAt * 1000L
                     )
-                    add(view)
                     if (currDate.formattedDate != previousDate?.formattedDate) {
                         add(currDate)
                         previousDate = currDate
                     }
+                    add(view)
                 }
             }.reversed()
         }.flowOn(dispatchers.io).collect {

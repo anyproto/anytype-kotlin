@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -14,6 +13,9 @@ import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.presentation.editor.editor.getFileObject
+import com.anytypeio.anytype.presentation.editor.editor.getObject
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -254,20 +256,18 @@ suspend fun List<ColumnView>.buildGridRow(
 
 fun Struct.buildFileViews(
     relationKey: Id,
-    details: Map<Id, Block.Fields>
+    details: AllObjectsDetails,
 ): List<FileView> {
     val files = mutableListOf<FileView>()
     val ids = getOrDefault(relationKey, null) ?: return emptyList()
     if (ids is Id) {
-        val map = details[ids]?.map ?: return emptyList()
-        val file = ObjectWrapper.File(map)
-        if (file.map.isEmpty() || file.isDeleted == true || file.isArchived == true) return emptyList()
+        val file = details.getFileObject(ids)
+        if (file == null || file.map.isEmpty() || file.isDeleted == true || file.isArchived == true) return emptyList()
         files.add(file.toView())
     } else if (ids is List<*>) {
         ids.filterIsInstance<Id>().forEach { id ->
-            val map = details[id]?.map ?: return@forEach
-            val file = ObjectWrapper.File(map)
-            if (file.map.isEmpty() || file.isDeleted == true || file.isArchived == true) return@forEach
+            val file = details.getFileObject(id)
+            if (file == null || file.map.isEmpty() || file.isDeleted == true || file.isArchived == true) return@forEach
             files.add(file.toView())
         }
     }
@@ -290,21 +290,21 @@ private fun ObjectWrapper.File.toView() : FileView {
 
 fun Struct.buildRelationValueObjectViews(
     relationKey: Id,
-    details: Map<Id, Block.Fields>,
+    details: AllObjectsDetails,
     builder: UrlBuilder,
     fieldParser: FieldParser
 ): List<ObjectView> {
     val objects = mutableListOf<ObjectView>()
     val value = this.getOrDefault(relationKey, null)
     if (value is Id) {
-        val wrapper = ObjectWrapper.Basic(details[value]?.map.orEmpty())
-        if (wrapper.isValid) {
+        val wrapper = details.getObject(value)
+        if (wrapper != null) {
             objects.add(wrapper.toObjectView(urlBuilder = builder, fieldParser = fieldParser))
         }
     } else if (value is List<*>) {
         value.typeOf<Id>().forEach { id ->
-            val wrapper = ObjectWrapper.Basic(details[id]?.map.orEmpty())
-            if (wrapper.isValid) {
+            val wrapper = details.getObject(id)
+            if (wrapper != null) {
                 objects.add(wrapper.toObjectView(urlBuilder = builder, fieldParser = fieldParser))
             }
         }

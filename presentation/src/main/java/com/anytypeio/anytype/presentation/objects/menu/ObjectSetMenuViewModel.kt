@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -25,6 +24,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
+import com.anytypeio.anytype.presentation.editor.editor.getObject
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -201,6 +201,7 @@ class ObjectSetMenuViewModel(
     }
 
     override fun onActionClicked(ctx: Id, space: Id, action: ObjectAction) {
+        val state = objectState.value.dataViewState() ?: return
         when (action) {
             ObjectAction.DELETE -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
@@ -221,13 +222,12 @@ class ObjectSetMenuViewModel(
                 proceedWithDuplication(
                     ctx = ctx,
                     space = space,
-                    details = objectState.value.dataViewState()?.details
+                    details = state.details.details
                 )
             }
             ObjectAction.CREATE_WIDGET -> {
-                val details = objectState.value.dataViewState()?.details?.get(ctx)
-                val wrapper = ObjectWrapper.Basic(details?.map ?: emptyMap())
-                proceedWithCreatingWidget(obj = wrapper)
+                val wrapper = state.details.getObject(ctx)
+                if (wrapper != null) proceedWithCreatingWidget(obj = wrapper)
             }
             ObjectAction.COPY_LINK -> {
                 viewModelScope.launch {

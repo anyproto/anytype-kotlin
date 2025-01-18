@@ -41,8 +41,12 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.presentation.editor.editor.getObject
+import com.anytypeio.anytype.presentation.editor.editor.getTypeObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
@@ -70,12 +74,13 @@ fun ObjectState.DataView.featuredRelations(
     val block = blocks.find { it.content is Block.Content.FeaturedRelations }
     if (block != null) {
         val views = mutableListOf<ObjectRelationView>()
-        val ids = details[ctx]?.featuredRelations ?: emptyList()
+        val currentObject = details.getObject(ctx)
+        val ids = currentObject?.featuredRelations
         views.addAll(
             mapFeaturedRelations(
                 ctx = ctx,
                 keys = ids,
-                details = Block.Details(details),
+                details = details,
                 relations = relations,
                 urlBuilder = urlBuilder,
                 fieldParser = fieldParser
@@ -98,10 +103,8 @@ fun ObjectState.DataView.header(
 ): SetOrCollectionHeaderState {
     val title = blocks.title()
     return if (title != null) {
-        val wrapper = ObjectWrapper.Basic(
-            map = details[ctx]?.map ?: emptyMap()
-        )
-        val featured = wrapper.featuredRelations
+        val wrapper = details.getObject(ctx)
+        val featured = wrapper?.featuredRelations
         SetOrCollectionHeaderState.Default(
             title = title(
                 ctx = ctx,
@@ -110,7 +113,7 @@ fun ObjectState.DataView.header(
                 details = details,
                 coverImageHashProvider = coverImageHashProvider,
             ),
-            description = if (featured.contains(Relations.DESCRIPTION)) {
+            description = if (featured?.contains(Relations.DESCRIPTION) == true) {
                 SetOrCollectionHeaderState.Description.Default(
                     description = wrapper.description.orEmpty()
                 )
@@ -126,94 +129,102 @@ fun ObjectState.DataView.header(
 
 private fun ObjectState.DataView.mapFeaturedRelations(
     ctx: Id,
-    keys: List<String>,
-    details: Block.Details,
+    keys: List<String>?,
+    details: AllObjectsDetails,
     relations: List<ObjectWrapper.Relation>,
     urlBuilder: UrlBuilder,
     fieldParser: FieldParser
-): List<ObjectRelationView> = keys.mapNotNull { key ->
-    when (key) {
-        Relations.DESCRIPTION -> null
-        Relations.TYPE -> {
+): List<ObjectRelationView> {
+    val currentObject = details.getObject(ctx) ?: return emptyList()
+    val featuredRelationsIds = currentObject.featuredRelations
+    return featuredRelationsIds.mapNotNull { key ->
+        when (key) {
+            Relations.DESCRIPTION -> null
+            Relations.TYPE -> {
+                val currentObjectType = currentObject.getProperType()
+                if (currentObjectType != null) {
+                    val wrapper = details.getTypeObject(currentObjectType)
+                    if (wrapper != null) {
+                        val isDeleted = wrapper.isDeleted == true
+                        if (isDeleted) {
+                            ObjectRelationView.ObjectType.Deleted(
+                                id = wrapper.id,
+                                key = key,
+                                featured = true,
+                                readOnly = false,
+                                system = key.isSystemKey()
+                            )
+                        } else {
+                            ObjectRelationView.ObjectType.Base(
+                                id = wrapper.id,
+                                key = key,
+                                name = wrapper.name.orEmpty(),
+                                featured = true,
+                                readOnly = false,
+                                type = wrapper.id,
+                                system = key.isSystemKey()
+                            )
+                        }
+                    } else {
+                        null
+                    }
+                } else {
+                    null
+                }
+            }
+            Relations.SET_OF -> {
 
-            val type = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty()).type.firstOrNull()
-            val typeMap = type?.let { details.details[it]?.map }
+                val source = currentObject.setOf.firstOrNull()
 
-            val isTypeMapValid = !typeMap.isNullOrEmpty()
-            val wrapper = if (isTypeMapValid) typeMap?.mapToObjectWrapperType() else null
+                val wrapper = if (source != null) {
+                    details.getObject(source)
+                } else {
+                    null
+                }
 
-            val isDeleted = wrapper == null || wrapper.isDeleted == true
+                val isValid = wrapper?.isValid == true
+                val isDeleted = wrapper?.isDeleted == true
+                val isReadOnly = wrapper?.relationReadonlyValue == true
 
-            if (wrapper != null && !isDeleted) {
-                ObjectRelationView.ObjectType.Base(
-                    id = wrapper.id,
+                val sources = if (isValid && !isDeleted) {
+                    listOf(wrapper.toObjectViewDefault(urlBuilder = urlBuilder, fieldParser = fieldParser))
+                } else {
+                    emptyList()
+                }
+
+                ObjectRelationView.Source(
+                    id = currentObject.id,
                     key = key,
-                    name = wrapper.name.orEmpty(),
+                    name = Relations.RELATION_NAME_EMPTY,
                     featured = true,
-                    readOnly = false,
-                    type = wrapper.id,
-                    system = key.isSystemKey()
-                )
-            } else {
-                ObjectRelationView.ObjectType.Deleted(
-                    id = type.orEmpty(),
-                    key = key,
-                    featured = true,
-                    readOnly = false,
+                    readOnly = isReadOnly,
+                    sources = sources,
                     system = key.isSystemKey()
                 )
             }
-        }
-        Relations.SET_OF -> {
-
-            val source = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty()).setOf.firstOrNull()
-            val sourceMap = source?.let { details.details[it]?.map }
-
-            val isSourceMapValid = !sourceMap.isNullOrEmpty()
-            val wrapper = if (isSourceMapValid) ObjectWrapper.Basic(sourceMap) else null
-
-            val isValid = wrapper?.isValid == true
-            val isDeleted = wrapper?.isDeleted == true
-            val isReadOnly = wrapper?.relationReadonlyValue == true
-
-            val sources = if (isValid && !isDeleted) {
-                listOf(wrapper.toObjectViewDefault(urlBuilder = urlBuilder, fieldParser = fieldParser))
-            } else {
-                emptyList()
+            Relations.BACKLINKS, Relations.LINKS -> {
+                details.linksFeaturedRelation(
+                    relations = relations,
+                    ctx = ctx,
+                    relationKey = key,
+                    isFeatured = true
+                )
             }
-
-            ObjectRelationView.Source(
-                id = details.details[ctx]?.id.orEmpty(),
-                key = key,
-                name = Relations.RELATION_NAME_EMPTY,
-                featured = true,
-                readOnly = isReadOnly,
-                sources = sources,
-                system = key.isSystemKey()
-            )
-        }
-        Relations.BACKLINKS, Relations.LINKS -> {
-            details.linksFeaturedRelation(
-                relations = relations,
-                ctx = ctx,
-                relationKey = key,
-                isFeatured = true
-            )
-        }
-        else -> {
-            val relation = relations.firstOrNull { it.key == key }
-            relation?.view(
-                details = details.details,
-                values = details.details[ctx]?.map ?: emptyMap(),
-                urlBuilder = urlBuilder,
-                isFeatured = true,
-                fieldParser = fieldParser
-            )
+            else -> {
+                val relation = relations.firstOrNull { it.key == key }
+                relation?.view(
+                    details = details,
+                    values = currentObject.map,
+                    urlBuilder = urlBuilder,
+                    isFeatured = true,
+                    fieldParser = fieldParser
+                )
+            }
         }
     }
+        .sortedByDescending { it.key == Relations.SET_OF }
+        .sortedByDescending { it.key == Relations.TYPE }
 }
-    .sortedByDescending { it.key == Relations.SET_OF }
-    .sortedByDescending { it.key == Relations.TYPE }
 
 fun List<DVRecord>.update(new: List<DVRecord>): List<DVRecord> {
     val update = new.associateBy { rec -> rec[ID_KEY] as String }
@@ -400,7 +411,7 @@ fun List<DVViewerRelation>.updateViewerRelations(updates: List<DVViewerRelationU
 }
 
 fun ObjectState.DataView.Set.getSetOfValue(ctx: Id): List<Id> {
-    return ObjectWrapper.Basic(details[ctx]?.map.orEmpty()).setOf
+    return details.getObject(ctx)?.setOf.orEmpty()
 }
 
 fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): List<Id> {
@@ -409,15 +420,13 @@ fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): Lis
 
 fun ObjectState.DataView.Set.isSetByRelation(setOfValue: List<Id>): Boolean {
     if (setOfValue.isEmpty()) return false
-    val objectDetails = details[setOfValue.first()]?.map.orEmpty()
-    val wrapper = ObjectWrapper.Basic(objectDetails)
-    return wrapper.layout == ObjectType.Layout.RELATION
+    val wrapper = details.getObject(setOfValue.first())
+    return wrapper?.layout == ObjectType.Layout.RELATION
 }
 
 private fun ObjectState.DataView.isValidObject(objectId: Id): Boolean {
-    val objectDetails = details[objectId] ?: return false
-    val objectWrapper = ObjectWrapper.Basic(objectDetails.map)
-    return objectWrapper.isDeleted != true
+    val objectWrapper = details.getObject(objectId)
+    return objectWrapper?.isValid == true && objectWrapper.isDeleted != true
 }
 
 fun DVViewer.updateFields(fields: DVViewerFields?): DVViewer {
@@ -549,7 +558,7 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
                     Timber.d("Set by type setOf param is null or empty, not possible to get Type and Template")
                     Pair(null, null)
                 } else {
-                    val defaultSetObjectType = details[setOf]?.map?.mapToObjectWrapperType()
+                    val defaultSetObjectType = details.getTypeObject(setOf)
                     if (activeView.defaultTemplate.isNullOrEmpty()) {
                         val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
                         Pair(defaultSetObjectType, defaultTemplateId)

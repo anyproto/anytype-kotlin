@@ -46,10 +46,14 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.ext.toObject
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -58,7 +62,11 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.getObject
+import com.anytypeio.anytype.presentation.editor.editor.getStringSingleValue
+import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.sets.isChangingDefaultTypeAvailable
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
@@ -290,7 +298,7 @@ fun Relation.Format.getPropName() = when (this) {
 
 fun CoroutineScope.sendAnalyticsObjectShowEvent(
     ctx: Id,
-    details: Map<Id, Block.Fields>?,
+    details: Map<Id, Struct>,
     analytics: Analytics,
     startTime: Long,
     spaceParams: AnalyticSpaceHelperDelegate.Params
@@ -474,7 +482,7 @@ fun CoroutineScope.sendAnalyticsMoveToBinEvent(
 
 fun CoroutineScope.sendAnalyticsDuplicateEvent(
     analytics: Analytics,
-    details: Map<Id, Block.Fields>?,
+    details: Map<Id, Struct>,
     ctx: Id,
     startTime: Long,
     count: Int = 1,
@@ -1933,7 +1941,7 @@ fun CoroutineScope.sendAnalyticsSelectTemplateEvent(
 
 fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
     analytics: Analytics,
-    details: Map<Id, Block.Fields>,
+    details: Map<Id, Struct>,
     ctx: Id,
     startTime: Long,
     spaceParams: AnalyticSpaceHelperDelegate.Params
@@ -1980,14 +1988,16 @@ fun CoroutineScope.sendAnalyticsDefaultTemplateEvent(
 }
 
 private fun getAnalyticsObjectType(
-    details: Map<Id, Block.Fields>?,
+    details: Map<Id, Struct>,
     ctx: Id
 ): String? {
-    if (details == null) return null
-    val objTypeId = details[ctx]?.type?.firstOrNull()
-    val typeStruct = details[objTypeId]?.map
-    val objType = typeStruct?.mapToObjectWrapperType()
-    return objType?.sourceObject ?: OBJ_TYPE_CUSTOM
+    val objTypeId = details[ctx]?.getSingleValue<String>(Relations.TYPE)
+    val sourceObject = if (objTypeId != null){
+        details[objTypeId]?.getSingleValue<String>(Relations.SOURCE_OBJECT)
+    } else {
+        null
+    }
+    return sourceObject ?: OBJ_TYPE_CUSTOM
 }
 
 fun CoroutineScope.sendAnalyticsCreateLink(

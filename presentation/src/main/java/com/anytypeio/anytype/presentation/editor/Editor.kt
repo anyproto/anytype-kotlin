@@ -93,11 +93,11 @@ interface Editor {
         ) : Mode()
     }
 
-    class Storage {
+    class Storage(ctx: Id) {
         val document: DocumentProvider = DocumentProvider.Default()
         val views: Store<List<BlockView>> = Store.Screen()
         val focus: Store<Focus> = Store.Focus()
-        val details: Store.Details = Store.Details()
+        val details: Store.Details = Store.Details(ctx)
 
         val textSelection: Store<Editor.TextSelection> = Store.TextSelection()
         val objectRestrictions: Store.ObjectRestrictions = Store.ObjectRestrictions()

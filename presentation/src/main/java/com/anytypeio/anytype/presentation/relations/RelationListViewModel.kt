@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -88,7 +89,7 @@ class RelationListViewModel(
 
     private suspend fun constructViews(
         ctx: Id,
-        details: Block.Details
+        details: AllObjectsDetails
     ): List<Model> {
 
         val objectDetails = details.details[ctx]?.map ?: emptyMap()
@@ -120,7 +121,7 @@ class RelationListViewModel(
     private suspend fun getObjectRelationsView(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
-        details: Block.Details,
+        details: AllObjectsDetails,
         objectWrapper: ObjectWrapper.Basic
     ): List<Model.Item> {
         return getObjectRelations(

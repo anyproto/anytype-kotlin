@@ -6,8 +6,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 
-fun Map<Id, Struct>.process(event: Event.Command.Details) = when (event) {
-    is Event.Command.Details.Set -> set(event.target, event.details.map)
+fun Map<Id, Struct>.process(event: Event.Command.Details): Map<Id, Struct> = when (event) {
+    is Event.Command.Details.Set -> set(event.target, event.details)
     is Event.Command.Details.Amend -> amend(event.target, event.details)
     is Event.Command.Details.Unset -> unset(event.target, event.keys)
 }
@@ -51,4 +51,39 @@ inline fun <reified T> Struct.getValues(key: String): List<T> {
         is List<*> -> value.typeOf()
         else -> emptyList()
     }
+}
+
+fun Struct?.toObject(): ObjectWrapper.Basic? {
+    if (this == null || !isValidObject()) return null
+    return ObjectWrapper.Basic(this)
+}
+
+fun Struct?.mapToOptionObject(): ObjectWrapper.Option? {
+    if (this == null) return null
+    return ObjectWrapper.Option(this)
+}
+
+fun Struct?.toFileObject(): ObjectWrapper.File? {
+    if (this == null || !isValidObject()) return null
+    return ObjectWrapper.File(this)
+}
+
+
+fun Struct?.toDateObject(): ObjectWrapper.Date? {
+    if (this == null || !isValidObject()) return null
+    return ObjectWrapper.Date(this)
+}
+
+fun Struct?.toBookmarkObject(): ObjectWrapper.Bookmark? {
+    if (this == null || !isValidObject()) return null
+    return ObjectWrapper.Bookmark(this)
+}
+
+fun Struct?.toInternalFlagsObject(): ObjectWrapper.ObjectInternalFlags? {
+    if (this.isNullOrEmpty()) return null
+    return ObjectWrapper.ObjectInternalFlags(this)
+}
+
+fun Struct.isValidObject(): Boolean {
+    return contains(Relations.ID)
 }

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.mappers.MWidgetLayout
 import com.anytypeio.anytype.middleware.mappers.core
+import com.anytypeio.anytype.middleware.mappers.toCoreFieldsModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsAlign
@@ -118,7 +119,7 @@ fun anytype.Event.Message.toCoreModels(
         Event.Command.UpdateFields(
             context = context,
             target = event.id,
-            fields = event.fields.toCoreModel()
+            fields = event.fields.toCoreFieldsModel()
         )
     }
     blockSetFile != null -> {

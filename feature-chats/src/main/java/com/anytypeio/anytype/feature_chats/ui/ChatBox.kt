@@ -382,7 +382,9 @@ fun ChatBox(
                 onMessageSent = {
                     onMessageSent(it)
                     clearText()
-                    resetScroll()
+                    if (mode !is ChatBoxMode.EditMessage) {
+                        resetScroll()
+                    }
                 },
                 onTextChanged = { value ->
                     updateValue(value)

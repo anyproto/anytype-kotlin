@@ -40,6 +40,7 @@ import com.anytypeio.anytype.presentation.profile.ParticipantViewModel.UiPartici
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -150,7 +151,8 @@ private fun ImageBlock(
                     .clip(shape = CircleShape)
                     .noRippleClickable {
                         onProfileIconClick.invoke()
-                    }
+                    },
+                loading = placeholder(R.drawable.ic_loading_state_112)
             )
         }
 
@@ -221,7 +223,7 @@ fun ParticipantScreenPreview() {
     ParticipantScreen(
         uiState = UiParticipantScreenState.Data(
             name = "Ivanov Konstantin",
-            icon = ProfileIconView.Emoji(""),
+            icon = ProfileIconView.Image("dsdas"),
             description = "some desc",
             isOwner = true
         ),

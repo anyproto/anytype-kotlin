@@ -1224,6 +1224,7 @@
     <string name="multiplayer_collaborate_step_1">1. Ketuk gawit Ruang untuk mengakses setelan</string>
     <string name="multiplayer_collaborate_step_2">2. Buka bagian Bagikan</string>
     <string name="multiplayer_collaborate_step_3">3. Buat tautan undangan lalu bagikan</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="other">%1$d anggota</item>
     </plurals>

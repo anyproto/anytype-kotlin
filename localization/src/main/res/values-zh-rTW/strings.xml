@@ -1224,6 +1224,7 @@
     <string name="multiplayer_collaborate_step_1">1. 點擊空間小工具來進行設置</string>
     <string name="multiplayer_collaborate_step_2">2. 開放共享區塊</string>
     <string name="multiplayer_collaborate_step_3">3. 產生邀請連結並分享</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="other">%1$d 位成員</item>
     </plurals>

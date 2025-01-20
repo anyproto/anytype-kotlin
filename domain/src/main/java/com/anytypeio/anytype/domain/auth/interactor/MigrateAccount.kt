@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
@@ -14,11 +15,18 @@ class MigrateAccount @Inject constructor(
 
     override suspend fun doWork(params: Params) {
         when(params) {
-            Params.Current -> {
+            is Params.Current -> {
                 val acc = repo.getCurrentAccount()
                 val path = path.providePath()
                 repo.migrateAccount(
                     account = acc.id,
+                    path = path
+                )
+            }
+            is Params.Other -> {
+                val path = path.providePath()
+                repo.migrateAccount(
+                    account = params.acc,
                     path = path
                 )
             }
@@ -27,5 +35,6 @@ class MigrateAccount @Inject constructor(
 
     sealed class Params {
         data object Current : Params()
+        data class Other(val acc: Id) : Params()
     }
 }

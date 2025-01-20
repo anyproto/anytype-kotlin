@@ -3,9 +3,10 @@ package com.anytypeio.anytype.presentation.editor.editor.ext
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.editor.editor.getObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
@@ -1194,16 +1195,16 @@ fun List<BlockView>.update(blockView: BlockView) = this.map {
 
 fun Document.getLinkAppearanceMenu(
     blockId: Id,
-    details: Block.Details
+    details: AllObjectsDetails
 ): BlockView.Appearance.Menu? {
     val block = this.find { it.id == blockId }
     val content = block?.content
     return if (block != null && content is Block.Content.Link) {
         val target = content.asLink().target
-        val obj = ObjectWrapper.Basic(details.details[target]?.map ?: emptyMap())
+        val obj = details.getObject(target)
         val factory = LinkAppearanceFactory(
             content = content,
-            layout = obj.layout
+            layout = obj?.layout
         )
         return factory.createAppearanceMenuItems()
     } else {

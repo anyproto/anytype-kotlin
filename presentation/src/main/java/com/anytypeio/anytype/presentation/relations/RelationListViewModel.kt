@@ -7,14 +7,12 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationFeatu
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationUnfeature
 import com.anytypeio.anytype.analytics.base.EventsDictionary.relationsScreenShow
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.TimeInMillis
-import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.base.fold
@@ -30,9 +28,12 @@ import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.presentation.editor.editor.getObjRelationsViews
+import com.anytypeio.anytype.presentation.editor.editor.getRecommendedRelations
+import com.anytypeio.anytype.presentation.editor.editor.getStruct
+import com.anytypeio.anytype.presentation.editor.editor.getTypeForObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
-import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -92,85 +93,39 @@ class RelationListViewModel(
         details: AllObjectsDetails
     ): List<Model> {
 
-        val objectDetails = details.details[ctx]?.map ?: emptyMap()
-        val objectWrapper = ObjectWrapper.Basic(objectDetails)
-        val objectTypeId = objectWrapper.getProperType()
-        val objectTypeWrapper = details.details[objectTypeId]?.map?.mapToObjectWrapperType()
-        if (objectTypeWrapper == null) {
-            Timber.e("Couldn't find valid object type for id: $objectTypeId")
-            return emptyList()
-        }
-
-        val objectRelationViews = getObjectRelationsView(
+        val objectRelationViews = details.getObjRelationsViews(
             ctx = ctx,
-            objectDetails = objectDetails,
-            details = details,
-            objectWrapper = objectWrapper
-        )
-
-        val recommendedRelationViews = getRecommendedRelations(
-            ctx = ctx,
-            objectDetails = objectDetails,
-            objectTypeWrapper = objectTypeWrapper,
-            details = details
-        )
-
-        return buildFinalList(objectRelationViews, recommendedRelationViews, objectTypeWrapper)
-    }
-
-    private suspend fun getObjectRelationsView(
-        ctx: Id,
-        objectDetails: Map<Key, Any?>,
-        details: AllObjectsDetails,
-        objectWrapper: ObjectWrapper.Basic
-    ): List<Model.Item> {
-        return getObjectRelations(
-            systemRelations = listOf(),
-            relationKeys = objectDetails.keys,
-            storeOfRelations = storeOfRelations
-        ).views(
-            context = ctx,
-            details = details,
-            values = objectDetails,
-            urlBuilder = urlBuilder,
-            featured = objectWrapper.featuredRelations,
+            storeOfRelations = storeOfRelations,
             fieldParser = fieldParser,
+            urlBuilder = urlBuilder
         ).map { view ->
             Model.Item(
                 view = view,
                 isRemovable = isPossibleToRemoveRelation(view)
             )
         }
-    }
 
-    private suspend fun getRecommendedRelations(
-        ctx: Id,
-        objectDetails: Map<Key, Any?>,
-        objectTypeWrapper: ObjectWrapper.Type,
-        details: Block.Details
-    ): List<Model.Item> {
-        return getNotIncludedRecommendedRelations(
-            relationKeys = objectDetails.keys,
-            recommendedRelations = objectTypeWrapper.recommendedRelations,
-            storeOfRelations = storeOfRelations
-        ).views(
-            context = ctx,
-            details = details,
-            values = objectDetails,
-            urlBuilder = urlBuilder,
-            fieldParser = fieldParser
+        val recommendedRelationViews = details.getRecommendedRelations(
+            ctx = ctx,
+            storeOfRelations = storeOfRelations,
+            fieldParser = fieldParser,
+            urlBuilder = urlBuilder
         ).map { view ->
             Model.Item(
                 view = view,
                 isRecommended = true
             )
         }
+
+        val objectWrapperType = details.getTypeForObject(currentObjectId = ctx)
+
+        return buildFinalList(objectRelationViews, recommendedRelationViews, objectWrapperType)
     }
 
     private fun buildFinalList(
         objectRelations: List<Model.Item>,
         recommendedRelations: List<Model.Item>,
-        objectTypeWrapper: ObjectWrapper.Type
+        objectTypeWrapper: ObjectWrapper.Type?
     ): MutableList<Model> {
         return mutableListOf<Model>().apply {
             val (isFeatured, other) = objectRelations.partition { it.view.featured }
@@ -183,7 +138,7 @@ class RelationListViewModel(
                 addAll(other)
             }
             if (recommendedRelations.isNotEmpty()) {
-                add(Model.Section.TypeFrom(objectTypeWrapper.name.orEmpty()))
+                add(Model.Section.TypeFrom(objectTypeWrapper?.name.orEmpty()))
                 addAll(recommendedRelations)
             }
         }
@@ -228,7 +183,7 @@ class RelationListViewModel(
     }
 
     private fun checkRelationIsInObject(view: ObjectRelationView): Boolean {
-        val objectRelations = relationListProvider.getDetails().details[vmParams.objectId]?.map?.keys
+        val objectRelations = relationListProvider.getDetails().getStruct(vmParams.objectId)?.keys
         return objectRelations?.any { it == view.key } == true
     }
 

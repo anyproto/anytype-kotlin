@@ -11,12 +11,12 @@ class DefaultObjectValueProvider(
     private val details: Store.Details
 ) : ObjectValueProvider {
     override suspend fun get(ctx: Id, target: Id): Struct {
-        return details.current()[target].orEmpty()
+        return details.current().details[target].orEmpty()
     }
 
     override suspend fun subscribe(ctx: Id, target: Id): Flow<Struct> {
         return details.stream().map { details ->
-            details[target].orEmpty()
+            details.details[target].orEmpty()
         }
     }
 }

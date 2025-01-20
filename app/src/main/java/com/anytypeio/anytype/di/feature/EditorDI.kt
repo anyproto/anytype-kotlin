@@ -119,7 +119,6 @@ import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -214,7 +213,9 @@ object EditorSessionModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideStorage(): Editor.Storage = Editor.Storage()
+    fun provideStorage(params: EditorViewModel.Params): Editor.Storage = Editor.Storage(
+        ctx = params.ctx
+    )
 
     @JvmStatic
     @Provides
@@ -901,15 +902,6 @@ object EditorUseCaseModule {
     fun provideDefaultObjectValueProvider(
         storage: Editor.Storage
     ): ObjectValueProvider = DefaultObjectValueProvider(storage.details)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideObjectDetailProvider(
-        storage: Editor.Storage
-    ): ObjectDetailProvider = object : ObjectDetailProvider {
-        override fun provide(): Map<Id, Block.Fields> = storage.details.current().details
-    }
 
     @JvmStatic
     @Provides

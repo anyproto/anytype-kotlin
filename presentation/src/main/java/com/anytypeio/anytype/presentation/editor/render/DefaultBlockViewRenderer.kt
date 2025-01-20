@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.ext.textColor
@@ -22,7 +21,6 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
-import com.anytypeio.anytype.presentation.editor.editor.Store
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.editor.editor.getBookmarkObject
 import com.anytypeio.anytype.presentation.editor.editor.getObject
@@ -41,7 +39,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
-import com.anytypeio.anytype.presentation.relations.BlockFieldsCoverWrapperProper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
@@ -1435,7 +1432,7 @@ class DefaultBlockViewRenderer @Inject constructor(
 
         check(rootContent is Content.Smart)
 
-        val coverContainer = BlockFieldsCoverWrapperProper(currentObject)
+        val coverContainer = BasicObjectCoverWrapper(currentObject)
             .getCover(urlBuilder, coverImageHashProvider)
 
         val blockMode = if (restrictions.contains(ObjectRestriction.DETAILS)) {

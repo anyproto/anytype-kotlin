@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.relations
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -131,26 +130,6 @@ data class CoverContainer(
 interface CoverWrapper {
     val coverType: CoverType
     val coverId: String?
-}
-
-class BlockFieldsCoverWrapper(val fields: Block.Fields?) : CoverWrapper {
-
-    override val coverType: CoverType
-        get() {
-            val value = fields?.coverType?.toInt() ?: return CoverType.NONE
-            return CoverType.values().find { type ->
-                type.code == value
-            } ?: CoverType.NONE
-        }
-
-    override val coverId = fields?.coverId
-}
-
-class BlockFieldsCoverWrapperProper(val obj: ObjectWrapper.Basic?) : CoverWrapper {
-    override val coverType: CoverType
-        get() = obj?.coverType ?: CoverType.NONE
-    override val coverId: String?
-        get() = obj?.coverId
 }
 
 class BasicObjectCoverWrapper(val obj: ObjectWrapper.Basic?) : CoverWrapper {

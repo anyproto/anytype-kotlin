@@ -7,9 +7,11 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.presentation.editor.editor.getObject
 import com.anytypeio.anytype.presentation.editor.editor.getOptionObject
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.number.NumberParser
+import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.sets.*
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -208,7 +210,7 @@ fun ColumnView.getDateRelationFormat(): String {
 }
 
 /**
- * Retrieves a list of distinct [ObjectWrapper.Relation] relations of Object using the given relation links filtered by system relations.
+ * Retrieves a list of distinct [ObjectWrapper.Relation] relations of Object using the given relation keys filtered by system relations.
  *
  * @param relationKeys The list of object details keys
  * @param systemRelations The list of keys of the system relations. Final list will be filtered by this list.

@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.relations.providers
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,14 +9,14 @@ import kotlinx.coroutines.flow.map
 
 interface RelationListProvider {
 
-    val details: Flow<Block.Details>
+    val details: Flow<AllObjectsDetails>
 
-    fun getDetails(): Block.Details
+    fun getDetails(): AllObjectsDetails
 
     class EditorRelationListProvider(
         private val storage: Editor.Storage
     ) : RelationListProvider {
-        override val details: Flow<Block.Details>
+        override val details: Flow<AllObjectsDetails>
             get() = storage.details.stream()
 
         override fun getDetails() = storage.details.current()
@@ -26,28 +26,22 @@ interface RelationListProvider {
         private val objectStates: StateFlow<ObjectState>
     ) : RelationListProvider {
 
-        override val details = objectStates.map {  state -> mapDetails(state) }
-
-        override fun getDetails(): Block.Details = mapDetails(objectStates.value)
-
-        private fun mapDetails(state: ObjectState) = when (state) {
-                is ObjectState.DataView.Collection -> {
-                    Block.Details(state.details)
-                }
-                is ObjectState.DataView.Set -> {
-                    Block.Details(state.details)
-                }
-                else -> Block.Details(emptyMap())
+        override val details = objectStates.map { state ->
+            mapDetails(state)
         }
 
-        private fun mapLinks(state: ObjectState) = when (state) {
+        override fun getDetails(): AllObjectsDetails = mapDetails(objectStates.value)
+
+        private fun mapDetails(state: ObjectState) = when (state) {
             is ObjectState.DataView.Collection -> {
-                state.details.keys
+                state.details
             }
+
             is ObjectState.DataView.Set -> {
-                state.details.keys
+                state.details
             }
-            else -> emptyList()
+
+            else -> AllObjectsDetails.EMPTY
         }
     }
 }

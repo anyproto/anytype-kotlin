@@ -1,34 +1,31 @@
 package com.anytypeio.anytype.presentation.objects.menu
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.presentation.editor.editor.getObject
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider.Options
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
 
 class ObjectMenuOptionsProviderImpl(
-    private val details: Flow<Map<Id, Block.Fields>>,
-    private val restrictions: Flow<List<ObjectRestriction>>,
-    private val featureToggles: FeatureToggles,
+    private val allObjectSDetailsFlow: Flow<AllObjectsDetails>,
+    private val restrictions: Flow<List<ObjectRestriction>>
 ) : ObjectMenuOptionsProvider {
 
-    private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> = details
+    private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> = allObjectSDetailsFlow
         .filter { details ->
-            details.containsKey(ctx).also { isValuePresent ->
+            details.details.containsKey(ctx).also { isValuePresent ->
                 if (!isValuePresent) Timber.w("Details missing for object: $ctx")
             }
         }
-        .map { details ->
-            val fields = requireNotNull(details[ctx])
-            ObjectWrapper.Basic(fields.map).layout
+        .mapNotNull { details ->
+            details.getObject(ctx)?.layout
         }
 
     override fun provide(ctx: Id, isLocked: Boolean): Flow<Options> {

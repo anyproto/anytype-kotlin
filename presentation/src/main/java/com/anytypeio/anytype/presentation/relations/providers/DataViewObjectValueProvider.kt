@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.relations.providers
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.presentation.editor.editor.getStruct
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlinx.coroutines.flow.Flow
@@ -43,10 +44,9 @@ class DataViewObjectValueProvider(
         state: ObjectState,
         target: Id
     ) : Struct = when (state) {
-        is ObjectState.DataView.Collection -> state.details[target]?.map ?: emptyMap()
-        is ObjectState.DataView.Set -> state.details[target]?.map ?: emptyMap()
-        is ObjectState.ErrorLayout -> emptyMap()
-        is ObjectState.Init -> emptyMap()
+        is ObjectState.DataView.Collection -> state.details.getStruct(target).orEmpty()
+        is ObjectState.DataView.Set -> state.details.getStruct(target).orEmpty()
+        else -> emptyMap()
     }
 }
 
@@ -79,10 +79,9 @@ class SetOrCollectionObjectValueProvider(
         state: ObjectState,
         target: Id
     ) : Struct = when (state) {
-        is ObjectState.DataView.Collection -> state.details[target]?.map ?: emptyMap()
-        is ObjectState.DataView.Set -> state.details[target]?.map ?: emptyMap()
-        is ObjectState.ErrorLayout -> emptyMap()
-        is ObjectState.Init -> emptyMap()
+        is ObjectState.DataView.Collection -> state.details.getStruct(target).orEmpty()
+        is ObjectState.DataView.Set -> state.details.getStruct(target).orEmpty()
+        else -> emptyMap()
     }
 }
 

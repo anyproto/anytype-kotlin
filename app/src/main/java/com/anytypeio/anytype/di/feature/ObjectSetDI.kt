@@ -2,7 +2,6 @@ package com.anytypeio.anytype.di.feature
 
 import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -69,7 +68,6 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
@@ -420,20 +418,6 @@ object ObjectSetModule {
         objectState = objectState,
         db = db
     )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideObjectDetailProvider(
-        objectState: MutableStateFlow<ObjectState>,
-    ): ObjectDetailProvider = object : ObjectDetailProvider {
-        override fun provide(): Map<Id, Block.Fields> {
-            return when (val state = objectState.value) {
-                is ObjectState.DataView -> state.details
-                else -> emptyMap()
-            }
-        }
-    }
 
     @JvmStatic
     @Provides

@@ -30,8 +30,7 @@ sealed class Event {
 
         data class AddBlock(
             override val context: String,
-            val blocks: List<Block>,
-            val details: Block.Details = Block.Details(emptyMap())
+            val blocks: List<Block>
         ) : Command()
 
         /**

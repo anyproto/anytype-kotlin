@@ -1236,6 +1236,7 @@
     <string name="multiplayer_collaborate_step_1">1.  Tap the Space widget to access settings</string>
     <string name="multiplayer_collaborate_step_2">2.  Open Share section</string>
     <string name="multiplayer_collaborate_step_3">3.  Generate an invite link and share it</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d member</item>
         <item quantity="few">%1$d members</item>

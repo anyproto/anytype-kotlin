@@ -1224,6 +1224,7 @@
     <string name="multiplayer_collaborate_step_1">1. 点击空间小部件来访问设置</string>
     <string name="multiplayer_collaborate_step_2">2. 打开分享栏</string>
     <string name="multiplayer_collaborate_step_3">3. 生成一个邀请链接并分享它</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="other">%1$d 成员</item>
     </plurals>

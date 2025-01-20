@@ -1228,6 +1228,7 @@
     <string name="multiplayer_collaborate_step_1">1. Tippe auf das Widget des aktiven Space, um die Einstellungen für den Space anzupassen</string>
     <string name="multiplayer_collaborate_step_2">2. Teilen-Bereich öffnen</string>
     <string name="multiplayer_collaborate_step_3">3. Generiere einen Einladungslink und teile ihn mit anderen</string>
+    <string name="profile_view_edit_button">Profil bearbeiten</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d Mitglied</item>
         <item quantity="other">%1$d Mitglieder</item>

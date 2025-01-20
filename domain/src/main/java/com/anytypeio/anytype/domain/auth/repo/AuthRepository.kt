@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,9 @@ interface AuthRepository {
      */
     suspend fun selectAccount(command: Command.AccountSelect): AccountSetup
     suspend fun createAccount(command: Command.AccountCreate): AccountSetup
+
+    suspend fun migrateAccount(account: Id, path: String)
+    suspend fun cancelAccountMigration(account: Id)
 
     suspend fun deleteAccount() : AccountStatus
     suspend fun restoreAccount() : AccountStatus

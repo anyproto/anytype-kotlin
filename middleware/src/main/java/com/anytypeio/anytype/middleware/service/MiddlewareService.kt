@@ -50,6 +50,12 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun accountStop(request: Rpc.Account.Stop.Request): Rpc.Account.Stop.Response
 
+    @Throws(Exception::class)
+    fun accountMigrate(request: Rpc.Account.Migrate.Request): Rpc.Account.Migrate.Response
+
+    @Throws(Exception::class)
+    fun accountMigrateCancel(request: Rpc.Account.MigrateCancel.Request): Rpc.Account.MigrateCancel.Response
+
     //endregion
 
     //region OBJECT commands

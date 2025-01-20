@@ -379,11 +379,6 @@ fun ChatBox(
             }
             ChatBoxUserInput(
                 textState = textState,
-                onMessageSent = {
-                    onMessageSent(it)
-                    clearText()
-                    resetScroll()
-                },
                 onTextChanged = { value ->
                     updateValue(value)
                 },
@@ -425,7 +420,6 @@ fun ChatBox(
 private fun ChatBoxUserInput(
     modifier: Modifier,
     textState: TextFieldValue,
-    onMessageSent: (String) -> Unit,
     onTextChanged: (TextFieldValue) -> Unit,
 ) {
     BasicTextField(
@@ -434,14 +428,6 @@ private fun ChatBoxUserInput(
         textStyle = BodyRegular.copy(
             color = colorResource(id = R.color.text_primary)
         ),
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Send
-        ),
-        keyboardActions = KeyboardActions {
-            if (textState.text.isNotBlank()) {
-                onMessageSent(textState.text)
-            }
-        },
         modifier = modifier
             .padding(
                 start = 4.dp,

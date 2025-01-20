@@ -8,12 +8,13 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
+import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
-import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
 import com.anytypeio.anytype.domain.auth.interactor.Logout
+import com.anytypeio.anytype.domain.auth.interactor.MigrateAccount
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
@@ -27,9 +28,9 @@ import com.anytypeio.anytype.domain.debugging.DebugGoroutines
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
+import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingLoginEvent
-import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -55,8 +56,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val uriFileProvider: UriFileProvider,
     private val logout: Logout,
     private val globalSubscriptionManager: GlobalSubscriptionManager,
-    private val debugAccountSelectTrace: DebugAccountSelectTrace
-) : ViewModel() {
+    private val debugAccountSelectTrace: DebugAccountSelectTrace,
+    private val migrationDelegate: MigrationHelperDelegate
+) : ViewModel(), MigrationHelperDelegate by migrationDelegate {
 
     private val jobs = mutableListOf<Job>()
     private var goroutinesJob : Job? = null
@@ -176,7 +178,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                             else -> SideEffect.Error.Unknown("Error while login: ${exception.message}")
                         }
                         sideEffects.emit(error).also {
-                            Timber.e(exception, "Error while selecting account")
+                            Timber.e(exception, "Error while recovering wallet")
                         }
                     }
                 }
@@ -265,7 +267,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     Timber.e(e, "Error while selecting account with id: $id")
                     state.value = SetupState.Failed
                     when (e) {
-                        is MigrationNeededException -> {
+                        is AccountMigrationNeededException -> {
                             navigateToMigrationErrorScreen()
                         }
                         is AccountIsDeletedException -> {
@@ -419,7 +421,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         private val uriFileProvider: UriFileProvider,
         private val logout: Logout,
         private val globalSubscriptionManager: GlobalSubscriptionManager,
-        private val debugAccountSelectTrace: DebugAccountSelectTrace
+        private val debugAccountSelectTrace: DebugAccountSelectTrace,
+        private val migrationHelperDelegate: MigrationHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -439,7 +442,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 uriFileProvider = uriFileProvider,
                 logout = logout,
                 globalSubscriptionManager = globalSubscriptionManager,
-                debugAccountSelectTrace = debugAccountSelectTrace
+                debugAccountSelectTrace = debugAccountSelectTrace,
+                migrationDelegate = migrationHelperDelegate
             ) as T
         }
     }

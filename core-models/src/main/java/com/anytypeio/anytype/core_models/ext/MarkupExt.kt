@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_models.ext
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.core_models.misc.Overlap
 

@@ -38,6 +38,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
+import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -326,7 +327,7 @@ class SplashViewModel(
                 }
                 .collect { view ->
                     val chat = view.chatId
-                    if (chat.isNullOrEmpty()) {
+                    if (chat.isNullOrEmpty() || !ChatConfig.isChatAllowed(space.id)) {
                         commands.emit(
                             Command.NavigateToWidgets(
                                 space = space.id,

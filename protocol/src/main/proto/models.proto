@@ -716,6 +716,8 @@ message Restrictions {
         Duplicate = 8;
         // can be set only for types. Restricts creating objects of this type
         CreateObjectOfThisType = 9;
+        // object is not allowed to publish
+        Publish = 10;
     }
 
 

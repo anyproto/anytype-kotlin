@@ -28,10 +28,8 @@ import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
-import com.anytypeio.anytype.core_ui.views.ButtonSecondary
-import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -72,62 +70,61 @@ fun ParticipantScreen(
             onEvent(ParticipantEvent.OnDismiss)
         },
         content = {
-            if (uiState is UiParticipantScreenState.Data) {
-                val (spacer, iconSize) = if (uiState.description.isNullOrBlank()) {
-                    68.dp to 184.dp
-                } else {
-                    48.dp to 128.dp
-                }
-                Spacer(modifier = Modifier.height(spacer))
-                ImageBlock(
-                    modifier = Modifier
-                        .size(iconSize)
-                        .align(Alignment.CenterHorizontally),
-                    name = uiState.name,
-                    icon = uiState.icon,
-                ) { }
-                Spacer(modifier = Modifier.height(12.dp))
-                Title(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    name = uiState.name
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                if (uiState.identity != null) {
-                    AnyIdentity(
-                        modifier = Modifier
-                            .padding(horizontal = 32.dp)
-                            .align(Alignment.CenterHorizontally),
-                        identity = uiState.identity!!
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-                if (!uiState.description.isNullOrBlank()) {
-                    Description(
-                        modifier = Modifier
-                            .padding(horizontal = 32.dp)
-                            .align(Alignment.CenterHorizontally),
-                        description = uiState.description!!
-                    )
-                }
-                if (uiState.isOwner) {
-                    ButtonSecondary(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp)
-                            .padding(top = 16.dp)
-                            .align(Alignment.CenterHorizontally),
-                        text = stringResource(R.string.profile_view_edit_button),
-                        size = ButtonSize.LargeSecondary,
-                        onClick = { onEvent(ParticipantEvent.OnButtonClick) }
-                    )
-                } else {
-                    Spacer(
-                        modifier = Modifier
-                            .height(64.dp)
-                            .background(color = colorResource(R.color.palette_dark_teal))
-                    )
-                }
+            val (spacer, iconSize) = if (uiState.description.isNullOrBlank()) {
+                68.dp to 184.dp
+            } else {
+                62.dp to 112.dp
             }
+            Spacer(
+                modifier = Modifier.height(spacer)
+            )
+            ImageBlock(
+                modifier = Modifier
+                    .size(iconSize)
+                    .align(Alignment.CenterHorizontally)
+                    .noRippleThrottledClickable {
+                        onEvent(ParticipantEvent.OnCardClicked)
+                    },
+                name = uiState.name,
+                icon = uiState.icon,
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Title(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .noRippleThrottledClickable {
+                        onEvent(ParticipantEvent.OnCardClicked)
+                    },
+                name = uiState.name
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            if (uiState.identity != null) {
+                AnyIdentity(
+                    modifier = Modifier
+                        .padding(horizontal = 32.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .noRippleThrottledClickable {
+                            onEvent(ParticipantEvent.OnCardClicked)
+                        },
+                    identity = uiState.identity!!
+                )
+            }
+            if (!uiState.description.isNullOrBlank()) {
+                Description(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .padding(horizontal = 32.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .noRippleThrottledClickable {
+                            onEvent(ParticipantEvent.OnCardClicked)
+                        },
+                    description = uiState.description!!
+                )
+            }
+            val h = spacer - 8.dp
+            Spacer(
+                modifier = Modifier.height(h)
+            )
         },
     )
 }
@@ -138,8 +135,7 @@ private fun ImageBlock(
     modifier: Modifier,
     name: String,
     icon: ProfileIconView,
-    fontSize: TextUnit = 24.sp,
-    onProfileIconClick: () -> Unit
+    fontSize: TextUnit = 24.sp
 ) {
     when (icon) {
         is ProfileIconView.Image -> {
@@ -148,10 +144,7 @@ private fun ImageBlock(
                 contentDescription = "Custom image profile",
                 contentScale = ContentScale.Crop,
                 modifier = modifier
-                    .clip(shape = CircleShape)
-                    .noRippleClickable {
-                        onProfileIconClick.invoke()
-                    },
+                    .clip(shape = CircleShape),
                 loading = placeholder(R.drawable.ic_loading_state_112)
             )
         }
@@ -166,9 +159,6 @@ private fun ImageBlock(
                 modifier = modifier
                     .clip(CircleShape)
                     .background(colorResource(id = R.color.shape_tertiary))
-                    .noRippleClickable {
-                        onProfileIconClick.invoke()
-                    }
             ) {
                 Text(
                     text = nameFirstChar,
@@ -221,7 +211,7 @@ private fun Description(modifier: Modifier, description: String) {
 @Composable
 fun ParticipantScreenPreview() {
     ParticipantScreen(
-        uiState = UiParticipantScreenState.Data(
+        uiState = UiParticipantScreenState(
             name = "Ivanov Konstantin",
             icon = ProfileIconView.Image("dsdas"),
             description = "some desc",

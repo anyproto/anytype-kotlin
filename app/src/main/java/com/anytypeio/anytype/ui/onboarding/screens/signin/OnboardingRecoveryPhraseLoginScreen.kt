@@ -39,18 +39,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.ConditionLogin
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TitleLogin
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel.SetupState
 import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicInput
@@ -71,6 +75,11 @@ fun RecoveryScreenWrapper(
         onEnterMyVaultClicked = vm::onEnterMyVaultClicked,
         onDebugAccountTraceClicked = {
             vm.onAccountThraceButtonClicked()
+        },
+        isMigrationInProgress = vm.migrationState.collectAsStateWithLifecycle(
+            MigrationHelperDelegate.State.Init
+        ).value.let {
+            it is MigrationHelperDelegate.State.InProgress
         }
     )
 }
@@ -82,6 +91,7 @@ fun RecoveryScreen(
     onActionDoneClicked: (Mnemonic) -> Unit,
     onScanQrClicked: () -> Unit,
     isLoading: Boolean,
+    isMigrationInProgress: Boolean,
     onEnterMyVaultClicked: () -> Unit,
     onDebugAccountTraceClicked: () -> Unit
 ) {
@@ -173,6 +183,25 @@ fun RecoveryScreen(
                         )
                     )
                 }
+                if (isMigrationInProgress) {
+                    item {
+                        Text(
+                            text = "Migration in progress. Please wait...",
+                            style = Caption1Medium,
+                            color = colorResource(R.color.palette_system_red),
+                            modifier = Modifier
+                                .padding(
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    bottom = 18.dp
+                                )
+                                .fillMaxWidth()
+                            ,
+                            textAlign = TextAlign.Center,
+                            maxLines = 2
+                        )
+                    }
+                }
                 item {
                     OnBoardingButtonPrimary(
                         text = stringResource(id = R.string.onboarding_enter_my_vault),
@@ -207,7 +236,7 @@ fun RecoveryScreen(
                         onClick = {
                             onScanQrClicked.invoke()
                         },
-                        enabled = !isLoading,
+                        enabled = (!isLoading && !isMigrationInProgress),
                         disabledBackgroundColor = Color.Transparent,
                         size = ButtonSize.Large,
                         modifier = Modifier
@@ -258,8 +287,7 @@ object MnemonicPhraseFormatter : VisualTransformation {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@DefaultPreviews
 @Composable
 fun RecoveryScreenPreview() {
     RecoveryScreen(
@@ -269,12 +297,12 @@ fun RecoveryScreenPreview() {
         onScanQrClicked = {},
         isLoading = false,
         onEnterMyVaultClicked = {},
-        onDebugAccountTraceClicked = {}
+        onDebugAccountTraceClicked = {},
+        isMigrationInProgress = false
     )
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@DefaultPreviews
 @Composable
 fun RecoveryScreenLoadingPreview() {
     RecoveryScreen(
@@ -284,6 +312,22 @@ fun RecoveryScreenLoadingPreview() {
         onScanQrClicked = {},
         isLoading = true,
         onEnterMyVaultClicked = {},
-        onDebugAccountTraceClicked = {}
+        onDebugAccountTraceClicked = {},
+        isMigrationInProgress = false
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun RecoveryScreenMigrationPreview() {
+    RecoveryScreen(
+        onBackClicked = {},
+        onNextClicked = {},
+        onActionDoneClicked = {},
+        onScanQrClicked = {},
+        isLoading = false,
+        onEnterMyVaultClicked = {},
+        onDebugAccountTraceClicked = {},
+        isMigrationInProgress = true
     )
 }

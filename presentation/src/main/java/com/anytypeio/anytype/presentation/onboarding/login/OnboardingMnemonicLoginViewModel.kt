@@ -268,7 +268,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     state.value = SetupState.Failed
                     when (e) {
                         is AccountMigrationNeededException -> {
-                            navigateToMigrationErrorScreen()
+                            onStartMigrationRequested()
                         }
                         is AccountIsDeletedException -> {
                             sideEffects.emit(value = SideEffect.Error.AccountDeletedError)

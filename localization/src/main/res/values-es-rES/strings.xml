@@ -678,7 +678,7 @@
     <string name="today">Hoy</string>
     <string name="yesterday">Ayer</string>
     <string name="tomorrow">Mañana</string>
-    <string name="open_selected_date">Open selected date</string>
+    <string name="open_selected_date">Abrir fecha seleccionada</string>
     <string name="no_date">Sin fecha</string>
     <string name="exact_day">Fecha exacta</string>
     <string name="reorder">Reordenar</string>
@@ -1228,6 +1228,7 @@
     <string name="multiplayer_collaborate_step_1">1. Toca el widget del espacio para acceder a los ajustes.</string>
     <string name="multiplayer_collaborate_step_2">2. Abre la sección Compartir.</string>
     <string name="multiplayer_collaborate_step_3">3. Genera un enlace de invitación y compártelo.</string>
+    <string name="profile_view_edit_button">Editar perfil</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d miembro</item>
         <item quantity="other">%1$d miembros</item>
@@ -1555,6 +1556,7 @@ En concreto,
     <string name="all_content_unlinked_description">Objetos desconectados que no tienen un enlace a o desde otro objeto del gráfico.</string>
     <string name="all_content_snackbar_title">se ha movido a la papelera</string>
     <string name="main_navigation_content_desc_back_button">Botón Atrás</string>
+    <string name="main_navigation_content_desc_members_button">Botón de compartir y miembros</string>
     <string name="main_navigation_content_desc_search_button">Botón Buscar objetos</string>
     <string name="main_navigation_content_desc_create_button">Botón Crear objeto</string>
     <string name="chat">Chat</string>
@@ -1567,9 +1569,9 @@ En concreto,
     <string name="date_layout_empty_items">Aún no hay nada aquí para esta fecha</string>
     <string name="date_layout_alert_date_out_of_range">La fecha seleccionada no está en un intervalo válido (entre los años %1$d y %2$d). Selecciona una fecha comprendida en ese intervalo.</string>
     <string name="date_layout_item_created_by">por</string>
-    <string name="chat_attachment_object">Select existing object</string>
-    <string name="chat_attachment_file">Upload file</string>
-    <string name="chat_attachment_media">Upload media</string>
+    <string name="chat_attachment_object">Seleccionar objeto existente</string>
+    <string name="chat_attachment_file">Subir archivo</string>
+    <string name="chat_attachment_media">Subir medios</string>
     <string name="chat_attachment_upload">Cargar</string>
     <string name="chats_reply">Responder</string>
     <string name="chats_add_reaction">Añadir reacción</string>
@@ -1592,9 +1594,9 @@ En concreto,
     <string name="emoji_category_symbols">Símbolos</string>
     <string name="emoji_category_flags">Banderas</string>
     <string name="emoji_recently_used_section">Usado recientemente</string>
-    <string name="chat_message_reactions_no_reactions_yet">No reactions yet</string>
-    <string name="chat_message_reactions_no_reactions_message">Probably someone has just removed the reaction or technical issue happened</string>
+    <string name="chat_message_reactions_no_reactions_yet">Aún no hay reacciones</string>
+    <string name="chat_message_reactions_no_reactions_message">Puede que se haya eliminado la reacción o se haya producido un error técnico</string>
     <string name="object_types_human">Humano</string>
-    <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
-    <string name="chats_alert_delete_this_message">Delete this message?</string>
+    <string name="chats_alert_delete_this_message_description">Después de confirmar esto, no podrás restaurarlo.</string>
+    <string name="chats_alert_delete_this_message">¿Eliminar este mensaje?</string>
 </resources>

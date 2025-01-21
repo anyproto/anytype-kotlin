@@ -599,14 +599,10 @@ class EditorViewModel(
             when (event) {
                 is Event.Command.ShowObject -> {
                     orchestrator.stores.details.update(event.details)
-                    orchestrator.stores.relationLinks.update(event.relationLinks)
                     orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
                 }
                 is Event.Command.Details -> {
                     orchestrator.stores.details.apply { update(current().process(event)) }
-                }
-                is Event.Command.ObjectRelationLinks -> {
-                    orchestrator.stores.relationLinks.apply { update(current().process(event)) }
                 }
                 else -> {
                     // do nothing
@@ -792,7 +788,6 @@ class EditorViewModel(
                     anchor = context,
                     indent = INITIAL_INDENT,
                     details = details,
-                    relationLinks = orchestrator.stores.relationLinks.current(),
                     restrictions = orchestrator.stores.objectRestrictions.current(),
                     selection = currentSelection()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
@@ -1195,6 +1190,12 @@ class EditorViewModel(
         Timber.d("onBackButtonPressed, ")
         viewModelScope.sendAnalyticsGoBackEvent(analytics)
         proceedWithExitingBack()
+    }
+
+    fun onShareButtonClicked() {
+        dispatch(
+            Command.OpenShareScreen(vmParams.space)
+        )
     }
 
     fun onHomeButtonClicked() {
@@ -3225,8 +3226,7 @@ class EditorViewModel(
             ObjectType.Layout.BASIC,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.TODO,
-            ObjectType.Layout.BOOKMARK,
-            ObjectType.Layout.PARTICIPANT -> {
+            ObjectType.Layout.BOOKMARK -> {
                 proceedWithOpeningObject(target = target)
             }
             in SupportedLayouts.fileLayouts -> {
@@ -3253,6 +3253,16 @@ class EditorViewModel(
                 navigate(
                     EventWrapper(
                         OpenDateObject(
+                            objectId = target,
+                            space = vmParams.space.id
+                        )
+                    )
+                )
+            }
+            ObjectType.Layout.PARTICIPANT -> {
+                navigate(
+                    EventWrapper(
+                        OpenParticipant(
                             objectId = target,
                             space = vmParams.space.id
                         )
@@ -3988,12 +3998,9 @@ class EditorViewModel(
             }
             is ListenerType.Relation.Placeholder -> {
                 when (mode) {
-                    EditorMode.Edit -> dispatch(
-                        Command.OpenObjectRelationScreen.RelationAdd(
-                            ctx = context,
-                            target = clicked.target
-                        )
-                    )
+                    EditorMode.Edit -> {
+                        sendToast(NOT_ALLOWED_FOR_RELATION)
+                    }
                     else -> onBlockMultiSelectClicked(clicked.target)
                 }
             }
@@ -4185,7 +4192,7 @@ class EditorViewModel(
                 return
             }
             val exclude = listOf(ObjectTypeUniqueKeys.SET, ObjectTypeUniqueKeys.COLLECTION)
-            proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude)
+            proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude, fromFeatured = true)
         } else {
             sendToast("Your object is locked. To change its type, simply unlock it.")
         }
@@ -4440,6 +4447,16 @@ class EditorViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenParticipant -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenParticipant(
+                            objectId = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                )
+            }
             is OpenObjectNavigation.OpenEditor -> {
                 navigate(
                     EventWrapper(
@@ -4450,7 +4467,7 @@ class EditorViewModel(
                     )
                 )
             }
-            is OpenObjectNavigation.OpenDiscussion -> {
+            is OpenObjectNavigation.OpenChat -> {
                 sendToast("not implemented")
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
@@ -4459,7 +4476,7 @@ class EditorViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
             }
-            is OpenObjectNavigation.OpenDataObject -> {
+            is OpenObjectNavigation.OpenDateObject -> {
                 navigate(
                     EventWrapper(
                         OpenDateObject(
@@ -4625,7 +4642,7 @@ class EditorViewModel(
             is TypesWidgetItem.Type -> {
                 val objType = _objectTypes.firstOrNull { item.item.id == it.id }
                 if (objType != null) {
-                    onObjectTypeChanged(objType)
+                    onObjectTypeChanged(objType, false)
                 } else {
                     Timber.e("Error while getting object type from objectTypes list")
                 }
@@ -4644,25 +4661,26 @@ class EditorViewModel(
     }
 
     fun onObjectTypeChanged(
-        objType: ObjectWrapper.Type
+        objType: ObjectWrapper.Type,
+        fromFeatured: Boolean
     ) {
         Timber.d("onObjectTypeChanged, item:[$objType]")
         viewModelScope.launch {
             when (objType.uniqueKey) {
                 ObjectTypeIds.SET -> {
-                    proceedWithConvertingToSet()
+                    proceedWithConvertingToSet(fromFeatured)
                 }
                 ObjectTypeIds.COLLECTION -> {
-                    proceedWithConvertingToCollection()
+                    proceedWithConvertingToCollection(fromFeatured)
                 }
                 else -> {
-                    proceedWithObjectTypeChangeAndApplyTemplate(objType)
+                    proceedWithObjectTypeChangeAndApplyTemplate(objType, fromFeatured)
                 }
             }
         }
     }
 
-    private suspend fun proceedWithConvertingToSet() {
+    private suspend fun proceedWithConvertingToSet(fromFeature: Boolean) {
         val startTime = System.currentTimeMillis()
         objectToSet.async(
             ConvertObjectToSet.Params(
@@ -4677,19 +4695,24 @@ class EditorViewModel(
                     space = vmParams.space,
                     isPopUpToDashboard = true
                 )
+                val route = if (fromFeature) {
+                    EventsDictionary.Routes.featuredRelations
+                } else {
+                    EventsDictionary.Routes.navigation
+                }
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
                     sourceObject = SET_MARKETPLACE_ID,
                     containsFlagType = true,
-                    route = EventsDictionary.Routes.navigation,
+                    route = route,
                     spaceParams = provideParams(vmParams.space.id)
                 )
             }
         )
     }
 
-    private suspend fun proceedWithConvertingToCollection() {
+    private suspend fun proceedWithConvertingToCollection(fromFeature: Boolean) {
         val startTime = System.currentTimeMillis()
         objectToCollection.async(
             ConvertObjectToCollection.Params(ctx = context)
@@ -4701,12 +4724,17 @@ class EditorViewModel(
                     space = vmParams.space,
                     isPopUpToDashboard = true
                 )
+                val route = if (fromFeature) {
+                    EventsDictionary.Routes.featuredRelations
+                } else {
+                    EventsDictionary.Routes.navigation
+                }
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
                     sourceObject = COLLECTION_MARKETPLACE_ID,
                     containsFlagType = true,
-                    route = EventsDictionary.Routes.navigation
+                    route = route
                 )
             }
         )
@@ -5220,13 +5248,11 @@ class EditorViewModel(
         val objectDetails = details.details[context]?.map ?: emptyMap()
         val objectWrapper = ObjectWrapper.Basic(objectDetails)
         val objectType = objectWrapper.getProperType()
-        val relationLinks = orchestrator.stores.relationLinks.current()
 
         viewModelScope.launch {
             val objectRelationViews = getObjectRelationsView(
                 ctx = context,
                 objectDetails = objectDetails,
-                relationLinks = relationLinks,
                 details = details,
                 objectWrapper = objectWrapper
             )
@@ -5234,7 +5260,6 @@ class EditorViewModel(
             val recommendedRelationViews = getRecommendedRelations(
                 ctx = context,
                 objectDetails = objectDetails,
-                relationLinks = relationLinks,
                 objectTypeStruct = details.details[objectType]?.map,
                 details = details
             )
@@ -5248,14 +5273,13 @@ class EditorViewModel(
     private suspend fun getObjectRelationsView(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
-        relationLinks: List<RelationLink>,
         details: Block.Details,
         objectWrapper: ObjectWrapper.Basic
     ): List<ObjectRelationView> {
         return getObjectRelations(
             systemRelations = listOf(),
-            relationLinks = relationLinks,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            relationKeys = objectDetails.keys
         ).views(
             context = ctx,
             details = details,
@@ -5269,16 +5293,15 @@ class EditorViewModel(
     private suspend fun getRecommendedRelations(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
-        relationLinks: List<RelationLink>,
         objectTypeStruct: Struct?,
         details: Block.Details
     ): List<ObjectRelationView> {
         val objType = objectTypeStruct?.mapToObjectWrapperType()
         val recommendedRelations = objType?.recommendedRelations ?: emptyList()
         return getNotIncludedRecommendedRelations(
-            relationLinks = relationLinks,
             recommendedRelations = recommendedRelations,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            relationKeys = objectDetails.keys
         ).views(
             context = ctx,
             details = details,
@@ -6366,7 +6389,7 @@ class EditorViewModel(
 
     private fun onTypesWidgetSearchClicked() {
         Timber.d("onObjectTypesWidgetSearchClicked, ")
-        proceedWithOpeningSelectingObjectTypeScreen()
+        proceedWithOpeningSelectingObjectTypeScreen(fromFeatured = false)
     }
 
     private fun proceedWithGettingObjectTypesForTypesWidget() {
@@ -6407,7 +6430,10 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithOpeningSelectingObjectTypeScreen(exclude: List<Id> = emptyList()) {
+    private fun proceedWithOpeningSelectingObjectTypeScreen(
+        exclude: List<Id> = emptyList(),
+        fromFeatured: Boolean
+    ) {
         val list = buildList {
             val types = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
             if (types.isNotEmpty()) {
@@ -6418,7 +6444,8 @@ class EditorViewModel(
             }
         }
         val command = Command.OpenObjectSelectTypeScreen(
-            excludedTypes = list
+            excludedTypes = list,
+            fromFeatured = fromFeatured
         )
         dispatch(command)
     }
@@ -6427,7 +6454,11 @@ class EditorViewModel(
         setTypesWidgetVisibility(false)
     }
 
-    private fun proceedWithObjectTypeChange(objType: ObjectWrapper.Type, onSuccess: (() -> Unit)? = null) {
+    private fun proceedWithObjectTypeChange(
+        objType: ObjectWrapper.Type,
+        fromFeature: Boolean,
+        onSuccess: (() -> Unit)? = null
+    ) {
         val startTime = System.currentTimeMillis()
         val internalFlags = getInternalFlagsFromDetails()
         val containsTypeFlag = internalFlags.contains(InternalFlags.ShouldSelectType)
@@ -6438,16 +6469,26 @@ class EditorViewModel(
                     objectTypeKey = objType.uniqueKey
                 )
             ).fold(
-                onFailure = { Timber.e(it, "Error while updating object type: [${objType.uniqueKey}]") },
+                onFailure = {
+                    Timber.e(
+                        it,
+                        "Error while updating object type: [${objType.uniqueKey}]"
+                    )
+                },
                 onSuccess = { response ->
                     Timber.d("proceedWithObjectTypeChange success, key:[${objType.uniqueKey}]")
+                    val route = if (fromFeature) {
+                        EventsDictionary.Routes.featuredRelations
+                    } else {
+                        EventsDictionary.Routes.navigation
+                    }
                     dispatcher.send(response)
                     sendAnalyticsObjectTypeSelectOrChangeEvent(
                         analytics = analytics,
                         startTime = startTime,
                         sourceObject = objType.sourceObject,
                         containsFlagType = containsTypeFlag,
-                        route = EventsDictionary.Routes.navigation
+                        route = route
                     )
                     onSuccess?.invoke()
                 }
@@ -6455,8 +6496,8 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithObjectTypeChangeAndApplyTemplate(objType: ObjectWrapper.Type) {
-        proceedWithObjectTypeChange(objType) {
+    private fun proceedWithObjectTypeChangeAndApplyTemplate(objType: ObjectWrapper.Type, fromFeatured: Boolean) {
+        proceedWithObjectTypeChange(objType, fromFeatured) {
             val internalFlags = getInternalFlagsFromDetails()
             if (internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
                 onProceedWithApplyingTemplateByObjectId(
@@ -7374,8 +7415,8 @@ class EditorViewModel(
     private fun checkRelationIsInObject(
         view: ObjectRelationView
     ): Boolean {
-        val relationLinks = orchestrator.stores.relationLinks.current()
-        return relationLinks.any { it.key == view.key }
+        val currentObjectDetails = orchestrator.stores.details.getAsObject(vmParams.ctx)
+        return currentObjectDetails?.map?.keys?.any { it == view.key } ?: false
     }
 
     private suspend fun proceedWithAddingRelationToObject(
@@ -7387,10 +7428,10 @@ class EditorViewModel(
             ctx = ctx,
             relationKey = view.key
         )
-        addRelationToObject.run(params).process(
-            failure = { Timber.e(it, "Error while adding relation to object") },
-            success = {
-                dispatcher.send(it)
+        addRelationToObject.async(params).fold(
+            onFailure = { e -> Timber.e(e, "Error while adding relation to object") },
+            onSuccess = { payload ->
+                if (payload != null) dispatcher.send(payload)
                 analytics.sendAnalyticsRelationEvent(
                     eventName = EventsDictionary.relationAdd,
                     storeOfRelations = storeOfRelations,
@@ -7540,7 +7581,7 @@ class EditorViewModel(
                 .run(Unit)
                 .collect { event ->
                     if (event.any { it is FileLimitsEvent.FileLimitReached }) {
-                        _toasts.emit("You exceeded file limit upload")
+                        //_toasts.emit("You exceeded file limit upload")
                     }
                 }
         }

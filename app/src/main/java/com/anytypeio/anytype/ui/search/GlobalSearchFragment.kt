@@ -22,11 +22,12 @@ import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.di.feature.discussions.DiscussionFragment
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -92,10 +93,23 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                                 )
                             )
                         }
-                        is OpenObjectNavigation.OpenDiscussion -> {
+                        is OpenObjectNavigation.OpenParticipant -> {
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.participantScreen,
+                                    ParticipantFragment.args(
+                                        objectId = nav.target,
+                                        space = nav.space
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.w("Error while opening participant screen")
+                            }
+                        }
+                        is OpenObjectNavigation.OpenChat -> {
                             findNavController().navigate(
                                 R.id.chatScreen,
-                                DiscussionFragment.args(
+                                ChatFragment.args(
                                     ctx = nav.target,
                                     space = nav.space
                                 )
@@ -104,7 +118,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                         OpenObjectNavigation.NonValidObject -> {
                             toast(getString(R.string.error_non_valid_object))
                         }
-                        is OpenObjectNavigation.OpenDataObject -> {
+                        is OpenObjectNavigation.OpenDateObject -> {
                             runCatching {
                                 findNavController().navigate(
                                     R.id.dateObjectScreen,

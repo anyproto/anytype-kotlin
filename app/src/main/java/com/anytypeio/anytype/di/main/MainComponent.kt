@@ -21,9 +21,9 @@ import com.anytypeio.anytype.di.feature.ObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
-import com.anytypeio.anytype.di.feature.discussions.ChatReactionDependencies
-import com.anytypeio.anytype.di.feature.discussions.SelectChatReactionDependencies
-import com.anytypeio.anytype.di.feature.discussions.DiscussionComponentDependencies
+import com.anytypeio.anytype.di.feature.chats.ChatReactionDependencies
+import com.anytypeio.anytype.di.feature.chats.SelectChatReactionDependencies
+import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
@@ -38,6 +38,7 @@ import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
+import com.anytypeio.anytype.di.feature.participant.ParticipantComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
@@ -133,7 +134,7 @@ interface MainComponent :
     MembershipUpdateComponentDependencies,
     VaultComponentDependencies,
     AllContentDependencies,
-    DiscussionComponentDependencies,
+    ChatComponentDependencies,
     SelectWidgetSourceDependencies,
     SelectWidgetTypeDependencies,
     LinkToObjectDependencies,
@@ -141,7 +142,8 @@ interface MainComponent :
     DateObjectDependencies,
     ObjectTypeDependencies,
     SelectChatReactionDependencies,
-    ChatReactionDependencies
+    ChatReactionDependencies,
+    ParticipantComponentDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -355,7 +357,7 @@ abstract class ComponentDependenciesModule {
 
     @Binds
     @IntoMap
-    @ComponentDependenciesKey(DiscussionComponentDependencies::class)
+    @ComponentDependenciesKey(ChatComponentDependencies::class)
     abstract fun provideDiscussionComponentDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
@@ -407,4 +409,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(ChatReactionDependencies::class)
     abstract fun provideChatReactionDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(ParticipantComponentDependencies::class)
+    abstract fun provideParticipantComponentDependencies(component: MainComponent): ComponentDependencies
 }

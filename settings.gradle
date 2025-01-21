@@ -48,7 +48,6 @@ include ':app',
         ':core-ui',
         ':library-page-icon-picker-widget',
         ':library-emojifier',
-        ':library-syntax-highlighter',
         ':sample',
         ':clipboard',
         ':analytics',
@@ -60,12 +59,12 @@ include ':app',
         ':libs',
         ':feature-date'
 
-include ':ui-settings'
+include ':feature-ui-settings'
 include ':crash-reporting'
 include ':localization'
 include ':payments'
 include ':gallery-experience'
-include ':feature-discussions'
+include ':feature-chats'
 include ':feature-all-content'
 include ':feature-date'
 include ':feature-object-type'

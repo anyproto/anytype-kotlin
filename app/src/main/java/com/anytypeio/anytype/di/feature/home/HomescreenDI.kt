@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -48,6 +49,7 @@ import com.anytypeio.anytype.presentation.home.Unsubscriber
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
@@ -215,6 +217,17 @@ object HomeScreenModule {
     @PerScreen
     @Provides
     fun provideSpaceInviteResolver(): SpaceInviteResolver = DefaultSpaceInviteResolver
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideExitToVaultDelegate(
+        spaceManager: SpaceManager,
+        clearLastOpenedSpace: ClearLastOpenedSpace
+    ) : ExitToVaultDelegate = ExitToVaultDelegate.Default(
+        spaceManager = spaceManager,
+        clearLastOpenedSpace = clearLastOpenedSpace
+    )
 
     @Module
     interface Declarations {

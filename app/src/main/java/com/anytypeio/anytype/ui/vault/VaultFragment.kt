@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.Command
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
@@ -83,6 +84,19 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while opening space from vault")
                 }
             }
+            is Command.EnterSpaceLevelChat -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.actionOpenChatFromVault,
+                        ChatFragment.args(
+                            space = command.space.id,
+                            ctx = command.chat
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening space-level chat from vault")
+                }
+            }
             is Command.CreateNewSpace -> {
                 runCatching {
                     findNavController().navigate(
@@ -95,7 +109,7 @@ class VaultFragment : BaseComposeFragment() {
             is Command.OpenProfileSettings -> {
                 runCatching {
                     findNavController().navigate(
-                        R.id.profileScreen,
+                        R.id.profileSettingsScreen,
                         null
                     )
                 }.onFailure {
@@ -176,6 +190,18 @@ class VaultFragment : BaseComposeFragment() {
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening date object from widgets")
+                }
+            }
+
+            is Navigation.OpenParticipant -> {
+                runCatching {
+                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                    navigation().openParticipantObject(
+                        objectId = destination.ctx,
+                        space = destination.space
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening participant object from widgets")
                 }
             }
         }

@@ -39,6 +39,7 @@ import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
@@ -162,6 +163,19 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                 DateObjectCommand.TypeSelectionScreen -> {
                     val dialog = ObjectTypeSelectionFragment.new(space = space)
                     dialog.show(childFragmentManager, null)
+                }
+                is DateObjectCommand.NavigateToParticipant -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.participantScreen,
+                            ParticipantFragment.args(
+                                objectId = effect.objectId,
+                                space = effect.space.id
+                            )
+                        )
+                    }.onFailure {
+                        Timber.w("Error while opening participant screen")
+                    }
                 }
             }
         }

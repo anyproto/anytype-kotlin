@@ -103,6 +103,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenShareScreen
 import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
@@ -1467,11 +1468,20 @@ class ObjectSetViewModel(
             ObjectType.Layout.VIDEO,
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF,
-            ObjectType.Layout.BOOKMARK,
-            ObjectType.Layout.PARTICIPANT -> proceedWithOpeningObject(
+            ObjectType.Layout.BOOKMARK -> proceedWithOpeningObject(
                 target = target,
                 space = space
             )
+            ObjectType.Layout.PARTICIPANT -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenParticipant(
+                            objectId = target,
+                            space = space
+                        )
+                    )
+                )
+            }
             ObjectType.Layout.PROFILE -> proceedWithOpeningObject(
                 target = identityProfileLink ?: target,
                 space = space
@@ -1604,6 +1614,16 @@ class ObjectSetViewModel(
             dispatch(
                 AppNavigation.Command.OpenGlobalSearch(
                     space = vmParams.space.id
+                )
+            )
+        }
+    }
+
+    fun onShareButtonClicked() {
+        viewModelScope.launch {
+            dispatch(
+                AppNavigation.Command.OpenShareScreen(
+                    vmParams.space
                 )
             )
         }

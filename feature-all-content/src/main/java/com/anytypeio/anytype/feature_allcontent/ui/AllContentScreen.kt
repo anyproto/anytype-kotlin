@@ -131,7 +131,8 @@ fun AllContentWrapperScreen(
     onBackLongClicked: () -> Unit,
     moveToBin: (UiContentItem.Item) -> Unit,
     undoMoveToBin: (Id) -> Unit,
-    onDismissSnackbar: () -> Unit
+    onDismissSnackbar: () -> Unit,
+    onShareButtonClicked: () -> Unit
 ) {
 
     AllContentMainScreen(
@@ -159,7 +160,8 @@ fun AllContentWrapperScreen(
         undoMoveToBin = undoMoveToBin,
         onDismissSnackbar = onDismissSnackbar,
         canPaginate = canPaginate,
-        onUpdateLimitSearch = onUpdateLimitSearch
+        onUpdateLimitSearch = onUpdateLimitSearch,
+        onShareButtonClicked = onShareButtonClicked
     )
 }
 
@@ -191,6 +193,7 @@ fun AllContentMainScreen(
     onDismissSnackbar: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
+    onShareButtonClicked: () -> Unit
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -235,7 +238,8 @@ fun AllContentMainScreen(
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
                     onBackClicked = onBackClicked,
                     onBackLongClicked = onBackLongClicked,
-                    uiBottomMenu = uiBottomMenu
+                    uiBottomMenu = uiBottomMenu,
+                    onShareButtonClicked = onShareButtonClicked
                 )
             }
         },
@@ -253,7 +257,8 @@ fun AllContentMainScreen(
                     uiMenuState = uiMenuState,
                     onSortClick = onSortClick,
                     onModeClick = onModeClick,
-                    onBinClick = onBinClick
+                    onBinClick = onBinClick,
+                    onBackClick = onBackClicked
                 )
                 AllContentTabs(tabsViewState = uiTabsState) { tab ->
                     onTabClick(tab)
@@ -337,6 +342,7 @@ fun BottomMenu(
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onBackLongClicked: () -> Unit,
+    onShareButtonClicked: () -> Unit
 ) {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     if (isImeVisible) return
@@ -347,7 +353,8 @@ fun BottomMenu(
         searchClick = onGlobalSearchClicked,
         addDocClick = onAddDocClicked,
         addDocLongClick = onCreateObjectLongClicked,
-        isOwnerOrEditor = uiBottomMenu.isOwnerOrEditor
+        isOwnerOrEditor = uiBottomMenu.isOwnerOrEditor,
+        onShareButtonClicked = onShareButtonClicked
     )
 }
 
@@ -617,7 +624,8 @@ fun PreviewMainScreen() {
         undoMoveToBin = {},
         onDismissSnackbar = {},
         canPaginate = true,
-        onUpdateLimitSearch = {}
+        onUpdateLimitSearch = {},
+        onShareButtonClicked = {}
     )
 }
 

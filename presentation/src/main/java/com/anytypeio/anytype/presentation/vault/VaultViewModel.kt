@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
@@ -30,6 +29,7 @@ import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
@@ -37,6 +37,7 @@ import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
+import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation.*
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -124,7 +125,10 @@ class VaultViewModel(
                         Timber.e(it, "Could not select space")
                     },
                     onSuccess = {
-                        proceedWithSavingCurrentSpace(targetSpace)
+                        proceedWithSavingCurrentSpace(
+                            targetSpace = targetSpace,
+                            chat = view.space.chatId?.ifEmpty { null }
+                        )
                     }
                 )
             } else {
@@ -245,7 +249,10 @@ class VaultViewModel(
         }
     }
 
-    private suspend fun proceedWithSavingCurrentSpace(targetSpace: String) {
+    private suspend fun proceedWithSavingCurrentSpace(
+        targetSpace: String,
+        chat: Id?
+    ) {
         saveCurrentSpace.async(
             SaveCurrentSpace.Params(SpaceId(targetSpace))
         ).fold(
@@ -253,11 +260,20 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                commands.emit(
-                    Command.EnterSpaceHomeScreen(
-                        space = Space(targetSpace)
+                if (chat != null && ChatConfig.isChatAllowed(space = targetSpace)) {
+                    commands.emit(
+                        Command.EnterSpaceLevelChat(
+                            space = Space(targetSpace),
+                            chat = chat
+                        )
                     )
-                )
+                } else {
+                    commands.emit(
+                        Command.EnterSpaceHomeScreen(
+                            space = Space(targetSpace)
+                        )
+                    )
+                }
             }
         )
     }
@@ -266,7 +282,7 @@ class VaultViewModel(
         when(navigation) {
             is OpenObjectNavigation.OpenDataView -> {
                 navigate(
-                    Navigation.OpenSet(
+                    OpenSet(
                         ctx = navigation.target,
                         space = navigation.space,
                         view = null
@@ -275,15 +291,15 @@ class VaultViewModel(
             }
             is OpenObjectNavigation.OpenEditor -> {
                 navigate(
-                    Navigation.OpenObject(
+                    OpenObject(
                         ctx = navigation.target,
                         space = navigation.space
                     )
                 )
             }
-            is OpenObjectNavigation.OpenDiscussion -> {
+            is OpenObjectNavigation.OpenChat -> {
                 navigate(
-                    Navigation.OpenChat(
+                    OpenChat(
                         ctx = navigation.target,
                         space = navigation.space
                     )
@@ -295,9 +311,17 @@ class VaultViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
             }
-            is OpenObjectNavigation.OpenDataObject -> {
+            is OpenObjectNavigation.OpenDateObject -> {
                 navigate(
-                    Navigation.OpenDateObject(
+                    OpenDateObject(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
+            is OpenObjectNavigation.OpenParticipant -> {
+                navigate(
+                    OpenParticipant(
                         ctx = navigation.target,
                         space = navigation.space
                     )
@@ -349,6 +373,7 @@ class VaultViewModel(
 
     sealed class Command {
         data class EnterSpaceHomeScreen(val space: Space): Command()
+        data class EnterSpaceLevelChat(val space: Space, val chat: Id): Command()
         data object CreateNewSpace: Command()
         data object OpenProfileSettings: Command()
         data object ShowIntroduceVault : Command()
@@ -369,6 +394,7 @@ class VaultViewModel(
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
+        data class OpenParticipant(val ctx: Id, val space: Id) : Navigation()
     }
 
     companion object {

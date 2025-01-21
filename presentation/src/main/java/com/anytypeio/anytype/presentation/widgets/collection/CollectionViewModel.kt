@@ -435,7 +435,6 @@ class CollectionViewModel(
             val target = view.id
             when (view.layout) {
                 ObjectType.Layout.PROFILE,
-                ObjectType.Layout.PARTICIPANT,
                 ObjectType.Layout.BASIC,
                 ObjectType.Layout.TODO,
                 ObjectType.Layout.NOTE,
@@ -452,6 +451,14 @@ class CollectionViewModel(
                 ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                     commands.emit(
                         Command.LaunchObjectSet(
+                            target = target,
+                            space = view.space
+                        )
+                    )
+                }
+                ObjectType.Layout.PARTICIPANT -> {
+                    commands.emit(
+                        Command.OpenParticipant(
                             target = target,
                             space = view.space
                         )
@@ -847,14 +854,16 @@ class CollectionViewModel(
     fun onPrevClicked() {
         launch {
             analytics.sendScreenHomeEvent()
-            commands.emit(Command.Exit)
+            commands.emit(Exit)
         }
     }
 
+    fun onShareButtonClicked() {
+        launch { commands.emit(OpenShareScreen(vmParams.spaceId)) }
+    }
+
     fun onBackLongClicked() {
-        launch {
-            commands.emit(Command.ExitToSpaceWidgets)
-        }
+        launch { commands.emit(ExitToSpaceWidgets) }
     }
 
     fun onSearchClicked(space: Id) {
@@ -918,7 +927,7 @@ class CollectionViewModel(
                     )
                 )
             }
-            is OpenObjectNavigation.OpenDiscussion -> {
+            is OpenObjectNavigation.OpenChat -> {
                 commands.emit(
                     Command.OpenChat(
                         target = navigation.target,
@@ -932,9 +941,17 @@ class CollectionViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 toasts.emit("Object id is missing")
             }
-            is OpenObjectNavigation.OpenDataObject -> {
+            is OpenObjectNavigation.OpenDateObject -> {
                 commands.emit(
                     OpenDateObject(
+                        target = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
+            is OpenObjectNavigation.OpenParticipant -> {
+                commands.emit(
+                    OpenParticipant(
                         target = navigation.target,
                         space = navigation.space
                     )
@@ -1044,6 +1061,8 @@ class CollectionViewModel(
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
         data class OpenChat(val target: Id, val space: Id) : Command()
         data class OpenDateObject(val target: Id, val space: Id) : Command()
+        data class OpenParticipant(val target: Id, val space: Id) : Command()
+        data class OpenShareScreen(val space: SpaceId) : Command()
 
         data object ToDesktop : Command()
         data class ToSearch(val space: Id) : Command()

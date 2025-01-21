@@ -697,6 +697,15 @@ class AllContentViewModel(
                     )
                 }
 
+                is OpenObjectNavigation.OpenParticipant -> {
+                    commands.emit(
+                        NavigateToParticipant(
+                            objectId = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
+
                 is OpenObjectNavigation.OpenEditor -> {
                     commands.emit(
                         Command.NavigateToEditor(
@@ -710,7 +719,7 @@ class AllContentViewModel(
                     Timber.e("Unexpected layout: ${navigation.layout}")
                     commands.emit(Command.SendToast.UnexpectedLayout(navigation.layout?.name.orEmpty()))
                 }
-                is OpenObjectNavigation.OpenDiscussion -> {
+                is OpenObjectNavigation.OpenChat -> {
                     commands.emit(
                         Command.OpenChat(
                             target = navigation.target,
@@ -721,7 +730,7 @@ class AllContentViewModel(
                 OpenObjectNavigation.NonValidObject -> {
                     Timber.e("Object id is missing")
                 }
-                is OpenObjectNavigation.OpenDataObject -> {
+                is OpenObjectNavigation.OpenDateObject -> {
                     commands.emit(
                         NavigateToEditor(
                             id = navigation.target,
@@ -761,6 +770,12 @@ class AllContentViewModel(
 
     fun onCreateObjectOfTypeClicked(objType: ObjectWrapper.Type) {
         proceedWithCreateDoc(objType)
+    }
+
+    fun onMemberButtonClicked() {
+        viewModelScope.launch {
+            commands.emit(OpenShareScreen(vmParams.spaceId))
+        }
     }
 
     private fun proceedWithCreateDoc(
@@ -993,6 +1008,7 @@ class AllContentViewModel(
             )
         }
     }
+
     //endregion
 
     sealed class Command {
@@ -1000,6 +1016,7 @@ class AllContentViewModel(
         data class NavigateToEditor(val id: Id, val space: Id) : Command()
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
         data class NavigateToBin(val space: Id) : Command()
+        data class NavigateToParticipant(val objectId: Id, val space: Id) : Command()
         data class NavigateToDateObject(val objectId: Id, val space: Id) : Command()
         sealed class SendToast: Command() {
             data class Error(val message: String) : SendToast()
@@ -1010,6 +1027,7 @@ class AllContentViewModel(
         }
         data class OpenTypeEditing(val item: UiContentItem.Type) : Command()
         data object OpenTypeCreation: Command()
+        data class OpenShareScreen(val space: SpaceId): Command()
         data class OpenRelationEditing(
             val typeName: String,
             val id: Id,

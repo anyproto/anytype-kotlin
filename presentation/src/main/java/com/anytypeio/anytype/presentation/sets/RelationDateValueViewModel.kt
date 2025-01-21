@@ -43,7 +43,7 @@ class RelationDateValueViewModel(
         Timber.d("onStart: ctx:[$ctx], relationKey:[$relationKey], objectId:[$objectId]")
         jobs += viewModelScope.launch {
             val pipeline = combine(
-                relations.observe(relationKey),
+                relations.observeRelation(relationKey),
                 values.subscribe(ctx = ctx, target = objectId)
             ) { relation, value ->
                 setupIsRelationNotEditable(isLocked, relation)

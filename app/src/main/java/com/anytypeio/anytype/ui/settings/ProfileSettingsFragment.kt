@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -15,12 +17,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.Mimetype
-import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.shareFile
@@ -30,7 +30,6 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.MediaPermissionHelper
-import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
@@ -140,11 +139,31 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
     }
 
     private fun proceedWithIconClick() {
-        permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
+        try {
+            pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+        } catch (e: Exception) {
+            Timber.w(e, "Error while opening photo picker")
+            toast("Error while opening photo picker")
+            permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
+        }
     }
 
     private fun openGallery() {
         getContent.launch(SELECT_IMAGE_CODE)
+    }
+
+    val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
+        if (uri != null) {
+            try {
+                val path = uri.parseImagePath(requireContext())
+                vm.onPickedImageFromDevice(path = path)
+            } catch (e: Exception) {
+                toast("Error while parsing path for media file")
+                Timber.e(e, "Error while parsing path for cover image")
+            }
+        } else {
+            Timber.i("No media selected")
+        }
     }
 
     private val getContent = registerForActivityResult(GetImageContract()) { uri: Uri? ->

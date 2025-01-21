@@ -159,8 +159,12 @@
 
     <fragment
         android:id="@+id/chatScreen"
-        android:name="com.anytypeio.anytype.di.feature.discussions.DiscussionFragment"
-        android:label="Discussion" />
+        android:name="com.anytypeio.anytype.ui.chats.ChatFragment"
+        android:label="Chat" >
+        <action
+            android:id="@+id/actionOpenWidgetsFromChat"
+            app:destination="@id/homeScreen" />
+    </fragment>
 
     <dialog
         android:id="@+id/selectChatReactionScreen"
@@ -171,6 +175,11 @@
         android:id="@+id/chatReactionScreen"
         android:name="com.anytypeio.anytype.ui.chats.ChatReactionFragment"
         android:label="Chat reaction" />
+
+    <dialog
+        android:id="@+id/participantScreen"
+        android:name="com.anytypeio.anytype.ui.profile.ParticipantFragment"
+        android:label="Profile screen" />
 
     <fragment
         android:id="@+id/homeScreen"
@@ -264,6 +273,9 @@
             android:id="@+id/actionOpenSpaceFromVault"
             app:destination="@id/homeScreen" />
         <action
+            android:id="@+id/actionOpenChatFromVault"
+            app:destination="@id/chatScreen" />
+        <action
             android:id="@+id/actionCreateSpaceFromVault"
             app:destination="@id/createSpaceScreen" />
         <action
@@ -305,7 +317,7 @@
         android:label="Object-Set-Icon-Picker-Screen" />
 
     <dialog
-        android:id="@+id/profileScreen"
+        android:id="@+id/profileSettingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.ProfileSettingsFragment">
     </dialog>
 

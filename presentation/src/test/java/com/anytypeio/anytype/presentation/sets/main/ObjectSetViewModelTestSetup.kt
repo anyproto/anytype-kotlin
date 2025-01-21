@@ -358,7 +358,6 @@ open class ObjectSetViewModelTestSetup {
                                 root = root,
                                 blocks = doc,
                                 details = details,
-                                relations = relations,
                                 dataViewRestrictions = dataViewRestrictions
                             )
                         ) + additionalEvents

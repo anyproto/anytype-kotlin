@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import net.bytebuddy.utility.RandomString
@@ -189,18 +190,16 @@ class MockSet(
     )
 
     // SET OBJECT DETAILS
-    val details = Block.Details(
+    val details = AllObjectsDetails(
         details = mapOf(
-            root to Block.Fields(
+            root to
                 mapOf(
                     Relations.ID to root,
                     Relations.SPACE_ID to spaceId,
                     Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                     Relations.SET_OF to listOf(setOf)
-                )
             ),
-            setOf to Block.Fields(
-                map = mapOf(
+            setOf to mapOf(
                     Relations.ID to setOf,
                     Relations.SPACE_ID to spaceId,
                     Relations.UNIQUE_KEY to setOfKey,
@@ -208,13 +207,12 @@ class MockSet(
                     Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
                     Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
                 )
-            )
         )
     )
 
-    val detailsEmptySetOf = Block.Details(
+    val detailsEmptySetOf = AllObjectsDetails(
         details = mapOf(
-            root to Block.Fields(
+            root to
                 mapOf(
                     Relations.ID to root,
                     Relations.SPACE_ID to spaceId,
@@ -222,41 +220,37 @@ class MockSet(
                     Relations.SET_OF to listOf<String>()
                 )
             )
-        )
     )
 
-    val detailsSetByRelation = Block.Details(
+    val detailsSetByRelation = AllObjectsDetails(
         details = mapOf(
-            root to Block.Fields(
+            root to
                 mapOf(
                     Relations.ID to root,
                     Relations.SPACE_ID to spaceId,
                     Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                     Relations.SET_OF to relationObject3.id
-                )
-            ),
-            relationObject3.id to Block.Fields(
+                ),
+            relationObject3.id to
                 mapOf(
                     Relations.ID to relationObject3.id,
                     Relations.SPACE_ID to spaceId,
                     Relations.RELATION_KEY to relationObject3.key,
                     Relations.LAYOUT to ObjectType.Layout.RELATION.code.toDouble()
                 )
-            )
         )
     )
 
-    fun detailsSetByRelation(relationSetBy: ObjectWrapper.Relation) = Block.Details(
+    fun detailsSetByRelation(relationSetBy: ObjectWrapper.Relation) = AllObjectsDetails(
         details = mapOf(
-            root to Block.Fields(
+            root to
                 mapOf(
                     Relations.ID to root,
                     Relations.SPACE_ID to spaceId,
                     Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                     Relations.SET_OF to relationSetBy.id
-                )
             ),
-            relationSetBy.id to Block.Fields(
+            relationSetBy.id to
                 mapOf(
                     Relations.ID to relationSetBy.id,
                     Relations.SPACE_ID to spaceId,
@@ -264,7 +258,7 @@ class MockSet(
                     Relations.UNIQUE_KEY to relationSetBy.uniqueKey,
                     Relations.LAYOUT to ObjectType.Layout.RELATION.code.toDouble(),
                 )
-            )
+
         )
     )
 }

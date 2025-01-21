@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.templates
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -12,7 +11,7 @@ import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
@@ -125,11 +124,11 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to null
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = setObjDetails),
-                setByRelationId to Block.Fields(map = setByRelationMap),
-                pageTypeId to Block.Fields(map = pageTypeMap)
+                root to setObjDetails,
+                setByRelationId to setByRelationMap,
+                pageTypeId to pageTypeMap
             )
         )
 
@@ -215,11 +214,11 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to DEFAULT_TEMPLATE_ID_BLANK
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = setObjDetails),
-                setByRelationId to Block.Fields(map = setByRelationMap),
-                pageTypeId to Block.Fields(map = pageTypeMap)
+                root to setObjDetails,
+                setByRelationId to setByRelationMap,
+                pageTypeId to pageTypeMap
             )
         )
 
@@ -305,11 +304,11 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to pageTemplate2.id
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = setObjDetails),
-                setByRelationId to Block.Fields(map = setByRelationMap),
-                pageTypeId to Block.Fields(map = pageTypeMap)
+                root to setObjDetails,
+                setByRelationId to setByRelationMap,
+                pageTypeId to pageTypeMap
             )
         )
 
@@ -404,12 +403,12 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 Relations.DEFAULT_TEMPLATE_ID to template1.id
             )
 
-            val details = Block.Details(
+            val details = AllObjectsDetails(
                 details = mapOf(
-                    root to Block.Fields(map = setObjDetails),
-                    setByRelationId to Block.Fields(map = setByRelationMap),
-                    pageTypeId to Block.Fields(map = pageTypeMap),
-                    customType1Id to Block.Fields(map = customType1Map)
+                    root to setObjDetails,
+                    setByRelationId to setByRelationMap,
+                    pageTypeId to pageTypeMap,
+                    customType1Id to customType1Map
                 )
             )
 
@@ -505,12 +504,12 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 Relations.DEFAULT_TEMPLATE_ID to null
             )
 
-            val details = Block.Details(
+            val details = AllObjectsDetails(
                 details = mapOf(
-                    root to Block.Fields(map = setObjDetails),
-                    setByRelationId to Block.Fields(map = setByRelationMap),
-                    pageTypeId to Block.Fields(map = pageTypeMap),
-                    customType1Id to Block.Fields(map = customType1Map)
+                    root to setObjDetails,
+                    setByRelationId to setByRelationMap,
+                    pageTypeId to pageTypeMap,
+                    customType1Id to customType1Map
                 )
             )
 
@@ -606,12 +605,12 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 Relations.DEFAULT_TEMPLATE_ID to DEFAULT_TEMPLATE_ID_BLANK
             )
 
-            val details = Block.Details(
+            val details = AllObjectsDetails(
                 details = mapOf(
-                    root to Block.Fields(map = setObjDetails),
-                    setByRelationId to Block.Fields(map = setByRelationMap),
-                    pageTypeId to Block.Fields(map = pageTypeMap),
-                    customType1Id to Block.Fields(map = customType1Map)
+                    root to setObjDetails,
+                    setByRelationId to setByRelationMap,
+                    pageTypeId to pageTypeMap,
+                    customType1Id to customType1Map
                 )
             )
 
@@ -707,12 +706,12 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 Relations.DEFAULT_TEMPLATE_ID to template1.id
             )
 
-            val details = Block.Details(
+            val details = AllObjectsDetails(
                 details = mapOf(
-                    root to Block.Fields(map = setObjDetails),
-                    setByRelationId to Block.Fields(map = setByRelationMap),
-                    pageTypeId to Block.Fields(map = pageTypeMap),
-                    customType1Id to Block.Fields(map = customType1Map)
+                    root to setObjDetails,
+                    setByRelationId to setByRelationMap,
+                    pageTypeId to pageTypeMap,
+                    customType1Id to customType1Map
                 )
             )
 
@@ -808,12 +807,12 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 Relations.DEFAULT_TEMPLATE_ID to template1.id
             )
 
-            val details = Block.Details(
+            val details = AllObjectsDetails(
                 details = mapOf(
-                    root to Block.Fields(map = setObjDetails),
-                    setByRelationId to Block.Fields(map = setByRelationMap),
-                    pageTypeId to Block.Fields(map = pageTypeMap),
-                    customType1Id to Block.Fields(map = customType1Map)
+                    root to setObjDetails,
+                    setByRelationId to setByRelationMap,
+                    pageTypeId to pageTypeMap,
+                    customType1Id to customType1Map
                 )
             )
 

@@ -13,7 +13,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.ID
 import com.anytypeio.anytype.core_models.Relations.LAYOUT
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -80,7 +80,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
         val rootObject = ObjectWrapper.Basic(
             map = mapOf(
                 ID to root,
-                Relations.NAME to objectCollection.details.details[root]?.name,
+                Relations.NAME to objectCollection.details.details[root],
                 LAYOUT to COLLECTION_LAYOUT
             )
         )
@@ -192,9 +192,9 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         objectCollection.title,
                         objectCollection.dataView
                     ),
-                    details = mapOf(
-                        rootObject.id to Block.Fields(rootObject.map)
-                    ),
+                    details = AllObjectsDetails(mapOf(
+                        rootObject.id to rootObject.map
+                    )),
                     objectRestrictions = listOf(),
                     dataViewRestrictions = listOf()
                 ),
@@ -205,7 +205,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             val eventObjectDetailsSet = Event.Command.Details.Set(
                 context = root,
                 target = relationId4,
-                details = Block.Fields(relationObject4.map)
+                details = mapOf(root to relationObject4.map)
             )
             val eventDataViewRelationSet = Event.Command.DataView.SetRelation(
                 context = root,
@@ -282,10 +282,10 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         objectCollection.title,
                         expectedDataView
                     ),
-                    details = mapOf(
-                        rootObject.id to Block.Fields(rootObject.map),
-                        relationObject4.id to Block.Fields(relationObject4.map)
-                    ),
+                    details = AllObjectsDetails(mapOf(
+                        rootObject.id to rootObject.map,
+                        relationObject4.id to relationObject4.map
+                    )),
                     objectRestrictions = listOf(),
                     dataViewRestrictions = listOf()
                 ),

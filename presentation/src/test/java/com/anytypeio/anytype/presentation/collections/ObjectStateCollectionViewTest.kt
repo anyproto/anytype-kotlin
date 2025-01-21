@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -76,7 +77,9 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
 
             assertEquals(
-                expected = mockObjectCollection.details.details[mockObjectCollection.root]?.name,
+                expected = mockObjectCollection.details.details[mockObjectCollection.root]?.getSingleValue(
+                    Relations.NAME
+                ),
                 actual = (headerFlow.awaitItem() as SetOrCollectionHeaderState.Default).title.text
             )
             viewerFlow.expectNoEvents()

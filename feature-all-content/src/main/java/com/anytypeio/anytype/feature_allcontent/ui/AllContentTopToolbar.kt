@@ -64,12 +64,12 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
-import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
+import com.anytypeio.anytype.presentation.objects.MenuSortsItem
+import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 
 //region AllContentTopBarContainer
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +78,7 @@ fun AllContentTopBarContainer(
     titleState: UiTitleState,
     uiMenuState: UiMenuState,
     onModeClick: (AllContentMenuMode) -> Unit,
-    onSortClick: (AllContentSort) -> Unit,
+    onSortClick: (ObjectsListSort) -> Unit,
     onBinClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -139,21 +139,21 @@ private fun AllContentTopBarContainerPreview() {
                 AllContentMenuMode.Unlinked()
             ),
             container = MenuSortsItem.Container(
-                sort = AllContentSort.ByName(isSelected = true)
+                sort = ObjectsListSort.ByName(isSelected = true)
             ),
             sorts = listOf(
                 MenuSortsItem.Sort(
-                    sort = AllContentSort.ByName(isSelected = true)
+                    sort = ObjectsListSort.ByName(isSelected = true)
                 ),
             ),
             types = listOf(
                 MenuSortsItem.SortType(
-                    sort = AllContentSort.ByName(isSelected = true),
+                    sort = ObjectsListSort.ByName(isSelected = true),
                     sortType = DVSortType.DESC,
                     isSelected = true
                 ),
                 MenuSortsItem.SortType(
-                    sort = AllContentSort.ByDateCreated(isSelected = false),
+                    sort = ObjectsListSort.ByDateCreated(isSelected = false),
                     sortType = DVSortType.ASC,
                     isSelected = false
                 ),

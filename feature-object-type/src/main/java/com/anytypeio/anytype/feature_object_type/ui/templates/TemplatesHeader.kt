@@ -4,13 +4,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,10 +38,7 @@ fun TemplatesHeader(
     Box(
         modifier = modifier.padding(horizontal = 20.dp),
     ) {
-        Row(
-            modifier = Modifier.matchParentSize(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.wrapContentWidth().align(Alignment.CenterStart)) {
             Text(
                 modifier = Modifier
                     .wrapContentSize()
@@ -59,14 +59,14 @@ fun TemplatesHeader(
         if (uiTemplatesAddIconState is UiTemplatesAddIconState.Visible) {
             Image(
                 modifier = Modifier
-                    .padding(start = 20.dp)
-                    .wrapContentSize()
+                    .size(48.dp)
                     .align(Alignment.CenterEnd)
                     .noRippleThrottledClickable {
                         onTypeEvent(OnTemplatesAddIconClick)
                     },
                 painter = painterResource(R.drawable.ic_default_plus),
-                contentDescription = "Add"
+                contentDescription = "Add",
+                contentScale = ContentScale.Inside
             )
         }
     }
@@ -78,7 +78,7 @@ fun TemplatesHeaderPreview() {
     TemplatesHeader(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight(),
+            .height(48.dp),
         uiTemplatesHeaderState = UiTemplatesHeaderState(
             count = "2"
         ),

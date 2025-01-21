@@ -30,9 +30,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.feature_allcontent.models.AllContentBottomMenu
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
-import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.UiItemsState
@@ -62,6 +60,8 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentToBin
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.objects.MenuSortsItem
+import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import java.time.Instant
 import java.time.LocalDate
@@ -115,7 +115,7 @@ class AllContentViewModel(
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
-    private val sortState = MutableStateFlow<AllContentSort>(AllContentSort.ByName())
+    private val sortState = MutableStateFlow<ObjectsListSort>(ObjectsListSort.ByName())
     val uiTitleState = MutableStateFlow<UiTitleState>(DEFAULT_INITIAL_MODE)
     val uiTabsState = MutableStateFlow<UiTabsState>(UiTabsState())
     val uiMenuState = MutableStateFlow<UiMenuState>(UiMenuState.Hidden)
@@ -276,7 +276,7 @@ class AllContentViewModel(
 
     private suspend fun handleData(
         objWrappers: List<ObjectWrapper.Basic>,
-        activeSort: AllContentSort,
+        activeSort: ObjectsListSort,
         activeTab: AllContentTab
     ): List<UiContentItem> {
 
@@ -307,7 +307,7 @@ class AllContentViewModel(
 
     private suspend fun mapToUiContentItems(
         objectWrappers: List<ObjectWrapper.Basic>,
-        activeSort: AllContentSort,
+        activeSort: ObjectsListSort,
         activeTab: AllContentTab
     ): List<UiContentItem> {
         val isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
@@ -342,19 +342,19 @@ class AllContentViewModel(
                     )
                 }
                 val result = when (activeSort) {
-                    is AllContentSort.ByDateCreated -> {
+                    is ObjectsListSort.ByDateCreated -> {
                         groupItemsByDate(items = items, isSortByDateCreated = true, activeSort = activeSort)
                     }
 
-                    is AllContentSort.ByDateUpdated -> {
+                    is ObjectsListSort.ByDateUpdated -> {
                         groupItemsByDate(items = items, isSortByDateCreated = false, activeSort = activeSort)
                     }
 
-                    is AllContentSort.ByName -> {
+                    is ObjectsListSort.ByName -> {
                         items
                     }
 
-                    is AllContentSort.ByDateUsed -> {
+                    is ObjectsListSort.ByDateUsed -> {
                         items
                     }
                 }
@@ -373,7 +373,7 @@ class AllContentViewModel(
     private fun groupItemsByDate(
         items: List<UiContentItem.Item>,
         isSortByDateCreated: Boolean,
-        activeSort: AllContentSort
+        activeSort: ObjectsListSort
     ): List<UiContentItem> {
 
         val groupedItems = mutableListOf<UiContentItem>()
@@ -499,35 +499,35 @@ class AllContentViewModel(
         }
     }
 
-    fun AllContentTab.sorts(activeSort: AllContentSort): List<MenuSortsItem.Sort> {
+    fun AllContentTab.sorts(activeSort: ObjectsListSort): List<MenuSortsItem.Sort> {
         return when (this) {
             AllContentTab.TYPES -> {
                 listOf(
                     MenuSortsItem.Sort(
-                        sort = AllContentSort.ByName(isSelected = activeSort is AllContentSort.ByName)
+                        sort = ObjectsListSort.ByName(isSelected = activeSort is ObjectsListSort.ByName)
                     ),
                     MenuSortsItem.Sort(
-                        sort = AllContentSort.ByDateUsed(isSelected = activeSort is AllContentSort.ByDateUsed)
+                        sort = ObjectsListSort.ByDateUsed(isSelected = activeSort is ObjectsListSort.ByDateUsed)
                     )
                 )
             }
             AllContentTab.RELATIONS -> {
                 listOf(
                     MenuSortsItem.Sort(
-                        sort = AllContentSort.ByName(isSelected = activeSort is AllContentSort.ByName)
+                        sort = ObjectsListSort.ByName(isSelected = activeSort is ObjectsListSort.ByName)
                     )
                 )
             }
             else -> {
                 listOf(
                     MenuSortsItem.Sort(
-                        sort = AllContentSort.ByDateUpdated(isSelected = activeSort is AllContentSort.ByDateUpdated)
+                        sort = ObjectsListSort.ByDateUpdated(isSelected = activeSort is ObjectsListSort.ByDateUpdated)
                     ),
                     MenuSortsItem.Sort(
-                        sort = AllContentSort.ByDateCreated(isSelected = activeSort is AllContentSort.ByDateCreated)
+                        sort = ObjectsListSort.ByDateCreated(isSelected = activeSort is ObjectsListSort.ByDateCreated)
                     ),
                     MenuSortsItem.Sort(
-                        sort = AllContentSort.ByName(isSelected = activeSort is AllContentSort.ByName)
+                        sort = ObjectsListSort.ByName(isSelected = activeSort is ObjectsListSort.ByName)
                     )
                 )
             }
@@ -549,12 +549,12 @@ class AllContentViewModel(
     private fun AllContentTab.updateInitialState() {
         return when (this) {
             AllContentTab.TYPES -> {
-                sortState.value = AllContentSort.ByName()
+                sortState.value = ObjectsListSort.ByName()
                 userInput.value = DEFAULT_QUERY
                 uiTitleState.value = UiTitleState.AllContent
             }
             AllContentTab.RELATIONS -> {
-                sortState.value = AllContentSort.ByName()
+                sortState.value = ObjectsListSort.ByName()
                 userInput.value = DEFAULT_QUERY
                 uiTitleState.value = UiTitleState.AllContent
             }
@@ -595,19 +595,19 @@ class AllContentViewModel(
         }
     }
 
-    fun onSortClicked(sort: AllContentSort) {
+    fun onSortClicked(sort: ObjectsListSort) {
         Timber.d("onSortClicked: $sort")
         val newSort = when (sort) {
-            is AllContentSort.ByDateCreated -> {
+            is ObjectsListSort.ByDateCreated -> {
                 sort.copy(isSelected = true)
             }
-            is AllContentSort.ByDateUpdated -> {
+            is ObjectsListSort.ByDateUpdated -> {
                 sort.copy(isSelected = true)
             }
-            is AllContentSort.ByName -> {
+            is ObjectsListSort.ByName -> {
                 sort.copy(isSelected = true)
             }
-            is AllContentSort.ByDateUsed -> {
+            is ObjectsListSort.ByDateUsed -> {
                 sort.copy(isSelected = true)
             }
         }
@@ -625,7 +625,7 @@ class AllContentViewModel(
         }
     }
 
-    private fun proceedWithSortSaving(activeTab: UiTabsState, sort: AllContentSort) {
+    private fun proceedWithSortSaving(activeTab: UiTabsState, sort: ObjectsListSort) {
         if (activeTab.selectedTab == AllContentTab.TYPES
             || activeTab.selectedTab == AllContentTab.RELATIONS
         ) {

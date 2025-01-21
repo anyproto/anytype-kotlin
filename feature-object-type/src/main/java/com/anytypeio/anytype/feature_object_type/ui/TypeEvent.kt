@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_object_type.ui
 
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
+import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 
 sealed class TypeEvent {
 
@@ -11,5 +12,9 @@ sealed class TypeEvent {
     data object OnLayoutButtonClick : TypeEvent()
     data object OnFieldsButtonClick : TypeEvent()
     data object OnTemplatesAddIconClick : TypeEvent()
+    data class OnSortClick(val sort: ObjectsListSort) : TypeEvent()
+    data object OnCreateSetClick : TypeEvent()
+    data object OnOpenSetClick : TypeEvent()
+    data object OnObjectsSettingsIconClick: TypeEvent()
 
 }

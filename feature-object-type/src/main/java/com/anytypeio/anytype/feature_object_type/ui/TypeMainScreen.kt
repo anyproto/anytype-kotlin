@@ -51,6 +51,7 @@ import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesList
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiFieldsButtonState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiIconState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiLayoutButtonState
+import com.anytypeio.anytype.feature_object_type.viewmodel.UiMenuState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsAddIconState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsHeaderState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsSettingsIconState
@@ -90,6 +91,7 @@ fun ObjectTypeMainScreen(
     uiObjectsHeaderState: UiObjectsHeaderState,
     uiObjectsAddIconState: UiObjectsAddIconState,
     uiObjectsSettingsIconState: UiObjectsSettingsIconState,
+    uiObjectsMenuState: UiMenuState,
 
     //objects list
     uiObjectsListState: UiObjectsListState,
@@ -165,7 +167,7 @@ fun ObjectTypeMainScreen(
                 TemplatesHeader(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentHeight(),
+                        .height(48.dp),
                     uiTemplatesHeaderState = uiTemplatesHeaderState,
                     uiTemplatesAddIconState = uiTemplatesAddIconState,
                     onTypeEvent = onTypeEvent
@@ -186,6 +188,7 @@ fun ObjectTypeMainScreen(
                     uiObjectsHeaderState = uiObjectsHeaderState,
                     uiObjectsAddIconState = uiObjectsAddIconState,
                     uiObjectsSettingsIconState = uiObjectsSettingsIconState,
+                    uiObjectsMenuState = uiObjectsMenuState,
                     onTypeEvent = onTypeEvent
                 )
                 if (uiObjectsListState.items.isEmpty()) {
@@ -310,6 +313,7 @@ fun ObjectTypeMainScreenPreview() {
         uiObjectsSettingsIconState = UiObjectsSettingsIconState.Visible,
         uiObjectsListState = UiObjectsListState(emptyList()),
         uiContentState = UiContentState.Idle(),
+        uiObjectsMenuState = UiMenuState.EMPTY,
         onTypeEvent = {}
     )
 }

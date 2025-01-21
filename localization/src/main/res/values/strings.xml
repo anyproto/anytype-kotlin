@@ -1847,6 +1847,8 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_empty_items_title">It’s empty here.</string>
     <string name="object_type_empty_items_subtitle">Create your first objects to get started.</string>
     <string name="object_type_menu_delete">Delete completely</string>
+    <string name="object_type_objects_menu_open_set">Open Set</string>
+    <string name="object_type_objects_menu_create_set">Create Set</string>
 
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>

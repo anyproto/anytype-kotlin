@@ -1,31 +1,48 @@
 package com.anytypeio.anytype.feature_object_type.ui.objects
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.lists.objects.menu.ObjectsListMenuItem
+import com.anytypeio.anytype.core_ui.lists.objects.menu.ObjectsListSortingMenuContainer
+import com.anytypeio.anytype.core_ui.lists.objects.menu.title
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent.OnTemplatesAddIconClick
+import com.anytypeio.anytype.feature_object_type.viewmodel.UiMenuSetItem
+import com.anytypeio.anytype.feature_object_type.viewmodel.UiMenuState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsAddIconState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsHeaderState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsSettingsIconState
+import com.anytypeio.anytype.presentation.objects.MenuSortsItem
+import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 
 @Composable
 fun ObjectsHeader(
@@ -33,8 +50,12 @@ fun ObjectsHeader(
     uiObjectsHeaderState: UiObjectsHeaderState,
     uiObjectsAddIconState: UiObjectsAddIconState,
     uiObjectsSettingsIconState: UiObjectsSettingsIconState,
+    uiObjectsMenuState: UiMenuState,
     onTypeEvent: (TypeEvent) -> Unit
 ) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
+    var isSortingExpanded by remember { mutableStateOf(false) }
+
     Box(
         modifier = modifier.padding(start = 20.dp),
     ) {
@@ -68,11 +89,63 @@ fun ObjectsHeader(
                         .padding(start = 8.dp, end = 8.dp)
                         .size(24.dp)
                         .noRippleThrottledClickable {
-                            onTypeEvent(OnTemplatesAddIconClick)
+                            isMenuExpanded = !isMenuExpanded
                         },
                     painter = painterResource(R.drawable.ic_space_list_dots),
                     contentDescription = "Settings"
                 )
+                DropdownMenu(
+                    modifier = Modifier
+                        .width(252.dp)
+                        .padding(end = 32.dp),
+                    expanded = isMenuExpanded,
+                    onDismissRequest = { isMenuExpanded = false },
+                    shape = RoundedCornerShape(size = 16.dp),
+                    containerColor = colorResource(id = R.color.background_primary),
+                    shadowElevation = 5.dp
+                ) {
+                    when (uiObjectsMenuState.setItem) {
+                        UiMenuSetItem.CreateSet -> {
+                            ObjectsListMenuItem(
+                                title = stringResource(R.string.object_type_objects_menu_create_set),
+                                isSelected = false,
+                                modifier = Modifier
+                                    .clickable { onTypeEvent(TypeEvent.OnCreateSetClick) }
+                            )
+                            Divider(
+                                height = 8.dp,
+                                paddingStart = 0.dp,
+                                paddingEnd = 0.dp,
+                                color = colorResource(R.color.shape_secondary)
+                            )
+                        }
+                        is UiMenuSetItem.OpenSet -> {
+                            ObjectsListMenuItem(
+                                title = stringResource(R.string.object_type_objects_menu_open_set),
+                                isSelected = false,
+                                modifier = Modifier
+                                    .clickable { onTypeEvent(TypeEvent.OnOpenSetClick) }
+                            )
+                            Divider(
+                                height = 8.dp,
+                                paddingStart = 0.dp,
+                                paddingEnd = 0.dp,
+                                color = colorResource(R.color.shape_secondary)
+                            )
+                        }
+                        UiMenuSetItem.Hidden -> {}
+                    }
+                    ObjectsListSortingMenuContainer(
+                        container = uiObjectsMenuState.container,
+                        sorts = uiObjectsMenuState.sorts,
+                        types = uiObjectsMenuState.types,
+                        sortingExpanded = isSortingExpanded,
+                        onSortClick = {
+                            onTypeEvent(TypeEvent.OnSortClick(it))
+                        },
+                        onChangeSortExpandedState = { isSortingExpanded = it }
+                    )
+                }
             }
             if (uiObjectsAddIconState is UiObjectsAddIconState.Visible) {
                 Image(
@@ -94,10 +167,35 @@ fun ObjectsHeader(
 @Composable
 fun ObjectsHeaderPreview() {
     ObjectsHeader(
-        modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
         uiObjectsHeaderState = UiObjectsHeaderState("3"),
         uiObjectsAddIconState = UiObjectsAddIconState.Visible,
         uiObjectsSettingsIconState = UiObjectsSettingsIconState.Visible,
+        uiObjectsMenuState = UiMenuState(
+            container = MenuSortsItem.Container(
+                sort = ObjectsListSort.ByName(isSelected = true)
+            ),
+            sorts = listOf(
+                MenuSortsItem.Sort(
+                    sort = ObjectsListSort.ByName(isSelected = true)
+                ),
+            ),
+            types = listOf(
+                MenuSortsItem.SortType(
+                    sort = ObjectsListSort.ByName(isSelected = true),
+                    sortType = DVSortType.DESC,
+                    isSelected = true
+                ),
+                MenuSortsItem.SortType(
+                    sort = ObjectsListSort.ByDateCreated(isSelected = false),
+                    sortType = DVSortType.ASC,
+                    isSelected = false
+                ),
+            ),
+            setItem = UiMenuSetItem.CreateSet
+        ),
         onTypeEvent = {}
     )
 }

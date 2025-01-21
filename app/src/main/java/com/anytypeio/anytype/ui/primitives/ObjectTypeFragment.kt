@@ -109,6 +109,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiObjectsHeaderState = vm.uiObjectsHeaderState.collectAsStateWithLifecycle().value,
                     uiObjectsAddIconState = vm.uiObjectsAddIconState.collectAsStateWithLifecycle().value,
                     uiObjectsSettingsIconState = vm.uiObjectsSettingsIconState.collectAsStateWithLifecycle().value,
+                    uiObjectsMenuState = vm.uiMenuState.collectAsStateWithLifecycle().value,
                     uiObjectsListState = vm.uiObjectsListState.collectAsStateWithLifecycle().value,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                     onTypeEvent = {}

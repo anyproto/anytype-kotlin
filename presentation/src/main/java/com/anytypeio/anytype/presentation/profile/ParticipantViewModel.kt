@@ -34,7 +34,7 @@ class ParticipantViewModel(
     private val configStorage: ConfigStorage
 ) : ViewModel() {
 
-    val uiState = MutableStateFlow<UiParticipantScreenState>(UiParticipantScreenState.Idle)
+    val uiState = MutableStateFlow<UiParticipantScreenState>(UiParticipantScreenState.EMPTY)
 
     val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
     val commands = MutableSharedFlow<Command>(0)
@@ -68,7 +68,7 @@ class ParticipantViewModel(
                     if (participant.isNotEmpty()) {
                         val obj = participant.first()
                         val identityProfileLink = obj.getSingleValue<String>(Relations.IDENTITY_PROFILE_LINK)
-                        uiState.value = UiParticipantScreenState.Data(
+                        uiState.value = UiParticipantScreenState(
                             name = fieldsParser.getObjectName(obj),
                             icon = obj.profileIcon(urlBuilder),
                             isOwner = configStorage.getOrNull()?.profile == identityProfileLink,
@@ -108,23 +108,31 @@ class ParticipantViewModel(
                 }
             }
 
-            ParticipantEvent.OnButtonClick -> {
-                viewModelScope.launch {
-                    commands.emit(Command.OpenSettingsProfile)
+            ParticipantEvent.OnCardClicked -> {
+                val uiState = uiState.value
+                if (uiState.isOwner) {
+                    viewModelScope.launch {
+                        commands.emit(Command.OpenSettingsProfile)
+                    }
                 }
             }
         }
     }
 
-    sealed class UiParticipantScreenState {
-        data object Idle : UiParticipantScreenState()
-        class Data(
-            val name: String,
-            val icon: ProfileIconView,
-            val description: String? = null,
-            val identity: String? = null,
-            val isOwner: Boolean
-        ) : UiParticipantScreenState()
+    data class UiParticipantScreenState(
+        val name: String,
+        val icon: ProfileIconView,
+        val description: String? = null,
+        val identity: String? = null,
+        val isOwner: Boolean
+    ) {
+       companion object {
+           val EMPTY = UiParticipantScreenState(
+               name = "",
+               icon = ProfileIconView.Loading,
+               isOwner = false
+           )
+       }
     }
 
     data class VmParams(

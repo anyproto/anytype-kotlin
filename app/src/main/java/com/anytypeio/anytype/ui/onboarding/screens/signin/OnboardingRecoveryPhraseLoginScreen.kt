@@ -76,11 +76,9 @@ fun RecoveryScreenWrapper(
         onDebugAccountTraceClicked = {
             vm.onAccountThraceButtonClicked()
         },
-        isMigrationInProgress = vm.migrationState.collectAsStateWithLifecycle(
+        migrationState = vm.migrationState.collectAsStateWithLifecycle(
             MigrationHelperDelegate.State.Init
-        ).value.let {
-            it is MigrationHelperDelegate.State.InProgress
-        }
+        ).value
     )
 }
 
@@ -91,9 +89,9 @@ fun RecoveryScreen(
     onActionDoneClicked: (Mnemonic) -> Unit,
     onScanQrClicked: () -> Unit,
     isLoading: Boolean,
-    isMigrationInProgress: Boolean,
     onEnterMyVaultClicked: () -> Unit,
-    onDebugAccountTraceClicked: () -> Unit
+    onDebugAccountTraceClicked: () -> Unit,
+    migrationState: MigrationHelperDelegate.State
 ) {
     val focus = LocalFocusManager.current
     val context = LocalContext.current
@@ -183,23 +181,85 @@ fun RecoveryScreen(
                         )
                     )
                 }
-                if (isMigrationInProgress) {
-                    item {
-                        Text(
-                            text = "Migration in progress. Please wait...",
-                            style = Caption1Medium,
-                            color = colorResource(R.color.palette_system_red),
-                            modifier = Modifier
-                                .padding(
-                                    start = 16.dp,
-                                    end = 16.dp,
-                                    bottom = 18.dp
-                                )
-                                .fillMaxWidth()
-                            ,
-                            textAlign = TextAlign.Center,
-                            maxLines = 2
-                        )
+                when(migrationState) {
+                    MigrationHelperDelegate.State.Cancelled -> {
+                        item {
+                            Text(
+                                text = "Migration canceled",
+                                style = Caption1Medium,
+                                color = colorResource(R.color.palette_system_red),
+                                modifier = Modifier
+                                    .padding(
+                                        start = 16.dp,
+                                        end = 16.dp,
+                                        bottom = 18.dp
+                                    )
+                                    .fillMaxWidth()
+                                ,
+                                textAlign = TextAlign.Center,
+                                maxLines = 5
+                            )
+                        }
+                    }
+                    is MigrationHelperDelegate.State.Failed -> {
+                        item {
+                            Text(
+                                text = "Migration failed, error: ${migrationState.error.message}",
+                                style = Caption1Medium,
+                                color = colorResource(R.color.palette_system_red),
+                                modifier = Modifier
+                                    .padding(
+                                        start = 16.dp,
+                                        end = 16.dp,
+                                        bottom = 18.dp
+                                    )
+                                    .fillMaxWidth()
+                                ,
+                                textAlign = TextAlign.Center,
+                                maxLines = 5
+                            )
+                        }
+                    }
+                    MigrationHelperDelegate.State.InProgress -> {
+                        item {
+                            Text(
+                                text = "Migration in progress. Please wait...",
+                                style = Caption1Medium,
+                                color = colorResource(R.color.palette_system_red),
+                                modifier = Modifier
+                                    .padding(
+                                        start = 16.dp,
+                                        end = 16.dp,
+                                        bottom = 18.dp
+                                    )
+                                    .fillMaxWidth()
+                                ,
+                                textAlign = TextAlign.Center,
+                                maxLines = 2
+                            )
+                        }
+                    }
+                    MigrationHelperDelegate.State.Init -> {
+                        // Do nothing.
+                    }
+                    MigrationHelperDelegate.State.Migrated -> {
+                        item {
+                            Text(
+                                text = "Account is migrated. Enter again.",
+                                style = Caption1Medium,
+                                color = colorResource(R.color.palette_system_red),
+                                modifier = Modifier
+                                    .padding(
+                                        start = 16.dp,
+                                        end = 16.dp,
+                                        bottom = 18.dp
+                                    )
+                                    .fillMaxWidth()
+                                ,
+                                textAlign = TextAlign.Center,
+                                maxLines = 2
+                            )
+                        }
                     }
                 }
                 item {
@@ -236,7 +296,7 @@ fun RecoveryScreen(
                         onClick = {
                             onScanQrClicked.invoke()
                         },
-                        enabled = (!isLoading && !isMigrationInProgress),
+                        enabled = (!isLoading),
                         disabledBackgroundColor = Color.Transparent,
                         size = ButtonSize.Large,
                         modifier = Modifier
@@ -298,7 +358,7 @@ fun RecoveryScreenPreview() {
         isLoading = false,
         onEnterMyVaultClicked = {},
         onDebugAccountTraceClicked = {},
-        isMigrationInProgress = false
+        migrationState = MigrationHelperDelegate.State.Init
     )
 }
 
@@ -313,7 +373,7 @@ fun RecoveryScreenLoadingPreview() {
         isLoading = true,
         onEnterMyVaultClicked = {},
         onDebugAccountTraceClicked = {},
-        isMigrationInProgress = false
+        migrationState = MigrationHelperDelegate.State.Init
     )
 }
 
@@ -328,6 +388,6 @@ fun RecoveryScreenMigrationPreview() {
         isLoading = false,
         onEnterMyVaultClicked = {},
         onDebugAccountTraceClicked = {},
-        isMigrationInProgress = true
+        migrationState = MigrationHelperDelegate.State.Init
     )
 }

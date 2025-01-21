@@ -7,7 +7,7 @@ plugins {
 android {
     buildTypes {
         release {
-            buildConfigField "boolean", "SEND_EVENTS", "true"
+            buildConfigField "boolean", "SEND_EVENTS", "false"
         }
         debug {
             buildConfigField "boolean", "SEND_EVENTS", getProperty('config.enableAnalyticsForDebugBuilds')

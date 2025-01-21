@@ -1,11 +1,13 @@
 package com.anytypeio.anytype.presentation.auth.account
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.auth.interactor.CancelAccountMigration
 import com.anytypeio.anytype.domain.auth.interactor.MigrateAccount
 import com.anytypeio.anytype.domain.base.Resultat
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
@@ -13,8 +15,8 @@ interface MigrationHelperDelegate {
 
     val migrationState: Flow<State>
 
-    suspend fun onStartMigrationRequested()
-    suspend fun onCancelMigrationRequested()
+    suspend fun onStartMigrationRequested(account: Id)
+    suspend fun onCancelMigrationRequested(account: Id)
 
     class Impl @Inject constructor(
         private val migrateAccount: MigrateAccount,
@@ -25,9 +27,9 @@ interface MigrationHelperDelegate {
 
         override val migrationState = events.flatMapLatest { event ->
             when(event) {
-                Event.OnCancel -> {
+                is Event.OnCancel -> {
                     cancelAccountMigrateAccount
-                        .stream(CancelAccountMigration.Params.Current)
+                        .stream(CancelAccountMigration.Params.Other(event.account))
                         .map { result ->
                             when(result) {
                                 is Resultat.Failure -> State.Failed(result.exception)
@@ -36,9 +38,9 @@ interface MigrationHelperDelegate {
                             }
                         }
                 }
-                Event.OnStart -> {
+                is Event.OnStart -> {
                     migrateAccount
-                        .stream(MigrateAccount.Params.Current)
+                        .stream(MigrateAccount.Params.Other(event.account))
                         .map { result ->
                             when(result) {
                                 is Resultat.Failure -> State.Failed(result.exception)
@@ -50,18 +52,18 @@ interface MigrationHelperDelegate {
             }
         }
 
-        override suspend fun onStartMigrationRequested() {
-            events.emit(Event.OnStart)
+        override suspend fun onStartMigrationRequested(account: Id) {
+            events.emit(Event.OnStart(account))
         }
 
-        override suspend fun onCancelMigrationRequested() {
-            events.emit(Event.OnCancel)
+        override suspend fun onCancelMigrationRequested(account: Id) {
+            events.emit(Event.OnCancel(account))
         }
     }
 
     sealed class Event {
-        data object OnStart : Event()
-        data object OnCancel : Event()
+        data class OnStart(val account: Id) : Event()
+        data class OnCancel(val account: Id) : Event()
     }
 
     sealed class State {

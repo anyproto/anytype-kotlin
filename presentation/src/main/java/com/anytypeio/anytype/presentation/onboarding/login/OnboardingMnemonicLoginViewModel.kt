@@ -71,6 +71,10 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private var debugClickCount = 0
     private val _fiveClicks = MutableStateFlow(false)
 
+    private val lastMigrationState = MutableStateFlow<MigrationHelperDelegate.State>(
+        MigrationHelperDelegate.State.Init
+    )
+
     init {
         Timber.i("OnboardingMnemonicLoginViewModel, init")
         viewModelScope.sendEvent(
@@ -82,10 +86,15 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 if (it) proceedWithGoroutinesDebug()
             }
         }
+        viewModelScope.launch {
+            migrationState.collect {
+                lastMigrationState.value = it
+            }
+        }
     }
 
     fun onLoginClicked(chain: String) {
-        if (state.value is SetupState.Idle) {
+        if (state.value is SetupState.Idle || lastMigrationState.value is MigrationHelperDelegate.State.Migrated) {
             proceedWithRecoveringWallet(chain.trim())
             viewModelScope.sendAnalyticsOnboardingLoginEvent(
                 analytics = analytics,
@@ -268,7 +277,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     state.value = SetupState.Failed
                     when (e) {
                         is AccountMigrationNeededException -> {
-                            onStartMigrationRequested()
+                            onStartMigrationRequested(account = id)
                         }
                         is AccountIsDeletedException -> {
                             sideEffects.emit(value = SideEffect.Error.AccountDeletedError)

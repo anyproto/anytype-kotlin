@@ -3,6 +3,7 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
@@ -15,6 +16,9 @@ interface AuthDataStore {
 
     suspend fun deleteAccount() : AccountStatus
     suspend fun restoreAccount() : AccountStatus
+
+    suspend fun migrateAccount(account: Id, path: String)
+    suspend fun cancelAccountMigration(account: Id)
 
     suspend fun recoverAccount()
 

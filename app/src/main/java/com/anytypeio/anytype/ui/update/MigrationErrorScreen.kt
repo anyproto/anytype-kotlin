@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -42,8 +43,9 @@ import com.anytypeio.anytype.presentation.update.MigrationErrorViewModel.ViewAct
 import kotlinx.coroutines.launch
 
 
+@Deprecated("Outdated")
 @Composable
-fun MigrationErrorScreen(onViewAction: (ViewAction) -> Unit) {
+fun LegacyMigrationErrorScreen(onViewAction: (ViewAction) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -216,4 +218,14 @@ private fun CloseButton(closeClicks: () -> Unit) {
                 .noRippleClickable { closeClicks.invoke() }
         )
     }
+}
+
+@DefaultPreviews
+@Composable
+fun MigrationErrorScreenPreview() {
+    LegacyMigrationErrorScreen(
+        onViewAction = {
+
+        }
+    )
 }

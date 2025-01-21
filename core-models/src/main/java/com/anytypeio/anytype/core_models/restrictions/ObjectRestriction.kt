@@ -41,6 +41,8 @@ enum class ObjectRestriction(val code: Int) {
 
     CREATE_OBJECT_OF_THIS_TYPE(9),
 
-    NONE(0)
+    NONE(0),
+
+    PUBLISH(10)
 
 }

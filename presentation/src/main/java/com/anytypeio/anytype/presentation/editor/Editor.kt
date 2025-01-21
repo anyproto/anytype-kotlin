@@ -1,13 +1,11 @@
 package com.anytypeio.anytype.presentation.editor
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.Store
-import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import kotlinx.coroutines.flow.Flow
@@ -101,11 +99,8 @@ interface Editor {
         val focus: Store<Focus> = Store.Focus()
         val details: Store.Details = Store.Details()
 
-        @Deprecated("legacy")
-        val relations: Store.Relations = Store.Relations()
         val textSelection: Store<Editor.TextSelection> = Store.TextSelection()
         val objectRestrictions: Store.ObjectRestrictions = Store.ObjectRestrictions()
-        val relationLinks: Store.RelationLinks = Store.RelationLinks()
     }
 
     class Proxer(

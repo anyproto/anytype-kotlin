@@ -22,27 +22,19 @@ internal class FakeObjectRelationProvider : ObjectRelationProvider {
 
     constructor(relation: ObjectWrapper.Relation = StubRelationObject()) : this(listOf(relation))
 
-    override suspend fun get(relation: Key): ObjectWrapper.Relation {
-        return relations.first { it.key == relation }
-    }
-
     override suspend fun getOrNull(relation: Key): ObjectWrapper.Relation? {
         return relations.find { it.key == relation }
     }
 
-    override suspend fun getById(relation: Id): ObjectWrapper.Relation {
-        return relations.first { it.id == relation }
-    }
-
-    override fun observe(relation: Key): Flow<ObjectWrapper.Relation> {
+    override suspend fun observeAll(id: Id): Flow<List<ObjectWrapper.Relation>> {
         return flow {
-            emit(get(relation))
+            emit(relations)
         }
     }
 
-    override fun observeAll(): Flow<List<ObjectWrapper.Relation>> {
+    override suspend fun observeRelation(relation: Key): Flow<ObjectWrapper.Relation> {
         return flow {
-            emit(relations)
+            emit(this@FakeObjectRelationProvider.relation)
         }
     }
 }

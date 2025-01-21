@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.home
 
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,27 +13,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
-import com.anytypeio.anytype.core_ui.views.Relations3
-import com.anytypeio.anytype.feature_discussions.R
+import com.anytypeio.anytype.core_ui.views.Relations2
+import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
 fun HomeScreenToolbar(
     spaceIconView: SpaceIconView,
-    isChatActive: Boolean,
-    onWidgetTabClicked: () -> Unit,
-    onChatTabClicked: () -> Unit,
     onSpaceIconClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit,
+    onSettingsClicked: () -> Unit,
     name: String,
     membersCount: Int
 ) {
@@ -42,29 +40,48 @@ fun HomeScreenToolbar(
         modifier = Modifier
             .systemBarsPadding()
             .fillMaxWidth()
-            .height(64.dp)
-            .padding(horizontal = 20.dp)
+            .height(52.dp)
     ) {
 
+        Image(
+            painter = painterResource(R.drawable.ic_home_top_toolbar_back),
+            contentDescription = "Back button",
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .align(Alignment.CenterStart)
+                .noRippleClickable {
+                    onBackButtonClicked()
+                }
+        )
 
         SpaceIconView(
             modifier = Modifier
+                .padding(start = 60.dp)
                 .align(Alignment.CenterStart),
             icon = spaceIconView,
             onSpaceIconClick = {
                 onSpaceIconClicked()
             },
-            mainSize = 40.dp
+            mainSize = 32.dp
         )
 
         Text(
             text = name.ifEmpty { stringResource(R.string.untitled) },
             style = PreviewTitle2Medium,
             color = colorResource(R.color.text_primary),
-            modifier = Modifier.padding(
-                start = 52.dp,
-                top = 13.dp
-            )
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 104.dp,
+                    top = 8.dp,
+                    end = 56.dp
+                )
+                .noRippleClickable {
+                    onSettingsClicked()
+                }
+            ,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
 
         Text(
@@ -77,43 +94,28 @@ fun HomeScreenToolbar(
                 )
             } else
                 stringResource(id = R.string.three_dots_text_placeholder),
-            style = Relations3,
+            style = Relations2,
             color = colorResource(R.color.text_secondary),
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(
-                    start = 52.dp,
-                    bottom = 13.dp
+                    start = 104.dp,
+                    bottom = 8.dp
                 )
+                .noRippleClickable {
+                    onSettingsClicked()
+                }
         )
 
         Image(
-            painter = painterResource(id = R.drawable.ic_home_toolbar_widgets),
+            painter = painterResource(id = com.anytypeio.anytype.R.drawable.ic_vault_settings),
+            contentDescription = "Settings icon",
             modifier = Modifier
-                .padding(end = 48.dp)
-                .size(32.dp)
                 .align(Alignment.CenterEnd)
-                .alpha(
-                    if (isChatActive) 0.5f else 1f
-                )
+                .padding(end = 16.dp)
                 .noRippleClickable {
-                    onWidgetTabClicked()
-                },
-            contentDescription = "Widgets button"
-        )
-
-        Image(
-            painter = painterResource(id = R.drawable.ic_home_toolbar_chat),
-            modifier = Modifier
-                .size(32.dp)
-                .align(Alignment.CenterEnd)
-                .alpha(
-                    if (isChatActive) 1f else 0.5f
-                )
-                .noRippleClickable {
-                    onChatTabClicked()
-                },
-            contentDescription = "Chats button"
+                    onSettingsClicked()
+                }
         )
     }
 }
@@ -122,12 +124,11 @@ fun HomeScreenToolbar(
 @Composable
 fun HomeScreenToolbarPreview() {
     HomeScreenToolbar(
-        onWidgetTabClicked = {},
-        onChatTabClicked = {},
-        isChatActive = false,
-        spaceIconView = SpaceIconView.Loading,
+        spaceIconView = SpaceIconView.Placeholder(name = "A"),
         onSpaceIconClicked = {},
         membersCount = 74,
-        name = "Test space"
+        name = "Test space",
+        onBackButtonClicked = {},
+        onSettingsClicked = {}
     )
 }

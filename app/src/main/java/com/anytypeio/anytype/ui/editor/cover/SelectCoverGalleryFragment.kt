@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -101,7 +103,15 @@ abstract class SelectCoverGalleryFragment :
             .launchIn(lifecycleScope)
 
         binding.btnUpload.clicks()
-            .onEach { permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, null) }
+            .onEach {
+                try {
+                    pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                } catch (e: Exception) {
+                    Timber.w(e, "Error while opening photo picker")
+                    toast("Error while opening photo picker")
+                    permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
+                }
+            }
             .launchIn(lifecycleScope)
 
         val spacing = requireContext().dimen(R.dimen.cover_gallery_item_spacing).toInt()
@@ -170,6 +180,20 @@ abstract class SelectCoverGalleryFragment :
     ): FragmentDocCoverGalleryBinding = FragmentDocCoverGalleryBinding.inflate(
         inflater, container, false
     )
+
+    val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
+        if (uri != null) {
+            try {
+                val path = uri.parseImagePath(requireContext())
+                vm.onImagePicked(ctx, path)
+            } catch (e: Exception) {
+                toast("Error while parsing path for media file")
+                Timber.e(e, "Error while parsing path for cover image")
+            }
+        } else {
+            Timber.i("No media selected")
+        }
+    }
 
     abstract fun onUnsplashClicked()
 

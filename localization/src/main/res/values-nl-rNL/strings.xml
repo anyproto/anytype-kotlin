@@ -1228,6 +1228,7 @@
     <string name="multiplayer_collaborate_step_1">1. Tik op de ruimtewidget om de instellingen te openen</string>
     <string name="multiplayer_collaborate_step_2">2. Open het gedeelte Delen</string>
     <string name="multiplayer_collaborate_step_3">3. Genereer een uitnodigingslink en deel deze</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d lid</item>
         <item quantity="other">%1$d leden</item>
@@ -1555,6 +1556,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="all_content_unlinked_description">Niet-gelinkte objecten die geen directe link of teruglink hebben met andere objecten in de weergave.</string>
     <string name="all_content_snackbar_title">verplaatst naar prullenmand</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_members_button">Deel en leden knop</string>
     <string name="main_navigation_content_desc_search_button">Zoek objecten knop</string>
     <string name="main_navigation_content_desc_create_button">Maak object knop</string>
     <string name="chat">Chat</string>

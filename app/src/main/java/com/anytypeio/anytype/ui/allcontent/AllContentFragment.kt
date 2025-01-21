@@ -35,8 +35,10 @@ import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_MODIFY_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_UNINSTALL_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_ID
@@ -112,7 +114,6 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         Timber.e(e, "Error while exiting to vault from all content")
                     }
                 }
-
                 is AllContentViewModel.Command.Back -> {
                     runCatching {
                         findNavController().popBackStack()
@@ -120,7 +121,6 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         Timber.e(e, "Error while exiting back from all content")
                     }
                 }
-
                 is AllContentViewModel.Command.OpenGlobalSearch -> {
                     runCatching {
                         findNavController().navigate(
@@ -267,6 +267,30 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         Timber.e(e, "Error while opening date object from All Objects screen")
                     }
                 }
+                is AllContentViewModel.Command.OpenShareScreen -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.shareSpaceScreen,
+                            args = ShareSpaceFragment.args(command.space)
+                        )
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while opening date object from All Objects screen")
+                    }
+                }
+
+                is AllContentViewModel.Command.NavigateToParticipant -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.participantScreen,
+                            ParticipantFragment.args(
+                                objectId = command.objectId,
+                                space = command.space
+                            )
+                        )
+                    }.onFailure {
+                        Timber.w("Error while opening participant screen")
+                    }
+                }
             }
         }
     }
@@ -312,7 +336,8 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     onRelationClicked = vm::onRelationClicked,
                     undoMoveToBin = vm::proceedWithUndoMoveToBin,
                     onDismissSnackbar = vm::proceedWithDismissSnackbar,
-                    uiBottomMenu = vm.uiBottomMenu.collectAsStateWithLifecycle().value
+                    uiBottomMenu = vm.uiBottomMenu.collectAsStateWithLifecycle().value,
+                    onShareButtonClicked = vm::onMemberButtonClicked
                 )
             }
         }

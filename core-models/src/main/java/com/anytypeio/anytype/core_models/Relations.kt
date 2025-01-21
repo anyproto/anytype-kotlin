@@ -86,6 +86,7 @@ object Relations {
     const val SPACE_LOCAL_STATUS = "spaceLocalStatus"
 
     const val IDENTITY_PROFILE_LINK = "identityProfileLink"
+    const val PROFILE_OWNER_IDENTITY = "profileOwnerIdentity"
 
     const val PARTICIPANT_STATUS = "participantStatus"
     const val PARTICIPANT_PERMISSIONS = "participantPermissions"

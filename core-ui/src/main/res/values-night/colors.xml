@@ -23,6 +23,9 @@
     <color name="shape_tertiary">#1F1F1F</color>
     <color name="shape_transparent">#24DAD7CA</color>
     <color name="shape_transparent_primary">#3DFFFFFF</color>
+    <color name="shape_transparent_secondary">#29FFFFFF</color>
+
+    <color name="transparent_active">#66FFFFFF</color>
 
     <color name="glyph_active">#7B7B7B</color>
     <color name="glyph_selected">#F3F2EC</color>

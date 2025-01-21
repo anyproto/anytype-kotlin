@@ -42,9 +42,9 @@ class RelationExtensionsTest {
 
         // When
         val result = getNotIncludedRecommendedRelations(
-            relationLinks = relationLinks,
             recommendedRelations = recommendedRelations,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            relationKeys = relationLinks.map { it.key }.toSet()
         )
 
         // Then

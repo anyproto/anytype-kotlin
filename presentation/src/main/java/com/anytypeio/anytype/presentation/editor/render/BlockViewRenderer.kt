@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.editor.render
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -29,7 +28,6 @@ interface BlockViewRenderer {
         anchor: Id,
         indent: Int,
         details: Block.Details = Block.Details(emptyMap()),
-        relationLinks: List<RelationLink>,
         restrictions: List<ObjectRestriction>,
         selection: Set<Id>,
         count: Int = 0,

@@ -46,7 +46,6 @@ import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceUsage
-import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
@@ -95,7 +94,6 @@ fun MObjectView.toPayload(): Payload {
                         details.id to details.details.toCoreModel()
                     }
                 ),
-                relationLinks = relationLinks.map { it.toCoreModels() },
                 objectRestrictions = restrictions?.object_?.map { it.toCoreModel() }.orEmpty(),
                 dataViewRestrictions = restrictions?.dataview?.map { it.toCoreModel() }.orEmpty()
             )
@@ -108,7 +106,6 @@ fun MObjectView.toCore(): ObjectView {
         root = rootId,
         blocks = blocks.toCoreModels(),
         details = details.associate { d -> d.id to d.details.orEmpty() },
-        relations = relationLinks.map { it.toCoreModels() },
         objectRestrictions = restrictions?.object_?.map { it.toCoreModel() }.orEmpty(),
         dataViewRestrictions = restrictions?.dataview?.map { it.toCoreModel() }.orEmpty(),
     )
@@ -762,6 +759,7 @@ fun MObjectRestriction.toCoreModel(): ObjectRestriction = when (this) {
     MObjectRestriction.None -> ObjectRestriction.NONE
     MObjectRestriction.Duplicate -> ObjectRestriction.DUPLICATE
     MObjectRestriction.CreateObjectOfThisType -> ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE
+    MObjectRestriction.Publish -> ObjectRestriction.PUBLISH
 }
 
 fun MDVRestrictions.toCoreModel(): DataViewRestrictions {

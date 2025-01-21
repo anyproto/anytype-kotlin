@@ -1224,6 +1224,7 @@
     <string name="multiplayer_collaborate_step_1">1. 點擊空間小工具來進行設置</string>
     <string name="multiplayer_collaborate_step_2">2. 開放共享區塊</string>
     <string name="multiplayer_collaborate_step_3">3. 產生邀請連結並分享</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="other">%1$d 位成員</item>
     </plurals>
@@ -1542,6 +1543,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_snackbar_title">moved to bin</string>
     <string name="main_navigation_content_desc_back_button">返回按鈕</string>
+    <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
     <string name="chat">Chat</string>

@@ -150,6 +150,7 @@ object MimeTypes {
         "image/gif",
         "image/avif",
         "image/apng",
-        "image/bmp"
+        "image/bmp",
+        "video/mpeg"
     )
 }

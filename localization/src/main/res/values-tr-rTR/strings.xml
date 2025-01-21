@@ -1228,6 +1228,7 @@
     <string name="multiplayer_collaborate_step_1">1.  Ayarlara erişmek için Alan widget\'ına dokunun</string>
     <string name="multiplayer_collaborate_step_2">2.  Paylaşım bölümünü açın</string>
     <string name="multiplayer_collaborate_step_3">3.  Bir davet bağlantısı oluşturun ve paylaşın</string>
+    <string name="profile_view_edit_button">Profili Düzenle</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d üye</item>
         <item quantity="other">%1$d üye</item>
@@ -1555,6 +1556,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="all_content_unlinked_description">Grafikteki diğer nesnelerle doğrudan bağlantısı veya geri bağlantısı olmayan bağlantısız nesneler.</string>
     <string name="all_content_snackbar_title">çöp kutusuna taşındı</string>
     <string name="main_navigation_content_desc_back_button">Geri düğmesi</string>
+    <string name="main_navigation_content_desc_members_button">Paylaş ve üyeler butonu</string>
     <string name="main_navigation_content_desc_search_button">Nesneleri ara butonu</string>
     <string name="main_navigation_content_desc_create_button">Nesne oluştur butonu</string>
     <string name="chat">Sohbet</string>

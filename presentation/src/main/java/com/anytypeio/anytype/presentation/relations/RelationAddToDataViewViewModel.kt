@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
@@ -17,7 +16,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -31,6 +29,7 @@ import timber.log.Timber
 
 class RelationAddToDataViewViewModel(
     relationsProvider: ObjectRelationProvider,
+    val vmParams: VmParams,
     private val objectState: StateFlow<ObjectState>,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val addRelationToDataView: AddRelationToDataView,
@@ -39,15 +38,14 @@ class RelationAddToDataViewViewModel(
     private val analytics: Analytics,
     private val addObjectToWorkspace: AddObjectToWorkspace,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
-    private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val storeOfRelations: StoreOfRelations
 ) : RelationAddViewModelBase(
+    vmParams = vmParams,
     relationsProvider = relationsProvider,
     appCoroutineDispatchers = appCoroutineDispatchers,
     getRelations = getRelations,
     addObjectToWorkspace = addObjectToWorkspace,
-    spaceManager = spaceManager
 ) {
 
     fun onRelationSelected(
@@ -78,7 +76,7 @@ class RelationAddToDataViewViewModel(
                         storeOfRelations = storeOfRelations,
                         relationKey = relation,
                         type = screenType,
-                        spaceParams = analyticSpaceHelperDelegate.provideParams(spaceManager.get())
+                        spaceParams = analyticSpaceHelperDelegate.provideParams(vmParams.space.id)
                     )
                 },
                 failure = {
@@ -110,6 +108,7 @@ class RelationAddToDataViewViewModel(
     }
 
     class Factory(
+        private val vmParams: VmParams,
         private val state: StateFlow<ObjectState>,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val addRelationToDataView: AddRelationToDataView,
@@ -119,13 +118,13 @@ class RelationAddToDataViewViewModel(
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val getRelations: GetRelations,
         private val addObjectToWorkspace: AddObjectToWorkspace,
-        private val spaceManager: SpaceManager,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val storeOfRelations: StoreOfRelations
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationAddToDataViewViewModel(
+                vmParams = vmParams,
                 addRelationToDataView = addRelationToDataView,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,
@@ -135,7 +134,6 @@ class RelationAddToDataViewViewModel(
                 appCoroutineDispatchers = appCoroutineDispatchers,
                 getRelations = getRelations,
                 addObjectToWorkspace = addObjectToWorkspace,
-                spaceManager = spaceManager,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 storeOfRelations = storeOfRelations
             ) as T

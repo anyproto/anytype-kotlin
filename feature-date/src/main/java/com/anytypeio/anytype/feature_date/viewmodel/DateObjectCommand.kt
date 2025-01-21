@@ -8,6 +8,7 @@ sealed class DateObjectCommand {
     data class NavigateToEditor(val id: Id, val space: SpaceId) : DateObjectCommand()
     data class NavigateToSetOrCollection(val id: Id, val space: SpaceId) : DateObjectCommand()
     data class NavigateToDateObject(val objectId: Id, val space: SpaceId) : DateObjectCommand()
+    data class NavigateToParticipant(val objectId: Id, val space: SpaceId) : DateObjectCommand()
     data object TypeSelectionScreen : DateObjectCommand()
     data object ExitToSpaceWidgets : DateObjectCommand()
     sealed class SendToast : DateObjectCommand() {

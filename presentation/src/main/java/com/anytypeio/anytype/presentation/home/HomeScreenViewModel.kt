@@ -98,6 +98,7 @@ import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
@@ -209,7 +210,8 @@ class HomeScreenViewModel(
     private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
     private val featureToggles: FeatureToggles,
     private val fieldParser: FieldParser,
-    private val spaceInviteResolver: SpaceInviteResolver
+    private val spaceInviteResolver: SpaceInviteResolver,
+    private val exitToVaultDelegate: ExitToVaultDelegate
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -217,7 +219,9 @@ class HomeScreenViewModel(
     CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate,
     Unsubscriber by unsubscriber,
-    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
+    ExitToVaultDelegate by exitToVaultDelegate
+{
 
     private val jobs = mutableListOf<Job>()
     private val mutex = Mutex()
@@ -236,7 +240,6 @@ class HomeScreenViewModel(
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
     private val allContentWidget = AllContentWidgetContainer()
-    private val spaceChatWidget = SpaceChatWidgetContainer()
 
     private val spaceWidgetView = spaceWidgetContainer.view
 
@@ -410,9 +413,6 @@ class HomeScreenViewModel(
                     combine(
                         flows = buildList<Flow<WidgetView>> {
                             add(spaceWidgetView)
-                            if (featureToggles.isSpaceLevelChatWidgetEnabled) {
-                                add(spaceChatWidget.view)
-                            }
                             add(allContentWidget.view)
                             addAll(list.map { m -> m.view })
                         }
@@ -1097,7 +1097,7 @@ class HomeScreenViewModel(
             val space = spaceView.space.targetSpaceId
             if (chat != null && space != null) {
                 navigation(
-                    Navigation.OpenDiscussion(
+                    Navigation.OpenChat(
                         space = space,
                         ctx = chat
                     )
@@ -1422,9 +1422,9 @@ class HomeScreenViewModel(
                     )
                 )
             }
-            is OpenObjectNavigation.OpenDiscussion -> {
+            is OpenObjectNavigation.OpenChat -> {
                 navigate(
-                    Navigation.OpenDiscussion(
+                    Navigation.OpenChat(
                         ctx = navigation.target,
                         space = navigation.space
                     )
@@ -1436,10 +1436,18 @@ class HomeScreenViewModel(
             OpenObjectNavigation.NonValidObject -> {
                 sendToast("Object id is missing")
             }
-            is OpenObjectNavigation.OpenDataObject -> {
+            is OpenObjectNavigation.OpenDateObject -> {
                 navigate(
                     destination = Navigation.OpenDateObject(
                         ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
+            is OpenObjectNavigation.OpenParticipant -> {
+                navigate(
+                    Navigation.OpenParticipant(
+                        objectId = navigation.target,
                         space = navigation.space
                     )
                 )
@@ -1750,6 +1758,14 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSpaceShareIconClicked() {
+        viewModelScope.launch {
+            commands.emit(
+                Command.ShareSpace(SpaceId(spaceManager.get()))
+            )
+        }
+    }
+
     fun onSpaceSettingsClicked() {
         viewModelScope.launch {
             commands.emit(
@@ -1760,7 +1776,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onBackClicked() {
+    fun onBackClicked(isSpaceRoot: Boolean) {
         viewModelScope.launch {
             if (spaceManager.getState() is SpaceManager.State.Space) {
                 // Proceed with releasing resources before exiting
@@ -1779,17 +1795,12 @@ class HomeScreenViewModel(
                             Timber.e(it, "Error while closing object from history")
                         }
                 }
-                spaceManager.clear()
-                clearLastOpenedSpace.async(Unit).fold(
-                    onSuccess = {
-                        Timber.d("Cleared last opened space before opening vault")
-                    },
-                    onFailure = {
-                        Timber.e(it, "Error while clearing last opened space before opening vault")
-                    }
-                )
+                if (isSpaceRoot) {
+                    Timber.d("Root space screen. Releasing resources...")
+                    proceedWithClearingSpaceBeforeExitingToVault()
+                }
             }
-            commands.emit(Command.OpenVault)
+            commands.emit(Command.Exit)
         }
     }
 
@@ -2160,12 +2171,13 @@ class HomeScreenViewModel(
 
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
-        data class OpenDiscussion(val ctx: Id, val space: Id) : Navigation()
+        data class OpenChat(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data object OpenSpaceSwitcher: Navigation()
         data class OpenAllContent(val space: Id) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
+        data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()
     }
 
     class Factory @Inject constructor(
@@ -2218,7 +2230,8 @@ class HomeScreenViewModel(
         private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
         private val featureToggles: FeatureToggles,
         private val fieldParser: FieldParser,
-        private val spaceInviteResolver: SpaceInviteResolver
+        private val spaceInviteResolver: SpaceInviteResolver,
+        private val exitToVaultDelegate: ExitToVaultDelegate,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2271,7 +2284,8 @@ class HomeScreenViewModel(
             spaceBinWidgetContainer = spaceBinWidgetContainer,
             featureToggles = featureToggles,
             fieldParser = fieldParser,
-            spaceInviteResolver = spaceInviteResolver
+            spaceInviteResolver = spaceInviteResolver,
+            exitToVaultDelegate = exitToVaultDelegate
         ) as T
     }
 
@@ -2323,6 +2337,7 @@ sealed class Command {
     data class OpenGlobalSearchScreen(val space: Id) : Command()
 
     data object OpenVault: Command()
+    data object Exit: Command()
 
     data class SelectWidgetType(
         val ctx: Id,
@@ -2395,8 +2410,9 @@ sealed class OpenObjectNavigation {
     data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
     data object NonValidObject: OpenObjectNavigation()
-    data class OpenDiscussion(val target: Id, val space: Id): OpenObjectNavigation()
-    data class OpenDataObject(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenChat(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenDateObject(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenParticipant(val target: Id, val space: Id): OpenObjectNavigation()
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
@@ -2405,8 +2421,7 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,
         ObjectType.Layout.TODO,
-        ObjectType.Layout.BOOKMARK,
-        ObjectType.Layout.PARTICIPANT -> {
+        ObjectType.Layout.BOOKMARK -> {
             OpenObjectNavigation.OpenEditor(
                 target = id,
                 space = requireNotNull(spaceId)
@@ -2440,13 +2455,19 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
             )
         }
         ObjectType.Layout.CHAT_DERIVED -> {
-            OpenObjectNavigation.OpenDiscussion(
+            OpenObjectNavigation.OpenChat(
                 target = id,
                 space = requireNotNull(spaceId)
             )
         }
         ObjectType.Layout.DATE -> {
-            OpenObjectNavigation.OpenDataObject(
+            OpenObjectNavigation.OpenDateObject(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
+        }
+        ObjectType.Layout.PARTICIPANT -> {
+            OpenObjectNavigation.OpenParticipant(
                 target = id,
                 space = requireNotNull(spaceId)
             )
@@ -2465,8 +2486,7 @@ fun ObjectType.Layout.navigation(
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,
         ObjectType.Layout.TODO,
-        ObjectType.Layout.BOOKMARK,
-        ObjectType.Layout.PARTICIPANT -> {
+        ObjectType.Layout.BOOKMARK -> {
             OpenObjectNavigation.OpenEditor(
                 target = target,
                 space = space
@@ -2492,13 +2512,19 @@ fun ObjectType.Layout.navigation(
             )
         }
         ObjectType.Layout.CHAT_DERIVED -> {
-            OpenObjectNavigation.OpenDiscussion(
+            OpenObjectNavigation.OpenChat(
                 target = target,
                 space = space
             )
         }
         ObjectType.Layout.DATE -> {
-            OpenObjectNavigation.OpenDataObject(
+            OpenObjectNavigation.OpenDateObject(
+                target = target,
+                space = space
+            )
+        }
+        ObjectType.Layout.PARTICIPANT -> {
+            OpenObjectNavigation.OpenParticipant(
                 target = target,
                 space = space
             )

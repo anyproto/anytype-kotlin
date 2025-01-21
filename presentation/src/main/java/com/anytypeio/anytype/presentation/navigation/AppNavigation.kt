@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.navigation
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 
 interface AppNavigation {
@@ -36,6 +37,11 @@ interface AppNavigation {
         space: Id
     )
 
+    fun openParticipantObject(
+        objectId: Id,
+        space: Id
+    )
+
     fun openObjectType(
         objectId: Id,
         space: Id
@@ -49,6 +55,7 @@ interface AppNavigation {
     fun exitToDesktop()
     fun exitToVault()
     fun openGlobalSearch(space: Id)
+    fun openShareScreen(space: SpaceId)
     fun openUpdateAppScreen()
     fun openRemoteFilesManageScreen(subscription: Id, space: Id)
 
@@ -87,6 +94,10 @@ interface AppNavigation {
         object OpenSettings : Command()
         object MigrationErrorScreen: Command()
 
+        data class OpenShareScreen(
+            val space: SpaceId
+        ) : Command()
+
         data class OpenGlobalSearch(
             val space: Id
         ) : Command()
@@ -101,6 +112,11 @@ interface AppNavigation {
             val objectId: Id,
             val space: Id
         ) : Command()
+
+        data class OpenParticipant(
+            val objectId: Id,
+            val space: Id
+        ): Command()
 
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
 

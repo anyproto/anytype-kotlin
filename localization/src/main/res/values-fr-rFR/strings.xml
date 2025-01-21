@@ -1228,6 +1228,7 @@
     <string name="multiplayer_collaborate_step_1">1. Appuyez sur le widget de l’espace pour accéder aux paramètres</string>
     <string name="multiplayer_collaborate_step_2">2. Ouvrez la section Partage</string>
     <string name="multiplayer_collaborate_step_3">3. Générez un lien d’invitation et partagez-le</string>
+    <string name="profile_view_edit_button">Modifier le profil</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d membre</item>
         <item quantity="other">%1$d membres</item>
@@ -1552,6 +1553,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="all_content_unlinked_description">Objets non liés qui n\'ont pas de lien direct ou de lien en retour avec d\'autres objets dans le graphique.</string>
     <string name="all_content_snackbar_title">déplacé vers la corbeille</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
+    <string name="main_navigation_content_desc_members_button">Bouton de partage et membres</string>
     <string name="main_navigation_content_desc_search_button">Bouton de recherche d\'objets</string>
     <string name="main_navigation_content_desc_create_button">Créer un bouton objet</string>
     <string name="chat">Messagerie</string>

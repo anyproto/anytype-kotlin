@@ -634,6 +634,15 @@ class DateObjectViewModel(
                     )
                 }
 
+                is OpenObjectNavigation.OpenParticipant -> {
+                    effects.emit(
+                        DateObjectCommand.NavigateToParticipant(
+                            objectId = navigation.target,
+                            space = SpaceId(navigation.space)
+                        )
+                    )
+                }
+
                 is OpenObjectNavigation.OpenEditor -> {
                     effects.emit(
                         DateObjectCommand.NavigateToEditor(
@@ -648,7 +657,7 @@ class DateObjectViewModel(
                     effects.emit(DateObjectCommand.SendToast.UnexpectedLayout(navigation.layout?.name.orEmpty()))
                 }
 
-                is OpenObjectNavigation.OpenDiscussion -> {
+                is OpenObjectNavigation.OpenChat -> {
                     effects.emit(
                         DateObjectCommand.OpenChat(
                             target = navigation.target,
@@ -661,7 +670,7 @@ class DateObjectViewModel(
                     Timber.e("Object id is missing")
                 }
 
-                is OpenObjectNavigation.OpenDataObject -> {
+                is OpenObjectNavigation.OpenDateObject -> {
                     effects.emit(
                         DateObjectCommand.NavigateToEditor(
                             id = navigation.target,

@@ -9,28 +9,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,34 +31,22 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.intents.SystemAction
-import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.ext.daggerViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
-import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
-import com.anytypeio.anytype.ui.chats.ChatReactionFragment
-import com.anytypeio.anytype.ui.chats.SelectChatReactionFragment
-import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -79,7 +57,9 @@ import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListene
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
@@ -125,181 +105,60 @@ class HomeScreenFragment : BaseComposeFragment(),
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
-                if (featureToggles.isNewSpaceHomeEnabled || spacesWithSpaceLevelChat.contains(space)) {
-                    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
-                    var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
-
-                    val view = (vm.views.collectAsStateWithLifecycle().value.find {
-                        it is WidgetView.SpaceWidget.View
-                    } as? WidgetView.SpaceWidget.View)
-
-                    val focus = LocalFocusManager.current
-
-                    val component = componentManager().spaceLevelChatComponent
-                    val spaceLevelChatViewModel = daggerViewModel {
-                        component.get(
-                            key = space,
-                            param = DiscussionViewModel.Params.SpaceLevelChat(
-                                space = Space(space)
+                val view = (vm.views.collectAsStateWithLifecycle().value.find {
+                    it is WidgetView.SpaceWidget.View
+                } as? WidgetView.SpaceWidget.View)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .systemBarsPadding()
+                ) {
+                    HomeScreenToolbar(
+                        spaceIconView = view?.icon ?: SpaceIconView.Loading,
+                        onSpaceIconClicked = vm::onSpaceSettingsClicked,
+                        membersCount = view?.membersCount ?: 0,
+                        name = view?.space?.name.orEmpty(),
+                        onBackButtonClicked = {
+                            vm.onBackClicked(
+                                isSpaceRoot = isSpaceRootScreen()
                             )
-                        ).getViewModel()
-                    }
-                    val pagerState = rememberPagerState { 2 }
-                    val coroutineScope = rememberCoroutineScope()
-
-                    Box(
-                        Modifier.fillMaxSize()
-                    ) {
-                        HomeScreenToolbar(
-                            spaceIconView = view?.icon ?: SpaceIconView.Loading,
-                            isChatActive = pagerState.targetPage == 1,
-                            onWidgetTabClicked = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(0)
-                                }
-                            },
-                            onChatTabClicked = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(1)
-                                }
-                            },
-                            onSpaceIconClicked = vm::onSpaceSettingsClicked,
-                            membersCount = view?.membersCount ?: 0,
-                            name = view?.space?.name.orEmpty()
-                        )
-                        HorizontalPager(
-                            modifier = Modifier
-                                .systemBarsPadding()
-                                .padding(top = 64.dp),
-                            state = pagerState,
-                            userScrollEnabled = false
-                        ) { page ->
-                            if (page == 0) {
-                                focus.clearFocus(force = true)
-                                PageWithWidgets(showSpaceWidget = false)
-                            } else {
-                                DiscussionScreenWrapper(
-                                    isSpaceLevelChat = true,
-                                    vm = spaceLevelChatViewModel,
-                                    onAttachObjectClicked = {
-                                        showGlobalSearchBottomSheet = true
-                                    },
-                                    onBackButtonClicked = {
-                                        findNavController().popBackStack()
-                                    },
-                                    onMarkupLinkClicked = {
-                                        proceedWithAction(SystemAction.OpenUrl(it))
-                                    },
-                                    onRequestOpenFullScreenImage = { url ->
-                                        findNavController().navigate(
-                                            R.id.fullScreenImageFragment,
-                                            FullScreenPictureFragment.args(
-                                                url = url
-                                            )
+                        },
+                        onSettingsClicked = {
+                            runCatching {
+                                findNavController()
+                                    .navigate(
+                                        R.id.spaceSettingsScreen,
+                                        SpaceSettingsFragment.args(
+                                            space = SpaceId(space)
                                         )
-                                    },
-                                    onSelectChatReaction = {
-                                        runCatching {
-                                            findNavController().navigate(
-                                                R.id.selectChatReactionScreen,
-                                                SelectChatReactionFragment.args(
-                                                    space = Space(space),
-                                                    chat = spaceLevelChatViewModel.chat,
-                                                    msg = it
-                                                )
-                                            )
-                                        }.onFailure {
-                                            Timber.e(it, "Error while opening chat-reaction picker")
-                                        }
-                                    },
-                                    onViewChatReaction = { msg, emoji ->
-                                        runCatching {
-                                            findNavController().navigate(
-                                                R.id.chatReactionScreen,
-                                                ChatReactionFragment.args(
-                                                    space = Space(space),
-                                                    chat = spaceLevelChatViewModel.chat,
-                                                    msg = msg,
-                                                    emoji = emoji
-                                                )
-                                            )
-                                        }.onFailure {
-                                            Timber.e(it, "Error while opening a chat reaction")
-                                        }
-                                    }
-                                )
+                                    )
+                            }.onFailure {
+                                Timber.e(it, "Error while opening space settings")
                             }
                         }
-                    }
-                    if (showGlobalSearchBottomSheet) {
-                        ModalBottomSheet(
-                            onDismissRequest = {
-                                showGlobalSearchBottomSheet = false
-                            },
-                            sheetState = sheetState,
-                            containerColor = colorResource(id = R.color.background_secondary),
-                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                            dragHandle = null
-                        ) {
-                            val component = componentManager().globalSearchComponent
-                            val searchViewModel = daggerViewModel {
-                                component
-                                    .get(GlobalSearchViewModel.VmParams(space = SpaceId(space)))
-                                    .getViewModel()
-                            }
-                            GlobalSearchScreen(
-                                modifier = Modifier.padding(top = 12.dp),
-                                state = searchViewModel.state
-                                    .collectAsStateWithLifecycle()
-                                    .value
-                                ,
-                                onQueryChanged = searchViewModel::onQueryChanged,
-                                onObjectClicked = {
-                                    spaceLevelChatViewModel.onAttachObject(it)
-                                    showGlobalSearchBottomSheet = false
-                                },
-                                focusOnStart = false
-                            )
-                        }
-                    }
-                    LaunchedEffect(Unit) {
-                        // TODO refact navigation here. or reuse nav command from home screen view model
-                        spaceLevelChatViewModel.navigation.collect { nav ->
-                            when(nav) {
-                                is OpenObjectNavigation.OpenEditor -> {
-                                    runCatching {
-                                        findNavController().navigate(
-                                            R.id.objectNavigation,
-                                            EditorFragment.args(
-                                                ctx = nav.target,
-                                                space = nav.space
-                                            )
-                                        )
-                                    }.onFailure {
-                                        Timber.w("Error while opening editor from chat.")
-                                    }
-                                }
-                                else -> toast("TODO")
-                            }
-                        }
-                    }
-                } else {
-                    PageWithWidgets()
+                    )
+                    PageWithWidgets(
+                        modifier = Modifier.padding(top = 52.dp),
+                        showSpaceWidget = false
+                    )
                 }
             }
 
             BackHandler {
-                vm.onBackClicked()
+                vm.onBackClicked(
+                    isSpaceRoot = isSpaceRootScreen()
+                )
             }
         }
     }
 
     @Composable
     fun PageWithWidgets(
+        modifier: Modifier = Modifier,
         showSpaceWidget: Boolean = true
     ) {
         HomeScreen(
-            modifier = Modifier,
+            modifier = modifier,
             widgets = if (showSpaceWidget) vm.views.collectAsState().value else vm.views.collectAsState().value.filter { it !is WidgetView.SpaceWidget },
             mode = vm.mode.collectAsState().value,
             onExpand = { path -> vm.onExpand(path) },
@@ -321,7 +180,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                 onClick = { vm.onCreateNewObjectLongClicked() }
             ),
             onBackClicked = throttledClick(
-                onClick = vm::onBackClicked
+                onClick = { vm.onBackClicked(isSpaceRootScreen()) }
             ),
             onSpaceWidgetClicked = throttledClick(
                 onClick = vm::onSpaceSettingsClicked
@@ -333,7 +192,8 @@ class HomeScreenFragment : BaseComposeFragment(),
             onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
             onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
             onCreateDataViewObject = vm::onCreateDataViewObject,
-            onBackLongClicked = vm::onBackLongClicked
+            onBackLongClicked = vm::onBackLongClicked,
+            onShareButtonClicked = vm::onSpaceShareIconClicked
         )
     }
 
@@ -459,11 +319,15 @@ class HomeScreenFragment : BaseComposeFragment(),
                 )
             }
             is Command.Deeplink.MembershipScreen -> {
-                findNavController().navigate(
-                    R.id.paymentsScreen,
-                    MembershipFragment.args(command.tierId),
-                    NavOptions.Builder().setLaunchSingleTop(true).build()
-                )
+                runCatching {
+                    findNavController().navigate(
+                        R.id.paymentsScreen,
+                        MembershipFragment.args(command.tierId),
+                        NavOptions.Builder().setLaunchSingleTop(true).build()
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening membership screen")
+                }
             }
             is Command.Deeplink.DeepLinkToObjectNotWorking -> {
                 toast(
@@ -471,10 +335,14 @@ class HomeScreenFragment : BaseComposeFragment(),
                 )
             }
             is Command.ShareSpace -> {
-                findNavController().navigate(
-                    R.id.shareSpaceScreen,
-                    args = ShareSpaceFragment.args(command.space)
-                )
+                runCatching {
+                    findNavController().navigate(
+                        R.id.shareSpaceScreen,
+                        args = ShareSpaceFragment.args(command.space)
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening share screen")
+                }
             }
             is Command.CreateSourceForNewWidget -> {
                 val dialog = WidgetSourceTypeFragment.new(
@@ -523,6 +391,13 @@ class HomeScreenFragment : BaseComposeFragment(),
                     Timber.e(it, "Error while opening vault from home screen")
                 }
             }
+            is Command.Exit -> {
+                runCatching {
+                    findNavController().popBackStack()
+                }.onFailure {
+                    Timber.e(it, "Error exiting home screen")
+                }
+            }
         }
     }
 
@@ -542,7 +417,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     view = destination.view
                 )
             }
-            is Navigation.OpenDiscussion -> runCatching {
+            is Navigation.OpenChat -> runCatching {
                 navigation().openDiscussion(
                     target = destination.ctx,
                     space = destination.space
@@ -572,6 +447,16 @@ class HomeScreenFragment : BaseComposeFragment(),
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening date object from widgets")
+                }
+            }
+            is Navigation.OpenParticipant -> {
+                runCatching {
+                    navigation().openParticipantObject(
+                        objectId = destination.objectId,
+                        space = destination.space
+                    )
+                    }.onFailure { e ->
+                    Timber.e(e, "Error while opening participant from widgets")
                 }
             }
         }
@@ -607,29 +492,10 @@ class HomeScreenFragment : BaseComposeFragment(),
         componentManager().homeScreenComponent.release()
     }
 
-    override fun onApplyWindowRootInsets(view: View) {
-        if (featureToggles.isNewSpaceHomeEnabled || spacesWithSpaceLevelChat.contains(space)) {
-            // Do nothing.
-        } else {
-            super.onApplyWindowRootInsets(view)
-        }
-        // Do not apply window insets on fragment container.
-    }
-
     companion object {
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
         const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
         const val SPACE_ID_KEY = "arg.home-screen.space-id"
-
-        /**
-         * Spaces for beta-testing space-level chats
-         */
-
-        val spacesWithSpaceLevelChat = listOf(
-            "bafyreiezhzb4ggnhjwejmh67pd5grilk6jn3jt7y2rnfpbkjwekilreola.1t123w9f2lgn5",
-            "bafyreifikxj75r4duzhqxqelmi66rwlzqml5jnad35dnukxwlawtfrql5a.21584urzltddb",
-            "bafyreia4jsiobrq7ptpuxsv6nmpj4vis7o5p73yibjb5w4crhxl2oqocoq.9tkr2p3mb0pj"
-        )
 
         fun args(
             space: Id,
@@ -639,4 +505,9 @@ class HomeScreenFragment : BaseComposeFragment(),
             SPACE_ID_KEY to space
         )
     }
+}
+
+fun Fragment.isSpaceRootScreen() : Boolean {
+    val previous = findNavController().previousBackStackEntry
+    return previous?.destination?.id == R.id.vaultScreen
 }

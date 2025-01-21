@@ -36,7 +36,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
@@ -161,6 +160,7 @@ import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeUpdateFragment
@@ -601,21 +601,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
 
         binding.bottomToolbar
-            .backClicks()
-            .onEach { vm.onBackButtonPressed() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomToolbar
-            .binding
-            .btnBack
-            .longClicks(withHaptic = true)
-            .onEach {
-                runCatching {
-                    findNavController().navigate(R.id.actionExitToSpaceWidgets)
-                }.onFailure {
-                    Timber.e(it, "Error while opening space switcher from editor")
-                }
-            }
+            .shareClicks()
+            .onEach { vm.onShareButtonClicked() }
             .launchIn(lifecycleScope)
 
         binding.bottomToolbar
@@ -643,6 +630,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .clicks()
             .throttleFirst()
             .onEach { vm.onDocumentMenuClicked() }
+            .launchIn(lifecycleScope)
+
+        binding.topToolbar.back
+            .clicks()
+            .throttleFirst()
+            .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
 
         binding.markupToolbar
@@ -934,7 +927,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     try {
                         pickProfileIcon.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
                     } catch (e: Exception) {
-                        Timber.e(e, "Error while opening photo picker")
+                        Timber.w(e, "Error while opening photo picker")
                         toast("Error while opening photo picker")
                         pickerDelegate.openFilePicker(Mimetype.MIME_IMAGE_ALL, REQUEST_PROFILE_IMAGE_CODE)
                     }
@@ -967,7 +960,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     try {
                         pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
                     } catch (e: Exception) {
-                        Timber.e(e, "Error while opening photo picker")
+                        Timber.w(e, "Error while opening photo picker")
                         toast("Error while opening photo picker")
                         pickerDelegate.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
                     }
@@ -1076,17 +1069,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     SelectProgrammingLanguageFragment.new(command.target)
                         .showChildFragment()
                 }
-                is Command.OpenObjectRelationScreen.RelationAdd -> {
-                    hideKeyboard()
-                    ObjectRelationListFragment
-                        .new(
-                            ctx = command.ctx,
-                            space = space,
-                            target = command.target,
-                            mode = ObjectRelationListFragment.MODE_ADD,
-                        )
-                        .showChildFragment()
-                }
                 is Command.OpenObjectRelationScreen.RelationList -> {
                     hideKeyboard()
                     findNavController().safeNavigate(
@@ -1097,7 +1079,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             ObjectRelationListFragment.ARG_SPACE to space,
                             ObjectRelationListFragment.ARG_TARGET to command.target,
                             ObjectRelationListFragment.ARG_LOCKED to command.isLocked,
-                            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
                         )
                     )
                 }
@@ -1139,7 +1120,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         hideKeyboard()
                         val dialog = ObjectTypeUpdateFragment.new(
                             excludedTypeKeys = command.excludedTypes,
-                            space = space
+                            space = space,
+                            fromFeatured = command.fromFeatured
                         )
                         dialog.show(childFragmentManager, null)
                     }
@@ -1305,6 +1287,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             IconPickerFragmentBase.ARG_SPACE_ID_KEY to command.space
                         )
                     )
+                }
+                is Command.OpenShareScreen -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.shareSpaceScreen,
+                            args = ShareSpaceFragment.args(command.space)
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening share screen")
+                    }
                 }
             }
         }
@@ -2229,8 +2221,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.proceedToCreateObjectAndAddToTextAsLink(name)
     }
 
-    override fun onUpdateObjectType(objType: ObjectWrapper.Type) {
-        vm.onObjectTypeChanged(objType = objType)
+    override fun onUpdateObjectType(objType: ObjectWrapper.Type, fromFeatured: Boolean) {
+        vm.onObjectTypeChanged(objType = objType, fromFeatured = fromFeatured)
     }
 
     override fun onSelectObjectType(objType: ObjectWrapper.Type) {

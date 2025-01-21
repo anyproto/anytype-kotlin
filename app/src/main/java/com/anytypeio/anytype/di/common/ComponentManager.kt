@@ -49,11 +49,10 @@ import com.anytypeio.anytype.di.feature.TextBlockIconPickerModule
 import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
+import com.anytypeio.anytype.di.feature.chats.DaggerChatComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
-import com.anytypeio.anytype.di.feature.discussions.DaggerChatReactionComponent
-import com.anytypeio.anytype.di.feature.discussions.DaggerDiscussionComponent
-import com.anytypeio.anytype.di.feature.discussions.DaggerSelectChatReactionComponent
-import com.anytypeio.anytype.di.feature.discussions.DaggerSpaceLevelChatComponent
+import com.anytypeio.anytype.di.feature.chats.DaggerChatReactionComponent
+import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatReactionComponent
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
@@ -68,6 +67,7 @@ import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponen
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemonicLoginComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationComponent
+import com.anytypeio.anytype.di.feature.participant.DaggerParticipantComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -105,10 +105,10 @@ import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetTypeComponent
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
-import com.anytypeio.anytype.feature_discussions.presentation.ChatReactionViewModel
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVmParams
-import com.anytypeio.anytype.feature_discussions.presentation.SelectChatReactionViewModel
+import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
@@ -118,6 +118,8 @@ import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
+import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
+import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
@@ -345,6 +347,12 @@ class ComponentManager(
             .create(params, findComponentDependencies())
     }
 
+    val participantScreenComponent = ComponentWithParams { params: ParticipantViewModel.VmParams ->
+        DaggerParticipantComponent
+            .factory()
+            .create(params, findComponentDependencies())
+    }
+
     val dateObjectComponent = ComponentWithParams { params: DateObjectVmParams  ->
         DaggerDateObjectComponent
             .factory()
@@ -367,7 +375,12 @@ class ComponentManager(
         editorComponent
             .get(key = param.ctx, param = param)
             .objectRelationListComponent()
-            .withVmParams(RelationListViewModel.VmParams(param.space))
+            .withVmParams(
+                RelationListViewModel.VmParams(
+                    objectId = param.ctx,
+                    spaceId = param.space
+                )
+            )
             .module(ObjectRelationListModule)
             .build()
     }
@@ -376,7 +389,12 @@ class ComponentManager(
         objectSetComponent
             .get(key = param.ctx, param = param)
             .objectRelationListComponent()
-            .withVmParams(RelationListViewModel.VmParams(param.space))
+            .withVmParams(
+                RelationListViewModel.VmParams(
+                    objectId = param.ctx,
+                    spaceId = param.space
+                )
+            )
             .module(ObjectRelationListModule)
             .build()
     }
@@ -579,6 +597,12 @@ class ComponentManager(
         editorComponent
             .get(key = param.ctx, param = param)
             .relationAddToObjectComponent()
+            .withVmParams(
+                vmParams = RelationAddViewModelBase.VmParams(
+                    objectId = param.ctx,
+                    space = param.space
+                )
+            )
             .module(RelationAddToObjectModule)
             .build()
     }
@@ -587,6 +611,12 @@ class ComponentManager(
         objectSetComponent
             .get(key = param.ctx, param = param)
             .relationAddToObjectComponent()
+            .withVmParams(
+                vmParams = RelationAddViewModelBase.VmParams(
+                    objectId = param.ctx,
+                    space = param.space
+                )
+            )
             .module(RelationAddToObjectModule)
             .build()
     }
@@ -595,6 +625,12 @@ class ComponentManager(
         objectSetComponent
             .get(key = param.ctx, param = param)
             .relationAddToDataViewComponent()
+            .withVmParams(
+                vmParams = RelationAddViewModelBase.VmParams(
+                    objectId = param.ctx,
+                    space = param.space
+                )
+            )
             .module(RelationAddToDataViewModule)
             .build()
     }
@@ -1069,16 +1105,8 @@ class ComponentManager(
                 .build()
         }
 
-    val discussionComponent = ComponentMapWithParam { params: DiscussionViewModel.Params ->
-        DaggerDiscussionComponent
-            .builder()
-            .withDependencies(findComponentDependencies())
-            .withParams(params)
-            .build()
-    }
-
-    val spaceLevelChatComponent = ComponentMapWithParam { params: DiscussionViewModel.Params ->
-        DaggerSpaceLevelChatComponent
+    val chatComponent = ComponentMapWithParam { params: ChatViewModel.Params.Default ->
+        DaggerChatComponent
             .builder()
             .withDependencies(findComponentDependencies())
             .withParams(params)

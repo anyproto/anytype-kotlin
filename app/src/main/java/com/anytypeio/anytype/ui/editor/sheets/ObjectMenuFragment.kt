@@ -55,7 +55,8 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
             isFavorite: Boolean,
             isLocked: Boolean,
             fromName: String?,
-            isTemplate: Boolean
+            isTemplate: Boolean,
+            isReadOnly: Boolean
         ) = bundleOf(
             CTX_KEY to ctx,
             SPACE_KEY to space,
@@ -63,7 +64,8 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
             IS_FAVORITE_KEY to isFavorite,
             IS_LOCKED_KEY to isLocked,
             FROM_NAME to fromName,
-            IS_TEMPLATE_KEY to isTemplate
+            IS_TEMPLATE_KEY to isTemplate,
+            IS_READ_ONLY_KEY to isReadOnly
         )
     }
 }

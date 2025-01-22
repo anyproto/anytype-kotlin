@@ -108,13 +108,14 @@ class ObjectMenuViewModel(
         isArchived: Boolean,
         isFavorite: Boolean,
         isTemplate: Boolean,
-        isLocked: Boolean
+        isLocked: Boolean,
+        isReadOnly: Boolean
     ): List<ObjectAction> = buildList {
 
         val wrapper = ObjectWrapper.Basic(storage.details.current().details[ctx]?.map.orEmpty())
         val layout = wrapper.layout
 
-        if (isLocked) {
+        if (isReadOnly) {
             add(ObjectAction.COPY_LINK)
             add(ObjectAction.SEARCH_ON_PAGE)
             if (layout in fileLayouts) {

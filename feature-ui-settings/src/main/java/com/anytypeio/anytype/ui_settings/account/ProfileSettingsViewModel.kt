@@ -7,29 +7,23 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.account.DeleteAccount
-import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.icon.RemoveObjectIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
-import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
-import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEvent
-import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.profile.AccountProfile
-import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,7 +42,8 @@ class ProfileSettingsViewModel(
     private val setImageIcon: SetDocumentImageIcon,
     private val membershipProvider: MembershipProvider,
     private val getNetworkMode: GetNetworkMode,
-    private val profileContainer: ProfileSubscriptionManager
+    private val profileContainer: ProfileSubscriptionManager,
+    private val removeObjectIcon: RemoveObjectIcon
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -150,6 +145,27 @@ class ProfileSettingsViewModel(
         }
     }
 
+    fun onClearProfileImage() {
+        viewModelScope.launch {
+            val config = configStorage.getOrNull()
+            if (config != null) {
+                val params = RemoveObjectIcon.Params(objectId = config.profile)
+                removeObjectIcon.async(
+                    params = params
+                ).fold(
+                    onFailure = {
+                        Timber.e("Error while removing profile image")
+                    },
+                    onSuccess = {
+                        // do nothing
+                    }
+                )
+            } else {
+                Timber.e("Missing config while trying to unset profile image")
+            }
+        }
+    }
+
     class Factory(
         private val analytics: Analytics,
         private val container: StorelessSubscriptionContainer,
@@ -159,7 +175,8 @@ class ProfileSettingsViewModel(
         private val setDocumentImageIcon: SetDocumentImageIcon,
         private val membershipProvider: MembershipProvider,
         private val getNetworkMode: GetNetworkMode,
-        private val profileSubscriptionManager: ProfileSubscriptionManager
+        private val profileSubscriptionManager: ProfileSubscriptionManager,
+        private val removeObjectIcon: RemoveObjectIcon
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -172,7 +189,8 @@ class ProfileSettingsViewModel(
                 setImageIcon = setDocumentImageIcon,
                 membershipProvider = membershipProvider,
                 getNetworkMode = getNetworkMode,
-                profileContainer = profileSubscriptionManager
+                profileContainer = profileSubscriptionManager,
+                removeObjectIcon = removeObjectIcon
             ) as T
         }
     }

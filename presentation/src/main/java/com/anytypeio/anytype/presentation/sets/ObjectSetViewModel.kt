@@ -1252,7 +1252,7 @@ class ObjectSetViewModel(
                     space = space,
                     isArchived = state.details[vmParams.ctx]?.isArchived ?: false,
                     isFavorite = state.details[vmParams.ctx]?.isFavorite ?: false,
-                    isLocked = !isOwnerOrEditor
+                    isReadOnly = !isOwnerOrEditor
                 )
             )
         } else {

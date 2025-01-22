@@ -180,9 +180,10 @@ class ObjectSetMenuViewModel(
         isArchived: Boolean,
         isFavorite: Boolean,
         isTemplate: Boolean,
-        isLocked: Boolean
+        isLocked: Boolean,
+        isReadOnly: Boolean
     ): List<ObjectAction> = buildList {
-        if (!isLocked) {
+        if (!isReadOnly) {
             if (isArchived) {
                 add(ObjectAction.RESTORE)
             } else {

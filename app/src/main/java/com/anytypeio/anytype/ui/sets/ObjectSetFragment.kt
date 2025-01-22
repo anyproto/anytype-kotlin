@@ -1001,7 +1001,8 @@ open class ObjectSetFragment :
                         ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
                         ObjectMenuBaseFragment.IS_LOCKED_KEY to false,
                         ObjectMenuBaseFragment.FROM_NAME to title.text.toString(),
-                        ObjectMenuBaseFragment.IS_LOCKED_KEY to command.isLocked
+                        ObjectMenuBaseFragment.IS_LOCKED_KEY to command.isReadOnly,
+                        ObjectMenuBaseFragment.IS_READ_ONLY_KEY to command.isReadOnly
                     )
                 )
             }

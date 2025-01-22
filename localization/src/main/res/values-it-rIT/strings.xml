@@ -45,6 +45,8 @@
     <string name="default_space">Spazio d\'ingresso</string>
     <string name="space_settings_apply_random_gradient">Applica colore tinta unita casuale</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
+    <string name="profile_settings_apply_upload_image">Upload image</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">Puoi archiviare gratuitamente fino a %1$s di file personali sul nostro nodo di backup crittografato. Se raggiungi il limite, i file verranno archiviati solo localmente.</string>
     <string name="in_order_to_save">Per risparmiare spazio sul tuo dispositivo locale, puoi liberare tutti i tuoi file trasferendoli al nostro nodo di backup criptato. I file verranno ricaricati quando li apri</string>

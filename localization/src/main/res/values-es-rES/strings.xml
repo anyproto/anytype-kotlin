@@ -45,6 +45,8 @@
     <string name="default_space">Espacio inicial</string>
     <string name="space_settings_apply_random_gradient">Aplicar color sólido aleatorio</string>
     <string name="space_settings_apply_upload_image">Cargar una imagen</string>
+    <string name="profile_settings_apply_upload_image">Cargar una imagen</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">Eliminar espacio</string>
     <string name="you_can_store">Puedes almacenar gratuitamente hasta %1$s de archivos en nuestro nodo de respaldo cifrado. Si llegas al límite, los archivos se almacenarán solo localmente.</string>
     <string name="in_order_to_save">Para ahorrar espacio en tu dispositivo local, puedes guardar todos tus archivos en nuestro nodo de respaldo cifrado. Los archivos se cargarán de nuevo cuando los abras.</string>

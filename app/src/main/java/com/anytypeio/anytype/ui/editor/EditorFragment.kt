@@ -854,10 +854,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.permission.onEach { permission ->
             if (hasBinding) {
                 if (permission?.isOwnerOrEditor() == true) {
-                    binding.topToolbar.setIsReadOnly(false)
                     binding.bottomToolbar.setIsReadOnly(false)
                 } else {
-                    binding.topToolbar.setIsReadOnly(true)
                     binding.bottomToolbar.setIsReadOnly(true)
                 }
             }

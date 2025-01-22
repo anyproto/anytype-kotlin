@@ -59,6 +59,7 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
@@ -73,7 +74,7 @@ fun ProfileSettingsScreen(
     isLogoutInProgress: Boolean,
     onNameChange: (String) -> Unit,
     onProfileIconClick: () -> Unit,
-    account: ProfileSettingsViewModel.AccountProfile,
+    account: AccountProfile,
     onAppearanceClicked: () -> Unit,
     onDataManagementClicked: () -> Unit,
     onAboutClicked: () -> Unit,
@@ -269,12 +270,12 @@ fun ActionWithProgressBar(
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
-    account: ProfileSettingsViewModel.AccountProfile,
+    account: AccountProfile,
     onProfileIconClick: () -> Unit,
     onNameSet: (String) -> Unit
 ) {
     when (account) {
-        is ProfileSettingsViewModel.AccountProfile.Data -> {
+        is AccountProfile.Data -> {
             Box(modifier = modifier.padding(vertical = 6.dp)) {
                 Dragger()
             }
@@ -290,7 +291,7 @@ private fun Header(
             }
             ProfileNameBlock(name = account.name, onNameSet = onNameSet)
         }
-        is ProfileSettingsViewModel.AccountProfile.Idle -> {}
+        is AccountProfile.Idle -> {}
     }
 }
 
@@ -448,7 +449,7 @@ private fun ProfileSettingPreview() {
         isLogoutInProgress = false,
         onNameChange = {},
         onProfileIconClick = {},
-        account = ProfileSettingsViewModel.AccountProfile.Data(
+        account = AccountProfile.Data(
             "Walter",
             icon = ProfileIconView.Placeholder("Walter")
         ),

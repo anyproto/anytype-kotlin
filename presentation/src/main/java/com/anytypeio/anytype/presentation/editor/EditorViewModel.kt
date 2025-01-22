@@ -1573,7 +1573,7 @@ class EditorViewModel(
                         space = space,
                         isArchived = details[context]?.isArchived ?: false,
                         isFavorite = details[context]?.isFavorite ?: false,
-                        isLocked = mode == EditorMode.Locked,
+                        isLocked = mode == EditorMode.Locked || mode == EditorMode.Read,
                         isTemplate = isObjectTemplate()
                     )
                 )

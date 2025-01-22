@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui_settings.account
 
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,7 +8,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,7 +41,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -55,7 +52,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.anytypeio.anytype.core_ui.foundation.Arrow
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Option
@@ -409,7 +405,7 @@ fun ProfileImageBlock(
     onProfileIconClick: () -> Unit,
     clearProfileImage: () -> Unit
 ) {
-    val isSpaceIconMenuExpanded = remember {
+    val isIconMenuExpanded = remember {
         mutableStateOf(false)
     }
 
@@ -425,7 +421,7 @@ fun ProfileImageBlock(
                     .size(96.dp)
                     .clip(RoundedCornerShape(48.dp))
                     .noRippleClickable {
-                        isSpaceIconMenuExpanded.value = !isSpaceIconMenuExpanded.value
+                        isIconMenuExpanded.value = !isIconMenuExpanded.value
                     }
             )
         }
@@ -459,10 +455,10 @@ fun ProfileImageBlock(
         shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))
     ) {
         DropdownMenu(
-            expanded = isSpaceIconMenuExpanded.value,
+            expanded = isIconMenuExpanded.value,
             offset = DpOffset(x = 0.dp, y = 6.dp),
             onDismissRequest = {
-                isSpaceIconMenuExpanded.value = false
+                isIconMenuExpanded.value = false
             }
         ) {
             if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
@@ -473,7 +469,7 @@ fun ProfileImageBlock(
                 DropdownMenuItem(
                     onClick = {
                         onProfileIconClick.invoke()
-                        isSpaceIconMenuExpanded.value = false
+                        isIconMenuExpanded.value = false
                     },
                 ) {
                     Text(
@@ -485,7 +481,7 @@ fun ProfileImageBlock(
             }
             DropdownMenuItem(
                 onClick = {
-                    isSpaceIconMenuExpanded.value = false
+                    isIconMenuExpanded.value = false
                     clearProfileImage.invoke()
                 },
             ) {

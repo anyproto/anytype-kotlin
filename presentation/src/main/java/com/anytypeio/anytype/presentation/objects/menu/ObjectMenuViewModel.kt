@@ -122,7 +122,6 @@ class ObjectMenuViewModel(
                 add(ObjectAction.DOWNLOAD_FILE)
             }
         } else {
-
             if (!isTemplate) {
                 if (isFavorite) {
                     add(ObjectAction.REMOVE_FROM_FAVOURITE)

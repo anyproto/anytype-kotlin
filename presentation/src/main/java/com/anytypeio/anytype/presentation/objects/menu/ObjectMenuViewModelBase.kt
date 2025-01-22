@@ -124,7 +124,9 @@ abstract class ObjectMenuViewModelBase(
             isReadOnly = isReadOnly
         )
         jobs += viewModelScope.launch {
-            menuOptionsProvider.provide(ctx, isLocked).collect(_options)
+            menuOptionsProvider
+                .provide(ctx = ctx, isLocked = isLocked, isReadOnly = isReadOnly)
+                .collect(_options)
         }
     }
 

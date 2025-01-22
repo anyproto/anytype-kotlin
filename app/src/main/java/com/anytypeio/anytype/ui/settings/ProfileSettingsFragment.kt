@@ -119,7 +119,8 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                                     findNavController().navigate(R.id.spaceListScreen)
                                 }
                             }
-                        )
+                        ),
+                        clearProfileImage = { vm.onClearProfileImage() }
                     )
                 }
             }

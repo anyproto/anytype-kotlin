@@ -45,6 +45,8 @@
     <string name="default_space">Espace d\'entrée</string>
     <string name="space_settings_apply_random_gradient">Appliquer une couleur solide aléatoire</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
+    <string name="profile_settings_apply_upload_image">Upload image</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">Supprimer l\'espace</string>
     <string name="you_can_store">Vous pouvez stocker gratuitement jusqu\'à %1$s de vos fichiers sur notre nœud de sauvegarde chiffré. Si vous atteignez la limite, les fichiers ne seront stockés que localement.</string>
     <string name="in_order_to_save">Afin d\'économiser de l\'espace sur votre appareil, vous pouvez décharger tous vos fichiers vers notre nœud de sauvegarde chiffré. Les fichiers seront rechargés lorsque vous les ouvrirez.</string>

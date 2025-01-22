@@ -118,7 +118,8 @@ abstract class ObjectMenuViewModelBase(
             ctx = ctx,
             isArchived = isArchived,
             isFavorite = isFavorite,
-            isTemplate = isTemplate
+            isTemplate = isTemplate,
+            isLocked = isLocked
         )
         jobs += viewModelScope.launch {
             menuOptionsProvider.provide(ctx, isLocked).collect(_options)
@@ -131,7 +132,8 @@ abstract class ObjectMenuViewModelBase(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isTemplate: Boolean = false
+        isTemplate: Boolean = false,
+        isLocked: Boolean
     ): List<ObjectAction>
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {

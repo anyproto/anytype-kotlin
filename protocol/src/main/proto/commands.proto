@@ -703,6 +703,7 @@ message Rpc {
                 NetworkMode networkMode = 6; // optional, default is DefaultConfig
                 string networkCustomConfigFilePath = 7; // config path for the custom network mode            }
                 bool preferYamuxTransport = 8; // optional, default is false, recommended in case of problems with QUIC transport
+                string jsonApiListenAddr = 9; // optional, if empty json api will not be started; 127.0.0.1:31009 should be the default one
             }
             /**
             * Middleware-to-front-end response for an account creation request, that can contain a NULL error and created account or a non-NULL error and an empty account
@@ -824,6 +825,7 @@ message Rpc {
                 NetworkMode networkMode = 4; // optional, default is DefaultConfig
                 string networkCustomConfigFilePath = 5; // config path for the custom network mode
                 bool preferYamuxTransport = 6; // optional, default is false, recommended in case of problems with QUIC transport
+                string jsonApiListenAddr = 7; // optional, if empty json api will not be started; 127.0.0.1:31009 should be the default one
             }
 
             /**
@@ -1033,6 +1035,28 @@ message Rpc {
 
         }
 
+        message ChangeJsonApiAddr {
+            message Request {
+                string listenAddr = 1; // make sure to use 127.0.0.1:x to not listen on all interfaces; recommended value is 127.0.0.1:31009
+            }
+            message Response {
+                Error error = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        ACCOUNT_IS_NOT_RUNNING = 4;
+                    }
+                }
+            }
+
+        }
+
         message ChangeNetworkConfigAndRestart {
             message Request {
                 NetworkMode networkMode = 1;
@@ -1073,6 +1097,7 @@ message Rpc {
                 message Request {
                     option (no_auth) = true;
                     string appName = 1; // just for info, not secure to rely on
+                    model.Account.Auth.LocalApiScope scope = 2;
                 }
 
                 message Response {
@@ -7851,8 +7876,6 @@ message Rpc {
         }
     }
 }
-
-
 
 message Empty {
 

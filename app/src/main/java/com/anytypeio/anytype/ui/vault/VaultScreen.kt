@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.vault
 
 import android.content.res.Configuration
+import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -75,6 +76,7 @@ import com.anytypeio.anytype.ui.sharing.SharingData
 import com.anytypeio.anytype.ui.widgets.types.gradient
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.request.RequestListener
 
 
 @Composable
@@ -209,39 +211,42 @@ fun VaultScreenToolbar(
                         .padding(start = 16.dp)
                         .size(28.dp)
                 ) {
-                    val nameFirstChar = if (profile.name.isEmpty()) {
-                        stringResource(id = com.anytypeio.anytype.ui_settings.R.string.account_default_name)
-                    } else {
-                        profile.name.first().uppercaseChar().toString()
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(CircleShape)
-                            .background(colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_tertiary))
-                            .noRippleClickable {
-                                onSettingsClicked()
+                    when(val icon = profile.icon) {
+                        is ProfileIconView.Image -> {
+                            GlideImage(
+                                model = icon.url,
+                                contentDescription = "Custom image profile",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                            )
+                        }
+                        else -> {
+                            val nameFirstChar = if (profile.name.isEmpty()) {
+                                stringResource(id = com.anytypeio.anytype.ui_settings.R.string.account_default_name)
+                            } else {
+                                profile.name.first().uppercaseChar().toString()
                             }
-                    ) {
-                        Text(
-                            text = nameFirstChar,
-                            style = MaterialTheme.typography.h3.copy(
-                                color = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_white),
-                                fontSize = 20.sp
-                            ),
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                    val icon = profile.icon
-                    if (icon is ProfileIconView.Image) {
-                        GlideImage(
-                            model = icon.url,
-                            contentDescription = "Custom image profile",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape)
-                        )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                                    .background(colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_tertiary))
+                                    .noRippleClickable {
+                                        onSettingsClicked()
+                                    }
+                            ) {
+                                Text(
+                                    text = nameFirstChar,
+                                    style = MaterialTheme.typography.h3.copy(
+                                        color = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_white),
+                                        fontSize = 20.sp
+                                    ),
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
                     }
                 }
             }

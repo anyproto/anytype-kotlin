@@ -7,7 +7,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 sealed class ProfileIconView {
     object Loading : ProfileIconView()
     data class Placeholder(val name: String?) : ProfileIconView()
-    data class Emoji(val unicode: String) : ProfileIconView()
     data class Image(val url: Url) : ProfileIconView()
 }
 

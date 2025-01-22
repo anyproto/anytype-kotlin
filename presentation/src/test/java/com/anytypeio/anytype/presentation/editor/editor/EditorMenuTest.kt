@@ -101,7 +101,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isLocked = false,
                 isTemplate = false,
                 space = defaultSpace,
-                ctx = root
+                ctx = root,
+                isReadOnly = false
             )
         }
     }
@@ -156,6 +157,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isArchived = false,
                 isFavorite = false,
                 isLocked = false,
+                isReadOnly = false,
                 isTemplate = false,
                 space = space,
                 ctx = root
@@ -236,6 +238,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
             value.peekContent() == Command.OpenDocumentMenu(
                 isFavorite = false,
                 isLocked = false,
+                isReadOnly = false,
                 isArchived = false,
                 isTemplate = false,
                 space = space,

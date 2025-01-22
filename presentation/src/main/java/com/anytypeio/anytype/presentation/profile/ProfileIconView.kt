@@ -20,3 +20,11 @@ fun ObjectWrapper.Basic.profileIcon(builder: UrlBuilder): ProfileIconView = when
         name = name?.trim()?.ifEmpty { null }
     )
 }
+
+sealed class AccountProfile {
+    data object Idle: AccountProfile()
+    class Data(
+        val name: String,
+        val icon: ProfileIconView
+    ): AccountProfile()
+}

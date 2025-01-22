@@ -28,6 +28,7 @@ import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEven
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import kotlinx.coroutines.Job
@@ -147,14 +148,6 @@ class ProfileSettingsViewModel(
                 Timber.e("Missing config while trying to set profile image")
             }
         }
-    }
-
-    sealed class AccountProfile {
-        data object Idle: AccountProfile()
-        class Data(
-            val name: String,
-            val icon: ProfileIconView
-        ): AccountProfile()
     }
 
     class Factory(

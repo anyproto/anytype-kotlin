@@ -642,7 +642,8 @@ class HomeScreenViewModel(
                 .withLatestFrom(spaceManager.observe()) { dispatch, config ->
                     when (dispatch) {
                         is WidgetDispatchEvent.SourcePicked.Default -> {
-                            if (dispatch.sourceLayout == ObjectType.Layout.DATE.code) {
+                            if (dispatch.sourceLayout == ObjectType.Layout.DATE.code ||
+                                dispatch.sourceLayout == ObjectType.Layout.PARTICIPANT.code) {
                                 proceedWithCreatingWidget(
                                     ctx = config.widgets,
                                     source = dispatch.source,

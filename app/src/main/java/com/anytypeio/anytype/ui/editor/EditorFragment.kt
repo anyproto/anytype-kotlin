@@ -1009,6 +1009,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                                 isArchived = command.isArchived,
                                 isFavorite = command.isFavorite,
                                 isLocked = command.isLocked,
+                                isReadOnly = command.isReadOnly,
                                 fromName = getFrom(),
                                 isTemplate = command.isTemplate
                             )

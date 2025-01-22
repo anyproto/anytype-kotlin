@@ -31,9 +31,14 @@ class ObjectMenuOptionsProviderImpl(
             ObjectWrapper.Basic(fields.map).layout
         }
 
-    override fun provide(ctx: Id, isLocked: Boolean): Flow<Options> {
+    override fun provide(ctx: Id, isLocked: Boolean, isReadOnly: Boolean): Flow<Options> {
         return combine(observeLayout(ctx), restrictions) { layout, restrictions ->
-            createOptions(layout, restrictions, isLocked)
+            createOptions(
+                layout = layout,
+                restrictions = restrictions,
+                isLocked = isLocked,
+                isReadOnly = isReadOnly
+            )
         }
     }
 
@@ -41,10 +46,11 @@ class ObjectMenuOptionsProviderImpl(
         layout: ObjectType.Layout?,
         restrictions: List<ObjectRestriction>,
         isLocked: Boolean,
+        isReadOnly: Boolean
     ): Options {
-        val hasIcon = !isLocked
-        val hasCover = !isLocked
-        val hasLayout = !isLocked && !restrictions.contains(ObjectRestriction.LAYOUT_CHANGE)
+        val hasIcon = !isLocked && !isReadOnly
+        val hasCover = !isLocked && !isReadOnly
+        val hasLayout = !isLocked && !restrictions.contains(ObjectRestriction.LAYOUT_CHANGE) && !isReadOnly
         val options = if (layout != null) {
             when (layout) {
                 ObjectType.Layout.PARTICIPANT -> Options.ALL.copy(
@@ -72,7 +78,7 @@ class ObjectMenuOptionsProviderImpl(
                         hasCover = hasCover,
                         hasLayout = false,
                         hasDiagnosticsVisibility = true,
-                        hasHistory = !isLocked
+                        hasHistory = !isLocked && !isReadOnly
                     )
                 }
                 ObjectType.Layout.BASIC,
@@ -82,7 +88,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasCover = hasCover,
                     hasLayout = hasLayout,
                     hasDiagnosticsVisibility = true,
-                    hasHistory = !isLocked
+                    hasHistory = !isLocked && !isReadOnly
                 )
                 ObjectType.Layout.TODO -> Options(
                     hasIcon = false,
@@ -90,7 +96,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasLayout = hasLayout,
                     hasRelations = true,
                     hasDiagnosticsVisibility = true,
-                    hasHistory = !isLocked
+                    hasHistory = !isLocked && !isReadOnly
                 )
 
                 ObjectType.Layout.NOTE -> Options(
@@ -99,7 +105,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasLayout = hasLayout,
                     hasRelations = true,
                     hasDiagnosticsVisibility = true,
-                    hasHistory = !isLocked
+                    hasHistory = !isLocked && !isReadOnly
                 )
                 else -> Options.NONE.copy(
                     hasDiagnosticsVisibility = true

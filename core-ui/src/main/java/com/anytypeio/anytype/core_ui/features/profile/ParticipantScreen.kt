@@ -249,7 +249,7 @@ fun ParticipantScreenPreview() {
     ParticipantScreen(
         uiState = UiParticipantScreenState(
             name = "Jetpack Compose",
-            icon = ProfileIconView.Emoji("M"),
+            icon = ProfileIconView.Placeholder("M"),
             identity = "AnyId43",
             description = "some description",
             isOwner = true

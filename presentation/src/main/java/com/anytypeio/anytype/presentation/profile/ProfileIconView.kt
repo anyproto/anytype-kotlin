@@ -7,7 +7,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 sealed class ProfileIconView {
     object Loading : ProfileIconView()
     data class Placeholder(val name: String?) : ProfileIconView()
-    data class Emoji(val unicode: String) : ProfileIconView()
     data class Image(val url: Url) : ProfileIconView()
 }
 
@@ -19,4 +18,12 @@ fun ObjectWrapper.Basic.profileIcon(builder: UrlBuilder): ProfileIconView = when
     else -> ProfileIconView.Placeholder(
         name = name?.trim()?.ifEmpty { null }
     )
+}
+
+sealed class AccountProfile {
+    data object Idle: AccountProfile()
+    class Data(
+        val name: String,
+        val icon: ProfileIconView
+    ): AccountProfile()
 }

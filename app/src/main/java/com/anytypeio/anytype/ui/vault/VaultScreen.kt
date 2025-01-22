@@ -210,6 +210,9 @@ fun VaultScreenToolbar(
                         .align(Alignment.CenterStart)
                         .padding(start = 16.dp)
                         .size(28.dp)
+                        .noRippleClickable {
+                            onSettingsClicked()
+                        }
                 ) {
                     when(val icon = profile.icon) {
                         is ProfileIconView.Image -> {
@@ -233,9 +236,6 @@ fun VaultScreenToolbar(
                                     .fillMaxSize()
                                     .clip(CircleShape)
                                     .background(colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_tertiary))
-                                    .noRippleClickable {
-                                        onSettingsClicked()
-                                    }
                             ) {
                                 Text(
                                     text = nameFirstChar,

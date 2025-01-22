@@ -11,7 +11,8 @@ sealed class ObjectSetCommand {
             val ctx: Id,
             val space: Id,
             val isArchived: Boolean,
-            val isFavorite: Boolean
+            val isFavorite: Boolean,
+            val isLocked: Boolean
         ) : Modal()
 
         data class OpenSettings(

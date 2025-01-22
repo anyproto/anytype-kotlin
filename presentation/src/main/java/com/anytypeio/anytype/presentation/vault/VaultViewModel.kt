@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.GetVaultSettings
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
@@ -34,6 +35,8 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
+import com.anytypeio.anytype.presentation.profile.AccountProfile
+import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
@@ -42,10 +45,13 @@ import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -63,11 +69,23 @@ class VaultViewModel(
     private val analytics: Analytics,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val appActionManager: AppActionManager,
-    private val spaceInviteResolver: SpaceInviteResolver
+    private val spaceInviteResolver: SpaceInviteResolver,
+    private val profileContainer: ProfileSubscriptionManager
 ) : NavigationViewModel<VaultViewModel.Navigation>(), DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
     val commands = MutableSharedFlow<Command>(replay = 0)
+
+    val profileView = profileContainer.observe().map { obj ->
+        AccountProfile.Data(
+            name = obj.name.orEmpty(),
+            icon = obj.profileIcon(urlBuilder)
+        )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(1000L),
+        AccountProfile.Idle
+    )
 
     init {
         Timber.i("VaultViewModel, init")
@@ -343,7 +361,8 @@ class VaultViewModel(
         private val analytics: Analytics,
         private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
         private val appActionManager: AppActionManager,
-        private val spaceInviteResolver: SpaceInviteResolver
+        private val spaceInviteResolver: SpaceInviteResolver,
+        private val profileContainer: ProfileSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -361,7 +380,8 @@ class VaultViewModel(
             analytics = analytics,
             deepLinkToObjectDelegate = deepLinkToObjectDelegate,
             appActionManager = appActionManager,
-            spaceInviteResolver = spaceInviteResolver
+            spaceInviteResolver = spaceInviteResolver,
+            profileContainer = profileContainer
         ) as T
     }
 

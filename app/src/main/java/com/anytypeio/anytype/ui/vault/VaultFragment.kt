@@ -57,7 +57,8 @@ class VaultFragment : BaseComposeFragment() {
                     onSpaceClicked = vm::onSpaceClicked,
                     onCreateSpaceClicked = vm::onCreateSpaceClicked,
                     onSettingsClicked = vm::onSettingsClicked,
-                    onOrderChanged = vm::onOrderChanged
+                    onOrderChanged = vm::onOrderChanged,
+                    profile = vm.profileView.collectAsStateWithLifecycle().value
                 )
             }
             LaunchedEffect(Unit) {

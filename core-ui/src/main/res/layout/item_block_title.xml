@@ -52,21 +52,24 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageIcon"
-        android:layout_width="108dp"
-        android:layout_height="108dp"
+        tools:src="@drawable/a123"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxHeight="443dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="15dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         android:layout_marginTop="51dp"
         android:adjustViewBounds="true"
         android:background="@color/shape_tertiary"
-        android:padding="4dp"
         android:transitionName="@string/logo_transition"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:shapeAppearance="@style/TitleImageAppearanceOverlay"
         app:strokeColor="@color/background_primary"
         app:strokeWidth="4dp"
-        tools:visibility="gone" />
+        tools:visibility="visible" />
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
@@ -76,7 +79,7 @@
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         app:ignoreDragAndDrop="true"
-        android:layout_marginTop="@dimen/dp_32"
+        android:layout_marginTop="@dimen/dp_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barrier"

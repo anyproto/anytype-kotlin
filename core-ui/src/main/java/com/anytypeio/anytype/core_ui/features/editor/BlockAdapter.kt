@@ -1339,7 +1339,8 @@ class BlockAdapter(
                     bind(
                         item = blocks[position] as BlockView.Title.Basic,
                         onPageIconClicked = onPageIconClicked,
-                        onCoverClicked = onCoverClicked
+                        onCoverClicked = onCoverClicked,
+                        click = onClickListener
                     )
                     setTextInputClickListener {
                         if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
@@ -1356,7 +1357,8 @@ class BlockAdapter(
                     bind(
                         item = blocks[position] as BlockView.Title.Todo,
                         onPageIconClicked = onPageIconClicked,
-                        onCoverClicked = onCoverClicked
+                        onCoverClicked = onCoverClicked,
+                        click = onClickListener
                     )
                     setTextInputClickListener {
                         if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
@@ -1373,7 +1375,8 @@ class BlockAdapter(
                     bind(
                         item = blocks[position] as BlockView.Title.Profile,
                         onProfileIconClicked = onClickListener,
-                        onCoverClicked = onCoverClicked
+                        onCoverClicked = onCoverClicked,
+                        click = onClickListener
                     )
                     setTextInputClickListener {
                         if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {

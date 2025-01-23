@@ -88,7 +88,6 @@ fun HomeScreen(
     onSearchClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
-    onBackClicked: () -> Unit,
     onShareButtonClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
@@ -96,8 +95,7 @@ fun HomeScreen(
     onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateObjectInsideWidget: (Id) -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
-    onBackLongClicked: () -> Unit
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
 ) {
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -157,8 +155,6 @@ fun HomeScreen(
         ) {
             BottomNavigationMenu(
                 modifier = Modifier,
-                backClick = onBackClicked,
-                backLongClick = onBackLongClicked,
                 searchClick = onSearchClicked,
                 addDocClick = onCreateNewObjectClicked,
                 addDocLongClick = onCreateNewObjectLongClicked,

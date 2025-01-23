@@ -38,8 +38,6 @@ import com.anytypeio.anytype.presentation.profile.ProfileIconView
 @Composable
 private fun MyBottomNavigationMenu() {
     BottomNavigationMenu(
-        backClick = {},
-        backLongClick = {},
         searchClick = {},
         addDocClick = {},
         addDocLongClick = {},
@@ -51,8 +49,6 @@ private fun MyBottomNavigationMenu() {
 @Composable
 private fun MyBottomViewerNavigationMenu() {
     BottomNavigationMenu(
-        backClick = {},
-        backLongClick = {},
         searchClick = {},
         addDocClick = {},
         addDocLongClick = {},
@@ -63,8 +59,6 @@ private fun MyBottomViewerNavigationMenu() {
 @Composable
 fun BottomNavigationMenu(
     modifier: Modifier = Modifier,
-    backClick: () -> Unit = {},
-    backLongClick: () -> Unit = {},
     onShareButtonClicked: () -> Unit = {},
     searchClick: () -> Unit = {},
     addDocClick: () -> Unit = {},
@@ -88,7 +82,10 @@ fun BottomNavigationMenu(
         MenuItem(
             modifier = Modifier.width(72.dp).height(52.dp),
             contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
-            res = BottomNavigationItem.MEMBERS.res,
+            res = if (isOwnerOrEditor)
+                BottomNavigationItem.ADD_MEMBERS.res
+            else
+                BottomNavigationItem.MEMBERS.res,
             onClick = onShareButtonClicked
         )
         MenuItem(

@@ -176,9 +176,6 @@ class HomeScreenFragment : BaseComposeFragment(),
             onCreateNewObjectLongClicked = throttledClick(
                 onClick = { vm.onCreateNewObjectLongClicked() }
             ),
-            onBackClicked = throttledClick(
-                onClick = { vm.onBackClicked(isSpaceRootScreen()) }
-            ),
             onSpaceWidgetClicked = throttledClick(
                 onClick = vm::onSpaceSettingsClicked
             ),
@@ -189,7 +186,6 @@ class HomeScreenFragment : BaseComposeFragment(),
             onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
             onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
             onCreateDataViewObject = vm::onCreateDataViewObject,
-            onBackLongClicked = vm::onBackLongClicked,
             onShareButtonClicked = vm::onSpaceShareIconClicked
         )
     }

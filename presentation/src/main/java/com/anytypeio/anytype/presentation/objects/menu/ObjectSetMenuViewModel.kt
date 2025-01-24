@@ -179,24 +179,31 @@ class ObjectSetMenuViewModel(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isTemplate: Boolean
+        isTemplate: Boolean,
+        isLocked: Boolean,
+        isReadOnly: Boolean
     ): List<ObjectAction> = buildList {
-        if (isArchived) {
-            add(ObjectAction.RESTORE)
-        } else {
-            add(ObjectAction.DELETE)
+        if (!isReadOnly) {
+            if (isArchived) {
+                add(ObjectAction.RESTORE)
+            } else {
+                add(ObjectAction.DELETE)
+            }
+            if (isFavorite) {
+                add(ObjectAction.REMOVE_FROM_FAVOURITE)
+            } else {
+                add(ObjectAction.ADD_TO_FAVOURITE)
+            }
+            add(ObjectAction.CREATE_WIDGET)
+            val dataViewState = objectState.value.dataViewState()
+            if (dataViewState != null && !dataViewState.objectRestrictions.contains(
+                    ObjectRestriction.DUPLICATE
+                )
+            ) {
+                add(ObjectAction.DUPLICATE)
+            }
+            add(ObjectAction.LINK_TO)
         }
-        if (isFavorite) {
-            add(ObjectAction.REMOVE_FROM_FAVOURITE)
-        } else {
-            add(ObjectAction.ADD_TO_FAVOURITE)
-        }
-        add(ObjectAction.CREATE_WIDGET)
-        val dataViewState = objectState.value.dataViewState()
-        if (dataViewState != null && !dataViewState.objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
-            add(ObjectAction.DUPLICATE)
-        }
-        add(ObjectAction.LINK_TO)
         add(ObjectAction.COPY_LINK)
     }
 

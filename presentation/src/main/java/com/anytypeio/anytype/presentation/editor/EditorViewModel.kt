@@ -247,6 +247,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.*
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
@@ -1553,6 +1554,9 @@ class EditorViewModel(
             sendToast("Space not found")
             return
         }
+        val isReadOnly = permission.value == null
+                || permission.value == SpaceMemberPermissions.NO_PERMISSIONS
+                || permission.value == SpaceMemberPermissions.READER
         when {
             isTemplate -> {
                 dispatch(
@@ -1562,7 +1566,8 @@ class EditorViewModel(
                         isArchived = false,
                         isFavorite = false,
                         isLocked = false,
-                        isTemplate = true
+                        isTemplate = true,
+                        isReadOnly = isReadOnly
                     )
                 )
             }
@@ -1574,6 +1579,7 @@ class EditorViewModel(
                         isArchived = details[context]?.isArchived ?: false,
                         isFavorite = details[context]?.isFavorite ?: false,
                         isLocked = mode == EditorMode.Locked,
+                        isReadOnly = isReadOnly,
                         isTemplate = isObjectTemplate()
                     )
                 )

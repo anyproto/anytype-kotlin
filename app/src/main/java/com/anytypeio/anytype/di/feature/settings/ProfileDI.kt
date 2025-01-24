@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugSpace
+import com.anytypeio.anytype.domain.icon.RemoveObjectIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -54,7 +55,8 @@ object ProfileModule {
         setDocumentImageIcon: SetDocumentImageIcon,
         membershipProvider: MembershipProvider,
         getNetworkMode: GetNetworkMode,
-        profileSubscriptionManager: ProfileSubscriptionManager
+        profileSubscriptionManager: ProfileSubscriptionManager,
+        removeObjectIcon: RemoveObjectIcon
     ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
         analytics = analytics,
         container = storelessSubscriptionContainer,
@@ -64,7 +66,8 @@ object ProfileModule {
         setDocumentImageIcon = setDocumentImageIcon,
         membershipProvider = membershipProvider,
         getNetworkMode = getNetworkMode,
-        profileSubscriptionManager = profileSubscriptionManager
+        profileSubscriptionManager = profileSubscriptionManager,
+        removeObjectIcon = removeObjectIcon
     )
 
     @Provides
@@ -82,6 +85,13 @@ object ProfileModule {
         dispatchers = dispatchers,
         spaceManager = spaceManager
     )
+
+    @Provides
+    @PerScreen
+    fun provideRemoveObjectIcon(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): RemoveObjectIcon = RemoveObjectIcon(repo, dispatchers)
 
     @JvmStatic
     @PerScreen

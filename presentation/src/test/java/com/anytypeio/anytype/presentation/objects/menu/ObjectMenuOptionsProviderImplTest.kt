@@ -119,9 +119,14 @@ class ObjectMenuOptionsProviderImplTest {
     private fun assertOptions(
         expected: ObjectMenuOptionsProvider.Options,
         isLocked: Boolean = false,
+        isReadOnly: Boolean = false
     ) {
         runTest {
-            provider.provide(objectId, isLocked).test {
+            provider.provide(
+                objectId,
+                isLocked = isLocked,
+                isReadOnly = isReadOnly
+            ).test {
                 assertEquals(
                     expected = expected,
                     actual = awaitItem()

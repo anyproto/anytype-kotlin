@@ -539,10 +539,8 @@ open class ObjectSetFragment :
         }
         lifecycleScope.subscribe(vm.permission.filterNotNull()) { permission ->
             if (permission.isOwnerOrEditor()) {
-                binding.topToolbar.ivThreeDots.visible()
                 binding.bottomToolbar.setIsReadOnly(false)
             } else {
-                binding.topToolbar.ivThreeDots.invisible()
                 binding.bottomToolbar.setIsReadOnly(true)
             }
         }
@@ -1002,7 +1000,9 @@ open class ObjectSetFragment :
                         ObjectMenuBaseFragment.IS_ARCHIVED_KEY to command.isArchived,
                         ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
                         ObjectMenuBaseFragment.IS_LOCKED_KEY to false,
-                        ObjectMenuBaseFragment.FROM_NAME to title.text.toString()
+                        ObjectMenuBaseFragment.FROM_NAME to title.text.toString(),
+                        ObjectMenuBaseFragment.IS_LOCKED_KEY to command.isReadOnly,
+                        ObjectMenuBaseFragment.IS_READ_ONLY_KEY to command.isReadOnly
                     )
                 )
             }

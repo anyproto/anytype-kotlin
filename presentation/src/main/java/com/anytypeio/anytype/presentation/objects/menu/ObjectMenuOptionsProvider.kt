@@ -33,5 +33,5 @@ interface ObjectMenuOptionsProvider {
         }
     }
 
-    fun provide(ctx: Id, isLocked: Boolean): Flow<Options>
+    fun provide(ctx: Id, isLocked: Boolean, isReadOnly: Boolean): Flow<Options>
 }

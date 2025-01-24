@@ -43,7 +43,7 @@ private fun NavBarPreviewOwner() {
         searchClick = {},
         addDocClick = {},
         addDocLongClick = {},
-        state = NavPanelState(
+        state = NavPanelState.Default(
             isCreateObjectButtonEnabled = true,
             leftButtonState = NavPanelState.LeftButtonState.AddMembers(
                 isActive = true
@@ -59,7 +59,7 @@ private fun NavBarPreviewReader() {
         searchClick = {},
         addDocClick = {},
         addDocLongClick = {},
-        state = NavPanelState(
+        state = NavPanelState.Default(
             isCreateObjectButtonEnabled = false,
             leftButtonState = NavPanelState.LeftButtonState.ViewMembers
         )
@@ -147,7 +147,7 @@ fun BottomNavigationMenu(
 
 @Composable
 fun BottomNavigationMenu(
-    state: NavPanelState.Default,
+    state: NavPanelState,
     modifier: Modifier = Modifier,
     onShareButtonClicked: () -> Unit = {},
     searchClick: () -> Unit = {},
@@ -168,30 +168,43 @@ fun BottomNavigationMenu(
             .noRippleClickable { },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        when(state.leftButtonState) {
-            is NavPanelState.LeftButtonState.AddMembers -> {
-                MenuItem(
-                    modifier = Modifier
-                        .width(72.dp)
-                        .height(52.dp),
-                    contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
-                    res = BottomNavigationItem.ADD_MEMBERS.res,
-                    onClick = onShareButtonClicked
-                )
+        if (state is NavPanelState.Default) {
+            when (state.leftButtonState) {
+                is NavPanelState.LeftButtonState.AddMembers -> {
+                    MenuItem(
+                        modifier = Modifier
+                            .width(72.dp)
+                            .height(52.dp),
+                        contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
+                        res = BottomNavigationItem.ADD_MEMBERS.res,
+                        onClick = onShareButtonClicked
+                    )
+                }
+
+                is NavPanelState.LeftButtonState.Comment -> {
+                    // TODO
+                }
+
+                NavPanelState.LeftButtonState.ViewMembers -> {
+                    MenuItem(
+                        modifier = Modifier
+                            .width(72.dp)
+                            .height(52.dp),
+                        contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
+                        res = BottomNavigationItem.MEMBERS.res,
+                        onClick = onShareButtonClicked
+                    )
+                }
             }
-            is NavPanelState.LeftButtonState.Comment -> {
-                // TODO
-            }
-            NavPanelState.LeftButtonState.ViewMembers -> {
-                MenuItem(
-                    modifier = Modifier
-                        .width(72.dp)
-                        .height(52.dp),
-                    contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
-                    res = BottomNavigationItem.MEMBERS.res,
-                    onClick = onShareButtonClicked
-                )
-            }
+        } else {
+            MenuItem(
+                modifier = Modifier
+                    .width(72.dp)
+                    .height(52.dp),
+                contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
+                res = BottomNavigationItem.MEMBERS.res,
+                onClick = onShareButtonClicked
+            )
         }
         MenuItem(
             modifier = Modifier
@@ -206,10 +219,14 @@ fun BottomNavigationMenu(
                 .width(72.dp)
                 .height(52.dp)
                 .alpha(
-                    if (state.isCreateObjectButtonEnabled)
-                        1.0f
-                    else
+                    if (state is NavPanelState.Default) {
+                        if (state.isCreateObjectButtonEnabled)
+                            1.0f
+                        else
+                            0.5f
+                    } else {
                         0.5f
+                    }
                 )
             ,
             contentDescription = stringResource(id = R.string.main_navigation_content_desc_create_button),

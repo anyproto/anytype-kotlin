@@ -186,7 +186,8 @@ class HomeScreenFragment : BaseComposeFragment(),
             onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
             onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
             onCreateDataViewObject = vm::onCreateDataViewObject,
-            onShareButtonClicked = vm::onSpaceShareIconClicked
+            onShareButtonClicked = vm::onSpaceShareIconClicked,
+            navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value
         )
     }
 

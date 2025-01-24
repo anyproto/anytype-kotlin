@@ -45,6 +45,8 @@
     <string name="default_space">Spazio d\'ingresso</string>
     <string name="space_settings_apply_random_gradient">Applica colore tinta unita casuale</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
+    <string name="profile_settings_apply_upload_image">Upload image</string>
+    <string name="profile_settings_remove_image">Rimuovi immagine</string>
     <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">Puoi archiviare gratuitamente fino a %1$s di file personali sul nostro nodo di backup crittografato. Se raggiungi il limite, i file verranno archiviati solo localmente.</string>
     <string name="in_order_to_save">Per risparmiare spazio sul tuo dispositivo locale, puoi liberare tutti i tuoi file trasferendoli al nostro nodo di backup criptato. I file verranno ricaricati quando li apri</string>
@@ -1229,7 +1231,7 @@
     <string name="multiplayer_collaborate_step_1">1. Tocca il widget Spazio per accedere alle impostazioni</string>
     <string name="multiplayer_collaborate_step_2">2. Apri sezione Condividi</string>
     <string name="multiplayer_collaborate_step_3">3. Genera un link di invito e condividilo</string>
-    <string name="profile_view_edit_button">Edit Profile</string>
+    <string name="profile_view_edit_button">Modifica il Profilo</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d membro</item>
         <item quantity="other">%1$d membri</item>
@@ -1557,7 +1559,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_unlinked_description">Oggetti non collegati che non hanno un collegamento diretto o un backlink con altri oggetti nel grafo.</string>
     <string name="all_content_snackbar_title">spostato nel cestino</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
-    <string name="main_navigation_content_desc_members_button">Share and members button</string>
+    <string name="main_navigation_content_desc_members_button">Condividi e il pulsante membri</string>
     <string name="main_navigation_content_desc_search_button">Pulsante cerca oggetti</string>
     <string name="main_navigation_content_desc_create_button">Pulsante crea oggetti</string>
     <string name="chat">Chat</string>

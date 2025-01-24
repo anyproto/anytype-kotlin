@@ -45,6 +45,8 @@
     <string name="default_space">Ruang bawaan</string>
     <string name="space_settings_apply_random_gradient">Beri warna polos acak</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
+    <string name="profile_settings_apply_upload_image">Upload image</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">Hapus ruang</string>
     <string name="you_can_store">Kamu bisa menyimpan berkasmu hingga %1$s di simpul cadangan terenkripsi kami secara gratis. Jika melewati batas, berkasmu hanya akan disimpan secara lokal.</string>
     <string name="in_order_to_save">Untuk menghemat penyimpanan ruang pada perangkat lokal, anda dapat melepaskan semua berkas ke simpul cadangan terenkripsi kami. Berkas - berkas akan diunduh kembali saat kamu membuka mereka. </string>

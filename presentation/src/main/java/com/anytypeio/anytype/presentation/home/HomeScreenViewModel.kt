@@ -366,38 +366,7 @@ class HomeScreenViewModel(
 
         viewModelScope.launch {
             userPermissions
-                .map { permission ->
-                    when(permission) {
-                        SpaceMemberPermissions.READER -> {
-                            NavPanelState.Default(
-                                isCreateObjectButtonEnabled = false,
-                                leftButtonState = NavPanelState.LeftButtonState.ViewMembers
-                            )
-                        }
-                        SpaceMemberPermissions.WRITER -> {
-                            NavPanelState.Default(
-                                isCreateObjectButtonEnabled = true,
-                                leftButtonState = NavPanelState.LeftButtonState.ViewMembers
-                            )
-                        }
-                        SpaceMemberPermissions.OWNER -> {
-                            NavPanelState.Default(
-                                isCreateObjectButtonEnabled = true,
-                                leftButtonState = NavPanelState.LeftButtonState.AddMembers(
-                                    isActive = true
-                                )
-                            )
-                        }
-                        SpaceMemberPermissions.NO_PERMISSIONS -> {
-                            NavPanelState.Default(
-                                isCreateObjectButtonEnabled = false,
-                                leftButtonState = NavPanelState.LeftButtonState.ViewMembers
-                            )
-                        }
-                        else -> {
-                            NavPanelState.Init
-                        }
-                    }
+                .map { permission -> NavPanelState.fromPermission(permission)
                 }.collect {
                     navPanelState.value = it
                 }

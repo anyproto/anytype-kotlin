@@ -77,9 +77,13 @@ fun SpaceHeader(
                 }
             )
             MaterialTheme(
-                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))
+                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp))
             ) {
                 DropdownMenu(
+                    modifier = Modifier
+                        .background(
+                            shape = RoundedCornerShape(10.dp),
+                            color = colorResource(id = R.color.background_secondary)),
                     expanded = isSpaceIconMenuExpanded.value,
                     offset = DpOffset(x = 0.dp, y = 6.dp),
                     onDismissRequest = {

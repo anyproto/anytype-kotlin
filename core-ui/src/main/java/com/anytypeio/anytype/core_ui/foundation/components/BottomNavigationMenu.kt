@@ -147,7 +147,7 @@ fun BottomNavigationMenu(
 
 @Composable
 fun BottomNavigationMenu(
-    state: NavPanelState,
+    state: NavPanelState.Default,
     modifier: Modifier = Modifier,
     onShareButtonClicked: () -> Unit = {},
     searchClick: () -> Unit = {},

@@ -89,6 +89,7 @@ import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendSelectHomeTabEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -186,7 +187,6 @@ class HomeScreenViewModel(
     private val analytics: Analytics,
     private val getWidgetSession: GetWidgetSession,
     private val saveWidgetSession: SaveWidgetSession,
-    private val spaceGradientProvider: SpaceGradientProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectWatcher: ObjectWatcher,
     private val spaceManager: SpaceManager,
@@ -250,6 +250,8 @@ class HomeScreenViewModel(
     private val userPermissions = MutableStateFlow<SpaceMemberPermissions?>(null)
 
     val hasEditAccess = userPermissions.map { it?.isOwnerOrEditor() == true }
+
+    val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
 
     private val widgetObjectPipeline = spaceManager
         .observe()
@@ -361,6 +363,45 @@ class HomeScreenViewModel(
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
+
+        viewModelScope.launch {
+            userPermissions
+                .map { permission ->
+                    when(permission) {
+                        SpaceMemberPermissions.READER -> {
+                            NavPanelState.Default(
+                                isCreateObjectButtonEnabled = false,
+                                leftButtonState = NavPanelState.LeftButtonState.ViewMembers
+                            )
+                        }
+                        SpaceMemberPermissions.WRITER -> {
+                            NavPanelState.Default(
+                                isCreateObjectButtonEnabled = true,
+                                leftButtonState = NavPanelState.LeftButtonState.ViewMembers
+                            )
+                        }
+                        SpaceMemberPermissions.OWNER -> {
+                            NavPanelState.Default(
+                                isCreateObjectButtonEnabled = true,
+                                leftButtonState = NavPanelState.LeftButtonState.AddMembers(
+                                    isActive = true
+                                )
+                            )
+                        }
+                        SpaceMemberPermissions.NO_PERMISSIONS -> {
+                            NavPanelState.Default(
+                                isCreateObjectButtonEnabled = false,
+                                leftButtonState = NavPanelState.LeftButtonState.ViewMembers
+                            )
+                        }
+                        else -> {
+                            NavPanelState.Init
+                        }
+                    }
+                }.collect {
+                    navPanelState.value = it
+                }
+        }
     }
 
     private fun proceedWithViewStatePipeline() {
@@ -2261,7 +2302,6 @@ class HomeScreenViewModel(
             analytics = analytics,
             getWidgetSession = getWidgetSession,
             saveWidgetSession = saveWidgetSession,
-            spaceGradientProvider = spaceGradientProvider,
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
             objectWatcher = objectWatcher,

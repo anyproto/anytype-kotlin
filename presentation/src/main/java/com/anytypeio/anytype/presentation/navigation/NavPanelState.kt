@@ -1,9 +1,14 @@
 package com.anytypeio.anytype.presentation.navigation
 
-class NavPanelState(
-    val isCreateObjectButtonEnabled: Boolean,
-    val leftButtonState: LeftButtonState
-) {
+sealed class NavPanelState {
+
+    data object Init : NavPanelState()
+
+    data class Default(
+        val isCreateObjectButtonEnabled: Boolean,
+        val leftButtonState: LeftButtonState
+    ) : NavPanelState()
+
     sealed class LeftButtonState {
         data object ViewMembers : LeftButtonState()
         data class AddMembers(val isActive: Boolean): LeftButtonState()

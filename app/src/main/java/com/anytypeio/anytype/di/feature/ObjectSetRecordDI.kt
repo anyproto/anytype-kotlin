@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.di.feature;
 
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordViewModel
 import com.anytypeio.anytype.ui.sets.modals.SetObjectSetRecordNameFragment
 import dagger.Module
@@ -26,7 +26,7 @@ object ObjectSetRecordModule {
     @Provides
     @ObjectSetRecordScope
     fun provideObjectSetRecordViewModelFactory(
-        setObjectDetails: UpdateDetail
+        setObjectDetails: SetObjectDetails
     ): ObjectSetRecordViewModel.Factory = ObjectSetRecordViewModel.Factory(
         setObjectDetails = setObjectDetails,
     )

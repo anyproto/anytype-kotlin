@@ -304,7 +304,7 @@ class SpaceSettingsViewModel(
     }
 
     private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) : Boolean {
-        return spaceView.spaceAccessType != null && spaceView.spaceAccessType != SpaceAccessType.DEFAULT
+        return spaceView.spaceAccessType != null
     }
 
     fun onAddMoreSpacesClicked() {

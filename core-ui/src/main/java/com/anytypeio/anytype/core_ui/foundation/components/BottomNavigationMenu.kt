@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
@@ -32,7 +33,39 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults.Height
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
+
+@DefaultPreviews
+@Composable
+private fun NavBarPreviewOwner() {
+    BottomNavigationMenu(
+        searchClick = {},
+        addDocClick = {},
+        addDocLongClick = {},
+        state = NavPanelState(
+            isCreateObjectButtonEnabled = true,
+            leftButtonState = NavPanelState.LeftButtonState.AddMembers(
+                isActive = true
+            )
+        )
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun NavBarPreviewReader() {
+    BottomNavigationMenu(
+        searchClick = {},
+        addDocClick = {},
+        addDocLongClick = {},
+        state = NavPanelState(
+            isCreateObjectButtonEnabled = false,
+            leftButtonState = NavPanelState.LeftButtonState.ViewMembers
+        )
+    )
+}
+
 
 @DefaultPreviews
 @Composable
@@ -80,7 +113,9 @@ fun BottomNavigationMenu(
         verticalAlignment = Alignment.CenterVertically
     ) {
         MenuItem(
-            modifier = Modifier.width(72.dp).height(52.dp),
+            modifier = Modifier
+                .width(72.dp)
+                .height(52.dp),
             contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
             res = if (isOwnerOrEditor)
                 BottomNavigationItem.ADD_MEMBERS.res
@@ -89,20 +124,99 @@ fun BottomNavigationMenu(
             onClick = onShareButtonClicked
         )
         MenuItem(
-            modifier = Modifier.width(72.dp).height(52.dp),
+            modifier = Modifier
+                .width(72.dp)
+                .height(52.dp),
             contentDescription = stringResource(id = R.string.main_navigation_content_desc_search_button),
             res = BottomNavigationItem.SEARCH.res,
             onClick = searchClick
         )
         if (isOwnerOrEditor) {
             MenuItem(
-                modifier = Modifier.width(72.dp).height(52.dp),
+                modifier = Modifier
+                    .width(72.dp)
+                    .height(52.dp),
                 contentDescription = stringResource(id = R.string.main_navigation_content_desc_create_button),
                 res = BottomNavigationItem.ADD_DOC.res,
                 onClick = addDocClick,
                 onLongClick = addDocLongClick
             )
         }
+    }
+}
+
+@Composable
+fun BottomNavigationMenu(
+    state: NavPanelState,
+    modifier: Modifier = Modifier,
+    onShareButtonClicked: () -> Unit = {},
+    searchClick: () -> Unit = {},
+    addDocClick: () -> Unit = {},
+    addDocLongClick: () -> Unit = {}
+) {
+    Row(
+        modifier = modifier
+            .height(Height)
+            .wrapContentWidth()
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.home_screen_toolbar_button)
+            )
+            /**
+             * Workaround for clicks through the bottom navigation menu.
+             */
+            .noRippleClickable { },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        when(state.leftButtonState) {
+            is NavPanelState.LeftButtonState.AddMembers -> {
+                MenuItem(
+                    modifier = Modifier
+                        .width(72.dp)
+                        .height(52.dp),
+                    contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
+                    res = BottomNavigationItem.ADD_MEMBERS.res,
+                    onClick = onShareButtonClicked
+                )
+            }
+            is NavPanelState.LeftButtonState.Comment -> {
+                // TODO
+            }
+            NavPanelState.LeftButtonState.ViewMembers -> {
+                MenuItem(
+                    modifier = Modifier
+                        .width(72.dp)
+                        .height(52.dp),
+                    contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
+                    res = BottomNavigationItem.MEMBERS.res,
+                    onClick = onShareButtonClicked
+                )
+            }
+        }
+        MenuItem(
+            modifier = Modifier
+                .width(72.dp)
+                .height(52.dp),
+            contentDescription = stringResource(id = R.string.main_navigation_content_desc_search_button),
+            res = BottomNavigationItem.SEARCH.res,
+            onClick = searchClick
+        )
+        MenuItem(
+            modifier = Modifier
+                .width(72.dp)
+                .height(52.dp)
+                .alpha(
+                    if (state.isCreateObjectButtonEnabled)
+                        1.0f
+                    else
+                        0.5f
+                )
+            ,
+            contentDescription = stringResource(id = R.string.main_navigation_content_desc_create_button),
+            res = BottomNavigationItem.ADD_DOC.res,
+            onClick = addDocClick,
+            onLongClick = addDocLongClick
+        )
     }
 }
 

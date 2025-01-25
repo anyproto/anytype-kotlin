@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_ui.databinding.WidgetMainBottomToolbarBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
 
 class MainBottomToolbar @JvmOverloads constructor(
     context: Context,
@@ -38,7 +39,7 @@ class MainBottomToolbar @JvmOverloads constructor(
                         if (left.isActive) {
                             binding.icShare.alpha = 1f
                         } else {
-                            binding.icShare.alpha = 0.5f
+                            binding.icShare.alpha = DEFAULT_DISABLED_ALPHA
                         }
                     }
                     is NavPanelState.LeftButtonState.Comment -> {
@@ -55,7 +56,7 @@ class MainBottomToolbar @JvmOverloads constructor(
                     binding.icAddDoc.alpha = 1f
                     binding.btnAddDoc.isEnabled = true
                 } else {
-                    binding.icAddDoc.alpha = 0.5f
+                    binding.icAddDoc.alpha = DEFAULT_DISABLED_ALPHA
                     binding.btnAddDoc.isEnabled = false
                 }
             }

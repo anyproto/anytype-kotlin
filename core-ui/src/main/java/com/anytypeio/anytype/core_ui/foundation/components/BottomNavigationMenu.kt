@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults.Height
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -223,9 +224,9 @@ fun BottomNavigationMenu(
                         if (state.isCreateObjectButtonEnabled)
                             1.0f
                         else
-                            0.5f
+                            DEFAULT_DISABLED_ALPHA
                     } else {
-                        0.5f
+                        DEFAULT_DISABLED_ALPHA
                     }
                 )
             ,
@@ -271,65 +272,6 @@ private fun MenuItem(
             )
     )
 }
-
-@Composable
-private fun ProfileMenuItem(
-    icon: ProfileIconView,
-    onClick: () -> Unit = {}
-) {
-    when (icon) {
-        is ProfileIconView.Image -> {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = icon.url,
-                    error = painterResource(id = R.drawable.ic_home_widget_space)
-                ),
-                contentDescription = "Custom image profile",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(28.dp)
-                    .clip(CircleShape)
-                    .noRippleClickable { onClick() }
-            )
-        }
-
-        is ProfileIconView.Placeholder -> {
-            val name = icon.name
-            val nameFirstChar = if (name.isNullOrEmpty()) {
-                stringResource(id = R.string.account_default_name)
-            } else {
-                name.first().uppercaseChar().toString()
-            }
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(colorResource(id = R.color.shape_primary))
-                    .noRippleClickable { onClick() }
-            ) {
-                Text(
-                    text = nameFirstChar,
-                    style = MaterialTheme.typography.h3.copy(
-                        color = colorResource(id = R.color.text_white),
-                        fontSize = 12.sp
-                    ),
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-        }
-
-        else -> {
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .clip(CircleShape)
-                    .background(colorResource(id = R.color.shape_primary))
-                    .noRippleClickable { onClick() }
-            )
-        }
-    }
-}
-
 
 private enum class BottomNavigationItem(@DrawableRes val res: Int) {
     BACK(R.drawable.ic_nav_panel_back),

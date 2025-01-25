@@ -108,7 +108,6 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
@@ -363,10 +362,14 @@ class HomeScreenViewModel(
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
+        proceedWithNavPanelState()
+    }
 
+    private fun proceedWithNavPanelState() {
         viewModelScope.launch {
             userPermissions
-                .map { permission -> NavPanelState.fromPermission(permission)
+                .map { permission ->
+                    NavPanelState.fromPermission(permission)
                 }.collect {
                     navPanelState.value = it
                 }

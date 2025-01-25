@@ -148,8 +148,8 @@ fun ScreenContent(
                     searchClick = onSearchClicked,
                     addDocClick = { vm.onAddClicked(null) },
                     addDocLongClick = onCreateObjectLongClicked,
-                    isOwnerOrEditor = uiState.isActionButtonVisible,
-                    onShareButtonClicked = vm::onShareButtonClicked
+                    onShareButtonClicked = vm::onShareButtonClicked,
+                    state = vm.navPanelState.collectAsStateWithLifecycle().value
                 )
             }
         }

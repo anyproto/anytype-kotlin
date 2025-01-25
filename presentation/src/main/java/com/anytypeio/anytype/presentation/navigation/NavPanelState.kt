@@ -23,7 +23,7 @@ sealed class NavPanelState {
                 SpaceMemberPermissions.READER -> {
                     Default(
                         isCreateObjectButtonEnabled = false,
-                        leftButtonState = NavPanelState.LeftButtonState.ViewMembers
+                        leftButtonState = LeftButtonState.ViewMembers
                     )
                 }
                 SpaceMemberPermissions.WRITER -> {

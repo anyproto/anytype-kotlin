@@ -493,7 +493,7 @@ fun ProfileImageBlock(
                 Text(
                     text = stringResource(R.string.profile_settings_remove_image),
                     style = BodyRegular,
-                    color = colorResource(id = R.color.palette_dark_red)
+                    color = colorResource(id = R.color.text_primary)
                 )
             }
         }

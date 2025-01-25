@@ -61,6 +61,7 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.ui_settings.R
@@ -452,9 +453,13 @@ fun ProfileImageBlock(
         }
     }
     MaterialTheme(
-        shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))
+        shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp))
     ) {
         DropdownMenu(
+            modifier = Modifier
+                .background(
+                    shape = RoundedCornerShape(10.dp),
+                    color = colorResource(id = R.color.background_secondary)),
             expanded = isIconMenuExpanded.value,
             offset = DpOffset(x = 0.dp, y = 6.dp),
             onDismissRequest = {
@@ -462,10 +467,6 @@ fun ProfileImageBlock(
             }
         ) {
             if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
-                androidx.compose.material.Divider(
-                    thickness = 0.5.dp,
-                    color = colorResource(id = R.color.shape_primary)
-                )
                 DropdownMenuItem(
                     onClick = {
                         onProfileIconClick.invoke()
@@ -479,6 +480,10 @@ fun ProfileImageBlock(
                     )
                 }
             }
+            Divider(
+                paddingStart = 0.dp,
+                paddingEnd = 0.dp,
+            )
             DropdownMenuItem(
                 onClick = {
                     isIconMenuExpanded.value = false
@@ -488,14 +493,14 @@ fun ProfileImageBlock(
                 Text(
                     text = stringResource(R.string.profile_settings_remove_image),
                     style = BodyRegular,
-                    color = colorResource(id = R.color.text_primary)
+                    color = colorResource(id = R.color.palette_dark_red)
                 )
             }
         }
     }
 }
 
-@Preview
+@DefaultPreviews
 @Composable
 private fun ProfileSettingPreview() {
     ProfileSettingsScreen(

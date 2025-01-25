@@ -53,8 +53,10 @@ class MainBottomToolbar @JvmOverloads constructor(
                 }
                 if (state.isCreateObjectButtonEnabled) {
                     binding.icAddDoc.alpha = 1f
+                    binding.btnAddDoc.isEnabled = true
                 } else {
                     binding.icAddDoc.alpha = 0.5f
+                    binding.btnAddDoc.isEnabled = false
                 }
             }
             NavPanelState.Init -> {

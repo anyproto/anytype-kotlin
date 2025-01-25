@@ -232,7 +232,8 @@ fun BottomNavigationMenu(
             contentDescription = stringResource(id = R.string.main_navigation_content_desc_create_button),
             res = BottomNavigationItem.ADD_DOC.res,
             onClick = addDocClick,
-            onLongClick = addDocLongClick
+            onLongClick = addDocLongClick,
+            enabled = (state is NavPanelState.Default && state.isCreateObjectButtonEnabled)
         )
     }
 }
@@ -243,7 +244,8 @@ private fun MenuItem(
     contentDescription: String,
     @DrawableRes res: Int,
     onClick: () -> Unit = {},
-    onLongClick: () -> Unit = {}
+    onLongClick: () -> Unit = {},
+    enabled: Boolean = true
 ) {
     val haptic = LocalHapticFeedback.current
     Image(
@@ -251,15 +253,22 @@ private fun MenuItem(
         contentDescription = contentDescription,
         contentScale = ContentScale.Inside,
         modifier = modifier
-            .noRippleCombinedClickable(
-            onClick = onClick,
-            onLongClicked = {
-                haptic.performHapticFeedback(
-                    HapticFeedbackType.LongPress
-                )
-                onLongClick()
-            }
-        )
+            .then(
+                if (enabled) {
+                    Modifier
+                        .noRippleCombinedClickable(
+                            onClick = onClick,
+                            onLongClicked = {
+                                haptic.performHapticFeedback(
+                                    HapticFeedbackType.LongPress
+                                )
+                                onLongClick()
+                            }
+                        )
+                } else {
+                    Modifier
+                }
+            )
     )
 }
 

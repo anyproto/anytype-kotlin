@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -160,7 +161,7 @@ fun ShareInviteLinkCard(
                 size = ButtonSize.Large,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
+                    .wrapContentHeight()
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
@@ -175,7 +176,7 @@ fun ShareInviteLinkCard(
                 size = ButtonSize.Large,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
+                    .wrapContentHeight()
             )
         }
         Spacer(modifier = Modifier.height(20.dp))

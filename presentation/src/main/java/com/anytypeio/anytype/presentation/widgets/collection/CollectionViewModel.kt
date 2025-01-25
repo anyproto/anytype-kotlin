@@ -117,25 +117,7 @@ class CollectionViewModel(
 
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
-    init {
-        Timber.i("CollectionViewModel, init, spaceId:${vmParams.spaceId.id}")
-        proceedWithObservingPermissions()
-        proceedWithNavPanelState()
-        val externalChannelEvents: Flow<Payload> = spaceManager
-            .observe()
-            .flatMapLatest { config ->
-                val params = InterceptEvents.Params(config.home)
-                interceptEvents.build(params).map {
-                    Payload(
-                        context = config.home,
-                        events = it
-                    )
-                }
-            }
-
-        val internalChannelEvents = objectPayloadDispatcher.flow()
-        payloads = merge(externalChannelEvents, internalChannelEvents)
-    }
+    val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
 
     val commands = MutableSharedFlow<Command>()
 
@@ -149,8 +131,6 @@ class CollectionViewModel(
 
     private var actionMode: ActionMode = ActionMode.Edit
     private var subscription: Subscription = Subscription.None
-
-    val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
 
     val uiState: StateFlow<Resultat<CollectionUiState>> =
         combine(interactionMode, views, operationInProgress) { mode, views, operationInProgress ->
@@ -182,6 +162,26 @@ class CollectionViewModel(
             started = SharingStarted.WhileSubscribed(),
             initialValue = Resultat.loading()
         )
+
+    init {
+        Timber.i("CollectionViewModel, init, spaceId:${vmParams.spaceId.id}")
+        proceedWithObservingPermissions()
+        proceedWithNavPanelState()
+        val externalChannelEvents: Flow<Payload> = spaceManager
+            .observe()
+            .flatMapLatest { config ->
+                val params = InterceptEvents.Params(config.home)
+                interceptEvents.build(params).map {
+                    Payload(
+                        context = config.home,
+                        events = it
+                    )
+                }
+            }
+
+        val internalChannelEvents = objectPayloadDispatcher.flow()
+        payloads = merge(externalChannelEvents, internalChannelEvents)
+    }
 
     private fun proceedWithObservingPermissions() {
         viewModelScope.launch {

@@ -6,6 +6,9 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.ResultInteractor
+import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -28,9 +31,8 @@ class ObjectSetRecordViewModelTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     @Mock
-    lateinit var setObjectDetails: UpdateDetail
+    lateinit var setObjectDetails: SetObjectDetails
 
-    private val ctx: Id = MockDataFactory.randomUuid()
     private val defaultSpace = MockDataFactory.randomUuid()
     private val obj = ObjectWrapper.Basic(
         mapOf(
@@ -53,10 +55,11 @@ class ObjectSetRecordViewModelTest {
 
         val input = MockDataFactory.randomString()
 
-        val params = UpdateDetail.Params(
-            target = obj.id,
-            key = Relations.NAME,
-            value = input
+        val params = SetObjectDetails.Params(
+            ctx = obj.id,
+            details = mapOf(
+                Relations.NAME to input
+            )
         )
 
         stubSetObjectDetails(params)
@@ -70,7 +73,7 @@ class ObjectSetRecordViewModelTest {
         )
 
         verifyBlocking(setObjectDetails, times(1)) {
-            invoke(params)
+            async(params)
         }
     }
 
@@ -81,10 +84,11 @@ class ObjectSetRecordViewModelTest {
 
         val input = MockDataFactory.randomString()
 
-        val params = UpdateDetail.Params(
-            target = obj.id,
-            key = Relations.NAME,
-            value = input
+        val params = SetObjectDetails.Params(
+            ctx = obj.id,
+            details = mapOf(
+                Relations.NAME to input
+            )
         )
 
         stubSetObjectDetails(params)
@@ -109,7 +113,7 @@ class ObjectSetRecordViewModelTest {
         }
 
         verifyBlocking(setObjectDetails, times(1)) {
-            invoke(params)
+            async(params)
         }
     }
 
@@ -120,10 +124,11 @@ class ObjectSetRecordViewModelTest {
 
         val emptyInput = ""
 
-        val params = UpdateDetail.Params(
-            target = obj.id,
-            key = Relations.NAME,
-            value = emptyInput
+        val params = SetObjectDetails.Params(
+            ctx = obj.id,
+            details = mapOf(
+                Relations.NAME to emptyInput
+            )
         )
 
         stubSetObjectDetails(params)
@@ -155,7 +160,7 @@ class ObjectSetRecordViewModelTest {
     )
 
     private fun stubSetObjectDetails(
-        params: UpdateDetail.Params,
+        params: SetObjectDetails.Params,
         payload: Payload = Payload(
             context = MockDataFactory.randomUuid(),
             events = emptyList()
@@ -163,8 +168,8 @@ class ObjectSetRecordViewModelTest {
     ) {
         setObjectDetails.stub {
             onBlocking {
-                invoke(params)
-            } doReturn Either.Right(payload)
+                async(params)
+            } doReturn Resultat.Success(payload)
         }
     }
 }

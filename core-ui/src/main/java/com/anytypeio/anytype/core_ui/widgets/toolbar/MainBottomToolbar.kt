@@ -32,37 +32,51 @@ class MainBottomToolbar @JvmOverloads constructor(
     fun setState(state: NavPanelState) {
         when(state) {
             is NavPanelState.Default -> {
-                when(val left = state.leftButtonState) {
-                    is NavPanelState.LeftButtonState.AddMembers -> {
-                        binding.icShare.setImageResource(
-                            R.drawable.ic_nav_panel_add_member
-                        )
-                        if (left.isActive) {
-                            binding.icShare.alpha = FULL_ALPHA
-                        } else {
-                            binding.icShare.alpha = DEFAULT_DISABLED_ALPHA
-                        }
-                    }
-                    is NavPanelState.LeftButtonState.Comment -> {
-
-                    }
-                    NavPanelState.LeftButtonState.ViewMembers -> {
-                        binding.icShare.setImageResource(
-                            R.drawable.ic_nav_panel_add_member
-                        )
-                        binding.icShare.alpha = FULL_ALPHA
-                    }
-                }
-                if (state.isCreateObjectButtonEnabled) {
-                    binding.icAddDoc.alpha = FULL_ALPHA
-                    binding.btnAddDoc.isEnabled = true
-                } else {
-                    binding.icAddDoc.alpha = DEFAULT_DISABLED_ALPHA
-                    binding.btnAddDoc.isEnabled = false
-                }
+                setDefaultState(state)
             }
             NavPanelState.Init -> {
                 // Do nothing
+            }
+        }
+    }
+
+    private fun setDefaultState(state: NavPanelState.Default) {
+        setLeftButtonState(state)
+        setCreateButtonState(state)
+    }
+
+    private fun setCreateButtonState(state: NavPanelState.Default) {
+        if (state.isCreateObjectButtonEnabled) {
+            binding.icAddDoc.alpha = FULL_ALPHA
+            binding.btnAddDoc.isEnabled = true
+        } else {
+            binding.icAddDoc.alpha = DEFAULT_DISABLED_ALPHA
+            binding.btnAddDoc.isEnabled = false
+        }
+    }
+
+    private fun setLeftButtonState(state: NavPanelState.Default) {
+        when (val left = state.leftButtonState) {
+            is NavPanelState.LeftButtonState.AddMembers -> {
+                binding.icShare.setImageResource(
+                    R.drawable.ic_nav_panel_add_member
+                )
+                if (left.isActive) {
+                    binding.icShare.alpha = FULL_ALPHA
+                } else {
+                    binding.icShare.alpha = DEFAULT_DISABLED_ALPHA
+                }
+            }
+
+            is NavPanelState.LeftButtonState.Comment -> {
+
+            }
+
+            NavPanelState.LeftButtonState.ViewMembers -> {
+                binding.icShare.setImageResource(
+                    R.drawable.ic_nav_panel_add_member
+                )
+                binding.icShare.alpha = FULL_ALPHA
             }
         }
     }

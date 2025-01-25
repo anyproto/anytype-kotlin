@@ -198,9 +198,6 @@ class HomeScreenViewModelTest {
     lateinit var saveWidgetSession: SaveWidgetSession
 
     @Mock
-    lateinit var spaceGradientProvider: SpaceGradientProvider
-
-    @Mock
     lateinit var getWidgetSession: GetWidgetSession
 
     @Mock
@@ -3036,7 +3033,6 @@ class HomeScreenViewModelTest {
         analytics = analytics,
         getWidgetSession = getWidgetSession,
         saveWidgetSession = saveWidgetSession,
-        spaceGradientProvider = spaceGradientProvider,
         storeOfObjectTypes = storeOfObjectTypes,
         objectWatcher = objectWatcher,
         setWidgetActiveView = setWidgetActiveView,

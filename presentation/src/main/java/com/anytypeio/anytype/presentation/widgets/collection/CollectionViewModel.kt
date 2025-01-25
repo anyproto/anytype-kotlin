@@ -49,6 +49,7 @@ import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.mapFileObjectToView
@@ -119,6 +120,7 @@ class CollectionViewModel(
     init {
         Timber.i("CollectionViewModel, init, spaceId:${vmParams.spaceId.id}")
         proceedWithObservingPermissions()
+        proceedWithNavPanelState()
         val externalChannelEvents: Flow<Payload> = spaceManager
             .observe()
             .flatMapLatest { config ->
@@ -147,6 +149,8 @@ class CollectionViewModel(
 
     private var actionMode: ActionMode = ActionMode.Edit
     private var subscription: Subscription = Subscription.None
+
+    val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
 
     val uiState: StateFlow<Resultat<CollectionUiState>> =
         combine(interactionMode, views, operationInProgress) { mode, views, operationInProgress ->
@@ -185,6 +189,17 @@ class CollectionViewModel(
                 .observe(space = vmParams.spaceId)
                 .collect {
                     permission.value = it
+                }
+        }
+    }
+
+    private fun proceedWithNavPanelState() {
+        viewModelScope.launch {
+            permission
+                .map { permission ->
+                    NavPanelState.fromPermission(permission)
+                }.collect {
+                    navPanelState.value = it
                 }
         }
     }

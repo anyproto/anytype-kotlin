@@ -145,13 +145,11 @@ fun ScreenContent(
                     .align(BottomCenter)
                     .padding(bottom = 20.dp)) {
                 BottomNavigationMenu(
-                    backClick = { vm.onPrevClicked() },
                     searchClick = onSearchClicked,
                     addDocClick = { vm.onAddClicked(null) },
                     addDocLongClick = onCreateObjectLongClicked,
-                    backLongClick = vm::onBackLongClicked,
-                    isOwnerOrEditor = uiState.isActionButtonVisible,
-                    onShareButtonClicked = vm::onShareButtonClicked
+                    onShareButtonClicked = vm::onShareButtonClicked,
+                    state = vm.navPanelState.collectAsStateWithLifecycle().value
                 )
             }
         }

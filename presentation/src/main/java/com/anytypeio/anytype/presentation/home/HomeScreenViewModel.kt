@@ -89,6 +89,7 @@ import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendSelectHomeTabEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -107,7 +108,6 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
@@ -186,7 +186,6 @@ class HomeScreenViewModel(
     private val analytics: Analytics,
     private val getWidgetSession: GetWidgetSession,
     private val saveWidgetSession: SaveWidgetSession,
-    private val spaceGradientProvider: SpaceGradientProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectWatcher: ObjectWatcher,
     private val spaceManager: SpaceManager,
@@ -250,6 +249,8 @@ class HomeScreenViewModel(
     private val userPermissions = MutableStateFlow<SpaceMemberPermissions?>(null)
 
     val hasEditAccess = userPermissions.map { it?.isOwnerOrEditor() == true }
+
+    val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
 
     private val widgetObjectPipeline = spaceManager
         .observe()
@@ -361,6 +362,18 @@ class HomeScreenViewModel(
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
+        proceedWithNavPanelState()
+    }
+
+    private fun proceedWithNavPanelState() {
+        viewModelScope.launch {
+            userPermissions
+                .map { permission ->
+                    NavPanelState.fromPermission(permission)
+                }.collect {
+                    navPanelState.value = it
+                }
+        }
     }
 
     private fun proceedWithViewStatePipeline() {
@@ -2261,7 +2274,6 @@ class HomeScreenViewModel(
             analytics = analytics,
             getWidgetSession = getWidgetSession,
             saveWidgetSession = saveWidgetSession,
-            spaceGradientProvider = spaceGradientProvider,
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
             objectWatcher = objectWatcher,

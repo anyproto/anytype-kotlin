@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.databinding.WidgetMainBottomToolbarBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.gone
-import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
+import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
+import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
 
 class MainBottomToolbar @JvmOverloads constructor(
     context: Context,
@@ -27,13 +29,55 @@ class MainBottomToolbar @JvmOverloads constructor(
     fun addDocClicks() = binding.btnAddDoc.clicks()
     fun shareClicks() = binding.btnShare.clicks()
 
+    fun setState(state: NavPanelState) {
+        when(state) {
+            is NavPanelState.Default -> {
+                setDefaultState(state)
+            }
+            NavPanelState.Init -> {
+                // Do nothing
+            }
+        }
+    }
 
-    fun setIsReadOnly(isReadOnly: Boolean) {
-        with(binding.btnAddDoc) {
-            if (isReadOnly)
-                gone()
-            else
-                visible()
+    private fun setDefaultState(state: NavPanelState.Default) {
+        setLeftButtonState(state)
+        setCreateButtonState(state)
+    }
+
+    private fun setCreateButtonState(state: NavPanelState.Default) {
+        if (state.isCreateObjectButtonEnabled) {
+            binding.icAddDoc.alpha = FULL_ALPHA
+            binding.btnAddDoc.isEnabled = true
+        } else {
+            binding.icAddDoc.alpha = DEFAULT_DISABLED_ALPHA
+            binding.btnAddDoc.isEnabled = false
+        }
+    }
+
+    private fun setLeftButtonState(state: NavPanelState.Default) {
+        when (val left = state.leftButtonState) {
+            is NavPanelState.LeftButtonState.AddMembers -> {
+                binding.icShare.setImageResource(
+                    R.drawable.ic_nav_panel_add_member
+                )
+                if (left.isActive) {
+                    binding.icShare.alpha = FULL_ALPHA
+                } else {
+                    binding.icShare.alpha = DEFAULT_DISABLED_ALPHA
+                }
+            }
+
+            is NavPanelState.LeftButtonState.Comment -> {
+
+            }
+
+            NavPanelState.LeftButtonState.ViewMembers -> {
+                binding.icShare.setImageResource(
+                    R.drawable.ic_nav_panel_add_member
+                )
+                binding.icShare.alpha = FULL_ALPHA
+            }
         }
     }
 }

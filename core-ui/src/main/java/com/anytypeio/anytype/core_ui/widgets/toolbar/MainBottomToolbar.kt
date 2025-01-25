@@ -8,6 +8,8 @@ import com.anytypeio.anytype.core_ui.databinding.WidgetMainBottomToolbarBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
+import com.anytypeio.anytype.core_ui.R
 
 class MainBottomToolbar @JvmOverloads constructor(
     context: Context,
@@ -34,6 +36,42 @@ class MainBottomToolbar @JvmOverloads constructor(
                 gone()
             else
                 visible()
+        }
+    }
+
+    fun setState(state: NavPanelState) {
+        when(state) {
+            is NavPanelState.Default -> {
+                when(val left = state.leftButtonState) {
+                    is NavPanelState.LeftButtonState.AddMembers -> {
+                        binding.icShare.setImageResource(
+                            R.drawable.ic_nav_panel_add_member
+                        )
+                        if (left.isActive) {
+                            binding.icShare.alpha = 1f
+                        } else {
+                            binding.icShare.alpha = 0.5f
+                        }
+                    }
+                    is NavPanelState.LeftButtonState.Comment -> {
+
+                    }
+                    NavPanelState.LeftButtonState.ViewMembers -> {
+                        binding.icShare.setImageResource(
+                            R.drawable.ic_nav_panel_add_member
+                        )
+                        binding.icShare.alpha = 1f
+                    }
+                }
+                if (state.isCreateObjectButtonEnabled) {
+                    binding.icAddDoc.alpha = 1f
+                } else {
+                    binding.icAddDoc.alpha = 0.5f
+                }
+            }
+            NavPanelState.Init -> {
+                // Do nothing
+            }
         }
     }
 }

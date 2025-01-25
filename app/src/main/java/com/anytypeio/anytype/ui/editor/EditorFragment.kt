@@ -861,6 +861,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }.launchIn(lifecycleScope)
 
+        vm.navPanelState.onEach {
+            if (hasBinding) {
+                binding.bottomToolbar.setState(it)
+            }
+        }.launchIn(lifecycleScope)
+
         with(lifecycleScope) {
             launch {
                 vm.actions.collectLatest {

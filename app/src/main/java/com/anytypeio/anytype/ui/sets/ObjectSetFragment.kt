@@ -1295,6 +1295,13 @@ open class ObjectSetFragment :
 
     override fun onStart() {
         super.onStart()
+
+        vm.navPanelState.onEach {
+            if (hasBinding) {
+                binding.bottomToolbar.setState(it)
+            }
+        }.launchIn(lifecycleScope)
+
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header) { header ->
             when(header) {

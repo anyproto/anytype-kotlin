@@ -155,7 +155,8 @@ fun ButtonPrimary(
         ) {
             Text(
                 text = text,
-                style = size.textStyle
+                style = size.textStyle,
+                textAlign = TextAlign.Center
             )
         }
     }

@@ -27,8 +27,7 @@ class ObjectSetRecordViewModel(
 
     override fun onActionDone(target: Id, space: Id, input: String) {
         updateDetails(input, target,
-            onSuccess = { isCompleted.value = true },
-            onFailure = {}
+            successAction = { isCompleted.value = true }
         )
     }
 
@@ -38,8 +37,8 @@ class ObjectSetRecordViewModel(
                 emitOpenObjectCommand(target, space)
             } else {
                 updateDetails(input, target,
-                    onSuccess = { emitOpenObjectCommand(target, space) },
-                    onFailure = { emitOpenObjectCommand(target, space) }
+                    successAction = { emitOpenObjectCommand(target, space) },
+                    failureAction = { emitOpenObjectCommand(target, space) }
                 )
             }
         }
@@ -55,8 +54,8 @@ class ObjectSetRecordViewModel(
 
     private fun updateDetails(
         input: String, target: Id,
-        onSuccess: (suspend () -> Unit)? = null,
-        onFailure: (suspend (Throwable) -> Unit)? = null
+        successAction: (suspend () -> Unit)? = null,
+        failureAction: (suspend (Throwable) -> Unit)? = null
     ) {
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
@@ -66,9 +65,9 @@ class ObjectSetRecordViewModel(
             setObjectDetails.async(params).fold(
                 onFailure = { error ->
                     Timber.e(error, "Error while updating data view record")
-                    onFailure?.invoke(error)
+                    failureAction?.invoke(error)
                 },
-                onSuccess = { onSuccess?.invoke() }
+                onSuccess = { successAction?.invoke() }
             )
         }
     }

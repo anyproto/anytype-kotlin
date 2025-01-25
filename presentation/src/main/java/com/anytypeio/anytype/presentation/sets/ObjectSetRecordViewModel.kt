@@ -22,12 +22,28 @@ class ObjectSetRecordViewModel(
     }
 
     fun onTextChanged(input: String, target: Id) {
-        updateDetails(input, target)
+        updateDetails(
+            input = input,
+            target = target,
+            successAction = {
+                //do nothing
+            },
+            failureAction = {
+                //do nothing
+            }
+        )
     }
 
     override fun onActionDone(target: Id, space: Id, input: String) {
-        updateDetails(input, target,
-            successAction = { isCompleted.value = true }
+        updateDetails(
+            input = input,
+            target = target,
+            successAction = {
+                isCompleted.value = true
+            },
+            failureAction = {
+                //do nothing
+            }
         )
     }
 
@@ -36,7 +52,9 @@ class ObjectSetRecordViewModel(
             if (input.isEmpty()) {
                 emitOpenObjectCommand(target, space)
             } else {
-                updateDetails(input, target,
+                updateDetails(
+                    input = input,
+                    target = target,
                     successAction = { emitOpenObjectCommand(target, space) },
                     failureAction = { emitOpenObjectCommand(target, space) }
                 )

@@ -799,6 +799,8 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    unsupportedViewError.gone()
+                    unsupportedViewError.text = null
                 }
             }
         }

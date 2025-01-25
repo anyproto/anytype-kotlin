@@ -236,8 +236,6 @@ fun AllContentMainScreen(
                     onGlobalSearchClicked = onGlobalSearchClicked,
                     onAddDocClicked = onAddDocClicked,
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
-                    onBackClicked = onBackClicked,
-                    onBackLongClicked = onBackLongClicked,
                     uiBottomMenu = uiBottomMenu,
                     onShareButtonClicked = onShareButtonClicked
                 )
@@ -340,16 +338,12 @@ fun BottomMenu(
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
-    onBackClicked: () -> Unit,
-    onBackLongClicked: () -> Unit,
     onShareButtonClicked: () -> Unit
 ) {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     if (isImeVisible) return
     BottomNavigationMenu(
         modifier = modifier,
-        backClick = onBackClicked,
-        backLongClick = onBackLongClicked,
         searchClick = onGlobalSearchClicked,
         addDocClick = onAddDocClicked,
         addDocLongClick = onCreateObjectLongClicked,

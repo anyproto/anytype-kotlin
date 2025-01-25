@@ -537,13 +537,6 @@ open class ObjectSetFragment :
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
         }
-        lifecycleScope.subscribe(vm.permission.filterNotNull()) { permission ->
-            if (permission.isOwnerOrEditor()) {
-                binding.bottomToolbar.setIsReadOnly(false)
-            } else {
-                binding.bottomToolbar.setIsReadOnly(true)
-            }
-        }
     }
 
     private fun setStatus(status: SpaceSyncAndP2PStatusState?) {
@@ -1297,6 +1290,13 @@ open class ObjectSetFragment :
 
     override fun onStart() {
         super.onStart()
+
+        vm.navPanelState.onEach {
+            if (hasBinding) {
+                binding.bottomToolbar.setState(it)
+            }
+        }.launchIn(lifecycleScope)
+
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header) { header ->
             when(header) {

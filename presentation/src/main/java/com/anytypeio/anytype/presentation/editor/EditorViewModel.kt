@@ -3231,55 +3231,65 @@ class EditorViewModel(
         proceedWithClearingFocus()
         val details = orchestrator.stores.details.current()
         val wrapper = ObjectWrapper.Basic(map = details.details[target]?.map ?: emptyMap())
-        when (wrapper.layout) {
-            ObjectType.Layout.BASIC,
-            ObjectType.Layout.NOTE,
-            ObjectType.Layout.TODO,
-            ObjectType.Layout.BOOKMARK -> {
-                proceedWithOpeningObject(target = target)
-            }
-            in SupportedLayouts.fileLayouts -> {
-                proceedWithOpeningObject(target = target)
-            }
-            ObjectType.Layout.PROFILE -> {
-                val identity = wrapper.getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
-                if (identity != null) {
-                    proceedWithOpeningObject(target = identity)
-                } else {
+        if (wrapper.spaceId != vmParams.space.id) {
+            sendToast("Cannot open object from another space from here.")
+        } else {
+            when (wrapper.layout) {
+                ObjectType.Layout.BASIC,
+                ObjectType.Layout.NOTE,
+                ObjectType.Layout.TODO,
+                ObjectType.Layout.BOOKMARK -> {
                     proceedWithOpeningObject(target = target)
                 }
-            }
-            ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
-                val space = wrapper.spaceId
-                if (space != null) {
-                    proceedWithOpeningDataViewObject(
-                        target = target,
-                        space = SpaceId(checkNotNull(wrapper.spaceId))
+
+                in SupportedLayouts.fileLayouts -> {
+                    proceedWithOpeningObject(target = target)
+                }
+
+                ObjectType.Layout.PROFILE -> {
+                    val identity = wrapper.getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
+                    if (identity != null) {
+                        proceedWithOpeningObject(target = identity)
+                    } else {
+                        proceedWithOpeningObject(target = target)
+                    }
+                }
+
+                ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
+                    val space = wrapper.spaceId
+                    if (space != null) {
+                        proceedWithOpeningDataViewObject(
+                            target = target,
+                            space = SpaceId(checkNotNull(wrapper.spaceId))
+                        )
+                    }
+                }
+
+                ObjectType.Layout.DATE -> {
+                    navigate(
+                        EventWrapper(
+                            OpenDateObject(
+                                objectId = target,
+                                space = vmParams.space.id
+                            )
+                        )
                     )
                 }
-            }
-            ObjectType.Layout.DATE -> {
-                navigate(
-                    EventWrapper(
-                        OpenDateObject(
-                            objectId = target,
-                            space = vmParams.space.id
+
+                ObjectType.Layout.PARTICIPANT -> {
+                    navigate(
+                        EventWrapper(
+                            OpenParticipant(
+                                objectId = target,
+                                space = vmParams.space.id
+                            )
                         )
                     )
-                )
-            }
-            ObjectType.Layout.PARTICIPANT -> {
-                navigate(
-                    EventWrapper(
-                        OpenParticipant(
-                            objectId = target,
-                            space = vmParams.space.id
-                        )
-                    )
-                )
-            }
-            else -> {
-                sendToast("Cannot open object with layout: ${wrapper.layout}")
+                }
+
+                else -> {
+                    sendToast("Cannot open object with layout: ${wrapper.layout}")
+                }
             }
         }
     }

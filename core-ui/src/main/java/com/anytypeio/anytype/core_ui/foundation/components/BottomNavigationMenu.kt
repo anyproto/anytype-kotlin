@@ -31,6 +31,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults.Height
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
@@ -222,7 +223,7 @@ fun BottomNavigationMenu(
                 .alpha(
                     if (state is NavPanelState.Default) {
                         if (state.isCreateObjectButtonEnabled)
-                            1.0f
+                            FULL_ALPHA
                         else
                             DEFAULT_DISABLED_ALPHA
                     } else {

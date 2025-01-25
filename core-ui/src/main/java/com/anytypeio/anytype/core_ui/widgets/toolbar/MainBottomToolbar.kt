@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
+import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
 
 class MainBottomToolbar @JvmOverloads constructor(
     context: Context,
@@ -37,7 +38,7 @@ class MainBottomToolbar @JvmOverloads constructor(
                             R.drawable.ic_nav_panel_add_member
                         )
                         if (left.isActive) {
-                            binding.icShare.alpha = 1f
+                            binding.icShare.alpha = FULL_ALPHA
                         } else {
                             binding.icShare.alpha = DEFAULT_DISABLED_ALPHA
                         }
@@ -49,11 +50,11 @@ class MainBottomToolbar @JvmOverloads constructor(
                         binding.icShare.setImageResource(
                             R.drawable.ic_nav_panel_add_member
                         )
-                        binding.icShare.alpha = 1f
+                        binding.icShare.alpha = FULL_ALPHA
                     }
                 }
                 if (state.isCreateObjectButtonEnabled) {
-                    binding.icAddDoc.alpha = 1f
+                    binding.icAddDoc.alpha = FULL_ALPHA
                     binding.btnAddDoc.isEnabled = true
                 } else {
                     binding.icAddDoc.alpha = DEFAULT_DISABLED_ALPHA

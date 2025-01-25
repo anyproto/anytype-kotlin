@@ -5,11 +5,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
@@ -33,6 +30,7 @@ class ObjectSetRecordViewModelTest {
     @Mock
     lateinit var setObjectDetails: SetObjectDetails
 
+    private val ctx: Id = MockDataFactory.randomUuid()
     private val defaultSpace = MockDataFactory.randomUuid()
     private val obj = ObjectWrapper.Basic(
         mapOf(

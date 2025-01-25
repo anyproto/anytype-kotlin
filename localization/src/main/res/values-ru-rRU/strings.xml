@@ -45,6 +45,8 @@
     <string name="default_space">Пространство входа</string>
     <string name="space_settings_apply_random_gradient">Применить случайный сплошной цвет</string>
     <string name="space_settings_apply_upload_image">Загрузить изображение</string>
+    <string name="profile_settings_apply_upload_image">Загрузить изображение</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">Удалить пространство</string>
     <string name="you_can_store">Вы можете бесплатно хранить до %1$s ваших файлов на нашем узле резервного копирования. При достижении лимита файлы будут храниться только локально.</string>
     <string name="in_order_to_save">Чтобы сохранить место на вашем локальном устройстве, вы можете выгрузить все ваши файлы в наш зашифрованный узел резервного копирования. Файлы будут загружены обратно, когда вы откроете их.</string>
@@ -1236,6 +1238,7 @@
     <string name="multiplayer_collaborate_step_1">1. Нажмите на виджет Пространства, чтобы получить доступ к настройкам</string>
     <string name="multiplayer_collaborate_step_2">2. Откройте раздел «Доступ»</string>
     <string name="multiplayer_collaborate_step_3">3. Создайте ссылку для приглашения и поделитесь ею</string>
+    <string name="profile_view_edit_button">Редактировать профиль</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d участник</item>
         <item quantity="few">%1$d участника</item>
@@ -1584,7 +1587,7 @@
     <string name="all_content_unlinked_description">Непривязанные объекты, не имеющие прямой связи или обратной связи с другими объектами на графике.</string>
     <string name="all_content_snackbar_title">перемещен в корзину</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
-    <string name="main_navigation_content_desc_members_button">Share and members button</string>
+    <string name="main_navigation_content_desc_members_button">Кнопка \"Поделиться\" и \"Участники\"</string>
     <string name="main_navigation_content_desc_search_button">Кнопка поиска объектов</string>
     <string name="main_navigation_content_desc_create_button">Кнопка создания объекта</string>
     <string name="chat">Чат</string>
@@ -1624,7 +1627,7 @@
     <string name="emoji_recently_used_section">Недавно использованные</string>
     <string name="chat_message_reactions_no_reactions_yet">Пока нет реакций</string>
     <string name="chat_message_reactions_no_reactions_message">Возможно, кто-то только что удалил реакцию или случился технический сбой</string>
-    <string name="object_types_human">Human</string>
+    <string name="object_types_human">Человек</string>
     <string name="chats_alert_delete_this_message_description">Его нельзя восстановить после подтверждения</string>
     <string name="chats_alert_delete_this_message">Удалить это сообщение?</string>
 </resources>

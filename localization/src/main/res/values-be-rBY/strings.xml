@@ -45,6 +45,8 @@
     <string name="default_space">Ваша прастора</string>
     <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Загрузіць відарыс</string>
+    <string name="profile_settings_apply_upload_image">Загрузіць відарыс</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">Выдаліць прастору</string>
     <string name="you_can_store">Вы можаце бясплатна захоўваць да %1$s вашых файлаў на нашым зашыфраваным вузле рэзервовага капіравання. Калі вы вычарпаеце ліміт, файлы будуць захоўвацца толькі лакальна.</string>
     <string name="in_order_to_save">Каб зэканоміць месца на лакальнай прыладзе, вы можаце загрузіць усе свае файлы ў наш зашыфраваны вузел рэзервовага капіявання. Файлы будуць загружаны назад, калі вы іх адкрыеце.</string>
@@ -1236,6 +1238,7 @@
     <string name="multiplayer_collaborate_step_1">1. Націсніце віджэт \"Прастора\", каб атрымаць доступ да налад</string>
     <string name="multiplayer_collaborate_step_2">2. Адкрыйце раздзел \"Абагуліць\"</string>
     <string name="multiplayer_collaborate_step_3">3. Стварыце спасылку з запрашэннем і падзяліцеся ёю</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d удзельнік</item>
         <item quantity="few">%1$d удзельнікі</item>

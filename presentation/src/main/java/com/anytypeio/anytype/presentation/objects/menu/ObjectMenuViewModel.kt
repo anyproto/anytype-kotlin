@@ -106,81 +106,91 @@ class ObjectMenuViewModel(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isTemplate: Boolean
+        isTemplate: Boolean,
+        isLocked: Boolean,
+        isReadOnly: Boolean
     ): List<ObjectAction> = buildList {
 
         val wrapper = _currentObject
         val layout = wrapper?.layout
 
-        if (!isTemplate) {
-            if (isFavorite) {
-                add(ObjectAction.REMOVE_FROM_FAVOURITE)
-            } else {
-                add(ObjectAction.ADD_TO_FAVOURITE)
+        if (isReadOnly) {
+            add(ObjectAction.COPY_LINK)
+            add(ObjectAction.SEARCH_ON_PAGE)
+            if (layout in fileLayouts) {
+                add(ObjectAction.DOWNLOAD_FILE)
             }
-        }
-
-        if (isArchived) {
-            add(ObjectAction.RESTORE)
         } else {
-            if (objectRestrictions.none { it == ObjectRestriction.DELETE }) {
-                add(ObjectAction.DELETE)
+            if (!isTemplate) {
+                if (isFavorite) {
+                    add(ObjectAction.REMOVE_FROM_FAVOURITE)
+                } else {
+                    add(ObjectAction.ADD_TO_FAVOURITE)
+                }
             }
-        }
 
-        if (!isTemplate && !systemLayouts.contains(layout) && !fileLayouts.contains(layout)) {
-            add(ObjectAction.CREATE_WIDGET)
-        }
+            if (isArchived) {
+                add(ObjectAction.RESTORE)
+            } else {
+                if (objectRestrictions.none { it == ObjectRestriction.DELETE }) {
+                    add(ObjectAction.DELETE)
+                }
+            }
 
-        if (isTemplate) {
-            add(ObjectAction.SET_AS_DEFAULT)
-        }
+            if (!isTemplate && !systemLayouts.contains(layout) && !fileLayouts.contains(layout)) {
+                add(ObjectAction.CREATE_WIDGET)
+            }
 
-        if (!objectRestrictions.contains(ObjectRestriction.DUPLICATE) && !isTemplate) {
-            add(ObjectAction.DUPLICATE)
-        }
+            if (isTemplate) {
+                add(ObjectAction.SET_AS_DEFAULT)
+            }
 
-        add(ObjectAction.UNDO_REDO)
+            if (!objectRestrictions.contains(ObjectRestriction.DUPLICATE) && !isTemplate) {
+                add(ObjectAction.DUPLICATE)
+            }
 
-        val objTypeId = wrapper?.getProperType()
-        if (objTypeId != null) {
+            add(ObjectAction.UNDO_REDO)
+
+            val objTypeId = wrapper?.getProperType()
+            if (objTypeId != null) {
             val objType = storage.details.getAsTypeObject(objTypeId)
             if (objType != null) {
                 val isTemplateAllowed = objType.isTemplatesAllowed()
                 if (isTemplateAllowed && !isTemplate) {
                     add(ObjectAction.USE_AS_TEMPLATE)
                 }
-            }
-        }
-        if (!isTemplate) {
-            add(ObjectAction.LINK_TO)
-            add(ObjectAction.COPY_LINK)
-        }
-
-        if (!isTemplate) {
-            val root = storage.document.get().find { it.id == ctx }
-            if (root != null) {
-                if (root.fields.isLocked == true) {
-                    add(ObjectAction.UNLOCK)
-                } else {
-                    add(ObjectAction.LOCK)
                 }
             }
-            add(ObjectAction.SEARCH_ON_PAGE)
-        }
-
-        if (layout in fileLayouts) {
-            clear()
-            add(ObjectAction.DELETE)
-            add(ObjectAction.DOWNLOAD_FILE)
-            if (isFavorite) {
-                add(ObjectAction.REMOVE_FROM_FAVOURITE)
-            } else {
-                add(ObjectAction.ADD_TO_FAVOURITE)
+            if (!isTemplate) {
+                add(ObjectAction.LINK_TO)
+                add(ObjectAction.COPY_LINK)
             }
-            add(ObjectAction.CREATE_WIDGET)
-            add(ObjectAction.LINK_TO)
-            add(ObjectAction.COPY_LINK)
+
+            if (!isTemplate) {
+                val root = storage.document.get().find { it.id == ctx }
+                if (root != null) {
+                    if (root.fields.isLocked == true) {
+                        add(ObjectAction.UNLOCK)
+                    } else {
+                        add(ObjectAction.LOCK)
+                    }
+                }
+                add(ObjectAction.SEARCH_ON_PAGE)
+            }
+
+            if (layout in fileLayouts) {
+                clear()
+                add(ObjectAction.DELETE)
+                add(ObjectAction.DOWNLOAD_FILE)
+                if (isFavorite) {
+                    add(ObjectAction.REMOVE_FROM_FAVOURITE)
+                } else {
+                    add(ObjectAction.ADD_TO_FAVOURITE)
+                }
+                add(ObjectAction.CREATE_WIDGET)
+                add(ObjectAction.LINK_TO)
+                add(ObjectAction.COPY_LINK)
+            }
         }
     }
 

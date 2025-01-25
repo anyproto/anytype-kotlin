@@ -45,6 +45,8 @@
     <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Last opp bilde</string>
+    <string name="profile_settings_apply_upload_image">Last opp bilde</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">Slett rom</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
     <string name="in_order_to_save">For å spare plass på den lokale enheten din, kan du slette alle lokale filer og beholde dem på vår krypterte sikkerhetskopi-node. Filene vil bli lastet ned igjen når du åpner dem.</string>
@@ -1228,6 +1230,7 @@
     <string name="multiplayer_collaborate_step_1">1.  Tap the Space widget to access settings</string>
     <string name="multiplayer_collaborate_step_2">2.  Open Share section</string>
     <string name="multiplayer_collaborate_step_3">3.  Generate an invite link and share it</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d member</item>
         <item quantity="other">%1$d members</item>

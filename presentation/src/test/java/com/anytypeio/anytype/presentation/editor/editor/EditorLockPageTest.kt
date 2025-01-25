@@ -284,7 +284,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                     target to Block.Fields(
                         mapOf(
                             Relations.ID to target,
-                            Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                            Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+                            Relations.SPACE_ID to defaultSpace
                         )
                     )
                 )

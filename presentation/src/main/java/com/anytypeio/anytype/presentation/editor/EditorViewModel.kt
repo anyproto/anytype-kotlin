@@ -247,6 +247,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.ext.toObject
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
@@ -262,6 +263,7 @@ import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.O
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTomorrowClick
 import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
 import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -434,6 +436,8 @@ class EditorViewModel(
      * Mention date picker
      */
     val mentionDatePicker = MutableStateFlow<EditorDatePickerState>(EditorDatePickerState.Hidden)
+
+    val navPanelState = permission.map { permission -> NavPanelState.fromPermission(permission) }
 
     init {
         Timber.i("EditorViewModel, init")
@@ -1555,6 +1559,14 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val wrapper = orchestrator.stores.details.getAsObject(context)
         val isTemplate = isObjectTemplate()
+        val space = wrapper.spaceId
+        if (space == null) {
+            sendToast("Space not found")
+            return
+        }
+        val isReadOnly = permission.value == null
+                || permission.value == SpaceMemberPermissions.NO_PERMISSIONS
+                || permission.value == SpaceMemberPermissions.READER
         when {
             isTemplate -> {
                 dispatch(
@@ -1564,7 +1576,8 @@ class EditorViewModel(
                         isArchived = false,
                         isFavorite = false,
                         isLocked = false,
-                        isTemplate = true
+                        isTemplate = true,
+                        isReadOnly = isReadOnly
                     )
                 )
             }
@@ -1576,6 +1589,7 @@ class EditorViewModel(
                         isArchived = wrapper?.isArchived == true,
                         isFavorite = wrapper?.isFavorite == true,
                         isLocked = mode == EditorMode.Locked,
+                        isReadOnly = isReadOnly,
                         isTemplate = isObjectTemplate()
                     )
                 )
@@ -3217,55 +3231,65 @@ class EditorViewModel(
     private fun proceedWithOpeningObjectByLayout(target: String) {
         proceedWithClearingFocus()
         val wrapper = orchestrator.stores.details.getAsObject(target)
-        when (wrapper?.layout) {
-            ObjectType.Layout.BASIC,
-            ObjectType.Layout.NOTE,
-            ObjectType.Layout.TODO,
-            ObjectType.Layout.BOOKMARK -> {
-                proceedWithOpeningObject(target = target)
-            }
-            in SupportedLayouts.fileLayouts -> {
-                proceedWithOpeningObject(target = target)
-            }
-            ObjectType.Layout.PROFILE -> {
-                val identity = wrapper.getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
-                if (identity != null) {
-                    proceedWithOpeningObject(target = identity)
-                } else {
+        if (wrapper.spaceId != vmParams.space.id) {
+            sendToast("Cannot open object from another space from here.")
+        } else {
+            when (wrapper?.layout) {
+                ObjectType.Layout.BASIC,
+                ObjectType.Layout.NOTE,
+                ObjectType.Layout.TODO,
+                ObjectType.Layout.BOOKMARK -> {
                     proceedWithOpeningObject(target = target)
                 }
-            }
-            ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
-                val space = wrapper.spaceId
-                if (space != null) {
-                    proceedWithOpeningDataViewObject(
-                        target = target,
-                        space = SpaceId(checkNotNull(wrapper.spaceId))
+
+                in SupportedLayouts.fileLayouts -> {
+                    proceedWithOpeningObject(target = target)
+                }
+
+                ObjectType.Layout.PROFILE -> {
+                    val identity = wrapper.getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
+                    if (identity != null) {
+                        proceedWithOpeningObject(target = identity)
+                    } else {
+                        proceedWithOpeningObject(target = target)
+                    }
+                }
+
+                ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
+                    val space = wrapper.spaceId
+                    if (space != null) {
+                        proceedWithOpeningDataViewObject(
+                            target = target,
+                            space = SpaceId(checkNotNull(wrapper.spaceId))
+                        )
+                    }
+                }
+
+                ObjectType.Layout.DATE -> {
+                    navigate(
+                        EventWrapper(
+                            OpenDateObject(
+                                objectId = target,
+                                space = vmParams.space.id
+                            )
+                        )
                     )
                 }
-            }
-            ObjectType.Layout.DATE -> {
-                navigate(
-                    EventWrapper(
-                        OpenDateObject(
-                            objectId = target,
-                            space = vmParams.space.id
+
+                ObjectType.Layout.PARTICIPANT -> {
+                    navigate(
+                        EventWrapper(
+                            OpenParticipant(
+                                objectId = target,
+                                space = vmParams.space.id
+                            )
                         )
                     )
-                )
-            }
-            ObjectType.Layout.PARTICIPANT -> {
-                navigate(
-                    EventWrapper(
-                        OpenParticipant(
-                            objectId = target,
-                            space = vmParams.space.id
-                        )
-                    )
-                )
-            }
-            else -> {
-                sendToast("Cannot open object with layout: ${wrapper?.layout}")
+                }
+
+                else -> {
+                    sendToast("Cannot open object with layout: ${wrapper?.layout}")
+                }
             }
         }
     }

@@ -77,6 +77,7 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.presentation.editor.editor.getObject
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
@@ -225,6 +226,8 @@ class ObjectSetViewModel(
     val isLoading = MutableStateFlow(false)
 
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
+
+    val navPanelState = permission.map { permission -> NavPanelState.fromPermission(permission) }
 
     init {
         Timber.i("ObjectSetViewModel, init")
@@ -1248,7 +1251,8 @@ class ObjectSetViewModel(
                     ctx = vmParams.ctx,
                     space = space,
                     isArchived = wrapper.isArchived == true,
-                    isFavorite = wrapper.isFavorite == true
+                    isFavorite = wrapper.isFavorite == true,
+                    isReadOnly = !isOwnerOrEditor
                 )
             )
         } else {

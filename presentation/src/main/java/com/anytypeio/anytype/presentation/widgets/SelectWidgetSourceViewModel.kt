@@ -208,7 +208,9 @@ class SelectWidgetSourceViewModel(
                             isInEditMode = curr.isInEditMode
                         )
                     }
-                    if (view.layout == ObjectType.Layout.DATE) {
+                    if (view.layout == ObjectType.Layout.DATE ||
+                        view.layout == ObjectType.Layout.PARTICIPANT
+                    ) {
                         isDismissed.value = true
                     }
                 }

@@ -45,6 +45,8 @@
     <string name="default_space">默认空间</string>
     <string name="space_settings_apply_random_gradient">应用随机纯色</string>
     <string name="space_settings_apply_upload_image">上传图像</string>
+    <string name="profile_settings_apply_upload_image">上传图像</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
     <string name="in_order_to_save">为了节省本地设备上的空间，您可以将所有文件卸载到我们的加密备份节点。打开文件时，文件将被重新加载。</string>
@@ -1224,6 +1226,7 @@
     <string name="multiplayer_collaborate_step_1">1. 点击空间小部件来访问设置</string>
     <string name="multiplayer_collaborate_step_2">2. 打开分享栏</string>
     <string name="multiplayer_collaborate_step_3">3. 生成一个邀请链接并分享它</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="other">%1$d 成员</item>
     </plurals>

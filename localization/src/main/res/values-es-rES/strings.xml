@@ -45,6 +45,8 @@
     <string name="default_space">Espacio inicial</string>
     <string name="space_settings_apply_random_gradient">Aplicar color sólido aleatorio</string>
     <string name="space_settings_apply_upload_image">Cargar una imagen</string>
+    <string name="profile_settings_apply_upload_image">Cargar una imagen</string>
+    <string name="profile_settings_remove_image">Eliminar imagen</string>
     <string name="delete_space">Eliminar espacio</string>
     <string name="you_can_store">Puedes almacenar gratuitamente hasta %1$s de archivos en nuestro nodo de respaldo cifrado. Si llegas al límite, los archivos se almacenarán solo localmente.</string>
     <string name="in_order_to_save">Para ahorrar espacio en tu dispositivo local, puedes guardar todos tus archivos en nuestro nodo de respaldo cifrado. Los archivos se cargarán de nuevo cuando los abras.</string>
@@ -1228,6 +1230,7 @@
     <string name="multiplayer_collaborate_step_1">1. Toca el widget del espacio para acceder a los ajustes.</string>
     <string name="multiplayer_collaborate_step_2">2. Abre la sección Compartir.</string>
     <string name="multiplayer_collaborate_step_3">3. Genera un enlace de invitación y compártelo.</string>
+    <string name="profile_view_edit_button">Editar perfil</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d miembro</item>
         <item quantity="other">%1$d miembros</item>

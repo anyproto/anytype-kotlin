@@ -45,6 +45,8 @@
     <string name="default_space">Entrar no Espaço</string>
     <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Carregue uma imagem</string>
+    <string name="profile_settings_apply_upload_image">Carregue uma imagem</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">Excluir Espaço</string>
     <string name="you_can_store">Você pode armazenar até %1$s de seus arquivos em nosso nó de backup criptografado gratuitamente. Se você atingir o limite, os arquivos serão armazenados apenas localmente.</string>
     <string name="in_order_to_save">Para economizar espaço no seu dispositivo local, você pode descarregar todos os seus arquivos no nosso servidor de backup criptografado. Os arquivos serão carregados novamente quando forem abertos.</string>
@@ -1228,6 +1230,7 @@
     <string name="multiplayer_collaborate_step_1">Toque no espaço para acessar as configurações</string>
     <string name="multiplayer_collaborate_step_2">Abrir a seção de Compartilhamento</string>
     <string name="multiplayer_collaborate_step_3">Gerar um link de convite e compartilhá-lo</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d membro</item>
         <item quantity="other">%1$d membros</item>

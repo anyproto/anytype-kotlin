@@ -45,6 +45,8 @@
     <string name="default_space">初始空間</string>
     <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">上傳圖片</string>
+    <string name="profile_settings_apply_upload_image">上傳圖片</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">刪除空間</string>
     <string name="you_can_store">您目前擁有 %1$s 的加密節點儲存空間，您可以將檔案備份到我們的節點當中。 當儲存空間容量到達上限，新的檔案只能存放在您的本地儲存區中。</string>
     <string name="in_order_to_save">為了節省本地設備上的空間，您可以將所有檔案傳輸到我們的加密備份節點。 當您打開這些檔案時，它們將被重新載入。</string>
@@ -1224,6 +1226,7 @@
     <string name="multiplayer_collaborate_step_1">1. 點擊空間小工具來進行設置</string>
     <string name="multiplayer_collaborate_step_2">2. 開放共享區塊</string>
     <string name="multiplayer_collaborate_step_3">3. 產生邀請連結並分享</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="other">%1$d 位成員</item>
     </plurals>

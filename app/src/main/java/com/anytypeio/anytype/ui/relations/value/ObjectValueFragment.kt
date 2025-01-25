@@ -23,16 +23,22 @@ import com.anytypeio.anytype.core_ui.relations.RelationObjectValueScreen
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModelFactory
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
+import com.anytypeio.anytype.ui.chats.ChatFragment
+import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import javax.inject.Inject
+import timber.log.Timber
 
 class ObjectValueFragment : BaseBottomSheetComposeFragment() {
 
@@ -74,30 +80,76 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupCollapsedHeight()
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
+        jobs += lifecycleScope.subscribe(vm.navigation) { nav ->
+            when (nav) {
+                is OpenObjectNavigation.OpenEditor -> {
+                    findNavController().navigate(
+                        R.id.objectNavigation,
+                        EditorFragment.args(
+                            ctx = nav.target,
+                            space = nav.space
+                        )
+                    )
+                }
+                is OpenObjectNavigation.OpenDataView -> {
+                    findNavController().navigate(
+                        R.id.dataViewNavigation,
+                        ObjectSetFragment.args(
+                            ctx = nav.target,
+                            space = nav.space
+                        )
+                    )
+                }
+                is OpenObjectNavigation.OpenParticipant -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.participantScreen,
+                            ParticipantFragment.args(
+                                objectId = nav.target,
+                                space = nav.space
+                            )
+                        )
+                    }.onFailure {
+                        Timber.w("Error while opening participant screen")
+                    }
+                }
+                is OpenObjectNavigation.OpenChat -> {
+                    findNavController().navigate(
+                        R.id.chatScreen,
+                        ChatFragment.args(
+                            ctx = nav.target,
+                            space = nav.space
+                        )
+                    )
+                }
+                OpenObjectNavigation.NonValidObject -> {
+                    toast(getString(R.string.error_non_valid_object))
+                }
+                is OpenObjectNavigation.OpenDateObject -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.dateObjectScreen,
+                            DateObjectFragment.args(
+                                objectId = nav.target,
+                                space = nav.space
+                            )
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Failed to navigate to date object screen")
+                    }
+                }
+                is OpenObjectNavigation.UnexpectedLayoutError -> {
+                    toast(getString(R.string.error_unexpected_layout))
+                }
+                else -> {
+                    // Do nothing.
+                }
+            }
+        }
     }
 
     private fun observeCommands(command: ObjectValueViewModel.Command) = when (command) {
         ObjectValueViewModel.Command.Dismiss -> dismiss()
-        is ObjectValueViewModel.Command.OpenObject -> {
-            findNavController().navigate(
-                R.id.objectNavigation,
-                EditorFragment.args(
-                    ctx = command.id,
-                    space = command.space
-                )
-            )
-            dismiss()
-        }
-        is ObjectValueViewModel.Command.OpenSet -> {
-            findNavController().navigate(
-                R.id.dataViewNavigation,
-                ObjectSetFragment.args(
-                    ctx = command.id,
-                    space = command.space
-                )
-            )
-            dismiss()
-        }
         ObjectValueViewModel.Command.Expand -> expand()
         is ObjectValueViewModel.Command.DeleteObject -> {
             val dialog = DeleteOptionWarningFragment.new(

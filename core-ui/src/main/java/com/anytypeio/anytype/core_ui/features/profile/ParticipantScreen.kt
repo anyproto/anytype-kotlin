@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.profile
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -20,18 +22,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
-import com.anytypeio.anytype.core_ui.views.ButtonSecondary
-import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -72,63 +74,78 @@ fun ParticipantScreen(
             onEvent(ParticipantEvent.OnDismiss)
         },
         content = {
-            if (uiState is UiParticipantScreenState.Data) {
-                val (spacer, iconSize) = if (uiState.description.isNullOrBlank()) {
-                    68.dp to 184.dp
-                } else {
-                    48.dp to 128.dp
-                }
-                Spacer(modifier = Modifier.height(spacer))
-                ImageBlock(
-                    modifier = Modifier
-                        .size(iconSize)
-                        .align(Alignment.CenterHorizontally),
-                    name = uiState.name,
-                    icon = uiState.icon,
-                ) { }
-                Spacer(modifier = Modifier.height(12.dp))
-                Title(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    name = uiState.name
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                if (uiState.identity != null) {
-                    AnyIdentity(
-                        modifier = Modifier
-                            .padding(horizontal = 32.dp)
-                            .align(Alignment.CenterHorizontally),
-                        identity = uiState.identity!!
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-                if (!uiState.description.isNullOrBlank()) {
-                    Description(
-                        modifier = Modifier
-                            .padding(horizontal = 32.dp)
-                            .align(Alignment.CenterHorizontally),
-                        description = uiState.description!!
-                    )
-                }
-                if (uiState.isOwner) {
-                    ButtonSecondary(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp)
-                            .padding(top = 16.dp)
-                            .align(Alignment.CenterHorizontally),
-                        text = stringResource(R.string.profile_view_edit_button),
-                        size = ButtonSize.LargeSecondary,
-                        onClick = { onEvent(ParticipantEvent.OnButtonClick) }
-                    )
-                } else {
-                    Spacer(
-                        modifier = Modifier
-                            .height(64.dp)
-                            .background(color = colorResource(R.color.palette_dark_teal))
-                    )
-                }
+            val (spacer, iconSize, textSize) = if (uiState.description.isNullOrBlank()) {
+                Triple(68.dp, 184.dp, 88.sp)
+            } else {
+                Triple(62.dp, 112.dp, 64.sp)
             }
+            if (uiState.isOwner) {
+                EditIcon(
+                    modifier = Modifier
+                        .padding(end = 16.dp, bottom = 16.dp, start = 16.dp)
+                        .size(32.dp)
+                        .align(Alignment.End)
+                        .noRippleThrottledClickable {
+                            onEvent(ParticipantEvent.OnCardClicked)
+                        }
+                )
+                Spacer(
+                    modifier = Modifier.height(spacer - 32.dp - 16.dp)
+                )
+            } else {
+                Spacer(
+                    modifier = Modifier.height(spacer)
+                )
+            }
+            ImageBlock(
+                modifier = Modifier
+                    .size(iconSize)
+                    .align(Alignment.CenterHorizontally),
+                name = uiState.name,
+                icon = uiState.icon,
+                fontSize = textSize
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Title(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
+                    .align(Alignment.CenterHorizontally),
+                name = uiState.name
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            if (uiState.identity != null) {
+                AnyIdentity(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp)
+                        .align(Alignment.CenterHorizontally),
+                    identity = uiState.identity!!
+                )
+            }
+            if (!uiState.description.isNullOrBlank()) {
+                Description(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .padding(horizontal = 32.dp)
+                        .align(Alignment.CenterHorizontally),
+                    description = uiState.description!!
+                )
+            }
+            val h = spacer - 8.dp
+            Spacer(
+                modifier = Modifier.height(h)
+            )
         },
+    )
+}
+
+@Composable
+private fun EditIcon(modifier: Modifier) {
+    Image(
+        modifier = modifier,
+        painter = painterResource(R.drawable.ic_participant_edit),
+        contentDescription = "Edit participant"
     )
 }
 
@@ -138,8 +155,7 @@ private fun ImageBlock(
     modifier: Modifier,
     name: String,
     icon: ProfileIconView,
-    fontSize: TextUnit = 24.sp,
-    onProfileIconClick: () -> Unit
+    fontSize: TextUnit = 24.sp
 ) {
     when (icon) {
         is ProfileIconView.Image -> {
@@ -148,10 +164,7 @@ private fun ImageBlock(
                 contentDescription = "Custom image profile",
                 contentScale = ContentScale.Crop,
                 modifier = modifier
-                    .clip(shape = CircleShape)
-                    .noRippleClickable {
-                        onProfileIconClick.invoke()
-                    },
+                    .clip(shape = CircleShape),
                 loading = placeholder(R.drawable.ic_loading_state_112)
             )
         }
@@ -166,9 +179,6 @@ private fun ImageBlock(
                 modifier = modifier
                     .clip(CircleShape)
                     .background(colorResource(id = R.color.shape_tertiary))
-                    .noRippleClickable {
-                        onProfileIconClick.invoke()
-                    }
             ) {
                 Text(
                     text = nameFirstChar,
@@ -176,7 +186,8 @@ private fun ImageBlock(
                         color = colorResource(id = R.color.glyph_active),
                         fontSize = fontSize
                     ),
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -185,46 +196,62 @@ private fun ImageBlock(
 
 @Composable
 private fun Title(modifier: Modifier, name: String) {
-    Text(
-        modifier = modifier,
-        text = name,
-        style = HeadlineHeading,
-        color = colorResource(id = R.color.text_primary),
-        maxLines = 3
-    )
+    SelectionContainer(modifier = modifier) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = name,
+            style = HeadlineHeading,
+            color = colorResource(id = R.color.text_primary),
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+        )
+    }
 }
 
 @Composable
 private fun AnyIdentity(modifier: Modifier, identity: String) {
-    Text(
-        modifier = modifier,
-        text = identity,
-        style = Caption1Regular,
-        color = colorResource(id = R.color.text_secondary),
-        maxLines = 2,
-        textAlign = TextAlign.Center
-    )
+    SelectionContainer(
+        modifier = modifier
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = identity,
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+            maxLines = 1,
+            textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
 }
 
 @Composable
 private fun Description(modifier: Modifier, description: String) {
-    Text(
-        modifier = modifier,
-        text = description,
-        style = PreviewTitle2Regular,
-        color = colorResource(id = R.color.text_primary),
-        textAlign = TextAlign.Center
-    )
+    SelectionContainer(
+        modifier = modifier
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = description,
+            style = PreviewTitle2Regular,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
 }
 
 @DefaultPreviews
 @Composable
 fun ParticipantScreenPreview() {
     ParticipantScreen(
-        uiState = UiParticipantScreenState.Data(
-            name = "Ivanov Konstantin",
-            icon = ProfileIconView.Image("dsdas"),
-            description = "some desc",
+        uiState = UiParticipantScreenState(
+            name = "Jetpack Compose",
+            icon = ProfileIconView.Placeholder("M"),
+            identity = "AnyId43",
+            description = "some description",
             isOwner = true
         ),
         onEvent = {}

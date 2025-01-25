@@ -851,15 +851,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // TODO
         }.launchIn(lifecycleScope)
 
-        vm.permission.onEach { permission ->
+        vm.navPanelState.onEach {
             if (hasBinding) {
-                if (permission?.isOwnerOrEditor() == true) {
-                    binding.topToolbar.setIsReadOnly(false)
-                    binding.bottomToolbar.setIsReadOnly(false)
-                } else {
-                    binding.topToolbar.setIsReadOnly(true)
-                    binding.bottomToolbar.setIsReadOnly(true)
-                }
+                binding.bottomToolbar.setState(it)
             }
         }.launchIn(lifecycleScope)
 
@@ -1011,6 +1005,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                                 isArchived = command.isArchived,
                                 isFavorite = command.isFavorite,
                                 isLocked = command.isLocked,
+                                isReadOnly = command.isReadOnly,
                                 fromName = getFrom(),
                                 isTemplate = command.isTemplate
                             )

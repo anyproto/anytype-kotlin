@@ -45,6 +45,8 @@
     <string name="default_space">Standaard ruimte</string>
     <string name="space_settings_apply_random_gradient">Pas willekeurige effen kleur toe</string>
     <string name="space_settings_apply_upload_image">Upload afbeelding</string>
+    <string name="profile_settings_apply_upload_image">Upload afbeelding</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">Verwijder ruimte</string>
     <string name="you_can_store">Je kunt maximaal %1$s van je bestanden gratis opslaan op onze versleutelde back-up node. Als de limiet is bereikt, zullen bestanden alleen lokaal worden opgeslagen.</string>
     <string name="in_order_to_save">Om ruimte op je lokale apparaat te besparen, kun je al je bestanden naar onze versleutelde back-upnode verplaatsen. De bestanden worden opnieuw geladen wanneer je ze opent.</string>
@@ -1228,6 +1230,7 @@
     <string name="multiplayer_collaborate_step_1">1. Tik op de ruimtewidget om de instellingen te openen</string>
     <string name="multiplayer_collaborate_step_2">2. Open het gedeelte Delen</string>
     <string name="multiplayer_collaborate_step_3">3. Genereer een uitnodigingslink en deel deze</string>
+    <string name="profile_view_edit_button">Edit Profile</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d lid</item>
         <item quantity="other">%1$d leden</item>

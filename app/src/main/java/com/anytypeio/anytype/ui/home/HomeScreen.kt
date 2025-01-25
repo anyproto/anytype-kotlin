@@ -46,6 +46,7 @@ import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.home.InteractionMode
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
 import com.anytypeio.anytype.presentation.widgets.ToIndex
@@ -72,6 +73,7 @@ import org.burnoutcrew.reorderable.reorderable
 
 @Composable
 fun HomeScreen(
+    navPanelState: NavPanelState,
     modifier: Modifier,
     mode: InteractionMode,
     widgets: List<WidgetView>,
@@ -88,7 +90,6 @@ fun HomeScreen(
     onSearchClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
-    onBackClicked: () -> Unit,
     onShareButtonClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
@@ -96,8 +97,7 @@ fun HomeScreen(
     onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateObjectInsideWidget: (Id) -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
-    onBackLongClicked: () -> Unit
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
 ) {
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -156,13 +156,11 @@ fun HomeScreen(
             exit = fadeOut() + slideOutVertically { it }
         ) {
             BottomNavigationMenu(
+                state = navPanelState,
                 modifier = Modifier,
-                backClick = onBackClicked,
-                backLongClick = onBackLongClicked,
                 searchClick = onSearchClicked,
                 addDocClick = onCreateNewObjectClicked,
                 addDocLongClick = onCreateNewObjectLongClicked,
-                isOwnerOrEditor = mode !is InteractionMode.ReadOnly,
                 onShareButtonClicked = onShareButtonClicked
             )
         }

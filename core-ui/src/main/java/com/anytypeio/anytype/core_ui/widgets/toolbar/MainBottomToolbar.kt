@@ -6,8 +6,6 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.databinding.WidgetMainBottomToolbarBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.core_utils.ext.gone
-import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.core_ui.R
 
@@ -28,16 +26,6 @@ class MainBottomToolbar @JvmOverloads constructor(
     fun searchClicks() = binding.btnSearch.clicks()
     fun addDocClicks() = binding.btnAddDoc.clicks()
     fun shareClicks() = binding.btnShare.clicks()
-
-
-    fun setIsReadOnly(isReadOnly: Boolean) {
-        with(binding.btnAddDoc) {
-            if (isReadOnly)
-                gone()
-            else
-                visible()
-        }
-    }
 
     fun setState(state: NavPanelState) {
         when(state) {

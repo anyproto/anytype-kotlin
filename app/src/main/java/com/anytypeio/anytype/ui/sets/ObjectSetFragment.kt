@@ -537,13 +537,6 @@ open class ObjectSetFragment :
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
         }
-        lifecycleScope.subscribe(vm.permission.filterNotNull()) { permission ->
-            if (permission.isOwnerOrEditor()) {
-                binding.bottomToolbar.setIsReadOnly(false)
-            } else {
-                binding.bottomToolbar.setIsReadOnly(true)
-            }
-        }
     }
 
     private fun setStatus(status: SpaceSyncAndP2PStatusState?) {

@@ -138,7 +138,7 @@ sealed class Event {
             data class Set(
                 override val context: Id,
                 val target: Id,
-                val details: Map<Id, Any?>
+                val details: Struct
             ) : Details()
 
             /**
@@ -151,7 +151,7 @@ sealed class Event {
             data class Amend(
                 override val context: Id,
                 val target: Id,
-                val details: Map<Id, Any?>
+                val details: Struct
             ) : Details()
 
             /**

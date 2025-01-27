@@ -112,6 +112,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiObjectsMenuState = vm.uiMenuState.collectAsStateWithLifecycle().value,
                     uiObjectsListState = vm.uiObjectsListState.collectAsStateWithLifecycle().value,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
+                    uiDeleteAlertState = vm.uiAlertState.collectAsStateWithLifecycle().value,
                     onTypeEvent = vm::onTypeEvent
                 )
             }

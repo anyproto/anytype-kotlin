@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.lists.objects.UiContentState
 import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListState
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -41,6 +43,7 @@ import com.anytypeio.anytype.presentation.objects.toDVSort
 import com.anytypeio.anytype.presentation.objects.toUiObjectsListItem
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
+import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import kotlin.collections.map
@@ -81,7 +84,8 @@ class ObjectTypeViewModel(
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val coverImageHashProvider: CoverImageHashProvider,
-    private val userSettingsRepository: UserSettingsRepository
+    private val userSettingsRepository: UserSettingsRepository,
+    private val deleteObjects: DeleteObjects
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //sync status
@@ -121,6 +125,9 @@ class ObjectTypeViewModel(
     private val restartSubscription = MutableStateFlow(0L)
     private var shouldScrollToTopItems = false
     private val _sortState = MutableStateFlow<ObjectsListSort>(ObjectsListSort.ByName())
+
+    //alerts
+    val uiAlertState = MutableStateFlow<UiDeleteAlertState>(UiDeleteAlertState.Hidden)
 
     private val _objTypeState = MutableStateFlow<ObjectWrapper.Type?>(null)
     private val _objectTypePermissionsState = MutableStateFlow<ObjectPermissions?>(null)
@@ -319,6 +326,7 @@ class ObjectTypeViewModel(
             }.collect { (items, permission) ->
                 if (items.isEmpty()) {
                     uiObjectsListState.value = UiObjectsListState.Empty
+                    uiContentState.value = UiContentState.Idle()
                     uiObjectsHeaderState.value = UiObjectsHeaderState.EMPTY
                 } else {
                     uiContentState.value = UiContentState.Idle(
@@ -529,8 +537,13 @@ class ObjectTypeViewModel(
             TypeEvent.OnFieldsButtonClick -> TODO()
             TypeEvent.OnLayoutButtonClick -> TODO()
             TypeEvent.OnSettingsClick -> TODO()
-            is TypeEvent.OnSyncStatusClick -> TODO()
-            TypeEvent.OnSyncStatusDismiss -> TODO()
+            is TypeEvent.OnSyncStatusClick -> {
+                uiSyncStatusWidgetState.value =
+                    event.status.toSyncStatusWidgetState()
+            }
+            TypeEvent.OnSyncStatusDismiss -> {
+                uiSyncStatusWidgetState.value = SyncStatusWidgetState.Hidden
+            }
             TypeEvent.OnTemplatesAddIconClick -> TODO()
             is TypeEvent.OnTitleUpdate -> TODO()
             is TypeEvent.OnSortClick -> onSortClicked(event.sort)
@@ -540,6 +553,16 @@ class ObjectTypeViewModel(
             TypeEvent.OnOpenSetClick -> TODO()
             TypeEvent.OnCreateObjectIconClick -> {
 
+            }
+            TypeEvent.OnMenuItemDeleteClick -> {
+                uiAlertState.value = UiDeleteAlertState.Show
+            }
+            TypeEvent.OnAlertDeleteConfirm -> {
+                uiAlertState.value = UiDeleteAlertState.Hidden
+                onDeletionAccepted()
+            }
+            TypeEvent.OnAlertDeleteDismiss -> {
+                uiAlertState.value = UiDeleteAlertState.Hidden
             }
         }
     }
@@ -575,6 +598,23 @@ class ObjectTypeViewModel(
 //                sort = sort.toAnalyticsSortType().second
 //            )
 //        }
+    }
+
+    private fun onDeletionAccepted() {
+        val params = DeleteObjects.Params(
+            targets = listOf(vmParams.objectId)
+        )
+        viewModelScope.launch {
+            deleteObjects.async(params).fold(
+                onSuccess = {
+                    Timber.d("Object ${vmParams.objectId} deleted")
+                    commands.emit(ObjectTypeCommand.Back)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting object ${vmParams.objectId}")
+                }
+            )
+        }
     }
 
     //endregion

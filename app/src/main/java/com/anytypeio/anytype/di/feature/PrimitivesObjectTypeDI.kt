@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -156,6 +157,14 @@ object ObjectTypeModule {
         events: EventChannel,
         reducer: ObjectWatcher.Reducer
     ): ObjectWatcher = ObjectWatcher(repo, events, reducer)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun getDeleteObjects(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DeleteObjects = DeleteObjects(repo, dispatchers)
 
     @Module
     interface Declarations {

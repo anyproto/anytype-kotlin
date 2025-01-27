@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -41,7 +42,8 @@ class ObjectTypeVMFactory @Inject constructor(
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val coverImageHashProvider: CoverImageHashProvider,
-    private val userSettingsRepository: UserSettingsRepository
+    private val userSettingsRepository: UserSettingsRepository,
+    private val deleteObjects: DeleteObjects
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -65,6 +67,7 @@ class ObjectTypeVMFactory @Inject constructor(
             setObjectListIsArchived = setObjectListIsArchived,
             templatesContainer = templatesContainer,
             coverImageHashProvider = coverImageHashProvider,
-            userSettingsRepository = userSettingsRepository
+            userSettingsRepository = userSettingsRepository,
+            deleteObjects = deleteObjects
         ) as T
 }

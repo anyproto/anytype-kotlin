@@ -198,6 +198,11 @@ sealed class UiFieldsButtonState{
 
 }
 
+sealed class UiDeleteAlertState {
+    data object Hidden : UiDeleteAlertState()
+    data object Show : UiDeleteAlertState()
+}
+
 //region Mapping
 fun ObjectWrapper.Basic.toTemplateView(
     objectId: Id,

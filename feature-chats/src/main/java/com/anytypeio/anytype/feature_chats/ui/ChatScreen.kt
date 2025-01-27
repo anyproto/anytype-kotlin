@@ -154,7 +154,8 @@ fun ChatScreenWrapper(
                     },
                     onAddReactionClicked = onSelectChatReaction,
                     onViewChatReaction = onViewChatReaction,
-                    onMemberIconClicked = vm::onMemberIconClicked
+                    onMemberIconClicked = vm::onMemberIconClicked,
+                    onMentionClicked = vm::onMentionClicked
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -216,12 +217,13 @@ fun ChatScreen(
     onChatBoxFilePicked: (List<Uri>) -> Unit,
     onAddReactionClicked: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
-    onMemberIconClicked: (Id?) -> Unit
+    onMemberIconClicked: (Id?) -> Unit,
+    onMentionClicked: (Id) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
     }
-    var isTitleFocused by remember { mutableStateOf(false) }
+
     val chatBoxFocusRequester = FocusRequester()
 
     val scope = rememberCoroutineScope()
@@ -264,7 +266,8 @@ fun ChatScreen(
                 onMarkupLinkClicked = onMarkupLinkClicked,
                 onAddReactionClicked = onAddReactionClicked,
                 onViewChatReaction = onViewChatReaction,
-                onMemberIconClicked = onMemberIconClicked
+                onMemberIconClicked = onMemberIconClicked,
+                onMentionClicked = onMentionClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -343,7 +346,8 @@ fun Messages(
     onMarkupLinkClicked: (String) -> Unit,
     onAddReactionClicked: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
-    onMemberIconClicked: (Id?) -> Unit
+    onMemberIconClicked: (Id?) -> Unit,
+    onMentionClicked: (Id) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     LazyColumn(
@@ -427,7 +431,8 @@ fun Messages(
                         },
                         onViewChatReaction = { emoji ->
                             onViewChatReaction(msg.id, emoji)
-                        }
+                        },
+                        onMentionClicked = onMentionClicked
                     )
                 }
                 if (idx == messages.lastIndex) {

@@ -583,6 +583,17 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onMentionClicked(member: Id) {
+        viewModelScope.launch {
+            commands.emit(
+                ViewModelCommand.ViewMemberCard(
+                    member = member,
+                    space = vmParams.space
+                )
+            )
+        }
+    }
+
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()

@@ -37,9 +37,11 @@ sealed interface ChatView {
                 val isItalic: Boolean = styles.any { it.type == Block.Content.Text.Mark.Type.ITALIC }
                 val isStrike = styles.any { it.type == Block.Content.Text.Mark.Type.STRIKETHROUGH }
                 val underline = styles.any { it.type == Block.Content.Text.Mark.Type.UNDERLINE }
-                val link = styles.find { it.type == Block.Content.Text.Mark.Type.LINK }
                 val isCode = styles.any { it.type == Block.Content.Text.Mark.Type.KEYBOARD }
+
+                val link = styles.find { it.type == Block.Content.Text.Mark.Type.LINK }
                 val emoji = styles.find { it.type == Block.Content.Text.Mark.Type.EMOJI }
+                val mention = styles.find { it.type == Block.Content.Text.Mark.Type.MENTION }
             }
         }
 

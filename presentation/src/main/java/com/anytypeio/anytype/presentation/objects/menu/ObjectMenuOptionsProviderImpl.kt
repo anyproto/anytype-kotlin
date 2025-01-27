@@ -14,11 +14,11 @@ import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
 class ObjectMenuOptionsProviderImpl(
-    private val allObjectSDetailsFlow: Flow<ObjectViewDetails>,
+    private val objectViewDetailsFlow: Flow<ObjectViewDetails>,
     private val restrictions: Flow<List<ObjectRestriction>>
 ) : ObjectMenuOptionsProvider {
 
-    private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> = allObjectSDetailsFlow
+    private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> = objectViewDetailsFlow
         .filter { details ->
             details.details.containsKey(ctx).also { isValuePresent ->
                 if (!isValuePresent) Timber.w("Details missing for object: $ctx")

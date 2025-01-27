@@ -164,7 +164,7 @@ object ObjectMenuModule {
     @JvmStatic
     private fun createMenuOptionsProvider(storage: Editor.Storage): ObjectMenuOptionsProvider =
         ObjectMenuOptionsProviderImpl(
-            allObjectSDetailsFlow = storage.details.stream(),
+            objectViewDetailsFlow = storage.details.stream(),
             restrictions = storage.objectRestrictions.stream()
         )
 
@@ -324,11 +324,11 @@ object ObjectSetMenuModule {
     ): ObjectMenuOptionsProvider {
         return when (val currentState = state.value) {
             is ObjectState.DataView -> ObjectMenuOptionsProviderImpl(
-                allObjectSDetailsFlow = state.map { currentState.details }.distinctUntilChanged(),
+                objectViewDetailsFlow = state.map { currentState.details }.distinctUntilChanged(),
                 restrictions = state.map { currentState.objectRestrictions }.distinctUntilChanged(),
             )
             else -> ObjectMenuOptionsProviderImpl(
-                allObjectSDetailsFlow = emptyFlow(),
+                objectViewDetailsFlow = emptyFlow(),
                 restrictions = emptyFlow(),
             )
         }

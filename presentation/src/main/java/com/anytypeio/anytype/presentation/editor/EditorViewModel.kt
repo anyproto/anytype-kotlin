@@ -5261,17 +5261,17 @@ class EditorViewModel(
     }
 
     private fun getRelations(action: (List<SlashRelationView.Item>) -> Unit) {
-        val allObjectsDetails = orchestrator.stores.details.current()
+        val objectViewDetails = orchestrator.stores.details.current()
 
         viewModelScope.launch {
-            val objectRelationViews = allObjectsDetails.getObjRelationsViews(
+            val objectRelationViews = objectViewDetails.getObjRelationsViews(
                 ctx = vmParams.ctx,
                 urlBuilder = urlBuilder,
                 storeOfRelations = storeOfRelations,
                 fieldParser = fieldParser
             )
 
-            val recommendedRelationViews = allObjectsDetails.getRecommendedRelations(
+            val recommendedRelationViews = objectViewDetails.getRecommendedRelations(
                 ctx = vmParams.ctx,
                 storeOfRelations = storeOfRelations,
                 fieldParser = fieldParser,
@@ -6731,18 +6731,18 @@ class EditorViewModel(
     }
 
     private fun getObjectTypeUniqueKeyFromDetails(): Id? {
-        val allObjectsDetails = orchestrator.stores.details.current()
-        val currentObject = allObjectsDetails.getObject(context)
+        val objectViewDetails = orchestrator.stores.details.current()
+        val currentObject = objectViewDetails.getObject(context)
         val currentObjectTypeId = currentObject?.getProperType() ?: return null
-        val currentObjectType = allObjectsDetails.getTypeObject(currentObjectTypeId)
+        val currentObjectType = objectViewDetails.getTypeObject(currentObjectTypeId)
         return currentObjectType?.uniqueKey
     }
 
     private fun getObjectTypeFromDetails(): ObjectWrapper.Type? {
-        val allObjectsDetails = orchestrator.stores.details.current()
-        val currentObject = allObjectsDetails.getObject(context)
+        val objectViewDetails = orchestrator.stores.details.current()
+        val currentObject = objectViewDetails.getObject(context)
         val currentObjectTypeId = currentObject?.getProperType() ?: return null
-        return allObjectsDetails.getTypeObject(currentObjectTypeId)
+        return objectViewDetails.getTypeObject(currentObjectTypeId)
     }
 
     fun isObjectTemplate(): Boolean {

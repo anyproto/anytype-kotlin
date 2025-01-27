@@ -33,12 +33,14 @@ import com.anytypeio.anytype.core_ui.syncstatus.StatusBadge
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
+import com.anytypeio.anytype.feature_object_type.viewmodel.UiEditButton
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiSyncStatusBadgeState
 
 
 @Composable
 fun TopToolbar(
     modifier: Modifier,
+    uiEditButtonState: UiEditButton,
     uiSyncStatusBadgeState: UiSyncStatusBadgeState,
     onTypeEvent: (TypeEvent) -> Unit
 ) {
@@ -70,44 +72,46 @@ fun TopToolbar(
                 )
             }
         }
-        IconButton(
-            modifier = Modifier
-                .size(48.dp)
-                .align(Alignment.CenterEnd),
-            onClick = {
-                isIconMenuExpanded.value = !isIconMenuExpanded.value
-            }
-        ) {
-            Image(
-                modifier = Modifier.size(24.dp),
-                painter = painterResource(id = R.drawable.ic_space_list_dots),
-                contentDescription = "More options"
-            )
-            DropdownMenu(
+        if (uiEditButtonState is UiEditButton.Visible) {
+            IconButton(
                 modifier = Modifier
-                    .width(244.dp)
+                    .size(48.dp)
                     .align(Alignment.CenterEnd),
-                expanded = isIconMenuExpanded.value,
-                offset = DpOffset(x = 0.dp, y = 0.dp),
-                onDismissRequest = {
-                    isIconMenuExpanded.value = false
-                },
-                shape = RoundedCornerShape(10.dp),
-                containerColor = colorResource(id = R.color.background_secondary),
+                onClick = {
+                    isIconMenuExpanded.value = !isIconMenuExpanded.value
+                }
             ) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.object_type_settings_item_remove),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.palette_system_red)
-                        )
-                    },
-                    onClick = {
-                        onTypeEvent(TypeEvent.OnMenuItemDeleteClick)
+                Image(
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_space_list_dots),
+                    contentDescription = "More options"
+                )
+                DropdownMenu(
+                    modifier = Modifier
+                        .width(244.dp)
+                        .align(Alignment.CenterEnd),
+                    expanded = isIconMenuExpanded.value,
+                    offset = DpOffset(x = 0.dp, y = 0.dp),
+                    onDismissRequest = {
                         isIconMenuExpanded.value = false
                     },
-                )
+                    shape = RoundedCornerShape(10.dp),
+                    containerColor = colorResource(id = R.color.background_secondary),
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.object_type_settings_item_remove),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.palette_system_red)
+                            )
+                        },
+                        onClick = {
+                            onTypeEvent(TypeEvent.OnMenuItemDeleteClick)
+                            isIconMenuExpanded.value = false
+                        },
+                    )
+                }
             }
         }
     }
@@ -131,6 +135,7 @@ fun TopToolbarPreview() {
                 p2PStatusUpdate = P2PStatusUpdate.Initial
             )
         ),
+        uiEditButtonState = UiEditButton.Visible,
         onTypeEvent = {}
     )
 }

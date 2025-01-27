@@ -50,6 +50,7 @@ import com.anytypeio.anytype.feature_object_type.ui.objects.ObjectsHeader
 import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesHeader
 import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesList
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiDeleteAlertState
+import com.anytypeio.anytype.feature_object_type.viewmodel.UiEditButton
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiFieldsButtonState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiIconState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiLayoutButtonState
@@ -70,7 +71,8 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 @Composable
 fun ObjectTypeMainScreen(
 
-    //sync status
+    //top bar
+    uiEditButtonState: UiEditButton,
     uiSyncStatusBadgeState: UiSyncStatusBadgeState,
     uiSyncStatusState: SyncStatusWidgetState,
 
@@ -126,6 +128,7 @@ fun ObjectTypeMainScreen(
                         .fillMaxWidth()
                         .height(48.dp),
                     uiSyncStatusBadgeState = uiSyncStatusBadgeState,
+                    uiEditButtonState = uiEditButtonState,
                     onTypeEvent = onTypeEvent
                 )
                 Spacer(
@@ -331,6 +334,7 @@ fun ObjectTypeMainScreenPreview() {
         uiContentState = UiContentState.Idle(),
         uiObjectsMenuState = UiMenuState.EMPTY,
         uiDeleteAlertState = UiDeleteAlertState.Hidden,
+        uiEditButtonState = UiEditButton.Visible,
         onTypeEvent = {}
     )
 }

@@ -88,11 +88,12 @@ class ObjectTypeViewModel(
     private val deleteObjects: DeleteObjects
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
-    //sync status
+    //top bar
     val uiSyncStatusWidgetState =
         MutableStateFlow<SyncStatusWidgetState>(SyncStatusWidgetState.Hidden)
     val uiSyncStatusBadgeState =
         MutableStateFlow<UiSyncStatusBadgeState>(UiSyncStatusBadgeState.Hidden)
+    val uiEditButtonState = MutableStateFlow<UiEditButton>(UiEditButton.Hidden)
 
     //header
     val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.EMPTY)
@@ -131,9 +132,6 @@ class ObjectTypeViewModel(
 
     private val _objTypeState = MutableStateFlow<ObjectWrapper.Type?>(null)
     private val _objectTypePermissionsState = MutableStateFlow<ObjectPermissions?>(null)
-
-    val uiEditButtonState = MutableStateFlow<UiEditButton>(UiEditButton.Hidden)
-
 
     val commands = MutableSharedFlow<ObjectTypeCommand>()
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)

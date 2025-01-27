@@ -80,9 +80,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubSearchObjects()
         stubOpenDocument(
-            document = doc,
-            details = Block.Details(),
-            relations = listOf()
+            document = doc
         )
         stubUpdateText()
 
@@ -228,11 +226,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubSearchObjects()
-        stubOpenDocument(
-            document = doc,
-            details = Block.Details(),
-            relations = listOf()
-        )
+        stubOpenDocument(document = doc)
         stubUpdateText()
 
         val vm = buildViewModel()
@@ -396,9 +390,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubSearchObjects()
         stubOpenDocument(
-            document = doc,
-            details = Block.Details(),
-            relations = listOf()
+            document = doc
         )
         stubUpdateText()
         val vm = buildViewModel()

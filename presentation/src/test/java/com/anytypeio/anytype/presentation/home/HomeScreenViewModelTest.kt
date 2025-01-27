@@ -198,9 +198,6 @@ class HomeScreenViewModelTest {
     lateinit var saveWidgetSession: SaveWidgetSession
 
     @Mock
-    lateinit var spaceGradientProvider: SpaceGradientProvider
-
-    @Mock
     lateinit var getWidgetSession: GetWidgetSession
 
     @Mock
@@ -2275,7 +2272,7 @@ class HomeScreenViewModelTest {
                             Event.Command.Details.Set(
                                 context = WIDGET_OBJECT_ID,
                                 target = newSourceObject.id,
-                                details = Block.Fields(newSourceObject.map)
+                                details = newSourceObject.map
                             ),
                             Event.Command.LinkGranularChange(
                                 context = WIDGET_OBJECT_ID,
@@ -3036,7 +3033,6 @@ class HomeScreenViewModelTest {
         analytics = analytics,
         getWidgetSession = getWidgetSession,
         saveWidgetSession = saveWidgetSession,
-        spaceGradientProvider = spaceGradientProvider,
         storeOfObjectTypes = storeOfObjectTypes,
         objectWatcher = objectWatcher,
         setWidgetActiveView = setWidgetActiveView,

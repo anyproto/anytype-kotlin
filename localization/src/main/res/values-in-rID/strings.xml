@@ -45,6 +45,8 @@
     <string name="default_space">Ruang bawaan</string>
     <string name="space_settings_apply_random_gradient">Beri warna polos acak</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
+    <string name="profile_settings_apply_upload_image">Upload image</string>
+    <string name="profile_settings_remove_image">Hapus gambar</string>
     <string name="delete_space">Hapus ruang</string>
     <string name="you_can_store">Kamu bisa menyimpan berkasmu hingga %1$s di simpul cadangan terenkripsi kami secara gratis. Jika melewati batas, berkasmu hanya akan disimpan secara lokal.</string>
     <string name="in_order_to_save">Untuk menghemat penyimpanan ruang pada perangkat lokal, anda dapat melepaskan semua berkas ke simpul cadangan terenkripsi kami. Berkas - berkas akan diunduh kembali saat kamu membuka mereka. </string>
@@ -1224,7 +1226,7 @@
     <string name="multiplayer_collaborate_step_1">1. Ketuk gawit Ruang untuk mengakses setelan</string>
     <string name="multiplayer_collaborate_step_2">2. Buka bagian Bagikan</string>
     <string name="multiplayer_collaborate_step_3">3. Buat tautan undangan lalu bagikan</string>
-    <string name="profile_view_edit_button">Edit Profile</string>
+    <string name="profile_view_edit_button">Sunting Profil</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="other">%1$d anggota</item>
     </plurals>
@@ -1572,18 +1574,18 @@ Please provide specific details of your needs here.</string>
     <string name="file">Berkas</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Buat ruang pertamamu untuk memulai</string>
     <string name="space_list_empty_state_it_is_empty_here">Di sini kosong.</string>
-    <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
-    <string name="emoji_category_animals_and_nature">Animals &amp; Nature</string>
-    <string name="emoji_category_food_and_drink">Food &amp; Drink</string>
-    <string name="emoji_category_activity_and_sport">Activity &amp; Sport</string>
-    <string name="emoji_category_travel_and_places">Travel &amp; Places</string>
+    <string name="emoji_category_smileys_and_people">Smiley &amp; Orang</string>
+    <string name="emoji_category_animals_and_nature">Hewan &amp; Alam</string>
+    <string name="emoji_category_food_and_drink">Makanan &amp; Minuman</string>
+    <string name="emoji_category_activity_and_sport">Aktivitas &amp; Olahraga</string>
+    <string name="emoji_category_travel_and_places">Perjalanan &amp; Tempat</string>
     <string name="emoji_category_objects">Objek</string>
-    <string name="emoji_category_symbols">Symbols</string>
-    <string name="emoji_category_flags">Flags</string>
-    <string name="emoji_recently_used_section">Recently used</string>
+    <string name="emoji_category_symbols">Simbol</string>
+    <string name="emoji_category_flags">Bendera</string>
+    <string name="emoji_recently_used_section">Baru-baru ini dipakai</string>
     <string name="chat_message_reactions_no_reactions_yet">Belum ada reaksi</string>
     <string name="chat_message_reactions_no_reactions_message">Mungkin seseorang menghapus reaksinya atau ada masalah teknis</string>
-    <string name="object_types_human">Human</string>
+    <string name="object_types_human">Manusia</string>
     <string name="chats_alert_delete_this_message_description">Pesan tak dapat dikembalikan lagi</string>
     <string name="chats_alert_delete_this_message">Hapus pesan ini?</string>
 </resources>

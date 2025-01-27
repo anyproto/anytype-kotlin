@@ -15,7 +15,9 @@ import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -41,7 +43,7 @@ fun Block.Content.File.toPictureView(
     background: ThemeColor,
     isPreviousBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>,
-    details: Block.Details = Block.Details(),
+    details: ObjectViewDetails,
     fieldParser: FieldParser
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Picture(
@@ -64,11 +66,11 @@ fun Block.Content.File.toPictureView(
     Block.Content.File.State.DONE -> {
 
         val url = urlBuilder.getUrlForFileContent(this)
-        val currentObject = ObjectWrapper.Basic(details.details[context]?.map.orEmpty())
-        val targetObject = ObjectWrapper.Basic(details.details[targetObjectId]?.map.orEmpty())
+        val currentObject = details.getObject(id = context)
+        val targetObject = details.getObject(id = targetObjectId)
 
-        if (url != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
-            if (currentObject.layout == ObjectType.Layout.IMAGE) {
+        if (url != null && targetObject != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
+            if (currentObject?.layout == ObjectType.Layout.IMAGE) {
                 BlockView.ButtonOpenFile.ImageButton(
                     id = blockId,
                     targetId = targetObjectId
@@ -121,7 +123,7 @@ fun Block.Content.File.toVideoView(
     background: ThemeColor,
     isPrevBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>,
-    details: Block.Details = Block.Details(),
+    details: ObjectViewDetails,
     fieldParser: FieldParser
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Video(
@@ -144,11 +146,11 @@ fun Block.Content.File.toVideoView(
     Block.Content.File.State.DONE -> {
 
         val url = urlBuilder.getUrlForFileContent(this)
-        val currentObject = ObjectWrapper.Basic(details.details[context]?.map.orEmpty())
-        val targetObject = ObjectWrapper.Basic(details.details[targetObjectId]?.map.orEmpty())
+        val currentObject = details.getObject(id = context)
+        val targetObject = details.getObject(id = targetObjectId)
 
-        if (url != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
-            if (currentObject.layout == ObjectType.Layout.VIDEO) {
+        if (url != null && targetObject != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
+            if (currentObject?.layout == ObjectType.Layout.VIDEO) {
                 BlockView.ButtonOpenFile.FileButton(
                     id = blockId,
                     targetId = targetObjectId
@@ -201,7 +203,7 @@ fun Block.Content.File.toFileView(
     background: ThemeColor,
     isPrevBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>,
-    details: Block.Details = Block.Details(),
+    details: ObjectViewDetails,
     fieldParser: FieldParser
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.File(
@@ -224,11 +226,12 @@ fun Block.Content.File.toFileView(
     Block.Content.File.State.DONE -> {
 
         val url = urlBuilder.getUrlForFileContent(this)
-        val currentObject = ObjectWrapper.Basic(details.details[context]?.map.orEmpty())
-        val targetObject = ObjectWrapper.Basic(details.details[targetObjectId]?.map.orEmpty())
+        val currentObject = details.getObject(id = context)
+        val targetObject = details.getObject(id = targetObjectId)
 
-        if (url != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
-            if (SupportedLayouts.fileLayouts.contains(currentObject.layout)) {
+        if (url != null && targetObject != null && targetObject.isValid && targetObject.notDeletedNorArchived) {
+            val layout = currentObject?.layout
+            if (layout != null && SupportedLayouts.fileLayouts.contains(layout)) {
                 BlockView.ButtonOpenFile.FileButton(
                     id = blockId,
                     targetId = targetObjectId
@@ -282,7 +285,7 @@ fun Block.Align.toView(): Alignment = when (this) {
 
 fun Block.Content.Text.marks(
     urlBuilder: UrlBuilder,
-    details: Block.Details
+    details: ObjectViewDetails
 ): List<Markup.Mark> = marks
     .filterByRange(text.length)
     .mapNotNull { mark ->
@@ -345,32 +348,29 @@ fun Block.Content.Text.marks(
                 )
             }
             Block.Content.Text.Mark.Type.MENTION -> {
-
-                val wrapper = if (!details.details.containsKey(mark.param)) {
+                val param = mark.param
+                if (param.isNullOrBlank()) {
                     null
                 } else {
-                    ObjectWrapper.Basic(map = details.details[mark.param]?.map ?: emptyMap())
+                    mark.createMentionMarkup(
+                        obj = details.getObject(id = param),
+                        urlBuilder = urlBuilder
+                    )
                 }
-
-                mark.createMentionMarkup(
-                    obj = wrapper,
-                    urlBuilder = urlBuilder
-                )
             }
             Block.Content.Text.Mark.Type.OBJECT -> {
-                val wrapper = if (!details.details.containsKey(mark.param)) {
+                val param = mark.param
+                if (param.isNullOrBlank()) {
                     null
                 } else {
-                    ObjectWrapper.Basic(map = details.details[mark.param]?.map ?: emptyMap())
+                    val wrapper = details.getObject(id = param)
+                    Markup.Mark.Object(
+                        from = mark.range.first,
+                        to = mark.range.last,
+                        param = param,
+                        isArchived = wrapper?.isArchived == true
+                    )
                 }
-                val param = mark.param
-                if (param.isNullOrBlank()) null
-                else Markup.Mark.Object(
-                    from = mark.range.first,
-                    to = mark.range.last,
-                    param = param,
-                    isArchived = wrapper?.isArchived == true
-                )
             }
             else -> null
         }

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -99,16 +100,15 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         val doc = listOf(page, header, title, paragraph, featuredBlock)
 
-        val objectDetails = Block.Fields(
+        val objectDetails =
             mapOf(
                 Relations.SPACE_ID to defaultSpace,
                 Relations.TYPE to ObjectTypeIds.NOTE,
                 Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble(),
                 Relations.INTERNAL_FLAGS to listOf(1.0)
             )
-        )
 
-        val detailsList = Block.Details(details = mapOf(root to objectDetails))
+        val detailsList = ObjectViewDetails(details = mapOf(root to objectDetails))
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
@@ -169,14 +169,13 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         val doc = listOf(page, header, paragraph, featuredBlock)
 
-        val objectDetails = Block.Fields(
+        val objectDetails =
             mapOf(
                 "type" to ObjectTypeIds.NOTE,
                 "layout" to ObjectType.Layout.NOTE.code.toDouble()
             )
-        )
 
-        val detailsList = Block.Details(details = mapOf(root to objectDetails))
+        val detailsList = ObjectViewDetails(details = mapOf(root to objectDetails))
 
         stubInterceptEvents()
         stubInterceptThreadStatus()

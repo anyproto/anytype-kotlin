@@ -87,7 +87,7 @@ class SetOrCollectionRelationProvider(
         }.flatMapLatest { state ->
             when (state) {
                 is ObjectState.DataView.Collection -> {
-                    val objectKeys = state.details[id]?.map?.keys.orEmpty()
+                    val objectKeys = state.details.details[id]?.keys.orEmpty()
                     flow {
                         objectKeys.mapNotNull {
                             storeOfRelations.getByKey(it)
@@ -95,7 +95,7 @@ class SetOrCollectionRelationProvider(
                     }
                 }
                 is ObjectState.DataView.Set -> {
-                    val objectKeys = state.details[id]?.map?.keys.orEmpty()
+                    val objectKeys = state.details.details[id]?.keys.orEmpty()
                     flow {
                         objectKeys.mapNotNull {
                             storeOfRelations.getByKey(it)

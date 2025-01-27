@@ -51,6 +51,7 @@ abstract class ObjectMenuBaseFragment :
     private val isArchived get() = arg<Boolean>(IS_ARCHIVED_KEY)
     private val isFavorite get() = arg<Boolean>(IS_FAVORITE_KEY)
     private val isLocked get() = arg<Boolean>(IS_LOCKED_KEY)
+    private val isReadOnly get() = arg<Boolean>(IS_READ_ONLY_KEY)
     private val isTemplate get() = argOrNull<Boolean>(IS_TEMPLATE_KEY)
     private val fromName get() = argOrNull<String?>(FROM_NAME)
 
@@ -106,7 +107,8 @@ abstract class ObjectMenuBaseFragment :
             isArchived = isArchived,
             isFavorite = isFavorite,
             isLocked = isLocked,
-            isTemplate = isTemplate ?: false
+            isTemplate = isTemplate == true,
+            isReadOnly = isReadOnly
         )
     }
 
@@ -354,6 +356,7 @@ abstract class ObjectMenuBaseFragment :
         const val IS_ARCHIVED_KEY = "arg.doc-menu-bottom-sheet.is-archived"
         const val IS_FAVORITE_KEY = "arg.doc-menu-bottom-sheet.is-favorite"
         const val IS_LOCKED_KEY = "arg.doc-menu-bottom-sheet.is-locked"
+        const val IS_READ_ONLY_KEY = "arg.doc-menu-bottom-sheet.is-read-only"
         const val FROM_NAME = "arg.doc-menu-bottom-sheet.from-name"
         const val COMING_SOON_MSG = "Coming soon..."
         const val IS_TEMPLATE_KEY = "arg.doc-menu-bottom-sheet.is-template"

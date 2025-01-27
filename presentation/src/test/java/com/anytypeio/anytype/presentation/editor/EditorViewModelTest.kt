@@ -12,7 +12,6 @@ import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubNumbered
 import com.anytypeio.anytype.core_models.StubObject
@@ -24,7 +23,6 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
-import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -106,6 +104,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
@@ -2573,7 +2572,7 @@ open class EditorViewModelTest {
             fileExt = ".pdf"
         )
 
-        val objectDetails = Block.Fields(targetObject.map)
+        val objectDetails = targetObject.map
 
         val page = listOf(
             Block(
@@ -2594,9 +2593,7 @@ open class EditorViewModelTest {
                         root = root,
                         blocks = page,
                         context = root,
-                        details = Block.Details(mapOf(
-                            targetObjectId to objectDetails
-                        ))
+                        details = mapOf(targetObjectId to objectDetails)
                     )
                 )
             )
@@ -3591,8 +3588,7 @@ open class EditorViewModelTest {
 
     private fun givenOpenDocument(
         document: List<Block> = emptyList(),
-        details: Block.Details = Block.Details(),
-        relations: List<Relation> = emptyList(),
+        details: ObjectViewDetails = ObjectViewDetails.EMPTY,
         objectRestrictions: List<ObjectRestriction> = emptyList()
     ) {
         openPage.stub {
@@ -3604,7 +3600,7 @@ open class EditorViewModelTest {
                             Event.Command.ShowObject(
                                 context = root,
                                 root = root,
-                                details = details,
+                                details = details.details,
                                 blocks = document,
                                 objectRestrictions = objectRestrictions
                             )

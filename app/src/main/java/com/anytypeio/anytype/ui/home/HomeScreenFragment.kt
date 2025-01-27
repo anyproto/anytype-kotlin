@@ -57,9 +57,6 @@ import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListene
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
-import com.anytypeio.anytype.ui.profile.ParticipantFragment
-import com.anytypeio.anytype.ui.search.GlobalSearchScreen
-import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
@@ -179,9 +176,6 @@ class HomeScreenFragment : BaseComposeFragment(),
             onCreateNewObjectLongClicked = throttledClick(
                 onClick = { vm.onCreateNewObjectLongClicked() }
             ),
-            onBackClicked = throttledClick(
-                onClick = { vm.onBackClicked(isSpaceRootScreen()) }
-            ),
             onSpaceWidgetClicked = throttledClick(
                 onClick = vm::onSpaceSettingsClicked
             ),
@@ -192,8 +186,8 @@ class HomeScreenFragment : BaseComposeFragment(),
             onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
             onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
             onCreateDataViewObject = vm::onCreateDataViewObject,
-            onBackLongClicked = vm::onBackLongClicked,
-            onShareButtonClicked = vm::onSpaceShareIconClicked
+            onShareButtonClicked = vm::onSpaceShareIconClicked,
+            navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value
         )
     }
 

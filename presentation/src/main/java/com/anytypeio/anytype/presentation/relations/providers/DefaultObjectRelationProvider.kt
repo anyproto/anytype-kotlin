@@ -30,7 +30,7 @@ class DefaultObjectRelationProvider(
         ) { _, details ->
             details
         }.flatMapLatest { details ->
-            val objectKeys = details.details[id]?.map?.keys ?: emptyList()
+            val objectKeys = details.details[id]?.keys.orEmpty()
             flow {
                 objectKeys.mapNotNull {
                     storeOfRelations.getByKey(it)

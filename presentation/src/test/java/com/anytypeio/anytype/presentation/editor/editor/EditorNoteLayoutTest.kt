@@ -3,9 +3,9 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.StubRelationObject
@@ -104,8 +104,9 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val objectFields = Block.Fields(
+        val objectFields =
             mapOf(
+                Relations.ID to root,
                 r1.key to value1,
                 r2.key to value2,
                 r3.key to value3,
@@ -113,17 +114,15 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 Relations.FEATURED_RELATIONS to listOf(Relations.TYPE),
                 Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble()
             )
-        )
 
-        val objectTypeFields = Block.Fields(
+        val objectTypeFields =
             mapOf(
                 Relations.ID to objectTypeId,
                 Relations.UNIQUE_KEY to objectType.uniqueKey,
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription
             )
-        )
-        val customDetails = Block.Details(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to objectFields,
                 objectTypeId to objectTypeFields
@@ -136,10 +135,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         stubGetDefaultObjectType()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -224,8 +220,9 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val objectFields = Block.Fields(
+        val objectFields =
             mapOf(
+                Relations.ID to root,
                 r1.key to value1,
                 r2.key to value2,
                 r3.key to value3,
@@ -233,17 +230,15 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 Relations.FEATURED_RELATIONS to listOf(Relations.TYPE),
                 Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
             )
-        )
 
-        val objectTypeFields = Block.Fields(
+        val objectTypeFields =
             mapOf(
                 Relations.ID to objectTypeId,
                 Relations.UNIQUE_KEY to MockDataFactory.randomString(),
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription
             )
-        )
-        val customDetails = Block.Details(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to objectFields,
                 objectTypeId to objectTypeFields
@@ -256,10 +251,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         stubGetDefaultObjectType()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()

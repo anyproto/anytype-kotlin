@@ -22,6 +22,7 @@ message Event {
             Account.Config.Update accountConfigUpdate = 202;
             Account.Update accountUpdate = 203;
             Account.LinkChallenge accountLinkChallenge = 204;
+            Account.LinkChallengeHide accountLinkChallengeHide = 205;
 
             Object.Details.Set objectDetailsSet = 16;
             Object.Details.Amend objectDetailsAmend = 50;
@@ -172,6 +173,11 @@ message Event {
             }
             string challenge = 1;
             ClientInfo clientInfo = 2;
+            model.Account.Auth.LocalApiScope scope = 3;
+        }
+
+        message LinkChallengeHide {
+            string challenge = 1; // verify code before hiding to protect from MITM attacks
         }
     }
 

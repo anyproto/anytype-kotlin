@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
@@ -279,15 +280,15 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         stubOpenDocument(
             document = page,
-            details = Block.Details(
+            details = ObjectViewDetails(
                 mapOf(
-                    target to Block.Fields(
+                    target to
                         mapOf(
                             Relations.ID to target,
-                            Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                            Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+                            Relations.SPACE_ID to defaultSpace
                         )
                     )
-                )
             )
         )
 
@@ -391,16 +392,16 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         stubClosePage()
         stubOpenDocument(
             document = page,
-            details = Block.Details(
+            details = ObjectViewDetails(
                 mapOf(
-                    target to Block.Fields(
+                    target to
                         mapOf(
                             Relations.ID to target,
                             Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
                             Relations.SPACE_ID to defaultSpace
                         )
                     )
-                )
+
             )
         )
 
@@ -504,16 +505,16 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         stubClosePage()
         stubOpenDocument(
             document = page,
-            details = Block.Details(
+            details = ObjectViewDetails(
                 mapOf(
-                    bookmarkObjectId to Block.Fields(
+                    bookmarkObjectId to
                         mapOf(
+                            Relations.ID to root,
                             Relations.NAME to bookmarkTitle,
                             Relations.DESCRIPTION to bookmarkDescription,
                             Relations.SOURCE to bookmarkUrl
                         )
                     )
-                )
             )
         )
 
@@ -612,9 +613,9 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubOpenDocument(
             document = page,
-            details = Block.Details(
+            details = ObjectViewDetails(
                 mapOf(
-                    targetObjectId to Block.Fields(
+                    targetObjectId to
                         mapOf(
                             Relations.ID to targetObjectId,
                             Relations.FILE_MIME_TYPE to mimeType,
@@ -622,7 +623,6 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                             Relations.SIZE_IN_BYTES to fileSize
                         )
                     )
-                )
             )
         )
 
@@ -714,9 +714,9 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubOpenDocument(
             document = page,
-            details = Block.Details(
+            details = ObjectViewDetails(
                 mapOf(
-                    targetObjectId to Block.Fields(
+                    targetObjectId to
                         mapOf(
                             Relations.ID to targetObjectId,
                             Relations.FILE_MIME_TYPE to mimeType,
@@ -724,7 +724,6 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                             Relations.SIZE_IN_BYTES to fileSize
                         )
                     )
-                )
             )
         )
 

@@ -15,12 +15,12 @@ import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.VmParams
-import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
 class ObjectRelationListViewModelFactory(
     private val vmParams: VmParams,
-    private val relationListProvider: RelationListProvider,
+    private val objectRelationListProvider: ObjectRelationListProvider,
     private val lockedStateProvider: LockedStateProvider,
     private val urlBuilder: UrlBuilder,
     private val dispatcher: Dispatcher<Payload>,
@@ -39,7 +39,7 @@ class ObjectRelationListViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return RelationListViewModel(
             vmParams = vmParams,
-            relationListProvider = relationListProvider,
+            objectRelationListProvider = objectRelationListProvider,
             lockedStateProvider = lockedStateProvider,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,

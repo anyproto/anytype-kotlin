@@ -27,12 +27,13 @@ import com.anytypeio.anytype.core_utils.ext.TOMORROW
 import com.anytypeio.anytype.core_utils.ext.YESTERDAY
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.typeOf
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -202,19 +203,18 @@ fun title(
     ctx: Id,
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
-    details: Map<Id, Block.Fields>
+    details: ObjectViewDetails
 ): BlockView.Title.Basic {
-    val wrapper = ObjectWrapper.Basic(details[ctx]?.map ?: emptyMap())
-    val objectDetails = details[ctx]
-    val coverContainer = BlockFieldsCoverWrapper(objectDetails).getCover(
+    val wrapper = details.getObject(ctx)
+    val coverContainer = BasicObjectCoverWrapper(wrapper).getCover(
         urlBuilder = urlBuilder,
         coverImageHashProvider = coverImageHashProvider
     )
     return BlockView.Title.Basic(
         id = title.id,
-        text = wrapper.name.orEmpty(),
-        emoji = wrapper.iconEmoji.orNull(),
-        image = wrapper.iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.medium(it) },
+        text = wrapper?.name.orEmpty(),
+        emoji = wrapper?.iconEmoji.orNull(),
+        image = wrapper?.iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.medium(it) },
         coverImage = coverContainer.coverImage,
         coverColor = coverContainer.coverColor,
         coverGradient = coverContainer.coverGradient

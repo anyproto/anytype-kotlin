@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.templates
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
@@ -13,7 +12,7 @@ import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
@@ -122,10 +121,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to null
         )
 
-        val details = Block.Details(
+        val details = ObjectViewDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                pageTypeId.id to Block.Fields(map = pageTypeMap)
+                root to collectionObjDetails,
+                pageTypeId.id to pageTypeMap
             )
         )
 
@@ -214,10 +213,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to null
         )
 
-        val details = Block.Details(
+        val details = ObjectViewDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                pageTypeId.id to Block.Fields(map = pageTypeMap)
+                root to collectionObjDetails,
+                pageTypeId.id to pageTypeMap
             )
         )
 
@@ -306,10 +305,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to pageTemplate2.id
         )
 
-        val details = Block.Details(
+        val details = ObjectViewDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                pageTypeId.id to Block.Fields(map = pageTypeMap)
+                root to collectionObjDetails,
+                pageTypeId.id to pageTypeMap
             )
         )
 
@@ -398,10 +397,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to template1.id
         )
 
-        val details = Block.Details(
+        val details = ObjectViewDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                customType1Id to Block.Fields(map = customType1Map)
+                root to collectionObjDetails,
+                customType1Id to customType1Map
             )
         )
 
@@ -490,10 +489,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to template1.id
         )
 
-        val details = Block.Details(
+        val details = ObjectViewDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                customType1Id to Block.Fields(map = customType1Map)
+                root to collectionObjDetails,
+                customType1Id to customType1Map
             )
         )
 
@@ -582,10 +581,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to template1.id
         )
 
-        val details = Block.Details(
+        val details = ObjectViewDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                customType1Id to Block.Fields(map = customType1Map)
+                root to collectionObjDetails,
+                customType1Id to customType1Map
             )
         )
 

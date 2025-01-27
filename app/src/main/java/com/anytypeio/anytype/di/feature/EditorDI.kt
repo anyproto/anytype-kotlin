@@ -2,8 +2,6 @@ package com.anytypeio.anytype.di.feature
 
 import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
@@ -119,11 +117,10 @@ import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
@@ -230,7 +227,7 @@ object EditorSessionModule {
     @PerScreen
     fun relationListProvider(
         storage: Editor.Storage
-    ) : RelationListProvider = RelationListProvider.EditorRelationListProvider(
+    ) : ObjectRelationListProvider = ObjectRelationListProvider.EditorRelationListProvider(
         storage = storage
     )
 
@@ -901,15 +898,6 @@ object EditorUseCaseModule {
     fun provideDefaultObjectValueProvider(
         storage: Editor.Storage
     ): ObjectValueProvider = DefaultObjectValueProvider(storage.details)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideObjectDetailProvider(
-        storage: Editor.Storage
-    ): ObjectDetailProvider = object : ObjectDetailProvider {
-        override fun provide(): Map<Id, Block.Fields> = storage.details.current().details
-    }
 
     @JvmStatic
     @Provides

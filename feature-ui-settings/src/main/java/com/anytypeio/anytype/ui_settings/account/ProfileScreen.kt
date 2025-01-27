@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui_settings.account
 
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,7 +8,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +20,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -35,10 +37,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -46,10 +48,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.anytypeio.anytype.core_ui.foundation.Arrow
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Option
@@ -59,6 +61,8 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
@@ -73,14 +77,15 @@ fun ProfileSettingsScreen(
     isLogoutInProgress: Boolean,
     onNameChange: (String) -> Unit,
     onProfileIconClick: () -> Unit,
-    account: ProfileSettingsViewModel.AccountProfile,
+    account: AccountProfile,
     onAppearanceClicked: () -> Unit,
     onDataManagementClicked: () -> Unit,
     onAboutClicked: () -> Unit,
     onSpacesClicked: () -> Unit,
     onMembershipClicked: () -> Unit,
     membershipStatus: MembershipStatus?,
-    showMembership: ShowMembership?
+    showMembership: ShowMembership?,
+    clearProfileImage: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -92,7 +97,8 @@ fun ProfileSettingsScreen(
             Header(
                 account = account,
                 onNameSet = onNameChange,
-                onProfileIconClick = onProfileIconClick
+                onProfileIconClick = onProfileIconClick,
+                clearProfileImage = clearProfileImage
             )
         }
         item {
@@ -269,12 +275,13 @@ fun ActionWithProgressBar(
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
-    account: ProfileSettingsViewModel.AccountProfile,
+    account: AccountProfile,
     onProfileIconClick: () -> Unit,
-    onNameSet: (String) -> Unit
+    onNameSet: (String) -> Unit,
+    clearProfileImage: () -> Unit
 ) {
     when (account) {
-        is ProfileSettingsViewModel.AccountProfile.Data -> {
+        is AccountProfile.Data -> {
             Box(modifier = modifier.padding(vertical = 6.dp)) {
                 Dragger()
             }
@@ -285,12 +292,13 @@ private fun Header(
                 ProfileImageBlock(
                     name = account.name,
                     icon = account.icon,
-                    onProfileIconClick = onProfileIconClick
+                    onProfileIconClick = onProfileIconClick,
+                    clearProfileImage = clearProfileImage
                 )
             }
             ProfileNameBlock(name = account.name, onNameSet = onNameSet)
         }
-        is ProfileSettingsViewModel.AccountProfile.Idle -> {}
+        is AccountProfile.Idle -> {}
     }
 }
 
@@ -395,8 +403,15 @@ fun ProfileTitleBlock() {
 fun ProfileImageBlock(
     name: String,
     icon: ProfileIconView,
-    onProfileIconClick: () -> Unit
+    onProfileIconClick: () -> Unit,
+    clearProfileImage: () -> Unit
 ) {
+    val isIconMenuExpanded = remember {
+        mutableStateOf(false)
+    }
+
+    val context = LocalContext.current
+
     when (icon) {
         is ProfileIconView.Image -> {
             Image(
@@ -407,7 +422,7 @@ fun ProfileImageBlock(
                     .size(96.dp)
                     .clip(RoundedCornerShape(48.dp))
                     .noRippleClickable {
-                        onProfileIconClick.invoke()
+                        isIconMenuExpanded.value = !isIconMenuExpanded.value
                     }
             )
         }
@@ -437,9 +452,55 @@ fun ProfileImageBlock(
             }
         }
     }
+    MaterialTheme(
+        shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp))
+    ) {
+        DropdownMenu(
+            modifier = Modifier
+                .background(
+                    shape = RoundedCornerShape(10.dp),
+                    color = colorResource(id = R.color.background_secondary)),
+            expanded = isIconMenuExpanded.value,
+            offset = DpOffset(x = 0.dp, y = 6.dp),
+            onDismissRequest = {
+                isIconMenuExpanded.value = false
+            }
+        ) {
+            if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
+                DropdownMenuItem(
+                    onClick = {
+                        onProfileIconClick.invoke()
+                        isIconMenuExpanded.value = false
+                    },
+                ) {
+                    Text(
+                        text = stringResource(R.string.profile_settings_apply_upload_image),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+            }
+            Divider(
+                paddingStart = 0.dp,
+                paddingEnd = 0.dp,
+            )
+            DropdownMenuItem(
+                onClick = {
+                    isIconMenuExpanded.value = false
+                    clearProfileImage.invoke()
+                },
+            ) {
+                Text(
+                    text = stringResource(R.string.profile_settings_remove_image),
+                    style = BodyRegular,
+                    color = colorResource(id = R.color.text_primary)
+                )
+            }
+        }
+    }
 }
 
-@Preview
+@DefaultPreviews
 @Composable
 private fun ProfileSettingPreview() {
     ProfileSettingsScreen(
@@ -448,7 +509,7 @@ private fun ProfileSettingPreview() {
         isLogoutInProgress = false,
         onNameChange = {},
         onProfileIconClick = {},
-        account = ProfileSettingsViewModel.AccountProfile.Data(
+        account = AccountProfile.Data(
             "Walter",
             icon = ProfileIconView.Placeholder("Walter")
         ),
@@ -458,7 +519,8 @@ private fun ProfileSettingPreview() {
         onSpacesClicked = {},
         onMembershipClicked = {},
         membershipStatus = null,
-        showMembership = ShowMembership(true)
+        showMembership = ShowMembership(true),
+        clearProfileImage = {}
     )
 }
 

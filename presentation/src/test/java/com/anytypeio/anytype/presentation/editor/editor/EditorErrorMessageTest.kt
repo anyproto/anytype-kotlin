@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubFile
-import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -50,9 +50,9 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
             targetObjectId = fileObjectId
         )
 
-        val details = Block.Details(
+        val details = ObjectViewDetails(
             mapOf(
-                fileObjectId to Block.Fields(
+                fileObjectId to
                     mapOf(
                         Relations.ID to fileObjectId,
                         Relations.NAME to "file object",
@@ -61,7 +61,6 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
                         Relations.LAYOUT to ObjectType.Layout.FILE.code.toDouble()
                     )
                 )
-            )
         )
 
         val doc = listOf(

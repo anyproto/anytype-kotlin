@@ -45,6 +45,8 @@
     <string name="default_space">Ваша прастора</string>
     <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Загрузіць відарыс</string>
+    <string name="profile_settings_apply_upload_image">Загрузіць відарыс</string>
+    <string name="profile_settings_remove_image">Remove image</string>
     <string name="delete_space">Выдаліць прастору</string>
     <string name="you_can_store">Вы можаце бясплатна захоўваць да %1$s вашых файлаў на нашым зашыфраваным вузле рэзервовага капіравання. Калі вы вычарпаеце ліміт, файлы будуць захоўвацца толькі лакальна.</string>
     <string name="in_order_to_save">Каб зэканоміць месца на лакальнай прыладзе, вы можаце загрузіць усе свае файлы ў наш зашыфраваны вузел рэзервовага капіявання. Файлы будуць загружаны назад, калі вы іх адкрыеце.</string>

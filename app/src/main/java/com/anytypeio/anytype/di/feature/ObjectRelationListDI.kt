@@ -16,7 +16,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
-import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import dagger.BindsInstance
@@ -47,7 +47,7 @@ object ObjectRelationListModule {
     fun factory(
         vmParams: RelationListViewModel.VmParams,
         lockedStateProvider: LockedStateProvider,
-        relationListProvider: RelationListProvider,
+        objectRelationListProvider: ObjectRelationListProvider,
         urlBuilder: UrlBuilder,
         dispatcher: Dispatcher<Payload>,
         updateDetail: UpdateDetail,
@@ -63,7 +63,7 @@ object ObjectRelationListModule {
         return ObjectRelationListViewModelFactory(
             vmParams = vmParams,
             lockedStateProvider = lockedStateProvider,
-            relationListProvider = relationListProvider,
+            objectRelationListProvider = objectRelationListProvider,
             urlBuilder = urlBuilder,
             dispatcher = dispatcher,
             updateDetail = updateDetail,

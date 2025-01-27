@@ -530,7 +530,7 @@ class EditorViewModel(
             success = { hash ->
                 setDocCoverImage(
                     SetDocCoverImage.Params.FromHash(
-                        context = context,
+                        context = vmParams.ctx,
                         hash = hash
                     )
                 ).process(
@@ -627,7 +627,7 @@ class EditorViewModel(
         if (featureToggles.isLogEditorViewModelEvents) {
             Timber.d("Blocks after handling events: ${blocks.toPrettyString()}")
         }
-        return events.flags(context)
+        return events.flags(vmParams.ctx)
     }
 
     private fun startProcessingControlPanelViewState() {
@@ -689,7 +689,7 @@ class EditorViewModel(
                         rerenderingBlocks(newBlock)
                         proceedWithUpdatingText(
                             intent = Intent.Text.UpdateText(
-                                context = context,
+                                context = vmParams.ctx,
                                 text = newBlock.content.asText().text,
                                 target = targetBlock.id,
                                 marks = sortedMarks

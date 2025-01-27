@@ -16,6 +16,7 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.MockBlockFactory.paragraph
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed
 import com.anytypeio.anytype.test_utils.utils.checkIsNotDisplayed
@@ -42,13 +43,12 @@ class SlashTextWatcherTesting : EditorTestSetup() {
 
     private val args = bundleOf(EditorFragment.CTX_KEY to root)
 
-    private val defaultDetails = Block.Details(
+    private val defaultDetails = AllObjectsDetails(
         mapOf(
-            root to Block.Fields(
+            root to
                 mapOf(
                     "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
                 )
-            )
         )
     )
 

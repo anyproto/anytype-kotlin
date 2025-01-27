@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.presentation.MockObjectTypes
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
@@ -440,16 +441,16 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val value3 = "Captain Beefheart and his Magic Band"
 
         val customDetails =
-            Block.Details(
+            AllObjectsDetails(
                 mapOf(
-                    root to Block.Fields(
+                    root to
                         mapOf(
+                            Relations.ID to root,
                             relation1.key to value1,
                             relation2.key to value2,
                             relation3.key to value3
                         )
                     )
-                )
             )
 
         val a = Block(
@@ -483,13 +484,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubOpenDocument(
             document = document,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(
-                    key = it.key,
-                    format = it.relationFormat
-                )
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()

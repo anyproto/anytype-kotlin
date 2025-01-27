@@ -106,6 +106,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
@@ -2573,7 +2574,7 @@ open class EditorViewModelTest {
             fileExt = ".pdf"
         )
 
-        val objectDetails = Block.Fields(targetObject.map)
+        val objectDetails = targetObject.map
 
         val page = listOf(
             Block(
@@ -2594,9 +2595,7 @@ open class EditorViewModelTest {
                         root = root,
                         blocks = page,
                         context = root,
-                        details = Block.Details(mapOf(
-                            targetObjectId to objectDetails
-                        ))
+                        details = mapOf(targetObjectId to objectDetails)
                     )
                 )
             )
@@ -3591,8 +3590,7 @@ open class EditorViewModelTest {
 
     private fun givenOpenDocument(
         document: List<Block> = emptyList(),
-        details: Block.Details = Block.Details(),
-        relations: List<Relation> = emptyList(),
+        details: AllObjectsDetails = AllObjectsDetails.EMPTY,
         objectRestrictions: List<ObjectRestriction> = emptyList()
     ) {
         openPage.stub {
@@ -3604,7 +3602,7 @@ open class EditorViewModelTest {
                             Event.Command.ShowObject(
                                 context = root,
                                 root = root,
-                                details = details,
+                                details = details.details,
                                 blocks = document,
                                 objectRestrictions = objectRestrictions
                             )
@@ -3812,7 +3810,7 @@ open class EditorViewModelTest {
 
     fun givenViewModel(urlBuilder: UrlBuilder = builder) {
 
-        val storage = Editor.Storage()
+        val storage = Editor.Storage(root)
         val proxies = Editor.Proxer()
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()

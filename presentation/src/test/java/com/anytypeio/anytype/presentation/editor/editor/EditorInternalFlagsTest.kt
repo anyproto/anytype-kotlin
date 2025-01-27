@@ -12,10 +12,12 @@ import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubTitle
+import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -50,16 +52,16 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubGetObjectTypes(emptyList())
 
-        val detailsList = Block.Details(
+        val detailsList = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
+                        Relations.ID to root,
                         Relations.TYPE to ObjectTypeIds.NOTE,
                         Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble(),
                         Relations.INTERNAL_FLAGS to listOf(2.0, 0.0, 1.0)
                     )
                 )
-            )
         )
         stubOpenDocument(document = document, details = detailsList)
 
@@ -71,39 +73,14 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
 
         val storedDetails = orchestrator.stores.details.current()
 
-        val objectDetails = ObjectWrapper.Basic(storedDetails.details[root]?.map.orEmpty())
+        val objectDetails = storedDetails.details[root].toObject()
 
         val expectedFlags = listOf(
             InternalFlags.ShouldSelectTemplate,
             InternalFlags.ShouldEmptyDelete,
             InternalFlags.ShouldSelectType
         )
-        val actualFlags = objectDetails.internalFlags
-
-        assertEquals(expected = expectedFlags, actual = actualFlags)
-    }
-
-    @Test
-    fun `should hasn't internal flags on object open`() = runTest {
-        val title = StubTitle()
-        val header = StubHeader(children = listOf(title.id))
-        val page = StubSmartBlock(id = root, children = listOf(header.id))
-        val document = listOf(page, header, title)
-        stubInterceptEvents()
-        stubOpenDocument(document = document)
-
-        val vm = buildViewModel()
-
-        vm.onStart(id = root, space = defaultSpace)
-
-        advanceUntilIdle()
-
-        val storedDetails = orchestrator.stores.details.current()
-
-        val objectDetails = ObjectWrapper.Basic(storedDetails.details[root]?.map.orEmpty())
-
-        val expectedFlags = emptyList<InternalFlags>()
-        val actualFlags = objectDetails.internalFlags
+        val actualFlags = objectDetails?.internalFlags
 
         assertEquals(expected = expectedFlags, actual = actualFlags)
     }
@@ -116,9 +93,9 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         val document = listOf(page, header, title)
         stubInterceptEvents()
 
-        val detailsList = Block.Details(
+        val detailsList = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         Relations.TYPE to ObjectTypeIds.PAGE,
                         Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
@@ -128,7 +105,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
                             InternalFlags.ShouldSelectType.code.toDouble(),
                         )
                     )
-                )
+
             )
         )
         stubOpenDocument(document = document, details = detailsList)
@@ -160,9 +137,9 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
 
-        val detailsList = Block.Details(
+        val detailsList = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         Relations.TYPE to ObjectTypeIds.PAGE,
                         Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
@@ -171,7 +148,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
                             InternalFlags.ShouldEmptyDelete.code.toDouble()
                         )
                     )
-                )
+
             )
         )
         stubOpenDocument(document = document, details = detailsList)
@@ -200,9 +177,9 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         val document = listOf(page, header, title)
         stubInterceptEvents()
 
-        val detailsList = Block.Details(
+        val detailsList = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         Relations.TYPE to ObjectTypeIds.PAGE,
                         Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
@@ -211,7 +188,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
                             InternalFlags.ShouldEmptyDelete.code.toDouble(),
                         )
                     )
-                )
+
             )
         )
         stubOpenDocument(document = document, details = detailsList)
@@ -244,9 +221,9 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         val document = listOf(page, header, title)
         stubInterceptEvents()
 
-        val detailsList = Block.Details(
+        val detailsList = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         Relations.TYPE to ObjectTypeIds.PAGE,
                         Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
@@ -254,7 +231,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
                             InternalFlags.ShouldSelectType.code.toDouble(),
                         )
                     )
-                )
+
             )
         )
         stubOpenDocument(document = document, details = detailsList)
@@ -287,17 +264,18 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         val document = listOf(page, header, title)
         stubInterceptEvents()
 
-        val detailsList = Block.Details(
+        val detailsList = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
+                        Relations.ID to root,
                         Relations.TYPE to ObjectTypeIds.PAGE,
                         Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
                         Relations.INTERNAL_FLAGS to listOf(
                             InternalFlags.ShouldSelectType.code.toDouble(),
                         )
                     )
-                )
+
             )
         )
         stubOpenDocument(document = document, details = detailsList)

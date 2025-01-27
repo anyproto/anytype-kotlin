@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
@@ -112,13 +113,11 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
     private fun setupInteractions(
         doc: List<Block>,
-        details: Block.Details = Block.Details(),
-        relations: List<Relation> = listOf()
+        details: AllObjectsDetails = AllObjectsDetails.EMPTY,
     ) {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            relations = relations,
             details = details
         )
         stubSplitBlock()
@@ -196,15 +195,14 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         )
 
         fun createDetailsWithFeaturedRelations(root: Id, relation1: String, relation2: String) =
-            Block.Details(
+            AllObjectsDetails(
                 mapOf(
-                    root to Block.Fields(
-                        mapOf(
-                            "featuredRelations" to listOf(
-                                relation1, relation2
+                    root to
+                            mapOf(
+                                "featuredRelations" to listOf(
+                                    relation1, relation2
+                                )
                             )
-                        )
-                    )
                 )
             )
     }
@@ -613,7 +611,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         setupInteractions(
             doc = doc,
             details = createDetailsWithFeaturedRelations(root, description.id, relation2.key),
-            relations = listOf()
+
         )
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
@@ -954,7 +952,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         setupInteractions(
             doc = doc,
             details = createDetailsWithFeaturedRelations(root, description.id, relation2.key),
-            relations = listOf()
+
         )
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
@@ -1018,7 +1016,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         setupInteractions(
             doc = doc,
             details = createDetailsWithFeaturedRelations(root, description.id, relation2.key),
-            relations = listOf()
+
         )
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
@@ -1197,7 +1195,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         setupInteractions(
             doc = doc,
             details = createDetailsWithFeaturedRelations(root, description.id, relation2.key),
-            relations = listOf()
+
         )
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
@@ -1378,7 +1376,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         setupInteractions(
             doc = doc,
             details = createDetailsWithFeaturedRelations(root, description.id, relation2.key),
-            relations = listOf()
+
         )
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
@@ -1452,7 +1450,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         setupInteractions(
             doc = doc,
             details = createDetailsWithFeaturedRelations(root, description.id, relation2.key),
-            relations = listOf()
+
         )
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
@@ -1526,7 +1524,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         setupInteractions(
             doc = doc,
             details = createDetailsWithFeaturedRelations(root, description.id, relation2.key),
-            relations = listOf()
+
         )
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
@@ -1602,7 +1600,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         setupInteractions(
             doc = doc,
             details = createDetailsWithFeaturedRelations(root, description.id, relation2.key),
-            relations = listOf()
+
         )
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
@@ -1675,7 +1673,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         setupInteractions(
             doc = doc,
             details = createDetailsWithFeaturedRelations(root, description.id, relation2.key),
-            relations = listOf()
+
         )
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
@@ -1748,7 +1746,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         setupInteractions(
             doc = doc,
             details = createDetailsWithFeaturedRelations(root, description.id, relation2.key),
-            relations = listOf()
+
         )
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)

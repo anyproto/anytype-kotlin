@@ -6,14 +6,13 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Relations.ID
 import com.anytypeio.anytype.core_models.Relations.LAYOUT
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.presentation.editor.editor.getObject
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -77,11 +76,13 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
 
-        val rootObject = ObjectWrapper.Basic(
-            map = mapOf(
-                ID to root,
-                Relations.NAME to objectCollection.details.details[root],
-                LAYOUT to COLLECTION_LAYOUT
+        val allObjectsDetails = AllObjectsDetails(
+            details = mapOf(
+                root to mapOf(
+                    Relations.ID to root,
+                    Relations.NAME to objectCollection.details.getObject(root)?.name!!,
+                    LAYOUT to COLLECTION_LAYOUT
+                )
             )
         )
 
@@ -91,7 +92,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                 objectCollection.title,
                 objectCollection.dataView
             ),
-            details = objectCollection.details
+            details = allObjectsDetails
         )
 
         // TESTING
@@ -192,9 +193,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         objectCollection.title,
                         objectCollection.dataView
                     ),
-                    details = AllObjectsDetails(mapOf(
-                        rootObject.id to rootObject.map
-                    )),
+                    details = allObjectsDetails,
                     objectRestrictions = listOf(),
                     dataViewRestrictions = listOf()
                 ),
@@ -202,11 +201,12 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             )
 
             //Add new relation from marketplace to object and view
-            val eventObjectDetailsSet = Event.Command.Details.Set(
+            val eventObjectDetailsSet = Event.Command.Details.Amend(
                 context = root,
-                target = relationId4,
-                details = mapOf(root to relationObject4.map)
+                target = root,
+                details = mapOf(relationKey4 to "")
             )
+
             val eventDataViewRelationSet = Event.Command.DataView.SetRelation(
                 context = root,
                 dv = objectCollection.dataView.id,
@@ -282,10 +282,13 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         objectCollection.title,
                         expectedDataView
                     ),
-                    details = AllObjectsDetails(mapOf(
-                        rootObject.id to rootObject.map,
-                        relationObject4.id to relationObject4.map
-                    )),
+                    details = allObjectsDetails.copy(
+                        details = allObjectsDetails.details.toMutableMap().apply {
+                            this[root] = this[root]!!.toMutableMap().apply {
+                                put(relationKey4, "")
+                            }
+                        }
+                    ),
                     objectRestrictions = listOf(),
                     dataViewRestrictions = listOf()
                 ),

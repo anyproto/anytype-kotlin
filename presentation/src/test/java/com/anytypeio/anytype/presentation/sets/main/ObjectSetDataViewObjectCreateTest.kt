@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import kotlin.test.assertFalse
@@ -165,24 +166,22 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         val skipLayouts = SupportedLayouts.fileLayouts + SupportedLayouts.systemLayouts
         val recommendedLayout = skipLayouts.random()
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(
-                    mapOf(
-                        Relations.ID to root,
-                        Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
-                        Relations.SET_OF to listOf(mockObjectSet.setOf)
-                    )
-                ),
-                mockObjectSet.setOf to Block.Fields(
-                    map = mapOf(
-                        Relations.ID to mockObjectSet.setOf,
-                        Relations.UNIQUE_KEY to setOfKey,
-                        Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
-                        Relations.RECOMMENDED_LAYOUT to recommendedLayout.code.toDouble(),
-                        Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
-                    )
-                )
+                root to
+                        mapOf(
+                            Relations.ID to root,
+                            Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
+                            Relations.SET_OF to listOf(mockObjectSet.setOf)
+                        ),
+                mockObjectSet.setOf to
+                        mapOf(
+                            Relations.ID to mockObjectSet.setOf,
+                            Relations.UNIQUE_KEY to setOfKey,
+                            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+                            Relations.RECOMMENDED_LAYOUT to recommendedLayout.code.toDouble(),
+                            Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+                        )
             )
         )
         stubOpenObject(

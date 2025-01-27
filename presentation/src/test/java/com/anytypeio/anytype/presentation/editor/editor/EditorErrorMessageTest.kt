@@ -50,9 +50,9 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
             targetObjectId = fileObjectId
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             mapOf(
-                fileObjectId to Block.Fields(
+                fileObjectId to
                     mapOf(
                         Relations.ID to fileObjectId,
                         Relations.NAME to "file object",
@@ -61,7 +61,6 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
                         Relations.LAYOUT to ObjectType.Layout.FILE.code.toDouble()
                     )
                 )
-            )
         )
 
         val doc = listOf(

@@ -10,7 +10,9 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProviderImpl
@@ -66,6 +68,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -216,13 +219,12 @@ abstract class TestObjectSetSetup {
         children = listOf(title.id)
     )
 
-    val defaultDetails = Block.Details(
+    val defaultDetails = AllObjectsDetails(
         mapOf(
-            ctx to Block.Fields(
-                mapOf(
-                    "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
-                )
-            )
+            ctx to
+                    mapOf(
+                        Relations.ICON_EMOJI to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
+                    )
         )
     )
 
@@ -347,8 +349,7 @@ abstract class TestObjectSetSetup {
 
     fun stubOpenObjectSet(
         set: List<Block>,
-        details: Block.Details = Block.Details(),
-        relations: List<Relation> = emptyList()
+        details: Map<Id, Struct> = emptyMap<Id, Struct>()
     ) {
         repo.stub {
             onBlocking { openObjectSet(ctx, SpaceId(defaultSpace)) } doReturn Result.Success(
@@ -369,8 +370,7 @@ abstract class TestObjectSetSetup {
 
     fun stubOpenObjectSetWithRecord(
         set: List<Block>,
-        details: Block.Details = Block.Details(),
-        relations: List<Relation> = emptyList()
+        details: AllObjectsDetails = AllObjectsDetails.EMPTY
     ) {
         repo.stub {
             onBlocking { openObjectSet(ctx, SpaceId(defaultSpace)) } doReturn Result.Success(
@@ -380,7 +380,7 @@ abstract class TestObjectSetSetup {
                         Event.Command.ShowObject(
                             context = ctx,
                             root = ctx,
-                            details = details,
+                            details = details.details,
                             blocks = set,
                         )
                     )

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
@@ -122,10 +123,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to null
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                pageTypeId.id to Block.Fields(map = pageTypeMap)
+                root to collectionObjDetails,
+                pageTypeId.id to pageTypeMap
             )
         )
 
@@ -214,10 +215,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to null
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                pageTypeId.id to Block.Fields(map = pageTypeMap)
+                root to collectionObjDetails,
+                pageTypeId.id to pageTypeMap
             )
         )
 
@@ -306,10 +307,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to pageTemplate2.id
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                pageTypeId.id to Block.Fields(map = pageTypeMap)
+                root to collectionObjDetails,
+                pageTypeId.id to pageTypeMap
             )
         )
 
@@ -398,10 +399,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to template1.id
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                customType1Id to Block.Fields(map = customType1Map)
+                root to collectionObjDetails,
+                customType1Id to customType1Map
             )
         )
 
@@ -490,10 +491,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to template1.id
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                customType1Id to Block.Fields(map = customType1Map)
+                root to collectionObjDetails,
+                customType1Id to customType1Map
             )
         )
 
@@ -582,10 +583,10 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to template1.id
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = collectionObjDetails),
-                customType1Id to Block.Fields(map = customType1Map)
+                root to collectionObjDetails,
+                customType1Id to customType1Map
             )
         )
 

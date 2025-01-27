@@ -15,6 +15,7 @@ import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory
 import com.anytypeio.anytype.presentation.MockBlockFactory
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.checkIsRecyclerSize
@@ -119,16 +120,15 @@ class DescriptionTesting : EditorTestSetup() {
 
         val document = listOf(page, header, title, description)
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
                         "featuredRelations" to listOf(Relations.DESCRIPTION),
                         "description" to description.content<Block.Content.Text>().text
                     )
                 )
-            )
         )
 
         stubInterceptEvents()

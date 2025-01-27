@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
@@ -109,10 +110,10 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to null
         )
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = setObjDetails),
-                customType1Id to Block.Fields(map = customType1Map)
+                root to setObjDetails,
+                customType1Id to customType1Map
             )
         )
 
@@ -198,10 +199,10 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to DEFAULT_TEMPLATE_ID_BLANK
         )
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = setObjDetails),
-                customType1Id to Block.Fields(map = customType1Map)
+                root to setObjDetails,
+                customType1Id to customType1Map
             )
         )
 
@@ -287,10 +288,10 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to template2.id
         )
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = setObjDetails),
-                customType1Id to Block.Fields(map = customType1Map)
+                root to setObjDetails,
+                customType1Id to customType1Map
             )
         )
 
@@ -389,11 +390,11 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 defaultTemplateId = template1.id
             )
             val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
-            val details = Block.Details(
+            val details = AllObjectsDetails(
                 details = mapOf(
-                    root to Block.Fields(map = setObjDetails),
-                    customType1Id to Block.Fields(map = customType1Map),
-                    customType2Id to Block.Fields(map = customType2Map)
+                    root to setObjDetails,
+                    customType1Id to customType1Map,
+                    customType2Id to customType2Map
                 )
             )
 
@@ -479,10 +480,10 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to template2.id
         )
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = setObjDetails),
-                customType1Id to Block.Fields(map = customType1Map)
+                root to setObjDetails,
+                customType1Id to customType1Map
             )
         )
 
@@ -568,10 +569,10 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to template2.id
         )
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = mapOf(
-                root to Block.Fields(map = setObjDetails),
-                customType1Id to Block.Fields(map = customType1Map)
+                root to setObjDetails,
+                customType1Id to customType1Map
             )
         )
 

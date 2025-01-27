@@ -99,16 +99,15 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         val doc = listOf(page, header, title, paragraph, featuredBlock)
 
-        val objectDetails = Block.Fields(
+        val objectDetails =
             mapOf(
                 Relations.SPACE_ID to defaultSpace,
                 Relations.TYPE to ObjectTypeIds.NOTE,
                 Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble(),
                 Relations.INTERNAL_FLAGS to listOf(1.0)
             )
-        )
 
-        val detailsList = Block.Details(details = mapOf(root to objectDetails))
+        val detailsList = AllObjectsDetails(details = mapOf(root to objectDetails))
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
@@ -169,14 +168,13 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         val doc = listOf(page, header, paragraph, featuredBlock)
 
-        val objectDetails = Block.Fields(
+        val objectDetails =
             mapOf(
                 "type" to ObjectTypeIds.NOTE,
                 "layout" to ObjectType.Layout.NOTE.code.toDouble()
             )
-        )
 
-        val detailsList = Block.Details(details = mapOf(root to objectDetails))
+        val detailsList = AllObjectsDetails(details = mapOf(root to objectDetails))
 
         stubInterceptEvents()
         stubInterceptThreadStatus()

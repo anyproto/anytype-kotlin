@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
@@ -85,6 +86,10 @@ object MockObjectSetFactory {
 
         val blocks = listOf(title, dataView)
 
-        return ObjectState.DataView.Set(root = root, blocks = blocks)
+        return ObjectState.DataView.Set(
+            root = root,
+            blocks = blocks,
+            details = AllObjectsDetails.EMPTY
+        )
     }
 }

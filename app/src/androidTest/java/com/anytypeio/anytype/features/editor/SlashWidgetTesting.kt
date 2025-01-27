@@ -29,6 +29,7 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.MockBlockFactory.paragraph
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -59,14 +60,13 @@ class SlashWidgetTesting : EditorTestSetup() {
 
     private val args = bundleOf(EditorFragment.CTX_KEY to root)
 
-    private val defaultDetails = Block.Details(
+    private val defaultDetails = AllObjectsDetails(
         mapOf(
-            root to Block.Fields(
+            root to
                 mapOf(
                     "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
                 )
             )
-        )
     )
 
     private val title = Block(
@@ -413,16 +413,15 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         val relations = listOf(relation1, relation2)
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
                         relation1.key to relation1Value,
                         relation2.key to relation2Value
                     )
                 )
-            )
         )
         stubInterceptEvents()
         stubInterceptThreadStatus()

@@ -1333,16 +1333,16 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             format = Relation.Format.NUMBER
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
+                        Relations.ID to root,
                         Relations.FEATURED_RELATIONS to listOf(
                             relation.key,
                             Relations.DESCRIPTION
                         )
                     )
-                )
             )
         )
 
@@ -1362,7 +1362,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         stubOpenDocument(
             document = document,
             details = details,
-            relations = emptyList()
+
         )
         stubUpdateText()
         stubGetTemplates()
@@ -1418,8 +1418,11 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val paragraph = StubParagraph()
         val relation = StubRelationObject(format = Relation.Format.NUMBER)
 
-        val details = Block.Details(
-            mapOf(root to Block.Fields(mapOf(Relations.FEATURED_RELATIONS to listOf(relation.key))))
+        val details = AllObjectsDetails(
+            mapOf(root to mapOf(
+                Relations.ID to root,
+                Relations.FEATURED_RELATIONS to listOf(relation.key)
+            ))
         )
 
         val header = StubHeader(
@@ -1438,7 +1441,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         stubOpenDocument(
             document = document,
             details = details,
-            relations = emptyList()
+
         )
         stubUpdateText()
         stubGetTemplates()
@@ -1559,14 +1562,13 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             format = RelationFormat.NUMBER
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
-                    mapOf(
-                        Relations.FEATURED_RELATIONS to listOf(
-                            relationKey,
-                            Relations.DESCRIPTION
-                        )
+                root to mapOf(
+                    Relations.ID to root,
+                    Relations.FEATURED_RELATIONS to listOf(
+                        relationKey,
+                        Relations.DESCRIPTION
                     )
                 )
             )
@@ -1588,7 +1590,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         stubOpenDocument(
             document = document,
             details = details,
-            relations = emptyList()
+            
         )
         stubUpdateText()
         stubInterceptThreadStatus()

@@ -62,7 +62,9 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
 
         val value = "Safe as milk"
 
-        val customDetails = Block.Details(mapOf(root to Block.Fields(mapOf(relation.key to value))))
+        val customDetails = AllObjectsDetails(mapOf(root to mapOf(
+            Relations.ID to root,
+            relation.key to value)))
 
         val a = Block(
             id = MockDataFactory.randomUuid(),
@@ -95,7 +97,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
         stubOpenDocument(
             document = document,
             details = customDetails,
-            relations = emptyList()
+
         )
 
         val vm = buildViewModel()
@@ -190,22 +192,21 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
             val value1 = MockDataFactory.randomString()
             val value2 = MockDataFactory.randomString()
             val value3 = MockDataFactory.randomString()
-            val objectFields = Block.Fields(
+            val objectFields =
                 mapOf(
                     r1.key to value1,
                     r2.key to value2,
                     r3.key to value3,
                     relationObjectType.key to objectTypeId
                 )
-            )
 
-            val objectTypeFields = Block.Fields(
+            val objectTypeFields =
                 mapOf(
                     Relations.NAME to objectTypeName,
                     Relations.DESCRIPTION to objectTypeDescription
                 )
-            )
-            val customDetails = Block.Details(
+
+            val customDetails = AllObjectsDetails(
                 mapOf(
                     root to objectFields,
                     objectTypeId to objectTypeFields
@@ -217,7 +218,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
             stubOpenDocument(
                 document = doc,
                 details = customDetails,
-                relations = emptyList()
+
             )
 
             storeOfRelations.merge(
@@ -311,22 +312,23 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
         val objectTypeName = MockDataFactory.randomString()
         val objectTypeDescription = MockDataFactory.randomString()
 
-        val objectFields = Block.Fields(
+        val objectFields =
             mapOf(
+                Relations.ID to root,
                 r1.key to value1,
                 r2.key to value2,
                 r3.key to value3,
                 relationObjectType.key to objectTypeId
             )
-        )
 
-        val objectTypeFields = Block.Fields(
+        val objectTypeFields =
             mapOf(
+                Relations.ID to objectTypeId,
                 Relations.NAME to objectTypeName,
-                Relations.DESCRIPTION to objectTypeDescription
+                Relations.DESCRIPTION to objectTypeDescription,
+                Relations.UNIQUE_KEY to objectTypeId
             )
-        )
-        val customDetails = Block.Details(
+        val customDetails = AllObjectsDetails(
             mapOf(
                 root to objectFields,
                 objectTypeId to objectTypeFields
@@ -339,7 +341,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
         stubOpenDocument(
             document = doc,
             details = customDetails,
-            relations = emptyList()
+
         )
 
         storeOfRelations.merge(

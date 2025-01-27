@@ -225,8 +225,6 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
         stubSearchObjects()
         stubOpenDocument(
             document = doc,
-            details = Block.Details(),
-            relations = listOf()
         )
         stubUpdateText()
 
@@ -507,8 +505,6 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
         stubSearchObjects()
         stubOpenDocument(
             document = doc,
-            details = Block.Details(),
-            relations = listOf()
         )
         stubUpdateText()
 
@@ -819,9 +815,7 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubSearchObjects()
         stubOpenDocument(
-            document = doc,
-            details = Block.Details(),
-            relations = listOf()
+            document = doc
         )
         stubUpdateText()
 
@@ -1045,9 +1039,7 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubSearchObjects()
         stubOpenDocument(
-            document = doc,
-            details = Block.Details(),
-            relations = listOf()
+            document = doc
         )
         stubUpdateText()
 

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectType.Layout
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.RelativeDate
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_models.StubCallout
 import com.anytypeio.anytype.core_models.StubFile
@@ -734,6 +735,7 @@ class DefaultBlockViewRendererTest {
         val imageName = MockDataFactory.randomString()
         val pageId = MockDataFactory.randomUuid()
         val struct = mapOf(
+            Relations.ID to pageId,
             "name" to name,
             "iconImage" to imageName
         )
@@ -1143,12 +1145,12 @@ class DefaultBlockViewRendererTest {
             fields = Block.Fields.empty()
         )
 
-        val fields = Block.Fields.empty()
+        val fields = mapOf<Id, Any?>()
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
-            fields = fields,
+            fields = Block.Fields.empty(),
             content = Block.Content.Smart
         )
 
@@ -1259,12 +1261,12 @@ class DefaultBlockViewRendererTest {
             children = listOf(title.id)
         )
 
-        val fields = Block.Fields.empty()
+        val fields = mapOf<Id, Any?>()
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id),
-            fields = fields,
+            fields = Block.Fields.empty(),
             content = Block.Content.Smart
         )
 
@@ -1327,12 +1329,12 @@ class DefaultBlockViewRendererTest {
             children = listOf(title.id)
         )
 
-        val fields = Block.Fields.empty()
+        val fields = mapOf<Id, Any?>()
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id),
-            fields = fields,
+            fields = Block.Fields.empty(),
             content = Block.Content.Smart
         )
 
@@ -1452,17 +1454,16 @@ class DefaultBlockViewRendererTest {
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
         val fieldsUpdated1 =
             mapOf(
-                Block.Fields.NAME_KEY to mentionTextUpdated1,
-                DetailsKeys.ICON_EMOJI to randomEmoji1
+                Relations.ID to mentionTarget1,
+                Relations.NAME to mentionTextUpdated1,
+                Relations.ICON_EMOJI to randomEmoji1
             )
-        )
 
         val randomEmoji2 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
-        val fieldsUpdated2 =
-            mapOf(
-                Block.Fields.NAME_KEY to mentionTextUpdated2,
-                DetailsKeys.ICON_EMOJI to randomEmoji2
-            )
+        val fieldsUpdated2 = mapOf(
+            Relations.ID to mentionTarget2,
+            Relations.NAME to mentionTextUpdated2,
+            Relations.ICON_EMOJI to randomEmoji2
         )
 
         val detailsAmend = mapOf(
@@ -1485,7 +1486,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = Block.Details(detailsAmend)
+                details = AllObjectsDetails(detailsAmend)
             )
         }
 
@@ -1637,18 +1638,18 @@ class DefaultBlockViewRendererTest {
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
         val fieldsUpdated1 =
             mapOf(
-                Block.Fields.NAME_KEY to mentionTextUpdated1,
-                DetailsKeys.ICON_EMOJI to randomEmoji1
+                Relations.ID to mentionTarget1,
+                Relations.NAME to mentionTextUpdated1,
+                Relations.ICON_EMOJI to randomEmoji1
             )
-        )
 
         val randomEmoji2 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
         val fieldsUpdated2 =
             mapOf(
-                Block.Fields.NAME_KEY to mentionTextUpdated2,
-                DetailsKeys.ICON_EMOJI to randomEmoji2
+                Relations.ID to mentionTarget2,
+                Relations.NAME to mentionTextUpdated2,
+                Relations.ICON_EMOJI to randomEmoji2
             )
-        )
 
         val detailsAmend = mapOf(
             mentionTarget1 to fieldsUpdated1,
@@ -1670,7 +1671,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = Block.Details(detailsAmend)
+                details = AllObjectsDetails(detailsAmend)
             )
         }
 
@@ -1822,20 +1823,20 @@ class DefaultBlockViewRendererTest {
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
         val fieldsUpdated1 =
             mapOf(
+                Relations.ID to mentionTarget1,
                 "name" to "XmN34",
                 "snippet" to mentionTextUpdated1,
                 "layout" to 9.0
             )
-        )
 
         val randomEmoji2 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
         val fieldsUpdated2 =
             mapOf(
+                Relations.ID to mentionTarget2,
                 "name" to mentionTextUpdated2,
                 "iconEmoji" to randomEmoji2,
                 "layout" to 0.0
             )
-        )
 
         val detailsAmend = mapOf(
             mentionTarget1 to fieldsUpdated1,
@@ -1857,7 +1858,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = Block.Details(detailsAmend)
+                details = AllObjectsDetails(detailsAmend)
             )
         }
 
@@ -2004,16 +2005,16 @@ class DefaultBlockViewRendererTest {
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
         val fieldsUpdated1 =
             mapOf(
-                DetailsKeys.ICON_EMOJI to randomEmoji1
+                Relations.ID to mentionTarget1,
+                Relations.ICON_EMOJI to randomEmoji1
             )
-        )
 
         val randomEmoji2 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
         val fieldsUpdated2 =
             mapOf(
-                DetailsKeys.ICON_EMOJI to randomEmoji2
+                Relations.ID to mentionTarget2,
+                Relations.ICON_EMOJI to randomEmoji2
             )
-        )
 
         val detailsAmend = mapOf(
             mentionTarget1 to fieldsUpdated1,
@@ -2035,7 +2036,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = Block.Details(detailsAmend)
+                details = AllObjectsDetails(detailsAmend)
             )
         }
 
@@ -2173,16 +2174,14 @@ class DefaultBlockViewRendererTest {
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
         val fieldsUpdated1 =
             mapOf(
-                DetailsKeys.ICON_EMOJI to randomEmoji1
+                Relations.ICON_EMOJI to randomEmoji1
             )
-        )
 
         val randomEmoji2 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
         val fieldsUpdated2 =
             mapOf(
-                DetailsKeys.ICON_EMOJI to randomEmoji2
+                Relations.ICON_EMOJI to randomEmoji2
             )
-        )
 
         val detailsAmend = mapOf(
             mentionTarget1 to fieldsUpdated1,
@@ -2204,7 +2203,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = Block.Details(detailsAmend)
+                details = AllObjectsDetails(detailsAmend)
             )
         }
 
@@ -2303,7 +2302,10 @@ class DefaultBlockViewRendererTest {
             content = Block.Content.Smart
         )
 
-        val fieldsUpdated1 = mapOf(Relations.NAME to mentionText2))
+        val fieldsUpdated1 = mapOf(
+            Relations.ID to mentionTarget1,
+            Relations.NAME to mentionText2
+        )
 
         val detailsAmend = mapOf(mentionTarget1 to fieldsUpdated1)
 
@@ -2322,7 +2324,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = Block.Details(detailsAmend)
+                details = AllObjectsDetails(detailsAmend)
             )
         }
 
@@ -2447,19 +2449,19 @@ class DefaultBlockViewRendererTest {
         val randomEmoji1 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
         val fieldsUpdated1 =
             mapOf(
-                Block.Fields.NAME_KEY to mentionTextUpdated1,
+                Relations.ID to mentionTarget1,
+                Relations.NAME to mentionTextUpdated1,
                 Relations.IS_DELETED to true,
-                DetailsKeys.ICON_EMOJI to randomEmoji1
+                Relations.ICON_EMOJI to randomEmoji1
             )
-        )
 
         val randomEmoji2 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
         val fieldsUpdated2 =
             mapOf(
-                Block.Fields.NAME_KEY to mentionTextUpdated2,
-                DetailsKeys.ICON_EMOJI to randomEmoji2
+                Relations.ID to mentionTarget2,
+                Relations.NAME to mentionTextUpdated2,
+                Relations.ICON_EMOJI to randomEmoji2
             )
-        )
 
         val detailsAmend = mapOf(
             mentionTarget1 to fieldsUpdated1,
@@ -2481,7 +2483,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = Block.Details(detailsAmend)
+                details = AllObjectsDetails(detailsAmend)
             )
         }
 
@@ -2581,10 +2583,11 @@ class DefaultBlockViewRendererTest {
         val snippet = MockDataFactory.randomString()
         val name = MockDataFactory.randomString()
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             mapOf(
                 target to
                     mapOf(
+                        Relations.ID to page.id,
                         "name" to name,
                         "description" to "",
                         "snippet" to snippet,
@@ -2592,7 +2595,6 @@ class DefaultBlockViewRendererTest {
                     )
                 )
             )
-        )
 
         wrapper = BlockViewRenderWrapper(
             blocks = map,
@@ -2712,12 +2714,12 @@ class DefaultBlockViewRendererTest {
             fields = Block.Fields.empty()
         )
 
-        val fields = Block.Fields.empty()
+        val fields = mapOf<Id, Any?>()
 
         val page = Block(
             id = MockDataFactory.randomUuid(),
             children = listOf(header.id, a.id),
-            fields = fields,
+            fields = Block.Fields.empty(),
             content = Block.Content.Smart
         )
 
@@ -2943,8 +2945,6 @@ class DefaultBlockViewRendererTest {
             content = Block.Content.Smart
         )
 
-        val details = mapOf(page.id to Block.Fields.empty())
-
         val blocks = listOf(page, header, title, a1, a2, a3, a4, b1, b2, b3)
 
         val map = blocks.asMap()
@@ -2960,7 +2960,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -3197,7 +3197,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -3331,7 +3331,7 @@ class DefaultBlockViewRendererTest {
             )
         }
 
-        val fields = Block.Fields.empty()
+        val fields = mapOf<Id, Any?>()
 
 
         val div1 = Block(
@@ -3373,7 +3373,7 @@ class DefaultBlockViewRendererTest {
         val page = Block(
             id = "root",
             children = listOf(header.id) + listOf(div1.id, div2.id, div3.id, div4.id),
-            fields = fields,
+            fields = Block.Fields.empty(),
             content = Block.Content.Smart
         )
 
@@ -3394,7 +3394,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -3461,7 +3461,7 @@ class DefaultBlockViewRendererTest {
             )
         }
 
-        val fields = Block.Fields.empty()
+        val fields = mapOf<Id, Any?>()
 
 
         val div1 = Block(
@@ -3508,7 +3508,7 @@ class DefaultBlockViewRendererTest {
                 div3.id,
                 div4.id
             ) + numbered.subList(20, 25).map { it.id },
-            fields = fields,
+            fields = Block.Fields.empty(),
             content = Block.Content.Smart
         )
 
@@ -3529,7 +3529,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -3645,7 +3645,7 @@ class DefaultBlockViewRendererTest {
             fields = Block.Fields.empty()
         )
 
-         val fields = Block.Fields.empty()
+         val fields = mapOf<Id, Any?>()
 
 
         val div1 = Block(
@@ -3694,7 +3694,7 @@ class DefaultBlockViewRendererTest {
                 div1.id,
                 div2.id
             ) + listOf(afterDiv2Num1.id, afterDiv2Num2.id),
-            fields = fields,
+            fields = Block.Fields.empty(),
             content = Block.Content.Smart
         )
 
@@ -3727,7 +3727,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -3993,7 +3993,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -4229,7 +4229,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -4328,7 +4328,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -4443,7 +4443,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -4593,7 +4593,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -4765,7 +4765,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -4891,15 +4891,15 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = Block.Details(
+                details = AllObjectsDetails(
                     mapOf(
                         bookmarkObjectId to
-                            mapOf(
-                                Relations.NAME to bookmarkTitle,
-                                Relations.DESCRIPTION to bookmarkDescription,
-                                Relations.SOURCE to bookmarkUrl
-                            )
-                        )
+                                mapOf(
+                                    Relations.ID to page.id,
+                                    Relations.NAME to bookmarkTitle,
+                                    Relations.DESCRIPTION to bookmarkDescription,
+                                    Relations.SOURCE to bookmarkUrl
+                                )
                     )
                 )
             )
@@ -5095,7 +5095,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -5154,7 +5154,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -5232,7 +5232,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -5331,7 +5331,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -5409,7 +5409,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = AllObjectsDetails.EMPTY
             )
         }
 
@@ -5529,7 +5529,6 @@ class DefaultBlockViewRendererTest {
                 Relations.TIMESTAMP to 1733775232,
                 Relations.LAYOUT to Layout.DATE.code.toDouble()
             )
-        )
 
         val detailsAmend = mapOf(
             mentionTarget1 to fieldsUpdated1,
@@ -5550,7 +5549,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = Block.Details(detailsAmend)
+                details = AllObjectsDetails(detailsAmend)
             )
         }
 
@@ -5670,7 +5669,6 @@ class DefaultBlockViewRendererTest {
                 Relations.TIMESTAMP to 1733775232,
                 Relations.LAYOUT to Layout.DATE.code.toDouble()
             )
-        )
 
         val detailsAmend = mapOf(
             mentionTarget1 to fieldsUpdated1,
@@ -5691,7 +5689,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = Block.Details(detailsAmend)
+                details = AllObjectsDetails(detailsAmend)
             )
         }
 
@@ -5768,7 +5766,6 @@ class DefaultBlockViewRendererTest {
                     Relations.LAYOUT to layout.code.toDouble()
                 )
             )
-        )
 
         val blocks = listOf(page, paragraph, file)
 

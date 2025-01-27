@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
@@ -67,22 +68,21 @@ class MapperExtensionKtTest {
         val type = Block.Content.File.Type.FILE
         val mode = BlockView.Mode.EDIT
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             mapOf(
-                objectId to Block.Fields(
-                    StubObject(
-                        layout = ObjectType.Layout.BASIC.code.toDouble()
-                    ).map
-                ),
-                targetObjectId to Block.Fields(
-                    mapOf(
-                        Relations.ID to targetObjectId,
-                        Relations.NAME to name,
-                        Relations.SIZE_IN_BYTES to 10000.0,
-                        Relations.FILE_MIME_TYPE to mime,
-                        Relations.LAYOUT to ObjectType.Layout.FILE.code.toDouble()
-                    )
-                )
+                objectId to
+                        StubObject(
+                            id = objectId,
+                            layout = ObjectType.Layout.BASIC.code.toDouble()
+                        ).map,
+                targetObjectId to
+                        mapOf(
+                            Relations.ID to targetObjectId,
+                            Relations.NAME to name,
+                            Relations.SIZE_IN_BYTES to 10000.0,
+                            Relations.FILE_MIME_TYPE to mime,
+                            Relations.LAYOUT to ObjectType.Layout.FILE.code.toDouble()
+                        )
             )
         )
 
@@ -127,7 +127,8 @@ class MapperExtensionKtTest {
 
         val expected =
             BlockView.MediaPlaceholder.File(id = id, indent = indent, isPreviousBlockMedia = false)
-        val actual = block.toFileView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toFileView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(),
+            AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -152,7 +153,7 @@ class MapperExtensionKtTest {
         ).content as Block.Content.File
 
         val expected = BlockView.Error.File(id = id, indent = indent, decorations = emptyList(), name = block.name)
-        val actual = block.toFileView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toFileView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -175,7 +176,7 @@ class MapperExtensionKtTest {
         ).content as Block.Content.File
 
         val expected = BlockView.Upload.File(id = id, indent = indent)
-        val actual = block.toFileView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toFileView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -201,9 +202,9 @@ class MapperExtensionKtTest {
             targetObjectId = targetObjectId
         ).content as Block.Content.File
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             mapOf(
-                targetObjectId to Block.Fields(
+                targetObjectId to
                     mapOf(
                         Relations.ID to targetObjectId,
                         Relations.NAME to name,
@@ -211,7 +212,6 @@ class MapperExtensionKtTest {
                         Relations.FILE_MIME_TYPE to mime,
                     )
                 )
-            )
         )
 
         val expected = BlockView.Media.Picture(
@@ -252,7 +252,7 @@ class MapperExtensionKtTest {
             indent = indent,
             isPreviousBlockMedia = false
         )
-        val actual = block.toPictureView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toPictureView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -281,7 +281,7 @@ class MapperExtensionKtTest {
             name = block.name
         )
 
-        val actual = block.toPictureView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toPictureView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -304,7 +304,7 @@ class MapperExtensionKtTest {
         ).content as Block.Content.File
 
         val expected = BlockView.Upload.Picture(id = id, indent = indent)
-        val actual = block.toPictureView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toPictureView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -330,16 +330,15 @@ class MapperExtensionKtTest {
             targetObjectId = targetObjectId
         ).content as Block.Content.File
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             mapOf(
-                targetObjectId to Block.Fields(
-                    mapOf(
-                        Relations.ID to targetObjectId,
-                        Relations.NAME to name,
-                        Relations.SIZE_IN_BYTES to 10000.0,
-                        Relations.FILE_MIME_TYPE to mime,
-                    )
-                )
+                targetObjectId to
+                        mapOf(
+                            Relations.ID to targetObjectId,
+                            Relations.NAME to name,
+                            Relations.SIZE_IN_BYTES to 10000.0,
+                            Relations.FILE_MIME_TYPE to mime,
+                        )
             )
         )
 
@@ -382,7 +381,7 @@ class MapperExtensionKtTest {
             decorations = emptyList()
         )
 
-        val actual = block.toVideoView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toVideoView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -410,7 +409,7 @@ class MapperExtensionKtTest {
             decorations = emptyList()
         )
 
-        val actual = block.toPictureView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toPictureView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -438,7 +437,7 @@ class MapperExtensionKtTest {
             decorations = emptyList()
         )
 
-        val actual = block.toFileView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toFileView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -466,7 +465,7 @@ class MapperExtensionKtTest {
             decorations = emptyList()
         )
 
-        val actual = block.toFileView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toFileView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -494,7 +493,7 @@ class MapperExtensionKtTest {
             isPreviousBlockMedia = false
         )
 
-        val actual = block.toVideoView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toVideoView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -521,7 +520,7 @@ class MapperExtensionKtTest {
             indent = indent
         )
 
-        val actual = block.toVideoView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toVideoView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -550,7 +549,7 @@ class MapperExtensionKtTest {
             name = block.name
         )
 
-        val actual = block.toVideoView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), Block.Details(), fieldParser)
+        val actual = block.toVideoView(objectId, id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), AllObjectsDetails.EMPTY, fieldParser)
 
         assertEquals(expected, actual)
     }
@@ -821,7 +820,7 @@ class MapperExtensionKtTest {
 
         val result = content.marks(
             urlBuilder = urlBuilder,
-            details = Block.Details(mapOf())
+            details = AllObjectsDetails.EMPTY
         )
 
         assertEquals(
@@ -860,7 +859,7 @@ class MapperExtensionKtTest {
 
         val result = content.marks(
             urlBuilder = urlBuilder,
-            details = Block.Details(mapOf())
+            details = AllObjectsDetails.EMPTY
         )
 
         assertEquals(

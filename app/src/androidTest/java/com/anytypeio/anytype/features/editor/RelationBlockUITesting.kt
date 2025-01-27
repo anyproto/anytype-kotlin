@@ -20,6 +20,7 @@ import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasBackgroundColor
 import com.anytypeio.anytype.test_utils.utils.checkHasNoBackground
@@ -53,14 +54,13 @@ class RelationBlockUITesting : EditorTestSetup() {
 
     private val args = bundleOf(EditorFragment.CTX_KEY to root)
 
-    private val defaultDetails = Block.Details(
+    private val defaultDetails = AllObjectsDetails(
         mapOf(
-            root to Block.Fields(
+            root to
                 mapOf(
                     "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
                 )
             )
-        )
     )
 
     private val title = Block(
@@ -184,9 +184,9 @@ class RelationBlockUITesting : EditorTestSetup() {
         val value4 = "https://anytype.io/"
         val value5 = "team@anytype.io"
 
-        val customDetails = Block.Details(
+        val customDetails = AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
                         relation1.key to value1,
@@ -196,7 +196,6 @@ class RelationBlockUITesting : EditorTestSetup() {
                         relation5.key to value5,
                     )
                 )
-            )
         )
 
         val paragraph = Block(
@@ -348,9 +347,9 @@ class RelationBlockUITesting : EditorTestSetup() {
         val background3 = ThemeColor.BLUE
         val background4 = ThemeColor.ORANGE
 
-        val customDetails = Block.Details(
+        val customDetails = AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
                         relation1.key to value1,
@@ -360,7 +359,6 @@ class RelationBlockUITesting : EditorTestSetup() {
                         relation5.key to value5,
                     )
                 )
-            )
         )
 
         val paragraph = Block(
@@ -482,15 +480,14 @@ class RelationBlockUITesting : EditorTestSetup() {
             selections = listOf(option)
         )
 
-        val customDetails = Block.Details(
+        val customDetails = AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
                         relation1.key to option.id
                     )
                 )
-            )
         )
 
         val a = Block(
@@ -557,29 +554,28 @@ class RelationBlockUITesting : EditorTestSetup() {
             selections = emptyList()
         )
 
-        val customDetails = Block.Details(
+        val customDetails = AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
                         relation1.key to listOf(file1, file2)
                     )
-                ),
-                file1 to Block.Fields(
+                ,
+                file1 to
                     mapOf(
                         "name" to "Document",
                         "ext" to "pdf",
                         "mime" to "application/pdf"
                     )
-                ),
-                file2 to Block.Fields(
+                ,
+                file2 to
                     mapOf(
                         "name" to "Image",
                         "ext" to "jpg",
                         "mime" to "image/jpeg"
                     )
                 )
-            )
         )
 
         val a = Block(
@@ -793,9 +789,9 @@ class RelationBlockUITesting : EditorTestSetup() {
         val value4 = "https://anytype.io/"
         val value5 = "team@anytype.io"
 
-        val customDetails = Block.Details(
+        val customDetails = AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
                         relation1.key to value1,
@@ -805,7 +801,6 @@ class RelationBlockUITesting : EditorTestSetup() {
                         relation5.key to value5,
                     )
                 )
-            )
         )
 
         val block1 = Block(
@@ -907,15 +902,14 @@ class RelationBlockUITesting : EditorTestSetup() {
             selections = listOf(option1)
         )
 
-        val customDetails = Block.Details(
+        val customDetails = AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
                         relation1.key to option1.id
                     )
                 )
-            )
         )
 
         val block1 = Block(
@@ -1011,9 +1005,9 @@ class RelationBlockUITesting : EditorTestSetup() {
         val value4 = "https://anytype.io/"
         val value5 = "team@anytype.io"
 
-        val customDetails = Block.Details(
+        val customDetails = AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
                         relation1.key to value1,
@@ -1023,7 +1017,6 @@ class RelationBlockUITesting : EditorTestSetup() {
                         relation5.key to value5,
                     )
                 )
-            )
         )
 
         val paragraph = Block(

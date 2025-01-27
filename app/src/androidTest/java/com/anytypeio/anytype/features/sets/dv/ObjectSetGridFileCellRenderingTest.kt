@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -124,22 +125,19 @@ class ObjectSetGridFileCellRenderingTest : TestObjectSetSetup() {
             )
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = defaultDetails.details + mapOf(
-                file1Id to Block.Fields(
-                    mapOf(
+                file1Id to mapOf(
                         ObjectSetConfig.NAME_KEY to file1Name,
                         ObjectSetConfig.TYPE_KEY to objectType.url,
                         "fileExt" to file1Ext
-                    )
-                ),
-                file2Id to Block.Fields(
+                    ),
+                file2Id to
                     mapOf(
                         ObjectSetConfig.NAME_KEY to file2Name,
                         ObjectSetConfig.TYPE_KEY to objectType.url,
                         "fileExt" to file2Ext
                     )
-                )
             )
         )
 
@@ -156,7 +154,6 @@ class ObjectSetGridFileCellRenderingTest : TestObjectSetSetup() {
         stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
             set = set,
-            relations = listOf(relation),
             details = details,
         )
 

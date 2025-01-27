@@ -36,7 +36,9 @@ class ObjectAppearanceChoosePreviewLayoutViewModelTest {
 
     private lateinit var viewModel: ObjectAppearanceChoosePreviewLayoutViewModel
 
-    private var storage = Editor.Storage()
+    val root = MockDataFactory.randomUuid()
+
+    private var storage = Editor.Storage(root)
 
     @Before
     fun init() {
@@ -51,7 +53,6 @@ class ObjectAppearanceChoosePreviewLayoutViewModelTest {
     @Test
     fun `should fallback to icon size small when changing from card preview to text`() {
 
-        val root = MockDataFactory.randomUuid()
         val target = MockDataFactory.randomUuid()
 
         val block = Block(

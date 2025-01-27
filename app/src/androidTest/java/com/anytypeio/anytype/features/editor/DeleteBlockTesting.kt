@@ -24,6 +24,7 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.MockBlockFactory.text
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -536,12 +537,11 @@ class DeleteBlockTesting : EditorTestSetup() {
 
         stubOpenDocument(
             document = document,
-            details = Block.Details(
+            details = AllObjectsDetails(
                 mapOf(
-                    root to Block.Fields(
+                    root to
                         mapOf("name" to title)
                     )
-                )
             )
         )
 

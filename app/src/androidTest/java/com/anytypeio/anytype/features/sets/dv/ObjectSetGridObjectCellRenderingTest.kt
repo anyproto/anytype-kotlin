@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -109,20 +110,19 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
             )
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = defaultDetails.details + mapOf(
-                object1Id to Block.Fields(
+                object1Id to
                     mapOf(
                         ObjectSetConfig.NAME_KEY to object1Name,
                         "iconEmoji" to "👤"
                     )
-                ),
-                object2Id to Block.Fields(
+                ,
+                object2Id to
                     mapOf(
                         ObjectSetConfig.NAME_KEY to object2Name,
                         "iconEmoji" to "👤"
                     )
-                )
             )
         )
 
@@ -139,7 +139,6 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
         stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
             set = set,
-            relations = listOf(relation),
             details = details
         )
 
@@ -221,22 +220,20 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
             )
         )
 
-        val details = Block.Details(
+        val details = AllObjectsDetails(
             details = defaultDetails.details + mapOf(
-                object1Id to Block.Fields(
+                object1Id to
                     mapOf(
                         ObjectSetConfig.NAME_KEY to object1Name,
                         ObjectSetConfig.TYPE_KEY to objectType.url,
                         "iconEmoji" to "👤"
-                    )
-                ),
-                object2Id to Block.Fields(
+                    ),
+                object2Id to
                     mapOf(
                         ObjectSetConfig.NAME_KEY to object2Name,
                         ObjectSetConfig.TYPE_KEY to objectType.url,
                         "iconEmoji" to "👤"
                     )
-                )
             )
         )
 
@@ -253,7 +250,7 @@ class ObjectSetGridObjectCellRenderingTest : TestObjectSetSetup() {
         stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
             set = set,
-            relations = listOf(relation),
+
             details = details,
         )
 

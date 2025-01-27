@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
+import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed
@@ -174,11 +175,11 @@ class ProfileTesting : EditorTestSetup() {
         }
     }
 
-    private fun givenBlockDetailsWithImage(): Block.Details {
+    private fun givenBlockDetailsWithImage(): AllObjectsDetails {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        return Block.Details(
+        return AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         "iconImage" to "anyimage",
                         "layout" to ObjectType.Layout.PROFILE.code.toDouble(),
@@ -186,21 +187,19 @@ class ProfileTesting : EditorTestSetup() {
                         "coverId" to CoverColor.BLUE.code,
                     )
                 )
-            )
         )
     }
 
-    private fun givenBlockDetailsWithOutImage(): Block.Details {
-        return Block.Details(
+    private fun givenBlockDetailsWithOutImage(): AllObjectsDetails {
+        return AllObjectsDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         "layout" to ObjectType.Layout.PROFILE.code.toDouble(),
                         "coverType" to CoverType.COLOR.code.toDouble(),
                         "coverId" to CoverColor.BLUE.code,
                     )
                 )
-            )
         )
     }
 }

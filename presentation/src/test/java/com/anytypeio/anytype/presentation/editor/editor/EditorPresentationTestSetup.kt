@@ -7,8 +7,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -26,7 +24,6 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
 import com.anytypeio.anytype.domain.block.interactor.SetObjectType
@@ -399,7 +396,7 @@ open class EditorPresentationTestSetup {
 
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
 
-        val storage = Editor.Storage()
+        val storage = Editor.Storage(root)
         val proxies = Editor.Proxer()
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()
@@ -537,10 +534,8 @@ open class EditorPresentationTestSetup {
 
     fun stubOpenDocument(
         document: List<Block> = emptyList(),
-        details: Block.Details = Block.Details(),
-        relations: List<Relation> = emptyList(),
+        details: AllObjectsDetails = AllObjectsDetails.EMPTY,
         objectRestrictions: List<ObjectRestriction> = emptyList(),
-        relationLinks: List<RelationLink> = emptyList(),
         spaceId: SpaceId = SpaceId(defaultSpace)
     ) {
         openPage.stub {
@@ -560,7 +555,7 @@ open class EditorPresentationTestSetup {
                             Event.Command.ShowObject(
                                 context = root,
                                 root = root,
-                                details = details,
+                                details = details.details,
                                 blocks = document,
                                 objectRestrictions = objectRestrictions
                             )

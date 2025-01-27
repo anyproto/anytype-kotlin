@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -246,10 +247,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -306,10 +304,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -356,10 +351,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -410,13 +402,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(
-                    key = it.key,
-                    format = it.relationFormat
-                )
-            }
+            details = customDetails
         )
 
         storeOfRelations.merge(objectRelations)
@@ -523,10 +509,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -562,16 +545,16 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
+        val fields = mapOf(
+            Relations.ID to root,
+            r1.key to value1, r2.key to value2, r3.key to value3
+        )
         val customDetails = AllObjectsDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
         stubGetObjectTypes(listOf())
 
@@ -639,10 +622,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -689,10 +669,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -743,10 +720,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -793,10 +767,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -847,10 +818,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -897,10 +865,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -951,10 +916,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -1001,10 +963,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -1069,10 +1028,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -1119,10 +1075,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -1187,10 +1140,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -1239,10 +1189,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -1294,10 +1241,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -1346,10 +1290,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()
@@ -1611,16 +1552,20 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type2 = StubObjectType(name = "Df")
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
-        val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails.EMPTY
+        val fields = mapOf(
+            Relations.ID to root,
+            r1.key to value1, r2.key to value2, r3.key to value3
+        )
+        val customDetails = AllObjectsDetails(
+            details = mapOf(
+                root to fields
+            )
+        )
 
         stubInterceptEvents()
         stubOpenDocument(
             document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+            details = customDetails
         )
 
         val vm = buildViewModel()

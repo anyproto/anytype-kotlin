@@ -510,11 +510,9 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         stubUpdateText()
         stubCreateBlock(root = root)
         stubSearchObjects()
-        stubOpenDocument(document = doc,
-            details = customDetails,
-            relationLinks = objectRelations.map {
-                RelationLink(key = it.key, format = it.relationFormat)
-            }
+        stubOpenDocument(
+            document = doc,
+            details = customDetails
         )
 
         val vm = buildViewModel()

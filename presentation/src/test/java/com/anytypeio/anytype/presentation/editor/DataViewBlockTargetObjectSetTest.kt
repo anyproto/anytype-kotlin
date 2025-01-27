@@ -121,6 +121,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
         )
         val objectDetails =
             mapOf(
+                Relations.ID to targetObjectId,
                 Relations.TYPE to ObjectTypeIds.SET,
                 Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                 Relations.SET_OF to listOf("")
@@ -183,6 +184,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
         )
         val objectDetails =
             mapOf(
+                Relations.ID to targetObjectId,
                 Relations.TYPE to ObjectTypeIds.SET,
                 Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                 Relations.SET_OF to emptyList<String>()
@@ -245,6 +247,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
         )
         val objectDetails =
             mapOf(
+                Relations.ID to targetObjectId,
                 Relations.TYPE to ObjectTypeIds.SET,
                 Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                 Relations.SET_OF to listOf<String>("", "   ", RandomString.make())
@@ -307,6 +310,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
         )
         val objectDetails =
             mapOf(
+                Relations.ID to targetObjectId,
                 Relations.TYPE to ObjectTypeIds.COLLECTION,
                 Relations.LAYOUT to ObjectType.Layout.COLLECTION.code.toDouble()
             )
@@ -441,7 +445,18 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                 )
             }
 
-            stubOpenDocument(document = listOf(page, header, title, block, dv))
+            stubOpenDocument(
+                document = listOf(page, header, title, block, dv),
+                details = AllObjectsDetails(
+                    details = mapOf(
+                        targetObjectId to mapOf(
+                            Relations.ID to targetObjectId,
+                            Relations.UNIQUE_KEY to targetObjectId,
+                            Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                        )
+                    )
+                )
+            )
             stubInterceptEvents(
                 params = params,
                 flow = events

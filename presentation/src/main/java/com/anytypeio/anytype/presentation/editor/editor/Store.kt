@@ -64,7 +64,7 @@ interface Store<T> {
 
     class Screen : State<List<BlockView>>(emptyList())
 
-    class Details(val ctx: Id) : State<AllObjectsDetails>(AllObjectsDetails.EMPTY)
+    class Details : State<AllObjectsDetails>(AllObjectsDetails.EMPTY)
     class ObjectRestrictions : State<List<ObjectRestriction>>(emptyList())
     class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
 }

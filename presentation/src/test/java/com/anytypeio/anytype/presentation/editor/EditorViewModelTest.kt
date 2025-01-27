@@ -3810,7 +3810,7 @@ open class EditorViewModelTest {
 
     fun givenViewModel(urlBuilder: UrlBuilder = builder) {
 
-        val storage = Editor.Storage(root)
+        val storage = Editor.Storage()
         val proxies = Editor.Proxer()
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()

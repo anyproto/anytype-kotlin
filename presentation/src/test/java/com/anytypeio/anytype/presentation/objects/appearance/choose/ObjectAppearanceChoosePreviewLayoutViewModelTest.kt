@@ -38,7 +38,7 @@ class ObjectAppearanceChoosePreviewLayoutViewModelTest {
 
     val root = MockDataFactory.randomUuid()
 
-    private var storage = Editor.Storage(root)
+    private var storage = Editor.Storage()
 
     @Before
     fun init() {

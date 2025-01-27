@@ -2,8 +2,6 @@ package com.anytypeio.anytype.di.feature
 
 import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
@@ -213,9 +211,7 @@ object EditorSessionModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideStorage(params: EditorViewModel.Params): Editor.Storage = Editor.Storage(
-        ctx = params.ctx
-    )
+    fun provideStorage(): Editor.Storage = Editor.Storage()
 
     @JvmStatic
     @Provides

@@ -397,7 +397,7 @@ open class EditorPresentationTestSetup {
 
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
 
-        val storage = Editor.Storage(root)
+        val storage = Editor.Storage()
         val proxies = Editor.Proxer()
         val memory = Editor.Memory(
             selections = SelectionStateHolder.Default()

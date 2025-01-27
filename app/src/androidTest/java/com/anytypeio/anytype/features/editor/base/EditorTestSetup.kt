@@ -318,7 +318,7 @@ open class EditorTestSetup {
 
     private val intents = Proxy.Intents()
 
-    private val stores = Editor.Storage(root)
+    private val stores = Editor.Storage()
 
     private val proxies = Editor.Proxer(
         intents = intents

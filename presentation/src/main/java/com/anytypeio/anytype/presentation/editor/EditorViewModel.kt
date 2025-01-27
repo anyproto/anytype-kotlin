@@ -255,8 +255,10 @@ import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.getObjRelationsViews
 import com.anytypeio.anytype.presentation.editor.editor.getRecommendedRelations
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
+import com.anytypeio.anytype.presentation.editor.editor.getBookmarkObject
 import com.anytypeio.anytype.presentation.editor.editor.getInternalFlagsObject
 import com.anytypeio.anytype.presentation.editor.editor.getObject
+import com.anytypeio.anytype.presentation.editor.editor.getTypeObject
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDatePickerDismiss
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDateSelected
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
@@ -490,7 +492,7 @@ class EditorViewModel(
 
     override fun onPickedDocImageFromDevice(ctx: Id, path: String) {
         viewModelScope.launch {
-            val obj = orchestrator.stores.details.getAsObject(ctx)
+            val obj = orchestrator.stores.details.current().getObject(ctx)
             val space = obj?.spaceId
             if (space != null) {
                 setDocImageIcon(
@@ -1557,7 +1559,7 @@ class EditorViewModel(
 
     private fun proceedWithOpeningObjectMenu() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
-        val wrapper = orchestrator.stores.details.getAsObject(context)
+        val wrapper = orchestrator.stores.details.current().getObject(context)
         val isTemplate = isObjectTemplate()
         val space = wrapper?.spaceId
         if (space == null) {
@@ -1886,9 +1888,7 @@ class EditorViewModel(
                         if (!isMultiMode) {
                             val targetObjectId = content.targetObjectId
                             if (targetObjectId != null) {
-                                val obj = orchestrator.stores.details.getAsObject(
-                                    target = targetObjectId
-                                )
+                                val obj = orchestrator.stores.details.current().getObject(targetObjectId)
                                 if (obj != null) {
                                     val isReady = content.state == Content.Bookmark.State.DONE
                                     val isActive = obj.isArchived != true && obj.isDeleted != true
@@ -3178,7 +3178,7 @@ class EditorViewModel(
             is Content.Bookmark -> {
                 val target = content.targetObjectId
                 if (target != null) {
-                    val obj = orchestrator.stores.details.getAsBookmarkObject(target)
+                    val obj = orchestrator.stores.details.current().getBookmarkObject(target)
                     if (obj?.isArchived == true || obj?.isDeleted == true) {
                         val source = obj.source
                         if (!source.isNullOrBlank()) {
@@ -3208,8 +3208,9 @@ class EditorViewModel(
 
     private fun proceedWithOpeningDataViewBlock(dv: Content.DataView) {
         if (dv.targetObjectId.isNotEmpty()) {
-            val targetSpace = orchestrator.stores.details.getAsObject(dv.targetObjectId)?.spaceId
-                ?: vmParams.space.id
+            val targetSpace =
+                orchestrator.stores.details.current().getObject(dv.targetObjectId)?.spaceId
+                    ?: vmParams.space.id
             proceedWithOpeningDataViewObject(
                 target = dv.targetObjectId,
                 space = SpaceId(targetSpace)
@@ -3230,7 +3231,7 @@ class EditorViewModel(
 
     private fun proceedWithOpeningObjectByLayout(target: String) {
         proceedWithClearingFocus()
-        val wrapper = orchestrator.stores.details.getAsObject(target)
+        val wrapper = orchestrator.stores.details.current().getObject(target)
         if (wrapper?.spaceId != vmParams.space.id) {
             sendToast("Cannot open object from another space from here.")
         } else {
@@ -3420,7 +3421,7 @@ class EditorViewModel(
 
     fun onSetObjectIconClicked() {
         viewModelScope.launch {
-            val obj = orchestrator.stores.details.getAsObject(context)
+            val obj = orchestrator.stores.details.current().getObject(context)
             val space = obj?.spaceId
             if (space != null) {
                 dispatch(Command.SetObjectIcon(ctx = context, space = space))
@@ -4254,7 +4255,7 @@ class EditorViewModel(
         val isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
         if (isDetailsAllowed) {
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
-            val obj = orchestrator.stores.details.getAsObject(context)
+            val obj = orchestrator.stores.details.current().getObject(context)
             val space = obj?.spaceId
             if (space != null) {
                 dispatch(
@@ -4332,7 +4333,7 @@ class EditorViewModel(
 
     private fun proceedWithDownloadCurrentObjectAsFile() {
 
-        val fileObject = orchestrator.stores.details.getAsObject(target = context)
+        val fileObject = orchestrator.stores.details.current().getObject(context)
         if (fileObject == null) {
             Timber.e("Object with id $context not found.")
             return
@@ -6217,7 +6218,7 @@ class EditorViewModel(
 
     fun onMentionClicked(target: String) {
         if (isObjectTemplate()) return
-        val obj = orchestrator.stores.details.getAsObject(target)
+        val obj = orchestrator.stores.details.current().getObject(target)
         if (obj == null) return
         proceedWithClearingFocus()
         proceedWithOpeningObject(obj)
@@ -6367,7 +6368,7 @@ class EditorViewModel(
 
     private fun proceedWithGettingObjectTypesForTypesWidget() {
         viewModelScope.launch {
-            val excludeTypes = orchestrator.stores.details.getAsObject(context)?.type.orEmpty()
+            val excludeTypes = orchestrator.stores.details.current().getObject(context)?.type.orEmpty()
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
@@ -6408,7 +6409,7 @@ class EditorViewModel(
         fromFeatured: Boolean
     ) {
         val list = buildList {
-            val types = orchestrator.stores.details.getAsObject(vmParams.ctx)?.type.orEmpty()
+            val types = orchestrator.stores.details.current().getObject(vmParams.ctx)?.type.orEmpty()
             if (types.isNotEmpty()) {
                 addAll(types)
             }
@@ -6733,18 +6734,18 @@ class EditorViewModel(
     }
 
     private fun getObjectTypeUniqueKeyFromDetails(): Id? {
-        val details = orchestrator.stores.details
-        val currentObject = details.getAsObject(context)
+        val allObjectsDetails = orchestrator.stores.details.current()
+        val currentObject = allObjectsDetails.getObject(context)
         val currentObjectTypeId = currentObject?.getProperType() ?: return null
-        val currentObjectType = details.getAsTypeObject(currentObjectTypeId)
+        val currentObjectType = allObjectsDetails.getTypeObject(currentObjectTypeId)
         return currentObjectType?.uniqueKey
     }
 
     private fun getObjectTypeFromDetails(): ObjectWrapper.Type? {
-        val details = orchestrator.stores.details
-        val currentObject = details.getAsObject(context)
+        val allObjectsDetails = orchestrator.stores.details.current()
+        val currentObject = allObjectsDetails.getObject(context)
         val currentObjectTypeId = currentObject?.getProperType() ?: return null
-        return details.getAsTypeObject(currentObjectTypeId)
+        return allObjectsDetails.getTypeObject(currentObjectTypeId)
     }
 
     fun isObjectTemplate(): Boolean {
@@ -7387,8 +7388,8 @@ class EditorViewModel(
     private fun checkRelationIsInObject(
         view: ObjectRelationView
     ): Boolean {
-        val currentObjectDetails = orchestrator.stores.details.getAsObject(vmParams.ctx)
-        return currentObjectDetails?.map?.keys?.any { it == view.key } ?: false
+        val currentObjectDetails = orchestrator.stores.details.current().getObject(vmParams.ctx)
+        return currentObjectDetails?.map?.keys?.any { it == view.key } == true
     }
 
     private suspend fun proceedWithAddingRelationToObject(
@@ -7580,7 +7581,7 @@ class EditorViewModel(
                 if (blocks.isAllowedToShowTypesWidget(
                         objectRestrictions = orchestrator.stores.objectRestrictions.current(),
                         isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true,
-                        objectLayout = orchestrator.stores.details.getAsObject(context)?.layout
+                        objectLayout = orchestrator.stores.details.current().getObject(context)?.layout
                     )
                 ) {
                     setTypesWidgetVisibility(true)

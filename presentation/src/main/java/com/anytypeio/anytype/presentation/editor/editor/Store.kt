@@ -73,25 +73,7 @@ interface Store<T> {
 
     class Screen : State<List<BlockView>>(emptyList())
 
-    class Details(val ctx: Id) : State<AllObjectsDetails>(AllObjectsDetails.EMPTY) {
-
-        fun getCurrentObject() : ObjectWrapper.Basic? {
-            return current().details[ctx].toObject()
-        }
-
-        fun getAsObject(target: Id) : ObjectWrapper.Basic? {
-            return current().details[target].toObject()
-        }
-
-        fun getAsTypeObject(target: Id) : ObjectWrapper.Type? {
-            return current().details[target]?.mapToObjectWrapperType()
-        }
-
-        fun getAsBookmarkObject(target: Id) : ObjectWrapper.Bookmark? {
-            return current().details[target]?.toBookmarkObject()
-        }
-    }
-
+    class Details(val ctx: Id) : State<AllObjectsDetails>(AllObjectsDetails.EMPTY)
     class ObjectRestrictions : State<List<ObjectRestriction>>(emptyList())
     class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
 }

@@ -38,6 +38,8 @@ import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.presentation.editor.editor.getObject
+import com.anytypeio.anytype.presentation.editor.editor.getTypeObject
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -100,7 +102,6 @@ class ObjectMenuViewModel(
     }
 
     private val objectRestrictions = storage.objectRestrictions.current()
-    private val _currentObject get() = storage.details.getCurrentObject()
 
     override fun buildActions(
         ctx: Id,
@@ -111,7 +112,7 @@ class ObjectMenuViewModel(
         isReadOnly: Boolean
     ): List<ObjectAction> = buildList {
 
-        val wrapper = _currentObject
+        val wrapper = storage.details.current().getObject(ctx)
         val layout = wrapper?.layout
 
         if (isReadOnly) {
@@ -153,7 +154,7 @@ class ObjectMenuViewModel(
 
             val objTypeId = wrapper?.getProperType()
             if (objTypeId != null) {
-            val objType = storage.details.getAsTypeObject(objTypeId)
+            val objType = storage.details.current().getTypeObject(objTypeId)
             if (objType != null) {
                 val isTemplateAllowed = objType.isTemplatesAllowed()
                 if (isTemplateAllowed && !isTemplate) {
@@ -339,7 +340,7 @@ class ObjectMenuViewModel(
                 proceedWithSettingAsDefaultTemplate(ctx = ctx)
             }
             ObjectAction.CREATE_WIDGET -> {
-                val wrapper = storage.details.getCurrentObject()
+                val wrapper = storage.details.current().getObject(ctx)
                 if (wrapper != null) proceedWithCreatingWidget(obj = wrapper)
             }
             ObjectAction.MOVE_TO,
@@ -359,7 +360,7 @@ class ObjectMenuViewModel(
 
     private fun proceedWithSettingAsDefaultTemplate(ctx: Id) {
         val startTime = System.currentTimeMillis()
-        val objTemplate = storage.details.getCurrentObject()
+        val objTemplate = storage.details.current().getObject(ctx)
         val targetObjectTypeId = objTemplate?.targetObjectType ?: return
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
@@ -368,7 +369,7 @@ class ObjectMenuViewModel(
             )
             setObjectDetails.async(params).fold(
                 onSuccess = {
-                    val objType = storage.details.getAsTypeObject(targetObjectTypeId)
+                    val objType = storage.details.current().getTypeObject(targetObjectTypeId)
                     sendAnalyticsDefaultTemplateEvent(analytics, objType, startTime)
                     _toasts.emit("The template was set as default")
                     isDismissed.value = true
@@ -410,9 +411,9 @@ class ObjectMenuViewModel(
     }
 
     private suspend fun buildOpenTemplateCommand(ctx: Id, space: Id, template: Id) {
-        val type = storage.details.getCurrentObject()?.getProperType()
+        val type = storage.details.current().getObject(ctx)?.getProperType()
         if (type != null) {
-            val objType = storage.details.getAsTypeObject(type)
+            val objType = storage.details.current().getTypeObject(type)
             if (objType != null) {
                 val objTypeKey = objType.uniqueKey
                 val command = Command.OpenTemplate(

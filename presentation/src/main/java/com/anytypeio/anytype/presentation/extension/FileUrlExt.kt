@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
+import com.anytypeio.anytype.presentation.editor.editor.getObject
 import timber.log.Timber
 
 fun UrlBuilder.getUrlForFileBlock(
@@ -105,7 +106,7 @@ fun List<Block>.getFileDetailsForBlock(
         return null
     }
 
-    val fileObject = orchestrator.stores.details.getAsObject(target = targetObjectId)
+    val fileObject = orchestrator.stores.details.current().getObject(targetObjectId)
     if (fileObject == null) {
         Timber.e("Object with id $targetObjectId not found.")
         return null

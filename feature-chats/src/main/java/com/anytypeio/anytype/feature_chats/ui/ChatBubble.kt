@@ -71,7 +71,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun  Bubble(
+fun Bubble(
     modifier: Modifier = Modifier,
     name: String,
     reply: ChatView.Message.Reply? = null,

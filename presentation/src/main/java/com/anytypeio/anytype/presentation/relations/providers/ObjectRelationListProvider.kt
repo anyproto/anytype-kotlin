@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 
-interface RelationListProvider {
+interface ObjectRelationListProvider {
 
     val details: Flow<ObjectViewDetails>
 
@@ -15,7 +15,7 @@ interface RelationListProvider {
 
     class EditorRelationListProvider(
         private val storage: Editor.Storage
-    ) : RelationListProvider {
+    ) : ObjectRelationListProvider {
         override val details: Flow<ObjectViewDetails>
             get() = storage.details.stream()
 
@@ -24,7 +24,7 @@ interface RelationListProvider {
 
     class ObjectSetRelationListProvider(
         private val objectStates: StateFlow<ObjectState>
-    ) : RelationListProvider {
+    ) : ObjectRelationListProvider {
 
         override val details = objectStates.map { state ->
             mapDetails(state)

@@ -35,7 +35,7 @@ import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
-import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,7 +46,7 @@ import timber.log.Timber
 
 class RelationListViewModel(
     private val vmParams: VmParams,
-    private val relationListProvider: RelationListProvider,
+    private val objectRelationListProvider: ObjectRelationListProvider,
     private val lockedStateProvider: LockedStateProvider,
     private val urlBuilder: UrlBuilder,
     private val dispatcher: Dispatcher<Payload>,
@@ -81,7 +81,7 @@ class RelationListViewModel(
         jobs += viewModelScope.launch {
             combine(
                 storeOfRelations.trackChanges(),
-                relationListProvider.details
+                objectRelationListProvider.details
             ) { _, details ->
                 constructViews(ctx, details)
             }.collect { views.value = it }
@@ -119,7 +119,11 @@ class RelationListViewModel(
 
         val objectWrapperType = details.getTypeForObject(currentObjectId = ctx)
 
-        return buildFinalList(objectRelationViews, recommendedRelationViews, objectWrapperType)
+        return buildFinalList(
+            objectRelations = objectRelationViews,
+            recommendedRelations = recommendedRelationViews,
+            objectTypeWrapper = objectWrapperType
+        )
     }
 
     private fun buildFinalList(
@@ -183,7 +187,7 @@ class RelationListViewModel(
     }
 
     private fun checkRelationIsInObject(view: ObjectRelationView): Boolean {
-        val objectRelations = relationListProvider.getDetails().getStruct(vmParams.objectId)?.keys
+        val objectRelations = objectRelationListProvider.getDetails().getStruct(vmParams.objectId)?.keys
         return objectRelations?.any { it == view.key } == true
     }
 

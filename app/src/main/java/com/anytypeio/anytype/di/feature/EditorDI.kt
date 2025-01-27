@@ -120,7 +120,7 @@ import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectValue
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
@@ -227,7 +227,7 @@ object EditorSessionModule {
     @PerScreen
     fun relationListProvider(
         storage: Editor.Storage
-    ) : RelationListProvider = RelationListProvider.EditorRelationListProvider(
+    ) : ObjectRelationListProvider = ObjectRelationListProvider.EditorRelationListProvider(
         storage = storage
     )
 

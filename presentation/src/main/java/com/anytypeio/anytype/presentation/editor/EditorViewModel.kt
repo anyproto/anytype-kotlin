@@ -6216,7 +6216,10 @@ class EditorViewModel(
     fun onMentionClicked(target: String) {
         if (isObjectTemplate()) return
         val obj = orchestrator.stores.details.current().getObject(target)
-        if (obj == null) return
+        if (obj == null) {
+            Timber.w("Details missing for mentioned object")
+            return
+        }
         proceedWithClearingFocus()
         proceedWithOpeningObject(obj)
     }

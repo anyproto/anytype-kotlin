@@ -72,7 +72,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.relations.providers.SetOrCollectionObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.SetOrCollectionRelationProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -556,7 +556,7 @@ object ObjectSetModule {
     @PerScreen
     fun dataViewRelationListProvider(
         objectStateFlow: MutableStateFlow<ObjectState>
-    ) : RelationListProvider = RelationListProvider.ObjectSetRelationListProvider(
+    ) : ObjectRelationListProvider = ObjectRelationListProvider.ObjectSetRelationListProvider(
         objectStates = objectStateFlow
     )
 

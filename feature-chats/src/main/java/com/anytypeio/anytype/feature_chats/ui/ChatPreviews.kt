@@ -70,7 +70,8 @@ fun ChatPreview() {
         onReplyMessage = {},
         onAddReactionClicked = {},
         onViewChatReaction = { a, b -> },
-        onMemberIconClicked = {}
+        onMemberIconClicked = {},
+        onMentionClicked = {}
     )
 }
 
@@ -121,7 +122,8 @@ fun ChatScreenPreview() {
         onChatBoxFilePicked = {},
         onAddReactionClicked = {},
         onViewChatReaction = { a, b -> },
-        onMemberIconClicked = {}
+        onMemberIconClicked = {},
+        onMentionClicked = {}
     )
 }
 
@@ -149,7 +151,8 @@ fun BubblePreview() {
         onReply = {},
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
-        onViewChatReaction = {}
+        onViewChatReaction = {},
+        onMentionClicked = {}
     )
 }
 
@@ -178,7 +181,8 @@ fun BubbleEditedPreview() {
         onReply = {},
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
-        onViewChatReaction = {}
+        onViewChatReaction = {},
+        onMentionClicked = {}
     )
 }
 
@@ -215,6 +219,7 @@ fun BubbleWithAttachmentPreview() {
         onReply = {},
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
-        onViewChatReaction = {}
+        onViewChatReaction = {},
+        onMentionClicked = {}
     )
 }

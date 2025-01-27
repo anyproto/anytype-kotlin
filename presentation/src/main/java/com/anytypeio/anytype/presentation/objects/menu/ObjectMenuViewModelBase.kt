@@ -37,6 +37,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsBackLinkAddEven
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsDuplicateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMoveToBinEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFromFavoritesEvent
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -311,15 +312,15 @@ abstract class ObjectMenuViewModelBase(
                         startTime = startTime,
                         spaceParams = provideParams(space)
                     )
-//                    commands.emit(
-//                        Command.OpenSnackbar(
-//                            id = addTo,
-//                            currentObjectName = fromName,
-//                            targetObjectName = fieldParser.getObjectName(obj),
-//                            icon = obj.objectIcon(urlBuilder),
-//                            space = space
-//                        )
-//                    )
+                    commands.emit(
+                        Command.OpenSnackbar(
+                            id = addTo,
+                            currentObjectName = fromName,
+                            targetObjectName = fieldParser.getObjectName(obj),
+                            icon = obj.objectIcon(urlBuilder),
+                            space = space
+                        )
+                    )
                 },
                 onFailure = {
                     Timber.e(it, "Error while adding link from object to object")

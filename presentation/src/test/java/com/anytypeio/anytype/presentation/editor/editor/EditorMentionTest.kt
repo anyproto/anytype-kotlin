@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectType.Layout
@@ -15,7 +16,6 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
@@ -163,7 +163,18 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val document = listOf(page, header, title, a)
 
-        stubOpenDocument(document)
+        stubOpenDocument(
+            document,
+            details = ObjectViewDetails(
+                details = mapOf(
+                    mentionHash to mapOf(
+                        Relations.ID to mentionHash,
+                        Relations.LAYOUT to Layout.BASIC.code.toDouble(),
+                        Relations.NAME to mentionText
+                    )
+                )
+            )
+        )
         stubInterceptEvents()
 
         updateText.stub {
@@ -203,8 +214,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         coroutineTestRule.advanceUntilIdle()
 
         vm.state.test().apply {
-            assertValue(
-                ViewState.Success(
+            assertEquals(
+                expected = ViewState.Success(
                     blocks = listOf(
                         BlockView.Title.Basic(
                             id = title.id,
@@ -226,14 +237,15 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     from = 5,
                                     to = 9
                                 ),
+                                Markup.Mark.Mention.Base(
+                                    from = from,
+                                    to = from + mentionText.length,
+                                    param = mentionHash,
+                                    isArchived = false
+                                ),
                                 Markup.Mark.Strikethrough(
                                     from = 29,
                                     to = 33
-                                ),
-                                Markup.Mark.Mention.Loading(
-                                    from = from,
-                                    to = from + mentionText.length,
-                                    param = mentionHash
                                 )
                             ),
                             indent = 0,
@@ -246,7 +258,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             )
                         )
                     )
-                )
+                ),
+                actual = this.value()
             )
         }
 
@@ -844,14 +857,21 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             Event.Command.ShowObject(
                                 context = root,
                                 root = root,
-                                details = Block.Details(),
                                 blocks = document,
+                                details = mapOf(
+                                    mentionTarget to mapOf(
+                                        Relations.ID to mentionTarget,
+                                        Relations.NAME to ""
+                                    )
+                                ),
                                 objectRestrictions = emptyList()
                             ),
                             Event.Command.Details.Amend(
                                 context = root,
                                 target = mentionTarget,
-                                details = mapOf(Block.Fields.NAME_KEY to "Foob")
+                                details = mapOf(
+                                    Relations.NAME to "Foob"
+                                )
                             )
                         )
                     )
@@ -973,12 +993,11 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             children = listOf(header.id, a.id)
         )
 
-        val fieldsUpdated1 = Block.Fields(
+        val fieldsUpdated1 =
             mapOf(
                 Relations.ID to mentionTarget,
                 Relations.NAME to ""
             )
-        )
 
         val detailsAmend = mapOf(
             mentionTarget to fieldsUpdated1,
@@ -1002,7 +1021,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             Event.Command.ShowObject(
                                 context = root,
                                 root = root,
-                                details = Block.Details(detailsAmend),
+                                details = detailsAmend,
                                 blocks = document,
                                 objectRestrictions = emptyList()
                             ),
@@ -1259,12 +1278,11 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             children = listOf(header.id, a.id)
         )
 
-        val fieldsUpdated1 = Block.Fields(
+        val fieldsUpdated1 =
             mapOf(
                 Relations.ID to mentionTarget,
                 Relations.NAME to " "
             )
-        )
 
         val detailsAmend = mapOf(
             mentionTarget to fieldsUpdated1,
@@ -1288,7 +1306,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             Event.Command.ShowObject(
                                 context = root,
                                 root = root,
-                                details = Block.Details(detailsAmend),
+                                details = detailsAmend,
                                 blocks = document,
                                 objectRestrictions = emptyList()
                             ),
@@ -1418,11 +1436,10 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             children = listOf(header.id, a.id)
         )
 
-        val fieldsUpdated1 = Block.Fields(
+        val fieldsUpdated1 =
             mapOf(
                 Relations.ID to mentionTarget
             )
-        )
 
         val detailsAmend = mapOf(
             mentionTarget to fieldsUpdated1,
@@ -1446,7 +1463,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             Event.Command.ShowObject(
                                 context = root,
                                 root = root,
-                                details = Block.Details(detailsAmend),
+                                details = detailsAmend,
                                 blocks = document,
                                 objectRestrictions = emptyList()
                             ),

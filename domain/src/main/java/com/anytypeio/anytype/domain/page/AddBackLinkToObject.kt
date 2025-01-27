@@ -41,7 +41,7 @@ class AddBackLinkToObject(
                     ?.children
                     ?.last()
 
-                val objectDetails = event.details.details[params.objectToPlaceLink]?.map
+                val objectDetails = event.details[params.objectToPlaceLink]
 
                 require(targetBlock != null) { "Target block is missing" }
                 require(objectDetails != null) { "Object details is missing" }

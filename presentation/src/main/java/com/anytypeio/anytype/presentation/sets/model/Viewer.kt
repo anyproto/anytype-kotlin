@@ -356,7 +356,6 @@ sealed class Viewer {
                     fun selectConditions() = listOf(
                         In(),
                         AllIn(),
-                        Equal(),
                         NotIn(),
                         Empty(),
                         NotEmpty(),

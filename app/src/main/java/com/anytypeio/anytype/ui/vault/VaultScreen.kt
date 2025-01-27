@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.vault
 
 import android.content.res.Configuration
+import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,7 +22,9 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,13 +37,16 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -60,15 +66,22 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.profile.AccountProfile
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.VaultSpaceView
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
+import com.anytypeio.anytype.ui.sharing.SharingData
 import com.anytypeio.anytype.ui.widgets.types.gradient
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.request.RequestListener
 
 
 @Composable
 fun VaultScreen(
+    profile: AccountProfile,
     spaces: List<VaultSpaceView>,
     onSpaceClicked: (VaultSpaceView) -> Unit,
     onCreateSpaceClicked: () -> Unit,
@@ -109,6 +122,7 @@ fun VaultScreen(
     ) {
 
        VaultScreenToolbar(
+           profile = profile,
            onPlusClicked = onCreateSpaceClicked,
            onSettingsClicked = onSettingsClicked,
            spaceCountLimitReached = spaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT
@@ -170,8 +184,10 @@ fun VaultScreen(
 }
 
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun VaultScreenToolbar(
+    profile: AccountProfile,
     spaceCountLimitReached: Boolean = false,
     onPlusClicked: () -> Unit,
     onSettingsClicked: () -> Unit
@@ -187,16 +203,57 @@ fun VaultScreenToolbar(
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier.align(Alignment.Center)
         )
-        Image(
-            painter = painterResource(id = R.drawable.ic_vault_settings),
-            contentDescription = "Settings icon",
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 16.dp)
-                .noRippleClickable {
-                    onSettingsClicked()
+        when(profile) {
+            is AccountProfile.Data -> {
+                Box(
+                    Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = 16.dp)
+                        .size(28.dp)
+                        .noRippleClickable {
+                            onSettingsClicked()
+                        }
+                ) {
+                    when(val icon = profile.icon) {
+                        is ProfileIconView.Image -> {
+                            GlideImage(
+                                model = icon.url,
+                                contentDescription = "Custom image profile",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                            )
+                        }
+                        else -> {
+                            val nameFirstChar = if (profile.name.isEmpty()) {
+                                stringResource(id = com.anytypeio.anytype.ui_settings.R.string.account_default_name)
+                            } else {
+                                profile.name.first().uppercaseChar().toString()
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                                    .background(colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_tertiary))
+                            ) {
+                                Text(
+                                    text = nameFirstChar,
+                                    style = MaterialTheme.typography.h3.copy(
+                                        color = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_white),
+                                        fontSize = 20.sp
+                                    ),
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                    }
                 }
-        )
+            }
+            AccountProfile.Idle -> {
+                // Draw nothing
+            }
+        }
         if (!spaceCountLimitReached) {
             Image(
                 painter = painterResource(id = R.drawable.ic_vault_top_toolbar_plus),
@@ -411,7 +468,8 @@ fun LoadingSpaceCardPreview() {
 fun VaultScreenToolbarPreview() {
     VaultScreenToolbar(
         onPlusClicked = {},
-        onSettingsClicked = {}
+        onSettingsClicked = {},
+        profile = AccountProfile.Idle
     )
 }
 
@@ -449,6 +507,7 @@ fun VaultScreenPreview() {
         onSpaceClicked = {},
         onCreateSpaceClicked = {},
         onSettingsClicked = {},
-        onOrderChanged = {}
+        onOrderChanged = {},
+        profile = AccountProfile.Idle
     )
 }

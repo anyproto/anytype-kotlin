@@ -64,9 +64,9 @@ class ObjectSetCreateBookmarkRecordViewModel(
                 is ObjectState.DataView.Set -> {
                     val setOf = state.getSetOfValue(state.root)
                     if (state.isSetByRelation(setOf)) {
-                        val sourceDetails = state.details[setOf.firstOrNull()]
-                        if (sourceDetails != null && sourceDetails.map.isNotEmpty()) {
-                            val sourceObject = ObjectWrapper.Relation(sourceDetails.map)
+                        val sourceDetails = state.details.details[setOf.firstOrNull()]
+                        if (sourceDetails != null && sourceDetails.isNotEmpty()) {
+                            val sourceObject = ObjectWrapper.Relation(sourceDetails)
                             val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                             val details = viewer.resolveSetByRelationPrefilledObjectData(
                                 objSetByRelation = sourceObject,

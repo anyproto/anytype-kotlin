@@ -1,15 +1,17 @@
 package com.anytypeio.anytype.presentation.relations
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.extension.getOptionObject
+import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.buildFileViews
 import com.anytypeio.anytype.presentation.sets.buildRelationValueObjectViews
@@ -18,7 +20,7 @@ import com.anytypeio.anytype.presentation.sets.model.TagView
 
 fun List<ObjectWrapper.Relation>.views(
     context: Id,
-    details: Block.Details,
+    details: ObjectViewDetails,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     featured: List<Id> = emptyList(),
@@ -36,7 +38,7 @@ fun List<ObjectWrapper.Relation>.views(
 
 fun ObjectWrapper.Relation.view(
     context: Id,
-    details: Block.Details,
+    details: ObjectViewDetails,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false,
@@ -51,7 +53,7 @@ fun ObjectWrapper.Relation.view(
         RelationFormat.OBJECT -> {
             val objects = values.buildRelationValueObjectViews(
                 relationKey = relation.key,
-                details = details.details,
+                details = details,
                 builder = urlBuilder,
                 fieldParser = fieldParser
             )
@@ -68,7 +70,7 @@ fun ObjectWrapper.Relation.view(
         RelationFormat.FILE -> {
             val files = values.buildFileViews(
                 relationKey = relation.key,
-                details = details.details
+                details = details
             )
             ObjectRelationView.File(
                 id = relation.id,
@@ -156,15 +158,14 @@ fun ObjectWrapper.Relation.view(
 fun statusRelation(
     context: Id,
     relationDetails: ObjectWrapper.Relation,
-    details: Block.Details,
+    details: ObjectViewDetails,
     isFeatured: Boolean
 ): ObjectRelationView? {
-    val objectDetails = details.details[context]?.map ?: return null
+    val objectDetails = details.getObject(context)?.map ?: return null
     val optionId = StatusParser.parse(objectDetails[relationDetails.key])
     val statuses = buildList {
         if (optionId != null) {
-            val map = details.details[optionId]?.map ?: return null
-            val optionDetails = ObjectWrapper.Basic(map)
+            val optionDetails = details.getObject(optionId) ?: return null
             if (optionDetails.isDeleted != true) {
                 add(
                     StatusView(
@@ -190,20 +191,19 @@ fun statusRelation(
 fun tagRelation(
     context: Id,
     relationDetails: ObjectWrapper.Relation,
-    details: Block.Details,
+    details: ObjectViewDetails,
     isFeatured: Boolean
 ): ObjectRelationView? {
-    val objectDetails = details.details[context]?.map ?: return null
+    val objectDetails = details.getObject(context)?.map ?: return null
     val tagViews = mutableListOf<TagView>()
     val tagIds = TagParser.parse(objectDetails[relationDetails.key])
     tagIds.forEach { id ->
-        val map = details.details[id]?.map ?: emptyMap()
-        val optionDetails = ObjectWrapper.Basic(map)
-        if (optionDetails.isDeleted != true) {
+        val optionDetails = details.getOptionObject(id)
+        if (optionDetails != null && optionDetails.isDeleted != true) {
             val tagView = TagView(
                 id = id,
                 tag = optionDetails.name.orEmpty(),
-                color = optionDetails.relationOptionColor.orEmpty()
+                color = optionDetails.color
             )
             tagViews.add(tagView)
         }
@@ -219,13 +219,12 @@ fun tagRelation(
     )
 }
 
-fun Block.Details.objectTypeRelation(
+fun ObjectViewDetails.objectTypeRelation(
     relationKey: Key,
     isFeatured: Boolean,
     objectTypeId: Id
 ): ObjectRelationView {
-    val typeStruct = details[objectTypeId]?.map
-    val objectType = typeStruct?.mapToObjectWrapperType()
+    val objectType = getTypeObject(objectTypeId)
     return if (objectType == null || objectType.isDeleted == true) {
         ObjectRelationView.ObjectType.Deleted(
             id = objectTypeId,
@@ -247,7 +246,7 @@ fun Block.Details.objectTypeRelation(
     }
 }
 
-fun Block.Details.linksFeaturedRelation(
+fun ObjectViewDetails.linksFeaturedRelation(
     relations: List<ObjectWrapper.Relation>,
     relationKey: Key,
     ctx: Id,
@@ -256,8 +255,8 @@ fun Block.Details.linksFeaturedRelation(
     return when (relationKey) {
         Relations.BACKLINKS -> {
             val relation = relations.firstOrNull { it.key == relationKey } ?: return null
-            val objectDetails = ObjectWrapper.Basic(details[ctx]?.map ?: return null)
-            val backlinks = objectDetails.backlinks.filter {
+            val objectWrapper = getObject(ctx) ?: return null
+            val backlinks = objectWrapper.backlinks.filter {
                 details.containsKey(it)
             }
             if (backlinks.isEmpty()) {
@@ -277,8 +276,8 @@ fun Block.Details.linksFeaturedRelation(
         }
         Relations.LINKS -> {
             val relation = relations.firstOrNull { it.key == relationKey } ?: return null
-            val objectDetails = ObjectWrapper.Basic(details[ctx]?.map ?: return null)
-            val links = objectDetails.links.filter {
+            val objectWrapper = getObject(ctx) ?: return null
+            val links = objectWrapper.links.filter {
                 details.containsKey(it)
             }
             if (links.isEmpty()) {

@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation.Format.FILE
-import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.typeOf
@@ -27,7 +26,8 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.core_models.SupportedLayouts.isEditorOrFileLayout
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -70,6 +70,8 @@ class ObjectValueViewModel(
 
     private val initialIds = mutableListOf<Id>()
     private var isInitialSortDone = false
+
+    val navigation = MutableSharedFlow<OpenObjectNavigation>()
 
     init {
         Timber.d("ObjectValueViewModel init, params: $viewModelParams")
@@ -352,24 +354,13 @@ class ObjectValueViewModel(
     }
 
     private fun onOpenObjectAction(item: ObjectValueItem.Object) {
-        viewModelScope.launch {
-            val layout = item.view.layout
-            if (layout.isDataView()) {
-                commands.emit(
-                    Command.OpenSet(
-                        id = item.view.id,
-                        space = item.view.space
-                    )
-                )
-            } else if (isEditorOrFileLayout(layout)) {
-                commands.emit(
-                    Command.OpenObject(
-                        id = item.view.id,
-                        space = item.view.space
-                    )
-                )
-            } else {
-                Timber.w("This layout is not supported: $layout")
+        val nav = item.view.layout?.navigation(
+            target = item.view.id,
+            space = item.view.space
+        )
+        viewModelScope.launch{
+            if (nav != null) {
+                navigation.emit(nav)
             }
         }
     }
@@ -453,8 +444,6 @@ class ObjectValueViewModel(
     sealed class Command {
         object Dismiss : Command()
         object Expand : Command()
-        data class OpenObject(val id: Id, val space: Id) : Command()
-        data class OpenSet(val id: Id, val space: Id) : Command()
         data class DeleteObject(val id: Id) : Command()
     }
 }

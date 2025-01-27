@@ -59,8 +59,8 @@ open class LinkToObjectOrWebViewModelTest {
     @Mock
     lateinit var gateway: Gateway
 
-    var store: Editor.Storage = Editor.Storage()
     var ctx = ""
+    var store: Editor.Storage = Editor.Storage()
     val spaceId = MockDataFactory.randomString()
 
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)

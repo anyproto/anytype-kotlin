@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
@@ -135,7 +134,7 @@ object ObjectMenuModule {
         dispatcher = dispatcher,
         updateFields = updateFields,
         delegator = delegator,
-        menuOptionsProvider = createMenuOptionsProvider(storage, featureToggles),
+        menuOptionsProvider = createMenuOptionsProvider(storage),
         addObjectToCollection = addObjectToCollection,
         createTemplateFromObject = createTemplateFromObject,
         setObjectDetails = setObjectDetails,
@@ -163,11 +162,10 @@ object ObjectMenuModule {
     )
 
     @JvmStatic
-    private fun createMenuOptionsProvider(storage: Editor.Storage, featureToggles: FeatureToggles) =
+    private fun createMenuOptionsProvider(storage: Editor.Storage): ObjectMenuOptionsProvider =
         ObjectMenuOptionsProviderImpl(
-            details = storage.details.stream().map { it.details },
-            restrictions = storage.objectRestrictions.stream(),
-            featureToggles = featureToggles
+            objectViewDetailsFlow = storage.details.stream(),
+            restrictions = storage.objectRestrictions.stream()
         )
 
     @JvmStatic
@@ -254,7 +252,7 @@ object ObjectSetMenuModule {
         analytics = analytics,
         objectState = state,
         dispatcher = dispatcher,
-        menuOptionsProvider = createMenuOptionsProvider(state, featureToggles),
+        menuOptionsProvider = createMenuOptionsProvider(state),
         addObjectToCollection = addObjectToCollection,
         debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
         createWidget = createWidget,
@@ -323,18 +321,15 @@ object ObjectSetMenuModule {
     @JvmStatic
     private fun createMenuOptionsProvider(
         state: StateFlow<ObjectState>,
-        featureToggles: FeatureToggles
     ): ObjectMenuOptionsProvider {
         return when (val currentState = state.value) {
             is ObjectState.DataView -> ObjectMenuOptionsProviderImpl(
-                details = state.map { currentState.details }.distinctUntilChanged(),
+                objectViewDetailsFlow = state.map { currentState.details }.distinctUntilChanged(),
                 restrictions = state.map { currentState.objectRestrictions }.distinctUntilChanged(),
-                featureToggles = featureToggles
             )
             else -> ObjectMenuOptionsProviderImpl(
-                details = emptyFlow(),
+                objectViewDetailsFlow = emptyFlow(),
                 restrictions = emptyFlow(),
-                featureToggles = featureToggles
             )
         }
     }

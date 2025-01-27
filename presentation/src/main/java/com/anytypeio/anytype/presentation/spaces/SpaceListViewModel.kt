@@ -64,28 +64,24 @@ class SpaceListViewModel(
                                     SpaceId(id)
                                 } ?: return@buildList
 
-                                if (spaceView.spaceAccessType == SpaceAccessType.SHARED) {
-                                    val isOwner = permissions.get(space) == SpaceMemberPermissions.OWNER
-                                    if (isOwner) {
-                                        add(SpaceListItemView.Action.DeleteSpace)
-                                    } else {
-                                        when (spaceView.spaceAccountStatus) {
-                                            SpaceStatus.SPACE_JOINING -> {
-                                                add(SpaceListItemView.Action.CancelJoinRequest)
-                                            }
-                                            SpaceStatus.SPACE_REMOVING -> {
-                                                add(SpaceListItemView.Action.DeleteSpace)
-                                            }
-                                            SpaceStatus.SPACE_ACTIVE, SpaceStatus.UNKNOWN -> {
-                                                add(SpaceListItemView.Action.LeaveSpace)
-                                            }
-                                            else -> {
-                                                // Do nothing.
-                                            }
+                                val isOwner = permissions.get(space) == SpaceMemberPermissions.OWNER
+                                if (isOwner) {
+                                    add(SpaceListItemView.Action.DeleteSpace)
+                                } else {
+                                    when (spaceView.spaceAccountStatus) {
+                                        SpaceStatus.SPACE_JOINING -> {
+                                            add(SpaceListItemView.Action.CancelJoinRequest)
+                                        }
+                                        SpaceStatus.SPACE_REMOVING -> {
+                                            add(SpaceListItemView.Action.DeleteSpace)
+                                        }
+                                        SpaceStatus.SPACE_ACTIVE, SpaceStatus.UNKNOWN -> {
+                                            add(SpaceListItemView.Action.LeaveSpace)
+                                        }
+                                        else -> {
+                                            // Do nothing.
                                         }
                                     }
-                                } else if (spaceView.spaceAccessType == SpaceAccessType.PRIVATE) {
-                                    add(SpaceListItemView.Action.DeleteSpace)
                                 }
                             }
                         )

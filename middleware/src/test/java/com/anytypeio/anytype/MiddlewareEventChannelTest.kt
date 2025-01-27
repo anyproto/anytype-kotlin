@@ -276,7 +276,7 @@ class MiddlewareEventChannelTest {
         val icon = Pair("icon", ":package:")
         val name = Pair("name", "Document I")
 
-        val details = com.anytypeio.anytype.core_models.Block.Fields(map = mutableMapOf(icon, name))
+        val details = mutableMapOf(icon, name)
 
         val msg = anytype.Event.Object.Details.Set(
             id = id,

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSetup
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -118,15 +119,15 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
             children = listOf(header.id, block.id, dv.id),
             content = Block.Content.Smart
         )
-        val objectDetails = Block.Fields(
+        val objectDetails =
             mapOf(
+                Relations.ID to targetObjectId,
                 Relations.TYPE to ObjectTypeIds.SET,
                 Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                 Relations.SET_OF to listOf("")
             )
-        )
 
-        val detailsList = Block.Details(details = mapOf(targetObjectId to objectDetails))
+        val detailsList = ObjectViewDetails(details = mapOf(targetObjectId to objectDetails))
 
         stubOpenDocument(document = listOf(page, header, title, block, dv), details = detailsList)
         stubInterceptEvents(params = params)
@@ -181,15 +182,15 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
             children = listOf(header.id, block.id, dv.id),
             content = Block.Content.Smart
         )
-        val objectDetails = Block.Fields(
+        val objectDetails =
             mapOf(
+                Relations.ID to targetObjectId,
                 Relations.TYPE to ObjectTypeIds.SET,
                 Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                 Relations.SET_OF to emptyList<String>()
             )
-        )
 
-        val detailsList = Block.Details(details = mapOf(targetObjectId to objectDetails))
+        val detailsList = ObjectViewDetails(details = mapOf(targetObjectId to objectDetails))
 
         stubOpenDocument(document = listOf(page, header, title, block, dv), details = detailsList)
         stubInterceptEvents(params = params)
@@ -244,15 +245,15 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
             children = listOf(header.id, block.id, dv.id),
             content = Block.Content.Smart
         )
-        val objectDetails = Block.Fields(
+        val objectDetails =
             mapOf(
+                Relations.ID to targetObjectId,
                 Relations.TYPE to ObjectTypeIds.SET,
                 Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                 Relations.SET_OF to listOf<String>("", "   ", RandomString.make())
             )
-        )
 
-        val detailsList = Block.Details(details = mapOf(targetObjectId to objectDetails))
+        val detailsList = ObjectViewDetails(details = mapOf(targetObjectId to objectDetails))
 
         stubOpenDocument(document = listOf(page, header, title, block, dv), details = detailsList)
         stubInterceptEvents(params = params)
@@ -307,14 +308,14 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
             children = listOf(header.id, block.id, dv.id),
             content = Block.Content.Smart
         )
-        val objectDetails = Block.Fields(
+        val objectDetails =
             mapOf(
+                Relations.ID to targetObjectId,
                 Relations.TYPE to ObjectTypeIds.COLLECTION,
                 Relations.LAYOUT to ObjectType.Layout.COLLECTION.code.toDouble()
             )
-        )
 
-        val detailsList = Block.Details(details = mapOf(targetObjectId to objectDetails))
+        val detailsList = ObjectViewDetails(details = mapOf(targetObjectId to objectDetails))
 
         stubOpenDocument(document = listOf(page, header, title, block, dv), details = detailsList)
         stubInterceptEvents(params = params)
@@ -444,7 +445,18 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                 )
             }
 
-            stubOpenDocument(document = listOf(page, header, title, block, dv))
+            stubOpenDocument(
+                document = listOf(page, header, title, block, dv),
+                details = ObjectViewDetails(
+                    details = mapOf(
+                        targetObjectId to mapOf(
+                            Relations.ID to targetObjectId,
+                            Relations.UNIQUE_KEY to targetObjectId,
+                            Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                        )
+                    )
+                )
+            )
             stubInterceptEvents(
                 params = params,
                 flow = events

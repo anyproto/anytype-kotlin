@@ -74,12 +74,6 @@ data class Block(
     }
 
     /**
-     * Document metadata
-     * @property details maps id of the block to its details (contained as fields)
-     */
-    data class Details(val details: Map<Id, Fields> = emptyMap())
-
-    /**
      * Block's content.
      */
     sealed class Content {

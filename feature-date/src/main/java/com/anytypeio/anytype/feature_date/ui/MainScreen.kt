@@ -172,12 +172,6 @@ fun DateMainScreen(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 16.dp),
-                    backClick = {
-                        onDateEvent(DateEvent.NavigationWidget.OnBackClick)
-                    },
-                    backLongClick = {
-                        onDateEvent(DateEvent.NavigationWidget.OnBackLongClick)
-                    },
                     searchClick = {
                         onDateEvent(DateEvent.NavigationWidget.OnGlobalSearchClick)
                     },

@@ -11,9 +11,9 @@ import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubTitle
-import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSetup
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
@@ -21,7 +21,6 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
-import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
@@ -95,9 +94,9 @@ class FileLayoutTest : EditorPresentationTestSetup() {
             fileExt = fileExt
         )
 
-        val detailsList = Block.Details(
+        val detailsList = ObjectViewDetails(
             details = mapOf(
-                fileObject.id to Block.Fields(fileObject.map)
+                fileObject.id to fileObject.map
             )
         )
 
@@ -163,9 +162,9 @@ class FileLayoutTest : EditorPresentationTestSetup() {
             fileExt = fileExt
         )
 
-        val detailsList = Block.Details(
+        val detailsList = ObjectViewDetails(
             details = mapOf(
-                fileObject.id to Block.Fields(fileObject.map)
+                fileObject.id to fileObject.map
             )
         )
 
@@ -226,9 +225,9 @@ class FileLayoutTest : EditorPresentationTestSetup() {
             fileExt = "pdf"
         )
 
-        val detailsList = Block.Details(
+        val detailsList = ObjectViewDetails(
             details = mapOf(
-                fileObject.id to Block.Fields(fileObject.map)
+                fileObject.id to fileObject.map
             )
         )
 
@@ -294,9 +293,9 @@ class FileLayoutTest : EditorPresentationTestSetup() {
             fileExt = "jpg"
         )
 
-        val detailsList = Block.Details(
+        val detailsList = ObjectViewDetails(
             details = mapOf(
-                fileObject.id to Block.Fields(fileObject.map)
+                fileObject.id to fileObject.map
             )
         )
 

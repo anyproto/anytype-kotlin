@@ -155,7 +155,8 @@ fun ButtonPrimary(
         ) {
             Text(
                 text = text,
-                style = size.textStyle
+                style = size.textStyle,
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -195,7 +196,8 @@ fun ButtonPrimaryDarkTheme(
         ) {
             Text(
                 text = text,
-                style = size.textStyle
+                style = size.textStyle,
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -246,7 +248,8 @@ fun ButtonPrimaryLoading(
                 Text(
                     text = text,
                     modifier = Modifier.graphicsLayer { alpha = contentAlpha },
-                    style = size.textStyle
+                    style = size.textStyle,
+                    textAlign = TextAlign.Center
                 )
             }
             DotsLoadingIndicator(
@@ -300,7 +303,8 @@ fun ButtonSecondary(
         ) {
             Text(
                 text = text,
-                style = size.textStyle
+                style = size.textStyle,
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -346,7 +350,8 @@ fun ButtonSecondaryDarkTheme(
         ) {
             Text(
                 text = text,
-                style = size.textStyle
+                style = size.textStyle,
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -401,7 +406,8 @@ fun ButtonSecondaryLoading(
                 Text(
                     text = text,
                     style = size.textStyle,
-                    modifier = Modifier.graphicsLayer { alpha = contentAlpha }
+                    modifier = Modifier.graphicsLayer { alpha = contentAlpha },
+                    textAlign = TextAlign.Center
                 )
             }
             DotsLoadingIndicator(

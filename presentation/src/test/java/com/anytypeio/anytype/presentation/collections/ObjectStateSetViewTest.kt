@@ -3,14 +3,13 @@ package com.anytypeio.anytype.presentation.collections
 import app.cash.turbine.test
 import app.cash.turbine.testIn
 import app.cash.turbine.turbineScope
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -60,14 +59,13 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             stubInterceptEvents()
             stubInterceptThreadStatus()
 
-            val objectDetails = Block.Details(
+            val objectDetails = ObjectViewDetails(
                 details = mapOf(
-                    root to Block.Fields(
+                    root to
                         mapOf(
                             Relations.ID to root,
                             Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
                         )
-                    )
                 )
             )
             stubOpenObject(
@@ -280,26 +278,23 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
                 )
             )
 
-            val detailsDeletedSetOf = Block.Details(
+            val detailsDeletedSetOf = ObjectViewDetails(
                 details = mapOf(
-                    root to Block.Fields(
+                    root to
                         mapOf(
                             Relations.ID to root,
                             Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                             Relations.SET_OF to listOf(typeDeleted1.id, type2.id, typeDeleted3.id)
-                        )
                     ),
-                    typeDeleted1.id to Block.Fields(
+                    typeDeleted1.id to
                         mapOf(
                             Relations.ID to typeDeleted1.id,
                             Relations.IS_DELETED to true
-                        )
                     ),
-                    type2.id to Block.Fields(
+                    type2.id to
                         mapOf(
                             Relations.ID to type2.id,
                             Relations.TYPE to ObjectTypeIds.OBJECT_TYPE
-                        )
                     )
                 )
             )
@@ -375,21 +370,19 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
                 )
             )
 
-            val detailsDeletedSetOf = Block.Details(
+            val detailsDeletedSetOf = ObjectViewDetails(
                 details = mapOf(
-                    root to Block.Fields(
+                    root to
                         mapOf(
                             Relations.ID to root,
                             Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                             Relations.SET_OF to listOf(typeDeleted1.id, typeDeleted3.id)
-                        )
                     ),
-                    typeDeleted1.id to Block.Fields(
+                    typeDeleted1.id to
                         mapOf(
                             Relations.ID to typeDeleted1.id,
                             Relations.IS_DELETED to true
                         )
-                    )
                 )
             )
 

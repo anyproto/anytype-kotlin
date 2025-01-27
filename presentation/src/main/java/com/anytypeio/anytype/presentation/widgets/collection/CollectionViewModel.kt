@@ -49,6 +49,7 @@ import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.mapFileObjectToView
@@ -116,24 +117,7 @@ class CollectionViewModel(
 
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
-    init {
-        Timber.i("CollectionViewModel, init, spaceId:${vmParams.spaceId.id}")
-        proceedWithObservingPermissions()
-        val externalChannelEvents: Flow<Payload> = spaceManager
-            .observe()
-            .flatMapLatest { config ->
-                val params = InterceptEvents.Params(config.home)
-                interceptEvents.build(params).map {
-                    Payload(
-                        context = config.home,
-                        events = it
-                    )
-                }
-            }
-
-        val internalChannelEvents = objectPayloadDispatcher.flow()
-        payloads = merge(externalChannelEvents, internalChannelEvents)
-    }
+    val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
 
     val commands = MutableSharedFlow<Command>()
 
@@ -179,12 +163,43 @@ class CollectionViewModel(
             initialValue = Resultat.loading()
         )
 
+    init {
+        Timber.i("CollectionViewModel, init, spaceId:${vmParams.spaceId.id}")
+        proceedWithObservingPermissions()
+        proceedWithNavPanelState()
+        val externalChannelEvents: Flow<Payload> = spaceManager
+            .observe()
+            .flatMapLatest { config ->
+                val params = InterceptEvents.Params(config.home)
+                interceptEvents.build(params).map {
+                    Payload(
+                        context = config.home,
+                        events = it
+                    )
+                }
+            }
+
+        val internalChannelEvents = objectPayloadDispatcher.flow()
+        payloads = merge(externalChannelEvents, internalChannelEvents)
+    }
+
     private fun proceedWithObservingPermissions() {
         viewModelScope.launch {
             userPermissionProvider
                 .observe(space = vmParams.spaceId)
                 .collect {
                     permission.value = it
+                }
+        }
+    }
+
+    private fun proceedWithNavPanelState() {
+        viewModelScope.launch {
+            permission
+                .map { permission ->
+                    NavPanelState.fromPermission(permission)
+                }.collect {
+                    navPanelState.value = it
                 }
         }
     }

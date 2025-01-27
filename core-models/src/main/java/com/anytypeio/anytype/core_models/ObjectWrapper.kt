@@ -35,7 +35,7 @@ sealed class ObjectWrapper {
 
         val coverType: CoverType
             get() = when (val value = map[Relations.COVER_TYPE]) {
-                is Double -> CoverType.values().find { type ->
+                is Double -> CoverType.entries.find { type ->
                     type.code == value.toInt()
                 } ?: CoverType.NONE
                 else -> CoverType.NONE
@@ -378,6 +378,18 @@ sealed class ObjectWrapper {
                 }
 
         val globalName: String? by default
+    }
+
+    data class Date(override val map: Struct) : ObjectWrapper() {
+        private val default = map.withDefault { null }
+        val id: Id by default
+        val name: String? by default
+        val timestamp: Double?
+            get() = when (val value = map[Relations.TIMESTAMP]) {
+                is Double -> value
+                is Int -> value.toDouble()
+                else -> null
+            }
     }
 }
 

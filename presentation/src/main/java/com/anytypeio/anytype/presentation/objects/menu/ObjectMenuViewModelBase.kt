@@ -3,12 +3,12 @@ package com.anytypeio.anytype.presentation.objects.menu
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -111,17 +111,22 @@ abstract class ObjectMenuViewModelBase(
         isFavorite: Boolean,
         isArchived: Boolean,
         isLocked: Boolean,
-        isTemplate: Boolean
+        isTemplate: Boolean,
+        isReadOnly: Boolean
     ) {
-        Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isLocked:[$isLocked]")
+        Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isLocked:[$isLocked], isReadOnly: [$isReadOnly]")
         actions.value = buildActions(
             ctx = ctx,
             isArchived = isArchived,
             isFavorite = isFavorite,
-            isTemplate = isTemplate
+            isTemplate = isTemplate,
+            isLocked = isLocked,
+            isReadOnly = isReadOnly
         )
         jobs += viewModelScope.launch {
-            menuOptionsProvider.provide(ctx, isLocked).collect(_options)
+            menuOptionsProvider
+                .provide(ctx = ctx, isLocked = isLocked, isReadOnly = isReadOnly)
+                .collect(_options)
         }
     }
 
@@ -131,7 +136,9 @@ abstract class ObjectMenuViewModelBase(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isTemplate: Boolean = false
+        isTemplate: Boolean = false,
+        isLocked: Boolean,
+        isReadOnly: Boolean
     ): List<ObjectAction>
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {
@@ -347,7 +354,7 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
-    fun proceedWithDuplication(ctx: Id, space: Id, details: Map<Id, Block.Fields>?) {
+    fun proceedWithDuplication(ctx: Id, space: Id, details: Map<Id, Struct>) {
         Timber.d("proceedWithDuplication, ctx:[$ctx]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {

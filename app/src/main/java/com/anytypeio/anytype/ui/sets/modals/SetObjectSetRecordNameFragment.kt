@@ -9,11 +9,14 @@ import android.widget.EditText
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.databinding.FragmentSetObjectSetRecordNameBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
@@ -40,21 +43,27 @@ class SetObjectSetRecordNameFragment : SetObjectCreateRecordFragmentBase<Fragmen
 
     override fun onStart(scope: CoroutineScope) {
         super.onStart(scope)
-        scope.launch { subscribeCommands() }
+        lifecycleScope.launch {
+            jobs += subscribe(vm.commands) { subscribeCommands(it) }
+            jobs += subscribe(textInputField.textChanges()) { newText ->
+                vm.onTextChanged(
+                    input = newText.toString(),
+                    target = target
+                )
+            }
+        }
     }
 
-    private suspend fun subscribeCommands() {
-        vm.commands.collect { command ->
-            when (command) {
-                is Command.OpenObject -> {
-                    findNavController().navigate(
-                        R.id.objectNavigation,
-                        EditorFragment.args(
-                            ctx = command.ctx,
-                            space = command.space
-                        )
+    private fun subscribeCommands(command: Command) {
+        when (command) {
+            is Command.OpenObject -> {
+                findNavController().navigate(
+                    R.id.objectNavigation,
+                    EditorFragment.args(
+                        ctx = command.ctx,
+                        space = command.space
                     )
-                }
+                )
             }
         }
     }

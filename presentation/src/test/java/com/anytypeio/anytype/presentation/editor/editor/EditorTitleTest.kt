@@ -313,7 +313,10 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                 listOf(Event.Command.Details.Amend(
                     context = root,
                     target = root,
-                    details = mapOf(Relations.ICON_EMOJI to emoji)
+                    details = mapOf(
+                        Relations.ID to root,
+                        Relations.ICON_EMOJI to emoji
+                    )
                 ))
             )
         }
@@ -430,7 +433,10 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                 listOf(Event.Command.Details.Amend(
                     context = root,
                     target = root,
-                    details = mapOf(Relations.ICON_EMOJI to emoji)
+                    details = mapOf(
+                        Relations.ID to root,
+                        Relations.ICON_EMOJI to emoji
+                    )
                 ))
             )
         }

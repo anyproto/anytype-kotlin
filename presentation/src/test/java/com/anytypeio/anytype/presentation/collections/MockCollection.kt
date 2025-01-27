@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import net.bytebuddy.utility.RandomString
@@ -242,14 +243,12 @@ class MockCollection(
 
     val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(context)
 
-    val details = Block.Details(
+    val details = ObjectViewDetails(
         details = mapOf(
-            root to Block.Fields(
-                mapOf(
-                    Relations.ID to root,
-                    Relations.NAME to MockDataFactory.randomString(),
-                    Relations.LAYOUT to ObjectType.Layout.COLLECTION.code.toDouble()
-                )
+            root to mapOf(
+                Relations.ID to root,
+                Relations.NAME to MockDataFactory.randomString(),
+                Relations.LAYOUT to ObjectType.Layout.COLLECTION.code.toDouble()
             )
         )
     )

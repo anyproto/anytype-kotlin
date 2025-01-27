@@ -1,12 +1,11 @@
 package com.anytypeio.anytype.presentation.objects.menu
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider.Options
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -15,25 +14,28 @@ import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
 class ObjectMenuOptionsProviderImpl(
-    private val details: Flow<Map<Id, Block.Fields>>,
-    private val restrictions: Flow<List<ObjectRestriction>>,
-    private val featureToggles: FeatureToggles,
+    private val objectViewDetailsFlow: Flow<ObjectViewDetails>,
+    private val restrictions: Flow<List<ObjectRestriction>>
 ) : ObjectMenuOptionsProvider {
 
-    private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> = details
+    private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> = objectViewDetailsFlow
         .filter { details ->
-            details.containsKey(ctx).also { isValuePresent ->
+            details.details.containsKey(ctx).also { isValuePresent ->
                 if (!isValuePresent) Timber.w("Details missing for object: $ctx")
             }
         }
         .map { details ->
-            val fields = requireNotNull(details[ctx])
-            ObjectWrapper.Basic(fields.map).layout
+            details.getObject(ctx)?.layout
         }
 
-    override fun provide(ctx: Id, isLocked: Boolean): Flow<Options> {
+    override fun provide(ctx: Id, isLocked: Boolean, isReadOnly: Boolean): Flow<Options> {
         return combine(observeLayout(ctx), restrictions) { layout, restrictions ->
-            createOptions(layout, restrictions, isLocked)
+            createOptions(
+                layout = layout,
+                restrictions = restrictions,
+                isLocked = isLocked,
+                isReadOnly = isReadOnly
+            )
         }
     }
 
@@ -41,10 +43,11 @@ class ObjectMenuOptionsProviderImpl(
         layout: ObjectType.Layout?,
         restrictions: List<ObjectRestriction>,
         isLocked: Boolean,
+        isReadOnly: Boolean
     ): Options {
-        val hasIcon = !isLocked
-        val hasCover = !isLocked
-        val hasLayout = !isLocked && !restrictions.contains(ObjectRestriction.LAYOUT_CHANGE)
+        val hasIcon = !isLocked && !isReadOnly
+        val hasCover = !isLocked && !isReadOnly
+        val hasLayout = !isLocked && !restrictions.contains(ObjectRestriction.LAYOUT_CHANGE) && !isReadOnly
         val options = if (layout != null) {
             when (layout) {
                 ObjectType.Layout.PARTICIPANT -> Options.ALL.copy(
@@ -72,7 +75,7 @@ class ObjectMenuOptionsProviderImpl(
                         hasCover = hasCover,
                         hasLayout = false,
                         hasDiagnosticsVisibility = true,
-                        hasHistory = !isLocked
+                        hasHistory = !isLocked && !isReadOnly
                     )
                 }
                 ObjectType.Layout.BASIC,
@@ -82,7 +85,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasCover = hasCover,
                     hasLayout = hasLayout,
                     hasDiagnosticsVisibility = true,
-                    hasHistory = !isLocked
+                    hasHistory = !isLocked && !isReadOnly
                 )
                 ObjectType.Layout.TODO -> Options(
                     hasIcon = false,
@@ -90,7 +93,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasLayout = hasLayout,
                     hasRelations = true,
                     hasDiagnosticsVisibility = true,
-                    hasHistory = !isLocked
+                    hasHistory = !isLocked && !isReadOnly
                 )
 
                 ObjectType.Layout.NOTE -> Options(
@@ -99,7 +102,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasLayout = hasLayout,
                     hasRelations = true,
                     hasDiagnosticsVisibility = true,
-                    hasHistory = !isLocked
+                    hasHistory = !isLocked && !isReadOnly
                 )
                 else -> Options.NONE.copy(
                     hasDiagnosticsVisibility = true

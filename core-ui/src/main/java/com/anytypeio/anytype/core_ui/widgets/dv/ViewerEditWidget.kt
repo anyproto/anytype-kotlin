@@ -56,6 +56,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -285,7 +286,11 @@ fun NameTextField(
         )
         BasicTextField(
             value = innerValue,
-            onValueChange = { innerValue = it },
+            onValueChange = {
+                innerValue = it.also {
+                    action.invoke(ViewEditAction.UpdateName(id = state.id, name = it))
+                }
+            },
             textStyle = Title1.copy(color = colorResource(id = R.color.text_primary)),
             singleLine = true,
             enabled = true,
@@ -395,7 +400,7 @@ fun ColumnItem(
     }
 }
 
-@Preview(showBackground = true)
+@DefaultPreviews
 @Composable
 fun PreviewViewerEditWidget() {
     val state = ViewerEditWidgetUi.Data(

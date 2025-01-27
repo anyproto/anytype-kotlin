@@ -105,7 +105,7 @@ fun List<Block>.getFileDetailsForBlock(
         return null
     }
 
-    val fileObject = orchestrator.stores.details.getAsObject(target = targetObjectId)
+    val fileObject = orchestrator.stores.details.current().getObject(targetObjectId)
     if (fileObject == null) {
         Timber.e("Object with id $targetObjectId not found.")
         return null

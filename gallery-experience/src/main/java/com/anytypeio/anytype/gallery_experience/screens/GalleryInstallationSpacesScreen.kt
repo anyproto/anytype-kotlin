@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +35,7 @@ import androidx.core.graphics.toColorInt
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -60,27 +62,48 @@ fun GalleryInstallationSpacesScreen(
         onDismissRequest = onDismiss,
         containerColor = colorResource(id = R.color.background_secondary),
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(start = 8.dp, end = 8.dp, bottom = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(6.dp))
-                Dragger()
-                Spacer(modifier = Modifier.height(6.dp))
-                if (state.isNewButtonVisible) {
-                    NewSpaceItem(onNewSpaceClick = onNewSpaceClick)
-                }
-                state.spaces.forEach { space ->
-                    SpaceItem(space = space, onSpaceClick = onSpaceClick)
-                }
-            }
+            GalleryScreenContent(
+                state = state,
+                onNewSpaceClick = onNewSpaceClick,
+                onSpaceClick = onSpaceClick
+            )
         },
         shape = RoundedCornerShape(16.dp),
         dragHandle = null
     )
+}
+
+@Composable
+private fun GalleryScreenContent(
+    state: GalleryInstallationSpacesState,
+    onNewSpaceClick: () -> Unit,
+    onSpaceClick: (GallerySpaceView) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(start = 8.dp, end = 8.dp, bottom = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(6.dp))
+        Dragger()
+        Spacer(modifier = Modifier.height(6.dp))
+        if (state.isNewButtonVisible) {
+            NewSpaceItem(onNewSpaceClick = onNewSpaceClick)
+        }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1.0f)
+        ) {
+            state.spaces.forEach { space ->
+                item {
+                    SpaceItem(space = space, onSpaceClick = onSpaceClick)
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -149,21 +172,64 @@ private fun SpaceItem(space: GallerySpaceView, onSpaceClick: (GallerySpaceView) 
     }
 }
 
-@Preview(showBackground = true)
+@DefaultPreviews
 @Composable
 private fun GallerySpacesScreenPreview() {
-    GalleryInstallationSpacesScreen(
+    GalleryScreenContent(
         state = GalleryInstallationSpacesState(
             listOf(
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+                    icon = SpaceIconView.Placeholder()
+                ),
+                GallerySpaceView(
+                    obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 2")),
+                    icon = SpaceIconView.Placeholder()
+                ),
+                GallerySpaceView(
+                    obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 3")),
+                    icon = SpaceIconView.Placeholder()
+                ),
+                GallerySpaceView(
+                    obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 4")),
+                    icon = SpaceIconView.Placeholder()
+                ),
+                GallerySpaceView(
+                    obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 5")),
+                    icon = SpaceIconView.Placeholder()
+                ),
+                GallerySpaceView(
+                    obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 6")),
+                    icon = SpaceIconView.Placeholder()
+                ),
+                GallerySpaceView(
+                    obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 7")),
+                    icon = SpaceIconView.Placeholder()
+                ),
+                GallerySpaceView(
+                    obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 8")),
+                    icon = SpaceIconView.Placeholder()
+                ),
+                GallerySpaceView(
+                    obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 9")),
+                    icon = SpaceIconView.Placeholder()
+                ),
+                GallerySpaceView(
+                    obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 10")),
+                    icon = SpaceIconView.Placeholder()
+                ),
+                GallerySpaceView(
+                    obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 11")),
+                    icon = SpaceIconView.Placeholder()
+                ),
+                GallerySpaceView(
+                    obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 12")),
                     icon = SpaceIconView.Placeholder()
                 )
             ),
             isNewButtonVisible = true
         ),
         onNewSpaceClick = {},
-        onSpaceClick = {},
-        onDismiss = {}
+        onSpaceClick = {}
     )
 }

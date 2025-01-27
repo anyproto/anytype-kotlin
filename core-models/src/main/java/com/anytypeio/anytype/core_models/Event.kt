@@ -127,8 +127,6 @@ sealed class Event {
             val fields: Block.Fields
         ) : Command()
 
-
-        //todo move this Event ot of Block events, because they are Objects events!
         sealed class Details : Command() {
             /**
              * Command to set details (metadata) of the target Object.

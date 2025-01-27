@@ -112,7 +112,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiObjectsMenuState = vm.uiMenuState.collectAsStateWithLifecycle().value,
                     uiObjectsListState = vm.uiObjectsListState.collectAsStateWithLifecycle().value,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
-                    onTypeEvent = {}
+                    onTypeEvent = vm::onTypeEvent
                 )
             }
         }

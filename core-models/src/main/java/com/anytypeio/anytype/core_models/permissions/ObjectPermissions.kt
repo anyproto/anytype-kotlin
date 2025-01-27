@@ -8,6 +8,8 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import kotlin.collections.contains
+import kotlin.collections.get
 
 /**
  * Represents a set of user permissions for a given object.
@@ -52,8 +54,10 @@ data class ObjectPermissions(
     val canEditRelationsList: Boolean = false,
     val canEditBlocks: Boolean = false,
     val canEditDetails: Boolean = false,
-    val editBlocks: EditBlocksPermission,
-    val canCreateObjectThisType: Boolean = false
+    val editBlocks: EditBlocksPermission = EditBlocksPermission.ReadOnly,
+    val canCreateObjectThisType: Boolean = false,
+    val canCreateTemplatesForThisType: Boolean = false,
+    val participantCanEdit: Boolean = false,
 )
 
 /**
@@ -104,7 +108,7 @@ fun ObjectView.toObjectPermissions(
 
     return ObjectPermissions(
         canArchive = participantCanEdit && !objectRestrictions.contains(ObjectRestriction.DELETE) && !isArchived,
-        canDelete =  participantCanEdit && !objectRestrictions.contains(ObjectRestriction.DELETE),
+        canDelete = participantCanEdit && !objectRestrictions.contains(ObjectRestriction.DELETE),
         canChangeType = canEdit &&
                 !isTemplateObject &&
                 !objectRestrictions.contains(ObjectRestriction.TYPE_CHANGE),
@@ -134,7 +138,36 @@ fun ObjectView.toObjectPermissions(
         canEditBlocks = (editBlocksPermission == EditBlocksPermission.Edit),
         canEditDetails = canEditDetails && canEdit,
         editBlocks = editBlocksPermission,
-        canCreateObjectThisType = !objectRestrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && canApplyUneditableActions
+        canCreateObjectThisType = !objectRestrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && canApplyUneditableActions,
+        participantCanEdit = participantCanEdit
+    )
+}
+
+fun ObjectView.toObjectPermissionsForTypes(
+    participantCanEdit: Boolean
+): ObjectPermissions {
+
+    val isArchived = details[root]?.getSingleValue<Boolean>(Relations.IS_ARCHIVED) == true
+    val canEdit = !isArchived && participantCanEdit
+
+    val canEditDetails = !objectRestrictions.contains(ObjectRestriction.DETAILS)
+
+    val recommendedLayout =
+        when (val value = details[root]?.getOrDefault(Relations.RECOMMENDED_LAYOUT, null)) {
+            is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
+                layout.code == value.toInt()
+            }
+
+            else -> null
+        }
+    val canCreateTemplatesForObjectsThisType = participantCanEdit
+            && !layoutsWithoutTemplates.contains(recommendedLayout)
+
+    return ObjectPermissions(
+        canDelete = participantCanEdit && !objectRestrictions.contains(ObjectRestriction.DELETE),
+        canEditDetails = canEditDetails && canEdit,
+        canCreateTemplatesForThisType = canCreateTemplatesForObjectsThisType,
+        canCreateObjectThisType = !objectRestrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && participantCanEdit,
     )
 }
 
@@ -184,4 +217,28 @@ private val possibleToChangeLayoutLayouts = listOf(
     ObjectType.Layout.PROFILE,
     ObjectType.Layout.TODO,
     ObjectType.Layout.NOTE
+)
+
+private val fileLayouts = listOf(
+    ObjectType.Layout.FILE,
+    ObjectType.Layout.IMAGE,
+    ObjectType.Layout.VIDEO,
+    ObjectType.Layout.AUDIO,
+    ObjectType.Layout.PDF,
+)
+
+private val systemLayouts = listOf(
+    ObjectType.Layout.OBJECT_TYPE,
+    ObjectType.Layout.RELATION,
+    ObjectType.Layout.RELATION_OPTION,
+    ObjectType.Layout.RELATION_OPTION_LIST,
+    ObjectType.Layout.DASHBOARD,
+    ObjectType.Layout.SPACE,
+    ObjectType.Layout.SPACE_VIEW
+)
+
+private val layoutsWithoutTemplates = systemLayouts + fileLayouts + listOf(
+    ObjectType.Layout.CHAT,
+    ObjectType.Layout.CHAT_DERIVED,
+    ObjectType.Layout.PARTICIPANT,
 )

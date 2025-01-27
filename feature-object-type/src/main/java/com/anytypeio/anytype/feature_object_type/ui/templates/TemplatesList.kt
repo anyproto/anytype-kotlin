@@ -20,9 +20,12 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.widgets.TemplateItemContent
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiTemplatesListState
 import com.anytypeio.anytype.presentation.templates.TemplateView
+import timber.log.Timber
 
 @Composable
 fun TemplatesList(uiTemplatesListState: UiTemplatesListState) {
+
+    Timber.d("TemplatesList :$uiTemplatesListState")
 
     val scrollState = rememberLazyListState()
 

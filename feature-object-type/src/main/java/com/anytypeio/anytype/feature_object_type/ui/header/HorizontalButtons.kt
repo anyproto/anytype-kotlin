@@ -15,12 +15,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiFieldsButtonState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiLayoutButtonState
@@ -64,7 +67,9 @@ fun HorizontalButtons(
                     modifier = Modifier
                         .wrapContentSize()
                         .padding(start = 6.dp, end = 12.dp),
-                    text = uiLayoutButtonState.layout.name,
+                    text = uiLayoutButtonState.layout.name.substring(0, 1).uppercase()
+                            + uiLayoutButtonState.layout.name.substring(1)
+                        .toLowerCase(Locale.current),
                     style = PreviewTitle2Medium,
                     color = colorResource(R.color.glyph_active)
                 )

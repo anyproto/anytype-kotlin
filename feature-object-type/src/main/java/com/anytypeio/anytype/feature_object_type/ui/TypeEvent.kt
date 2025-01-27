@@ -15,6 +15,8 @@ sealed class TypeEvent {
     data class OnSortClick(val sort: ObjectsListSort) : TypeEvent()
     data object OnCreateSetClick : TypeEvent()
     data object OnOpenSetClick : TypeEvent()
+
+    data object OnCreateObjectIconClick : TypeEvent()
     data object OnObjectsSettingsIconClick: TypeEvent()
 
 }

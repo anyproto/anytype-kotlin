@@ -31,6 +31,7 @@ interface FieldParser {
         actionFailure: suspend (Throwable) -> Unit
     )
     fun getObjectName(objectWrapper: ObjectWrapper.Basic): String
+    fun getObjectName(objectWrapper: ObjectWrapper.Type): String
     fun getObjectTypeIdAndName(
         objectWrapper: ObjectWrapper.Basic,
         types: List<ObjectWrapper.Type>
@@ -141,6 +142,15 @@ class FieldParserImpl @Inject constructor(
             stringResourceProvider.getUntitledObjectTitle()
         } else {
             result
+        }
+    }
+
+    override fun getObjectName(objectWrapper: ObjectWrapper.Type): String {
+        val name = objectWrapper.name
+        return if (name.isNullOrBlank()) {
+            stringResourceProvider.getUntitledObjectTitle()
+        } else {
+            name
         }
     }
 

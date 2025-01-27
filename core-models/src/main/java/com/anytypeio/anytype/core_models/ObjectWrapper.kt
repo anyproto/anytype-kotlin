@@ -170,10 +170,17 @@ sealed class ObjectWrapper {
         val recommendedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_RELATIONS)
         val recommendedLayout: ObjectType.Layout?
             get() = when (val value = map[Relations.RECOMMENDED_LAYOUT]) {
-                is Double -> ObjectType.Layout.values().singleOrNull { layout ->
+                is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
                     layout.code == value.toInt()
                 }
                 else -> ObjectType.Layout.BASIC
+            }
+        val layout: ObjectType.Layout?
+            get() = when (val value = map[Relations.LAYOUT]) {
+                is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
+                    layout.code == value.toInt()
+                }
+                else -> null
             }
         val defaultTemplateId: Id? by default
     }

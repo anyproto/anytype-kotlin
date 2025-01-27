@@ -183,6 +183,7 @@ fun ObjectTypeMainScreen(
                 )
                 ObjectsHeader(
                     modifier = Modifier
+                        .padding(horizontal = 20.dp)
                         .fillMaxWidth()
                         .height(48.dp),
                     uiObjectsHeaderState = uiObjectsHeaderState,
@@ -306,6 +307,10 @@ fun ObjectTypeMainScreenPreview() {
                     coverGradient = null,
                     coverImage = null,
                 ),
+                TemplateView.New(
+                    targetTypeId = TypeId("32423"),
+                    targetTypeKey = TypeKey("43232")
+                )
             )
         ),
         uiObjectsAddIconState = UiObjectsAddIconState.Visible,

@@ -30,6 +30,7 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -73,6 +74,7 @@ class ChatViewModel @Inject constructor(
     val uXCommands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
+    val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
@@ -254,6 +256,13 @@ class ChatViewModel @Inject constructor(
         }.flowOn(dispatchers.io).collect {
             messages.value = it
         }
+    }
+    
+    fun onTextChanged(
+        cursor: Int,
+        text: String
+    ) {
+
     }
 
     fun onMessageSent(msg: String) {
@@ -617,6 +626,17 @@ class ChatViewModel @Inject constructor(
             val text: String,
             val author: String
         ): ChatBoxMode()
+    }
+
+    sealed class MentionPanelState {
+        data object Hidden : MentionPanelState()
+        data class Visible(val results: List<Member>) : MentionPanelState()
+        data class Member(
+            val id: Id,
+            val name: String,
+            val icon: SpaceMemberIconView,
+            val isUser: Boolean
+        )
     }
 
     sealed class HeaderView {

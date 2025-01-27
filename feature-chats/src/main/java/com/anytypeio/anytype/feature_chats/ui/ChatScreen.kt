@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -58,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -74,6 +76,7 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import kotlinx.coroutines.launch
 
@@ -155,7 +158,8 @@ fun ChatScreenWrapper(
                     onAddReactionClicked = onSelectChatReaction,
                     onViewChatReaction = onViewChatReaction,
                     onMemberIconClicked = vm::onMemberIconClicked,
-                    onMentionClicked = vm::onMentionClicked
+                    onMentionClicked = vm::onMentionClicked,
+                    mentionPanelState = vm.mentionPanelState.collectAsStateWithLifecycle().value
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -197,6 +201,7 @@ fun ChatScreenWrapper(
  */
 @Composable
 fun ChatScreen(
+    mentionPanelState: MentionPanelState,
     chatBoxMode: ChatBoxMode,
     lazyListState: LazyListState,
     messages: List<ChatView>,
@@ -295,6 +300,35 @@ fun ChatScreen(
                 },
                 enabled = jumpToBottomButtonEnabled
             )
+
+            when(mentionPanelState) {
+                MentionPanelState.Hidden -> {
+                    // Draw nothing.
+                }
+                is MentionPanelState.Visible -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .fillMaxWidth()
+                            .height(168.dp)
+                            .background(
+                                color = colorResource(R.color.background_primary),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .align(Alignment.BottomCenter)
+                    ) {
+                        items(
+                            items = mentionPanelState.results,
+                            key = { member -> member.id }
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                text = it.toString()
+                            )
+                        }
+                    }
+                }
+            }
         }
         ChatBox(
             mode = chatBoxMode,
@@ -442,7 +476,9 @@ fun Messages(
                 Text(
                     text = msg.formattedDate,
                     style = Caption1Medium,
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     textAlign = TextAlign.Center,
                     color = colorResource(R.color.transparent_active)
                 )

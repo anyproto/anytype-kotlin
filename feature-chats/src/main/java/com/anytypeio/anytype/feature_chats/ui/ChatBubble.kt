@@ -247,7 +247,7 @@ fun Bubble(
                         } else if (part.mention != null && part.mention.param != null) {
                             withLink(
                                 LinkAnnotation.Clickable(
-                                    tag = "link",
+                                    tag = "@-mention",
                                     styles = TextLinkStyles(
                                         style = SpanStyle(
                                             fontWeight = if (part.isBold) FontWeight.Bold else null,

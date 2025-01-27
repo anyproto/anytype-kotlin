@@ -42,10 +42,14 @@ class ObjectTopToolbar @JvmOverloads constructor(
     ) = with(binding) {
         if (overCover) {
             menu.setBackgroundResource(R.drawable.rect_object_menu_button_default)
-            ivThreeDots.imageTintList = ColorStateList.valueOf(Color.WHITE)
+            topBackButton.setBackgroundResource(R.drawable.rect_object_menu_button_default)
             statusBadge.setBackgroundResource(R.drawable.rect_object_menu_button_default)
+            ivThreeDots.imageTintList = ColorStateList.valueOf(Color.WHITE)
+            ivTopBackButton.imageTintList = ColorStateList.valueOf(Color.WHITE)
         } else {
             menu.background = null
+            topBackButton.background = null
+            ivTopBackButton.imageTintList = null
             ivThreeDots.imageTintList = null
             statusBadge.background = null
         }
@@ -88,14 +92,6 @@ class ObjectTopToolbar @JvmOverloads constructor(
             R.string.this_type_has_templates,
             count
         )
-    }
-
-    fun setIsReadOnly(isReadOnly: Boolean) {
-        if (isReadOnly) {
-            binding.ivThreeDots.invisible()
-        } else {
-            binding.ivThreeDots.visible()
-        }
     }
 
     companion object {

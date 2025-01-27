@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getOptionObject
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.number.NumberParser
@@ -16,7 +16,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import java.util.*
 
 fun List<ObjectWrapper.Relation>.views(
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     featured: List<Id> = emptyList(),
@@ -34,7 +34,7 @@ fun List<ObjectWrapper.Relation>.views(
 fun Key.isSystemKey() : Boolean = Relations.systemRelationKeys.contains(this)
 
 fun ObjectWrapper.Relation.view(
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false,

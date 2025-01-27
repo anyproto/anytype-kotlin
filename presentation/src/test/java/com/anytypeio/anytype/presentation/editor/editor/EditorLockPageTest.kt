@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
@@ -280,7 +280,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         stubOpenDocument(
             document = page,
-            details = AllObjectsDetails(
+            details = ObjectViewDetails(
                 mapOf(
                     target to
                         mapOf(
@@ -392,7 +392,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         stubClosePage()
         stubOpenDocument(
             document = page,
-            details = AllObjectsDetails(
+            details = ObjectViewDetails(
                 mapOf(
                     target to
                         mapOf(
@@ -505,7 +505,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         stubClosePage()
         stubOpenDocument(
             document = page,
-            details = AllObjectsDetails(
+            details = ObjectViewDetails(
                 mapOf(
                     bookmarkObjectId to
                         mapOf(
@@ -613,7 +613,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubOpenDocument(
             document = page,
-            details = AllObjectsDetails(
+            details = ObjectViewDetails(
                 mapOf(
                     targetObjectId to
                         mapOf(
@@ -714,7 +714,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubOpenDocument(
             document = page,
-            details = AllObjectsDetails(
+            details = ObjectViewDetails(
                 mapOf(
                     targetObjectId to
                         mapOf(

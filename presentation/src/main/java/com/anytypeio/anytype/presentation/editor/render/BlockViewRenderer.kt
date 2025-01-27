@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 
@@ -28,7 +28,7 @@ interface BlockViewRenderer {
         focus: Editor.Focus,
         anchor: Id,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         restrictions: List<ObjectRestriction>,
         selection: Set<Id>,
         count: Int = 0,

@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.extension
 
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Struct
@@ -20,40 +20,40 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
 import com.anytypeio.anytype.presentation.relations.view
 
-fun AllObjectsDetails.getStruct(id: Id): Struct? = details[id]
-fun AllObjectsDetails.containsObject(id: Id): Boolean {
+fun ObjectViewDetails.getStruct(id: Id): Struct? = details[id]
+fun ObjectViewDetails.containsObject(id: Id): Boolean {
     return details.containsKey(id) && details[id]?.isValidObject() == true
 }
 
-fun AllObjectsDetails.getObject(id: Id): ObjectWrapper.Basic? {
+fun ObjectViewDetails.getObject(id: Id): ObjectWrapper.Basic? {
     return details[id]?.toObject()
 }
 
-fun AllObjectsDetails.getOptionObject(id: Id): ObjectWrapper.Option? {
+fun ObjectViewDetails.getOptionObject(id: Id): ObjectWrapper.Option? {
     return details[id]?.mapToOptionObject()
 }
 
-fun AllObjectsDetails.getFileObject(id: Id): ObjectWrapper.File? {
+fun ObjectViewDetails.getFileObject(id: Id): ObjectWrapper.File? {
     return details[id]?.toFileObject()
 }
 
-fun AllObjectsDetails.getTypeObject(id: Id): ObjectWrapper.Type? {
+fun ObjectViewDetails.getTypeObject(id: Id): ObjectWrapper.Type? {
     return details[id]?.mapToObjectWrapperType()
 }
 
-fun AllObjectsDetails.getDateObject(id: Id): ObjectWrapper.Date? {
+fun ObjectViewDetails.getDateObject(id: Id): ObjectWrapper.Date? {
     return details[id]?.toDateObject()
 }
 
-fun AllObjectsDetails.getBookmarkObject(id: Id): ObjectWrapper.Bookmark? {
+fun ObjectViewDetails.getBookmarkObject(id: Id): ObjectWrapper.Bookmark? {
     return details[id]?.toBookmarkObject()
 }
 
-fun AllObjectsDetails.getInternalFlagsObject(id: Id): ObjectWrapper.ObjectInternalFlags? {
+fun ObjectViewDetails.getInternalFlagsObject(id: Id): ObjectWrapper.ObjectInternalFlags? {
     return details[id]?.toInternalFlagsObject()
 }
 
-suspend fun AllObjectsDetails.getObjRelationsViews(
+suspend fun ObjectViewDetails.getObjRelationsViews(
     ctx: Id,
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
@@ -73,7 +73,7 @@ suspend fun AllObjectsDetails.getObjRelationsViews(
     }
 }
 
-suspend fun AllObjectsDetails.getRecommendedRelations(
+suspend fun ObjectViewDetails.getRecommendedRelations(
     ctx: Id,
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
@@ -102,7 +102,7 @@ suspend fun AllObjectsDetails.getRecommendedRelations(
     }
 }
 
-fun AllObjectsDetails.getTypeForObject(currentObjectId: Id): ObjectWrapper.Type? {
+fun ObjectViewDetails.getTypeForObject(currentObjectId: Id): ObjectWrapper.Type? {
     val currentObject = getObject(currentObjectId)
     val type = currentObject?.getProperType()
     if (type != null) {

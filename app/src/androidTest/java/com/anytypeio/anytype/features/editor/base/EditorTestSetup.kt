@@ -101,7 +101,7 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
@@ -533,7 +533,7 @@ open class EditorTestSetup {
 
     fun stubOpenDocument(
         document: List<Block>,
-        details: AllObjectsDetails = AllObjectsDetails.EMPTY,
+        details: ObjectViewDetails = ObjectViewDetails.EMPTY,
         relations: List<Relation> = emptyList()
     ) {
         openPage.stub {

@@ -40,7 +40,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -129,7 +129,7 @@ fun ObjectState.DataView.header(
 private fun ObjectState.DataView.mapFeaturedRelations(
     ctx: Id,
     keys: List<String>?,
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     relations: List<ObjectWrapper.Relation>,
     urlBuilder: UrlBuilder,
     fieldParser: FieldParser

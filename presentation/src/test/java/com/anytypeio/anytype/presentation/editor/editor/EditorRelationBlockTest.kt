@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
@@ -63,7 +63,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
 
         val value = "Safe as milk"
 
-        val customDetails = AllObjectsDetails(mapOf(root to mapOf(
+        val customDetails = ObjectViewDetails(mapOf(root to mapOf(
             Relations.ID to root,
             relation.key to value)))
 
@@ -207,7 +207,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     Relations.DESCRIPTION to objectTypeDescription
                 )
 
-            val customDetails = AllObjectsDetails(
+            val customDetails = ObjectViewDetails(
                 mapOf(
                     root to objectFields,
                     objectTypeId to objectTypeFields
@@ -329,7 +329,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                 Relations.DESCRIPTION to objectTypeDescription,
                 Relations.UNIQUE_KEY to objectTypeId
             )
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to objectFields,
                 objectTypeId to objectTypeFields

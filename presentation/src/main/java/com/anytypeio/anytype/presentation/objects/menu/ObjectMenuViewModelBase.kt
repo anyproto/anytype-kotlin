@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.objects.menu
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
@@ -32,14 +31,12 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
-import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToCollectionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToFavoritesEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBackLinkAddEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsDuplicateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMoveToBinEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFromFavoritesEvent
-import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher

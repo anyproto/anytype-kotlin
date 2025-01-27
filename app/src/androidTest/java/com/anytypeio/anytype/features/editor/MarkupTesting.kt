@@ -13,7 +13,7 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.onItemView
@@ -102,7 +102,7 @@ class MarkupTesting : EditorTestSetup() {
         stubAnalytics()
         stubOpenDocument(
             document = document,
-            details = AllObjectsDetails(mapOf(mentionTarget to fields))
+            details = ObjectViewDetails(mapOf(mentionTarget to fields))
         )
         stubUpdateText()
 

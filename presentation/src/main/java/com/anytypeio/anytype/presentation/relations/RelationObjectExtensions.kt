@@ -8,7 +8,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getOptionObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
@@ -20,7 +20,7 @@ import com.anytypeio.anytype.presentation.sets.model.TagView
 
 fun List<ObjectWrapper.Relation>.views(
     context: Id,
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     featured: List<Id> = emptyList(),
@@ -38,7 +38,7 @@ fun List<ObjectWrapper.Relation>.views(
 
 fun ObjectWrapper.Relation.view(
     context: Id,
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false,
@@ -158,7 +158,7 @@ fun ObjectWrapper.Relation.view(
 fun statusRelation(
     context: Id,
     relationDetails: ObjectWrapper.Relation,
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     isFeatured: Boolean
 ): ObjectRelationView? {
     val objectDetails = details.getObject(context)?.map ?: return null
@@ -191,7 +191,7 @@ fun statusRelation(
 fun tagRelation(
     context: Id,
     relationDetails: ObjectWrapper.Relation,
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     isFeatured: Boolean
 ): ObjectRelationView? {
     val objectDetails = details.getObject(context)?.map ?: return null
@@ -219,7 +219,7 @@ fun tagRelation(
     )
 }
 
-fun AllObjectsDetails.objectTypeRelation(
+fun ObjectViewDetails.objectTypeRelation(
     relationKey: Key,
     isFeatured: Boolean,
     objectTypeId: Id
@@ -246,7 +246,7 @@ fun AllObjectsDetails.objectTypeRelation(
     }
 }
 
-fun AllObjectsDetails.linksFeaturedRelation(
+fun ObjectViewDetails.linksFeaturedRelation(
     relations: List<ObjectWrapper.Relation>,
     relationKey: Key,
     ctx: Id,

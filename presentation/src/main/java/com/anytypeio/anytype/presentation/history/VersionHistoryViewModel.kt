@@ -26,7 +26,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.editor.Editor.Mode
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.INITIAL_INDENT
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -534,7 +534,7 @@ class VersionHistoryViewModel(
                 focus = Editor.Focus.empty(),
                 anchor = vmParams.objectId,
                 indent = INITIAL_INDENT,
-                details = AllObjectsDetails(event.details),
+                details = ObjectViewDetails(event.details),
                 restrictions = event.objectRestrictions,
                 selection = emptySet()
             ).filterNot { it is BlockView.DataView }
@@ -571,7 +571,7 @@ class VersionHistoryViewModel(
                 focus = Editor.Focus.empty(),
                 anchor = vmParams.objectId,
                 indent = INITIAL_INDENT,
-                details = AllObjectsDetails(event.details),
+                details = ObjectViewDetails(event.details),
                 restrictions = event.objectRestrictions,
                 selection = emptySet()
             )

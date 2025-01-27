@@ -248,7 +248,7 @@ import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
@@ -607,7 +607,7 @@ class EditorViewModel(
             when (event) {
                 is Event.Command.ShowObject -> {
                     orchestrator.stores.details.update(
-                        AllObjectsDetails(
+                        ObjectViewDetails(
                             details = event.details
                         )
                     )
@@ -615,7 +615,7 @@ class EditorViewModel(
                 }
                 is Event.Command.Details -> {
                     orchestrator.stores.details.apply {
-                        update(AllObjectsDetails(details = current().details.process(event)))
+                        update(ObjectViewDetails(details = current().details.process(event)))
                     }
                 }
                 else -> {

@@ -11,7 +11,7 @@ import com.anytypeio.anytype.core_models.ext.amend
 import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_utils.ext.replace
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.sets.updateFields
 import com.anytypeio.anytype.presentation.sets.updateFilters
 import com.anytypeio.anytype.presentation.sets.updateSorts
@@ -124,13 +124,13 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             ObjectType.Layout.COLLECTION.code -> ObjectState.DataView.Collection(
                 root = event.root,
                 blocks = event.blocks,
-                details = AllObjectsDetails(event.details),
+                details = ObjectViewDetails(event.details),
                 dataViewRestrictions = event.dataViewRestrictions
             )
             ObjectType.Layout.SET.code -> ObjectState.DataView.Set(
                 root = event.root,
                 blocks = event.blocks,
-                details = AllObjectsDetails(event.details),
+                details = ObjectViewDetails(event.details),
                 dataViewRestrictions = event.dataViewRestrictions
             )
             else -> {
@@ -374,7 +374,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         return when (state) {
             is ObjectState.DataView.Collection -> {
                 state.copy(
-                    details = AllObjectsDetails(
+                    details = ObjectViewDetails(
                         details = state.details.details.toMutableMap().apply {
                             put(event.target, event.details)
                         }
@@ -383,7 +383,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             }
             is ObjectState.DataView.Set -> {
                 state.copy(
-                    details = AllObjectsDetails(
+                    details = ObjectViewDetails(
                         details = state.details.details.toMutableMap().apply {
                             put(event.target, event.details)
                         }

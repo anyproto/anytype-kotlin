@@ -18,7 +18,7 @@ import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import net.bytebuddy.utility.RandomString
@@ -190,7 +190,7 @@ class MockSet(
     )
 
     // SET OBJECT DETAILS
-    val details = AllObjectsDetails(
+    val details = ObjectViewDetails(
         details = mapOf(
             root to
                 mapOf(
@@ -210,7 +210,7 @@ class MockSet(
         )
     )
 
-    val detailsEmptySetOf = AllObjectsDetails(
+    val detailsEmptySetOf = ObjectViewDetails(
         details = mapOf(
             root to
                 mapOf(
@@ -222,7 +222,7 @@ class MockSet(
             )
     )
 
-    val detailsSetByRelation = AllObjectsDetails(
+    val detailsSetByRelation = ObjectViewDetails(
         details = mapOf(
             root to
                 mapOf(
@@ -241,7 +241,7 @@ class MockSet(
         )
     )
 
-    fun detailsSetByRelation(relationSetBy: ObjectWrapper.Relation) = AllObjectsDetails(
+    fun detailsSetByRelation(relationSetBy: ObjectWrapper.Relation) = ObjectViewDetails(
         details = mapOf(
             root to
                 mapOf(

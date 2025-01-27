@@ -67,7 +67,7 @@ import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -337,7 +337,7 @@ open class ObjectSetViewModelTestSetup {
 
     fun stubOpenObject(
         doc: List<Block> = emptyList(),
-        details: AllObjectsDetails = AllObjectsDetails.EMPTY,
+        details: ObjectViewDetails = ObjectViewDetails.EMPTY,
         additionalEvents: List<Event> = emptyList(),
         dataViewRestrictions: List<DataViewRestrictions> = emptyList()
     ) {

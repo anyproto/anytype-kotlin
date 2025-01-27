@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -535,7 +535,7 @@ open class EditorPresentationTestSetup {
 
     fun stubOpenDocument(
         document: List<Block> = emptyList(),
-        details: AllObjectsDetails = AllObjectsDetails.EMPTY,
+        details: ObjectViewDetails = ObjectViewDetails.EMPTY,
         objectRestrictions: List<ObjectRestriction> = emptyList(),
         spaceId: SpaceId = SpaceId(defaultSpace)
     ) {

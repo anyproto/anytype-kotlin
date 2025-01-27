@@ -68,7 +68,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -219,7 +219,7 @@ abstract class TestObjectSetSetup {
         children = listOf(title.id)
     )
 
-    val defaultDetails = AllObjectsDetails(
+    val defaultDetails = ObjectViewDetails(
         mapOf(
             ctx to
                     mapOf(
@@ -370,7 +370,7 @@ abstract class TestObjectSetSetup {
 
     fun stubOpenObjectSetWithRecord(
         set: List<Block>,
-        details: AllObjectsDetails = AllObjectsDetails.EMPTY
+        details: ObjectViewDetails = ObjectViewDetails.EMPTY
     ) {
         repo.stub {
             onBlocking { openObjectSet(ctx, SpaceId(defaultSpace)) } doReturn Result.Success(

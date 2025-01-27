@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectType.Layout
@@ -16,7 +16,6 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
@@ -166,7 +165,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         stubOpenDocument(
             document,
-            details = AllObjectsDetails(
+            details = ObjectViewDetails(
                 details = mapOf(
                     mentionHash to mapOf(
                         Relations.ID to mentionHash,

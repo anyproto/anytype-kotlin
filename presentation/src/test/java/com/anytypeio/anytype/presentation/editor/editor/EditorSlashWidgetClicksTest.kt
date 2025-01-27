@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
@@ -441,7 +441,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val value3 = "Captain Beefheart and his Magic Band"
 
         val customDetails =
-            AllObjectsDetails(
+            ObjectViewDetails(
                 mapOf(
                     root to
                         mapOf(

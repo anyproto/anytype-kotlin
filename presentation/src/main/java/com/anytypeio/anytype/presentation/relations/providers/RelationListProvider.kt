@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.relations.providers
 
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,14 +9,14 @@ import kotlinx.coroutines.flow.map
 
 interface RelationListProvider {
 
-    val details: Flow<AllObjectsDetails>
+    val details: Flow<ObjectViewDetails>
 
-    fun getDetails(): AllObjectsDetails
+    fun getDetails(): ObjectViewDetails
 
     class EditorRelationListProvider(
         private val storage: Editor.Storage
     ) : RelationListProvider {
-        override val details: Flow<AllObjectsDetails>
+        override val details: Flow<ObjectViewDetails>
             get() = storage.details.stream()
 
         override fun getDetails() = storage.details.current()
@@ -30,7 +30,7 @@ interface RelationListProvider {
             mapDetails(state)
         }
 
-        override fun getDetails(): AllObjectsDetails = mapDetails(objectStates.value)
+        override fun getDetails(): ObjectViewDetails = mapDetails(objectStates.value)
 
         private fun mapDetails(state: ObjectState) = when (state) {
             is ObjectState.DataView.Collection -> {
@@ -41,7 +41,7 @@ interface RelationListProvider {
                 state.details
             }
 
-            else -> AllObjectsDetails.EMPTY
+            else -> ObjectViewDetails.EMPTY
         }
     }
 }

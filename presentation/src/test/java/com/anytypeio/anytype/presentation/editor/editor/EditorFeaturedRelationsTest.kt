@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
@@ -111,7 +111,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 Relations.DESCRIPTION to objectTypeDescription
             )
 
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to objectFields,
                 objectTypeId to objectTypeFields
@@ -237,7 +237,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 Relations.DESCRIPTION to objectTypeDescription
             )
 
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to objectFields,
                 objectTypeId to objectTypeFields
@@ -339,7 +339,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription
             )
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to objectFields,
                 objectTypeId to objectTypeFields
@@ -445,7 +445,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     Relations.DESCRIPTION to objectTypeDescription
                 )
 
-            val customDetails = AllObjectsDetails(
+            val customDetails = ObjectViewDetails(
                 mapOf(
                     root to objectFields,
                     objectTypeId to objectTypeFields
@@ -567,7 +567,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     Relations.DESCRIPTION to objectTypeDescription
                 )
 
-            val customDetails = AllObjectsDetails(
+            val customDetails = ObjectViewDetails(
                 mapOf(
                     root to objectFields,
                     objectTypeId to objectTypeFields
@@ -704,7 +704,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     Relations.FEATURED_RELATIONS to listOf(Relations.TYPE, r3.key)
                 )
 
-            val customDetails = AllObjectsDetails(mapOf(root to objectFields))
+            val customDetails = ObjectViewDetails(mapOf(root to objectFields))
 
             stubInterceptEvents()
             stubInterceptThreadStatus()
@@ -825,7 +825,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             )
 
         val customDetails =
-            AllObjectsDetails(mapOf(root to objectFields, objectTypeId to objectTypeFields))
+            ObjectViewDetails(mapOf(root to objectFields, objectTypeId to objectTypeFields))
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
@@ -932,7 +932,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val objLinksTo1 = StubObject("objLinksTo1")
         val objLinksTo2 = StubObject("objLinksTo2")
 
-        val objectDetails = AllObjectsDetails(
+        val objectDetails = ObjectViewDetails(
             mapOf(
                 root to
                         mapOf(
@@ -1060,7 +1060,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             val linksRelation =
                 StubRelationObject(uniqueKey = Relations.LINKS, key = Relations.LINKS)
 
-            val objectDetails = AllObjectsDetails(
+            val objectDetails = ObjectViewDetails(
                 mapOf(
                     root to
                             mapOf(
@@ -1153,7 +1153,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val identityValue = MockDataFactory.randomString()
         val globalNameValue = "name123.any"
 
-        val objectDetails = AllObjectsDetails(
+        val objectDetails = ObjectViewDetails(
             mapOf(
                 root to
                         mapOf(
@@ -1247,7 +1247,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val identityValue = MockDataFactory.randomString()
         val globalNameValue = ""
 
-        val objectDetails = AllObjectsDetails(
+        val objectDetails = ObjectViewDetails(
             mapOf(
                 root to
                         mapOf(
@@ -1338,7 +1338,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val someRelation = StubRelationObject(uniqueKey = someRelationKey, key = someRelationKey)
         val someRelationValue = "Some relation Value"
 
-        val objectDetails = AllObjectsDetails(
+        val objectDetails = ObjectViewDetails(
             mapOf(
                 root to
                         mapOf(
@@ -1442,7 +1442,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val someRelation = StubRelationObject(uniqueKey = someRelationKey, key = someRelationKey)
         val someRelationValue = "Some relation Value"
 
-        val objectDetails = AllObjectsDetails(
+        val objectDetails = ObjectViewDetails(
             mapOf(
                 root to
                         mapOf(

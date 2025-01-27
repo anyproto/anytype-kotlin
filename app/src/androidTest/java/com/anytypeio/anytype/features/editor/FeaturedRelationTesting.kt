@@ -15,7 +15,7 @@ import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory
 import com.anytypeio.anytype.presentation.MockBlockFactory
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasViewGroupChildWithText
 import com.anytypeio.anytype.test_utils.utils.matchView
@@ -101,7 +101,7 @@ class FeaturedRelationTesting : EditorTestSetup() {
         val value4 = "https://anytype.io/"
         val value5 = "team@anytype.io"
 
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(
@@ -203,7 +203,7 @@ class FeaturedRelationTesting : EditorTestSetup() {
         val value4 = "https://anytype.io/"
         val value5 = "team@anytype.io"
 
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(

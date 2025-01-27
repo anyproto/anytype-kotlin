@@ -10,8 +10,8 @@ import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.LAYOUT
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
@@ -76,7 +76,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
 
-        val allObjectsDetails = AllObjectsDetails(
+        val objectViewDetails = ObjectViewDetails(
             details = mapOf(
                 root to mapOf(
                     Relations.ID to root,
@@ -92,7 +92,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                 objectCollection.title,
                 objectCollection.dataView
             ),
-            details = allObjectsDetails
+            details = objectViewDetails
         )
 
         // TESTING
@@ -193,7 +193,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         objectCollection.title,
                         objectCollection.dataView
                     ),
-                    details = allObjectsDetails,
+                    details = objectViewDetails,
                     objectRestrictions = listOf(),
                     dataViewRestrictions = listOf()
                 ),
@@ -282,8 +282,8 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         objectCollection.title,
                         expectedDataView
                     ),
-                    details = allObjectsDetails.copy(
-                        details = allObjectsDetails.details.toMutableMap().apply {
+                    details = objectViewDetails.copy(
+                        details = objectViewDetails.details.toMutableMap().apply {
                             this[root] = this[root]!!.toMutableMap().apply {
                                 put(relationKey4, "")
                             }

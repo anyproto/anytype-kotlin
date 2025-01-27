@@ -8,7 +8,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 
 sealed class ObjectState {
 
@@ -18,7 +18,7 @@ sealed class ObjectState {
 
         abstract val root: Id
         abstract val blocks: List<Block>
-        abstract val details: AllObjectsDetails
+        abstract val details: ObjectViewDetails
         abstract val objectRestrictions: List<ObjectRestriction>
         abstract val dataViewRestrictions: List<DataViewRestrictions>
 
@@ -29,7 +29,7 @@ sealed class ObjectState {
         data class Set(
             override val root: Id,
             override val blocks: List<Block> = emptyList(),
-            override val details: AllObjectsDetails = AllObjectsDetails.EMPTY,
+            override val details: ObjectViewDetails = ObjectViewDetails.EMPTY,
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
         ) : DataView() {
@@ -43,7 +43,7 @@ sealed class ObjectState {
         data class Collection(
             override val root: Id,
             override val blocks: List<Block> = emptyList(),
-            override val details: AllObjectsDetails = AllObjectsDetails.EMPTY,
+            override val details: ObjectViewDetails = ObjectViewDetails.EMPTY,
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
         ) : DataView() {

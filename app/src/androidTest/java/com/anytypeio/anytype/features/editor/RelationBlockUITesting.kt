@@ -20,7 +20,7 @@ import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasBackgroundColor
 import com.anytypeio.anytype.test_utils.utils.checkHasNoBackground
@@ -54,7 +54,7 @@ class RelationBlockUITesting : EditorTestSetup() {
 
     private val args = bundleOf(EditorFragment.CTX_KEY to root)
 
-    private val defaultDetails = AllObjectsDetails(
+    private val defaultDetails = ObjectViewDetails(
         mapOf(
             root to
                 mapOf(
@@ -184,7 +184,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val value4 = "https://anytype.io/"
         val value5 = "team@anytype.io"
 
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(
@@ -347,7 +347,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val background3 = ThemeColor.BLUE
         val background4 = ThemeColor.ORANGE
 
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(
@@ -480,7 +480,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             selections = listOf(option)
         )
 
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(
@@ -554,7 +554,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             selections = emptyList()
         )
 
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(
@@ -789,7 +789,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val value4 = "https://anytype.io/"
         val value5 = "team@anytype.io"
 
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(
@@ -902,7 +902,7 @@ class RelationBlockUITesting : EditorTestSetup() {
             selections = listOf(option1)
         )
 
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(
@@ -1005,7 +1005,7 @@ class RelationBlockUITesting : EditorTestSetup() {
         val value4 = "https://anytype.io/"
         val value5 = "team@anytype.io"
 
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(

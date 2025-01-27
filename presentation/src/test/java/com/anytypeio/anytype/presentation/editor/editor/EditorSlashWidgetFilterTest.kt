@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
@@ -241,7 +241,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -298,7 +298,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -345,7 +345,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -396,7 +396,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -435,7 +435,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type2 = MockObjectTypes.objectTypeNote
         val type3 = MockObjectTypes.objectTypeTask
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubGetObjectTypes(listOf(type1, type2, type3))
@@ -503,7 +503,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -548,7 +548,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             Relations.ID to root,
             r1.key to value1, r2.key to value2, r3.key to value3
         )
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -616,7 +616,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -663,7 +663,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -714,7 +714,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -761,7 +761,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -812,7 +812,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -859,7 +859,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -910,7 +910,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -957,7 +957,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1022,7 +1022,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1069,7 +1069,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1134,7 +1134,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1183,7 +1183,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1235,7 +1235,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1284,7 +1284,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
-        val customDetails = AllObjectsDetails(mapOf(root to fields))
+        val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1333,7 +1333,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type2 = StubObjectType(name = "Df")
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1380,7 +1380,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1427,7 +1427,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1472,7 +1472,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type2 = MockObjectTypes.objectTypeNote
         val type3 = MockObjectTypes.objectTypeCustom
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubSearchObjects(
@@ -1555,7 +1555,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             Relations.ID to root,
             r1.key to value1, r2.key to value2, r3.key to value3
         )
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             details = mapOf(
                 root to fields
             )
@@ -1631,7 +1631,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1684,7 +1684,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1742,7 +1742,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1784,7 +1784,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val type3 = StubObjectType(name = "LK")
         val objectTypes = listOf(type1, type2, type3)
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubOpenDocument(
@@ -1823,7 +1823,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubSearchObjects()
@@ -1861,7 +1861,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubSearchObjects()
@@ -1899,7 +1899,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubSearchObjects()
@@ -1937,7 +1937,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubSearchObjects()
@@ -1975,7 +1975,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
         
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubSearchObjects()
@@ -2012,7 +2012,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val customDetails = AllObjectsDetails.EMPTY
+        val customDetails = ObjectViewDetails.EMPTY
 
         stubInterceptEvents()
         stubSearchObjects()

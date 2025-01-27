@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectType.Layout
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.RelativeDate
-import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.StubBookmark
 import com.anytypeio.anytype.core_models.StubCallout
 import com.anytypeio.anytype.core_models.StubFile
@@ -20,7 +19,6 @@ import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.core_utils.const.DetailsKeys
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.editor.Editor
@@ -38,7 +36,7 @@ import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkConten
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
@@ -75,7 +73,7 @@ class DefaultBlockViewRendererTest {
             anchor: Id,
             focus: Editor.Focus,
             indent: Int,
-            details: AllObjectsDetails,
+            details: ObjectViewDetails,
             schema: NestedDecorationData = emptyList()
         ): List<BlockView> = blocks.render(
             context = root.id,
@@ -230,7 +228,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(paragraph.id),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -361,7 +359,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(paragraph.id),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -481,7 +479,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(paragraph.id),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -568,7 +566,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(paragraph.id),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -666,7 +664,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(paragraph.id),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = ObjectViewDetails(details)
             )
         }
 
@@ -761,7 +759,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(paragraph.id),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = ObjectViewDetails(details)
             )
         }
 
@@ -870,7 +868,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -1019,7 +1017,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -1171,7 +1169,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = ObjectViewDetails(details)
             )
         }
 
@@ -1288,7 +1286,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details),
+                details = ObjectViewDetails(details),
 
                 )
         }
@@ -1356,7 +1354,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = ObjectViewDetails(details)
             )
         }
 
@@ -1486,7 +1484,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails(detailsAmend)
+                details = ObjectViewDetails(detailsAmend)
             )
         }
 
@@ -1671,7 +1669,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails(detailsAmend)
+                details = ObjectViewDetails(detailsAmend)
             )
         }
 
@@ -1858,7 +1856,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails(detailsAmend)
+                details = ObjectViewDetails(detailsAmend)
             )
         }
 
@@ -2036,7 +2034,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails(detailsAmend)
+                details = ObjectViewDetails(detailsAmend)
             )
         }
 
@@ -2203,7 +2201,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails(detailsAmend)
+                details = ObjectViewDetails(detailsAmend)
             )
         }
 
@@ -2324,7 +2322,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails(detailsAmend)
+                details = ObjectViewDetails(detailsAmend)
             )
         }
 
@@ -2483,7 +2481,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails(detailsAmend)
+                details = ObjectViewDetails(detailsAmend)
             )
         }
 
@@ -2583,7 +2581,7 @@ class DefaultBlockViewRendererTest {
         val snippet = MockDataFactory.randomString()
         val name = MockDataFactory.randomString()
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             mapOf(
                 target to
                     mapOf(
@@ -2740,7 +2738,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = ObjectViewDetails(details)
             )
         }
 
@@ -2960,7 +2958,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -3197,7 +3195,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -3394,7 +3392,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -3529,7 +3527,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -3727,7 +3725,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -3993,7 +3991,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -4229,7 +4227,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -4328,7 +4326,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -4443,7 +4441,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -4593,7 +4591,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -4765,7 +4763,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -4891,7 +4889,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(
+                details = ObjectViewDetails(
                     mapOf(
                         bookmarkObjectId to
                                 mapOf(
@@ -4970,7 +4968,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -5034,7 +5032,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -5095,7 +5093,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -5154,7 +5152,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -5232,7 +5230,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -5331,7 +5329,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -5409,7 +5407,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -5549,7 +5547,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails(detailsAmend)
+                details = ObjectViewDetails(detailsAmend)
             )
         }
 
@@ -5689,7 +5687,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.id(a.id),
                 indent = 0,
-                details = AllObjectsDetails(detailsAmend)
+                details = ObjectViewDetails(detailsAmend)
             )
         }
 
@@ -5782,7 +5780,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = ObjectViewDetails(details)
             )
         }
 
@@ -5849,7 +5847,7 @@ class DefaultBlockViewRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails(details)
+                details = ObjectViewDetails(details)
             )
         }
 

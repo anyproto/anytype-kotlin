@@ -32,7 +32,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
@@ -203,7 +203,7 @@ fun title(
     ctx: Id,
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
-    details: AllObjectsDetails
+    details: ObjectViewDetails
 ): BlockView.Title.Basic {
     val wrapper = details.getObject(ctx)
     val coverContainer = BasicObjectCoverWrapper(wrapper).getCover(

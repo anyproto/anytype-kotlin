@@ -20,7 +20,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.extension.getBookmarkObject
 import com.anytypeio.anytype.presentation.extension.getObject
@@ -66,7 +66,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         anchor: Id,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         restrictions: List<ObjectRestriction>,
         selection: Set<Id>,
         count: Int,
@@ -798,7 +798,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         focus: Focus,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Paragraph {
@@ -861,7 +861,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Header.Three {
@@ -898,7 +898,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Header.Two {
@@ -935,7 +935,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Header.One {
@@ -972,7 +972,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         focus: Focus,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Checkbox {
@@ -1009,7 +1009,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         focus: Focus,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Bulleted {
@@ -1070,7 +1070,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         scheme: NestedDecorationData
     ): BlockView.Text.Highlight {
@@ -1114,7 +1114,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         content: Content.Text,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         scheme: NestedDecorationData
     ): BlockView.Text.Callout {
@@ -1169,7 +1169,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         indent: Int,
         focus: Focus,
         isEmpty: Boolean,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         scheme: NestedDecorationData
     ): BlockView.Text.Toggle {
@@ -1208,7 +1208,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         number: Int,
         focus: Focus,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.Text.Numbered {
@@ -1247,7 +1247,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
         schema: NestedDecorationData,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
     ): BlockView = when (content.state) {
         Content.Bookmark.State.EMPTY -> {
             BlockView.MediaPlaceholder.Bookmark(
@@ -1384,7 +1384,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
         schema: NestedDecorationData,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         fieldParser: FieldParser
     ): BlockView {
 
@@ -1408,7 +1408,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text,
         root: Block,
         focus: Focus,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         restrictions: List<ObjectRestriction>
     ): BlockView.Title {
 
@@ -1902,7 +1902,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         block: Block,
         focus: Focus,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         blocks: Map<String, List<Block>>,
         decorations: List<BlockView.Decoration>
@@ -1969,7 +1969,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         mode: EditorMode,
         focus: Focus,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>
     ): List<BlockView.Table.Cell> {
         val cells = mutableListOf<BlockView.Table.Cell>()
@@ -2018,7 +2018,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         block: Block,
         content: Content.RelationBlock,
         indent: Int,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         urlBuilder: UrlBuilder,
         schema: NestedDecorationData,
         fieldParser: FieldParser
@@ -2062,7 +2062,7 @@ class DefaultBlockViewRenderer @Inject constructor(
     private suspend fun featured(
         ctx: Id,
         block: Block,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         fieldParser: FieldParser,
     ): BlockView.FeaturedRelation {
         val obj = details.getObject(ctx)
@@ -2108,7 +2108,7 @@ class DefaultBlockViewRenderer @Inject constructor(
     private suspend fun mapFeaturedRelations(
         ctx: Id,
         keys: List<Key>,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         fieldParser: FieldParser
     ): List<ObjectRelationView> = keys.mapNotNull { key ->
         when (key) {
@@ -2173,7 +2173,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         mode: EditorMode,
         block: Block,
         content: Content.DataView,
-        details: AllObjectsDetails,
+        details: ObjectViewDetails,
         selection: Set<Id>,
         schema: NestedDecorationData
     ): BlockView.DataView {

@@ -2,12 +2,10 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.AllObjectsDetails
-import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubObjectType
@@ -17,8 +15,6 @@ import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -53,7 +49,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubGetObjectTypes(emptyList())
 
-        val detailsList = AllObjectsDetails(
+        val detailsList = ObjectViewDetails(
             details = mapOf(
                 root to
                     mapOf(
@@ -94,7 +90,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         val document = listOf(page, header, title)
         stubInterceptEvents()
 
-        val detailsList = AllObjectsDetails(
+        val detailsList = ObjectViewDetails(
             details = mapOf(
                 root to
                     mapOf(
@@ -138,7 +134,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
 
-        val detailsList = AllObjectsDetails(
+        val detailsList = ObjectViewDetails(
             details = mapOf(
                 root to
                     mapOf(
@@ -178,7 +174,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         val document = listOf(page, header, title)
         stubInterceptEvents()
 
-        val detailsList = AllObjectsDetails(
+        val detailsList = ObjectViewDetails(
             details = mapOf(
                 root to
                     mapOf(
@@ -222,7 +218,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         val document = listOf(page, header, title)
         stubInterceptEvents()
 
-        val detailsList = AllObjectsDetails(
+        val detailsList = ObjectViewDetails(
             details = mapOf(
                 root to
                     mapOf(
@@ -265,7 +261,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         val document = listOf(page, header, title)
         stubInterceptEvents()
 
-        val detailsList = AllObjectsDetails(
+        val detailsList = ObjectViewDetails(
             details = mapOf(
                 root to
                     mapOf(

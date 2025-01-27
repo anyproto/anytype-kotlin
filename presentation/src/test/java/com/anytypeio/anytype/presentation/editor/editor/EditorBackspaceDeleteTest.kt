@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Relation
@@ -20,13 +20,11 @@ import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.StubToggle
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
@@ -41,8 +39,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
@@ -1334,7 +1330,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             format = Relation.Format.NUMBER
         )
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(
@@ -1419,7 +1415,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         val paragraph = StubParagraph()
         val relation = StubRelationObject(format = Relation.Format.NUMBER)
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             mapOf(root to mapOf(
                 Relations.ID to root,
                 Relations.FEATURED_RELATIONS to listOf(relation.key)
@@ -1563,7 +1559,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             format = RelationFormat.NUMBER
         )
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             mapOf(
                 root to mapOf(
                     Relations.ID to root,

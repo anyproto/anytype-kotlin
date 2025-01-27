@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Position
@@ -113,7 +113,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
     private fun setupInteractions(
         doc: List<Block>,
-        details: AllObjectsDetails = AllObjectsDetails.EMPTY,
+        details: ObjectViewDetails = ObjectViewDetails.EMPTY,
     ) {
         stubInterceptEvents()
         stubOpenDocument(
@@ -195,7 +195,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         )
 
         fun createDetailsWithFeaturedRelations(root: Id, relation1: String, relation2: String) =
-            AllObjectsDetails(
+            ObjectViewDetails(
                 mapOf(
                     root to
                             mapOf(

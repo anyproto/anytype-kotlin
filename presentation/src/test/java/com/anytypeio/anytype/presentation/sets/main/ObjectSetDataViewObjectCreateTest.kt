@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
@@ -13,8 +12,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import kotlin.test.assertFalse
@@ -166,7 +164,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         val skipLayouts = SupportedLayouts.fileLayouts + SupportedLayouts.systemLayouts
         val recommendedLayout = skipLayouts.random()
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             details = mapOf(
                 root to
                         mapOf(

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.templates
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -13,8 +12,7 @@ import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
@@ -110,7 +108,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to null
         )
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             details = mapOf(
                 root to setObjDetails,
                 customType1Id to customType1Map
@@ -199,7 +197,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to DEFAULT_TEMPLATE_ID_BLANK
         )
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             details = mapOf(
                 root to setObjDetails,
                 customType1Id to customType1Map
@@ -288,7 +286,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to template2.id
         )
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             details = mapOf(
                 root to setObjDetails,
                 customType1Id to customType1Map
@@ -390,7 +388,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 defaultTemplateId = template1.id
             )
             val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
-            val details = AllObjectsDetails(
+            val details = ObjectViewDetails(
                 details = mapOf(
                     root to setObjDetails,
                     customType1Id to customType1Map,
@@ -480,7 +478,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to template2.id
         )
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             details = mapOf(
                 root to setObjDetails,
                 customType1Id to customType1Map
@@ -569,7 +567,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to template2.id
         )
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             details = mapOf(
                 root to setObjDetails,
                 customType1Id to customType1Map

@@ -15,7 +15,7 @@ import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
@@ -43,7 +43,7 @@ fun Block.Content.File.toPictureView(
     background: ThemeColor,
     isPreviousBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>,
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     fieldParser: FieldParser
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Picture(
@@ -123,7 +123,7 @@ fun Block.Content.File.toVideoView(
     background: ThemeColor,
     isPrevBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>,
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     fieldParser: FieldParser
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Video(
@@ -203,7 +203,7 @@ fun Block.Content.File.toFileView(
     background: ThemeColor,
     isPrevBlockMedia: Boolean,
     decorations: List<BlockView.Decoration>,
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     fieldParser: FieldParser
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.File(
@@ -285,7 +285,7 @@ fun Block.Align.toView(): Alignment = when (this) {
 
 fun Block.Content.Text.marks(
     urlBuilder: UrlBuilder,
-    details: AllObjectsDetails
+    details: ObjectViewDetails
 ): List<Markup.Mark> = marks
     .filterByRange(text.length)
     .mapNotNull { mark ->

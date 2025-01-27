@@ -11,7 +11,7 @@ import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
@@ -124,7 +124,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to null
         )
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             details = mapOf(
                 root to setObjDetails,
                 setByRelationId to setByRelationMap,
@@ -214,7 +214,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to DEFAULT_TEMPLATE_ID_BLANK
         )
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             details = mapOf(
                 root to setObjDetails,
                 setByRelationId to setByRelationMap,
@@ -304,7 +304,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             Relations.DEFAULT_TEMPLATE_ID to pageTemplate2.id
         )
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             details = mapOf(
                 root to setObjDetails,
                 setByRelationId to setByRelationMap,
@@ -403,7 +403,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 Relations.DEFAULT_TEMPLATE_ID to template1.id
             )
 
-            val details = AllObjectsDetails(
+            val details = ObjectViewDetails(
                 details = mapOf(
                     root to setObjDetails,
                     setByRelationId to setByRelationMap,
@@ -504,7 +504,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 Relations.DEFAULT_TEMPLATE_ID to null
             )
 
-            val details = AllObjectsDetails(
+            val details = ObjectViewDetails(
                 details = mapOf(
                     root to setObjDetails,
                     setByRelationId to setByRelationMap,
@@ -605,7 +605,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 Relations.DEFAULT_TEMPLATE_ID to DEFAULT_TEMPLATE_ID_BLANK
             )
 
-            val details = AllObjectsDetails(
+            val details = ObjectViewDetails(
                 details = mapOf(
                     root to setObjDetails,
                     setByRelationId to setByRelationMap,
@@ -706,7 +706,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 Relations.DEFAULT_TEMPLATE_ID to template1.id
             )
 
-            val details = AllObjectsDetails(
+            val details = ObjectViewDetails(
                 details = mapOf(
                     root to setObjDetails,
                     setByRelationId to setByRelationMap,
@@ -807,7 +807,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 Relations.DEFAULT_TEMPLATE_ID to template1.id
             )
 
-            val details = AllObjectsDetails(
+            val details = ObjectViewDetails(
                 details = mapOf(
                     root to setObjDetails,
                     setByRelationId to setByRelationMap,

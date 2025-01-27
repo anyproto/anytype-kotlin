@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -125,7 +125,7 @@ class ObjectSetGridFileCellRenderingTest : TestObjectSetSetup() {
             )
         )
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             details = defaultDetails.details + mapOf(
                 file1Id to mapOf(
                         ObjectSetConfig.NAME_KEY to file1Name,

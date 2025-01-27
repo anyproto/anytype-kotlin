@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -1195,7 +1195,7 @@ fun List<BlockView>.update(blockView: BlockView) = this.map {
 
 fun Document.getLinkAppearanceMenu(
     blockId: Id,
-    details: AllObjectsDetails
+    details: ObjectViewDetails
 ): BlockView.Appearance.Menu? {
     val block = this.find { it.id == blockId }
     val content = block?.content

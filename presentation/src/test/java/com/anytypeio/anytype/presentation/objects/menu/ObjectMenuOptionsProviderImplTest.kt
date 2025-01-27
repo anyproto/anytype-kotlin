@@ -4,7 +4,7 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,13 +15,13 @@ import org.junit.Test
 class ObjectMenuOptionsProviderImplTest {
 
     private val objectId: String = "objectId"
-    private val details = MutableStateFlow<AllObjectsDetails>(AllObjectsDetails.EMPTY)
+    private val details = MutableStateFlow<ObjectViewDetails>(ObjectViewDetails.EMPTY)
     private val restrictions = MutableStateFlow<List<ObjectRestriction>>(emptyList())
     private val provider = ObjectMenuOptionsProviderImpl(details, restrictions)
 
     @Test
     fun `when layout note - options are layout, relations, history`() {
-        details.value = AllObjectsDetails(
+        details.value = ObjectViewDetails(
             mapOf(
                 objectId to mapOf(
                     Relations.ID to objectId,
@@ -45,7 +45,7 @@ class ObjectMenuOptionsProviderImplTest {
 
     @Test
     fun `when layout task - options are layout, relations, history`() {
-        details.value = AllObjectsDetails(
+        details.value = ObjectViewDetails(
             mapOf(
                 objectId to mapOf(
                     Relations.ID to objectId,
@@ -69,7 +69,7 @@ class ObjectMenuOptionsProviderImplTest {
 
     @Test
     fun `when layout basic - all options are visible`() {
-        details.value = AllObjectsDetails(
+        details.value = ObjectViewDetails(
             mapOf(
                 objectId to mapOf(
                     Relations.ID to objectId,
@@ -86,7 +86,7 @@ class ObjectMenuOptionsProviderImplTest {
 
     @Test
     fun `when layout null - all options are not visible`() {
-        details.value = AllObjectsDetails(
+        details.value = ObjectViewDetails(
             mapOf(
                 objectId to mapOf(
                     Relations.ID to objectId
@@ -101,7 +101,7 @@ class ObjectMenuOptionsProviderImplTest {
 
     @Test
     fun `when restricts layout_change - layout options is invisible`() {
-        details.value = AllObjectsDetails(
+        details.value = ObjectViewDetails(
             mapOf(
                 objectId to mapOf(
                     Relations.ID to objectId,
@@ -121,7 +121,7 @@ class ObjectMenuOptionsProviderImplTest {
 
     @Test
     fun `when object is Locked - show only relations`() {
-        details.value = AllObjectsDetails(
+        details.value = ObjectViewDetails(
             mapOf(
                 objectId to mapOf(
                     Relations.ID to objectId,

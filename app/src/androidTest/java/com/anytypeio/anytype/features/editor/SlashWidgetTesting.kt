@@ -29,7 +29,7 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.MockBlockFactory.paragraph
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -60,7 +60,7 @@ class SlashWidgetTesting : EditorTestSetup() {
 
     private val args = bundleOf(EditorFragment.CTX_KEY to root)
 
-    private val defaultDetails = AllObjectsDetails(
+    private val defaultDetails = ObjectViewDetails(
         mapOf(
             root to
                 mapOf(
@@ -413,7 +413,7 @@ class SlashWidgetTesting : EditorTestSetup() {
 
         val relations = listOf(relation1, relation2)
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(

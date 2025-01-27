@@ -9,7 +9,7 @@ import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.BuildConfig
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.extension.getDateObject
 import com.anytypeio.anytype.presentation.extension.getObject
@@ -18,7 +18,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import timber.log.Timber
 
 fun Block.Content.Text.getTextAndMarks(
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     marks: List<Markup.Mark>,
     fieldParser: FieldParser,
     resourceProvider: ResourceProvider
@@ -76,7 +76,7 @@ fun Block.Content.Text.getTextAndMarks(
 
 private fun Block.Content.Text.getFormattedDateMention(
     mark: Markup.Mark.Mention.Date,
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     fieldParser: FieldParser,
     resourceProvider: ResourceProvider
 ): String? {

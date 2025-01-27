@@ -15,7 +15,7 @@ import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory
 import com.anytypeio.anytype.presentation.MockBlockFactory
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.checkIsRecyclerSize
@@ -120,7 +120,7 @@ class DescriptionTesting : EditorTestSetup() {
 
         val document = listOf(page, header, title, description)
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(

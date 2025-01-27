@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationLink
@@ -89,7 +89,7 @@ object MockObjectSetFactory {
         return ObjectState.DataView.Set(
             root = root,
             blocks = blocks,
-            details = AllObjectsDetails.EMPTY
+            details = ObjectViewDetails.EMPTY
         )
     }
 }

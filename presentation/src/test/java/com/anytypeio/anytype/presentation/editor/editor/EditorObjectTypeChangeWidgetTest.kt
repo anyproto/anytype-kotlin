@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -108,7 +108,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
                 Relations.INTERNAL_FLAGS to listOf(1.0)
             )
 
-        val detailsList = AllObjectsDetails(details = mapOf(root to objectDetails))
+        val detailsList = ObjectViewDetails(details = mapOf(root to objectDetails))
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
@@ -175,7 +175,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
                 "layout" to ObjectType.Layout.NOTE.code.toDouble()
             )
 
-        val detailsList = AllObjectsDetails(details = mapOf(root to objectDetails))
+        val detailsList = ObjectViewDetails(details = mapOf(root to objectDetails))
 
         stubInterceptEvents()
         stubInterceptThreadStatus()

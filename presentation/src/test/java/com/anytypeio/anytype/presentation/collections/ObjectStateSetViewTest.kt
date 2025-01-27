@@ -9,7 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -59,7 +59,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             stubInterceptEvents()
             stubInterceptThreadStatus()
 
-            val objectDetails = AllObjectsDetails(
+            val objectDetails = ObjectViewDetails(
                 details = mapOf(
                     root to
                         mapOf(
@@ -278,7 +278,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
                 )
             )
 
-            val detailsDeletedSetOf = AllObjectsDetails(
+            val detailsDeletedSetOf = ObjectViewDetails(
                 details = mapOf(
                     root to
                         mapOf(
@@ -370,7 +370,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
                 )
             )
 
-            val detailsDeletedSetOf = AllObjectsDetails(
+            val detailsDeletedSetOf = ObjectViewDetails(
                 details = mapOf(
                     root to
                         mapOf(

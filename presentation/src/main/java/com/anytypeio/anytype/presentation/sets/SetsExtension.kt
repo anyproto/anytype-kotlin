@@ -13,7 +13,7 @@ import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getFileObject
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
@@ -256,7 +256,7 @@ suspend fun List<ColumnView>.buildGridRow(
 
 fun Struct.buildFileViews(
     relationKey: Id,
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
 ): List<FileView> {
     val files = mutableListOf<FileView>()
     val ids = getOrDefault(relationKey, null) ?: return emptyList()
@@ -290,7 +290,7 @@ private fun ObjectWrapper.File.toView() : FileView {
 
 fun Struct.buildRelationValueObjectViews(
     relationKey: Id,
-    details: AllObjectsDetails,
+    details: ObjectViewDetails,
     builder: UrlBuilder,
     fieldParser: FieldParser
 ): List<ObjectView> {

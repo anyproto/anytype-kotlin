@@ -24,7 +24,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
@@ -54,7 +54,7 @@ class TableBlockRendererTest {
             anchor: Id,
             focus: Editor.Focus,
             indent: Int,
-            details: AllObjectsDetails
+            details: ObjectViewDetails
         ): List<BlockView> = blocks.render(
             context = root.id,
             root = root,
@@ -195,7 +195,7 @@ class TableBlockRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -361,7 +361,7 @@ class TableBlockRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -541,7 +541,7 @@ class TableBlockRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = AllObjectsDetails.EMPTY
+                details = ObjectViewDetails.EMPTY
             )
         }
 

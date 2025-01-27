@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasChildViewWithText
 import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed
@@ -41,7 +41,7 @@ class MentionWidgetTesting : EditorTestSetup() {
 
     private val args = bundleOf(EditorFragment.CTX_KEY to root)
 
-    private val defaultDetails = AllObjectsDetails(
+    private val defaultDetails = ObjectViewDetails(
         mapOf(
             root to
                 mapOf(

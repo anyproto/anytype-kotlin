@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
@@ -122,7 +122,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription
             )
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to objectFields,
                 objectTypeId to objectTypeFields
@@ -238,7 +238,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription
             )
-        val customDetails = AllObjectsDetails(
+        val customDetails = ObjectViewDetails(
             mapOf(
                 root to objectFields,
                 objectTypeId to objectTypeFields

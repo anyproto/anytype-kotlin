@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider.Options
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
 class ObjectMenuOptionsProviderImpl(
-    private val allObjectSDetailsFlow: Flow<AllObjectsDetails>,
+    private val allObjectSDetailsFlow: Flow<ObjectViewDetails>,
     private val restrictions: Flow<List<ObjectRestriction>>
 ) : ObjectMenuOptionsProvider {
 

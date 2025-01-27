@@ -13,7 +13,7 @@ import com.anytypeio.anytype.core_models.StubFilter
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubSort
 import com.anytypeio.anytype.core_models.StubTitle
-import com.anytypeio.anytype.core_models.AllObjectsDetails
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
@@ -878,7 +878,7 @@ class ObjectSetReducerTest {
         assertEquals(expected, stateDeleteRelation)
     }
 
-    val details = AllObjectsDetails(
+    val details = ObjectViewDetails(
         details = mapOf(
             context to mapOf(Relations.ID to context, Relations.LAYOUT to 3.0)
         )

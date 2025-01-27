@@ -1,8 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.AllObjectsDetails
-import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -64,7 +63,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         val doc = page(root)
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(
@@ -114,7 +113,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         val space = defaultSpace
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             mapOf(
                 root to
                     mapOf(
@@ -198,7 +197,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         val typeId = MockDataFactory.randomString()
 
-        val details = AllObjectsDetails(
+        val details = ObjectViewDetails(
             mapOf(
                 root to
                         mapOf(

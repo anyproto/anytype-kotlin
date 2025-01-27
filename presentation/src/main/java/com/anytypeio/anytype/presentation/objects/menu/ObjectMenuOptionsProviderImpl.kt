@@ -10,6 +10,7 @@ import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
 
@@ -24,7 +25,7 @@ class ObjectMenuOptionsProviderImpl(
                 if (!isValuePresent) Timber.w("Details missing for object: $ctx")
             }
         }
-        .mapNotNull { details ->
+        .map { details ->
             details.getObject(ctx)?.layout
         }
 

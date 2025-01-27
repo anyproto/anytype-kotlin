@@ -29,7 +29,7 @@ sealed class ObjectState {
         data class Set(
             override val root: Id,
             override val blocks: List<Block> = emptyList(),
-            override val details: AllObjectsDetails,
+            override val details: AllObjectsDetails = AllObjectsDetails.EMPTY,
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
         ) : DataView() {
@@ -43,7 +43,7 @@ sealed class ObjectState {
         data class Collection(
             override val root: Id,
             override val blocks: List<Block> = emptyList(),
-            override val details: AllObjectsDetails,
+            override val details: AllObjectsDetails = AllObjectsDetails.EMPTY,
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
         ) : DataView() {

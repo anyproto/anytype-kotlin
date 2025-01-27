@@ -1559,7 +1559,7 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val wrapper = orchestrator.stores.details.getAsObject(context)
         val isTemplate = isObjectTemplate()
-        val space = wrapper.spaceId
+        val space = wrapper?.spaceId
         if (space == null) {
             sendToast("Space not found")
             return
@@ -3231,10 +3231,10 @@ class EditorViewModel(
     private fun proceedWithOpeningObjectByLayout(target: String) {
         proceedWithClearingFocus()
         val wrapper = orchestrator.stores.details.getAsObject(target)
-        if (wrapper.spaceId != vmParams.space.id) {
+        if (wrapper?.spaceId != vmParams.space.id) {
             sendToast("Cannot open object from another space from here.")
         } else {
-            when (wrapper?.layout) {
+            when (wrapper.layout) {
                 ObjectType.Layout.BASIC,
                 ObjectType.Layout.NOTE,
                 ObjectType.Layout.TODO,

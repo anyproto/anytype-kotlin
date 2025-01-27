@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.isValidObject
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
@@ -94,7 +93,6 @@ interface Store<T> {
 
     class ObjectRestrictions : State<List<ObjectRestriction>>(emptyList())
     class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
-    class RelationLinks : State<List<RelationLink>>(emptyList())
 }
 
 data class AllObjectsDetails(val details: Map<Id, Struct>) {

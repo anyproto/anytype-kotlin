@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -159,7 +160,13 @@ fun ChatScreenWrapper(
                     onViewChatReaction = onViewChatReaction,
                     onMemberIconClicked = vm::onMemberIconClicked,
                     onMentionClicked = vm::onMentionClicked,
-                    mentionPanelState = vm.mentionPanelState.collectAsStateWithLifecycle().value
+                    mentionPanelState = vm.mentionPanelState.collectAsStateWithLifecycle().value,
+                    onTextChanged = { value ->
+                        vm.onTextChanged(
+                            selection = value.selection.start..value.selection.end,
+                            text = value.text
+                        )
+                    }
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -223,7 +230,8 @@ fun ChatScreen(
     onAddReactionClicked: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
     onMemberIconClicked: (Id?) -> Unit,
-    onMentionClicked: (Id) -> Unit
+    onMentionClicked: (Id) -> Unit,
+    onTextChanged: (TextFieldValue) -> Unit
 ) {
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -347,6 +355,7 @@ fun ChatScreen(
             },
             attachments = attachments,
             updateValue = {
+                onTextChanged(it)
                 textState = it
             },
             clearText = {

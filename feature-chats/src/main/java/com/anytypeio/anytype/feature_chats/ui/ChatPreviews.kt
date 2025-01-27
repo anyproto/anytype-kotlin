@@ -124,7 +124,8 @@ fun ChatScreenPreview() {
         onViewChatReaction = { a, b -> },
         onMemberIconClicked = {},
         onMentionClicked = {},
-        mentionPanelState = ChatViewModel.MentionPanelState.Hidden
+        mentionPanelState = ChatViewModel.MentionPanelState.Hidden,
+        onTextChanged = {}
     )
 }
 

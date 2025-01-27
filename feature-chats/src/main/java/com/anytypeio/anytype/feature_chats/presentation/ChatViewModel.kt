@@ -64,7 +64,7 @@ class ChatViewModel @Inject constructor(
     private val uploadFile: UploadFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
-    private val exitToVaultDelegate: ExitToVaultDelegate
+    private val exitToVaultDelegate: ExitToVaultDelegate,
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     val header = MutableStateFlow<HeaderView>(HeaderView.Init)
@@ -259,10 +259,44 @@ class ChatViewModel @Inject constructor(
     }
     
     fun onTextChanged(
-        cursor: Int,
+        selection: IntRange,
         text: String
     ) {
+        Timber.d("onTextChanged: ${text}, selection: $selection")
+        if (isMentionTriggered(text, selection.start)) {
+            mentionPanelState.value = MentionPanelState.Visible(
+                results = members.get().let { store ->
+                    when(store) {
+                        is Store.Data -> {
+                            store.members.map { member ->
+                                MentionPanelState.Member(
+                                    member.id,
+                                    name = member.name.orEmpty()
+                                )
+                            }
+                        }
+                        Store.Empty -> {
+                            emptyList()
+                        }
+                    }
+                }
+            )
+        } else {
+            mentionPanelState.value = MentionPanelState.Hidden
+        }
+    }
 
+    fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
+        // Ensure selectionStart is valid and not out of bounds
+        if (selectionStart <= 0 || selectionStart > text.length) {
+            return false
+        }
+
+        // Check the character before the cursor position
+        val previousChar = text[selectionStart - 1]
+
+        // Trigger mention if the previous character is '@'
+        return previousChar == '@'
     }
 
     fun onMessageSent(msg: String) {
@@ -634,8 +668,8 @@ class ChatViewModel @Inject constructor(
         data class Member(
             val id: Id,
             val name: String,
-            val icon: SpaceMemberIconView,
-            val isUser: Boolean
+//            val icon: SpaceMemberIconView,
+            val isUser: Boolean = false
         )
     }
 

@@ -155,4 +155,19 @@ fun throttledClick(
     }
 }
 
+fun <T> throttledClick(
+    onClick: (T) -> Unit,
+    param: T,
+    duration: Int = THROTTLE_DURATION
+): (T) -> Unit {
+    var latest: Long = 0
+    return {
+        val now = System.currentTimeMillis()
+        if (now - latest >= duration) {
+            onClick(param)
+            latest = now
+        }
+    }
+}
+
 const val THROTTLE_DURATION = 300

@@ -223,7 +223,7 @@ fun ChatScreen(
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
     }
-    var isTitleFocused by remember { mutableStateOf(false) }
+
     val chatBoxFocusRequester = FocusRequester()
 
     val scope = rememberCoroutineScope()

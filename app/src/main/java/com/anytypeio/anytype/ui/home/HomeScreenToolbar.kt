@@ -108,7 +108,7 @@ fun HomeScreenToolbar(
         )
 
         Image(
-            painter = painterResource(id = com.anytypeio.anytype.R.drawable.ic_vault_settings),
+            painter = painterResource(id = R.drawable.ic_vault_settings),
             contentDescription = "Settings icon",
             modifier = Modifier
                 .align(Alignment.CenterEnd)

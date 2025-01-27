@@ -275,7 +275,6 @@ private fun MenuItem(
 }
 
 private enum class BottomNavigationItem(@DrawableRes val res: Int) {
-    BACK(R.drawable.ic_nav_panel_back),
     MEMBERS(R.drawable.ic_nav_panel_members),
     ADD_MEMBERS(R.drawable.ic_nav_panel_add_member),
     SEARCH(R.drawable.ic_nav_panel_search),

@@ -3,17 +3,16 @@ package com.anytypeio.anytype.presentation.collections
 import android.util.Log
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Relations.ID
 import com.anytypeio.anytype.core_models.Relations.LAYOUT
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -77,11 +76,13 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
 
-        val rootObject = ObjectWrapper.Basic(
-            map = mapOf(
-                ID to root,
-                Relations.NAME to objectCollection.details.details[root]?.name,
-                LAYOUT to COLLECTION_LAYOUT
+        val objectViewDetails = ObjectViewDetails(
+            details = mapOf(
+                root to mapOf(
+                    Relations.ID to root,
+                    Relations.NAME to objectCollection.details.getObject(root)?.name!!,
+                    LAYOUT to COLLECTION_LAYOUT
+                )
             )
         )
 
@@ -91,7 +92,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                 objectCollection.title,
                 objectCollection.dataView
             ),
-            details = objectCollection.details
+            details = objectViewDetails
         )
 
         // TESTING
@@ -192,9 +193,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         objectCollection.title,
                         objectCollection.dataView
                     ),
-                    details = mapOf(
-                        rootObject.id to Block.Fields(rootObject.map)
-                    ),
+                    details = objectViewDetails,
                     objectRestrictions = listOf(),
                     dataViewRestrictions = listOf()
                 ),
@@ -202,11 +201,12 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             )
 
             //Add new relation from marketplace to object and view
-            val eventObjectDetailsSet = Event.Command.Details.Set(
+            val eventObjectDetailsSet = Event.Command.Details.Amend(
                 context = root,
-                target = relationId4,
-                details = Block.Fields(relationObject4.map)
+                target = root,
+                details = mapOf(relationKey4 to "")
             )
+
             val eventDataViewRelationSet = Event.Command.DataView.SetRelation(
                 context = root,
                 dv = objectCollection.dataView.id,
@@ -282,9 +282,12 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         objectCollection.title,
                         expectedDataView
                     ),
-                    details = mapOf(
-                        rootObject.id to Block.Fields(rootObject.map),
-                        relationObject4.id to Block.Fields(relationObject4.map)
+                    details = objectViewDetails.copy(
+                        details = objectViewDetails.details.toMutableMap().apply {
+                            this[root] = this[root]!!.toMutableMap().apply {
+                                put(relationKey4, "")
+                            }
+                        }
                     ),
                     objectRestrictions = listOf(),
                     dataViewRestrictions = listOf()

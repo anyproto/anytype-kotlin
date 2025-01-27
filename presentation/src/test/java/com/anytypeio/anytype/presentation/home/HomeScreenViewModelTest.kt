@@ -2272,7 +2272,7 @@ class HomeScreenViewModelTest {
                             Event.Command.Details.Set(
                                 context = WIDGET_OBJECT_ID,
                                 target = newSourceObject.id,
-                                details = Block.Fields(newSourceObject.map)
+                                details = newSourceObject.map
                             ),
                             Event.Command.LinkGranularChange(
                                 context = WIDGET_OBJECT_ID,

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
@@ -70,8 +71,8 @@ class TemplateBlankViewModel(
         )
         val featuredRelations = listOf(Relations.TYPE)
         val page = listOf(rootBlock, headerBlock, blockTitle, featuredRelationsBlock)
-        val objectDetails = Block.Fields(
-            mapOf(
+        val objectDetails = mapOf(
+            DEFAULT_TEMPLATE_ID_BLANK to mapOf(
                 Relations.ID to DEFAULT_TEMPLATE_ID_BLANK,
                 Relations.LAYOUT to layout,
                 Relations.TYPE to typeId,
@@ -80,8 +81,8 @@ class TemplateBlankViewModel(
             )
         )
 
-        val typeDetails = Block.Fields(
-            mapOf(
+        val typeDetails = mapOf(
+            typeId to mapOf(
                 Relations.ID to typeId,
                 Relations.UNIQUE_KEY to ObjectTypeIds.TEMPLATE,
                 Relations.NAME to TEMPLATE_TYPE_NAME,
@@ -90,7 +91,8 @@ class TemplateBlankViewModel(
         )
 
         val customDetails =
-            Block.Details(mapOf(DEFAULT_TEMPLATE_ID_BLANK to objectDetails, typeId to typeDetails))
+            ObjectViewDetails(
+                details = mapOf(DEFAULT_TEMPLATE_ID_BLANK to objectDetails, typeId to typeDetails))
 
         viewModelScope.launch {
             state.value = page.asMap().render(

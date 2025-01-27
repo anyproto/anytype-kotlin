@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -63,15 +63,14 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         val doc = page(root)
 
-        val details = Block.Details(
+        val details = ObjectViewDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         Relations.ID to root,
                         Relations.SPACE_ID to defaultSpace
                     )
                 )
-            )
         )
 
         stubInterceptEvents()
@@ -114,16 +113,15 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         val space = defaultSpace
 
-        val details = Block.Details(
+        val details = ObjectViewDetails(
             mapOf(
-                root to Block.Fields(
+                root to
                     mapOf(
                         Relations.SPACE_ID to defaultSpace,
                         Relations.ID to root,
                         Relations.SPACE_ID to space
                     )
                 )
-            )
         )
 
         val doc = page(root)
@@ -199,18 +197,16 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         val typeId = MockDataFactory.randomString()
 
-        val details = Block.Details(
+        val details = ObjectViewDetails(
             mapOf(
-                root to Block.Fields(
-                    mapOf(
-                        Relations.ID to root,
-                        Relations.SPACE_ID to space,
-                        Relations.TYPE to typeId
-                    )
-                ),
-                typeId to Block.Fields(
-                    mapOf(Relations.ID to typeId, Relations.UNIQUE_KEY to ObjectTypeIds.PROFILE)
-                )
+                root to
+                        mapOf(
+                            Relations.ID to root,
+                            Relations.SPACE_ID to space,
+                            Relations.TYPE to typeId
+                        ),
+                typeId to
+                        mapOf(Relations.ID to typeId, Relations.UNIQUE_KEY to ObjectTypeIds.PROFILE)
             )
         )
 

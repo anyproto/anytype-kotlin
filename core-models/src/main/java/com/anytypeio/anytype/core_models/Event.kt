@@ -22,7 +22,7 @@ sealed class Event {
         data class ShowObject(
             override val context: Id,
             val root: Id,
-            val details: Block.Details = Block.Details(emptyMap()),
+            val details: Map<Id, Struct> = emptyMap(),
             val blocks: List<Block>,
             val objectRestrictions: List<ObjectRestriction> = emptyList(),
             val dataViewRestrictions: List<DataViewRestrictions> = emptyList()
@@ -30,8 +30,7 @@ sealed class Event {
 
         data class AddBlock(
             override val context: String,
-            val blocks: List<Block>,
-            val details: Block.Details = Block.Details(emptyMap())
+            val blocks: List<Block>
         ) : Command()
 
         /**
@@ -128,39 +127,38 @@ sealed class Event {
             val fields: Block.Fields
         ) : Command()
 
-
         sealed class Details : Command() {
             /**
-             * Command to set details (metadata) of the target block.
+             * Command to set details (metadata) of the target Object.
              * Overwrites existing state.
              * @property context id of the context
-             * @property target id of the target block, whose details we need to update
-             * @property details details of the target block
+             * @property target id of the target object, whose details we need to update
+             * @property details details of the target object
              */
             data class Set(
                 override val context: Id,
                 val target: Id,
-                val details: Block.Fields
+                val details: Struct
             ) : Details()
 
             /**
-             * Command to amend details (metadata) of the target block.
+             * Command to amend details (metadata) of the target object.
              * Amend existing state.
              * @property context id of the context
-             * @property target id of the target block, whose details we need to update
-             * @property details slide of details of the target block
+             * @property target id of the target object, whose details we need to update
+             * @property details slide of details of the target object
              */
             data class Amend(
                 override val context: Id,
                 val target: Id,
-                val details: Map<Id, Any?>
+                val details: Struct
             ) : Details()
 
             /**
-             * Command to unset details (metadata) of the target block.
+             * Command to unset details (metadata) of the target object.
              * Unset existing detail keys.
              * @property context id of the context
-             * @property target id of the target block, whose details we need to update
+             * @property target id of the target object, whose details we need to update
              * @property keys
              */
             data class Unset(
@@ -169,7 +167,6 @@ sealed class Event {
                 val keys: List<Id>
             ) : Details()
         }
-
 
         /**
          * Command to update file block content

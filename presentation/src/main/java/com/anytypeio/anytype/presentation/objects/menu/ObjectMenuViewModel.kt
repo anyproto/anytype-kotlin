@@ -8,10 +8,8 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
@@ -38,9 +36,11 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplate
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
-import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.extension.getTypeObject
+import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
@@ -112,8 +112,8 @@ class ObjectMenuViewModel(
         isReadOnly: Boolean
     ): List<ObjectAction> = buildList {
 
-        val wrapper = ObjectWrapper.Basic(storage.details.current().details[ctx]?.map.orEmpty())
-        val layout = wrapper.layout
+        val wrapper = storage.details.current().getObject(ctx)
+        val layout = wrapper?.layout
 
         if (isReadOnly) {
             add(ObjectAction.COPY_LINK)
@@ -152,14 +152,14 @@ class ObjectMenuViewModel(
 
             add(ObjectAction.UNDO_REDO)
 
-            val details = storage.details.current().details
-            val objTypeId = details[ctx]?.type?.firstOrNull()
-            val typeStruct = details[objTypeId]?.map
-            val objType = typeStruct?.mapToObjectWrapperType()
+            val objTypeId = wrapper?.getProperType()
+            if (objTypeId != null) {
+            val objType = storage.details.current().getTypeObject(objTypeId)
             if (objType != null) {
                 val isTemplateAllowed = objType.isTemplatesAllowed()
                 if (isTemplateAllowed && !isTemplate) {
                     add(ObjectAction.USE_AS_TEMPLATE)
+                }
                 }
             }
             if (!isTemplate) {
@@ -340,9 +340,8 @@ class ObjectMenuViewModel(
                 proceedWithSettingAsDefaultTemplate(ctx = ctx)
             }
             ObjectAction.CREATE_WIDGET -> {
-                val details = storage.details.current().details[ctx]
-                val wrapper = ObjectWrapper.Basic(details?.map ?: emptyMap())
-                proceedWithCreatingWidget(obj = wrapper)
+                val wrapper = storage.details.current().getObject(ctx)
+                if (wrapper != null) proceedWithCreatingWidget(obj = wrapper)
             }
             ObjectAction.MOVE_TO,
             ObjectAction.MOVE_TO_BIN,
@@ -361,9 +360,8 @@ class ObjectMenuViewModel(
 
     private fun proceedWithSettingAsDefaultTemplate(ctx: Id) {
         val startTime = System.currentTimeMillis()
-        val details = storage.details.current().details
-        val objTemplate = ObjectWrapper.Basic(details[ctx]?.map ?: emptyMap())
-        val targetObjectTypeId = objTemplate.targetObjectType ?: return
+        val objTemplate = storage.details.current().getObject(ctx)
+        val targetObjectTypeId = objTemplate?.targetObjectType ?: return
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = targetObjectTypeId,
@@ -371,7 +369,7 @@ class ObjectMenuViewModel(
             )
             setObjectDetails.async(params).fold(
                 onSuccess = {
-                    val objType = details[targetObjectTypeId]?.map?.mapToObjectWrapperType()
+                    val objType = storage.details.current().getTypeObject(targetObjectTypeId)
                     sendAnalyticsDefaultTemplateEvent(analytics, objType, startTime)
                     _toasts.emit("The template was set as default")
                     isDismissed.value = true
@@ -413,22 +411,24 @@ class ObjectMenuViewModel(
     }
 
     private suspend fun buildOpenTemplateCommand(ctx: Id, space: Id, template: Id) {
-        val details = storage.details.current().details
-        val type = details[ctx]?.type?.firstOrNull()
-        val typeStruct = details[type]?.map
-        val objType = typeStruct?.mapToObjectWrapperType()
-        if (objType != null) {
-            val objTypeKey = objType.uniqueKey
-            val command = Command.OpenTemplate(
-                templateId = template,
-                typeId = objType.id,
-                typeKey = objTypeKey,
-                typeName = objType.name.orEmpty(),
-                space = space
-            )
-            commands.emit(command)
+        val type = storage.details.current().getObject(ctx)?.getProperType()
+        if (type != null) {
+            val objType = storage.details.current().getTypeObject(type)
+            if (objType != null) {
+                val objTypeKey = objType.uniqueKey
+                val command = Command.OpenTemplate(
+                    templateId = template,
+                    typeId = objType.id,
+                    typeKey = objTypeKey,
+                    typeName = objType.name.orEmpty(),
+                    space = space
+                )
+                commands.emit(command)
+            } else {
+                Timber.e("Error while opening template from object, type:$type hasn't key")
+            }
         } else {
-            Timber.e("Error while opening template from object, type:$type hasn't key")
+            Timber.e("Error while opening template from object, object hasn't type")
         }
     }
 

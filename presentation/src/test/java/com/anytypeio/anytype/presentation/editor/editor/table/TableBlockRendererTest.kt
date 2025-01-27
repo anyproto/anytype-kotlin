@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
@@ -53,7 +54,7 @@ class TableBlockRendererTest {
             anchor: Id,
             focus: Editor.Focus,
             indent: Int,
-            details: Block.Details
+            details: ObjectViewDetails
         ): List<BlockView> = blocks.render(
             context = root.id,
             root = root,
@@ -181,8 +182,6 @@ class TableBlockRendererTest {
          */
         assertEquals(50, blocks.size)
 
-        val details = mapOf(page.id to Block.Fields.empty())
-
         val map = blocks.asMap()
 
         wrapper = BlockViewRenderWrapper(
@@ -196,7 +195,7 @@ class TableBlockRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = Block.Details(details)
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -349,8 +348,6 @@ class TableBlockRendererTest {
          */
         assertEquals(26, blocks.size)
 
-        val details = mapOf(page.id to Block.Fields.empty())
-
         val map = blocks.asMap()
 
         wrapper = BlockViewRenderWrapper(
@@ -364,7 +361,7 @@ class TableBlockRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = Block.Details(details)
+                details = ObjectViewDetails.EMPTY
             )
         }
 
@@ -530,8 +527,6 @@ class TableBlockRendererTest {
 
         assertEquals(28, blocks.size)
 
-        val details = mapOf(page.id to Block.Fields.empty())
-
         val map = blocks.asMap()
 
         wrapper = BlockViewRenderWrapper(
@@ -546,7 +541,7 @@ class TableBlockRendererTest {
                 anchor = page.id,
                 focus = Editor.Focus.empty(),
                 indent = 0,
-                details = Block.Details(details)
+                details = ObjectViewDetails.EMPTY
             )
         }
 

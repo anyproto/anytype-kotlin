@@ -2,8 +2,6 @@ package com.anytypeio.anytype.presentation.editor.editor.ext
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.replaceRangeWithWord
@@ -11,19 +9,22 @@ import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.extension.getDateObject
+import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.shift
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import timber.log.Timber
 
 fun Block.Content.Text.getTextAndMarks(
-    details: Block.Details,
+    details: ObjectViewDetails,
     marks: List<Markup.Mark>,
     fieldParser: FieldParser,
     resourceProvider: ResourceProvider
 ): Pair<String, List<Markup.Mark>> {
 
-    if (details.details.isEmpty() || marks.none { it is Markup.Mark.Mention }) {
+    if (marks.none { it is Markup.Mark.Mention }) {
         return text to marks
     }
     var updatedText = text
@@ -40,7 +41,14 @@ fun Block.Content.Text.getTextAndMarks(
                     resourceProvider = resourceProvider
                 )
                 is Markup.Mark.Mention.Deleted -> resourceProvider.getNonExistentObjectTitle()
-                else -> details.details.getProperObjectName(id = mark.param) ?: return@forEach
+                else -> {
+                    val obj = details.getObject(mark.param)
+                    if (obj != null) {
+                        fieldParser.getObjectName(obj)
+                    } else {
+                        return@forEach
+                    }
+                }
             }
             val oldName = updatedText.substring(mark.from, mark.to)
             val finalName =
@@ -68,38 +76,28 @@ fun Block.Content.Text.getTextAndMarks(
 
 private fun Block.Content.Text.getFormattedDateMention(
     mark: Markup.Mark.Mention.Date,
-    details: Block.Details,
+    details: ObjectViewDetails,
     fieldParser: FieldParser,
     resourceProvider: ResourceProvider
 ): String? {
+    val dateObject = details.getDateObject(id = mark.param)
     return if (BuildConfig.ENABLE_RELATIVE_DATES_IN_MENTIONS) {
-        val dateObject = details.details[mark.param] ?: return null
-        val timestamp = dateObject.timestamp ?: return null
+        val timestamp = dateObject?.timestamp
         val relativeDate = fieldParser.toDate(timestamp)?.relativeDate
         resourceProvider.toFormattedString(relativeDate = relativeDate).takeIf { it.isNotEmpty() }
     } else {
-        details.details[mark.param]?.name
-    }
-}
-
-private fun Map<Id, Block.Fields>.getProperObjectName(id: Id?): String? {
-    if (id == null) return null
-    val layoutCode = this[id]?.layout?.toInt()
-    return if (layoutCode == ObjectType.Layout.NOTE.code) {
-        this[id]?.snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
-    } else {
-        this[id]?.name
+        dateObject?.name
     }
 }
 
 fun List<Block>.isAllowedToShowTypesWidget(
     objectRestrictions: List<ObjectRestriction>,
     isOwnerOrEditor: Boolean,
-    objectLayout: Int?
+    objectLayout: ObjectType.Layout?
 ): Boolean {
     if (objectRestrictions.any { it == ObjectRestriction.TYPE_CHANGE }) return false
     if (!isOwnerOrEditor) return false
-    return if (objectLayout == ObjectType.Layout.NOTE.code) {
+    return if (objectLayout == ObjectType.Layout.NOTE) {
         return true
     } else {
         return title()?.content<Content.Text>()?.text?.isEmpty() == true

@@ -3,12 +3,12 @@ package com.anytypeio.anytype.presentation.objects.menu
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -354,7 +354,7 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
-    fun proceedWithDuplication(ctx: Id, space: Id, details: Map<Id, Block.Fields>?) {
+    fun proceedWithDuplication(ctx: Id, space: Id, details: Map<Id, Struct>) {
         Timber.d("proceedWithDuplication, ctx:[$ctx]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {

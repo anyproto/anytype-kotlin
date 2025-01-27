@@ -121,8 +121,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
-            set = set,
-            relations = listOf(relation),
+            set = set
         )
 
         // TESTING
@@ -216,7 +215,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
             set = set,
-            relations = listOf(relation),
+
         )
 
         // TESTING
@@ -310,7 +309,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
             set = set,
-            relations = listOf(relation),
+
         )
 
         // TESTING
@@ -404,7 +403,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
             set = set,
-            relations = listOf(relation),
+
         )
 
         // TESTING
@@ -498,7 +497,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
             set = set,
-            relations = listOf(relation),
+
         )
 
         // TESTING
@@ -592,7 +591,7 @@ class ObjectSetGridNumberCellRenderingTest : TestObjectSetSetup() {
         stubInterceptThreadStatus()
         stubOpenObjectSetWithRecord(
             set = set,
-            relations = listOf(relation),
+
         )
 
         // TESTING

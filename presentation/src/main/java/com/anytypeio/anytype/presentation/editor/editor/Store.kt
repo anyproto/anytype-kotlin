@@ -1,10 +1,6 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -57,22 +53,7 @@ interface Store<T> {
 
     class Screen : State<List<BlockView>>(emptyList())
 
-    class Details : State<Block.Details>(Block.Details()) {
-        suspend fun add(target: Id, fields: Block.Fields) {
-            update(current().copy(details = current().details + mapOf(target to fields)))
-        }
-        fun getAsObject(target: Id) : ObjectWrapper.Basic? {
-            val struct = current().details[target]
-            return if (struct != null && struct.map.isNotEmpty()) {
-                ObjectWrapper.Basic(struct.map)
-            } else {
-                null
-            }
-        }
-    }
-
-    class Relations : State<List<Relation>>(emptyList())
+    class Details : State<ObjectViewDetails>(ObjectViewDetails.EMPTY)
     class ObjectRestrictions : State<List<ObjectRestriction>>(emptyList())
     class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
-    class RelationLinks : State<List<RelationLink>>(emptyList())
 }

@@ -79,8 +79,7 @@ class ObjectSetHeaderTest : TestObjectSetSetup() {
         stubSubscriptionEventChannel()
         stubOpenObjectSet(
             set = set,
-            relations = emptyList(),
-            details = defaultDetails
+            details = defaultDetails.details
         )
 
         // TESTING

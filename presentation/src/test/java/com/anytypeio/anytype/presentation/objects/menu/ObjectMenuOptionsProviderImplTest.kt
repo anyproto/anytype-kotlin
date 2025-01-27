@@ -1,30 +1,33 @@
 package com.anytypeio.anytype.presentation.objects.menu
 
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.Block.Fields
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_models.ObjectViewDetails
+import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import org.mockito.kotlin.mock
-import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class ObjectMenuOptionsProviderImplTest {
 
     private val objectId: String = "objectId"
-    private val details = MutableStateFlow<Map<Id, Fields>>(mapOf())
+    private val details = MutableStateFlow<ObjectViewDetails>(ObjectViewDetails.EMPTY)
     private val restrictions = MutableStateFlow<List<ObjectRestriction>>(emptyList())
-    private val provider = ObjectMenuOptionsProviderImpl(details, restrictions, mock())
+    private val provider = ObjectMenuOptionsProviderImpl(details, restrictions)
 
     @Test
     fun `when layout note - options are layout, relations, history`() {
-        details.value = mapOf(
-            objectId to Fields(map = mapOf(Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble()))
+        details.value = ObjectViewDetails(
+            mapOf(
+                objectId to mapOf(
+                    Relations.ID to objectId,
+                    Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble()
+                )
+            )
         )
         val expected = ObjectMenuOptionsProvider.Options(
             hasIcon = false,
@@ -42,8 +45,13 @@ class ObjectMenuOptionsProviderImplTest {
 
     @Test
     fun `when layout task - options are layout, relations, history`() {
-        details.value = mapOf(
-            objectId to Fields(map = mapOf(Relations.LAYOUT to ObjectType.Layout.TODO.code.toDouble()))
+        details.value = ObjectViewDetails(
+            mapOf(
+                objectId to mapOf(
+                    Relations.ID to objectId,
+                    Relations.LAYOUT to ObjectType.Layout.TODO.code.toDouble()
+                )
+            )
         )
         val expected = ObjectMenuOptionsProvider.Options(
             hasIcon = false,
@@ -61,8 +69,13 @@ class ObjectMenuOptionsProviderImplTest {
 
     @Test
     fun `when layout basic - all options are visible`() {
-        details.value = mapOf(
-            objectId to Fields(map = mapOf(Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()))
+        details.value = ObjectViewDetails(
+            mapOf(
+                objectId to mapOf(
+                    Relations.ID to objectId,
+                    Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                )
+            )
         )
 
         assertOptions(
@@ -73,8 +86,12 @@ class ObjectMenuOptionsProviderImplTest {
 
     @Test
     fun `when layout null - all options are not visible`() {
-        details.value = mapOf(
-            objectId to Fields(map = mapOf(Relations.LAYOUT to null))
+        details.value = ObjectViewDetails(
+            mapOf(
+                objectId to mapOf(
+                    Relations.ID to objectId
+                )
+            )
         )
 
         assertOptions(
@@ -84,8 +101,13 @@ class ObjectMenuOptionsProviderImplTest {
 
     @Test
     fun `when restricts layout_change - layout options is invisible`() {
-        details.value = mapOf(
-            objectId to Fields(map = mapOf(Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()))
+        details.value = ObjectViewDetails(
+            mapOf(
+                objectId to mapOf(
+                    Relations.ID to objectId,
+                    Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                )
+            )
         )
         restrictions.value = listOf(ObjectRestriction.LAYOUT_CHANGE)
 
@@ -99,8 +121,13 @@ class ObjectMenuOptionsProviderImplTest {
 
     @Test
     fun `when object is Locked - show only relations`() {
-        details.value = mapOf(
-            objectId to Fields(map = mapOf(Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()))
+        details.value = ObjectViewDetails(
+            mapOf(
+                objectId to mapOf(
+                    Relations.ID to objectId,
+                    Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                )
+            )
         )
 
         assertOptions(

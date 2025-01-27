@@ -26,7 +26,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.editor.Editor.Mode
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.INITIAL_INDENT
-import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -502,8 +502,7 @@ class VersionHistoryViewModel(
                     val event = payload.events
                         .filterIsInstance<Event.Command.ShowObject>()
                         .first()
-                    val obj =
-                        ObjectWrapper.Basic(event.details.details[vmParams.objectId]?.map.orEmpty())
+                    val obj = ObjectWrapper.Basic(event.details[vmParams.objectId].orEmpty())
                     val currentState = _previewViewState.value
                     if (currentState !is VersionHistoryPreviewScreen.Hidden) {
                         parseObject(
@@ -535,7 +534,7 @@ class VersionHistoryViewModel(
                 focus = Editor.Focus.empty(),
                 anchor = vmParams.objectId,
                 indent = INITIAL_INDENT,
-                details = event.details,
+                details = ObjectViewDetails(event.details),
                 restrictions = event.objectRestrictions,
                 selection = emptySet()
             ).filterNot { it is BlockView.DataView }
@@ -572,7 +571,7 @@ class VersionHistoryViewModel(
                 focus = Editor.Focus.empty(),
                 anchor = vmParams.objectId,
                 indent = INITIAL_INDENT,
-                details = event.details,
+                details = ObjectViewDetails(event.details),
                 restrictions = event.objectRestrictions,
                 selection = emptySet()
             )

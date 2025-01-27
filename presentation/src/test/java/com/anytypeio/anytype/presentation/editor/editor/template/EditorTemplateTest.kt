@@ -1,13 +1,13 @@
 package com.anytypeio.anytype.presentation.editor.editor.template
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubTitle
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSetup
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlin.test.assertFalse
@@ -50,22 +50,21 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
 
         val typeObjectId = RandomString.make()
 
-        val detailsList = Block.Details(
+        val detailsList = ObjectViewDetails(
             details = mapOf(
-                root to Block.Fields(
-                    mapOf(
-                        Relations.SPACE_ID to defaultSpace,
-                        Relations.TYPE to listOf<String>(typeObjectId),
-                        Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
-                    )
-                ),
-                typeObjectId to Block.Fields(
-                    mapOf(
-                        Relations.ID to typeObjectId,
-                        Relations.SPACE_ID to defaultSpace,
-                        Relations.UNIQUE_KEY to ObjectTypeIds.TEMPLATE
-                    )
-                )
+                root to
+                        mapOf(
+                            Relations.ID to root,
+                            Relations.SPACE_ID to defaultSpace,
+                            Relations.TYPE to listOf<String>(typeObjectId),
+                            Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                        ),
+                typeObjectId to
+                        mapOf(
+                            Relations.ID to typeObjectId,
+                            Relations.SPACE_ID to defaultSpace,
+                            Relations.UNIQUE_KEY to ObjectTypeIds.TEMPLATE
+                        )
             )
         )
 

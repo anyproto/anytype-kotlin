@@ -14,7 +14,7 @@ import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
-import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import kotlin.test.assertFalse

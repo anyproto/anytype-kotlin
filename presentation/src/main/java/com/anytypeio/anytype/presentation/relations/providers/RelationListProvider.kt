@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.relations.providers
 
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow

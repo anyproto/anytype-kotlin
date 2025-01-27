@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id

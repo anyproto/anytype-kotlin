@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.presentation.editor.editor.getObject
 import com.anytypeio.anytype.presentation.editor.editor.getOptionObject
 import com.anytypeio.anytype.presentation.extension.hasValue

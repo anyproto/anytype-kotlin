@@ -11,7 +11,7 @@ import com.anytypeio.anytype.core_models.ext.amend
 import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_utils.ext.replace
-import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.updateFields
 import com.anytypeio.anytype.presentation.sets.updateFilters
 import com.anytypeio.anytype.presentation.sets.updateSorts

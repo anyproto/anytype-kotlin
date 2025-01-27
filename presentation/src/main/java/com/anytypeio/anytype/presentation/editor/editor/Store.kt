@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
+import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Struct
@@ -95,13 +96,7 @@ interface Store<T> {
     class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
 }
 
-data class AllObjectsDetails(val details: Map<Id, Struct>) {
-    companion object {
-        val EMPTY = AllObjectsDetails(emptyMap())
-    }
-}
-
-fun AllObjectsDetails.getStruct(id: Id): Struct? = details[id]
+fun com.anytypeio.anytype.core_models.AllObjectsDetails.getStruct(id: Id): Struct? = details[id]
 
 fun AllObjectsDetails.containsObject(id: Id): Boolean {
     return details.containsKey(id) && details[id]?.isValidObject() == true

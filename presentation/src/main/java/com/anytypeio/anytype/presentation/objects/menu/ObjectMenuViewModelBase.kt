@@ -32,7 +32,7 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
-import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
+import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToCollectionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToFavoritesEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBackLinkAddEvent

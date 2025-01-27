@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.presentation.sets
 
+import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationLink
-import com.anytypeio.anytype.presentation.editor.editor.AllObjectsDetails
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.test_utils.MockDataFactory
 

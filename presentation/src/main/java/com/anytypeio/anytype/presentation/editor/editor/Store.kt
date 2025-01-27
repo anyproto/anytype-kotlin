@@ -96,7 +96,7 @@ interface Store<T> {
     class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
 }
 
-fun com.anytypeio.anytype.core_models.AllObjectsDetails.getStruct(id: Id): Struct? = details[id]
+fun AllObjectsDetails.getStruct(id: Id): Struct? = details[id]
 
 fun AllObjectsDetails.containsObject(id: Id): Boolean {
     return details.containsKey(id) && details[id]?.isValidObject() == true
@@ -112,10 +112,6 @@ fun AllObjectsDetails.getOptionObject(id: Id): ObjectWrapper.Option? {
 
 fun AllObjectsDetails.getFileObject(id: Id): ObjectWrapper.File? {
     return details[id]?.toFileObject()
-}
-
-fun AllObjectsDetails.getStringSingleValue(objectId: Id, relationKey: RelationKey): String? {
-    return details[objectId]?.getSingleValue<String>(relationKey.key)
 }
 
 fun AllObjectsDetails.getTypeObject(id: Id): ObjectWrapper.Type? {

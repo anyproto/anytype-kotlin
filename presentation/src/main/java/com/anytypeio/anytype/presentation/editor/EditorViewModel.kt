@@ -251,8 +251,6 @@ import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
-import com.anytypeio.anytype.presentation.editor.editor.getObjRelationsViews
-import com.anytypeio.anytype.presentation.editor.editor.getRecommendedRelations
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
 import com.anytypeio.anytype.presentation.extension.getBookmarkObject
 import com.anytypeio.anytype.presentation.extension.getInternalFlagsObject
@@ -263,6 +261,8 @@ import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.O
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTomorrowClick
 import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
+import com.anytypeio.anytype.presentation.extension.getObjRelationsViews
+import com.anytypeio.anytype.presentation.extension.getRecommendedRelations
 import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams

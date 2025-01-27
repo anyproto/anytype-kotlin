@@ -12,6 +12,13 @@ import com.anytypeio.anytype.core_models.ext.toDateObject
 import com.anytypeio.anytype.core_models.ext.toFileObject
 import com.anytypeio.anytype.core_models.ext.toInternalFlagsObject
 import com.anytypeio.anytype.core_models.ext.toObject
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.relations.ObjectRelationView
+import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
+import com.anytypeio.anytype.presentation.relations.view
 
 fun AllObjectsDetails.getStruct(id: Id): Struct? = details[id]
 fun AllObjectsDetails.containsObject(id: Id): Boolean {
@@ -44,4 +51,65 @@ fun AllObjectsDetails.getBookmarkObject(id: Id): ObjectWrapper.Bookmark? {
 
 fun AllObjectsDetails.getInternalFlagsObject(id: Id): ObjectWrapper.ObjectInternalFlags? {
     return details[id]?.toInternalFlagsObject()
+}
+
+suspend fun AllObjectsDetails.getObjRelationsViews(
+    ctx: Id,
+    storeOfRelations: StoreOfRelations,
+    fieldParser: FieldParser,
+    urlBuilder: UrlBuilder
+): List<ObjectRelationView> {
+    val currentObject = getObject(ctx)
+    if (currentObject == null || !currentObject.isValid) return emptyList()
+    val keys = currentObject.map.keys.toList()
+    return storeOfRelations.getByKeys(keys).map {
+        it.view(
+            details = this,
+            values = currentObject.map,
+            urlBuilder = urlBuilder,
+            fieldParser = fieldParser,
+            isFeatured = currentObject.featuredRelations.contains(it.key)
+        )
+    }
+}
+
+suspend fun AllObjectsDetails.getRecommendedRelations(
+    ctx: Id,
+    storeOfRelations: StoreOfRelations,
+    fieldParser: FieldParser,
+    urlBuilder: UrlBuilder
+): List<ObjectRelationView> {
+    val currentObject = getObject(ctx)
+    if (currentObject == null || !currentObject.isValid) return emptyList()
+    val typeObjectId = currentObject.getProperType()
+    if (typeObjectId == null) return emptyList()
+    val typeObject = getTypeObject(typeObjectId)
+    if (typeObject == null) return emptyList()
+    val recommendedRelations = typeObject.recommendedRelations
+    val notIncludedRecommendedRelations = getNotIncludedRecommendedRelations(
+        relationKeys = currentObject.map.keys,
+        recommendedRelations = recommendedRelations,
+        storeOfRelations = storeOfRelations
+    )
+    return notIncludedRecommendedRelations.map {
+        it.view(
+            details = this,
+            values = currentObject.map,
+            urlBuilder = urlBuilder,
+            fieldParser = fieldParser,
+            isFeatured = currentObject.featuredRelations.contains(it.key)
+        )
+    }
+}
+
+fun AllObjectsDetails.getTypeForObject(currentObjectId: Id): ObjectWrapper.Type? {
+    val currentObject = getObject(currentObjectId)
+    val type = currentObject?.getProperType()
+    if (type != null) {
+        val objType = getTypeObject(type)
+        if (objType != null) {
+            return objType
+        }
+    }
+    return null
 }

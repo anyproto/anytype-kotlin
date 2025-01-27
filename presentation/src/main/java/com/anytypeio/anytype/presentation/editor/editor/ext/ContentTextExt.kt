@@ -11,8 +11,8 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.core_models.AllObjectsDetails
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.getDateObject
-import com.anytypeio.anytype.presentation.editor.editor.getObject
+import com.anytypeio.anytype.presentation.extension.getDateObject
+import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.shift
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import timber.log.Timber

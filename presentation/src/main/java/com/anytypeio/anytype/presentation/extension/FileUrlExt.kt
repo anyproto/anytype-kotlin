@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
-import com.anytypeio.anytype.presentation.editor.editor.getObject
 import timber.log.Timber
 
 fun UrlBuilder.getUrlForFileBlock(

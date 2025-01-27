@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.collections
 import android.util.Log
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
@@ -12,7 +11,8 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.LAYOUT
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.AllObjectsDetails
-import com.anytypeio.anytype.presentation.editor.editor.getObject
+import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.DataViewViewState

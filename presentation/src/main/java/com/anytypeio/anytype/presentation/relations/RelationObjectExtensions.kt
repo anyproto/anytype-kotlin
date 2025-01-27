@@ -9,9 +9,9 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.core_models.AllObjectsDetails
-import com.anytypeio.anytype.presentation.editor.editor.getObject
-import com.anytypeio.anytype.presentation.editor.editor.getOptionObject
-import com.anytypeio.anytype.presentation.editor.editor.getTypeObject
+import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.extension.getOptionObject
+import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.buildFileViews
 import com.anytypeio.anytype.presentation.sets.buildRelationValueObjectViews

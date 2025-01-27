@@ -11,7 +11,7 @@ import com.anytypeio.anytype.domain.layout.GetSupportedObjectLayouts
 import com.anytypeio.anytype.domain.layout.SetObjectLayout
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.editor.editor.getObject
+import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectLayoutChangeEvent
 import com.anytypeio.anytype.presentation.mapper.toObjectLayout
 import com.anytypeio.anytype.presentation.mapper.toView

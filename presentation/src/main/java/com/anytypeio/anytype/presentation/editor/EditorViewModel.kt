@@ -40,7 +40,6 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.descendants
 import com.anytypeio.anytype.core_models.ext.isAllTextAndNoneCodeBlocks
 import com.anytypeio.anytype.core_models.ext.isAllTextBlocks
-import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.ext.parents
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.ext.sortByType
@@ -255,10 +254,10 @@ import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.getObjRelationsViews
 import com.anytypeio.anytype.presentation.editor.editor.getRecommendedRelations
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
-import com.anytypeio.anytype.presentation.editor.editor.getBookmarkObject
-import com.anytypeio.anytype.presentation.editor.editor.getInternalFlagsObject
-import com.anytypeio.anytype.presentation.editor.editor.getObject
-import com.anytypeio.anytype.presentation.editor.editor.getTypeObject
+import com.anytypeio.anytype.presentation.extension.getBookmarkObject
+import com.anytypeio.anytype.presentation.extension.getInternalFlagsObject
+import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDatePickerDismiss
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDateSelected
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
@@ -272,8 +271,6 @@ import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
-import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
-import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState

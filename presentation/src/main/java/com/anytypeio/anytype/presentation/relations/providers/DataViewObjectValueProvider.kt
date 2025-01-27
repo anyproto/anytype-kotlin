@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.relations.providers
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.presentation.editor.editor.getStruct
+import com.anytypeio.anytype.presentation.extension.getStruct
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlinx.coroutines.flow.Flow

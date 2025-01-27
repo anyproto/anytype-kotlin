@@ -489,7 +489,7 @@ class EditorViewModel(
 
     override fun onPickedDocImageFromDevice(ctx: Id, path: String) {
         viewModelScope.launch {
-            val obj = orchestrator.stores.details.current().getObject(ctx)
+            val obj = orchestrator.stores.details.current().getObject(vmParams.ctx)
             val space = obj?.spaceId
             if (space != null) {
                 setDocImageIcon(
@@ -767,8 +767,8 @@ class EditorViewModel(
             .withLatestFrom(
                 orchestrator.stores.focus.stream(),
                 orchestrator.stores.details.stream()
-            ) { models, focus, details ->
-                val currentObj = details.details[context].toObject()
+            ) { models, focus, objectViewDetails ->
+                val currentObj = objectViewDetails.getObject(vmParams.ctx)
                 val permission = permission.value
                 val root = models.first { it.id == context }
                 if (mode == EditorMode.Locked) {
@@ -802,7 +802,7 @@ class EditorViewModel(
                     focus = focus,
                     anchor = context,
                     indent = INITIAL_INDENT,
-                    details = details,
+                    details = objectViewDetails,
                     restrictions = orchestrator.stores.objectRestrictions.current(),
                     selection = currentSelection()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
@@ -1556,7 +1556,7 @@ class EditorViewModel(
 
     private fun proceedWithOpeningObjectMenu() {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
-        val wrapper = orchestrator.stores.details.current().getObject(context)
+        val wrapper = orchestrator.stores.details.current().getObject(vmParams.ctx)
         val isTemplate = isObjectTemplate()
         val space = wrapper?.spaceId
         if (space == null) {
@@ -3418,7 +3418,7 @@ class EditorViewModel(
 
     fun onSetObjectIconClicked() {
         viewModelScope.launch {
-            val obj = orchestrator.stores.details.current().getObject(context)
+            val obj = orchestrator.stores.details.current().getObject(vmParams.ctx)
             val space = obj?.spaceId
             if (space != null) {
                 dispatch(Command.SetObjectIcon(ctx = context, space = space))
@@ -4252,7 +4252,7 @@ class EditorViewModel(
         val isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
         if (isDetailsAllowed) {
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
-            val obj = orchestrator.stores.details.current().getObject(context)
+            val obj = orchestrator.stores.details.current().getObject(vmParams.ctx)
             val space = obj?.spaceId
             if (space != null) {
                 dispatch(
@@ -4330,7 +4330,7 @@ class EditorViewModel(
 
     private fun proceedWithDownloadCurrentObjectAsFile() {
 
-        val fileObject = orchestrator.stores.details.current().getObject(context)
+        val fileObject = orchestrator.stores.details.current().getObject(vmParams.ctx)
         if (fileObject == null) {
             Timber.e("Object with id $context not found.")
             return
@@ -6368,7 +6368,7 @@ class EditorViewModel(
 
     private fun proceedWithGettingObjectTypesForTypesWidget() {
         viewModelScope.launch {
-            val excludeTypes = orchestrator.stores.details.current().getObject(context)?.type.orEmpty()
+            val excludeTypes = orchestrator.stores.details.current().getObject(vmParams.ctx)?.type.orEmpty()
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
@@ -6735,7 +6735,7 @@ class EditorViewModel(
 
     private fun getObjectTypeUniqueKeyFromDetails(): Id? {
         val objectViewDetails = orchestrator.stores.details.current()
-        val currentObject = objectViewDetails.getObject(context)
+        val currentObject = objectViewDetails.getObject(vmParams.ctx)
         val currentObjectTypeId = currentObject?.getProperType() ?: return null
         val currentObjectType = objectViewDetails.getTypeObject(currentObjectTypeId)
         return currentObjectType?.uniqueKey
@@ -6743,7 +6743,7 @@ class EditorViewModel(
 
     private fun getObjectTypeFromDetails(): ObjectWrapper.Type? {
         val objectViewDetails = orchestrator.stores.details.current()
-        val currentObject = objectViewDetails.getObject(context)
+        val currentObject = objectViewDetails.getObject(vmParams.ctx)
         val currentObjectTypeId = currentObject?.getProperType() ?: return null
         return objectViewDetails.getTypeObject(currentObjectTypeId)
     }
@@ -7581,7 +7581,7 @@ class EditorViewModel(
                 if (blocks.isAllowedToShowTypesWidget(
                         objectRestrictions = orchestrator.stores.objectRestrictions.current(),
                         isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true,
-                        objectLayout = orchestrator.stores.details.current().getObject(context)?.layout
+                        objectLayout = orchestrator.stores.details.current().getObject(vmParams.ctx)?.layout
                     )
                 ) {
                     setTypesWidgetVisibility(true)
@@ -7604,7 +7604,7 @@ class EditorViewModel(
     }
 
     private fun getInternalFlagsFromDetails(): List<InternalFlags> {
-        val obj = orchestrator.stores.details.current().getInternalFlagsObject(context)
+        val obj = orchestrator.stores.details.current().getInternalFlagsObject(vmParams.ctx)
         return obj?.internalFlags ?: emptyList()
     }
     //endregion

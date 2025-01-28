@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -42,7 +43,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -52,19 +52,25 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -74,6 +80,7 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import kotlinx.coroutines.launch
 
@@ -110,7 +117,22 @@ fun ChatScreenWrapper(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
                     attachments = vm.chatBoxAttachments.collectAsState().value,
-                    onMessageSent = vm::onMessageSent,
+                    onMessageSent = { text, spans ->
+                        vm.onMessageSent(
+                            msg = text,
+                            markup = spans.map { span ->
+                                when(span) {
+                                    is ChatBoxSpan.Mention -> {
+                                        Block.Content.Text.Mark(
+                                            type = Block.Content.Text.Mark.Type.MENTION,
+                                            param = span.param,
+                                            range = span.start..span.end
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    },
                     onClearAttachmentClicked = vm::onClearAttachmentClicked,
                     lazyListState = lazyListState,
                     onReacted = vm::onReacted,
@@ -155,7 +177,14 @@ fun ChatScreenWrapper(
                     onAddReactionClicked = onSelectChatReaction,
                     onViewChatReaction = onViewChatReaction,
                     onMemberIconClicked = vm::onMemberIconClicked,
-                    onMentionClicked = vm::onMentionClicked
+                    onMentionClicked = vm::onMentionClicked,
+                    mentionPanelState = vm.mentionPanelState.collectAsStateWithLifecycle().value,
+                    onTextChanged = { value ->
+                        vm.onChatBoxInputChanged(
+                            selection = value.selection.start..value.selection.end,
+                            text = value.text
+                        )
+                    }
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -197,11 +226,12 @@ fun ChatScreenWrapper(
  */
 @Composable
 fun ChatScreen(
+    mentionPanelState: MentionPanelState,
     chatBoxMode: ChatBoxMode,
     lazyListState: LazyListState,
     messages: List<ChatView>,
     attachments: List<ChatView.Message.ChatBoxAttachment>,
-    onMessageSent: (String) -> Unit,
+    onMessageSent: (String, List<ChatBoxSpan>) -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
@@ -218,11 +248,14 @@ fun ChatScreen(
     onAddReactionClicked: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
     onMemberIconClicked: (Id?) -> Unit,
-    onMentionClicked: (Id) -> Unit
+    onMentionClicked: (Id) -> Unit,
+    onTextChanged: (TextFieldValue) -> Unit
 ) {
-    var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(""))
+    var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue())
     }
+
+    var spans by remember { mutableStateOf<List<ChatBoxSpan>>(emptyList()) }
 
     val chatBoxFocusRequester = FocusRequester()
 
@@ -252,7 +285,7 @@ fun ChatScreen(
                 onAttachmentClicked = onAttachmentClicked,
                 onEditMessage = { msg ->
                     onEditMessage(msg).also {
-                        textState = TextFieldValue(
+                        text = TextFieldValue(
                             msg.content.msg,
                             selection = TextRange(msg.content.msg.length)
                         )
@@ -295,6 +328,71 @@ fun ChatScreen(
                 },
                 enabled = jumpToBottomButtonEnabled
             )
+
+            when(mentionPanelState) {
+                MentionPanelState.Hidden -> {
+                    // Draw nothing.
+                }
+                is MentionPanelState.Visible -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .fillMaxWidth()
+                            .height(168.dp)
+                            .background(
+                                color = colorResource(R.color.background_primary),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .align(Alignment.BottomCenter)
+                    ) {
+                        items(
+                            items = mentionPanelState.results,
+                            key = { member -> member.id }
+                        ) { member ->
+                            ChatMemberItem(
+                                name = member.name,
+                                icon = member.icon,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .noRippleClickable {
+                                        val start = text.selection.start
+                                        val end = text.selection.end
+                                        val input = text.text
+
+                                        val adjustedStart = (start - 1).coerceAtLeast(0)
+
+                                        val replacementText = member.name + " "
+                                        val updatedText = input.replaceRange(
+                                            startIndex = adjustedStart,
+                                            endIndex = end,
+                                            replacement = replacementText
+                                        )
+
+                                        text = text.copy(
+                                            text = updatedText,
+                                            selection = TextRange(
+                                                index = (adjustedStart + replacementText.length))
+                                        )
+
+                                        val mentionSpan = ChatBoxSpan.Mention(
+                                            start = adjustedStart,
+                                            end = adjustedStart + member.name.length,
+                                            style = SpanStyle(
+                                                textDecoration = TextDecoration.Underline
+                                            ),
+                                            param = member.id
+                                        )
+
+                                        spans = spans + mentionSpan
+
+                                        onTextChanged(text)
+                                    }
+                            )
+                            Divider()
+                        }
+                    }
+                }
+            }
         }
         ChatBox(
             mode = chatBoxMode,
@@ -302,8 +400,9 @@ fun ChatScreen(
                 .imePadding()
                 .navigationBarsPadding(),
             chatBoxFocusRequester = chatBoxFocusRequester,
-            textState = textState,
-            onMessageSent = onMessageSent,
+            onMessageSent = { text, markup ->
+                onMessageSent(text, markup)
+            },
             resetScroll = {
                 if (lazyListState.firstVisibleItemScrollOffset > 0) {
                     scope.launch {
@@ -312,11 +411,8 @@ fun ChatScreen(
                 }
             },
             attachments = attachments,
-            updateValue = {
-                textState = it
-            },
             clearText = {
-                textState = TextFieldValue()
+                text = TextFieldValue()
             },
             onAttachObjectClicked = onAttachObjectClicked,
             onClearAttachmentClicked = onClearAttachmentClicked,
@@ -325,9 +421,18 @@ fun ChatScreen(
             onChatBoxFilePicked = onChatBoxFilePicked,
             onExitEditMessageMode = {
                 onExitEditMessageMode().also {
-                    textState = TextFieldValue()
+                    text = TextFieldValue()
                 }
-            }
+            },
+            onValueChange = { t, s ->
+                text = t
+                spans = s
+                onTextChanged(
+                    t
+                )
+            },
+            text = text,
+            spans = spans
         )
     }
 }
@@ -442,7 +547,9 @@ fun Messages(
                 Text(
                     text = msg.formattedDate,
                     style = Caption1Medium,
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     textAlign = TextAlign.Center,
                     color = colorResource(R.color.transparent_active)
                 )

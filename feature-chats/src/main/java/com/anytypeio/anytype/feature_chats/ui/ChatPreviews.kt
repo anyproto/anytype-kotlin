@@ -103,7 +103,7 @@ fun ChatScreenPreview() {
                 )
             }
         }.reversed(),
-        onMessageSent = {},
+        onMessageSent = { a, b -> },
         attachments = emptyList(),
         onClearAttachmentClicked = {},
         lazyListState = LazyListState(),
@@ -123,7 +123,9 @@ fun ChatScreenPreview() {
         onAddReactionClicked = {},
         onViewChatReaction = { a, b -> },
         onMemberIconClicked = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        mentionPanelState = ChatViewModel.MentionPanelState.Hidden,
+        onTextChanged = {}
     )
 }
 

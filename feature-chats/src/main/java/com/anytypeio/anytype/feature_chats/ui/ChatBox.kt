@@ -540,24 +540,45 @@ private fun ChatBoxUserInput(
         onValueChange = { newValue ->
 
             val newText = newValue.text
+            val oldText = text.text // Keep a reference to the current text before updating
+            val textLengthDifference = newText.length - oldText.length
 
-            // Adjust spans based on changes in the text
             val updatedSpans = spans.mapNotNull { span ->
-                // Adjust span positions dynamically
-                val newStart = span.start.coerceAtMost(newText.length)
-                val newEnd = span.end.coerceAtMost(newText.length)
+                // Detect the common prefix length
+                val commonPrefixLength = newText.commonPrefixWith(oldText).length
 
-                if (newStart < newEnd) {
+                // Adjust span ranges based on text changes
+                val newStart = when {
+                    // Insertion shifts spans after the insertion point
+                    textLengthDifference > 0 && commonPrefixLength <= span.start -> span.start + textLengthDifference
+                    // Deletion shifts spans after the deletion point
+                    textLengthDifference < 0 && commonPrefixLength <= span.start -> span.start + textLengthDifference
+                    else -> span.start
+                }.coerceAtLeast(0) // Ensure bounds are valid
+
+                val newEnd = when {
+                    // Insertion shifts spans after the insertion point
+                    textLengthDifference > 0 && commonPrefixLength < span.end -> span.end + textLengthDifference
+                    // Deletion shifts spans after the deletion point
+                    textLengthDifference < 0 && commonPrefixLength < span.end -> span.end + textLengthDifference
+                    else -> span.end
+                }.coerceAtLeast(newStart).coerceAtMost(newText.length) // Ensure bounds are valid
+
+                // Log changes for debugging
+                Timber.d("Text length: ${newText.length}, Old interval: ${span.start}, ${span.end}, New interval: $newStart, $newEnd")
+
+                // Remove span if the entire range is deleted or invalid
+                if (newStart < newEnd && newText.substring(newStart, newEnd).isNotBlank()) {
                     span.copy(start = newStart, end = newEnd)
                 } else {
-                    null // Remove invalid spans
+                    Timber.d("Removing span: $span")
+                    null // Remove invalid or deleted spans
                 }
             }
 
             // Notify parent with the updated text and spans
-            onValueChange(
-                newValue, updatedSpans
-            )
+            onValueChange(newValue, updatedSpans)
+
         },
         textStyle = BodyRegular.copy(
             color = colorResource(id = R.color.text_primary)
@@ -596,7 +617,8 @@ class AnnotatedTextTransformation(
     override fun filter(text: AnnotatedString): TransformedText {
         val annotatedString = AnnotatedString.Builder(text).apply {
             spans.forEach { span ->
-                if (span.start in text.indices && span.end in text.indices) {
+                Timber.d("Checking span before render: $span")
+                if (span.start in text.indices && span.end <= text.length) {
                     addStyle(span.style, span.start, span.end)
                 }
             }

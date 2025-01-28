@@ -1,10 +1,6 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import android.net.Uri
-import android.text.Editable
-import android.text.SpannableStringBuilder
-import android.text.TextWatcher
-import android.text.style.UnderlineSpan
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,7 +11,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,24 +22,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,15 +43,12 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.TransformedText
@@ -69,12 +56,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_ui.common.Underline
-import com.anytypeio.anytype.core_ui.common.setMentionSpan
-import com.anytypeio.anytype.core_ui.features.editor.marks
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -84,30 +68,20 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
-import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlin.collections.forEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
-sealed class Effect {
-    data class InsertMention(
-        val name: String,
-        val id: String
-    ) : Effect()
-
-    data object ClearInput : Effect()
-}
-
 @Composable
 fun ChatBox(
     text: TextFieldValue,
-    spans: List<SpanInfo>,
+    spans: List<ChatBoxSpan>,
     mode: ChatBoxMode = ChatBoxMode.Default,
     modifier: Modifier = Modifier,
     chatBoxFocusRequester: FocusRequester,
-    onMessageSent: (String, List<Block.Content.Text.Mark>) -> Unit,
+    onMessageSent: (String, List<ChatBoxSpan>) -> Unit,
     resetScroll: () -> Unit = {},
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     clearText: () -> Unit,
@@ -117,17 +91,13 @@ fun ChatBox(
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
     onExitEditMessageMode: () -> Unit,
-    onValueChange: (TextFieldValue, List<SpanInfo>) -> Unit
+    onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit
 ) {
 
     val uploadMediaLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickMultipleVisualMedia(maxItems = ChatConfig.MAX_ATTACHMENT_COUNT)
     ) {
         onChatBoxMediaPicked(it)
-    }
-
-    var markup by remember {
-        mutableStateOf<List<Block.Content.Text.Mark>>(emptyList())
     }
 
     val uploadFileLauncher = rememberLauncherForActivityResult(
@@ -421,7 +391,6 @@ fun ChatBox(
                 modifier = Modifier
                     .weight(1f)
                     .align(Alignment.Bottom)
-                    .border(width = 0.5.dp, color = colorResource(R.color.palette_system_red))
                     .focusRequester(chatBoxFocusRequester)
             )
             AnimatedVisibility(
@@ -435,7 +404,7 @@ fun ChatBox(
                         .padding(horizontal = 4.dp, vertical = 8.dp)
                         .clip(CircleShape)
                         .clickable {
-                            onMessageSent(text.text, markup)
+                            onMessageSent(text.text, spans)
                             clearText()
                             resetScroll()
                         }
@@ -457,8 +426,8 @@ fun ChatBox(
 private fun ChatBoxUserInput(
     modifier: Modifier,
     text: TextFieldValue,
-    spans: List<SpanInfo>,
-    onValueChange: (TextFieldValue, List<SpanInfo>) -> Unit
+    spans: List<ChatBoxSpan>,
+    onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit
 ) {
     BasicTextField(
         value = text,
@@ -494,7 +463,11 @@ private fun ChatBoxUserInput(
 
                 // Remove span if the entire range is deleted or invalid
                 if (newStart < newEnd && newText.substring(newStart, newEnd).isNotBlank()) {
-                    span.copy(start = newStart, end = newEnd)
+                    when(span) {
+                        is ChatBoxSpan.Mention -> {
+                            span.copy(start = newStart, end = newEnd)
+                        }
+                    }
                 } else {
                     Timber.d("Removing span: $span")
                     null // Remove invalid or deleted spans
@@ -530,14 +503,21 @@ private fun ChatBoxUserInput(
     )
 }
 
-data class SpanInfo(
-    val start: Int,
-    val end: Int,
-    val style: SpanStyle
-)
+sealed class ChatBoxSpan {
+    abstract val start: Int
+    abstract val end: Int
+    abstract val style: SpanStyle
+
+    data class Mention(
+        override val style: SpanStyle,
+        override val start: Int,
+        override val end: Int,
+        val param: Id
+    ) : ChatBoxSpan()
+}
 
 class AnnotatedTextTransformation(
-    private val spans: List<SpanInfo>
+    private val spans: List<ChatBoxSpan>
 ) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val annotatedString = AnnotatedString.Builder(text).apply {

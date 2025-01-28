@@ -127,7 +127,22 @@ fun ChatScreenWrapper(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
                     attachments = vm.chatBoxAttachments.collectAsState().value,
-                    onMessageSent = vm::onMessageSent,
+                    onMessageSent = { text, spans ->
+                        vm.onMessageSent(
+                            msg = text,
+                            markup = spans.map { span ->
+                                when(span) {
+                                    is ChatBoxSpan.Mention -> {
+                                        Block.Content.Text.Mark(
+                                            type = Block.Content.Text.Mark.Type.MENTION,
+                                            param = span.param,
+                                            range = span.start..span.end
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    },
                     onClearAttachmentClicked = vm::onClearAttachmentClicked,
                     lazyListState = lazyListState,
                     onReacted = vm::onReacted,
@@ -226,7 +241,7 @@ fun ChatScreen(
     lazyListState: LazyListState,
     messages: List<ChatView>,
     attachments: List<ChatView.Message.ChatBoxAttachment>,
-    onMessageSent: (String, List<Block.Content.Text.Mark>) -> Unit,
+    onMessageSent: (String, List<ChatBoxSpan>) -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
@@ -246,17 +261,11 @@ fun ChatScreen(
     onMentionClicked: (Id) -> Unit,
     onTextChanged: (TextFieldValue) -> Unit
 ) {
-
-    var effects by remember { mutableStateOf(
-        mutableListOf<Effect>()
-    ) }
-
-    var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(""))
+    var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue())
     }
 
-    var text by remember { mutableStateOf(TextFieldValue()) }
-    var spans by remember { mutableStateOf<List<SpanInfo>>(emptyList()) }
+    var spans by remember { mutableStateOf<List<ChatBoxSpan>>(emptyList()) }
 
     val chatBoxFocusRequester = FocusRequester()
 
@@ -286,7 +295,7 @@ fun ChatScreen(
                 onAttachmentClicked = onAttachmentClicked,
                 onEditMessage = { msg ->
                     onEditMessage(msg).also {
-                        textState = TextFieldValue(
+                        text = TextFieldValue(
                             msg.content.msg,
                             selection = TextRange(msg.content.msg.length)
                         )
@@ -369,12 +378,13 @@ fun ChatScreen(
                                                 start + member.name.length
                                             )
                                         )
-                                        spans = spans + SpanInfo(
+                                        spans = spans + ChatBoxSpan.Mention(
                                             start = start - 1,
                                             end = start - 1 + member.name.length,
                                             style = SpanStyle(
                                                 textDecoration = TextDecoration.Underline
-                                            )
+                                            ),
+                                            param = member.id
                                         )
                                         onTextChanged(
                                             text
@@ -396,9 +406,6 @@ fun ChatScreen(
             chatBoxFocusRequester = chatBoxFocusRequester,
             onMessageSent = { text, markup ->
                 onMessageSent(text, markup)
-                effects = mutableListOf(
-                    Effect.ClearInput
-                )
             },
             resetScroll = {
                 if (lazyListState.firstVisibleItemScrollOffset > 0) {

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -285,7 +286,9 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onMessageSent(msg: String, markup: List<Block.Content.Text.Mark>) {
-        Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
+        if (BuildConfig.DEBUG) {
+            Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
+        }
         viewModelScope.launch {
             val attachments = buildList {
                 chatBoxAttachments.value.forEach { attachment ->

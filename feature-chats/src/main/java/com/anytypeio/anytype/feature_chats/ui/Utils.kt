@@ -18,12 +18,18 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.feature_chats.R
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,45 +64,34 @@ fun DefaultHintDecorationBox(
     )
 }
 
-@Composable
-fun DiscussionTitle(
-    title: String?,
-    onTitleChanged: (String) -> Unit = {},
-    onFocusChanged: (Boolean) -> Unit = {}
-) {
-    var lastFocusState by remember { mutableStateOf(false) }
-    BasicTextField(
-        textStyle = HeadlineTitle.copy(
-            color = colorResource(id = R.color.text_primary)
-        ),
-        value = title.orEmpty(),
-        onValueChange = {
-            onTitleChanged(it)
-        },
-        modifier = Modifier
-            .padding(
-                top = 24.dp,
-                start = 20.dp,
-                end = 20.dp,
-                bottom = 8.dp
-            )
-            .onFocusChanged { state ->
-                if (lastFocusState != state.isFocused) {
-                    onFocusChanged(state.isFocused)
+class AnnotatedTextTransformation(
+    private val spans: List<ChatBoxSpan>
+) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val annotatedString = AnnotatedString.Builder(text).apply {
+            spans.forEach { span ->
+                if (span.start in text.indices && span.end <= text.length) {
+                    addStyle(span.style, span.start, span.end)
                 }
-                lastFocusState = state.isFocused
             }
-        ,
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Done
-        ),
-        decorationBox = @Composable { innerTextField ->
-            DefaultHintDecorationBox(
-                hint = stringResource(id = R.string.untitled),
-                text = title.orEmpty(),
-                innerTextField = innerTextField,
-                textStyle = HeadlineTitle
-            )
-        }
-    )
+        }.toAnnotatedString()
+
+        return TransformedText(annotatedString, offsetMapping = OffsetMapping.Identity)
+    }
 }
+
+sealed class ChatBoxSpan {
+    abstract val start: Int
+    abstract val end: Int
+    abstract val style: SpanStyle
+
+    data class Mention(
+        override val style: SpanStyle,
+        override val start: Int,
+        override val end: Int,
+        val param: Id
+    ) : ChatBoxSpan()
+}
+
+const val DEFAULT_MENTION_SPAN_TAG = "@-mention"
+const val DEFAULT_MENTION_LINK_TAG = "link"

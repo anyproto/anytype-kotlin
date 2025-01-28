@@ -13,7 +13,7 @@ fun String.splitByMarks(
 
     // Populate the style map with styles for each index in the ranges
     for (styledRange in marks) {
-        for (index in styledRange.range) {
+        for (index in styledRange.range.first until styledRange.range.last) {
             if (index in indices) {
                 // Add the style to the current index, initializing the list if needed
                 styleMap.computeIfAbsent(index) { mutableListOf() }.add(styledRange)
@@ -27,7 +27,6 @@ fun String.splitByMarks(
     while (currentIndex < length) {
         // Get the styles at the current index (or an empty list if none)
         val stylesAtCurrentIndex = styleMap[currentIndex] ?: emptyList()
-
 
         // Find the extent of this style group (i.e., where styles change)
         var endIndex = currentIndex

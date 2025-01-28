@@ -47,18 +47,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -432,7 +425,6 @@ private fun ChatBoxUserInput(
     BasicTextField(
         value = text,
         onValueChange = { newValue ->
-
             val newText = newValue.text
             val oldText = text.text // Keep a reference to the current text before updating
             val textLengthDifference = newText.length - oldText.length
@@ -501,34 +493,4 @@ private fun ChatBoxUserInput(
         },
         visualTransformation = AnnotatedTextTransformation(spans)
     )
-}
-
-sealed class ChatBoxSpan {
-    abstract val start: Int
-    abstract val end: Int
-    abstract val style: SpanStyle
-
-    data class Mention(
-        override val style: SpanStyle,
-        override val start: Int,
-        override val end: Int,
-        val param: Id
-    ) : ChatBoxSpan()
-}
-
-class AnnotatedTextTransformation(
-    private val spans: List<ChatBoxSpan>
-) : VisualTransformation {
-    override fun filter(text: AnnotatedString): TransformedText {
-        val annotatedString = AnnotatedString.Builder(text).apply {
-            spans.forEach { span ->
-                Timber.d("Checking span before render: $span")
-                if (span.start in text.indices && span.end <= text.length) {
-                    addStyle(span.style, span.start, span.end)
-                }
-            }
-        }.toAnnotatedString()
-
-        return TransformedText(annotatedString, offsetMapping = OffsetMapping.Identity)
-    }
 }

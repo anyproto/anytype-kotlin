@@ -358,28 +358,34 @@ fun ChatScreen(
                                         val start = text.selection.start
                                         val end = text.selection.end
                                         val input = text.text
+
+                                        val adjustedStart = (start - 1).coerceAtLeast(0)
+
+                                        val replacementText = member.name + " "
                                         val updatedText = input.replaceRange(
-                                            startIndex = start - 1,
+                                            startIndex = adjustedStart,
                                             endIndex = end,
-                                            replacement = member.name + " "
+                                            replacement = replacementText
                                         )
+
                                         text = text.copy(
                                             text = updatedText,
                                             selection = TextRange(
-                                                start + member.name.length
-                                            )
+                                                index = (adjustedStart + replacementText.length))
                                         )
-                                        spans = spans + ChatBoxSpan.Mention(
-                                            start = start - 1,
-                                            end = start - 1 + member.name.length,
+
+                                        val mentionSpan = ChatBoxSpan.Mention(
+                                            start = adjustedStart,
+                                            end = adjustedStart + member.name.length,
                                             style = SpanStyle(
                                                 textDecoration = TextDecoration.Underline
                                             ),
                                             param = member.id
                                         )
-                                        onTextChanged(
-                                            text
-                                        )
+
+                                        spans = spans + mentionSpan
+
+                                        onTextChanged(text)
                                     }
                             )
                             Divider()

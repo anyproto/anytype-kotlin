@@ -73,6 +73,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
@@ -225,7 +226,7 @@ fun ChatScreen(
     lazyListState: LazyListState,
     messages: List<ChatView>,
     attachments: List<ChatView.Message.ChatBoxAttachment>,
-    onMessageSent: (String) -> Unit,
+    onMessageSent: (String, List<Block.Content.Text.Mark>) -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
@@ -247,7 +248,7 @@ fun ChatScreen(
 ) {
 
     var effects by remember { mutableStateOf(
-        listOf<Effect>()
+        mutableListOf<Effect>()
     ) }
 
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
@@ -351,7 +352,7 @@ fun ChatScreen(
                                     .padding(16.dp)
                                     .fillMaxWidth()
                                     .noRippleClickable {
-                                        effects = listOf(
+                                        effects = mutableListOf(
                                             Effect.InsertMention(
                                                 name = member.name,
                                                 id = member.id

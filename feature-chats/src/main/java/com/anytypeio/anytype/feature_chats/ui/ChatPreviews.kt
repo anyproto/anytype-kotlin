@@ -103,7 +103,7 @@ fun ChatScreenPreview() {
                 )
             }
         }.reversed(),
-        onMessageSent = {},
+        onMessageSent = { a, b -> },
         attachments = emptyList(),
         onClearAttachmentClicked = {},
         lazyListState = LazyListState(),

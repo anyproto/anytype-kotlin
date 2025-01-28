@@ -65,8 +65,10 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_ui.common.Underline
 import com.anytypeio.anytype.core_ui.common.setMentionSpan
+import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -92,12 +94,12 @@ sealed class Effect {
 
 @Composable
 fun ChatBox(
-    effects: List<Effect> = emptyList(),
+    effects: MutableList<Effect> = mutableListOf(),
     mode: ChatBoxMode = ChatBoxMode.Default,
     modifier: Modifier = Modifier,
     chatBoxFocusRequester: FocusRequester,
     textState: TextFieldValue,
-    onMessageSent: (String) -> Unit = {},
+    onMessageSent: (String, List<Block.Content.Text.Mark>) -> Unit,
     resetScroll: () -> Unit = {},
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     clearText: () -> Unit,
@@ -115,6 +117,10 @@ fun ChatBox(
         ActivityResultContracts.PickMultipleVisualMedia(maxItems = ChatConfig.MAX_ATTACHMENT_COUNT)
     ) {
         onChatBoxMediaPicked(it)
+    }
+
+    var markup by remember {
+        mutableStateOf<List<Block.Content.Text.Mark>>(emptyList())
     }
 
     val uploadFileLauncher = rememberLauncherForActivityResult(
@@ -432,9 +438,12 @@ fun ChatBox(
                                         // Do nothing.
                                     }
 
-                                    override fun afterTextChanged(s: Editable?) {
+                                    override fun afterTextChanged(s: Editable) {
                                         // Do nothing.
                                         Timber.d("After text changed: ${s}")
+                                        Timber.d("Markup before extraction: ${markup}")
+                                        markup = s.markup()
+                                        Timber.d("Markup after extraction: ${markup}")
                                     }
 
                                     override fun onTextChanged(
@@ -449,13 +458,15 @@ fun ChatBox(
                                     }
                                 }
                             )
+                            requestFocus()
                         }
                     },
                     update = { view ->
-                        view.requestFocus()
                         effects.forEach { effect ->
                             view.setEffect(effect)
                         }
+                        effects.clear()
+                        markup = view.text?.markup() ?: emptyList()
                     }
                 )
             }
@@ -486,7 +497,7 @@ fun ChatBox(
                         .padding(horizontal = 4.dp, vertical = 8.dp)
                         .clip(CircleShape)
                         .clickable {
-                            onMessageSent(textState.text)
+                            onMessageSent(textState.text, markup)
                             clearText()
                             resetScroll()
                         }
@@ -538,32 +549,5 @@ private fun ChatBoxUserInput(
                 textStyle = BodyRegular.copy(color = colorResource(R.color.text_tertiary))
             )
         }
-    )
-}
-
-private fun <T> List<AnnotatedString.Range<T>>.mapMoving(pointer: Int, offset: Int): List<AnnotatedString.Range<T>> {
-    return mapNotNull {
-        if (it.end >= pointer || it.start >= pointer) {
-            AnnotatedString.Range(
-                item = it.item,
-                start = if (it.start >= pointer) (it.start + offset) else it.start,
-                end = if (it.end >= pointer) (it.end + offset) else it.end
-            ).let { range ->
-                if (range.start == range.end) null else range
-            }
-        } else it
-    }
-}
-
-fun differ(value: TextFieldValue, newValue: TextFieldValue): TextFieldValue {
-    val pointer = if (value.selection.reversed) value.selection.end else value.selection.start
-    val lengthDifference = newValue.text.length - value.text.length
-    return TextFieldValue(
-        annotatedString = AnnotatedString(
-            text = newValue.text,
-            spanStyles = value.annotatedString.spanStyles.mapMoving(pointer, lengthDifference),
-            paragraphStyles = value.annotatedString.paragraphStyles.mapMoving(pointer, lengthDifference),
-        ),
-        selection = newValue.selection
     )
 }

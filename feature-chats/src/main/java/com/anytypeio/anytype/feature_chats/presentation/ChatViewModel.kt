@@ -299,8 +299,8 @@ class ChatViewModel @Inject constructor(
         return previousChar == '@'
     }
 
-    fun onMessageSent(msg: String) {
-        Timber.d("DROID-2635 OnMessageSent: $msg")
+    fun onMessageSent(msg: String, markup: List<Block.Content.Text.Mark>) {
+        Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         viewModelScope.launch {
             val attachments = buildList {
                 chatBoxAttachments.value.forEach { attachment ->
@@ -364,7 +364,8 @@ class ChatViewModel @Inject constructor(
                             chat = vmParams.ctx,
                             message = Chat.Message.new(
                                 text = msg,
-                                attachments = attachments
+                                attachments = attachments,
+                                marks = markup
                             )
                         )
                     ).onSuccess { (id, payload) ->
@@ -406,7 +407,8 @@ class ChatViewModel @Inject constructor(
                             message = Chat.Message.new(
                                 text = msg,
                                 replyToMessageId = mode.msg,
-                                attachments = attachments
+                                attachments = attachments,
+                                marks = markup
                             )
                         )
                     ).onSuccess { (id, payload) ->

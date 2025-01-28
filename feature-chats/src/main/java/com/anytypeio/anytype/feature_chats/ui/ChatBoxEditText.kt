@@ -5,9 +5,6 @@ import android.text.Editable
 import android.text.style.UnderlineSpan
 import androidx.appcompat.widget.AppCompatEditText
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_ui.common.Span
-import com.anytypeio.anytype.core_ui.common.Underline
-import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 
 class ChatBoxEditText : AppCompatEditText {
@@ -36,6 +33,9 @@ class ChatBoxEditText : AppCompatEditText {
                     start + effect.name.length,
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
+            }
+            is Effect.ClearInput -> {
+                editableText.clear()
             }
         }
     }

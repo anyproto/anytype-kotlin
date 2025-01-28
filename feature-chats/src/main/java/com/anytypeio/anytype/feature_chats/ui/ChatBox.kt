@@ -39,10 +39,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,9 +59,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -90,10 +96,14 @@ sealed class Effect {
         val name: String,
         val id: String
     ) : Effect()
+
+    data object ClearInput : Effect()
 }
 
 @Composable
 fun ChatBox(
+    text: TextFieldValue,
+    spans: List<SpanInfo>,
     effects: MutableList<Effect> = mutableListOf(),
     mode: ChatBoxMode = ChatBoxMode.Default,
     modifier: Modifier = Modifier,
@@ -110,7 +120,8 @@ fun ChatBox(
     onClearReplyClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
-    onExitEditMessageMode: () -> Unit
+    onExitEditMessageMode: () -> Unit,
+    onValueChange: (TextFieldValue, List<SpanInfo>) -> Unit
 ) {
 
     val uploadMediaLauncher = rememberLauncherForActivityResult(
@@ -121,6 +132,10 @@ fun ChatBox(
 
     var markup by remember {
         mutableStateOf<List<Block.Content.Text.Mark>>(emptyList())
+    }
+
+    var initialInput by remember {
+        mutableStateOf("")
     }
 
     val uploadFileLauncher = rememberLauncherForActivityResult(
@@ -407,87 +422,84 @@ fun ChatBox(
                     }
                 }
             }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .align(Alignment.Bottom)
-                    .border(width = 0.5.dp, color = colorResource(R.color.palette_system_blue))
-                    .padding(bottom = 4.dp, top = 4.dp)
-                ,
-
-            ) {
-                AndroidView(
-                    modifier = Modifier
-                        .padding(
-                            start = 4.dp,
-                            end = 4.dp
-                        )
-                        .border(width = 0.5.dp, color = colorResource(R.color.palette_system_red))
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                        .align(Alignment.BottomStart)
-                    ,
-                    factory = { context ->
-                        ChatBoxEditText(context).apply {
-                            addTextChangedListener(
-                                object : TextWatcher {
-
-                                    override fun beforeTextChanged(
-                                        s: CharSequence?, start: Int, count: Int, after: Int
-                                    ) {
-                                        // Do nothing.
-                                    }
-
-                                    override fun afterTextChanged(s: Editable) {
-                                        // Do nothing.
-                                        Timber.d("After text changed: ${s}")
-                                        Timber.d("Markup before extraction: ${markup}")
-                                        markup = s.markup()
-                                        Timber.d("Markup after extraction: ${markup}")
-                                    }
-
-                                    override fun onTextChanged(
-                                        s: CharSequence, start: Int, before: Int, count: Int
-                                    ) {
-                                        updateValue(
-                                            TextFieldValue(
-                                                text = s.toString(),
-                                                selection = TextRange(start.inc())
-                                            )
-                                        )
-                                    }
-                                }
-                            )
-                            requestFocus()
-                        }
-                    },
-                    update = { view ->
-                        effects.forEach { effect ->
-                            view.setEffect(effect)
-                        }
-                        effects.clear()
-                        markup = view.text?.markup() ?: emptyList()
-                    }
-                )
-            }
-//            ChatBoxUserInput(
-//                textState = textState,
-//                onTextChanged = { value ->
-//                    val annotations = value.annotatedString.getLinkAnnotations(
-//                        start = 0,
-//                        end = value.text.length
-//                    )
-//                    Timber.d("onComposeTextChanged, annotations: $annotations")
-//                    updateValue(value)
-//                },
+//            Box(
 //                modifier = Modifier
 //                    .weight(1f)
 //                    .align(Alignment.Bottom)
-//                    .border(width = 0.5.dp, color = colorResource(R.color.palette_system_red))
-//                    .focusRequester(chatBoxFocusRequester)
-//            )
+//                    .border(width = 0.5.dp, color = colorResource(R.color.palette_system_blue))
+//                    .padding(bottom = 4.dp, top = 4.dp)
+//            ) {
+//                AndroidView(
+//                    modifier = Modifier
+//                        .padding(
+//                            start = 4.dp,
+//                            end = 4.dp
+//                        )
+//                        .border(width = 0.5.dp, color = colorResource(R.color.palette_system_red))
+//                        .wrapContentHeight()
+//                        .fillMaxWidth()
+//                        .align(Alignment.BottomStart)
+//
+//                    ,
+//                    factory = { context ->
+//                        ChatBoxEditText(context).apply {
+//                            setOnClickListener {
+//                                requestFocus()
+//                            }
+//                            text = SpannableStringBuilder(initialInput)
+//                            addTextChangedListener(
+//                                object : TextWatcher {
+//
+//                                    override fun beforeTextChanged(
+//                                        s: CharSequence?, start: Int, count: Int, after: Int
+//                                    ) {
+//                                        // Do nothing.
+//                                    }
+//
+//                                    override fun afterTextChanged(s: Editable) {
+//                                        // Do nothing.
+//                                        Timber.d("After text changed: ${s}")
+//                                        Timber.d("Markup before extraction: ${markup}")
+//                                        markup = s.markup()
+//                                        Timber.d("Markup after extraction: ${markup}")
+//                                    }
+//
+//                                    override fun onTextChanged(
+//                                        s: CharSequence, start: Int, before: Int, count: Int
+//                                    ) {
+//                                        updateValue(
+//                                            TextFieldValue(
+//                                                text = s.toString(),
+//                                                selection = TextRange(start.inc())
+//                                            )
+//                                        )
+//                                    }
+//                                }
+//                            )
+//                        }
+//                    },
+//                    update = { view ->
+//                        view.requestFocus()
+//                        effects.forEach { effect ->
+//                            view.setEffect(effect)
+//                        }
+//                        effects.clear()
+//                        markup = view.text?.markup() ?: emptyList()
+//                    }
+//                )
+//            }
+            ChatBoxUserInput(
+                text = text,
+                spans = spans,
+                onValueChange = onValueChange,
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.Bottom)
+                    .border(width = 0.5.dp, color = colorResource(R.color.palette_system_red))
+                    .focusRequester(chatBoxFocusRequester)
+            )
             AnimatedVisibility(
-                visible = attachments.isNotEmpty() || textState.text.isNotEmpty(),
+                visible = attachments.isNotEmpty() || text.text.isNotEmpty(),
                 exit = fadeOut() + scaleOut(),
                 enter = fadeIn() + scaleIn(),
                 modifier = Modifier.align(Alignment.Bottom)
@@ -500,6 +512,7 @@ fun ChatBox(
                             onMessageSent(textState.text, markup)
                             clearText()
                             resetScroll()
+                            initialInput = ""
                         }
                 ) {
                     Image(
@@ -518,16 +531,34 @@ fun ChatBox(
 @Composable
 private fun ChatBoxUserInput(
     modifier: Modifier,
-    textState: TextFieldValue,
-    onTextChanged: (TextFieldValue) -> Unit,
+    text: TextFieldValue,
+    spans: List<SpanInfo>,
+    onValueChange: (TextFieldValue, List<SpanInfo>) -> Unit
 ) {
-    Timber.d("Setting text state: $textState, annotated string: ${textState.annotatedString}, annotations: ${textState.annotatedString.getLinkAnnotations(
-        start = 0, 
-        textState.text.length
-    )}")
     BasicTextField(
-        value = textState,
-        onValueChange = { onTextChanged(it) },
+        value = text,
+        onValueChange = { newValue ->
+
+            val newText = newValue.text
+
+            // Adjust spans based on changes in the text
+            val updatedSpans = spans.mapNotNull { span ->
+                // Adjust span positions dynamically
+                val newStart = span.start.coerceAtMost(newText.length)
+                val newEnd = span.end.coerceAtMost(newText.length)
+
+                if (newStart < newEnd) {
+                    span.copy(start = newStart, end = newEnd)
+                } else {
+                    null // Remove invalid spans
+                }
+            }
+
+            // Notify parent with the updated text and spans
+            onValueChange(
+                newValue, updatedSpans
+            )
+        },
         textStyle = BodyRegular.copy(
             color = colorResource(id = R.color.text_primary)
         ),
@@ -543,11 +574,34 @@ private fun ChatBoxUserInput(
         maxLines = 5,
         decorationBox = @Composable { innerTextField ->
             DefaultHintDecorationBox(
-                text = textState.text,
+                text = text.text,
                 hint = stringResource(R.string.write_a_message),
                 innerTextField = innerTextField,
                 textStyle = BodyRegular.copy(color = colorResource(R.color.text_tertiary))
             )
-        }
+        },
+        visualTransformation = AnnotatedTextTransformation(spans)
     )
+}
+
+data class SpanInfo(
+    val start: Int,
+    val end: Int,
+    val style: SpanStyle
+)
+
+class AnnotatedTextTransformation(
+    private val spans: List<SpanInfo>
+) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val annotatedString = AnnotatedString.Builder(text).apply {
+            spans.forEach { span ->
+                if (span.start in text.indices && span.end in text.indices) {
+                    addStyle(span.style, span.start, span.end)
+                }
+            }
+        }.toAnnotatedString()
+
+        return TransformedText(annotatedString, offsetMapping = OffsetMapping.Identity)
+    }
 }

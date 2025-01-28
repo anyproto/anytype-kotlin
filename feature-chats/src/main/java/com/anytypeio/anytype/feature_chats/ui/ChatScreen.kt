@@ -255,6 +255,9 @@ fun ChatScreen(
         mutableStateOf(TextFieldValue(""))
     }
 
+    var text by remember { mutableStateOf(TextFieldValue()) }
+    var spans by remember { mutableStateOf<List<SpanInfo>>(emptyList()) }
+
     val chatBoxFocusRequester = FocusRequester()
 
     val scope = rememberCoroutineScope()
@@ -352,13 +355,29 @@ fun ChatScreen(
                                     .padding(16.dp)
                                     .fillMaxWidth()
                                     .noRippleClickable {
-                                        effects = mutableListOf(
-                                            Effect.InsertMention(
-                                                name = member.name,
-                                                id = member.id
+                                        val start = text.selection.start
+                                        val end = text.selection.end
+                                        val input = text.text
+                                        val updatedText = input.replaceRange(
+                                            startIndex = start - 1,
+                                            endIndex = end,
+                                            replacement = member.name + " "
+                                        )
+                                        text = text.copy(
+                                            text = updatedText,
+                                            selection = TextRange(
+                                                start + member.name.length
                                             )
                                         )
-
+                                        spans = listOf(
+                                            SpanInfo(
+                                                start = start - 1,
+                                                end = start - 1 + member.name.length,
+                                                style = SpanStyle(
+                                                    textDecoration = TextDecoration.Underline
+                                                )
+                                            )
+                                        )
                                     }
                                 ,
                                 text = member.name
@@ -375,7 +394,12 @@ fun ChatScreen(
                 .navigationBarsPadding(),
             chatBoxFocusRequester = chatBoxFocusRequester,
             textState = textState,
-            onMessageSent = onMessageSent,
+            onMessageSent = { text, markup ->
+                onMessageSent(text, markup)
+                effects = mutableListOf(
+                    Effect.ClearInput
+                )
+            },
             resetScroll = {
                 if (lazyListState.firstVisibleItemScrollOffset > 0) {
                     scope.launch {
@@ -389,7 +413,7 @@ fun ChatScreen(
                 textState = it
             },
             clearText = {
-                textState = TextFieldValue()
+                text = TextFieldValue()
             },
             onAttachObjectClicked = onAttachObjectClicked,
             onClearAttachmentClicked = onClearAttachmentClicked,
@@ -398,13 +422,22 @@ fun ChatScreen(
             onChatBoxFilePicked = onChatBoxFilePicked,
             onExitEditMessageMode = {
                 onExitEditMessageMode().also {
-                    textState = TextFieldValue()
+                    text = TextFieldValue()
                 }
             },
             effects = effects,
             onEditableChanged = {
                 // TODO
-            }
+            },
+            onValueChange = { t, s ->
+                text = t
+                spans = s
+                onTextChanged(
+                    t
+                )
+            },
+            text = text,
+            spans = spans
         )
     }
 }

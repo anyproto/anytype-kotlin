@@ -93,3 +93,6 @@ sealed class ChatBoxSpan {
         val param: Id
     ) : ChatBoxSpan()
 }
+
+const val DEFAULT_MENTION_SPAN_TAG = "@-mention"
+const val DEFAULT_MENTION_LINK_TAG = "link"

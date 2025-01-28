@@ -68,6 +68,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -348,9 +349,10 @@ fun ChatScreen(
                             items = mentionPanelState.results,
                             key = { member -> member.id }
                         ) { member ->
-                            Text(
+                            ChatMemberItem(
+                                name = member.name,
+                                icon = member.icon,
                                 modifier = Modifier
-                                    .padding(16.dp)
                                     .fillMaxWidth()
                                     .noRippleClickable {
                                         val start = text.selection.start
@@ -379,10 +381,8 @@ fun ChatScreen(
                                             text
                                         )
                                     }
-                                ,
-                                text = member.name,
-                                color = colorResource(R.color.text_primary)
                             )
+                            Divider()
                         }
                     }
                 }

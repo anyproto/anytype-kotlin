@@ -262,7 +262,6 @@ class ChatViewModel @Inject constructor(
         selection: IntRange,
         text: String
     ) {
-        Timber.d("onTextChanged: ${text}, selection: $selection")
         if (isMentionTriggered(text, selection.start)) {
             mentionPanelState.value = MentionPanelState.Visible(
                 results = members.get().let { store ->

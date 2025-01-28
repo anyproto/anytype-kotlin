@@ -285,19 +285,6 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
-        // Ensure selectionStart is valid and not out of bounds
-        if (selectionStart <= 0 || selectionStart > text.length) {
-            return false
-        }
-
-        // Check the character before the cursor position
-        val previousChar = text[selectionStart - 1]
-
-        // Trigger mention if the previous character is '@'
-        return previousChar == '@'
-    }
-
     fun onMessageSent(msg: String, markup: List<Block.Content.Text.Mark>) {
         Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         viewModelScope.launch {
@@ -636,6 +623,19 @@ class ChatViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    private fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
+        // Ensure selectionStart is valid and not out of bounds
+        if (selectionStart <= 0 || selectionStart > text.length) {
+            return false
+        }
+
+        // Check the character before the cursor position
+        val previousChar = text[selectionStart - 1]
+
+        // Trigger mention if the previous character is '@'
+        return previousChar == '@'
     }
 
     sealed class ViewModelCommand {

@@ -82,6 +82,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
+import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontIBM
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
@@ -391,7 +392,8 @@ fun ChatScreen(
                                         )
                                     }
                                 ,
-                                text = member.name
+                                text = member.name,
+                                color = colorResource(R.color.text_primary)
                             )
                         }
                     }

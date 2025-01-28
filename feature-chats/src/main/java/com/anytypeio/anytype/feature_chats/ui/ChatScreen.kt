@@ -54,10 +54,19 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -68,9 +77,11 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
+import com.anytypeio.anytype.core_ui.views.fontIBM
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.feature_chats.R
@@ -80,6 +91,7 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMod
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -233,6 +245,11 @@ fun ChatScreen(
     onMentionClicked: (Id) -> Unit,
     onTextChanged: (TextFieldValue) -> Unit
 ) {
+
+    var effects by remember { mutableStateOf(
+        listOf<Effect>()
+    ) }
+
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
     }
@@ -328,10 +345,22 @@ fun ChatScreen(
                         items(
                             items = mentionPanelState.results,
                             key = { member -> member.id }
-                        ) {
+                        ) { member ->
                             Text(
-                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                                text = it.toString()
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth()
+                                    .noRippleClickable {
+                                        effects = listOf(
+                                            Effect.InsertMention(
+                                                name = member.name,
+                                                id = member.id
+                                            )
+                                        )
+
+                                    }
+                                ,
+                                text = member.name
                             )
                         }
                     }
@@ -370,6 +399,10 @@ fun ChatScreen(
                 onExitEditMessageMode().also {
                     textState = TextFieldValue()
                 }
+            },
+            effects = effects,
+            onEditableChanged = {
+                // TODO
             }
         )
     }

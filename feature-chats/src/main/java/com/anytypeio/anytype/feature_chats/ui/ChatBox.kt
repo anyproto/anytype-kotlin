@@ -1,6 +1,10 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import android.net.Uri
+import android.text.Editable
+import android.text.SpannableStringBuilder
+import android.text.TextWatcher
+import android.text.style.UnderlineSpan
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,6 +15,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +27,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,16 +51,22 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.core_ui.common.Underline
+import com.anytypeio.anytype.core_ui.common.setMentionSpan
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -64,12 +76,23 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlin.collections.forEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
+
+
+sealed class Effect {
+    data class InsertMention(
+        val name: String,
+        val id: String
+    ) : Effect()
+}
 
 @Composable
 fun ChatBox(
+    effects: List<Effect> = emptyList(),
     mode: ChatBoxMode = ChatBoxMode.Default,
     modifier: Modifier = Modifier,
     chatBoxFocusRequester: FocusRequester,
@@ -79,6 +102,7 @@ fun ChatBox(
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     clearText: () -> Unit,
     updateValue: (TextFieldValue) -> Unit,
+    onEditableChanged: (Editable) -> Unit,
     onAttachObjectClicked: () -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
@@ -377,16 +401,80 @@ fun ChatBox(
                     }
                 }
             }
-            ChatBoxUserInput(
-                textState = textState,
-                onTextChanged = { value ->
-                    updateValue(value)
-                },
+            Box(
                 modifier = Modifier
                     .weight(1f)
                     .align(Alignment.Bottom)
-                    .focusRequester(chatBoxFocusRequester)
-            )
+                    .border(width = 0.5.dp, color = colorResource(R.color.palette_system_blue))
+                    .padding(bottom = 4.dp, top = 4.dp)
+                ,
+
+            ) {
+                AndroidView(
+                    modifier = Modifier
+                        .padding(
+                            start = 4.dp,
+                            end = 4.dp
+                        )
+                        .border(width = 0.5.dp, color = colorResource(R.color.palette_system_red))
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .align(Alignment.BottomStart)
+                    ,
+                    factory = { context ->
+                        ChatBoxEditText(context).apply {
+                            addTextChangedListener(
+                                object : TextWatcher {
+
+                                    override fun beforeTextChanged(
+                                        s: CharSequence?, start: Int, count: Int, after: Int
+                                    ) {
+                                        // Do nothing.
+                                    }
+
+                                    override fun afterTextChanged(s: Editable?) {
+                                        // Do nothing.
+                                        Timber.d("After text changed: ${s}")
+                                    }
+
+                                    override fun onTextChanged(
+                                        s: CharSequence, start: Int, before: Int, count: Int
+                                    ) {
+                                        updateValue(
+                                            TextFieldValue(
+                                                text = s.toString(),
+                                                selection = TextRange(start.inc())
+                                            )
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    },
+                    update = { view ->
+                        view.requestFocus()
+                        effects.forEach { effect ->
+                            view.setEffect(effect)
+                        }
+                    }
+                )
+            }
+//            ChatBoxUserInput(
+//                textState = textState,
+//                onTextChanged = { value ->
+//                    val annotations = value.annotatedString.getLinkAnnotations(
+//                        start = 0,
+//                        end = value.text.length
+//                    )
+//                    Timber.d("onComposeTextChanged, annotations: $annotations")
+//                    updateValue(value)
+//                },
+//                modifier = Modifier
+//                    .weight(1f)
+//                    .align(Alignment.Bottom)
+//                    .border(width = 0.5.dp, color = colorResource(R.color.palette_system_red))
+//                    .focusRequester(chatBoxFocusRequester)
+//            )
             AnimatedVisibility(
                 visible = attachments.isNotEmpty() || textState.text.isNotEmpty(),
                 exit = fadeOut() + scaleOut(),
@@ -422,6 +510,10 @@ private fun ChatBoxUserInput(
     textState: TextFieldValue,
     onTextChanged: (TextFieldValue) -> Unit,
 ) {
+    Timber.d("Setting text state: $textState, annotated string: ${textState.annotatedString}, annotations: ${textState.annotatedString.getLinkAnnotations(
+        start = 0, 
+        textState.text.length
+    )}")
     BasicTextField(
         value = textState,
         onValueChange = { onTextChanged(it) },
@@ -446,5 +538,32 @@ private fun ChatBoxUserInput(
                 textStyle = BodyRegular.copy(color = colorResource(R.color.text_tertiary))
             )
         }
+    )
+}
+
+private fun <T> List<AnnotatedString.Range<T>>.mapMoving(pointer: Int, offset: Int): List<AnnotatedString.Range<T>> {
+    return mapNotNull {
+        if (it.end >= pointer || it.start >= pointer) {
+            AnnotatedString.Range(
+                item = it.item,
+                start = if (it.start >= pointer) (it.start + offset) else it.start,
+                end = if (it.end >= pointer) (it.end + offset) else it.end
+            ).let { range ->
+                if (range.start == range.end) null else range
+            }
+        } else it
+    }
+}
+
+fun differ(value: TextFieldValue, newValue: TextFieldValue): TextFieldValue {
+    val pointer = if (value.selection.reversed) value.selection.end else value.selection.start
+    val lengthDifference = newValue.text.length - value.text.length
+    return TextFieldValue(
+        annotatedString = AnnotatedString(
+            text = newValue.text,
+            spanStyles = value.annotatedString.spanStyles.mapMoving(pointer, lengthDifference),
+            paragraphStyles = value.annotatedString.paragraphStyles.mapMoving(pointer, lengthDifference),
+        ),
+        selection = newValue.selection
     )
 }

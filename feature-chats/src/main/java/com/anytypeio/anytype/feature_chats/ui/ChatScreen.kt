@@ -369,14 +369,15 @@ fun ChatScreen(
                                                 start + member.name.length
                                             )
                                         )
-                                        spans = listOf(
-                                            SpanInfo(
-                                                start = start - 1,
-                                                end = start - 1 + member.name.length,
-                                                style = SpanStyle(
-                                                    textDecoration = TextDecoration.Underline
-                                                )
+                                        spans = spans + SpanInfo(
+                                            start = start - 1,
+                                            end = start - 1 + member.name.length,
+                                            style = SpanStyle(
+                                                textDecoration = TextDecoration.Underline
                                             )
+                                        )
+                                        onTextChanged(
+                                            text
                                         )
                                     }
                                 ,
@@ -393,7 +394,6 @@ fun ChatScreen(
                 .imePadding()
                 .navigationBarsPadding(),
             chatBoxFocusRequester = chatBoxFocusRequester,
-            textState = textState,
             onMessageSent = { text, markup ->
                 onMessageSent(text, markup)
                 effects = mutableListOf(
@@ -408,10 +408,6 @@ fun ChatScreen(
                 }
             },
             attachments = attachments,
-            updateValue = {
-                onTextChanged(it)
-                textState = it
-            },
             clearText = {
                 text = TextFieldValue()
             },
@@ -424,10 +420,6 @@ fun ChatScreen(
                 onExitEditMessageMode().also {
                     text = TextFieldValue()
                 }
-            },
-            effects = effects,
-            onEditableChanged = {
-                // TODO
             },
             onValueChange = { t, s ->
                 text = t

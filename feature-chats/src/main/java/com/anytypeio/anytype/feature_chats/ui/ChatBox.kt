@@ -104,17 +104,13 @@ sealed class Effect {
 fun ChatBox(
     text: TextFieldValue,
     spans: List<SpanInfo>,
-    effects: MutableList<Effect> = mutableListOf(),
     mode: ChatBoxMode = ChatBoxMode.Default,
     modifier: Modifier = Modifier,
     chatBoxFocusRequester: FocusRequester,
-    textState: TextFieldValue,
     onMessageSent: (String, List<Block.Content.Text.Mark>) -> Unit,
     resetScroll: () -> Unit = {},
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     clearText: () -> Unit,
-    updateValue: (TextFieldValue) -> Unit,
-    onEditableChanged: (Editable) -> Unit,
     onAttachObjectClicked: () -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
@@ -132,10 +128,6 @@ fun ChatBox(
 
     var markup by remember {
         mutableStateOf<List<Block.Content.Text.Mark>>(emptyList())
-    }
-
-    var initialInput by remember {
-        mutableStateOf("")
     }
 
     val uploadFileLauncher = rememberLauncherForActivityResult(
@@ -422,72 +414,6 @@ fun ChatBox(
                     }
                 }
             }
-//            Box(
-//                modifier = Modifier
-//                    .weight(1f)
-//                    .align(Alignment.Bottom)
-//                    .border(width = 0.5.dp, color = colorResource(R.color.palette_system_blue))
-//                    .padding(bottom = 4.dp, top = 4.dp)
-//            ) {
-//                AndroidView(
-//                    modifier = Modifier
-//                        .padding(
-//                            start = 4.dp,
-//                            end = 4.dp
-//                        )
-//                        .border(width = 0.5.dp, color = colorResource(R.color.palette_system_red))
-//                        .wrapContentHeight()
-//                        .fillMaxWidth()
-//                        .align(Alignment.BottomStart)
-//
-//                    ,
-//                    factory = { context ->
-//                        ChatBoxEditText(context).apply {
-//                            setOnClickListener {
-//                                requestFocus()
-//                            }
-//                            text = SpannableStringBuilder(initialInput)
-//                            addTextChangedListener(
-//                                object : TextWatcher {
-//
-//                                    override fun beforeTextChanged(
-//                                        s: CharSequence?, start: Int, count: Int, after: Int
-//                                    ) {
-//                                        // Do nothing.
-//                                    }
-//
-//                                    override fun afterTextChanged(s: Editable) {
-//                                        // Do nothing.
-//                                        Timber.d("After text changed: ${s}")
-//                                        Timber.d("Markup before extraction: ${markup}")
-//                                        markup = s.markup()
-//                                        Timber.d("Markup after extraction: ${markup}")
-//                                    }
-//
-//                                    override fun onTextChanged(
-//                                        s: CharSequence, start: Int, before: Int, count: Int
-//                                    ) {
-//                                        updateValue(
-//                                            TextFieldValue(
-//                                                text = s.toString(),
-//                                                selection = TextRange(start.inc())
-//                                            )
-//                                        )
-//                                    }
-//                                }
-//                            )
-//                        }
-//                    },
-//                    update = { view ->
-//                        view.requestFocus()
-//                        effects.forEach { effect ->
-//                            view.setEffect(effect)
-//                        }
-//                        effects.clear()
-//                        markup = view.text?.markup() ?: emptyList()
-//                    }
-//                )
-//            }
             ChatBoxUserInput(
                 text = text,
                 spans = spans,
@@ -509,10 +435,9 @@ fun ChatBox(
                         .padding(horizontal = 4.dp, vertical = 8.dp)
                         .clip(CircleShape)
                         .clickable {
-                            onMessageSent(textState.text, markup)
+                            onMessageSent(text.text, markup)
                             clearText()
                             resetScroll()
-                            initialInput = ""
                         }
                 ) {
                     Image(

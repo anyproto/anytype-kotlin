@@ -70,7 +70,6 @@ class AnnotatedTextTransformation(
     override fun filter(text: AnnotatedString): TransformedText {
         val annotatedString = AnnotatedString.Builder(text).apply {
             spans.forEach { span ->
-                Timber.d("Checking span before render: $span")
                 if (span.start in text.indices && span.end <= text.length) {
                     addStyle(span.style, span.start, span.end)
                 }

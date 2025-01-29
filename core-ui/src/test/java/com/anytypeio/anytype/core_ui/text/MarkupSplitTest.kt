@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.text
 
 import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import kotlin.test.Test
-
 import kotlin.test.assertEquals
 
 class SplitByMarkTests {
@@ -20,7 +19,7 @@ class SplitByMarkTests {
     fun testSingleMark() {
         val input = "Hello, world!"
         val marks = listOf(
-            Mark(0..4, Mark.Type.BOLD) // "Hello" styled as bold
+            Mark(0..5, Mark.Type.BOLD) // "Hello" styled as bold
         )
         val result = input.splitByMarks(marks)
         val expected = listOf(
@@ -34,8 +33,8 @@ class SplitByMarkTests {
     fun testOverlappingMarks() {
         val input = "Hello, world!"
         val marks = listOf(
-            Mark(0..4, Mark.Type.BOLD), // "Hello" styled as bold
-            Mark(3..7, Mark.Type.ITALIC) // Overlaps "lo, w" with italic
+            Mark(0..5, Mark.Type.BOLD),  // "Hello" styled as bold
+            Mark(3..8, Mark.Type.ITALIC) // Overlaps "lo, w" with italic
         )
         val result = input.splitByMarks(marks)
         val expected = listOf(
@@ -51,8 +50,8 @@ class SplitByMarkTests {
     fun testMultipleAdjacentMarks() {
         val input = "Hello, world!"
         val marks = listOf(
-            Mark(0..4, Mark.Type.BOLD),  // "Hello" styled as bold
-            Mark(7..11, Mark.Type.ITALIC) // "world" styled as italic
+            Mark(0..5, Mark.Type.BOLD),   // "Hello" styled as bold
+            Mark(7..12, Mark.Type.ITALIC) // "world" styled as italic
         )
         val result = input.splitByMarks(marks)
         val expected = listOf(
@@ -68,7 +67,7 @@ class SplitByMarkTests {
     fun testOutOfBoundsMarks() {
         val input = "Short text"
         val marks = listOf(
-            Mark(0..4, Mark.Type.BOLD),    // Valid range
+            Mark(0..5, Mark.Type.BOLD),    // Valid range
             Mark(10..15, Mark.Type.ITALIC) // Out-of-bounds, should be ignored
         )
         val result = input.splitByMarks(marks)
@@ -83,7 +82,7 @@ class SplitByMarkTests {
     fun testEmptyString() {
         val input = ""
         val marks = listOf(
-            Mark(0..4, Mark.Type.BOLD) // Should be ignored since the input is empty
+            Mark(0..5, Mark.Type.BOLD) // Should be ignored since the input is empty
         )
         val result = input.splitByMarks(marks)
         val expected = emptyList<Pair<String, List<Mark>>>()
@@ -94,8 +93,8 @@ class SplitByMarkTests {
     fun testFullyOverlappingMarks() {
         val input = "Overlap test"
         val marks = listOf(
-            Mark(0..11, Mark.Type.BOLD),   // Full range
-            Mark(0..11, Mark.Type.ITALIC) // Fully overlaps with another style
+            Mark(0..12, Mark.Type.BOLD),   // Full range
+            Mark(0..12, Mark.Type.ITALIC) // Fully overlaps with another style
         )
         val result = input.splitByMarks(marks)
         val expected = listOf(
@@ -108,7 +107,7 @@ class SplitByMarkTests {
     fun testNestedMarks() {
         val input = "Nested styles"
         val marks = listOf(
-            Mark(0..5, Mark.Type.BOLD),    // "Nested" styled as bold
+            Mark(0..6, Mark.Type.BOLD),    // "Nested" styled as bold
             Mark(4..13, Mark.Type.ITALIC) // Overlaps "ed styles" with italic
         )
         val result = input.splitByMarks(marks)

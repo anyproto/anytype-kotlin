@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -58,84 +59,90 @@ fun ParticipantScreen(
     ModalBottomSheet(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 12.dp, end = 12.dp, bottom = 32.dp),
-        dragHandle = {
-            Column {
-                Spacer(modifier = Modifier.height(6.dp))
-                Dragger()
-                Spacer(modifier = Modifier.height(6.dp))
-            }
-        },
+            .padding(start = 12.dp, end = 12.dp),
+        dragHandle = null,
         scrimColor = colorResource(id = R.color.modal_screen_outside_background),
-        containerColor = colorResource(id = R.color.background_secondary),
+        containerColor = colorResource(id = R.color.transparent_black),
         shape = RoundedCornerShape(20.dp),
         sheetState = bottomSheetState,
         onDismissRequest = {
             onEvent(ParticipantEvent.OnDismiss)
         },
         content = {
-            val (spacer, iconSize, textSize) = if (uiState.description.isNullOrBlank()) {
-                Triple(68.dp, 184.dp, 88.sp)
-            } else {
-                Triple(62.dp, 112.dp, 64.sp)
-            }
-            if (uiState.isOwner) {
-                EditIcon(
+            Column(
+                Modifier
+                    .navigationBarsPadding()
+                    .background(
+                        shape = RoundedCornerShape(20.dp),
+                        color = colorResource(id = R.color.background_secondary)
+                    )
+            ) {
+                val (spacer, iconSize, textSize) = if (uiState.description.isNullOrBlank()) {
+                    Triple(68.dp, 184.dp, 88.sp)
+                } else {
+                    Triple(62.dp, 112.dp, 64.sp)
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Dragger(modifier = Modifier.align(Alignment.CenterHorizontally))
+                Spacer(modifier = Modifier.height(6.dp))
+                if (uiState.isOwner) {
+                    EditIcon(
+                        modifier = Modifier
+                            .padding(end = 16.dp, bottom = 16.dp, start = 16.dp)
+                            .size(32.dp)
+                            .align(Alignment.End)
+                            .noRippleThrottledClickable {
+                                onEvent(ParticipantEvent.OnCardClicked)
+                            }
+                    )
+                    Spacer(
+                        modifier = Modifier.height(spacer - 32.dp - 16.dp)
+                    )
+                } else {
+                    Spacer(
+                        modifier = Modifier.height(spacer)
+                    )
+                }
+                ImageBlock(
                     modifier = Modifier
-                        .padding(end = 16.dp, bottom = 16.dp, start = 16.dp)
-                        .size(32.dp)
-                        .align(Alignment.End)
-                        .noRippleThrottledClickable {
-                            onEvent(ParticipantEvent.OnCardClicked)
-                        }
+                        .size(iconSize)
+                        .align(Alignment.CenterHorizontally),
+                    name = uiState.name,
+                    icon = uiState.icon,
+                    fontSize = textSize
                 )
-                Spacer(
-                    modifier = Modifier.height(spacer - 32.dp - 16.dp)
-                )
-            } else {
-                Spacer(
-                    modifier = Modifier.height(spacer)
-                )
-            }
-            ImageBlock(
-                modifier = Modifier
-                    .size(iconSize)
-                    .align(Alignment.CenterHorizontally),
-                name = uiState.name,
-                icon = uiState.icon,
-                fontSize = textSize
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Title(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-                    .align(Alignment.CenterHorizontally),
-                name = uiState.name
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            if (uiState.identity != null) {
-                AnyIdentity(
+                Spacer(modifier = Modifier.height(12.dp))
+                Title(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
                         .align(Alignment.CenterHorizontally),
-                    identity = uiState.identity!!
+                    name = uiState.name
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                if (uiState.identity != null) {
+                    AnyIdentity(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 32.dp)
+                            .align(Alignment.CenterHorizontally),
+                        identity = uiState.identity!!
+                    )
+                }
+                if (!uiState.description.isNullOrBlank()) {
+                    Description(
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .padding(horizontal = 32.dp)
+                            .align(Alignment.CenterHorizontally),
+                        description = uiState.description!!
+                    )
+                }
+                val h = spacer + 16.dp
+                Spacer(
+                    modifier = Modifier.height(h)
                 )
             }
-            if (!uiState.description.isNullOrBlank()) {
-                Description(
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .padding(horizontal = 32.dp)
-                        .align(Alignment.CenterHorizontally),
-                    description = uiState.description!!
-                )
-            }
-            val h = spacer - 8.dp
-            Spacer(
-                modifier = Modifier.height(h)
-            )
         },
     )
 }

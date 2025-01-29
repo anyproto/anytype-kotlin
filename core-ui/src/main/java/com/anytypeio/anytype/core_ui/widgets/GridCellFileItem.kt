@@ -28,4 +28,10 @@ class GridCellFileItem @JvmOverloads constructor(
             ivIcon.gone()
         }
     }
+
+    fun clear() {
+        binding.tvName.text = null
+        binding.tvName.gone()
+        binding.ivIcon.gone()
+    }
 }

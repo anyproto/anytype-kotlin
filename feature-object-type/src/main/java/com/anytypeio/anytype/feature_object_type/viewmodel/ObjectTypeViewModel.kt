@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_object_type.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -21,6 +22,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -37,9 +39,13 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.GetObjectRelationListById
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
+import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
+import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -50,12 +56,14 @@ import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 import com.anytypeio.anytype.presentation.objects.toDVSort
 import com.anytypeio.anytype.presentation.objects.toUiObjectsListItem
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel.Companion.DELAY_BEFORE_CREATING_TEMPLATE
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -96,7 +104,8 @@ class ObjectTypeViewModel(
     private val deleteObjects: DeleteObjects,
     private val setObjectDetails: SetObjectDetails,
     private val createObjectSet: CreateObjectSet,
-    private val stringResourceProvider: StringResourceProvider
+    private val stringResourceProvider: StringResourceProvider,
+    private val createTemplate: CreateTemplate
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //top bar
@@ -554,7 +563,6 @@ class ObjectTypeViewModel(
         when (event) {
             TypeEvent.OnFieldsButtonClick -> TODO()
             TypeEvent.OnLayoutButtonClick -> TODO()
-            TypeEvent.OnSettingsClick -> TODO()
             is TypeEvent.OnSyncStatusClick -> {
                 uiSyncStatusWidgetState.value =
                     event.status.toSyncStatusWidgetState()
@@ -585,6 +593,7 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnCreateObjectIconClick -> {
+                shouldScrollToTopItems = true
                 proceedWithCreateObjectOfThisType()
             }
 
@@ -617,7 +626,13 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnObjectTypeIconClick -> {
-                //todo открыть экран выбора emoji
+                viewModelScope.launch{
+                    commands.emit(OpenEmojiPicker)
+                }
+            }
+
+            TypeEvent.OnTemplateNewItemClick -> {
+
             }
         }
     }
@@ -689,7 +704,7 @@ class ObjectTypeViewModel(
         }
     }
 
-    private fun updateIcon(
+    fun updateIcon(
         emoji: String
     ) {
         viewModelScope.launch {
@@ -708,7 +723,7 @@ class ObjectTypeViewModel(
         }
     }
 
-    private fun removeIcon(target: Id) {
+    fun removeIcon() {
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
@@ -781,6 +796,29 @@ class ObjectTypeViewModel(
     //region RESTRICTIONS
 
     //
+
+    //region TEMPLATES
+    private suspend fun proceedWithCreatingTemplate(targetTypeId: Id, targetTypeKey: Id) {
+        delay(DELAY_BEFORE_CREATING_TEMPLATE)
+        val params = CreateTemplate.Params(
+            targetObjectTypeId = targetTypeId,
+            spaceId = vmParams.spaceId
+        )
+        createTemplate.async(params).fold(
+            onSuccess = { createObjectResult ->
+                val obj = ObjectWrapper.Basic(createObjectResult.details)
+                proceedWithNavigation(
+                    objectId = obj.id,
+                    objectLayout = obj.layout
+                )
+            },
+            onFailure = { e ->
+                Timber.e(e, "Error while creating new template")
+            }
+        )
+    }
+
+    //endregion
 
     //region Navigation
     val navigation = MutableSharedFlow<OpenObjectNavigation>()

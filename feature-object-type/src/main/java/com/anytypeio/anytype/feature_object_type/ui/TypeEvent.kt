@@ -25,18 +25,23 @@ sealed class TypeEvent {
     data class OnOpenSetClick(val setId: Id) : TypeEvent()
     //endregion
 
-    //region Objects list
+    //region Objects Header
+    data class OnSortClick(val sort: ObjectsListSort) : TypeEvent()
     data object OnCreateObjectIconClick : TypeEvent()
+    //endregion
+
+    //region Objects list
     data class OnObjectItemClick(val item: UiObjectsListItem) : TypeEvent()
     //endregion
 
-    data object OnSettingsClick : TypeEvent()
+    //region Templates
+    data object OnTemplatesAddIconClick : TypeEvent()
+    data object OnTemplateNewItemClick: TypeEvent()
+
+    //endregion
 
     data object OnLayoutButtonClick : TypeEvent()
     data object OnFieldsButtonClick : TypeEvent()
-    data object OnTemplatesAddIconClick : TypeEvent()
-    data class OnSortClick(val sort: ObjectsListSort) : TypeEvent()
-
 
     data object OnObjectsSettingsIconClick: TypeEvent()
 

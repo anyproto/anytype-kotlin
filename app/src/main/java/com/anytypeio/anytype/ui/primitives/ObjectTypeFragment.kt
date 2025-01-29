@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,6 +40,9 @@ import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_PICK_EMOJI
+import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_REMOVE_EMOJI
+import com.anytypeio.anytype.ui.types.picker.RESULT_EMOJI_UNICODE
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
@@ -54,6 +58,17 @@ class ObjectTypeFragment : BaseComposeFragment() {
 
     private val space get() = argString(ARG_SPACE)
     private val objectId get() = argString(ARG_OBJECT_ID)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setFragmentResultListener(REQUEST_KEY_PICK_EMOJI) { _, bundle ->
+            val res = requireNotNull(bundle.getString(RESULT_EMOJI_UNICODE))
+            vm.updateIcon(res)
+        }
+        setFragmentResultListener(REQUEST_KEY_REMOVE_EMOJI) { _, _ ->
+            vm.removeIcon()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,6 +95,14 @@ class ObjectTypeFragment : BaseComposeFragment() {
                 }
                 is ObjectTypeCommand.SendToast.Error -> TODO()
                 is ObjectTypeCommand.SendToast.UnexpectedLayout -> TODO()
+                ObjectTypeCommand.OpenEmojiPicker -> {
+                    runCatching {
+                        findNavController().navigate(R.id.openEmojiPicker)
+                    }.onFailure {
+                        Timber.w("Error while opening emoji picker")
+                    }
+                }
+                is ObjectTypeCommand.OpenTemplate -> TODO()
             }
         }
     }

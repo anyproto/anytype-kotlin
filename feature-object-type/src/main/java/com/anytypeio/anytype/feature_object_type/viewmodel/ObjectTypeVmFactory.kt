@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.GetObjectRelationListById
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
@@ -49,7 +50,8 @@ class ObjectTypeVMFactory @Inject constructor(
     private val deleteObjects: DeleteObjects,
     private val setObjectDetails: SetObjectDetails,
     private val createObjectSet: CreateObjectSet,
-    private val stringResourceProvider: StringResourceProvider
+    private val stringResourceProvider: StringResourceProvider,
+    private val createTemplate: CreateTemplate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -77,6 +79,7 @@ class ObjectTypeVMFactory @Inject constructor(
             deleteObjects = deleteObjects,
             setObjectDetails = setObjectDetails,
             createObjectSet = createObjectSet,
-            stringResourceProvider = stringResourceProvider
+            stringResourceProvider = stringResourceProvider,
+            createTemplate = createTemplate
         ) as T
 }

@@ -1004,7 +1004,8 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectCreateSet(
         space: Id,
-        objectType: String?
+        objectType: String?,
+        details: Struct?
     ): Response.Set.Create {
         val source = if (objectType != null) {
             listOf(objectType)
@@ -1014,7 +1015,8 @@ class Middleware @Inject constructor(
 
         val request = Rpc.Object.CreateSet.Request(
             source = source,
-            spaceId = space
+            spaceId = space,
+            details = details
         )
 
         logRequestIfDebug(request)
@@ -1022,9 +1024,9 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
 
         return Response.Set.Create(
-            targetId = response.objectId,
+            objectId = response.objectId,
             payload = response.event.toPayload(),
-            blockId = null
+            details = response.details.orEmpty()
         )
     }
 

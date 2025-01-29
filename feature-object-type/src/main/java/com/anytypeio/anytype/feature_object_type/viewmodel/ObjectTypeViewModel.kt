@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
@@ -14,7 +16,9 @@ import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.lists.objects.UiContentState
 import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListState
+import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -23,6 +27,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -31,10 +36,13 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.GetObjectRelationListById
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
@@ -85,7 +93,10 @@ class ObjectTypeViewModel(
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val userSettingsRepository: UserSettingsRepository,
-    private val deleteObjects: DeleteObjects
+    private val deleteObjects: DeleteObjects,
+    private val setObjectDetails: SetObjectDetails,
+    private val createObjectSet: CreateObjectSet,
+    private val stringResourceProvider: StringResourceProvider
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //top bar
@@ -137,7 +148,7 @@ class ObjectTypeViewModel(
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
 
     init {
-        viewModelScope.launch{
+        viewModelScope.launch {
             //Just for the testing purpose
             userSettingsRepository.setLastOpenedObject(
                 id = vmParams.objectId,
@@ -240,7 +251,8 @@ class ObjectTypeViewModel(
             }
                 .collect { (objectView, permission) ->
                     if (permission != null) {
-                        val objType = objectView.details[vmParams.objectId]?.mapToObjectWrapperType()
+                        val objType =
+                            objectView.details[vmParams.objectId]?.mapToObjectWrapperType()
                         if (objType != null) {
 
                             _objTypeState.value = objType
@@ -270,7 +282,8 @@ class ObjectTypeViewModel(
                             uiLayoutButtonState.value = UiLayoutButtonState.Visible(layout = layout)
                         } else {
                             _objTypeState.value = null
-                            errorState.value = UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects("Type details are empty"))
+                            errorState.value =
+                                UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects("Type details are empty"))
                         }
                     }
                 }
@@ -325,7 +338,10 @@ class ObjectTypeViewModel(
                 if (items.isEmpty()) {
                     uiObjectsListState.value = UiObjectsListState.Empty
                     uiContentState.value = UiContentState.Idle()
-                    uiObjectsHeaderState.value = UiObjectsHeaderState.EMPTY
+                    uiObjectsHeaderState.value = UiObjectsHeaderState(
+                        count = "0"
+                    )
+                    uiObjectsSettingsIconState.value = UiObjectsSettingsIconState.Visible
                 } else {
                     uiContentState.value = UiContentState.Idle(
                         scrollToTop = shouldScrollToTopItems.also {
@@ -336,6 +352,7 @@ class ObjectTypeViewModel(
                     uiObjectsHeaderState.value = UiObjectsHeaderState(
                         count = "${items.size}"
                     )
+                    uiObjectsSettingsIconState.value = UiObjectsSettingsIconState.Visible
                 }
                 if (permission.canCreateObjectThisType) {
                     uiObjectsAddIconState.value = UiObjectsAddIconState.Visible
@@ -357,24 +374,25 @@ class ObjectTypeViewModel(
                         emptyFlow()
                     }
                 }.collect { (items, permissions) ->
+                    Timber.d("items: $items, permissions: $permissions")
                     if (!permissions.participantCanEdit) {
                         if (items.isEmpty()) {
                             uiMenuState.value = uiMenuState.value.copy(
-                                setItem = UiMenuSetItem.Hidden
+                                objSetItem = UiMenuSetItem.Hidden
                             )
                         } else {
                             uiMenuState.value = uiMenuState.value.copy(
-                                setItem = UiMenuSetItem.OpenSet(items[0].id)
+                                objSetItem = UiMenuSetItem.OpenSet(setId = items[0].id)
                             )
                         }
                     } else {
                         if (items.isEmpty()) {
                             uiMenuState.value = uiMenuState.value.copy(
-                                setItem = UiMenuSetItem.CreateSet
+                                objSetItem = UiMenuSetItem.CreateSet
                             )
                         } else {
                             uiMenuState.value = uiMenuState.value.copy(
-                                setItem = UiMenuSetItem.OpenSet(items[0].id)
+                                objSetItem = UiMenuSetItem.OpenSet(setId = items[0].id)
                             )
                         }
                     }
@@ -483,11 +501,13 @@ class ObjectTypeViewModel(
         )
 
         return storelessSubscriptionContainer.subscribe(searchParams).map { templates ->
-            templates.map { it.toTemplateView(
-                objectId = vmParams.objectId,
-                urlBuilder = urlBuilder,
-                coverImageHashProvider = coverImageHashProvider,
-            ) }
+            templates.map {
+                it.toTemplateView(
+                    objectId = vmParams.objectId,
+                    urlBuilder = urlBuilder,
+                    coverImageHashProvider = coverImageHashProvider,
+                )
+            }
         }
 
         templatesContainer.subscribeToTemplates(
@@ -539,28 +559,65 @@ class ObjectTypeViewModel(
                 uiSyncStatusWidgetState.value =
                     event.status.toSyncStatusWidgetState()
             }
+
             TypeEvent.OnSyncStatusDismiss -> {
                 uiSyncStatusWidgetState.value = SyncStatusWidgetState.Hidden
             }
+
             TypeEvent.OnTemplatesAddIconClick -> TODO()
-            is TypeEvent.OnTitleUpdate -> TODO()
+            is TypeEvent.OnObjectTypeTitleUpdate -> {
+                updateTitle(event.title)
+            }
+
             is TypeEvent.OnSortClick -> onSortClicked(event.sort)
             TypeEvent.OnObjectsSettingsIconClick -> {
             }
-            TypeEvent.OnCreateSetClick -> TODO()
-            TypeEvent.OnOpenSetClick -> TODO()
-            TypeEvent.OnCreateObjectIconClick -> {
 
+            TypeEvent.OnCreateSetClick -> {
+                onCreateSet()
             }
+
+            is TypeEvent.OnOpenSetClick -> {
+                proceedWithNavigation(
+                    objectId = event.setId,
+                    objectLayout = ObjectType.Layout.SET
+                )
+            }
+
+            TypeEvent.OnCreateObjectIconClick -> {
+                proceedWithCreateObjectOfThisType()
+            }
+
             TypeEvent.OnMenuItemDeleteClick -> {
                 uiAlertState.value = UiDeleteAlertState.Show
             }
+
             TypeEvent.OnAlertDeleteConfirm -> {
                 uiAlertState.value = UiDeleteAlertState.Hidden
                 onDeletionAccepted()
             }
+
             TypeEvent.OnAlertDeleteDismiss -> {
                 uiAlertState.value = UiDeleteAlertState.Hidden
+            }
+
+            is TypeEvent.OnObjectItemClick -> {
+                when (event.item) {
+                    is UiObjectsListItem.Item -> {
+                        proceedWithNavigation(
+                            objectId = event.item.id,
+                            objectLayout = event.item.layout
+                        )
+                    }
+
+                    is UiObjectsListItem.Loading -> {
+                        //do nothing
+                    }
+                }
+            }
+
+            TypeEvent.OnObjectTypeIconClick -> {
+                //todo открыть экран выбора emoji
             }
         }
     }
@@ -615,11 +672,137 @@ class ObjectTypeViewModel(
         }
     }
 
+    private fun updateTitle(input: String) {
+        viewModelScope.launch {
+            val params = SetObjectDetails.Params(
+                ctx = vmParams.objectId,
+                details = mapOf(Relations.NAME to input)
+            )
+            setObjectDetails.async(params).fold(
+                onFailure = { error ->
+                    Timber.e(error, "Error while updating data view record")
+                },
+                onSuccess = {
+
+                }
+            )
+        }
+    }
+
+    private fun updateIcon(
+        emoji: String
+    ) {
+        viewModelScope.launch {
+            val params = SetObjectDetails.Params(
+                ctx = vmParams.objectId,
+                details = mapOf(Relations.ICON_EMOJI to emoji)
+            )
+            setObjectDetails.async(params).fold(
+                onFailure = { error ->
+                    Timber.e(error, "Error while updating data view record")
+                },
+                onSuccess = {
+
+                }
+            )
+        }
+    }
+
+    private fun removeIcon(target: Id) {
+        viewModelScope.launch {
+            val params = SetObjectDetails.Params(
+                ctx = vmParams.objectId,
+                details = mapOf(Relations.ICON_EMOJI to null)
+            )
+            setObjectDetails.async(params).fold(
+                onFailure = { error ->
+                    Timber.e(error, "Error while updating data view record")
+                },
+                onSuccess = {
+                }
+            )
+        }
+    }
+
+    private fun onCreateSet() {
+        val typeName = _objTypeState.value?.name.orEmpty()
+        val emoji = _objTypeState.value?.iconEmoji.orNull()
+        val params = CreateObjectSet.Params(
+            space = vmParams.spaceId.id,
+            type = vmParams.objectId,
+            details = mapOf(
+                Relations.NAME to "${stringResourceProvider.getSetOfObjectsTitle()} $typeName",
+                Relations.ICON_EMOJI to emoji
+            )
+        )
+        viewModelScope.launch {
+            createObjectSet.run(params).process(
+                failure = {},
+                success = { response ->
+                    val obj = ObjectWrapper.Basic(response.details)
+                    proceedWithNavigation(
+                        objectId = obj.id,
+                        objectLayout = obj.layout
+                    )
+                }
+            )
+        }
+    }
+
+    private fun proceedWithCreateObjectOfThisType() {
+        val uniqueKeys = _objTypeState.value?.uniqueKey ?: return
+        val defaultTemplate =
+            uiTemplatesListState.value.items.firstOrNull { it.isDefault } as? TemplateView.Template
+        val params = CreateObject.Param(
+            space = vmParams.spaceId,
+            type = TypeKey(uniqueKeys),
+            template = defaultTemplate?.id,
+            prefilled = mapOf(
+                Relations.ORIGIN to ObjectOrigin.BUILT_IN.code.toDouble()
+            )
+        )
+        viewModelScope.launch {
+            createObject.async(params).fold(
+                onSuccess = { result ->
+                    //todo need to check this logic
+//                    proceedWithNavigation(
+//                        objectId = result.objectId,
+//                        objectLayout = result.obj.layout
+//                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while creating object")
+                }
+            )
+        }
+    }
     //endregion
 
     //region RESTRICTIONS
 
     //
+
+    //region Navigation
+    val navigation = MutableSharedFlow<OpenObjectNavigation>()
+
+    private fun proceedWithNavigation(
+        objectId: Id,
+        objectLayout: ObjectType.Layout?
+    ) {
+        Timber.d("proceedWithNavigation, objectId: $objectId, objectLayout: $objectLayout")
+        val destination = objectLayout?.navigation(
+            target = objectId,
+            space = vmParams.spaceId.id
+        )
+        if (destination != null) {
+            viewModelScope.launch {
+                navigation.emit(destination)
+            }
+        } else {
+            Timber.w("No navigation destination found for object $objectId with layout $objectLayout")
+        }
+    }
+    //endregion
 
     companion object {
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"

@@ -73,14 +73,14 @@ data class UiMenuState(
     val container: MenuSortsItem.Container,
     val sorts: List<MenuSortsItem.Sort>,
     val types: List<MenuSortsItem.SortType>,
-    val setItem: UiMenuSetItem
+    val objSetItem: UiMenuSetItem
 ) {
     companion object {
         val EMPTY = UiMenuState(
             container = MenuSortsItem.Container(sort = ObjectsListSort.ByName()),
             sorts = emptyList(),
             types = emptyList(),
-            setItem = UiMenuSetItem.Hidden
+            objSetItem = UiMenuSetItem.Hidden
         )
     }
 }

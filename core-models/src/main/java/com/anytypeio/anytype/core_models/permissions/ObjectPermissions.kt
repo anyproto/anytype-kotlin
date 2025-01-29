@@ -168,6 +168,7 @@ fun ObjectView.toObjectPermissionsForTypes(
         canEditDetails = canEditDetails && canEdit,
         canCreateTemplatesForThisType = canCreateTemplatesForObjectsThisType,
         canCreateObjectThisType = !objectRestrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && participantCanEdit,
+        participantCanEdit = participantCanEdit
     )
 }
 

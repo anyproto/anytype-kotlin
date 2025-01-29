@@ -44,7 +44,7 @@ fun IconAndTitleWidget(
         ListWidgetObjectIcon(
             modifier = Modifier.size(32.dp)
                 .noRippleThrottledClickable{
-                    onTypeEvent.invoke(TypeEvent.OnCreateObjectIconClick)
+                    onTypeEvent.invoke(TypeEvent.OnObjectTypeIconClick)
                 },
             icon = uiIconState.icon,
             backgroundColor = R.color.amp_transparent
@@ -88,7 +88,7 @@ fun NameField(
             keyboardController?.hide()
             focusManager.clearFocus()
             onTypeEvent.invoke(
-                TypeEvent.OnTitleUpdate(
+                TypeEvent.OnObjectTypeTitleUpdate(
                     title = innerValue
                 )
             )

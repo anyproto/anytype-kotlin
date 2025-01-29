@@ -41,6 +41,7 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsHeaderState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsSettingsIconState
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
+import timber.log.Timber
 
 @Composable
 fun ObjectsHeader(
@@ -51,6 +52,8 @@ fun ObjectsHeader(
     uiObjectsMenuState: UiMenuState,
     onTypeEvent: (TypeEvent) -> Unit
 ) {
+
+    Timber.d("ObjectsHeader, MenuState: $uiObjectsMenuState")
     var isMenuExpanded by remember { mutableStateOf(false) }
     var isSortingExpanded by remember { mutableStateOf(false) }
 
@@ -103,7 +106,7 @@ fun ObjectsHeader(
                     containerColor = colorResource(id = R.color.background_primary),
                     shadowElevation = 5.dp
                 ) {
-                    when (uiObjectsMenuState.setItem) {
+                    when (val item = uiObjectsMenuState.objSetItem) {
                         UiMenuSetItem.CreateSet -> {
                             ObjectsListMenuItem(
                                 title = stringResource(R.string.object_type_objects_menu_create_set),
@@ -124,7 +127,7 @@ fun ObjectsHeader(
                                 title = stringResource(R.string.object_type_objects_menu_open_set),
                                 isSelected = false,
                                 modifier = Modifier
-                                    .clickable { onTypeEvent(TypeEvent.OnOpenSetClick) }
+                                    .clickable { onTypeEvent(TypeEvent.OnOpenSetClick(setId = item.setId)) }
                             )
                             Divider(
                                 height = 8.dp,
@@ -201,7 +204,7 @@ fun ObjectsHeaderPreview() {
                     isSelected = false
                 ),
             ),
-            setItem = UiMenuSetItem.CreateSet
+            objSetItem = UiMenuSetItem.CreateSet
         ),
         onTypeEvent = {}
     )

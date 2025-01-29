@@ -106,7 +106,8 @@ interface BlockRemote {
 
     suspend fun createSet(
         space: Id,
-        objectType: String?
+        objectType: String?,
+        details: Struct?
     ): Response.Set.Create
 
     suspend fun setDataViewViewerPosition(

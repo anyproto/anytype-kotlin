@@ -1882,5 +1882,6 @@ Please provide specific details of your needs here.</string>
 
     <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
     <string name="chats_alert_delete_this_message">Delete this message?</string>
+    <string name="object_set_of_title">Set of</string>
 
 </resources>

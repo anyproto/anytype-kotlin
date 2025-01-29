@@ -217,7 +217,7 @@ fun ObjectTypeMainScreen(
 
                     },
                     onObjectClicked = { item ->
-
+                        onTypeEvent(TypeEvent.OnObjectItemClick(item))
                     }
                 )
             }

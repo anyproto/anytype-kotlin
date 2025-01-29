@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeMainScreen
@@ -31,6 +33,12 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiErrorState
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.ui.chats.ChatFragment
+import com.anytypeio.anytype.ui.date.DateObjectFragment
+import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
@@ -116,6 +124,74 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
                     onTypeEvent = vm::onTypeEvent
                 )
+            }
+        }
+        LaunchedEffect(Unit) {
+            vm.navigation.collect { nav ->
+                when (nav) {
+                    is OpenObjectNavigation.OpenEditor -> {
+                        findNavController().navigate(
+                            R.id.objectNavigation,
+                            EditorFragment.args(
+                                ctx = nav.target,
+                                space = nav.space
+                            )
+                        )
+                    }
+                    is OpenObjectNavigation.OpenDataView -> {
+                        findNavController().navigate(
+                            R.id.dataViewNavigation,
+                            ObjectSetFragment.args(
+                                ctx = nav.target,
+                                space = nav.space
+                            )
+                        )
+                    }
+                    is OpenObjectNavigation.OpenParticipant -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.participantScreen,
+                                ParticipantFragment.args(
+                                    objectId = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening participant screen")
+                        }
+                    }
+                    is OpenObjectNavigation.OpenChat -> {
+                        findNavController().navigate(
+                            R.id.chatScreen,
+                            ChatFragment.args(
+                                ctx = nav.target,
+                                space = nav.space
+                            )
+                        )
+                    }
+                    OpenObjectNavigation.NonValidObject -> {
+                        toast(getString(R.string.error_non_valid_object))
+                    }
+                    is OpenObjectNavigation.OpenDateObject -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.dateObjectScreen,
+                                DateObjectFragment.args(
+                                    objectId = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Failed to navigate to date object screen")
+                        }
+                    }
+                    is OpenObjectNavigation.UnexpectedLayoutError -> {
+                        toast(getString(R.string.error_unexpected_layout))
+                    }
+                    else -> {
+                        // Do nothing.
+                    }
+                }
             }
         }
     }

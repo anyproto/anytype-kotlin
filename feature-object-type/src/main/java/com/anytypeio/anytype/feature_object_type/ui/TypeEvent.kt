@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
+import com.anytypeio.anytype.presentation.templates.TemplateView
 
 sealed class TypeEvent {
 
@@ -36,7 +37,7 @@ sealed class TypeEvent {
 
     //region Templates
     data object OnTemplatesAddIconClick : TypeEvent()
-    data object OnTemplateNewItemClick: TypeEvent()
+    data class OnTemplateItemClick(val item: TemplateView): TypeEvent()
 
     //endregion
 

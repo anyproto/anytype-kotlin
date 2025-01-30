@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.feature_object_type.viewmodel
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.Key
 
 
 sealed class ObjectTypeCommand {
@@ -14,8 +14,10 @@ sealed class ObjectTypeCommand {
     data object Back : ObjectTypeCommand()
 
     data class OpenTemplate(
-        val objectId: Id,
-        val spaceId: SpaceId
+        val templateId: Id,
+        val typeId: Id,
+        val typeKey: Key,
+        val spaceId: Id
     ): ObjectTypeCommand()
 
     data object OpenEmojiPicker : ObjectTypeCommand()

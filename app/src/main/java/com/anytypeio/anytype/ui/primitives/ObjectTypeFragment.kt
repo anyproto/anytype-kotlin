@@ -38,8 +38,11 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_SELECT
 import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_PICK_EMOJI
 import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_REMOVE_EMOJI
 import com.anytypeio.anytype.ui.types.picker.RESULT_EMOJI_UNICODE
@@ -102,7 +105,18 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         Timber.w("Error while opening emoji picker")
                     }
                 }
-                is ObjectTypeCommand.OpenTemplate -> TODO()
+                is ObjectTypeCommand.OpenTemplate -> {
+                    findNavController().navigate(
+                        R.id.nav_editor_modal,
+                        bundleOf(
+                            EditorModalFragment.ARG_TEMPLATE_ID to command.templateId,
+                            EditorModalFragment.ARG_TEMPLATE_TYPE_ID to command.typeId,
+                            EditorModalFragment.ARG_TEMPLATE_TYPE_KEY to command.typeKey,
+                            EditorModalFragment.ARG_SCREEN_TYPE to TYPE_TEMPLATE_EDIT,
+                            EditorModalFragment.ARG_SPACE_ID to command.spaceId
+                        )
+                    )
+                }
             }
         }
     }

@@ -184,7 +184,8 @@ fun ObjectTypeMainScreen(
                     modifier = Modifier.height(12.dp)
                 )
                 TemplatesList(
-                    uiTemplatesListState = uiTemplatesListState
+                    uiTemplatesListState = uiTemplatesListState,
+                    onTypeEvent = onTypeEvent
                 )
                 Spacer(
                     modifier = Modifier.height(32.dp)

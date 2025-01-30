@@ -294,9 +294,27 @@ class ObjectTypeViewModel(
                             errorState.value =
                                 UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects("Type details are empty"))
                         }
+                        updateDefaultTemplates(
+                            defaultTemplate = objType?.defaultTemplateId
+                        )
                     }
                 }
         }
+    }
+
+    private fun updateDefaultTemplates(defaultTemplate: Id?) {
+        val templates = uiTemplatesListState.value.items
+        uiTemplatesListState.value = uiTemplatesListState.value.copy(
+            templates.map { template ->
+                when (template) {
+                    is TemplateView.Blank -> template
+                    is TemplateView.New -> template
+                    is TemplateView.Template -> {
+                        template.copy(isDefault = template.id == defaultTemplate)
+                    }
+                }
+            }
+        )
     }
 
     private fun proceedWithObservingSyncStatus() {
@@ -425,8 +443,17 @@ class ObjectTypeViewModel(
                     uiTemplatesHeaderState.value = UiTemplatesHeaderState(
                         count = "${templates.size}"
                     )
+                    val updated = templates.map { template ->
+                        when (template) {
+                            is TemplateView.Blank -> template
+                            is TemplateView.New -> template
+                            is TemplateView.Template -> {
+                                template.copy(isDefault = template.id == _objTypeState.value?.defaultTemplateId)
+                            }
+                        }
+                    }
                     val result = buildList<TemplateView> {
-                        addAll(templates)
+                        addAll(updated)
                         if (permissions.canCreateTemplatesForThisType) {
                             add(
                                 TemplateView.New(
@@ -572,7 +599,9 @@ class ObjectTypeViewModel(
                 uiSyncStatusWidgetState.value = SyncStatusWidgetState.Hidden
             }
 
-            TypeEvent.OnTemplatesAddIconClick -> TODO()
+            TypeEvent.OnTemplatesAddIconClick -> {
+                proceedWithCreateTemplate(shouldOpen = true)
+            }
             is TypeEvent.OnObjectTypeTitleUpdate -> {
                 updateTitle(event.title)
             }
@@ -631,9 +660,58 @@ class ObjectTypeViewModel(
                 }
             }
 
-            TypeEvent.OnTemplateNewItemClick -> {
-
+            is TypeEvent.OnTemplateItemClick -> {
+                onTemplateItemClick(event.item)
             }
+        }
+    }
+
+    private fun onTemplateItemClick(item: TemplateView) {
+        when (item) {
+            is TemplateView.Blank -> {
+                //do nothing
+            }
+            is TemplateView.New -> {
+                proceedWithCreateTemplate(shouldOpen = true)
+            }
+            is TemplateView.Template -> {
+                val typeKey = _objTypeState.value?.uniqueKey ?: return
+                val command = ObjectTypeCommand.OpenTemplate(
+                    templateId = item.id,
+                    typeId = vmParams.objectId,
+                    typeKey = typeKey,
+                    spaceId = vmParams.spaceId.id
+                )
+                viewModelScope.launch {
+                    commands.emit(command)
+                }
+            }
+        }
+    }
+
+    private fun proceedWithCreateTemplate(shouldOpen: Boolean = false) {
+        val params = CreateTemplate.Params(
+            targetObjectTypeId = vmParams.objectId,
+            spaceId = vmParams.spaceId
+        )
+        viewModelScope.launch {
+            createTemplate.async(params).fold(
+                onSuccess = { template ->
+                    val typeKey = _objTypeState.value?.uniqueKey
+                    if (typeKey != null) {
+                        val command = ObjectTypeCommand.OpenTemplate(
+                            templateId = template.id,
+                            typeId = vmParams.objectId,
+                            typeKey = typeKey,
+                            spaceId = vmParams.spaceId.id
+                        )
+                        if (shouldOpen) commands.emit(command)
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while creating template")
+                }
+            )
         }
     }
 

@@ -263,10 +263,12 @@ class BlockMiddleware(
 
     override suspend fun createSet(
         space: Id,
-        objectType: String?
+        objectType: String?,
+        details: Struct?
     ): Response.Set.Create = middleware.objectCreateSet(
         space = space,
-        objectType = objectType
+        objectType = objectType,
+        details = details
     )
 
     override suspend fun setDataViewViewerPosition(

@@ -238,6 +238,9 @@
         android:id="@+id/objectTypeScreen"
         android:name="com.anytypeio.anytype.ui.primitives.ObjectTypeFragment"
         android:label=" Object">
+        <action
+            android:id="@+id/openEmojiPicker"
+            app:destination="@id/typeSetIconPickerScreen" />
     </fragment>
 
     <dialog

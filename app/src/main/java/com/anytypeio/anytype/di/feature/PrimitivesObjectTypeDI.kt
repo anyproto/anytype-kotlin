@@ -5,12 +5,12 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
-import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -20,12 +20,14 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
@@ -157,6 +159,21 @@ object ObjectTypeModule {
         reducer: ObjectWatcher.Reducer
     ): ObjectWatcher = ObjectWatcher(repo, events, reducer)
 
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun getDeleteObjects(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DeleteObjects = DeleteObjects(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateObjectSetUseCase(
+        repo: BlockRepository
+    ): CreateObjectSet = CreateObjectSet(repo = repo)
+
     @Module
     interface Declarations {
         @PerScreen
@@ -198,4 +215,5 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun fieldParser(): FieldParser
     fun provideEventChannel(): EventChannel
     fun templatesContainer(): ObjectTypeTemplatesContainer
+    fun provideStringResourceProvider(): StringResourceProvider
 }

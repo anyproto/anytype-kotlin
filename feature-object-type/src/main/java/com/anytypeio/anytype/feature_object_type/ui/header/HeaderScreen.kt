@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
@@ -41,8 +42,12 @@ fun IconAndTitleWidget(
 ) {
     Row(modifier = modifier) {
         ListWidgetObjectIcon(
-            modifier = Modifier.size(32.dp),
-            icon = uiIconState.icon
+            modifier = Modifier.size(32.dp)
+                .noRippleThrottledClickable{
+                    onTypeEvent.invoke(TypeEvent.OnObjectTypeIconClick)
+                },
+            icon = uiIconState.icon,
+            backgroundColor = R.color.amp_transparent
         )
         NameField(
             modifier = Modifier
@@ -83,7 +88,7 @@ fun NameField(
             keyboardController?.hide()
             focusManager.clearFocus()
             onTypeEvent.invoke(
-                TypeEvent.OnTitleUpdate(
+                TypeEvent.OnObjectTypeTitleUpdate(
                     title = innerValue
                 )
             )

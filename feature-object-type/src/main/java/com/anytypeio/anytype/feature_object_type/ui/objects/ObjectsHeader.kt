@@ -5,8 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -30,12 +30,10 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.lists.objects.menu.ObjectsListMenuItem
 import com.anytypeio.anytype.core_ui.lists.objects.menu.ObjectsListSortingMenuContainer
-import com.anytypeio.anytype.core_ui.lists.objects.menu.title
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
-import com.anytypeio.anytype.feature_object_type.ui.TypeEvent.OnTemplatesAddIconClick
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiMenuSetItem
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiMenuState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsAddIconState
@@ -43,6 +41,7 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsHeaderState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsSettingsIconState
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
+import timber.log.Timber
 
 @Composable
 fun ObjectsHeader(
@@ -53,12 +52,12 @@ fun ObjectsHeader(
     uiObjectsMenuState: UiMenuState,
     onTypeEvent: (TypeEvent) -> Unit
 ) {
+
+    Timber.d("ObjectsHeader, MenuState: $uiObjectsMenuState")
     var isMenuExpanded by remember { mutableStateOf(false) }
     var isSortingExpanded by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = modifier.padding(start = 20.dp),
-    ) {
+    Box(modifier = modifier) {
         Row(
             modifier = Modifier.matchParentSize(),
             verticalAlignment = Alignment.CenterVertically
@@ -84,27 +83,30 @@ fun ObjectsHeader(
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             if (uiObjectsSettingsIconState is UiObjectsSettingsIconState.Visible) {
-                Image(
+                Box(
                     modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp)
-                        .size(24.dp)
+                        .height(48.dp)
+                        .width(40.dp)
                         .noRippleThrottledClickable {
                             isMenuExpanded = !isMenuExpanded
                         },
-                    painter = painterResource(R.drawable.ic_space_list_dots),
-                    contentDescription = "Settings"
-                )
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Image(
+                        modifier = Modifier.wrapContentSize(),
+                        painter = painterResource(R.drawable.ic_space_list_dots),
+                        contentDescription = "Objects settings icon"
+                    )
+                }
                 DropdownMenu(
-                    modifier = Modifier
-                        .width(252.dp)
-                        .padding(end = 32.dp),
+                    modifier = Modifier.width(252.dp),
                     expanded = isMenuExpanded,
                     onDismissRequest = { isMenuExpanded = false },
                     shape = RoundedCornerShape(size = 16.dp),
                     containerColor = colorResource(id = R.color.background_primary),
                     shadowElevation = 5.dp
                 ) {
-                    when (uiObjectsMenuState.setItem) {
+                    when (val item = uiObjectsMenuState.objSetItem) {
                         UiMenuSetItem.CreateSet -> {
                             ObjectsListMenuItem(
                                 title = stringResource(R.string.object_type_objects_menu_create_set),
@@ -119,12 +121,13 @@ fun ObjectsHeader(
                                 color = colorResource(R.color.shape_secondary)
                             )
                         }
+
                         is UiMenuSetItem.OpenSet -> {
                             ObjectsListMenuItem(
                                 title = stringResource(R.string.object_type_objects_menu_open_set),
                                 isSelected = false,
                                 modifier = Modifier
-                                    .clickable { onTypeEvent(TypeEvent.OnOpenSetClick) }
+                                    .clickable { onTypeEvent(TypeEvent.OnOpenSetClick(setId = item.setId)) }
                             )
                             Divider(
                                 height = 8.dp,
@@ -133,6 +136,7 @@ fun ObjectsHeader(
                                 color = colorResource(R.color.shape_secondary)
                             )
                         }
+
                         UiMenuSetItem.Hidden -> {}
                     }
                     ObjectsListSortingMenuContainer(
@@ -148,16 +152,22 @@ fun ObjectsHeader(
                 }
             }
             if (uiObjectsAddIconState is UiObjectsAddIconState.Visible) {
-                Image(
+                Box(
                     modifier = Modifier
-                        .padding(start = 8.dp, end = 20.dp)
-                        .size(24.dp)
+                        .padding(start = 8.dp)
+                        .height(48.dp)
+                        .width(32.dp)
                         .noRippleThrottledClickable {
-                            onTypeEvent(OnTemplatesAddIconClick)
+                            onTypeEvent(TypeEvent.OnCreateObjectIconClick)
                         },
-                    painter = painterResource(R.drawable.ic_default_plus),
-                    contentDescription = "Add"
-                )
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Image(
+                        modifier = Modifier.wrapContentSize(),
+                        painter = painterResource(R.drawable.ic_default_plus),
+                        contentDescription = "Add",
+                    )
+                }
             }
         }
     }
@@ -194,7 +204,7 @@ fun ObjectsHeaderPreview() {
                     isSelected = false
                 ),
             ),
-            setItem = UiMenuSetItem.CreateSet
+            objSetItem = UiMenuSetItem.CreateSet
         ),
         onTypeEvent = {}
     )

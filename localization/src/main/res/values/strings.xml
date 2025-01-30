@@ -606,6 +606,7 @@
     <string name="set_as_default">Make default</string>
     <string name="default_object">Default object</string>
     <string name="default_template">Default template</string>
+    <string name="default_template_icon">Default</string>
     <string name="title_templates_not_allowed">This type doesn\'t support templates</string>
     <string name="num_applied">%1$d applied</string>
     <string name="view_list">List</string>
@@ -1878,8 +1879,10 @@ Please provide specific details of your needs here.</string>
     <string name="chat_message_reactions_no_reactions_message">Probably someone has just removed the reaction or technical issue happened</string>
 
     <string name="object_types_human">Human</string>
+    <string name="object_type_settings_item_remove">Delete completely</string>
 
     <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
     <string name="chats_alert_delete_this_message">Delete this message?</string>
+    <string name="object_set_of_title">Set of</string>
 
 </resources>

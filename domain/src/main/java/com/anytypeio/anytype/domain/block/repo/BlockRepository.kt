@@ -159,7 +159,8 @@ interface BlockRepository {
 
     suspend fun createSet(
         space: Id,
-        objectType: String? = null
+        objectType: String? = null,
+        details: Struct? = null
     ): CreateObjectSet.Response
 
     suspend fun addRelationToDataView(ctx: Id, dv: Id, relation: Key): Payload

@@ -14,7 +14,8 @@ object SupportedLayouts {
         ObjectType.Layout.NOTE,
         ObjectType.Layout.BOOKMARK,
         ObjectType.Layout.AUDIO,
-        ObjectType.Layout.PDF
+        ObjectType.Layout.PDF,
+        ObjectType.Layout.OBJECT_TYPE,
     )
     val editorLayouts = listOf(
         ObjectType.Layout.BASIC,

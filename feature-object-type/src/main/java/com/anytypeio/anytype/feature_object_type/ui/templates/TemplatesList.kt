@@ -18,11 +18,18 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.widgets.TemplateItemContent
+import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiTemplatesListState
 import com.anytypeio.anytype.presentation.templates.TemplateView
+import timber.log.Timber
 
 @Composable
-fun TemplatesList(uiTemplatesListState: UiTemplatesListState) {
+fun TemplatesList(
+    uiTemplatesListState: UiTemplatesListState,
+    onTypeEvent: (TypeEvent) -> Unit
+) {
+
+    Timber.d("TemplatesList :$uiTemplatesListState")
 
     val scrollState = rememberLazyListState()
 
@@ -56,10 +63,13 @@ fun TemplatesList(uiTemplatesListState: UiTemplatesListState) {
                         .height(224.dp)
                         .width(120.dp)
                         .clickable {
-                            //action(TemplateClick(item))
+                            onTypeEvent(TypeEvent.OnTemplateItemClick(item))
                         }
                 ) {
-                    TemplateItemContent(item)
+                    TemplateItemContent(
+                        item = item,
+                        showDefaultIcon = true
+                    )
                 }
                 when (item) {
                     is TemplateView.Blank -> item.id

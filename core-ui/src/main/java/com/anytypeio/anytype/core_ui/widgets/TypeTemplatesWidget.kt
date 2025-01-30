@@ -14,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -93,8 +94,10 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
@@ -116,6 +119,7 @@ import timber.log.Timber
 @Composable
 fun TypeTemplatesWidget(
     state: TypeTemplatesWidgetUI,
+    showDefaultIcon: Boolean = false,
     onDismiss: () -> Unit,
     moreClick: (TemplateView) -> Unit,
     editClick: () -> Unit,
@@ -414,7 +418,8 @@ private fun TemplatesList(
     scrollState: LazyListState,
     state: TypeTemplatesWidgetUI.Data,
     action: (TypeTemplatesWidgetUIAction) -> Unit,
-    moreClick: (TemplateView, IntOffset) -> Unit
+    moreClick: (TemplateView, IntOffset) -> Unit,
+    showDefaultIcon: Boolean = false
 ) {
     LazyRow(
         state = scrollState,
@@ -497,7 +502,10 @@ private fun TemplatesList(
 }
 
 @Composable
-fun TemplateItemContent(item: TemplateView) {
+fun BoxScope.TemplateItemContent(
+    item: TemplateView,
+    showDefaultIcon: Boolean = false
+) {
     Column {
         when (item) {
             is TemplateView.Blank -> {
@@ -580,6 +588,23 @@ fun TemplateItemContent(item: TemplateView) {
                 }
             }
         }
+    }
+    if (showDefaultIcon && item.isDefault) {
+        Text(
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .wrapContentSize()
+                .background(
+                    shape = RoundedCornerShape(4.dp),
+                    color = colorResource(R.color.shape_tertiary)
+                )
+                .padding(start = 6.dp, end = 6.dp, top = 2.dp, bottom = 2.dp)
+                .align(Alignment.BottomCenter),
+            text = stringResource(R.string.default_template_icon),
+            textAlign = TextAlign.Center,
+            color = colorResource(R.color.text_secondary),
+            style = Caption2Medium
+        )
     }
 }
 
@@ -1016,6 +1041,7 @@ fun ComposablePreview() {
             coverColor = null,
             coverGradient = null,
             coverImage = null,
+            isDefault = true
         ),
     )
     val state = TypeTemplatesWidgetUI.Data(

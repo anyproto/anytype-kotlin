@@ -42,12 +42,15 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
+import com.anytypeio.anytype.feature_object_type.ui.alerts.DeleteAlertScreen
 import com.anytypeio.anytype.feature_object_type.ui.header.HorizontalButtons
 import com.anytypeio.anytype.feature_object_type.ui.header.IconAndTitleWidget
 import com.anytypeio.anytype.feature_object_type.ui.header.TopToolbar
 import com.anytypeio.anytype.feature_object_type.ui.objects.ObjectsHeader
 import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesHeader
 import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesList
+import com.anytypeio.anytype.feature_object_type.viewmodel.UiDeleteAlertState
+import com.anytypeio.anytype.feature_object_type.viewmodel.UiEditButton
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiFieldsButtonState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiIconState
 import com.anytypeio.anytype.feature_object_type.viewmodel.UiLayoutButtonState
@@ -68,7 +71,8 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 @Composable
 fun ObjectTypeMainScreen(
 
-    //sync status
+    //top bar
+    uiEditButtonState: UiEditButton,
     uiSyncStatusBadgeState: UiSyncStatusBadgeState,
     uiSyncStatusState: SyncStatusWidgetState,
 
@@ -97,6 +101,9 @@ fun ObjectTypeMainScreen(
     uiObjectsListState: UiObjectsListState,
     uiContentState: UiContentState,
 
+    //delete alert
+    uiDeleteAlertState: UiDeleteAlertState,
+
     onTypeEvent: (TypeEvent) -> Unit
 ) {
     Scaffold(
@@ -121,6 +128,7 @@ fun ObjectTypeMainScreen(
                         .fillMaxWidth()
                         .height(48.dp),
                     uiSyncStatusBadgeState = uiSyncStatusBadgeState,
+                    uiEditButtonState = uiEditButtonState,
                     onTypeEvent = onTypeEvent
                 )
                 Spacer(
@@ -176,13 +184,15 @@ fun ObjectTypeMainScreen(
                     modifier = Modifier.height(12.dp)
                 )
                 TemplatesList(
-                    uiTemplatesListState = uiTemplatesListState
+                    uiTemplatesListState = uiTemplatesListState,
+                    onTypeEvent = onTypeEvent
                 )
                 Spacer(
                     modifier = Modifier.height(32.dp)
                 )
                 ObjectsHeader(
                     modifier = Modifier
+                        .padding(horizontal = 20.dp)
                         .fillMaxWidth()
                         .height(48.dp),
                     uiObjectsHeaderState = uiObjectsHeaderState,
@@ -208,7 +218,7 @@ fun ObjectTypeMainScreen(
 
                     },
                     onObjectClicked = { item ->
-
+                        onTypeEvent(TypeEvent.OnObjectItemClick(item))
                     }
                 )
             }
@@ -228,6 +238,12 @@ fun ObjectTypeMainScreen(
             uiState = uiSyncStatusState,
             onDismiss = { onTypeEvent(TypeEvent.OnSyncStatusDismiss) },
             onUpdateAppClick = {}
+        )
+    }
+
+    if (uiDeleteAlertState is UiDeleteAlertState.Show) {
+        DeleteAlertScreen(
+            onTypeEvent = onTypeEvent
         )
     }
 }
@@ -306,6 +322,10 @@ fun ObjectTypeMainScreenPreview() {
                     coverGradient = null,
                     coverImage = null,
                 ),
+                TemplateView.New(
+                    targetTypeId = TypeId("32423"),
+                    targetTypeKey = TypeKey("43232")
+                )
             )
         ),
         uiObjectsAddIconState = UiObjectsAddIconState.Visible,
@@ -314,6 +334,8 @@ fun ObjectTypeMainScreenPreview() {
         uiObjectsListState = UiObjectsListState(emptyList()),
         uiContentState = UiContentState.Idle(),
         uiObjectsMenuState = UiMenuState.EMPTY,
+        uiDeleteAlertState = UiDeleteAlertState.Hidden,
+        uiEditButtonState = UiEditButton.Visible,
         onTypeEvent = {}
     )
 }

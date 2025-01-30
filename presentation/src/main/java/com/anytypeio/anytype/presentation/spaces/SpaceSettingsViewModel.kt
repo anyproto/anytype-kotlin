@@ -177,7 +177,7 @@ class SpaceSettingsViewModel(
             if (config != null) {
                 setSpaceDetails.async(
                     SetSpaceDetails.Params(
-                        space = SpaceId(config.space),
+                        space = params.space,
                         details = mapOf(
                             Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
                             Relations.ICON_IMAGE to null,

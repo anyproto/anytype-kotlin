@@ -42,7 +42,7 @@ fun SpaceHeader(
     icon: SpaceIconView?,
     modifier: Modifier = Modifier,
     onNameSet: (String) -> Unit,
-    onRandomGradientClicked: () -> Unit,
+    onRemoveIconClicked: () -> Unit,
     isEditEnabled: Boolean,
     onSpaceImagePicked: (Uri) -> Unit
 ) {
@@ -114,7 +114,7 @@ fun SpaceHeader(
                     }
                     DropdownMenuItem(
                         onClick = {
-                            onRandomGradientClicked()
+                            onRemoveIconClicked()
                             isSpaceIconMenuExpanded.value = false
                         },
                     ) {

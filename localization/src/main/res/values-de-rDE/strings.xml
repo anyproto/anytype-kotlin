@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Zufällige Volltonfarbe verwenden</string>
     <string name="space_settings_apply_upload_image">Bild hochladen</string>
     <string name="profile_settings_apply_upload_image">Bild hochladen</string>
-    <string name="profile_settings_remove_image">Bild entfernen</string>
+    <string name="remove_image">Bild entfernen</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
     <string name="in_order_to_save">Um Platz auf deinem Gerät zu sparen, können alle deine Dateien auf unseren verschlüsselten Backup-Knoten ausgelagert werden. Die Dateien werden beim Öffnen dann wieder heruntergeladen.</string>

@@ -99,6 +99,7 @@ import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiSnackbarState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -112,7 +113,7 @@ fun AllContentWrapperScreen(
     uiMenuState: UiMenuState,
     uiSnackbarState: UiSnackbarState,
     uiItemsState: UiItemsState,
-    uiBottomMenu: AllContentBottomMenu,
+    uiBottomMenu: NavPanelState,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
@@ -132,7 +133,8 @@ fun AllContentWrapperScreen(
     moveToBin: (UiContentItem.Item) -> Unit,
     undoMoveToBin: (Id) -> Unit,
     onDismissSnackbar: () -> Unit,
-    onShareButtonClicked: () -> Unit
+    onShareButtonClicked: () -> Unit,
+    onHomeButtonClicked: () -> Unit
 ) {
 
     AllContentMainScreen(
@@ -161,7 +163,8 @@ fun AllContentWrapperScreen(
         onDismissSnackbar = onDismissSnackbar,
         canPaginate = canPaginate,
         onUpdateLimitSearch = onUpdateLimitSearch,
-        onShareButtonClicked = onShareButtonClicked
+        onShareButtonClicked = onShareButtonClicked,
+        onHomeButtonClicked = onHomeButtonClicked
     )
 }
 
@@ -173,7 +176,7 @@ fun AllContentMainScreen(
     uiTabsState: UiTabsState,
     uiMenuState: UiMenuState,
     uiSnackbarState: UiSnackbarState,
-    uiBottomMenu: AllContentBottomMenu,
+    uiBottomMenu: NavPanelState,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
@@ -193,7 +196,8 @@ fun AllContentMainScreen(
     onDismissSnackbar: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
-    onShareButtonClicked: () -> Unit
+    onShareButtonClicked: () -> Unit,
+    onHomeButtonClicked: () -> Unit
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -237,7 +241,8 @@ fun AllContentMainScreen(
                     onAddDocClicked = onAddDocClicked,
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
                     uiBottomMenu = uiBottomMenu,
-                    onShareButtonClicked = onShareButtonClicked
+                    onShareButtonClicked = onShareButtonClicked,
+                    onHomeButtonClicked = onHomeButtonClicked
                 )
             }
         },
@@ -333,12 +338,13 @@ fun AllContentMainScreen(
 
 @Composable
 fun BottomMenu(
-    uiBottomMenu: AllContentBottomMenu,
+    uiBottomMenu: NavPanelState,
     modifier: Modifier = Modifier,
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
-    onShareButtonClicked: () -> Unit
+    onShareButtonClicked: () -> Unit,
+    onHomeButtonClicked: () -> Unit
 ) {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     if (isImeVisible) return
@@ -347,8 +353,9 @@ fun BottomMenu(
         searchClick = onGlobalSearchClicked,
         addDocClick = onAddDocClicked,
         addDocLongClick = onCreateObjectLongClicked,
-        isOwnerOrEditor = uiBottomMenu.isOwnerOrEditor,
-        onShareButtonClicked = onShareButtonClicked
+        onShareButtonClicked = onShareButtonClicked,
+        state = uiBottomMenu,
+        onHomeButtonClicked = onHomeButtonClicked
     )
 }
 
@@ -613,13 +620,14 @@ fun PreviewMainScreen() {
         moveToBin = {},
         onBackLongClicked = {},
         onRelationClicked = {},
-        uiBottomMenu = AllContentBottomMenu(isOwnerOrEditor = false),
+        uiBottomMenu = NavPanelState.Init,
         uiSnackbarState = UiSnackbarState.Hidden,
         undoMoveToBin = {},
         onDismissSnackbar = {},
         canPaginate = true,
         onUpdateLimitSearch = {},
-        onShareButtonClicked = {}
+        onShareButtonClicked = {},
+        onHomeButtonClicked = {}
     )
 }
 

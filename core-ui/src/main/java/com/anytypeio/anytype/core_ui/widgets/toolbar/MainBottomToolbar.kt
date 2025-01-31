@@ -10,6 +10,8 @@ import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
 import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
 
 class MainBottomToolbar @JvmOverloads constructor(
     context: Context,
@@ -28,6 +30,7 @@ class MainBottomToolbar @JvmOverloads constructor(
     fun searchClicks() = binding.btnSearch.clicks()
     fun addDocClicks() = binding.btnAddDoc.clicks()
     fun shareClicks() = binding.btnShare.clicks()
+    fun homeClicks() = binding.btnHome.clicks()
 
     fun setState(state: NavPanelState) {
         when(state) {
@@ -58,6 +61,7 @@ class MainBottomToolbar @JvmOverloads constructor(
     private fun setLeftButtonState(state: NavPanelState.Default) {
         when (val left = state.leftButtonState) {
             is NavPanelState.LeftButtonState.AddMembers -> {
+                binding.btnHome.gone()
                 binding.icShare.setImageResource(
                     R.drawable.ic_nav_panel_add_member
                 )
@@ -66,8 +70,12 @@ class MainBottomToolbar @JvmOverloads constructor(
                 } else {
                     binding.icShare.alpha = DEFAULT_DISABLED_ALPHA
                 }
+                binding.btnShare.visible()
             }
-
+            is NavPanelState.LeftButtonState.Home -> {
+                binding.btnShare.gone()
+                binding.btnHome.visible()
+            }
             is NavPanelState.LeftButtonState.Comment -> {
 
             }

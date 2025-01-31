@@ -606,6 +606,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .launchIn(lifecycleScope)
 
         binding.bottomToolbar
+            .homeClicks()
+            .onEach { vm.onHomeButtonClicked() }
+            .launchIn(lifecycleScope)
+
+        binding.bottomToolbar
             .searchClicks()
             .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)
@@ -2078,10 +2083,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     private fun getEditorSettings() {
     }
 
-    override fun onExitToDesktopClicked() {
-        vm.navigateToDesktop()
-    }
-
     override fun onLanguageSelected(target: Id, key: String) {
         Timber.d("key: $key")
         vm.onSelectProgrammingLanguageClicked(target, key)
@@ -2357,7 +2358,6 @@ interface OnFragmentInteractionListener {
     fun onSetBlockObjectLink(blockId: Id, objectId: Id)
     fun onRemoveMarkupLinkClicked(blockId: String, range: IntRange)
     fun onAddBookmarkUrlClicked(target: String, url: String)
-    fun onExitToDesktopClicked()
     fun onSetRelationKeyClicked(blockId: Id, key: Id)
     fun onSetObjectLink(objectId: Id)
     fun onSetWebLink(link: String)

@@ -108,12 +108,8 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
             is Command.ToSearch -> navigation.openGlobalSearch(
                 space = command.space
             )
-            is Command.Vault -> {
-                runCatching {
-                    findNavController().navigate(R.id.actionOpenVault)
-                }.onFailure {
-                    Timber.e(it, "Error while exiting to vault")
-                }
+            is Command.ToSpaceHome -> {
+                navigation().exitToSpaceHome()
             }
             is Command.ExitToSpaceWidgets -> {
                 runCatching {

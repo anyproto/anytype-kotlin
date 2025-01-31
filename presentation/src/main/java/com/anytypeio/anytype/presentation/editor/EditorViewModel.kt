@@ -29,7 +29,6 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.TextBlock
@@ -1205,7 +1204,7 @@ class EditorViewModel(
     fun onHomeButtonClicked() {
         Timber.d("onHomeButtonClicked, ")
         if (stateData.value == ViewState.NotExist) {
-            navigateToDesktop()
+            exitToSpaceHome()
             return
         }
         proceedWithExitingToDashboard()
@@ -1251,19 +1250,19 @@ class EditorViewModel(
                     vmParams.space
                 )
             ).fold(
-                onSuccess = { navigateToDesktop() },
+                onSuccess = { exitToSpaceHome() },
                 onFailure = {
                     Timber.e(it, "Error while closing this page: $context")
-                    navigateToDesktop()
+                    exitToSpaceHome()
                 }
             )
         }
     }
 
     // TODO DROID-2731 rename the method
-    fun navigateToDesktop() {
+    fun exitToSpaceHome() {
         Timber.d("navigateToDesktop, ")
-        navigation.postValue(EventWrapper(AppNavigation.Command.ExitToVault))
+        navigation.postValue(EventWrapper(ExitToSpaceHome))
     }
 
     @Deprecated("replace by onTextBlockTextChanged")

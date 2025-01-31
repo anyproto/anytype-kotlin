@@ -88,6 +88,7 @@ fun HomeScreen(
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onExitEditMode: () -> Unit,
     onSearchClicked: () -> Unit,
+    onHomeButtonClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
     onShareButtonClicked: () -> Unit,
@@ -161,7 +162,8 @@ fun HomeScreen(
                 searchClick = onSearchClicked,
                 addDocClick = onCreateNewObjectClicked,
                 addDocLongClick = onCreateNewObjectLongClicked,
-                onShareButtonClicked = onShareButtonClicked
+                onShareButtonClicked = onShareButtonClicked,
+                onHomeButtonClicked = onHomeButtonClicked
             )
         }
     }

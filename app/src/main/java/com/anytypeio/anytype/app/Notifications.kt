@@ -86,9 +86,13 @@ class AnytypeNotificationService @Inject constructor(
                 val body = context.resources.getString(
                     R.string.multiplayer_notification_member_removed_from_space
                 )
+                val title = context.resources.getString(
+                    R.string.multiplayer_notification_member_removed_from_space_title
+                )
                 showBasicNotification(
                     tag = notification.id,
-                    body = body
+                    body = body,
+                    title = title
                 )
             }
             is NotificationPayload.ParticipantRequestApproved -> {

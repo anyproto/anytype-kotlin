@@ -135,6 +135,7 @@ class CreateSpaceViewModel(
     sealed class Command {
         data class SwitchSpace(
             val space: Space,
+            @Deprecated("Tooltip is outdated. Should be skipped for now.")
             val showMultiplayerTooltip: Boolean
         ): Command()
     }

@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Применить случайный сплошной цвет</string>
     <string name="space_settings_apply_upload_image">Загрузить изображение</string>
     <string name="profile_settings_apply_upload_image">Загрузить изображение</string>
-    <string name="profile_settings_remove_image">Remove image</string>
+    <string name="remove_image">Remove image</string>
     <string name="delete_space">Удалить пространство</string>
     <string name="you_can_store">Вы можете бесплатно хранить до %1$s ваших файлов на нашем узле резервного копирования. При достижении лимита файлы будут храниться только локально.</string>
     <string name="in_order_to_save">Чтобы сохранить место на вашем локальном устройстве, вы можете выгрузить все ваши файлы в наш зашифрованный узел резервного копирования. Файлы будут загружены обратно, когда вы откроете их.</string>

@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Carregue uma imagem</string>
     <string name="profile_settings_apply_upload_image">Carregue uma imagem</string>
-    <string name="profile_settings_remove_image">Remove image</string>
+    <string name="remove_image">Remove image</string>
     <string name="delete_space">Excluir Espaço</string>
     <string name="you_can_store">Você pode armazenar até %1$s de seus arquivos em nosso nó de backup criptografado gratuitamente. Se você atingir o limite, os arquivos serão armazenados apenas localmente.</string>
     <string name="in_order_to_save">Para economizar espaço no seu dispositivo local, você pode descarregar todos os seus arquivos no nosso servidor de backup criptografado. Os arquivos serão carregados novamente quando forem abertos.</string>

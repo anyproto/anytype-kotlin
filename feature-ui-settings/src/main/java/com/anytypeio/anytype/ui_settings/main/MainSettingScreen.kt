@@ -42,7 +42,7 @@ fun SpaceHeader(
     icon: SpaceIconView?,
     modifier: Modifier = Modifier,
     onNameSet: (String) -> Unit,
-    onRandomGradientClicked: () -> Unit,
+    onRemoveIconClicked: () -> Unit,
     isEditEnabled: Boolean,
     onSpaceImagePicked: (Uri) -> Unit
 ) {
@@ -90,18 +90,6 @@ fun SpaceHeader(
                         isSpaceIconMenuExpanded.value = false
                     }
                 ) {
-                    DropdownMenuItem(
-                        onClick = {
-                            onRandomGradientClicked()
-                            isSpaceIconMenuExpanded.value = false
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.space_settings_apply_random_gradient),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary)
-                        )
-                    }
                     if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
                         Divider(
                             thickness = 0.5.dp,
@@ -123,6 +111,18 @@ fun SpaceHeader(
                                 color = colorResource(id = R.color.text_primary)
                             )
                         }
+                    }
+                    DropdownMenuItem(
+                        onClick = {
+                            onRemoveIconClicked()
+                            isSpaceIconMenuExpanded.value = false
+                        },
+                    ) {
+                        Text(
+                            text = stringResource(R.string.remove_image),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
                     }
                 }
             }

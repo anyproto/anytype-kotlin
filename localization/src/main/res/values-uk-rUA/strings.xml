@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="profile_settings_apply_upload_image">Upload image</string>
-    <string name="profile_settings_remove_image">Remove image</string>
+    <string name="remove_image">Remove image</string>
     <string name="delete_space">Видалити простір </string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
     <string name="in_order_to_save">Щоб заощадити місце на вашому локальному пристрої, ви можете вивантажити всі ваші файли на наш зашифрований вузол резервного копіювання. Файли будуть завантажені назад, коли ви їх відкриєте.</string>

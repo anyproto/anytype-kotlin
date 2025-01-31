@@ -21,7 +21,6 @@ import com.anytypeio.anytype.core_models.ext.isPossibleToUpgrade
 import com.anytypeio.anytype.core_models.membership.MembershipUpgradeReason
 import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
-import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ui.ViewState
@@ -172,13 +171,13 @@ class SpaceSettingsViewModel(
         proceedWithSpaceDebug()
     }
 
-    fun onRandomSpaceGradientClicked() {
+    fun onRemoveSpaceIconClicked() {
         viewModelScope.launch {
             val config = spaceConfig
             if (config != null) {
                 setSpaceDetails.async(
                     SetSpaceDetails.Params(
-                        space = SpaceId(config.space),
+                        space = params.space,
                         details = mapOf(
                             Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
                             Relations.ICON_IMAGE to null,

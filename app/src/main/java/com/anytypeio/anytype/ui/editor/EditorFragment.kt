@@ -2083,10 +2083,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     private fun getEditorSettings() {
     }
 
-    override fun onExitToDesktopClicked() {
-        vm.exitToSpaceHome()
-    }
-
     override fun onLanguageSelected(target: Id, key: String) {
         Timber.d("key: $key")
         vm.onSelectProgrammingLanguageClicked(target, key)
@@ -2362,7 +2358,6 @@ interface OnFragmentInteractionListener {
     fun onSetBlockObjectLink(blockId: Id, objectId: Id)
     fun onRemoveMarkupLinkClicked(blockId: String, range: IntRange)
     fun onAddBookmarkUrlClicked(target: String, url: String)
-    fun onExitToDesktopClicked()
     fun onSetRelationKeyClicked(blockId: Id, key: Id)
     fun onSetObjectLink(objectId: Id)
     fun onSetWebLink(link: String)

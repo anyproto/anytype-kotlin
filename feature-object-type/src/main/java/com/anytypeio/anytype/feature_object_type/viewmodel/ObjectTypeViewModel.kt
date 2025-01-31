@@ -41,6 +41,7 @@ import com.anytypeio.anytype.feature_object_type.models.UiFieldsButtonState
 import com.anytypeio.anytype.feature_object_type.models.UiIconState
 import com.anytypeio.anytype.feature_object_type.models.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.models.UiLayoutTypeState
+import com.anytypeio.anytype.feature_object_type.models.UiLayoutTypeState.*
 import com.anytypeio.anytype.feature_object_type.models.UiMenuSetItem
 import com.anytypeio.anytype.feature_object_type.models.UiMenuState
 import com.anytypeio.anytype.feature_object_type.models.UiObjectsAddIconState
@@ -609,7 +610,7 @@ class ObjectTypeViewModel(
             TypeEvent.OnFieldsButtonClick -> TODO()
             TypeEvent.OnLayoutButtonClick -> {
                 //todo Логика по смене layout у типа должна быть вынесена в отдельную функцию
-                uiTypeLayoutsState.value = UiLayoutTypeState.Visible(
+                uiTypeLayoutsState.value = Visible(
                     layouts = listOf(
                         ObjectType.Layout.BASIC,
                         ObjectType.Layout.NOTE,
@@ -698,6 +699,12 @@ class ObjectTypeViewModel(
             }
             is TypeEvent.OnLayoutTypeItemClick -> {
                 proceedWithUpdatingLayout(layout = event.item)
+            }
+
+            TypeEvent.OnBackClick -> {
+                viewModelScope.launch {
+                    commands.emit(ObjectTypeCommand.Back)
+                }
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.feature_object_type.ui
 
 import android.os.Build
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,13 +12,19 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -34,7 +39,11 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.lists.objects.ObjectsScreen
+import com.anytypeio.anytype.core_ui.extensions.swapList
+import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.lists.objects.ListItemLoading
+import com.anytypeio.anytype.core_ui.lists.objects.ObjectsListItem
 import com.anytypeio.anytype.core_ui.lists.objects.UiContentState
 import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListState
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
@@ -42,13 +51,6 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
-import com.anytypeio.anytype.feature_object_type.ui.alerts.DeleteAlertScreen
-import com.anytypeio.anytype.feature_object_type.ui.header.HorizontalButtons
-import com.anytypeio.anytype.feature_object_type.ui.header.IconAndTitleWidget
-import com.anytypeio.anytype.feature_object_type.ui.header.TopToolbar
-import com.anytypeio.anytype.feature_object_type.ui.objects.ObjectsHeader
-import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesHeader
-import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesList
 import com.anytypeio.anytype.feature_object_type.models.UiDeleteAlertState
 import com.anytypeio.anytype.feature_object_type.models.UiEditButton
 import com.anytypeio.anytype.feature_object_type.models.UiFieldsButtonState
@@ -64,12 +66,21 @@ import com.anytypeio.anytype.feature_object_type.models.UiTemplatesAddIconState
 import com.anytypeio.anytype.feature_object_type.models.UiTemplatesHeaderState
 import com.anytypeio.anytype.feature_object_type.models.UiTemplatesListState
 import com.anytypeio.anytype.feature_object_type.models.UiTitleState
+import com.anytypeio.anytype.feature_object_type.ui.alerts.DeleteAlertScreen
+import com.anytypeio.anytype.feature_object_type.ui.header.HorizontalButtons
+import com.anytypeio.anytype.feature_object_type.ui.header.IconAndTitleWidget
+import com.anytypeio.anytype.feature_object_type.ui.header.TopToolbar
 import com.anytypeio.anytype.feature_object_type.ui.layouts.TypeLayoutsScreen
+import com.anytypeio.anytype.feature_object_type.ui.objects.ObjectsHeader
+import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesHeader
+import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesList
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.templates.TemplateView
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ObjectTypeMainScreen(
 
@@ -109,52 +120,40 @@ fun ObjectTypeMainScreen(
 
     onTypeEvent: (TypeEvent) -> Unit
 ) {
+
+    val objects = remember { mutableStateListOf<UiObjectsListItem>() }
+    objects.swapList(uiObjectsListState.items)
+
+    val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = rememberTopAppBarState()
+    )
+
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(
+                topAppBarScrollBehavior.nestedScrollConnection
+            ),
         containerColor = colorResource(id = R.color.background_primary),
         contentColor = colorResource(id = R.color.background_primary),
         topBar = {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = colorResource(id = R.color.background_primary))
+                modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .fillMaxWidth()
+                else
+                    Modifier.fillMaxWidth()
             ) {
-                if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-                    Spacer(
-                        modifier = Modifier.windowInsetsTopHeight(
-                            WindowInsets.statusBars
-                        )
-                    )
-                }
                 TopToolbar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
                     uiSyncStatusBadgeState = uiSyncStatusBadgeState,
                     uiEditButtonState = uiEditButtonState,
-                    onTypeEvent = onTypeEvent
-                )
-                Spacer(
-                    modifier = Modifier.height(32.dp)
-                )
-                IconAndTitleWidget(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(horizontal = 20.dp),
-                    uiIconState = uiIconState,
-                    uiTitleState = uiTitleState,
-                    onTypeEvent = onTypeEvent
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                HorizontalButtons(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(36.dp)
-                        .padding(horizontal = 20.dp),
-                    uiFieldsButtonState = uiFieldsButtonState,
-                    uiLayoutButtonState = uiLayoutButtonState,
-                    onTypeEvent = onTypeEvent
+                    onTypeEvent = onTypeEvent,
+                    topBarScrollBehavior = topAppBarScrollBehavior,
+                    uiTitleState = uiTitleState
                 )
             }
         },
@@ -169,63 +168,110 @@ fun ObjectTypeMainScreen(
                     Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-            Column(
-                modifier = contentModifier,
+            LazyColumn(
+                modifier = contentModifier
             ) {
-                if (uiTemplatesHeaderState is UiTemplatesHeaderState.Visible) {
-                    Spacer(
-                        modifier = Modifier.height(44.dp)
-                    )
-                    TemplatesHeader(
+                item {
+                    IconAndTitleWidget(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp),
-                        uiTemplatesHeaderState = uiTemplatesHeaderState,
-                        uiTemplatesAddIconState = uiTemplatesAddIconState,
+                            .wrapContentHeight()
+                            .padding(top = 32.dp)
+                            .padding(horizontal = 20.dp),
+                        uiIconState = uiIconState,
+                        uiTitleState = uiTitleState,
                         onTypeEvent = onTypeEvent
                     )
-                    Spacer(
-                        modifier = Modifier.height(12.dp)
-                    )
-                    TemplatesList(
-                        uiTemplatesListState = uiTemplatesListState,
-                        onTypeEvent = onTypeEvent
-                    )
-                    Spacer(
-                        modifier = Modifier.height(32.dp)
-                    )
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
-                ObjectsHeader(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    uiObjectsHeaderState = uiObjectsHeaderState,
-                    uiObjectsAddIconState = uiObjectsAddIconState,
-                    uiObjectsSettingsIconState = uiObjectsSettingsIconState,
-                    uiObjectsMenuState = uiObjectsMenuState,
-                    onTypeEvent = onTypeEvent
-                )
-                if (uiObjectsListState.items.isEmpty()) {
-                    EmptyScreen(
+                item {
+                    HorizontalButtons(
                         modifier = Modifier
-                            .padding(top = 18.dp)
+                            .fillMaxWidth()
+                            .height(36.dp)
+                            .padding(horizontal = 20.dp),
+                        uiFieldsButtonState = uiFieldsButtonState,
+                        uiLayoutButtonState = uiLayoutButtonState,
+                        onTypeEvent = onTypeEvent
                     )
                 }
-                ObjectsScreen(
-                    state = uiObjectsListState,
-                    uiState = uiContentState,
-                    canPaginate = false,
-                    onLoadMore = {
-
-                    },
-                    onMoveToBin = { item ->
-
-                    },
-                    onObjectClicked = { item ->
-                        onTypeEvent(TypeEvent.OnObjectItemClick(item))
+                if (uiTemplatesHeaderState is UiTemplatesHeaderState.Visible) {
+                    item {
+                        Spacer(
+                            modifier = Modifier.height(44.dp)
+                        )
+                        TemplatesHeader(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            uiTemplatesHeaderState = uiTemplatesHeaderState,
+                            uiTemplatesAddIconState = uiTemplatesAddIconState,
+                            onTypeEvent = onTypeEvent
+                        )
+                        Spacer(
+                            modifier = Modifier.height(12.dp)
+                        )
+                        TemplatesList(
+                            uiTemplatesListState = uiTemplatesListState,
+                            onTypeEvent = onTypeEvent
+                        )
+                        Spacer(
+                            modifier = Modifier.height(32.dp)
+                        )
                     }
-                )
+                }
+                item {
+                    ObjectsHeader(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        uiObjectsHeaderState = uiObjectsHeaderState,
+                        uiObjectsAddIconState = uiObjectsAddIconState,
+                        uiObjectsSettingsIconState = uiObjectsSettingsIconState,
+                        uiObjectsMenuState = uiObjectsMenuState,
+                        onTypeEvent = onTypeEvent
+                    )
+                }
+                if (uiObjectsListState.items.isEmpty()) {
+                    item {
+                        EmptyScreen(
+                            modifier = Modifier
+                                .padding(top = 18.dp)
+                        )
+                    }
+                } else {
+                    items(
+                        count = objects.size,
+                        key = { index -> objects[index].id },
+                        contentType = { index ->
+                            when (objects[index]) {
+                                is UiObjectsListItem.Loading -> "loading"
+                                is UiObjectsListItem.Item -> "item"
+                            }
+                        }
+                    ) { index ->
+                        val item = objects[index]
+                        when (item) {
+                            is UiObjectsListItem.Item -> {
+                                ObjectsListItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .noRippleThrottledClickable {
+                                            onTypeEvent(TypeEvent.OnObjectItemClick(item))
+                                        },
+                                    item = item
+                                )
+                                Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                            }
+
+                            is UiObjectsListItem.Loading -> {
+                                ListItemLoading(modifier = Modifier)
+                            }
+                        }
+                    }
+                }
             }
         }
     )

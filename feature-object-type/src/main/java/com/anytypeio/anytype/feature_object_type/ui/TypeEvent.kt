@@ -16,6 +16,7 @@ sealed class TypeEvent {
     data object OnMenuItemDeleteClick : TypeEvent()
     data object OnAlertDeleteDismiss : TypeEvent()
     data object OnAlertDeleteConfirm : TypeEvent()
+    data object OnBackClick : TypeEvent()
     //endregion
 
     //region Object Type Header

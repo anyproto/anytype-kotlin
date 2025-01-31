@@ -424,6 +424,7 @@
     <string name="scroll_to_select_position">Scroll to select new position</string>
     <string name="block_action_add_below">Add below</string>
     <string name="content_desc_back_button">Back button</string>
+    <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>

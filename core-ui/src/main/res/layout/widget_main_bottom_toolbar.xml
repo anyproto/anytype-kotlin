@@ -17,7 +17,7 @@
             android:layout_height="@dimen/main_bottom_toolbar_icon_height"
             android:layout_gravity="center"
             android:scaleType="center"
-            android:contentDescription="@string/content_desc_back_button"
+            android:contentDescription="@string/content_desc_home_button"
             app:srcCompat="@drawable/ic_nav_panel_home" />
 
     </FrameLayout>
@@ -35,7 +35,7 @@
             android:layout_height="@dimen/main_bottom_toolbar_icon_height"
             android:layout_gravity="center"
             android:scaleType="center"
-            android:contentDescription="@string/content_desc_back_button"
+            android:contentDescription="@string/content_desc_share_button"
             app:srcCompat="@drawable/ic_nav_panel_members" />
 
     </FrameLayout>

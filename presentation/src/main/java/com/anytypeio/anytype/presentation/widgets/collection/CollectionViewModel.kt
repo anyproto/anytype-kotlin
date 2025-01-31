@@ -859,11 +859,12 @@ class CollectionViewModel(
         return curr
     }
 
-    fun onHomeClicked() {
-        launch {
-            analytics.sendScreenHomeEvent()
-            commands.emit(Command.Vault)
-        }
+    fun onHomeButtonClicked() {
+        // TODO
+//        launch {
+//            analytics.sendScreenHomeEvent()
+//            commands.emit(Command.Vault)
+//        }
     }
 
     fun onPrevClicked() {

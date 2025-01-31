@@ -1780,6 +1780,10 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onHomeButtonClicked() {
+        // Do nothing
+    }
+
     fun onSpaceSettingsClicked() {
         viewModelScope.launch {
             commands.emit(

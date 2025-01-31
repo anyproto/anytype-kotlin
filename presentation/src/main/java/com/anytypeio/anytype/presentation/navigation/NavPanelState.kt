@@ -12,7 +12,7 @@ sealed class NavPanelState {
     ) : NavPanelState()
 
     sealed class LeftButtonState {
-//        data object Home : LeftButtonState()
+        data object Home : LeftButtonState()
         data object ViewMembers : LeftButtonState()
         data class AddMembers(val isActive: Boolean): LeftButtonState()
         data class Comment(val isActive: Boolean): LeftButtonState()
@@ -24,27 +24,25 @@ sealed class NavPanelState {
                 SpaceMemberPermissions.READER -> {
                     Default(
                         isCreateObjectButtonEnabled = false,
-                        leftButtonState = LeftButtonState.ViewMembers
+                        leftButtonState = LeftButtonState.Home
                     )
                 }
                 SpaceMemberPermissions.WRITER -> {
                     Default(
                         isCreateObjectButtonEnabled = true,
-                        leftButtonState = LeftButtonState.ViewMembers
+                        leftButtonState = LeftButtonState.Home
                     )
                 }
                 SpaceMemberPermissions.OWNER -> {
                     Default(
                         isCreateObjectButtonEnabled = true,
-                        leftButtonState = LeftButtonState.AddMembers(
-                            isActive = true
-                        )
+                        leftButtonState = LeftButtonState.Home
                     )
                 }
                 SpaceMemberPermissions.NO_PERMISSIONS -> {
                     Default(
                         isCreateObjectButtonEnabled = false,
-                        leftButtonState = LeftButtonState.ViewMembers
+                        leftButtonState = LeftButtonState.Home
                     )
                 }
                 else -> {

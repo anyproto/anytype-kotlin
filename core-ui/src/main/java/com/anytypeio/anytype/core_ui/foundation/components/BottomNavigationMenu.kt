@@ -50,7 +50,8 @@ private fun NavBarPreviewOwner() {
             leftButtonState = NavPanelState.LeftButtonState.AddMembers(
                 isActive = true
             )
-        )
+        ),
+        onHomeButtonClicked = {}
     )
 }
 
@@ -64,7 +65,8 @@ private fun NavBarPreviewReader() {
         state = NavPanelState.Default(
             isCreateObjectButtonEnabled = false,
             leftButtonState = NavPanelState.LeftButtonState.ViewMembers
-        )
+        ),
+        onHomeButtonClicked = {}
     )
 }
 
@@ -152,6 +154,7 @@ fun BottomNavigationMenu(
     state: NavPanelState,
     modifier: Modifier = Modifier,
     onShareButtonClicked: () -> Unit = {},
+    onHomeButtonClicked: () -> Unit,
     searchClick: () -> Unit = {},
     addDocClick: () -> Unit = {},
     addDocLongClick: () -> Unit = {}
@@ -194,6 +197,16 @@ fun BottomNavigationMenu(
                         contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
                         res = BottomNavigationItem.MEMBERS.res,
                         onClick = onShareButtonClicked
+                    )
+                }
+                is NavPanelState.LeftButtonState.Home -> {
+                    MenuItem(
+                        modifier = Modifier
+                            .width(72.dp)
+                            .height(52.dp),
+                        contentDescription = stringResource(id = R.string.main_navigation_content_desc_home_button),
+                        res = BottomNavigationItem.MEMBERS.res,
+                        onClick = onHomeButtonClicked
                     )
                 }
             }

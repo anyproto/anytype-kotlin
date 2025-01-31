@@ -369,7 +369,10 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             userPermissions
                 .map { permission ->
-                    NavPanelState.fromPermission(permission)
+                    NavPanelState.fromPermission(
+                        permission = permission,
+                        forceHome = false
+                    )
                 }.collect {
                     navPanelState.value = it
                 }

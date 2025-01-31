@@ -205,7 +205,7 @@ fun BottomNavigationMenu(
                             .width(72.dp)
                             .height(52.dp),
                         contentDescription = stringResource(id = R.string.main_navigation_content_desc_home_button),
-                        res = BottomNavigationItem.MEMBERS.res,
+                        res = BottomNavigationItem.HOME.res,
                         onClick = onHomeButtonClicked
                     )
                 }
@@ -287,6 +287,7 @@ private fun MenuItem(
 }
 
 private enum class BottomNavigationItem(@DrawableRes val res: Int) {
+    HOME(R.drawable.ic_nav_panel_home),
     MEMBERS(R.drawable.ic_nav_panel_members),
     ADD_MEMBERS(R.drawable.ic_nav_panel_add_member),
     SEARCH(R.drawable.ic_nav_panel_search),

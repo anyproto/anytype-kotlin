@@ -19,30 +19,47 @@ sealed class NavPanelState {
     }
 
     companion object {
-        fun fromPermission(permission: SpaceMemberPermissions?) : NavPanelState {
+        fun fromPermission(
+            permission: SpaceMemberPermissions?,
+            forceHome: Boolean = true
+        ) : NavPanelState {
             return when(permission) {
                 SpaceMemberPermissions.READER -> {
                     Default(
                         isCreateObjectButtonEnabled = false,
-                        leftButtonState = LeftButtonState.Home
+                        leftButtonState = if (forceHome)
+                            LeftButtonState.Home
+                        else
+                            LeftButtonState.ViewMembers
                     )
                 }
                 SpaceMemberPermissions.WRITER -> {
                     Default(
                         isCreateObjectButtonEnabled = true,
-                        leftButtonState = LeftButtonState.Home
+                        leftButtonState = if (forceHome)
+                            LeftButtonState.Home
+                        else
+                            LeftButtonState.ViewMembers
                     )
                 }
                 SpaceMemberPermissions.OWNER -> {
                     Default(
                         isCreateObjectButtonEnabled = true,
-                        leftButtonState = LeftButtonState.Home
+                        leftButtonState = if (forceHome)
+                            LeftButtonState.Home
+                        else
+                            LeftButtonState.AddMembers(
+                                isActive = true
+                            )
                     )
                 }
                 SpaceMemberPermissions.NO_PERMISSIONS -> {
                     Default(
                         isCreateObjectButtonEnabled = false,
-                        leftButtonState = LeftButtonState.Home
+                        leftButtonState = if (forceHome)
+                            LeftButtonState.Home
+                        else
+                            LeftButtonState.ViewMembers
                     )
                 }
                 else -> {

@@ -172,11 +172,15 @@ class Navigator : AppNavigation {
     }
 
     override fun exitToSpaceHome() {
-        navController?.let { controller ->
-            val isPopped = controller.popBackStack(R.id.chatScreen, inclusive = false)
-            if (!isPopped) {
-                controller.popBackStack(R.id.homeScreen, inclusive = false)
+        runCatching {
+            navController?.let { controller ->
+                val isPopped = controller.popBackStack(R.id.chatScreen, inclusive = false)
+                if (!isPopped) {
+                    controller.popBackStack(R.id.homeScreen, inclusive = false)
+                }
             }
+        }.onFailure {
+            Timber.e(it, "Error while exiting to space home")
         }
     }
 

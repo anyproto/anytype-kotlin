@@ -2084,7 +2084,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     override fun onExitToDesktopClicked() {
-        vm.navigateToDesktop()
+        vm.exitToSpaceHome()
     }
 
     override fun onLanguageSelected(target: Id, key: String) {

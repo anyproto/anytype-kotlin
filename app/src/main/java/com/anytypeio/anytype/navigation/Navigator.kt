@@ -171,6 +171,15 @@ class Navigator : AppNavigation {
         }
     }
 
+    override fun exitToSpaceHome() {
+        navController?.let { controller ->
+            val isPopped = controller.popBackStack(R.id.chatScreen, inclusive = false)
+            if (!isPopped) {
+                controller.popBackStack(R.id.homeScreen, inclusive = false)
+            }
+        }
+    }
+
     override fun openGlobalSearch(space: Id) {
         navController?.navigate(
             resId = R.id.globalSearchScreen,

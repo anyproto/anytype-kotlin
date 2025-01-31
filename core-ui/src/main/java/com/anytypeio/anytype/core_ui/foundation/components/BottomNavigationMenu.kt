@@ -186,7 +186,6 @@ fun BottomNavigationMenu(
                 is NavPanelState.LeftButtonState.Comment -> {
                     // TODO
                 }
-
                 NavPanelState.LeftButtonState.ViewMembers -> {
                     MenuItem(
                         modifier = Modifier
@@ -211,14 +210,6 @@ fun BottomNavigationMenu(
         MenuItem(
             modifier = Modifier
                 .width(72.dp)
-                .height(52.dp),
-            contentDescription = stringResource(id = R.string.main_navigation_content_desc_search_button),
-            res = BottomNavigationItem.SEARCH.res,
-            onClick = searchClick
-        )
-        MenuItem(
-            modifier = Modifier
-                .width(72.dp)
                 .height(52.dp)
                 .alpha(
                     if (state is NavPanelState.Default) {
@@ -236,6 +227,14 @@ fun BottomNavigationMenu(
             onClick = addDocClick,
             onLongClick = addDocLongClick,
             enabled = (state is NavPanelState.Default && state.isCreateObjectButtonEnabled)
+        )
+        MenuItem(
+            modifier = Modifier
+                .width(72.dp)
+                .height(52.dp),
+            contentDescription = stringResource(id = R.string.main_navigation_content_desc_search_button),
+            res = BottomNavigationItem.SEARCH.res,
+            onClick = searchClick
         )
     }
 }

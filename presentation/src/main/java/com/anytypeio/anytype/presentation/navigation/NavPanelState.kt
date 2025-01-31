@@ -12,6 +12,7 @@ sealed class NavPanelState {
     ) : NavPanelState()
 
     sealed class LeftButtonState {
+//        data object Home : LeftButtonState()
         data object ViewMembers : LeftButtonState()
         data class AddMembers(val isActive: Boolean): LeftButtonState()
         data class Comment(val isActive: Boolean): LeftButtonState()

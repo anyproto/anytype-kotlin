@@ -25,13 +25,13 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent.OnTemplatesAddIconClick
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiTemplatesAddIconState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiTemplatesHeaderState
+import com.anytypeio.anytype.feature_object_type.models.UiTemplatesAddIconState
+import com.anytypeio.anytype.feature_object_type.models.UiTemplatesHeaderState
 
 @Composable
 fun TemplatesHeader(
     modifier: Modifier,
-    uiTemplatesHeaderState: UiTemplatesHeaderState,
+    uiTemplatesHeaderState: UiTemplatesHeaderState.Visible,
     uiTemplatesAddIconState: UiTemplatesAddIconState,
     onTypeEvent: (TypeEvent) -> Unit
 ) {
@@ -79,7 +79,7 @@ fun TemplatesHeaderPreview() {
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp),
-        uiTemplatesHeaderState = UiTemplatesHeaderState(
+        uiTemplatesHeaderState = UiTemplatesHeaderState.Visible(
             count = "2"
         ),
         uiTemplatesAddIconState = UiTemplatesAddIconState.Visible,

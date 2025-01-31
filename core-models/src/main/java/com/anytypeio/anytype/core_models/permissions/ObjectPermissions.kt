@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.getSingleValue
@@ -56,6 +57,7 @@ data class ObjectPermissions(
     val canEditDetails: Boolean = false,
     val editBlocks: EditBlocksPermission = EditBlocksPermission.ReadOnly,
     val canCreateObjectThisType: Boolean = false,
+    val canChangeRecommendedLayoutForThisType: Boolean = false,
     val canCreateTemplatesForThisType: Boolean = false,
     val participantCanEdit: Boolean = false,
 )
@@ -143,31 +145,24 @@ fun ObjectView.toObjectPermissions(
     )
 }
 
-fun ObjectView.toObjectPermissionsForTypes(
+fun ObjectWrapper.Type.toObjectPermissionsForTypes(
     participantCanEdit: Boolean
 ): ObjectPermissions {
 
-    val isArchived = details[root]?.getSingleValue<Boolean>(Relations.IS_ARCHIVED) == true
+    val isArchived = getSingleValue<Boolean>(Relations.IS_ARCHIVED) == true
     val canEdit = !isArchived && participantCanEdit
 
-    val canEditDetails = !objectRestrictions.contains(ObjectRestriction.DETAILS)
+    val canEditDetails = !restrictions.contains(ObjectRestriction.DETAILS)
 
-    val recommendedLayout =
-        when (val value = details[root]?.getOrDefault(Relations.RECOMMENDED_LAYOUT, null)) {
-            is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
-                layout.code == value.toInt()
-            }
-
-            else -> null
-        }
     val canCreateTemplatesForObjectsThisType = participantCanEdit
             && !layoutsWithoutTemplates.contains(recommendedLayout)
 
     return ObjectPermissions(
-        canDelete = participantCanEdit && !objectRestrictions.contains(ObjectRestriction.DELETE),
+        canDelete = participantCanEdit && !restrictions.contains(ObjectRestriction.DELETE),
         canEditDetails = canEditDetails && canEdit,
         canCreateTemplatesForThisType = canCreateTemplatesForObjectsThisType,
-        canCreateObjectThisType = !objectRestrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && participantCanEdit,
+        canCreateObjectThisType = !restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && participantCanEdit,
+        canChangeRecommendedLayoutForThisType = true,
         participantCanEdit = participantCanEdit
     )
 }

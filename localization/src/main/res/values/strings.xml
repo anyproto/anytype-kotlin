@@ -396,6 +396,7 @@
     <string name="favourite">Favorite</string>
     <string name="template">Template</string>
     <string name="templates">Templates</string>
+    <string name="layout_type">Layout type</string>
     <string name="lock">Lock</string>
     <string name="unlock">Unlock</string>
     <string name="restore">Restore</string>

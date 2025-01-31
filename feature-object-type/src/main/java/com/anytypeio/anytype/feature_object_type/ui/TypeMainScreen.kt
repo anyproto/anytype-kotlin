@@ -49,20 +49,22 @@ import com.anytypeio.anytype.feature_object_type.ui.header.TopToolbar
 import com.anytypeio.anytype.feature_object_type.ui.objects.ObjectsHeader
 import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesHeader
 import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesList
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiDeleteAlertState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiEditButton
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiFieldsButtonState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiIconState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiLayoutButtonState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiMenuState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsAddIconState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsHeaderState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiObjectsSettingsIconState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiSyncStatusBadgeState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiTemplatesAddIconState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiTemplatesHeaderState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiTemplatesListState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiTitleState
+import com.anytypeio.anytype.feature_object_type.models.UiDeleteAlertState
+import com.anytypeio.anytype.feature_object_type.models.UiEditButton
+import com.anytypeio.anytype.feature_object_type.models.UiFieldsButtonState
+import com.anytypeio.anytype.feature_object_type.models.UiIconState
+import com.anytypeio.anytype.feature_object_type.models.UiLayoutButtonState
+import com.anytypeio.anytype.feature_object_type.models.UiLayoutTypeState
+import com.anytypeio.anytype.feature_object_type.models.UiMenuState
+import com.anytypeio.anytype.feature_object_type.models.UiObjectsAddIconState
+import com.anytypeio.anytype.feature_object_type.models.UiObjectsHeaderState
+import com.anytypeio.anytype.feature_object_type.models.UiObjectsSettingsIconState
+import com.anytypeio.anytype.feature_object_type.models.UiSyncStatusBadgeState
+import com.anytypeio.anytype.feature_object_type.models.UiTemplatesAddIconState
+import com.anytypeio.anytype.feature_object_type.models.UiTemplatesHeaderState
+import com.anytypeio.anytype.feature_object_type.models.UiTemplatesListState
+import com.anytypeio.anytype.feature_object_type.models.UiTitleState
+import com.anytypeio.anytype.feature_object_type.ui.layouts.TypeLayoutsScreen
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
@@ -83,6 +85,7 @@ fun ObjectTypeMainScreen(
     //layout and fields buttons
     uiFieldsButtonState: UiFieldsButtonState,
     uiLayoutButtonState: UiLayoutButtonState,
+    uiLayoutTypeState: UiLayoutTypeState,
 
     //templates header
     uiTemplatesHeaderState: UiTemplatesHeaderState,
@@ -169,27 +172,29 @@ fun ObjectTypeMainScreen(
             Column(
                 modifier = contentModifier,
             ) {
-                Spacer(
-                    modifier = Modifier.height(44.dp)
-                )
-                TemplatesHeader(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    uiTemplatesHeaderState = uiTemplatesHeaderState,
-                    uiTemplatesAddIconState = uiTemplatesAddIconState,
-                    onTypeEvent = onTypeEvent
-                )
-                Spacer(
-                    modifier = Modifier.height(12.dp)
-                )
-                TemplatesList(
-                    uiTemplatesListState = uiTemplatesListState,
-                    onTypeEvent = onTypeEvent
-                )
-                Spacer(
-                    modifier = Modifier.height(32.dp)
-                )
+                if (uiTemplatesHeaderState is UiTemplatesHeaderState.Visible) {
+                    Spacer(
+                        modifier = Modifier.height(44.dp)
+                    )
+                    TemplatesHeader(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        uiTemplatesHeaderState = uiTemplatesHeaderState,
+                        uiTemplatesAddIconState = uiTemplatesAddIconState,
+                        onTypeEvent = onTypeEvent
+                    )
+                    Spacer(
+                        modifier = Modifier.height(12.dp)
+                    )
+                    TemplatesList(
+                        uiTemplatesListState = uiTemplatesListState,
+                        onTypeEvent = onTypeEvent
+                    )
+                    Spacer(
+                        modifier = Modifier.height(32.dp)
+                    )
+                }
                 ObjectsHeader(
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
@@ -246,6 +251,14 @@ fun ObjectTypeMainScreen(
             onTypeEvent = onTypeEvent
         )
     }
+
+    if (uiLayoutTypeState is UiLayoutTypeState.Visible) {
+        TypeLayoutsScreen(
+            modifier = Modifier.fillMaxWidth(),
+            uiState = uiLayoutTypeState,
+            onTypeEvent = onTypeEvent
+        )
+    }
 }
 
 @Composable
@@ -294,7 +307,7 @@ fun ObjectTypeMainScreenPreview() {
         uiTitleState = UiTitleState(title = "title", isEditable = true),
         uiFieldsButtonState = UiFieldsButtonState.Visible(4),
         uiLayoutButtonState = UiLayoutButtonState.Visible(layout = ObjectType.Layout.VIDEO),
-        uiTemplatesHeaderState = UiTemplatesHeaderState(count = "3"),
+        uiTemplatesHeaderState = UiTemplatesHeaderState.Visible(count = "3"),
         uiTemplatesAddIconState = UiTemplatesAddIconState.Visible,
         uiTemplatesListState = UiTemplatesListState(
             items = listOf(
@@ -336,6 +349,7 @@ fun ObjectTypeMainScreenPreview() {
         uiObjectsMenuState = UiMenuState.EMPTY,
         uiDeleteAlertState = UiDeleteAlertState.Hidden,
         uiEditButtonState = UiEditButton.Visible,
+        uiLayoutTypeState = UiLayoutTypeState.Hidden,
         onTypeEvent = {}
     )
 }

@@ -91,10 +91,10 @@ sealed class ObjectWrapper {
         val restrictions: List<ObjectRestriction>
             get() = when (val value = map[Relations.RESTRICTIONS]) {
                 is Double -> buildList {
-                    ObjectRestriction.values().firstOrNull { it.code == value.toInt() }
+                    ObjectRestriction.entries.firstOrNull { it.code == value.toInt() }
                 }
                 is List<*> -> value.typeOf<Double>().mapNotNull { code ->
-                    ObjectRestriction.values().firstOrNull { it.code == code.toInt() }
+                    ObjectRestriction.entries.firstOrNull { it.code == code.toInt() }
                 }
                 else -> emptyList()
             }
@@ -183,6 +183,19 @@ sealed class ObjectWrapper {
                 else -> null
             }
         val defaultTemplateId: Id? by default
+
+        val restrictions: List<ObjectRestriction>
+            get() = when (val value = map[Relations.RESTRICTIONS]) {
+                is Double -> buildList {
+                    ObjectRestriction.entries.firstOrNull { it.code == value.toInt() }
+                }
+
+                is List<*> -> value.typeOf<Double>().mapNotNull { code ->
+                    ObjectRestriction.entries.firstOrNull { it.code == code.toInt() }
+                }
+
+                else -> emptyList()
+            }
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {

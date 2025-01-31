@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M9,6.75C8.172,6.75 7.5,7.757 7.5,9C7.5,10.243 8.172,11.25 9,11.25C9.828,11.25 10.5,10.243 10.5,9C10.5,7.757 9.828,6.75 9,6.75ZM15,6.75C14.172,6.75 13.5,7.757 13.5,9C13.5,10.243 14.172,11.25 15,11.25C15.828,11.25 16.5,10.243 16.5,9C16.5,7.757 15.828,6.75 15,6.75Z"
+      android:fillColor="@color/glyph_active"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M12,12m-11.25,0a11.25,11.25 0,1 1,22.5 0a11.25,11.25 0,1 1,-22.5 0"
+      android:strokeWidth="1.5"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/glyph_active"/>
+  <path
+      android:pathData="M18.178,13.464C18.426,13.4 18.668,13.476 18.816,13.611C18.949,13.733 18.984,13.869 18.924,14.025C17.652,17.342 14.975,19.503 12,19.503C9.036,19.503 6.368,17.359 5.089,14.062C5.029,13.906 5.064,13.768 5.2,13.645C5.352,13.508 5.599,13.431 5.85,13.496C7.368,13.894 9.484,14.268 12.005,14.236C14.537,14.236 16.661,13.856 18.178,13.464Z"
+      android:strokeWidth="1.5"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/glyph_active"/>
+</vector>

@@ -33,8 +33,8 @@ import com.anytypeio.anytype.core_ui.syncstatus.StatusBadge
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiEditButton
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiSyncStatusBadgeState
+import com.anytypeio.anytype.feature_object_type.models.UiEditButton
+import com.anytypeio.anytype.feature_object_type.models.UiSyncStatusBadgeState
 
 
 @Composable

@@ -49,6 +49,7 @@ interface AppNavigation {
     fun exit()
     fun exitToDesktop()
     fun exitToVault()
+    fun exitToSpaceHome()
     fun openGlobalSearch(space: Id)
     fun openShareScreen(space: SpaceId)
     fun openUpdateAppScreen()
@@ -73,6 +74,7 @@ interface AppNavigation {
         data object Exit : Command()
         data object ExitToDesktop : Command()
         data object ExitToVault : Command()
+        data object ExitToSpaceHome : Command()
 
         data object ExitFromMigrationScreen : Command()
 

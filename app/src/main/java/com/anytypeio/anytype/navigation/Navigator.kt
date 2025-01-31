@@ -171,6 +171,19 @@ class Navigator : AppNavigation {
         }
     }
 
+    override fun exitToSpaceHome() {
+        runCatching {
+            navController?.let { controller ->
+                val isPopped = controller.popBackStack(R.id.chatScreen, inclusive = false)
+                if (!isPopped) {
+                    controller.popBackStack(R.id.homeScreen, inclusive = false)
+                }
+            }
+        }.onFailure {
+            Timber.e(it, "Error while exiting to space home")
+        }
+    }
+
     override fun openGlobalSearch(space: Id) {
         navController?.navigate(
             resId = R.id.globalSearchScreen,

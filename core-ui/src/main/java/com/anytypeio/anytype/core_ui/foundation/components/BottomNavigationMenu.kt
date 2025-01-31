@@ -50,7 +50,8 @@ private fun NavBarPreviewOwner() {
             leftButtonState = NavPanelState.LeftButtonState.AddMembers(
                 isActive = true
             )
-        )
+        ),
+        onHomeButtonClicked = {}
     )
 }
 
@@ -64,7 +65,8 @@ private fun NavBarPreviewReader() {
         state = NavPanelState.Default(
             isCreateObjectButtonEnabled = false,
             leftButtonState = NavPanelState.LeftButtonState.ViewMembers
-        )
+        ),
+        onHomeButtonClicked = {}
     )
 }
 
@@ -152,6 +154,7 @@ fun BottomNavigationMenu(
     state: NavPanelState,
     modifier: Modifier = Modifier,
     onShareButtonClicked: () -> Unit = {},
+    onHomeButtonClicked: () -> Unit,
     searchClick: () -> Unit = {},
     addDocClick: () -> Unit = {},
     addDocLongClick: () -> Unit = {}
@@ -186,7 +189,6 @@ fun BottomNavigationMenu(
                 is NavPanelState.LeftButtonState.Comment -> {
                     // TODO
                 }
-
                 NavPanelState.LeftButtonState.ViewMembers -> {
                     MenuItem(
                         modifier = Modifier
@@ -195,6 +197,16 @@ fun BottomNavigationMenu(
                         contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
                         res = BottomNavigationItem.MEMBERS.res,
                         onClick = onShareButtonClicked
+                    )
+                }
+                is NavPanelState.LeftButtonState.Home -> {
+                    MenuItem(
+                        modifier = Modifier
+                            .width(72.dp)
+                            .height(52.dp),
+                        contentDescription = stringResource(id = R.string.main_navigation_content_desc_home_button),
+                        res = BottomNavigationItem.HOME.res,
+                        onClick = onHomeButtonClicked
                     )
                 }
             }
@@ -208,14 +220,6 @@ fun BottomNavigationMenu(
                 onClick = onShareButtonClicked
             )
         }
-        MenuItem(
-            modifier = Modifier
-                .width(72.dp)
-                .height(52.dp),
-            contentDescription = stringResource(id = R.string.main_navigation_content_desc_search_button),
-            res = BottomNavigationItem.SEARCH.res,
-            onClick = searchClick
-        )
         MenuItem(
             modifier = Modifier
                 .width(72.dp)
@@ -236,6 +240,14 @@ fun BottomNavigationMenu(
             onClick = addDocClick,
             onLongClick = addDocLongClick,
             enabled = (state is NavPanelState.Default && state.isCreateObjectButtonEnabled)
+        )
+        MenuItem(
+            modifier = Modifier
+                .width(72.dp)
+                .height(52.dp),
+            contentDescription = stringResource(id = R.string.main_navigation_content_desc_search_button),
+            res = BottomNavigationItem.SEARCH.res,
+            onClick = searchClick
         )
     }
 }
@@ -275,6 +287,7 @@ private fun MenuItem(
 }
 
 private enum class BottomNavigationItem(@DrawableRes val res: Int) {
+    HOME(R.drawable.ic_nav_panel_home),
     MEMBERS(R.drawable.ic_nav_panel_members),
     ADD_MEMBERS(R.drawable.ic_nav_panel_add_member),
     SEARCH(R.drawable.ic_nav_panel_search),

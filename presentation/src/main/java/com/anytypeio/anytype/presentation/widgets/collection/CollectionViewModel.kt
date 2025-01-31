@@ -859,10 +859,10 @@ class CollectionViewModel(
         return curr
     }
 
-    fun onHomeClicked() {
+    fun onHomeButtonClicked() {
         launch {
             analytics.sendScreenHomeEvent()
-            commands.emit(Command.Vault)
+            commands.emit(ToSpaceHome)
         }
     }
 
@@ -976,7 +976,7 @@ class CollectionViewModel(
     }
 
     @OptIn(FlowPreview::class)
-    private suspend fun filesSubscriptionFlow(): Flow<List<CollectionView>> {
+    private fun filesSubscriptionFlow(): Flow<List<CollectionView>> {
         return combine(
             container.subscribe(buildSearchParams()),
             queryFlow()
@@ -1081,7 +1081,7 @@ class CollectionViewModel(
 
         data object ToDesktop : Command()
         data class ToSearch(val space: Id) : Command()
-        data object Vault : Command()
+        data object ToSpaceHome : Command()
         data object Exit : Command()
         data object ExitToSpaceWidgets : Command()
     }

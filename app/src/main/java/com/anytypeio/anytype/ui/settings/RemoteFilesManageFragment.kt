@@ -98,7 +98,7 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
                 // Do nothing.
             }
             is CollectionViewModel.Command.Exit -> exit()
-            is CollectionViewModel.Command.Vault -> {
+            is CollectionViewModel.Command.ToSpaceHome -> {
                 // Do nothing.
             }
             is CollectionViewModel.Command.ExitToSpaceWidgets -> {

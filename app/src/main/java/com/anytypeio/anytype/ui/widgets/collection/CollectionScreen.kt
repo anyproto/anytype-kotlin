@@ -119,7 +119,7 @@ fun ScreenContent(
     vm: CollectionViewModel,
     uiState: CollectionUiState,
     onCreateObjectLongClicked: () -> Unit,
-    onSearchClicked: () -> Unit
+    onSearchClicked: () -> Unit,
 ) {
     Box(
         Modifier.background(color = colorResource(R.color.background_primary))
@@ -149,7 +149,8 @@ fun ScreenContent(
                     addDocClick = { vm.onAddClicked(null) },
                     addDocLongClick = onCreateObjectLongClicked,
                     onShareButtonClicked = vm::onShareButtonClicked,
-                    state = vm.navPanelState.collectAsStateWithLifecycle().value
+                    state = vm.navPanelState.collectAsStateWithLifecycle().value,
+                    onHomeButtonClicked = vm::onHomeButtonClicked
                 )
             }
         }

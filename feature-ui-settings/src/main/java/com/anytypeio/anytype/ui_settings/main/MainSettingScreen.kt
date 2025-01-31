@@ -112,17 +112,19 @@ fun SpaceHeader(
                             )
                         }
                     }
-                    DropdownMenuItem(
-                        onClick = {
-                            onRemoveIconClicked()
-                            isSpaceIconMenuExpanded.value = false
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.remove_image),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary)
-                        )
+                    if (icon is SpaceIconView.Image) {
+                        DropdownMenuItem(
+                            onClick = {
+                                onRemoveIconClicked()
+                                isSpaceIconMenuExpanded.value = false
+                            },
+                        ) {
+                            Text(
+                                text = stringResource(R.string.remove_image),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        }
                     }
                 }
             }
@@ -136,25 +138,4 @@ fun SpaceHeader(
             isEditEnabled = isEditEnabled
         )
     }
-}
-
-@Composable
-fun GradientComposeView(
-    modifier: Modifier,
-    from: String,
-    to: String,
-    size: Dp
-) {
-    val gradient = Brush.radialGradient(
-        colors = listOf(
-            Color(from.toColorInt()),
-            Color(to.toColorInt())
-        )
-    )
-    Box(
-        modifier = modifier
-            .size(size)
-            .clip(CircleShape)
-            .background(gradient)
-    )
 }

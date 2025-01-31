@@ -32,6 +32,7 @@ import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
@@ -107,12 +108,8 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
         super.onViewCreated(view, savedInstanceState)
         subscribe(vm.commands) { command ->
             when (command) {
-                is AllContentViewModel.Command.ExitToVault -> {
-                    runCatching {
-                        findNavController().navigate(R.id.actionOpenVault)
-                    }.onFailure { e ->
-                        Timber.e(e, "Error while exiting to vault from all content")
-                    }
+                is AllContentViewModel.Command.ExitToSpaceHome -> {
+                    navigation().exitToSpaceHome()
                 }
                 is AllContentViewModel.Command.Back -> {
                     runCatching {
@@ -338,8 +335,9 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     onRelationClicked = vm::onRelationClicked,
                     undoMoveToBin = vm::proceedWithUndoMoveToBin,
                     onDismissSnackbar = vm::proceedWithDismissSnackbar,
-                    uiBottomMenu = vm.uiBottomMenu.collectAsStateWithLifecycle().value,
-                    onShareButtonClicked = vm::onMemberButtonClicked
+                    uiBottomMenu = vm.navPanelState.collectAsStateWithLifecycle(NavPanelState.Init).value,
+                    onShareButtonClicked = vm::onMemberButtonClicked,
+                    onHomeButtonClicked = vm::onHomeClicked
                 )
             }
         }

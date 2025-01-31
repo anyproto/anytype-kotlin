@@ -83,7 +83,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     }
 
     fun onLoginClicked(chain: String) {
-        if (state.value is SetupState.Idle) {
+        Timber.d("onLoginClicked")
+        if (state.value !is SetupState.InProgress) {
             proceedWithRecoveringWallet(chain.trim())
             viewModelScope.sendAnalyticsOnboardingLoginEvent(
                 analytics = analytics,

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_object_type.ui
 import android.os.Build
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -85,41 +87,33 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ObjectTypeMainScreen(
-
     //top bar
     uiEditButtonState: UiEditButton,
     uiSyncStatusBadgeState: UiSyncStatusBadgeState,
     uiSyncStatusState: SyncStatusWidgetState,
-
     //header
     uiIconState: UiIconState,
     uiTitleState: UiTitleState,
-
     //layout and fields buttons
     uiFieldsButtonState: UiFieldsButtonState,
     uiLayoutButtonState: UiLayoutButtonState,
     uiLayoutTypeState: UiLayoutTypeState,
-
     //templates header
     uiTemplatesHeaderState: UiTemplatesHeaderState,
     uiTemplatesAddIconState: UiTemplatesAddIconState,
-
     //templates list
     uiTemplatesListState: UiTemplatesListState,
-
     //objects header
     uiObjectsHeaderState: UiObjectsHeaderState,
     uiObjectsAddIconState: UiObjectsAddIconState,
     uiObjectsSettingsIconState: UiObjectsSettingsIconState,
     uiObjectsMenuState: UiMenuState,
-
     //objects list
     uiObjectsListState: UiObjectsListState,
     uiContentState: UiContentState,
-
     //delete alert
     uiDeleteAlertState: UiDeleteAlertState,
-
+    //events
     onTypeEvent: (TypeEvent) -> Unit
 ) {
 
@@ -133,186 +127,42 @@ fun ObjectTypeMainScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(
-                topAppBarScrollBehavior.nestedScrollConnection
-            ),
+            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         containerColor = colorResource(id = R.color.background_primary),
         contentColor = colorResource(id = R.color.background_primary),
         topBar = {
-            Column(
-                modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                    Modifier
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .fillMaxWidth()
-                else
-                    Modifier.fillMaxWidth()
-            ) {
-                TopToolbar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    uiSyncStatusBadgeState = uiSyncStatusBadgeState,
-                    uiEditButtonState = uiEditButtonState,
-                    onTypeEvent = onTypeEvent,
-                    topBarScrollBehavior = topAppBarScrollBehavior,
-                    uiTitleState = uiTitleState
-                )
-            }
+            TopBarContent(
+                uiSyncStatusBadgeState = uiSyncStatusBadgeState,
+                uiEditButtonState = uiEditButtonState,
+                uiTitleState = uiTitleState,
+                topBarScrollBehavior = topAppBarScrollBehavior,
+                onTypeEvent = onTypeEvent
+            )
         },
         content = { paddingValues ->
-            val contentModifier =
-                if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                    Modifier
-                        .windowInsetsPadding(WindowInsets.navigationBars)
-                        .fillMaxSize()
-                        .padding(top = paddingValues.calculateTopPadding())
-                else
-                    Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-            LazyColumn(
-                modifier = contentModifier
-            ) {
-                item {
-                    IconAndTitleWidget(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(top = 32.dp)
-                            .padding(horizontal = 20.dp),
-                        uiIconState = uiIconState,
-                        uiTitleState = uiTitleState,
-                        onTypeEvent = onTypeEvent
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-                item {
-                    HorizontalButtons(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(36.dp)
-                            .padding(horizontal = 20.dp),
-                        uiFieldsButtonState = uiFieldsButtonState,
-                        uiLayoutButtonState = uiLayoutButtonState,
-                        onTypeEvent = onTypeEvent
-                    )
-                }
-                if (uiTemplatesHeaderState is UiTemplatesHeaderState.Visible) {
-                    item {
-                        TemplatesScreen(
-                            uiTemplatesHeaderState = uiTemplatesHeaderState,
-                            uiTemplatesAddIconState = uiTemplatesAddIconState,
-                            uiTemplatesListState = uiTemplatesListState,
-                            onTypeEvent = onTypeEvent
-                        )
-                    }
-                }
-                item {
-                    ObjectsHeader(
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        uiObjectsHeaderState = uiObjectsHeaderState,
-                        uiObjectsAddIconState = uiObjectsAddIconState,
-                        uiObjectsSettingsIconState = uiObjectsSettingsIconState,
-                        uiObjectsMenuState = uiObjectsMenuState,
-                        onTypeEvent = onTypeEvent
-                    )
-                }
-                if (uiObjectsListState.items.isEmpty()) {
-                    item {
-                        EmptyScreen(
-                            modifier = Modifier
-                                .padding(top = 18.dp)
-                        )
-                    }
-                } else {
-                    items(
-                        count = objects.size,
-                        key = { index -> objects[index].id },
-                        contentType = { index ->
-                            when (objects[index]) {
-                                is UiObjectsListItem.Loading -> "loading"
-                                is UiObjectsListItem.Item -> "item"
-                            }
-                        }
-                    ) { index ->
-                        val item = objects[index]
-                        when (item) {
-                            is UiObjectsListItem.Item -> {
-                                ObjectsListItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .noRippleThrottledClickable {
-                                            onTypeEvent(TypeEvent.OnObjectItemClick(item))
-                                        },
-                                    item = item
-                                )
-                                Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
-                            }
-
-                            is UiObjectsListItem.Loading -> {
-                                ListItemLoading(modifier = Modifier)
-                            }
-                        }
-                    }
-                }
-                when (val itemSet = uiObjectsMenuState.objSetItem) {
-                    UiMenuSetItem.CreateSet -> {
-                        item {
-                            ButtonSecondary(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 16.dp, end = 16.dp),
-                                text = stringResource(R.string.object_type_objects_menu_create_set),
-                                size = ButtonSize.Large,
-                                onClick = {
-                                    onTypeEvent(TypeEvent.OnCreateSetClick)
-                                }
-                            )
-                        }
-                    }
-
-                    is UiMenuSetItem.OpenSet -> {
-                        item {
-                            ButtonSecondary(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 16.dp, end = 16.dp),
-                                text = stringResource(R.string.object_type_objects_menu_open_set),
-                                size = ButtonSize.Large,
-                                onClick = {
-                                    onTypeEvent(TypeEvent.OnOpenSetClick(setId = itemSet.setId))
-                                }
-                            )
-                        }
-                    }
-
-                    UiMenuSetItem.Hidden -> {
-                        // do nothing
-                    }
-                }
-            }
+            MainContent(
+                paddingValues = paddingValues,
+                uiIconState = uiIconState,
+                uiTitleState = uiTitleState,
+                uiFieldsButtonState = uiFieldsButtonState,
+                uiLayoutButtonState = uiLayoutButtonState,
+                uiTemplatesHeaderState = uiTemplatesHeaderState,
+                uiTemplatesAddIconState = uiTemplatesAddIconState,
+                uiTemplatesListState = uiTemplatesListState,
+                uiObjectsHeaderState = uiObjectsHeaderState,
+                uiObjectsAddIconState = uiObjectsAddIconState,
+                uiObjectsSettingsIconState = uiObjectsSettingsIconState,
+                uiObjectsMenuState = uiObjectsMenuState,
+                objects = objects,
+                onTypeEvent = onTypeEvent
+            )
         }
     )
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        SpaceSyncStatusScreen(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .windowInsetsPadding(WindowInsets.navigationBars),
-            modifierCard = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
-            uiState = uiSyncStatusState,
-            onDismiss = { onTypeEvent(TypeEvent.OnSyncStatusDismiss) },
-            onUpdateAppClick = {}
-        )
-    }
+    BottomSyncStatus(
+        uiSyncStatusState = uiSyncStatusState,
+        onDismiss = { onTypeEvent(TypeEvent.OnSyncStatusDismiss) }
+    )
 
     if (uiDeleteAlertState is UiDeleteAlertState.Show) {
         DeleteAlertScreen(
@@ -325,6 +175,209 @@ fun ObjectTypeMainScreen(
             modifier = Modifier.fillMaxWidth(),
             uiState = uiLayoutTypeState,
             onTypeEvent = onTypeEvent
+        )
+    }
+}
+
+@Composable
+private fun MainContent(
+    paddingValues: PaddingValues,
+    uiIconState: UiIconState,
+    uiTitleState: UiTitleState,
+    uiFieldsButtonState: UiFieldsButtonState,
+    uiLayoutButtonState: UiLayoutButtonState,
+    uiTemplatesHeaderState: UiTemplatesHeaderState,
+    uiTemplatesAddIconState: UiTemplatesAddIconState,
+    uiTemplatesListState: UiTemplatesListState,
+    uiObjectsHeaderState: UiObjectsHeaderState,
+    uiObjectsAddIconState: UiObjectsAddIconState,
+    uiObjectsSettingsIconState: UiObjectsSettingsIconState,
+    uiObjectsMenuState: UiMenuState,
+    objects: List<UiObjectsListItem>,
+    onTypeEvent: (TypeEvent) -> Unit
+) {
+    // Adjust content modifier based on SDK version for proper insets handling
+    val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+        Modifier
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .fillMaxSize()
+            .padding(top = paddingValues.calculateTopPadding())
+    } else {
+        Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    }
+
+    LazyColumn(modifier = contentModifier) {
+        item {
+            IconAndTitleWidget(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(top = 32.dp)
+                    .padding(horizontal = 20.dp),
+                uiIconState = uiIconState,
+                uiTitleState = uiTitleState,
+                onTypeEvent = onTypeEvent
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+
+        item {
+            HorizontalButtons(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+                    .padding(horizontal = 20.dp),
+                uiFieldsButtonState = uiFieldsButtonState,
+                uiLayoutButtonState = uiLayoutButtonState,
+                onTypeEvent = onTypeEvent
+            )
+        }
+
+        if (uiTemplatesHeaderState is UiTemplatesHeaderState.Visible) {
+            item {
+                TemplatesScreen(
+                    uiTemplatesHeaderState = uiTemplatesHeaderState,
+                    uiTemplatesAddIconState = uiTemplatesAddIconState,
+                    uiTemplatesListState = uiTemplatesListState,
+                    onTypeEvent = onTypeEvent
+                )
+            }
+        }
+
+        item {
+            ObjectsHeader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(horizontal = 20.dp),
+                uiObjectsHeaderState = uiObjectsHeaderState,
+                uiObjectsAddIconState = uiObjectsAddIconState,
+                uiObjectsSettingsIconState = uiObjectsSettingsIconState,
+                uiObjectsMenuState = uiObjectsMenuState,
+                onTypeEvent = onTypeEvent
+            )
+        }
+
+        if (objects.isEmpty()) {
+            item {
+                EmptyScreen(
+                    modifier = Modifier.padding(top = 18.dp)
+                )
+            }
+        } else {
+            items(
+                count = objects.size,
+                key = { index -> objects[index].id },
+                contentType = { index ->
+                    when (objects[index]) {
+                        is UiObjectsListItem.Loading -> "loading"
+                        is UiObjectsListItem.Item -> "item"
+                    }
+                }
+            ) { index ->
+                when (val item = objects[index]) {
+                    is UiObjectsListItem.Item -> {
+                        ObjectsListItem(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateItem()
+                                .noRippleThrottledClickable {
+                                    onTypeEvent(TypeEvent.OnObjectItemClick(item))
+                                },
+                            item = item
+                        )
+                        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                    }
+                    is UiObjectsListItem.Loading -> {
+                        ListItemLoading(modifier = Modifier)
+                    }
+                }
+            }
+        }
+
+        // Objects menu actions
+        when (val itemSet = uiObjectsMenuState.objSetItem) {
+            UiMenuSetItem.CreateSet -> {
+                item {
+                    ButtonSecondary(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp, start = 16.dp, end = 16.dp),
+                        text = stringResource(R.string.object_type_objects_menu_create_set),
+                        size = ButtonSize.Large,
+                        onClick = { onTypeEvent(TypeEvent.OnCreateSetClick) }
+                    )
+                }
+            }
+            is UiMenuSetItem.OpenSet -> {
+                item {
+                    ButtonSecondary(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp, start = 16.dp, end = 16.dp),
+                        text = stringResource(R.string.object_type_objects_menu_open_set),
+                        size = ButtonSize.Large,
+                        onClick = { onTypeEvent(TypeEvent.OnOpenSetClick(setId = itemSet.setId)) }
+                    )
+                }
+            }
+            UiMenuSetItem.Hidden -> Unit
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopBarContent(
+    uiSyncStatusBadgeState: UiSyncStatusBadgeState,
+    uiEditButtonState: UiEditButton,
+    uiTitleState: UiTitleState,
+    topBarScrollBehavior: TopAppBarScrollBehavior,
+    onTypeEvent: (TypeEvent) -> Unit
+) {
+    // Use windowInsetsPadding if running on a recent SDK
+    val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+        Modifier
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .fillMaxWidth()
+    } else {
+        Modifier.fillMaxWidth()
+    }
+
+    Column(modifier = modifier) {
+        TopToolbar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            uiSyncStatusBadgeState = uiSyncStatusBadgeState,
+            uiEditButtonState = uiEditButtonState,
+            uiTitleState = uiTitleState,
+            onTypeEvent = onTypeEvent,
+            topBarScrollBehavior = topBarScrollBehavior
+        )
+    }
+}
+
+@Composable
+private fun BottomSyncStatus(
+    uiSyncStatusState: SyncStatusWidgetState,
+    onDismiss: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        SpaceSyncStatusScreen(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .windowInsetsPadding(WindowInsets.navigationBars),
+            modifierCard = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
+            uiState = uiSyncStatusState,
+            onDismiss = onDismiss,
+            onUpdateAppClick = {}
         )
     }
 }

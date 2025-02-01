@@ -213,7 +213,7 @@ class ObjectTypeViewModel(
         uiObjectsListState.value = UiObjectsListState.Empty
     }
 
-    //region Initialization
+    //region SETUP
     private fun setupObjectsMenuFlow() {
         viewModelScope.launch {
             _sortState.collect { sort ->
@@ -354,6 +354,7 @@ class ObjectTypeViewModel(
                 }
         }
     }
+    //endregion
 
     //region Objects subscription
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -473,7 +474,7 @@ class ObjectTypeViewModel(
                     }
                     val result = buildList<TemplateView> {
                         addAll(updated)
-                        if (permissions.canCreateTemplatesForThisType) {
+                        if (permissions.participantCanEdit) {
                             add(
                                 TemplateView.New(
                                     targetTypeId = TypeId(vmParams.objectId),
@@ -590,35 +591,29 @@ class ObjectTypeViewModel(
     }
     //endregion
 
-    //region Ui Actions
-    fun closeObject() {
-        viewModelScope.launch {
-            commands.emit(ObjectTypeCommand.Back)
-        }
-    }
-    //endregion
-
-    //region Ui State
+    //region Ui STATE
     fun hideError() {
         errorState.value = UiErrorState.Hidden
     }
     //endregion
 
-    //region Ui Actions
+    //region Ui ACTIONS
     fun onTypeEvent(event: TypeEvent) {
         when (event) {
             TypeEvent.OnFieldsButtonClick -> TODO()
             TypeEvent.OnLayoutButtonClick -> {
-                //todo Логика по смене layout у типа должна быть вынесена в отдельную функцию
-                uiTypeLayoutsState.value = Visible(
-                    layouts = listOf(
-                        ObjectType.Layout.BASIC,
-                        ObjectType.Layout.NOTE,
-                        ObjectType.Layout.PROFILE,
-                        ObjectType.Layout.TODO
-                    ),
-                    selectedLayout = _objTypeState.value?.recommendedLayout
-                )
+                val permissions = _objectTypePermissionsState.value
+                if (permissions?.canChangeRecommendedLayoutForThisType == true) {
+                    uiTypeLayoutsState.value = Visible(
+                        layouts = listOf(
+                            ObjectType.Layout.BASIC,
+                            ObjectType.Layout.NOTE,
+                            ObjectType.Layout.PROFILE,
+                            ObjectType.Layout.TODO
+                        ),
+                        selectedLayout = _objTypeState.value?.recommendedLayout
+                    )
+                }
             }
             is TypeEvent.OnSyncStatusClick -> {
                 uiSyncStatusWidgetState.value =
@@ -929,33 +924,12 @@ class ObjectTypeViewModel(
             )
         }
     }
-    //endregion
 
-    //region RESTRICTIONS
-
-    //
-
-    //region TEMPLATES
-    private suspend fun proceedWithCreatingTemplate(targetTypeId: Id, targetTypeKey: Id) {
-        delay(DELAY_BEFORE_CREATING_TEMPLATE)
-        val params = CreateTemplate.Params(
-            targetObjectTypeId = targetTypeId,
-            spaceId = vmParams.spaceId
-        )
-        createTemplate.async(params).fold(
-            onSuccess = { createObjectResult ->
-                val obj = ObjectWrapper.Basic(createObjectResult.details)
-                proceedWithNavigation(
-                    objectId = obj.id,
-                    objectLayout = obj.layout
-                )
-            },
-            onFailure = { e ->
-                Timber.e(e, "Error while creating new template")
-            }
-        )
+    fun closeObject() {
+        viewModelScope.launch {
+            commands.emit(ObjectTypeCommand.Back)
+        }
     }
-
     //endregion
 
     //region Navigation

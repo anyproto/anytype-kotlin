@@ -288,7 +288,7 @@ private fun MainContent(
                                 },
                             item = item
                         )
-                        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                        Divider(paddingStart = 20.dp, paddingEnd = 20.dp)
                     }
                     is UiObjectsListItem.Loading -> {
                         ListItemLoading(modifier = Modifier)
@@ -304,7 +304,7 @@ private fun MainContent(
                     ButtonSecondary(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp, start = 16.dp, end = 16.dp),
+                            .padding(top = 12.dp, start = 20.dp, end = 20.dp),
                         text = stringResource(R.string.object_type_objects_menu_create_set),
                         size = ButtonSize.Large,
                         onClick = { onTypeEvent(TypeEvent.OnCreateSetClick) }
@@ -316,7 +316,7 @@ private fun MainContent(
                     ButtonSecondary(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp, start = 16.dp, end = 16.dp),
+                            .padding(top = 12.dp, start = 20.dp, end = 20.dp),
                         text = stringResource(R.string.object_type_objects_menu_open_set),
                         size = ButtonSize.Large,
                         onClick = { onTypeEvent(TypeEvent.OnOpenSetClick(setId = itemSet.setId)) }

@@ -154,16 +154,20 @@ fun ObjectWrapper.Type.toObjectPermissionsForTypes(
 
     val canEditDetails = !restrictions.contains(ObjectRestriction.DETAILS)
 
-    val canCreateTemplatesForObjectsThisType = participantCanEdit
-            && !layoutsWithoutTemplates.contains(recommendedLayout)
+    val canCreateTemplatesForObjectsThisType = layoutsWithTemplates.contains(recommendedLayout)
+            && uniqueKey != ObjectTypeIds.TEMPLATE
+
+    val canChangeRecommendedLayoutForObjectsThisType = participantCanEdit
+            && possibleToChangeLayoutLayouts.contains(recommendedLayout)
+            && uniqueKey != ObjectTypeIds.TEMPLATE
 
     return ObjectPermissions(
         canDelete = participantCanEdit && !restrictions.contains(ObjectRestriction.DELETE),
         canEditDetails = canEditDetails && canEdit,
         canCreateTemplatesForThisType = canCreateTemplatesForObjectsThisType,
         canCreateObjectThisType = !restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && participantCanEdit,
-        canChangeRecommendedLayoutForThisType = true,
-        participantCanEdit = participantCanEdit
+        canChangeRecommendedLayoutForThisType = canChangeRecommendedLayoutForObjectsThisType,
+        participantCanEdit = canEdit
     )
 }
 
@@ -233,8 +237,9 @@ private val systemLayouts = listOf(
     ObjectType.Layout.SPACE_VIEW
 )
 
-private val layoutsWithoutTemplates = systemLayouts + fileLayouts + listOf(
-    ObjectType.Layout.CHAT,
-    ObjectType.Layout.CHAT_DERIVED,
-    ObjectType.Layout.PARTICIPANT,
+private val layoutsWithTemplates = listOf(
+    ObjectType.Layout.BASIC,
+    ObjectType.Layout.NOTE,
+    ObjectType.Layout.PROFILE,
+    ObjectType.Layout.TODO,
 )

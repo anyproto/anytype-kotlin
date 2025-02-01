@@ -44,7 +44,9 @@ fun IconAndTitleWidget(
         ListWidgetObjectIcon(
             modifier = Modifier.size(32.dp)
                 .noRippleThrottledClickable{
-                    onTypeEvent.invoke(TypeEvent.OnObjectTypeIconClick)
+                    if (uiIconState.isEditable) {
+                        onTypeEvent.invoke(TypeEvent.OnObjectTypeIconClick)
+                    }
                 },
             icon = uiIconState.icon,
             backgroundColor = R.color.amp_transparent

@@ -47,6 +47,8 @@ import com.anytypeio.anytype.core_ui.lists.objects.ObjectsListItem
 import com.anytypeio.anytype.core_ui.lists.objects.UiContentState
 import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListState
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -57,6 +59,7 @@ import com.anytypeio.anytype.feature_object_type.models.UiFieldsButtonState
 import com.anytypeio.anytype.feature_object_type.models.UiIconState
 import com.anytypeio.anytype.feature_object_type.models.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.models.UiLayoutTypeState
+import com.anytypeio.anytype.feature_object_type.models.UiMenuSetItem
 import com.anytypeio.anytype.feature_object_type.models.UiMenuState
 import com.anytypeio.anytype.feature_object_type.models.UiObjectsAddIconState
 import com.anytypeio.anytype.feature_object_type.models.UiObjectsHeaderState
@@ -254,6 +257,41 @@ fun ObjectTypeMainScreen(
                                 ListItemLoading(modifier = Modifier)
                             }
                         }
+                    }
+                }
+                when (val itemSet = uiObjectsMenuState.objSetItem) {
+                    UiMenuSetItem.CreateSet -> {
+                        item {
+                            ButtonSecondary(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp, start = 16.dp, end = 16.dp),
+                                text = stringResource(R.string.object_type_objects_menu_create_set),
+                                size = ButtonSize.Large,
+                                onClick = {
+                                    onTypeEvent(TypeEvent.OnCreateSetClick)
+                                }
+                            )
+                        }
+                    }
+
+                    is UiMenuSetItem.OpenSet -> {
+                        item {
+                            ButtonSecondary(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp, start = 16.dp, end = 16.dp),
+                                text = stringResource(R.string.object_type_objects_menu_open_set),
+                                size = ButtonSize.Large,
+                                onClick = {
+                                    onTypeEvent(TypeEvent.OnOpenSetClick(setId = itemSet.setId))
+                                }
+                            )
+                        }
+                    }
+
+                    UiMenuSetItem.Hidden -> {
+                        // do nothing
                     }
                 }
             }

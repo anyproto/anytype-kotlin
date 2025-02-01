@@ -283,6 +283,7 @@ private fun MainContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .animateItem()
+                                .padding(horizontal = 4.dp)
                                 .noRippleThrottledClickable {
                                     onTypeEvent(TypeEvent.OnObjectItemClick(item))
                                 },

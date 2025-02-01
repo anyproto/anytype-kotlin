@@ -72,8 +72,7 @@ import com.anytypeio.anytype.feature_object_type.ui.header.IconAndTitleWidget
 import com.anytypeio.anytype.feature_object_type.ui.header.TopToolbar
 import com.anytypeio.anytype.feature_object_type.ui.layouts.TypeLayoutsScreen
 import com.anytypeio.anytype.feature_object_type.ui.objects.ObjectsHeader
-import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesHeader
-import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesList
+import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesScreen
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
@@ -197,26 +196,11 @@ fun ObjectTypeMainScreen(
                 }
                 if (uiTemplatesHeaderState is UiTemplatesHeaderState.Visible) {
                     item {
-                        Spacer(
-                            modifier = Modifier.height(44.dp)
-                        )
-                        TemplatesHeader(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
+                        TemplatesScreen(
                             uiTemplatesHeaderState = uiTemplatesHeaderState,
                             uiTemplatesAddIconState = uiTemplatesAddIconState,
-                            onTypeEvent = onTypeEvent
-                        )
-                        Spacer(
-                            modifier = Modifier.height(12.dp)
-                        )
-                        TemplatesList(
                             uiTemplatesListState = uiTemplatesListState,
                             onTypeEvent = onTypeEvent
-                        )
-                        Spacer(
-                            modifier = Modifier.height(32.dp)
                         )
                     }
                 }

@@ -138,6 +138,7 @@ class VaultViewModel(
         viewModelScope.launch {
             val targetSpace = view.space.targetSpaceId
             if (targetSpace != null) {
+                analytics.sendEvent(eventName = EventsDictionary.switchSpace)
                 spaceManager.set(targetSpace).fold(
                     onFailure = {
                         Timber.e(it, "Could not select space")

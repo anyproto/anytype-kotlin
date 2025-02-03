@@ -326,22 +326,26 @@ class SplashViewModel(
                         .take(1)
                 }
                 .collect { view ->
-                    val chat = view.chatId
-                    if (chat.isNullOrEmpty() || !ChatConfig.isChatAllowed(space.id)) {
-                        commands.emit(
-                            Command.NavigateToWidgets(
-                                space = space.id,
-                                deeplink = deeplink
+                    if (view.isActive) {
+                        val chat = view.chatId
+                        if (chat.isNullOrEmpty() || !ChatConfig.isChatAllowed(space.id)) {
+                            commands.emit(
+                                Command.NavigateToWidgets(
+                                    space = space.id,
+                                    deeplink = deeplink
+                                )
                             )
-                        )
+                        } else {
+                            commands.emit(
+                                Command.NavigateToSpaceLevelChat(
+                                    space = space.id,
+                                    chat = chat,
+                                    deeplink = deeplink
+                                )
+                            )
+                        }
                     } else {
-                        commands.emit(
-                            Command.NavigateToSpaceLevelChat(
-                                space = space.id,
-                                chat = chat,
-                                deeplink = deeplink
-                            )
-                        )
+                        commands.emit(Command.NavigateToVault(deeplink))
                     }
                 }
         } else {

@@ -96,17 +96,15 @@ class ListWidgetContainer(
                                     space = SpaceId(widget.config.space),
                                     subscription = subscription,
                                     keys = keys,
-                                    targets = order.keys
-                                        .sortedBy { key -> order[key] }
-                                        .take(resolveLimit()),
+                                    targets = order.keys.sortedBy { key -> order[key] }
                                 )
                             ).map { objects ->
                                 buildWidgetViewWithElements(
                                     objects = objects
-                                        .filter { obj ->
-                                            obj.isArchived != true && obj.isDeleted != true
-                                        }
-                                        .sortedBy { obj -> order[obj.id] },
+                                        .filter { obj -> obj.notDeletedNorArchived }
+                                        .sortedBy { obj -> order[obj.id] }
+                                        .take(resolveLimit())
+                                    ,
                                     fieldParser = fieldParser
                                 )
                             }

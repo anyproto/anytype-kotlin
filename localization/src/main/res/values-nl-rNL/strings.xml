@@ -371,6 +371,7 @@
     <string name="scroll_to_select_position">Scroll om een nieuwe positie te selecteren</string>
     <string name="block_action_add_below">Hieronder toevoegen</string>
     <string name="content_desc_back_button">Back button</string>
+    <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1214,6 +1215,7 @@
     <string name="multiplayer_notification_member_request_approved">Verzoek goedgekeurd</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Je verzoek om deel te nemen aan de ruimte %1$s is goedgekeurd met alleen-lezen toegangsrechten. De ruimte zal binnenkort beschikbaar zijn op je apparaat.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Je verzoek om deel te nemen aan de ruimte %1$s is goedgekeurd met bewerktoegangsrechten. De ruimte zal binnenkort beschikbaar zijn op je apparaat.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
     <string name="multiplayer_notification_member_removed_from_space">Je bent verwijderd uit de ruimte, of de ruimte is verwijderd door de eigenaar.</string>
     <string name="multiplayer_notification_member_permissions_changed">Machtigingen gewijzigd</string>
     <string name="multiplayer_notification_member_permission_change_read">Je toegangsrechten zijn gewijzigd naar alleen-lezen in de ruimte %1$s.</string>
@@ -1559,6 +1561,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="all_content_snackbar_title">verplaatst naar prullenmand</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Deel en leden knop</string>
+    <string name="main_navigation_content_desc_home_button">Home button</string>
     <string name="main_navigation_content_desc_search_button">Zoek objecten knop</string>
     <string name="main_navigation_content_desc_create_button">Maak object knop</string>
     <string name="chat">Chat</string>

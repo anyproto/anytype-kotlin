@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Aplicar color sólido aleatorio</string>
     <string name="space_settings_apply_upload_image">Cargar una imagen</string>
     <string name="profile_settings_apply_upload_image">Cargar una imagen</string>
-    <string name="remove_image">Eliminar imagen</string>
+    <string name="remove_image">Remove image</string>
     <string name="delete_space">Eliminar espacio</string>
     <string name="you_can_store">Puedes almacenar gratuitamente hasta %1$s de archivos en nuestro nodo de respaldo cifrado. Si llegas al límite, los archivos se almacenarán solo localmente.</string>
     <string name="in_order_to_save">Para ahorrar espacio en tu dispositivo local, puedes guardar todos tus archivos en nuestro nodo de respaldo cifrado. Los archivos se cargarán de nuevo cuando los abras.</string>
@@ -371,6 +371,7 @@
     <string name="scroll_to_select_position">Desplaza para elegir un lugar</string>
     <string name="block_action_add_below">Añadir debajo</string>
     <string name="content_desc_back_button">Botón Atrás</string>
+    <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Botón Inicio</string>
     <string name="content_desc_search_button">Botón Buscar</string>
     <string name="content_desc_add_doc_button">Añadir documento</string>
@@ -1214,6 +1215,7 @@
     <string name="multiplayer_notification_member_request_approved">Solicitud aprobada</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Tu solicitud para acceder al espacio %1$s se ha aprobado con derechos de solo lectura. El espacio estará pronto disponible en tu dispositivo.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Tu solicitud de acceso al espacio %1$s se ha aprobado con derechos de edición. El espacio estará pronto disponible en tu dispositivo.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
     <string name="multiplayer_notification_member_removed_from_space">Te han eliminado de ese espacio o el propietario ha eliminado ese espacio.</string>
     <string name="multiplayer_notification_member_permissions_changed">Permisos cambiados</string>
     <string name="multiplayer_notification_member_permission_change_read">Tus derechos de acceso al espacio %1$s ahora son de solo lectura.</string>
@@ -1559,6 +1561,7 @@ En concreto,
     <string name="all_content_snackbar_title">se ha movido a la papelera</string>
     <string name="main_navigation_content_desc_back_button">Botón Atrás</string>
     <string name="main_navigation_content_desc_members_button">Botón de compartir y miembros</string>
+    <string name="main_navigation_content_desc_home_button">Botón Inicio</string>
     <string name="main_navigation_content_desc_search_button">Botón Buscar objetos</string>
     <string name="main_navigation_content_desc_create_button">Botón Crear objeto</string>
     <string name="chat">Chat</string>

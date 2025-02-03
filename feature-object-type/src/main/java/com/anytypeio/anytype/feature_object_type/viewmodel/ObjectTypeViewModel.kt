@@ -573,8 +573,8 @@ class ObjectTypeViewModel(
         ).catch {
             Timber.e(it, "Error while observing templates")
         }.collect { templates ->
-            templates.map {
-                it.toTemplateView(
+            templates.map { objWrapper ->
+                objWrapper.toTemplateView(
                     objectId = vmParams.objectId,
                     urlBuilder = urlBuilder,
                     coverImageHashProvider = coverImageHashProvider,

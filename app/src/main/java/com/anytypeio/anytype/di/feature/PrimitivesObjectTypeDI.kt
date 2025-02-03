@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -116,6 +117,17 @@ object ObjectTypeModule {
     fun provideCreateObjectSetUseCase(
         repo: BlockRepository
     ): CreateObjectSet = CreateObjectSet(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDuplicateObjectsListUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DuplicateObjects = DuplicateObjects(
+        repo = repo,
+        dispatchers = dispatchers
+    )
 
     @Module
     interface Declarations {

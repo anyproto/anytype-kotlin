@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -42,7 +43,8 @@ class ObjectTypeVMFactory @Inject constructor(
     private val setObjectDetails: SetObjectDetails,
     private val createObjectSet: CreateObjectSet,
     private val stringResourceProvider: StringResourceProvider,
-    private val createTemplate: CreateTemplate
+    private val createTemplate: CreateTemplate,
+    private val duplicateObjects: DuplicateObjects
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -66,6 +68,7 @@ class ObjectTypeVMFactory @Inject constructor(
             setObjectDetails = setObjectDetails,
             createObjectSet = createObjectSet,
             stringResourceProvider = stringResourceProvider,
-            createTemplate = createTemplate
+            createTemplate = createTemplate,
+            duplicateObjects = duplicateObjects
         ) as T
 }

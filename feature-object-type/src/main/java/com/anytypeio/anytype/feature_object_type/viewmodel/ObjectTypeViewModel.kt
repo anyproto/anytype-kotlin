@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -67,14 +68,12 @@ import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 import com.anytypeio.anytype.presentation.objects.toDVSort
 import com.anytypeio.anytype.presentation.objects.toUiObjectsListItem
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
-import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel.Companion.DELAY_BEFORE_CREATING_TEMPLATE
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -111,7 +110,8 @@ class ObjectTypeViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val createObjectSet: CreateObjectSet,
     private val stringResourceProvider: StringResourceProvider,
-    private val createTemplate: CreateTemplate
+    private val createTemplate: CreateTemplate,
+    private val duplicateObjects: DuplicateObjects
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //top bar
@@ -657,7 +657,7 @@ class ObjectTypeViewModel(
 
             TypeEvent.OnAlertDeleteConfirm -> {
                 uiAlertState.value = UiDeleteAlertState.Hidden
-                onDeletionAccepted()
+                onDeletionObjectTypeAccepted()
             }
 
             TypeEvent.OnAlertDeleteDismiss -> {
@@ -690,7 +690,7 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnLayoutTypeDismiss -> {
-                uiTypeLayoutsState.value = UiLayoutTypeState.Hidden
+                uiTypeLayoutsState.value = Hidden
             }
             is TypeEvent.OnLayoutTypeItemClick -> {
                 proceedWithUpdatingLayout(layout = event.item)
@@ -700,6 +700,17 @@ class ObjectTypeViewModel(
                 viewModelScope.launch {
                     commands.emit(ObjectTypeCommand.Back)
                 }
+            }
+
+            is TypeEvent.OnTemplateMenuDeleteClick -> {
+                proceedWithTemplateDelete(
+                    template = event.item.id
+                )
+            }
+            is TypeEvent.OnTemplateMenuDuplicateClick -> {
+                proceedWithTemplateDuplicate(
+                    template = event.item.id
+                )
             }
         }
     }
@@ -803,7 +814,7 @@ class ObjectTypeViewModel(
 //        }
     }
 
-    private fun onDeletionAccepted() {
+    private fun onDeletionObjectTypeAccepted() {
         val params = DeleteObjects.Params(
             targets = listOf(vmParams.objectId)
         )
@@ -815,6 +826,38 @@ class ObjectTypeViewModel(
                 },
                 onFailure = {
                     Timber.e(it, "Error while deleting object ${vmParams.objectId}")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithTemplateDelete(template: Id) {
+        val params = DeleteObjects.Params(
+            targets = listOf(template)
+        )
+        viewModelScope.launch {
+            deleteObjects.async(params).fold(
+                onSuccess = {
+                    Timber.d("Template $template deleted")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting template $template")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithTemplateDuplicate(template: Id) {
+        val params = DuplicateObjects.Params(
+            ids = listOf(template)
+        )
+        viewModelScope.launch {
+            duplicateObjects.async(params).fold(
+                onSuccess = {
+                    Timber.d("Template $template duplicated")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while duplicating template $template")
                 }
             )
         }

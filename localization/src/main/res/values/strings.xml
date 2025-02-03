@@ -1855,6 +1855,8 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_menu_delete">Delete completely</string>
     <string name="object_type_objects_menu_open_set">Open Set</string>
     <string name="object_type_objects_menu_create_set">Create Set</string>
+    <string name="object_type_templates_menu_duplicate">Duplicate</string>
+    <string name="object_type_templates_menu_delete">Delete</string>
 
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>

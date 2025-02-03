@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_chats.ui
 
-import com.anytypeio.anytype.feature_chats.R
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,10 +20,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceMemberIcon
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel.ViewState
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
@@ -63,9 +64,14 @@ fun ChatReactionScreen(
                     items(
                         count = viewState.members.size
                     ) { idx ->
-                        Member(
-                            member = viewState.members[idx]
+                        val member = viewState.members[idx]
+                        ChatMemberItem(
+                            name = member.name,
+                            icon = member.icon
                         )
+                        if (idx != viewState.members.lastIndex) {
+                            Divider()
+                        }
                     }
                 }
                 is ViewState.Error.MessageNotFound -> {
@@ -91,9 +97,10 @@ fun ChatReactionScreen(
 }
 
 @Composable
-private fun Member(
+fun ChatMemberItem(
     modifier: Modifier = Modifier,
-    member: ViewState.Member
+    name: String,
+    icon: SpaceMemberIconView
 ) {
     Box(
         modifier = modifier
@@ -102,7 +109,7 @@ private fun Member(
             .padding(horizontal = 16.dp)
     ) {
         SpaceMemberIcon(
-            icon = member.icon,
+            icon = icon,
             iconSize = 48.dp,
             modifier = Modifier.align(
                 alignment = Alignment.CenterStart
@@ -115,7 +122,7 @@ private fun Member(
                 .padding(start = 60.dp)
         ) {
             Text(
-                text = member.name.ifEmpty {
+                text = name.ifEmpty {
                     stringResource(R.string.untitled)
                 },
                 color = colorResource(R.color.text_primary)
@@ -192,13 +199,10 @@ private fun EmptyState(
 @DefaultPreviews
 @Composable
 private fun MemberPreview() {
-    Member(
-        member = ViewState.Member(
-            name = "Walter Benjamin",
-            icon = SpaceMemberIconView.Placeholder(
-                name = "Walter"
-            ),
-            isUser = false
+    ChatMemberItem(
+        name = "Walter Benjamin",
+        icon = SpaceMemberIconView.Placeholder(
+            name = "Walter"
         )
     )
 }

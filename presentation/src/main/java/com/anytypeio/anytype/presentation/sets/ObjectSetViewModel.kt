@@ -1618,6 +1618,12 @@ class ObjectSetViewModel(
         }
     }
 
+    fun onHomeButtonClicked() {
+        viewModelScope.launch {
+            dispatch(AppNavigation.Command.ExitToSpaceHome)
+        }
+    }
+
     fun onShareButtonClicked() {
         viewModelScope.launch {
             dispatch(

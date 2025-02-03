@@ -42,7 +42,8 @@ sealed class Chat {
             fun new(
                 text: String,
                 attachments: List<Attachment> = emptyList(),
-                replyToMessageId: Id? = null
+                replyToMessageId: Id? = null,
+                marks: List<Block.Content.Text.Mark>
             ) : Message = Message(
                 id = "",
                 createdAt = 0L,
@@ -53,7 +54,7 @@ sealed class Chat {
                 replyToMessageId = replyToMessageId,
                 content = Content(
                     text = text,
-                    marks = emptyList(),
+                    marks = marks,
                     style = Block.Content.Text.Style.P
                 ),
                 order = ""

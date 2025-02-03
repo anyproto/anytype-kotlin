@@ -26,8 +26,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -49,7 +47,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
@@ -67,24 +64,27 @@ import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlin.collections.forEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
+
 
 @Composable
 fun ChatBox(
+    text: TextFieldValue,
+    spans: List<ChatBoxSpan>,
     mode: ChatBoxMode = ChatBoxMode.Default,
     modifier: Modifier = Modifier,
     chatBoxFocusRequester: FocusRequester,
-    textState: TextFieldValue,
-    onMessageSent: (String) -> Unit = {},
+    onMessageSent: (String, List<ChatBoxSpan>) -> Unit,
     resetScroll: () -> Unit = {},
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     clearText: () -> Unit,
-    updateValue: (TextFieldValue) -> Unit,
     onAttachObjectClicked: () -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
-    onExitEditMessageMode: () -> Unit
+    onExitEditMessageMode: () -> Unit,
+    onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit
 ) {
 
     val uploadMediaLauncher = rememberLauncherForActivityResult(
@@ -378,17 +378,16 @@ fun ChatBox(
                 }
             }
             ChatBoxUserInput(
-                textState = textState,
-                onTextChanged = { value ->
-                    updateValue(value)
-                },
+                text = text,
+                spans = spans,
+                onValueChange = onValueChange,
                 modifier = Modifier
                     .weight(1f)
                     .align(Alignment.Bottom)
                     .focusRequester(chatBoxFocusRequester)
             )
             AnimatedVisibility(
-                visible = attachments.isNotEmpty() || textState.text.isNotEmpty(),
+                visible = attachments.isNotEmpty() || text.text.isNotEmpty(),
                 exit = fadeOut() + scaleOut(),
                 enter = fadeIn() + scaleIn(),
                 modifier = Modifier.align(Alignment.Bottom)
@@ -398,7 +397,7 @@ fun ChatBox(
                         .padding(horizontal = 4.dp, vertical = 8.dp)
                         .clip(CircleShape)
                         .clickable {
-                            onMessageSent(textState.text)
+                            onMessageSent(text.text, spans)
                             clearText()
                             resetScroll()
                         }
@@ -419,12 +418,58 @@ fun ChatBox(
 @Composable
 private fun ChatBoxUserInput(
     modifier: Modifier,
-    textState: TextFieldValue,
-    onTextChanged: (TextFieldValue) -> Unit,
+    text: TextFieldValue,
+    spans: List<ChatBoxSpan>,
+    onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit
 ) {
     BasicTextField(
-        value = textState,
-        onValueChange = { onTextChanged(it) },
+        value = text,
+        onValueChange = { newValue ->
+            val newText = newValue.text
+            val oldText = text.text // Keep a reference to the current text before updating
+            val textLengthDifference = newText.length - oldText.length
+
+            val updatedSpans = spans.mapNotNull { span ->
+                // Detect the common prefix length
+                val commonPrefixLength = newText.commonPrefixWith(oldText).length
+
+                // Adjust span ranges based on text changes
+                val newStart = when {
+                    // Insertion shifts spans after the insertion point
+                    textLengthDifference > 0 && commonPrefixLength <= span.start -> span.start + textLengthDifference
+                    // Deletion shifts spans after the deletion point
+                    textLengthDifference < 0 && commonPrefixLength <= span.start -> span.start + textLengthDifference
+                    else -> span.start
+                }.coerceAtLeast(0) // Ensure bounds are valid
+
+                val newEnd = when {
+                    // Insertion shifts spans after the insertion point
+                    textLengthDifference > 0 && commonPrefixLength < span.end -> span.end + textLengthDifference
+                    // Deletion shifts spans after the deletion point
+                    textLengthDifference < 0 && commonPrefixLength < span.end -> span.end + textLengthDifference
+                    else -> span.end
+                }.coerceAtLeast(newStart).coerceAtMost(newText.length) // Ensure bounds are valid
+
+                // Log changes for debugging
+                Timber.d("Text length: ${newText.length}, Old interval: ${span.start}, ${span.end}, New interval: $newStart, $newEnd")
+
+                // Remove span if the entire range is deleted or invalid
+                if (newStart < newEnd && newText.substring(newStart, newEnd).isNotBlank()) {
+                    when(span) {
+                        is ChatBoxSpan.Mention -> {
+                            span.copy(start = newStart, end = newEnd)
+                        }
+                    }
+                } else {
+                    Timber.d("Removing span: $span")
+                    null // Remove invalid or deleted spans
+                }
+            }
+
+            // Notify parent with the updated text and spans
+            onValueChange(newValue, updatedSpans)
+
+        },
         textStyle = BodyRegular.copy(
             color = colorResource(id = R.color.text_primary)
         ),
@@ -440,11 +485,12 @@ private fun ChatBoxUserInput(
         maxLines = 5,
         decorationBox = @Composable { innerTextField ->
             DefaultHintDecorationBox(
-                text = textState.text,
+                text = text.text,
                 hint = stringResource(R.string.write_a_message),
                 innerTextField = innerTextField,
                 textStyle = BodyRegular.copy(color = colorResource(R.color.text_tertiary))
             )
-        }
+        },
+        visualTransformation = AnnotatedTextTransformation(spans)
     )
 }

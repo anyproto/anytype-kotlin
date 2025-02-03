@@ -25,11 +25,13 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -63,7 +65,7 @@ class ChatViewModel @Inject constructor(
     private val uploadFile: UploadFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
-    private val exitToVaultDelegate: ExitToVaultDelegate
+    private val exitToVaultDelegate: ExitToVaultDelegate,
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     val header = MutableStateFlow<HeaderView>(HeaderView.Init)
@@ -73,6 +75,7 @@ class ChatViewModel @Inject constructor(
     val uXCommands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
+    val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
@@ -255,9 +258,42 @@ class ChatViewModel @Inject constructor(
             messages.value = it
         }
     }
+    
+    fun onChatBoxInputChanged(
+        selection: IntRange,
+        text: String
+    ) {
+        if (isMentionTriggered(text, selection.start)) {
+            mentionPanelState.value = MentionPanelState.Visible(
+                results = members.get().let { store ->
+                    when(store) {
+                        is Store.Data -> {
+                            store.members.map { member ->
+                                MentionPanelState.Member(
+                                    member.id,
+                                    name = member.name.orEmpty(),
+                                    icon = SpaceMemberIconView.icon(
+                                        obj = member,
+                                        urlBuilder = urlBuilder
+                                    )
+                                )
+                            }
+                        }
+                        Store.Empty -> {
+                            emptyList()
+                        }
+                    }
+                }
+            )
+        } else {
+            mentionPanelState.value = MentionPanelState.Hidden
+        }
+    }
 
-    fun onMessageSent(msg: String) {
-        Timber.d("DROID-2635 OnMessageSent: $msg")
+    fun onMessageSent(msg: String, markup: List<Block.Content.Text.Mark>) {
+        if (BuildConfig.DEBUG) {
+            Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
+        }
         viewModelScope.launch {
             val attachments = buildList {
                 chatBoxAttachments.value.forEach { attachment ->
@@ -321,7 +357,8 @@ class ChatViewModel @Inject constructor(
                             chat = vmParams.ctx,
                             message = Chat.Message.new(
                                 text = msg,
-                                attachments = attachments
+                                attachments = attachments,
+                                marks = markup
                             )
                         )
                     ).onSuccess { (id, payload) ->
@@ -363,7 +400,8 @@ class ChatViewModel @Inject constructor(
                             message = Chat.Message.new(
                                 text = msg,
                                 replyToMessageId = mode.msg,
-                                attachments = attachments
+                                attachments = attachments,
+                                marks = markup
                             )
                         )
                     ).onSuccess { (id, payload) ->
@@ -583,6 +621,30 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onMentionClicked(member: Id) {
+        viewModelScope.launch {
+            commands.emit(
+                ViewModelCommand.ViewMemberCard(
+                    member = member,
+                    space = vmParams.space
+                )
+            )
+        }
+    }
+
+    private fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
+        // Ensure selectionStart is valid and not out of bounds
+        if (selectionStart <= 0 || selectionStart > text.length) {
+            return false
+        }
+
+        // Check the character before the cursor position
+        val previousChar = text[selectionStart - 1]
+
+        // Trigger mention if the previous character is '@'
+        return previousChar == '@'
+    }
+
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
@@ -606,6 +668,17 @@ class ChatViewModel @Inject constructor(
             val text: String,
             val author: String
         ): ChatBoxMode()
+    }
+
+    sealed class MentionPanelState {
+        data object Hidden : MentionPanelState()
+        data class Visible(val results: List<Member>) : MentionPanelState()
+        data class Member(
+            val id: Id,
+            val name: String,
+            val icon: SpaceMemberIconView,
+            val isUser: Boolean = false
+        )
     }
 
     sealed class HeaderView {

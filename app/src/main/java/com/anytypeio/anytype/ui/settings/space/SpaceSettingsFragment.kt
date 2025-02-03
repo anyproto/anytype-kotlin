@@ -103,7 +103,7 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                         )
                     },
                     onDebugClicked = vm::onSpaceDebugClicked,
-                    onRandomGradientClicked = vm::onRandomSpaceGradientClicked,
+                    onRemoveIconClicked = vm::onRemoveSpaceIconClicked,
                     onManageSharedSpaceClicked = vm::onManageSharedSpaceClicked,
                     onSharePrivateSpaceClicked = vm::onSharePrivateSpaceClicked,
                     onAddMoreSpacesClicked = vm::onAddMoreSpacesClicked,

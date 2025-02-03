@@ -315,6 +315,11 @@ open class ObjectSetFragment :
             subscribe(
                 binding.bottomToolbar.searchClicks().throttleFirst()
             ) { vm.onSearchButtonClicked() }
+
+            subscribe(
+                binding.bottomToolbar.homeClicks().throttleFirst()
+            ) { vm.onHomeButtonClicked() }
+
             subscribe(
                 binding.bottomToolbar.addDocClicks().throttleFirst()
             ) { vm.onAddNewDocumentClicked() }

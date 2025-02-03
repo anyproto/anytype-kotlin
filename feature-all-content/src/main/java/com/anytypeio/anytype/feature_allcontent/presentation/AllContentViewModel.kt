@@ -60,6 +60,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentToBin
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
@@ -149,6 +150,8 @@ class AllContentViewModel(
     private var shouldScrollToTopItems = false
 
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
+
+    val navPanelState = permission.map { permission -> NavPanelState.fromPermission(permission) }
 
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
@@ -745,7 +748,7 @@ class AllContentViewModel(
     fun onHomeClicked() {
         Timber.d("onHomeClicked")
         viewModelScope.launch {
-            commands.emit(Command.ExitToVault)
+            commands.emit(Command.ExitToSpaceHome)
         }
     }
 
@@ -1036,7 +1039,7 @@ class AllContentViewModel(
         ) : Command()
         data class OpenRelationCreation(val space: Id): Command()
         data object OpenGlobalSearch : Command()
-        data object ExitToVault : Command()
+        data object ExitToSpaceHome : Command()
         data object Back : Command()
     }
 

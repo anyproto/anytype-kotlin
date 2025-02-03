@@ -407,6 +407,7 @@ sealed class RelationBlockViewHolder(
 
         override fun applyRelationValue(item: ObjectRelationView) {
             if (item is ObjectRelationView.File) {
+                clearAllViews()
                 if (item.files.isEmpty()) {
                     placeholder.visible()
                 } else {
@@ -430,6 +431,14 @@ sealed class RelationBlockViewHolder(
             1 -> binding.file1
             2 -> binding.file2
             else -> null
+        }
+
+        private fun clearAllViews() {
+            with(binding) {
+                file0.clear()
+                file1.clear()
+                file2.clear()
+            }
         }
 
         override fun indentize(item: BlockView.Indentable) {

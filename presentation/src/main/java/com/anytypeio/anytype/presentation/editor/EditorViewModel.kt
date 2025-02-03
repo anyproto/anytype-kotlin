@@ -1216,7 +1216,7 @@ class EditorViewModel(
     fun onHomeButtonClicked() {
         Timber.d("onHomeButtonClicked, ")
         if (stateData.value == ViewState.NotExist) {
-            navigateToDesktop()
+            exitToSpaceHome()
             return
         }
         proceedWithExitingToDashboard()
@@ -1262,19 +1262,19 @@ class EditorViewModel(
                     vmParams.space
                 )
             ).fold(
-                onSuccess = { navigateToDesktop() },
+                onSuccess = { exitToSpaceHome() },
                 onFailure = {
                     Timber.e(it, "Error while closing this page: $context")
-                    navigateToDesktop()
+                    exitToSpaceHome()
                 }
             )
         }
     }
 
     // TODO DROID-2731 rename the method
-    fun navigateToDesktop() {
+    fun exitToSpaceHome() {
         Timber.d("navigateToDesktop, ")
-        navigation.postValue(EventWrapper(AppNavigation.Command.ExitToVault))
+        navigation.postValue(EventWrapper(ExitToSpaceHome))
     }
 
     @Deprecated("replace by onTextBlockTextChanged")

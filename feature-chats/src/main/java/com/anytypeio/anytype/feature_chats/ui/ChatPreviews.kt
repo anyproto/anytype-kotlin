@@ -70,7 +70,8 @@ fun ChatPreview() {
         onReplyMessage = {},
         onAddReactionClicked = {},
         onViewChatReaction = { a, b -> },
-        onMemberIconClicked = {}
+        onMemberIconClicked = {},
+        onMentionClicked = {}
     )
 }
 
@@ -102,7 +103,7 @@ fun ChatScreenPreview() {
                 )
             }
         }.reversed(),
-        onMessageSent = {},
+        onMessageSent = { a, b -> },
         attachments = emptyList(),
         onClearAttachmentClicked = {},
         lazyListState = LazyListState(),
@@ -121,7 +122,10 @@ fun ChatScreenPreview() {
         onChatBoxFilePicked = {},
         onAddReactionClicked = {},
         onViewChatReaction = { a, b -> },
-        onMemberIconClicked = {}
+        onMemberIconClicked = {},
+        onMentionClicked = {},
+        mentionPanelState = ChatViewModel.MentionPanelState.Hidden,
+        onTextChanged = {}
     )
 }
 
@@ -149,7 +153,8 @@ fun BubblePreview() {
         onReply = {},
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
-        onViewChatReaction = {}
+        onViewChatReaction = {},
+        onMentionClicked = {}
     )
 }
 
@@ -178,7 +183,8 @@ fun BubbleEditedPreview() {
         onReply = {},
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
-        onViewChatReaction = {}
+        onViewChatReaction = {},
+        onMentionClicked = {}
     )
 }
 
@@ -215,6 +221,7 @@ fun BubbleWithAttachmentPreview() {
         onReply = {},
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
-        onViewChatReaction = {}
+        onViewChatReaction = {},
+        onMentionClicked = {}
     )
 }

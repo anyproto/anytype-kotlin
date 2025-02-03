@@ -187,23 +187,6 @@ class VaultViewModel(
             )
         }
         viewModelScope.launch {
-            getVaultSettings.async(Unit)
-                .onSuccess { settings ->
-                    if (settings.showIntroduceVault) {
-                        commands.emit(Command.ShowIntroduceVault)
-                        setVaultSettings.async(
-                            params = settings.copy(
-                                showIntroduceVault = false
-                            )
-                        ).onFailure {
-                            Timber.e(it, "Error while setting vault settings")
-                        }
-                    }
-                }.onFailure {
-                    Timber.e(it, "Error while getting vault settings")
-                }
-        }
-        viewModelScope.launch {
             when (deeplink) {
                 is DeepLinkResolver.Action.Import.Experience -> {
                     commands.emit(
@@ -397,7 +380,6 @@ class VaultViewModel(
         data class EnterSpaceLevelChat(val space: Space, val chat: Id): Command()
         data object CreateNewSpace: Command()
         data object OpenProfileSettings: Command()
-        data object ShowIntroduceVault : Command()
 
         sealed class Deeplink : Command() {
             data object DeepLinkToObjectNotWorking: Deeplink()

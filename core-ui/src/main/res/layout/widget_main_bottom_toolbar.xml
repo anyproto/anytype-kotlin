@@ -5,6 +5,24 @@
     tools:context="com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar">
 
     <FrameLayout
+        android:id="@+id/btnHome"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/default_ripple">
+
+        <ImageView
+            android:id="@+id/icHome"
+            android:layout_width="@dimen/main_bottom_toolbar_icon_width"
+            android:layout_height="@dimen/main_bottom_toolbar_icon_height"
+            android:layout_gravity="center"
+            android:scaleType="center"
+            android:contentDescription="@string/content_desc_home_button"
+            app:srcCompat="@drawable/ic_nav_panel_home" />
+
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/btnShare"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -17,8 +35,26 @@
             android:layout_height="@dimen/main_bottom_toolbar_icon_height"
             android:layout_gravity="center"
             android:scaleType="center"
-            android:contentDescription="@string/content_desc_back_button"
+            android:contentDescription="@string/content_desc_share_button"
             app:srcCompat="@drawable/ic_nav_panel_members" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/btnAddDoc"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/default_ripple">
+
+        <ImageView
+            android:id="@+id/icAddDoc"
+            android:layout_width="@dimen/main_bottom_toolbar_icon_width"
+            android:layout_height="@dimen/main_bottom_toolbar_icon_height"
+            android:layout_gravity="center"
+            android:scaleType="center"
+            android:contentDescription="@string/content_desc_add_doc_button"
+            app:srcCompat="@drawable/ic_nav_panel_plus" />
 
     </FrameLayout>
 
@@ -38,24 +74,6 @@
             android:contentDescription="@string/content_desc_search_button"
             android:scaleType="center"
             app:srcCompat="@drawable/ic_nav_panel_search" />
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/btnAddDoc"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@drawable/default_ripple">
-
-        <ImageView
-            android:id="@+id/icAddDoc"
-            android:layout_width="@dimen/main_bottom_toolbar_icon_width"
-            android:layout_height="@dimen/main_bottom_toolbar_icon_height"
-            android:layout_gravity="center"
-            android:scaleType="center"
-            android:contentDescription="@string/content_desc_add_doc_button"
-            app:srcCompat="@drawable/ic_nav_panel_plus" />
 
     </FrameLayout>
 

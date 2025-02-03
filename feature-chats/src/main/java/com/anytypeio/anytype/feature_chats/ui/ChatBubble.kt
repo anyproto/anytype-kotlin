@@ -50,6 +50,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
@@ -88,7 +90,8 @@ fun Bubble(
     onMarkupLinkClicked: (String) -> Unit,
     onScrollToReplyClicked: (ChatView.Message.Reply) -> Unit,
     onAddReactionClicked: () -> Unit,
-    onViewChatReaction: (String) -> Unit
+    onViewChatReaction: (String) -> Unit,
+    onMentionClicked: (Id) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     var showDeleteMessageWarning by remember { mutableStateOf(false) }
@@ -227,7 +230,7 @@ fun Bubble(
                         if (part.link != null && part.link.param != null) {
                             withLink(
                                 LinkAnnotation.Clickable(
-                                    tag = "link",
+                                    tag = DEFAULT_MENTION_LINK_TAG,
                                     styles = TextLinkStyles(
                                         style = SpanStyle(
                                             fontWeight = if (part.isBold) FontWeight.Bold else null,
@@ -237,6 +240,23 @@ fun Bubble(
                                     )
                                 ) {
                                     onMarkupLinkClicked(part.link.param.orEmpty())
+                                }
+                            ) {
+                                append(part.part)
+                            }
+                        } else if (part.mention != null && part.mention.param != null) {
+                            withLink(
+                                LinkAnnotation.Clickable(
+                                    tag = DEFAULT_MENTION_SPAN_TAG,
+                                    styles = TextLinkStyles(
+                                        style = SpanStyle(
+                                            fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                            fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                            textDecoration = TextDecoration.Underline
+                                        )
+                                    )
+                                ) {
+                                    onMentionClicked(part.mention.param.orEmpty())
                                 }
                             ) {
                                 append(part.part)

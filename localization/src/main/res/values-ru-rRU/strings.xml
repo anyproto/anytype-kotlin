@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Применить случайный сплошной цвет</string>
     <string name="space_settings_apply_upload_image">Загрузить изображение</string>
     <string name="profile_settings_apply_upload_image">Загрузить изображение</string>
-    <string name="profile_settings_remove_image">Remove image</string>
+    <string name="remove_image">Remove image</string>
     <string name="delete_space">Удалить пространство</string>
     <string name="you_can_store">Вы можете бесплатно хранить до %1$s ваших файлов на нашем узле резервного копирования. При достижении лимита файлы будут храниться только локально.</string>
     <string name="in_order_to_save">Чтобы сохранить место на вашем локальном устройстве, вы можете выгрузить все ваши файлы в наш зашифрованный узел резервного копирования. Файлы будут загружены обратно, когда вы откроете их.</string>
@@ -1169,9 +1169,9 @@
     <string name="multiplayer_upgrade_button_request">✦ Обновите, чтобы добавить больше участников</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Обновите, чтобы добавить больше пространств</string>
     <string name="multiplayer_members">Участники</string>
-    <string name="multiplayer_leave_request">Оставить запрос</string>
+    <string name="multiplayer_leave_request">Запрос на выход</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>
-    <string name="multiplayer_approve_request">Утверждено</string>
+    <string name="multiplayer_approve_request">Подтвердить</string>
     <string name="multiplayer_view_request">Посмотреть запрос</string>
     <string name="multiplayer_owner">Владелец</string>
     <string name="multiplayer_can_edit">Can edit</string>

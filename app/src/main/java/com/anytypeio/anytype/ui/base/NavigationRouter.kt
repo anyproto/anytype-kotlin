@@ -44,6 +44,7 @@ class NavigationRouter(
                 is AppNavigation.Command.Exit -> navigation.exit()
                 is AppNavigation.Command.ExitToDesktop -> navigation.exitToDesktop()
                 is AppNavigation.Command.ExitToVault -> navigation.exitToVault()
+                is AppNavigation.Command.ExitToSpaceHome -> navigation.exitToSpaceHome()
                 is AppNavigation.Command.OpenGlobalSearch -> navigation.openGlobalSearch(
                     space = command.space
                 )

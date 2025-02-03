@@ -1400,6 +1400,7 @@ message Rpc {
             int64 timestamp = 6;
             int64 size = 7;
             bool joinSpace = 8;
+            google.protobuf.Struct details = 9;
         }
 
         message Create {
@@ -2782,8 +2783,17 @@ message Rpc {
                 bool includeArchived = 9;
                 // for integrations like raycast and web publishing
                 bool noProgress = 11;
+                StateFilters linksStateFilters = 12;
+                bool includeBacklinks = 13;
             }
-
+            message StateFilters {
+                repeated RelationsWhiteList relationsWhiteList = 1;
+                bool removeBlocks = 2;
+            }
+            message RelationsWhiteList {
+                anytype.model.ObjectType.Layout layout = 1;
+                repeated string allowedRelations = 2;
+            }
             message Response {
                 Error error = 1;
                 string path = 2;

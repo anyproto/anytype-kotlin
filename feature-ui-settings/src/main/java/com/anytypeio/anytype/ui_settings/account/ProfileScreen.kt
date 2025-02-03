@@ -47,7 +47,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -491,7 +490,7 @@ fun ProfileImageBlock(
                 },
             ) {
                 Text(
-                    text = stringResource(R.string.profile_settings_remove_image),
+                    text = stringResource(R.string.remove_image),
                     style = BodyRegular,
                     color = colorResource(id = R.color.text_primary)
                 )

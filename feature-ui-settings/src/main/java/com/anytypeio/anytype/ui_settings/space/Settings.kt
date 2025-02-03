@@ -65,7 +65,7 @@ fun SpaceSettingsScreen(
     onNetworkIdClicked: (Id) -> Unit,
     onCreatedByClicked: (Id) -> Unit,
     onDebugClicked: () -> Unit,
-    onRandomGradientClicked: () -> Unit,
+    onRemoveIconClicked: () -> Unit,
     onSharePrivateSpaceClicked: () -> Unit,
     onManageSharedSpaceClicked: () -> Unit,
     onAddMoreSpacesClicked: () -> Unit,
@@ -91,7 +91,7 @@ fun SpaceSettingsScreen(
                     else -> null
                 },
                 onNameSet = onNameSet,
-                onRandomGradientClicked = onRandomGradientClicked,
+                onRemoveIconClicked = onRemoveIconClicked,
                 isEditEnabled = when(state) {
                     is ViewState.Error -> false
                     ViewState.Init -> false
@@ -327,7 +327,7 @@ fun SpaceSettingsScreenPreview() {
         onNetworkIdClicked = {} ,
         onCreatedByClicked = {},
         onDebugClicked = {},
-        onRandomGradientClicked = {},
+        onRemoveIconClicked = {},
         onManageSharedSpaceClicked = {},
         onSharePrivateSpaceClicked = {},
         onAddMoreSpacesClicked = {},

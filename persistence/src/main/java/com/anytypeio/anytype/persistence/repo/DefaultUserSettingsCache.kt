@@ -570,6 +570,22 @@ class DefaultUserSettingsCache(
         }
     }
 
+    override suspend fun setTooltipShown(shown: Boolean) {
+        prefs.edit().putBoolean(TOOLTIP_SHOWN_KEY, shown).apply()
+    }
+
+    override suspend fun isTooltipShown(): Boolean {
+        return prefs.getBoolean(TOOLTIP_SHOWN_KEY, false)
+    }
+
+    override suspend fun setSpaceSwitchCount(count: Int) {
+        prefs.edit().putInt(SPACE_SWITCH_COUNT_KEY, count).apply()
+    }
+
+    override suspend fun getSpaceSwitchCount(): Int {
+        return prefs.getInt(SPACE_SWITCH_COUNT_KEY, 0)
+    }
+
     companion object {
         const val CURRENT_SPACE_KEY = "prefs.user_settings.current_space"
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"
@@ -585,5 +601,8 @@ class DefaultUserSettingsCache(
 
         const val COLLAPSED_WIDGETS_KEY = "prefs.user_settings.collapsed-widgets"
         const val ACTIVE_WIDGETS_VIEWS_KEY = "prefs.user_settings.active-widget-views"
+
+        const val TOOLTIP_SHOWN_KEY = "tooltip_shown_key"
+        const val SPACE_SWITCH_COUNT_KEY = "space_switch_count_key"
     }
 }

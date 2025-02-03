@@ -824,28 +824,27 @@ open class ObjectSetFragment :
                 .launchIn(lifecycleScope)
         }
 
-        binding.objectHeader.root.findViewById<View>(R.id.imageIcon).apply {
-            if (header.title.image != null) visible() else gone()
+        binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).apply {
             jobs += this.clicks()
                 .throttleFirst()
                 .onEach { vm.onObjectIconClicked() }
                 .launchIn(lifecycleScope)
+
+            if (header.title.image != null) {
+                this.visible()
+                    Glide
+                        .with(this)
+                        .load(header.title.image)
+                        .centerCrop()
+                        .into(this)
+            } else {
+                this.gone()
+                this.setImageDrawable(null)
+            }
         }
 
         binding.objectHeader.root.findViewById<ImageView>(R.id.emojiIcon)
             .setEmojiOrNull(header.title.emoji)
-
-        if (header.title.image != null) {
-            binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).apply {
-                Glide
-                    .with(this)
-                    .load(header.title.image)
-                    .centerCrop()
-                    .into(this)
-            }
-        } else {
-            binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).setImageDrawable(null)
-        }
 
         setCover(
             coverColor = header.title.coverColor,

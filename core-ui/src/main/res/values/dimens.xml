@@ -44,6 +44,7 @@
     <dimen name="dp_102">102dp</dimen>
     <dimen name="dp_120">120dp</dimen>
     <dimen name="dp_203">203dp</dimen>
+    <dimen name="dp_443">443dp</dimen>
 
     <dimen name="roundedTextBorderRadius">4dp</dimen>
     <dimen name="roundedTextBorderWidth">1dp</dimen>

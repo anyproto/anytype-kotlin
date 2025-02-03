@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.text.Spannable
+import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout.LayoutParams
@@ -38,6 +41,11 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
+import java.security.MessageDigest
 import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
@@ -50,7 +58,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     fun bind(
         item: BlockView.Title,
-        onCoverClicked: () -> Unit
+        onCoverClicked: () -> Unit,
+        click: (ListenerType) -> Unit
     ) {
         setImage(item)
         applyTextColor(item)
@@ -162,22 +171,34 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             }
         }
     }
-
     open fun setImage(item: BlockView.Title) {
+        Timber.d("Setting image for ${item.id}, image=${item.image}")
         item.image?.let { url ->
             image.visible()
-            Glide
-                .with(image)
-                .load(url)
-                .centerCrop()
-                .into(image)
-        } ?: apply { image.setImageDrawable(null) }
+            loadImageWithCustomResize(image, url)
+        } ?: run { image.setImageDrawable(null) }
     }
 
-    private fun showKeyboard() {
-        content.postDelayed(16L) {
-            imm().showSoftInput(content, InputMethodManager.SHOW_IMPLICIT)
-        }
+    private fun loadImageWithCustomResize(imageView: ImageView, url: String) {
+        val context = imageView.context
+        val displayMetrics = context.resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val maxWidth = screenWidth - dpToPx(context, 40)
+        val maxHeight = dpToPx(context, 443)
+
+        Glide.with(context)
+            .load(url)
+            .override(Target.SIZE_ORIGINAL)
+            .apply(RequestOptions().transform(CustomImageResizeTransformation(maxWidth, maxHeight)))
+            .into(imageView)
+    }
+
+    private fun dpToPx(context: Context, dp: Int): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp.toFloat(),
+            context.resources.displayMetrics
+        ).toInt()
     }
 
     open fun processPayloads(
@@ -275,14 +296,25 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         fun bind(
             item: BlockView.Title.Basic,
             onPageIconClicked: () -> Unit,
-            onCoverClicked: () -> Unit
+            onCoverClicked: () -> Unit,
+            click: (ListenerType) -> Unit
         ) {
             super.bind(
                 item = item,
-                onCoverClicked = onCoverClicked
+                onCoverClicked = onCoverClicked,
+                click = click
             )
             setEmoji(item)
             applySearchHighlights(item)
+
+            image.setOnClickListener {
+                click(
+                    ListenerType.Picture.TitleView(
+                        item = item
+                    )
+                )
+            }
+
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onPageIconClicked() }
                 image.setOnClickListener { onPageIconClicked() }
@@ -299,9 +331,11 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                         topMargin = dimen(R.dimen.dp_10)
                     }
                     binding.imageIcon.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                        topMargin = if (!item.hasCover) dimen(R.dimen.dp_51) else dimen(R.dimen.dp_102)
+                        topMargin =
+                            if (!item.hasCover) dimen(R.dimen.dp_51) else dimen(R.dimen.dp_102)
                     }
                 }
+
                 item.emoji != null -> {
                     binding.imageIcon.gone()
                     binding.docEmojiIconContainer.visible()
@@ -309,9 +343,11 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                         topMargin = dimen(R.dimen.dp_12)
                     }
                     binding.docEmojiIconContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                        topMargin = if (!item.hasCover) dimen(R.dimen.dp_60) else dimen(R.dimen.dp_120)
+                        topMargin =
+                            if (!item.hasCover) dimen(R.dimen.dp_60) else dimen(R.dimen.dp_120)
                     }
                 }
+
                 else -> {
                     binding.imageIcon.gone()
                     binding.docEmojiIconContainer.gone()
@@ -397,9 +433,10 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val content: TextInputWidget = binding.title
         override val selectionView: View = itemView
 
-        private val gradientView : ComposeView get() = binding
-            .docProfileIconContainer
-            .findViewById(R.id.gradient)
+        private val gradientView: ComposeView
+            get() = binding
+                .docProfileIconContainer
+                .findViewById(R.id.gradient)
 
         private val iconText = binding.imageText
         private var hasImage = false
@@ -411,11 +448,13 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         fun bind(
             item: BlockView.Title.Profile,
             onProfileIconClicked: (ListenerType) -> Unit,
-            onCoverClicked: () -> Unit
+            onCoverClicked: () -> Unit,
+            click: (ListenerType) -> Unit
         ) {
             super.bind(
                 item = item,
-                onCoverClicked = onCoverClicked
+                onCoverClicked = onCoverClicked,
+                click = click
             )
             setupMargins(item)
             applySearchHighlights(item)
@@ -512,11 +551,13 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         fun bind(
             item: BlockView.Title.Todo,
             onPageIconClicked: () -> Unit,
-            onCoverClicked: () -> Unit
+            onCoverClicked: () -> Unit,
+            click: (ListenerType) -> Unit
         ) {
             super.bind(
                 item = item,
-                onCoverClicked = onCoverClicked
+                onCoverClicked = onCoverClicked,
+                click = click
             )
             setLocked(item.mode)
             checkbox.isSelected = item.isChecked
@@ -576,7 +617,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         ) {
             super.bind(
                 item = item,
-                onCoverClicked = {}
+                onCoverClicked = {},
+                click = {}
             )
             icon.setIcon(item.icon)
         }

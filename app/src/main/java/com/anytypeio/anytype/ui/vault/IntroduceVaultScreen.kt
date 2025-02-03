@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import kotlinx.coroutines.launch
 
+@Deprecated("To be deleted")
 @Composable
 fun IntroduceVaultScreen(
     onDoneClicked: () -> Unit

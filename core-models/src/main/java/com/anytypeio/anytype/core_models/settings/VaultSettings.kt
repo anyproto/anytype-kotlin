@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.FALLBACK_DATE_PATTERN
 import com.anytypeio.anytype.core_models.Id
 
 data class VaultSettings(
+    @Deprecated("Property to be deleted soon")
     val showIntroduceVault: Boolean,
     val orderOfSpaces: List<Id> = emptyList(),
     val isRelativeDates: Boolean,

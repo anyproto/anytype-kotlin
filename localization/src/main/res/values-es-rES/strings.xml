@@ -371,6 +371,7 @@
     <string name="scroll_to_select_position">Desplaza para elegir un lugar</string>
     <string name="block_action_add_below">Añadir debajo</string>
     <string name="content_desc_back_button">Botón Atrás</string>
+    <string name="content_desc_share_button">Botón Compartir</string>
     <string name="content_desc_home_button">Botón Inicio</string>
     <string name="content_desc_search_button">Botón Buscar</string>
     <string name="content_desc_add_doc_button">Añadir documento</string>
@@ -1214,6 +1215,7 @@
     <string name="multiplayer_notification_member_request_approved">Solicitud aprobada</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Tu solicitud para acceder al espacio %1$s se ha aprobado con derechos de solo lectura. El espacio estará pronto disponible en tu dispositivo.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Tu solicitud de acceso al espacio %1$s se ha aprobado con derechos de edición. El espacio estará pronto disponible en tu dispositivo.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">El espacio ya no es accesible.</string>
     <string name="multiplayer_notification_member_removed_from_space">Te han eliminado de ese espacio o el propietario ha eliminado ese espacio.</string>
     <string name="multiplayer_notification_member_permissions_changed">Permisos cambiados</string>
     <string name="multiplayer_notification_member_permission_change_read">Tus derechos de acceso al espacio %1$s ahora son de solo lectura.</string>
@@ -1559,6 +1561,7 @@ En concreto,
     <string name="all_content_snackbar_title">se ha movido a la papelera</string>
     <string name="main_navigation_content_desc_back_button">Botón Atrás</string>
     <string name="main_navigation_content_desc_members_button">Botón de compartir y miembros</string>
+    <string name="main_navigation_content_desc_home_button">Botón Inicio</string>
     <string name="main_navigation_content_desc_search_button">Botón Buscar objetos</string>
     <string name="main_navigation_content_desc_create_button">Botón Crear objeto</string>
     <string name="chat">Chat</string>

@@ -373,6 +373,7 @@
     <string name="scroll_to_select_position">Пракруціце, каб выбраць новую пазіцыю</string>
     <string name="block_action_add_below">Дадаць ніжэй</string>
     <string name="content_desc_back_button">Кнопка назад</string>
+    <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Кнопка Пошук</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1222,6 +1223,7 @@
     <string name="multiplayer_notification_member_request_approved">Запыт ухвалены</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Ваш запыт на далучэнне да прасторы %1$s быў ухвалены з правамі доступу толькі для чытання. Прастора будзе даступна на вашай прыладзе ў бліжэйшы час.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Ваш запыт на далучэнне да прасторы %1$s быў ухвалены з правамі доступу да рэдагавання. Прастора будзе даступна на вашай прыладзе ў бліжэйшы час.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
     <string name="multiplayer_notification_member_removed_from_space">Вы былі выдалены з прасторы, або прастора была выдалена ўладальнікам.</string>
     <string name="multiplayer_notification_member_permissions_changed">Дазволы зменены</string>
     <string name="multiplayer_notification_member_permission_change_read">Вашы правы доступу былі зменены толькі на доступ для чытання ў прасторы %1$s.</string>
@@ -1585,6 +1587,7 @@
     <string name="all_content_snackbar_title">moved to bin</string>
     <string name="main_navigation_content_desc_back_button">Кнопка назад</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
+    <string name="main_navigation_content_desc_home_button">Home button</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
     <string name="chat">Chat</string>

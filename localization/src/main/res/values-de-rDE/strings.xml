@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Zufällige Volltonfarbe verwenden</string>
     <string name="space_settings_apply_upload_image">Bild hochladen</string>
     <string name="profile_settings_apply_upload_image">Bild hochladen</string>
-    <string name="remove_image">Bild entfernen</string>
+    <string name="remove_image">Remove image</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
     <string name="in_order_to_save">Um Platz auf deinem Gerät zu sparen, können alle deine Dateien auf unseren verschlüsselten Backup-Knoten ausgelagert werden. Die Dateien werden beim Öffnen dann wieder heruntergeladen.</string>
@@ -371,6 +371,7 @@
     <string name="scroll_to_select_position">Scrollen, um neue Position auszuwählen</string>
     <string name="block_action_add_below">Unten hinzufügen</string>
     <string name="content_desc_back_button">Back button</string>
+    <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1214,6 +1215,7 @@
     <string name="multiplayer_notification_member_request_approved">Anfrage genehmigt</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Deine Anfrage, dem Space %1$s beizutreten, wurde mit Nur-Lese-Rechten genehmigt. Der Bereich wird in Kürze auf deinem Gerät verfügbar sein.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Deine Anfrage, dem Space %1$s beizutreten, wurde mit Bearbeitungszugriffsrechten genehmigt. Der Space wird in Kürze auf deinem Gerät verfügbar sein.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
     <string name="multiplayer_notification_member_removed_from_space">Du wurdest aus dem Space entfernt oder der Space wurde vom Eigentümer/von der Eigentümerin gelöscht.</string>
     <string name="multiplayer_notification_member_permissions_changed">Berechtigungen geändert</string>
     <string name="multiplayer_notification_member_permission_change_read">Deine Zugriffsrechte wurden im Space %1$s auf „Nur Lesen“ geändert.</string>
@@ -1559,6 +1561,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_snackbar_title">in den  Papierkorb verschoben</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
+    <string name="main_navigation_content_desc_home_button">Home button</string>
     <string name="main_navigation_content_desc_search_button">Schaltfläche zum Suchen von Objekten</string>
     <string name="main_navigation_content_desc_create_button">Schaltfläche zum Erstellen eines Objekts</string>
     <string name="chat">Chat</string>

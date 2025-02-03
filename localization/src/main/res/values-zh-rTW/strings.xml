@@ -370,6 +370,7 @@
     <string name="scroll_to_select_position">滾動以選擇新的位置</string>
     <string name="block_action_add_below">在下方添加</string>
     <string name="content_desc_back_button">返回按鈕</string>
+    <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">首頁按鈕</string>
     <string name="content_desc_search_button">搜尋按鈕</string>
     <string name="content_desc_add_doc_button">添加文件</string>
@@ -1210,6 +1211,7 @@
     <string name="multiplayer_notification_member_request_approved">請求已批准</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">您請求加入的 %1$s 空間已獲得批准，並具有唯讀存取權限。 該空間很快就可以在您的裝置上使用。</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">您請求加入的 %1$s 空間已獲得批准，並具有編輯存取權限。 該空間很快就可以在您的裝置上使用。</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
     <string name="multiplayer_notification_member_removed_from_space">您已從該空間中移除，或該空間已被擁有者刪除。</string>
     <string name="multiplayer_notification_member_permissions_changed">權限已變更</string>
     <string name="multiplayer_notification_member_permission_change_read">您在 %1$s 空間的存取權限已變更為唯讀存取。</string>
@@ -1546,6 +1548,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_snackbar_title">moved to bin</string>
     <string name="main_navigation_content_desc_back_button">返回按鈕</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
+    <string name="main_navigation_content_desc_home_button">首頁按鈕</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
     <string name="chat">Chat</string>

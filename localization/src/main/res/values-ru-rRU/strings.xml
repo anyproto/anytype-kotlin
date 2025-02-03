@@ -373,6 +373,7 @@
     <string name="scroll_to_select_position">Прокрутите для выбора новой позиции</string>
     <string name="block_action_add_below">Добавить ниже</string>
     <string name="content_desc_back_button">Back button</string>
+    <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1169,9 +1170,9 @@
     <string name="multiplayer_upgrade_button_request">✦ Обновите, чтобы добавить больше участников</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Обновите, чтобы добавить больше пространств</string>
     <string name="multiplayer_members">Участники</string>
-    <string name="multiplayer_leave_request">Запрос на выход</string>
+    <string name="multiplayer_leave_request">Оставить запрос</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>
-    <string name="multiplayer_approve_request">Подтвердить</string>
+    <string name="multiplayer_approve_request">Утверждено</string>
     <string name="multiplayer_view_request">Посмотреть запрос</string>
     <string name="multiplayer_owner">Владелец</string>
     <string name="multiplayer_can_edit">Can edit</string>
@@ -1222,6 +1223,7 @@
     <string name="multiplayer_notification_member_request_approved">Запрос одобрен</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами доступа только для чтения. Пространство будет доступно на вашем устройстве в ближайшее время.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами на редактирование. Пространство будет доступно в ближайшее время на устройстве.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
     <string name="multiplayer_notification_member_removed_from_space">Вы были удалены из пространства, или оно было удалено владельцем.</string>
     <string name="multiplayer_notification_member_permissions_changed">Разрешения изменены</string>
     <string name="multiplayer_notification_member_permission_change_read">Ваши права доступа были изменены на только для чтения в пространстве %1$s.</string>
@@ -1588,6 +1590,7 @@
     <string name="all_content_snackbar_title">перемещен в корзину</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Кнопка \"Поделиться\" и \"Участники\"</string>
+    <string name="main_navigation_content_desc_home_button">Home button</string>
     <string name="main_navigation_content_desc_search_button">Кнопка поиска объектов</string>
     <string name="main_navigation_content_desc_create_button">Кнопка создания объекта</string>
     <string name="chat">Чат</string>

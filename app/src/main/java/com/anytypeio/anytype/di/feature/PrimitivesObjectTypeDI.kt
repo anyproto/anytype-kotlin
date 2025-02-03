@@ -14,29 +14,23 @@ import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
-import com.anytypeio.anytype.domain.objects.ObjectWatcher
-import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
-import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.models.ObjectTypeVmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
-import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import dagger.Binds
@@ -71,19 +65,6 @@ object ObjectTypeModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun openObject(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers,
-        settings: UserSettingsRepository,
-    ): OpenObject = OpenObject(
-        repo = repo,
-        dispatchers = dispatchers,
-        settings = settings
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideStoreLessSubscriptionContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
@@ -95,13 +76,6 @@ object ObjectTypeModule {
         dispatchers = dispatchers,
         logger = logger
     )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun searchObjects(
-        repo: BlockRepository
-    ): SearchObjects = SearchObjects(repo = repo)
 
     @JvmStatic
     @Provides
@@ -119,45 +93,15 @@ object ObjectTypeModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideGetDefaultPageType(
-        userSettingsRepository: UserSettingsRepository,
-        blockRepository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): GetDefaultObjectType = GetDefaultObjectType(
-        userSettingsRepository = userSettingsRepository,
-        blockRepository = blockRepository,
-        dispatchers = dispatchers
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideUpdateDetailUseCase(
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetObjectDetails = SetObjectDetails(repository, dispatchers)
 
     @JvmStatic
-    @PerScreen
-    @Provides
-    fun getSetObjectListIsArchived(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
-
-    @JvmStatic
     @Provides
     @PerScreen
     fun coverHashProvider() : CoverImageHashProvider = DefaultCoverImageHashProvider()
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun provideObjectWatcher(
-        repo: BlockRepository,
-        events: EventChannel,
-        reducer: ObjectWatcher.Reducer
-    ): ObjectWatcher = ObjectWatcher(repo, events, reducer)
 
     @JvmStatic
     @PerScreen
@@ -174,6 +118,17 @@ object ObjectTypeModule {
         repo: BlockRepository
     ): CreateObjectSet = CreateObjectSet(repo = repo)
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDuplicateObjectsListUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DuplicateObjects = DuplicateObjects(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
     @Module
     interface Declarations {
         @PerScreen
@@ -181,18 +136,6 @@ object ObjectTypeModule {
         fun bindViewModelFactory(
             factory: ObjectTypeVMFactory
         ): ViewModelProvider.Factory
-
-        @PerScreen
-        @Binds
-        fun objectWatcherReducer(
-            default: DefaultObjectViewReducer
-        ): ObjectWatcher.Reducer
-
-        @PerScreen
-        @Binds
-        fun deepLinkToObjectDelegate(
-            default: DeepLinkToObjectDelegate.Default
-        ) : DeepLinkToObjectDelegate
     }
 }
 
@@ -209,7 +152,6 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun config(): ConfigStorage
     fun userPermissionProvider(): UserPermissionProvider
     fun provideStoreOfRelations(): StoreOfRelations
-    fun provideDateProvider(): DateProvider
     fun provideSpaceSyncAndP2PStatusProvider(): SpaceSyncAndP2PStatusProvider
     fun provideUserSettingsRepository(): UserSettingsRepository
     fun fieldParser(): FieldParser

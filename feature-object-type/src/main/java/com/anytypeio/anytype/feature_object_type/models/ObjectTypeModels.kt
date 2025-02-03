@@ -1,10 +1,9 @@
-package com.anytypeio.anytype.feature_object_type.viewmodel
+package com.anytypeio.anytype.feature_object_type.models
 
 import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -25,22 +24,7 @@ data class ObjectTypeVmParams(
     val spaceId: SpaceId
 )
 
-/**
- * State representing session while working with an object.
- */
-sealed class ObjectViewState {
-    data object Idle : ObjectViewState()
-    data class Success(val obj: ObjectView) : ObjectViewState()
-    data class Failure(val e: Throwable) : ObjectViewState()
-}
-
-sealed class ObjectTypeState {
-    data object Empty : ObjectTypeState()
-    data class Loading(val objectId: Id) : ObjectTypeState()
-    data class Content(val objectId: Id, val obj: ObjectWrapper.Type) : ObjectTypeState()
-}
-
-//region HEADER
+//region OBJECT TYPE HEADER (title + icon)
 data class UiTitleState(val title: String, val isEditable: Boolean) {
     companion object {
         val EMPTY = UiTitleState(title = "", isEditable = false)
@@ -54,13 +38,28 @@ data class UiIconState(val icon: ObjectIcon, val isEditable: Boolean) {
 }
 //endregion
 
-sealed class UiSettingsIcon {
-    data object Hidden : UiSettingsIcon()
-    data class Visible(val objectId: Id) : UiSettingsIcon()
+//region LAYOUTS
+sealed class UiLayoutButtonState{
+    data object Hidden : UiLayoutButtonState()
+    data class Visible(val layout: ObjectType.Layout) : UiLayoutButtonState()
+}
+
+sealed class UiLayoutTypeState{
+    data object Hidden : UiLayoutTypeState()
+    data class Visible(
+        val layouts: List<ObjectType.Layout>,
+        val selectedLayout: ObjectType.Layout? = null
+    ) : UiLayoutTypeState()
+}
+//endregion
+
+sealed class UiFieldsButtonState{
+    data object Hidden : UiFieldsButtonState()
+    data class Visible(val count: Int) : UiFieldsButtonState()
+
 }
 
 //region MENU
-
 @Immutable
 sealed class UiMenuSetItem{
     data object Hidden: UiMenuSetItem()
@@ -120,10 +119,9 @@ enum class UiObjectsMenuItem {
 //endregion
 
 //region TEMPLATES HEADER
-data class UiTemplatesHeaderState(val count: String) {
-    companion object {
-        val EMPTY = UiTemplatesHeaderState(count = "")
-    }
+sealed class UiTemplatesHeaderState{
+    data object Hidden : UiTemplatesHeaderState()
+    data class Visible(val count: String): UiTemplatesHeaderState()
 }
 
 sealed class UiTemplatesAddIconState{
@@ -160,6 +158,30 @@ sealed class UiObjectsSettingsIconState{
 }
 //endregion
 
+sealed class UiEditButton {
+    data object Hidden : UiEditButton()
+    data object Visible : UiEditButton()
+}
+
+//region ERRORS
+sealed class UiErrorState {
+    data object Hidden : UiErrorState()
+    data class Show(val reason: Reason) : UiErrorState()
+
+    sealed class Reason {
+        data class ErrorGettingObjects(val msg: String) : Reason()
+        data class Other(val msg: String) : Reason()
+    }
+}
+//endregion
+
+//region ALERTS
+sealed class UiDeleteAlertState {
+    data object Hidden : UiDeleteAlertState()
+    data object Show : UiDeleteAlertState()
+}
+//endregion
+
 //region SYNC STATUS
 sealed class UiSyncStatusWidgetState {
     data object Hidden : UiSyncStatusWidgetState()
@@ -170,64 +192,4 @@ sealed class UiSyncStatusBadgeState {
     data object Hidden : UiSyncStatusBadgeState()
     data class Visible(val status: SpaceSyncAndP2PStatusState) : UiSyncStatusBadgeState()
 }
-//endregion
-
-sealed class UiEditButton {
-    data object Hidden : UiEditButton()
-    data object Visible : UiEditButton()
-}
-
-sealed class UiErrorState {
-    data object Hidden : UiErrorState()
-    data class Show(val reason: Reason) : UiErrorState()
-
-    sealed class Reason {
-        data class ErrorGettingObjects(val msg: String) : Reason()
-        data class Other(val msg: String) : Reason()
-    }
-}
-
-sealed class UiLayoutButtonState{
-    data object Hidden : UiLayoutButtonState()
-    data class Visible(val layout: ObjectType.Layout) : UiLayoutButtonState()
-}
-
-sealed class UiFieldsButtonState{
-    data object Hidden : UiFieldsButtonState()
-    data class Visible(val count: Int) : UiFieldsButtonState()
-
-}
-
-sealed class UiDeleteAlertState {
-    data object Hidden : UiDeleteAlertState()
-    data object Show : UiDeleteAlertState()
-}
-
-//region Mapping
-fun ObjectWrapper.Basic.toTemplateView(
-    objectId: Id,
-    urlBuilder: UrlBuilder,
-    coverImageHashProvider: CoverImageHashProvider,
-): TemplateView.Template {
-    val coverContainer = if (coverType != CoverType.NONE) {
-        BasicObjectCoverWrapper(this)
-            .getCover(urlBuilder, coverImageHashProvider)
-    } else {
-        null
-    }
-    return TemplateView.Template(
-        id = id,
-        name = name.orEmpty(),
-        targetTypeId = TypeId(targetObjectType.orEmpty()),
-        emoji = if (!iconEmoji.isNullOrBlank()) iconEmoji else null,
-        image = iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.thumbnail(it) },
-        layout = layout ?: ObjectType.Layout.BASIC,
-        coverColor = coverContainer?.coverColor,
-        coverImage = coverContainer?.coverImage,
-        coverGradient = coverContainer?.coverGradient,
-        isDefault = false,
-        targetTypeKey = TypeKey(objectId)
-    )
-}
-
 //endregion

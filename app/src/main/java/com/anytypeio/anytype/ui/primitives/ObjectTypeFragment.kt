@@ -32,8 +32,8 @@ import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeMainScreen
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
-import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVmParams
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiErrorState
+import com.anytypeio.anytype.feature_object_type.models.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.models.UiErrorState
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
@@ -42,7 +42,6 @@ import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
-import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_SELECT
 import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_PICK_EMOJI
 import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_REMOVE_EMOJI
 import com.anytypeio.anytype.ui.types.picker.RESULT_EMOJI_UNICODE
@@ -159,6 +158,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                     uiDeleteAlertState = vm.uiAlertState.collectAsStateWithLifecycle().value,
                     uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
+                    uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
                     onTypeEvent = vm::onTypeEvent
                 )
             }

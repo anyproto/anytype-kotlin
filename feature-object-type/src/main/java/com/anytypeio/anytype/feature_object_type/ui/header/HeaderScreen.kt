@@ -28,8 +28,8 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiIconState
-import com.anytypeio.anytype.feature_object_type.viewmodel.UiTitleState
+import com.anytypeio.anytype.feature_object_type.models.UiIconState
+import com.anytypeio.anytype.feature_object_type.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 
@@ -44,7 +44,9 @@ fun IconAndTitleWidget(
         ListWidgetObjectIcon(
             modifier = Modifier.size(32.dp)
                 .noRippleThrottledClickable{
-                    onTypeEvent.invoke(TypeEvent.OnObjectTypeIconClick)
+                    if (uiIconState.isEditable) {
+                        onTypeEvent.invoke(TypeEvent.OnObjectTypeIconClick)
+                    }
                 },
             icon = uiIconState.icon,
             backgroundColor = R.color.amp_transparent

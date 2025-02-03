@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_object_type.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -10,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -25,27 +23,41 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
-import com.anytypeio.anytype.domain.objects.ObjectWatcher
-import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.domain.relations.GetObjectRelationListById
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
+import com.anytypeio.anytype.feature_object_type.models.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.models.UiDeleteAlertState
+import com.anytypeio.anytype.feature_object_type.models.UiEditButton
+import com.anytypeio.anytype.feature_object_type.models.UiErrorState
+import com.anytypeio.anytype.feature_object_type.models.UiFieldsButtonState
+import com.anytypeio.anytype.feature_object_type.models.UiIconState
+import com.anytypeio.anytype.feature_object_type.models.UiLayoutButtonState
+import com.anytypeio.anytype.feature_object_type.models.UiLayoutTypeState
+import com.anytypeio.anytype.feature_object_type.models.UiLayoutTypeState.*
+import com.anytypeio.anytype.feature_object_type.models.UiMenuSetItem
+import com.anytypeio.anytype.feature_object_type.models.UiMenuState
+import com.anytypeio.anytype.feature_object_type.models.UiObjectsAddIconState
+import com.anytypeio.anytype.feature_object_type.models.UiObjectsHeaderState
+import com.anytypeio.anytype.feature_object_type.models.UiObjectsSettingsIconState
+import com.anytypeio.anytype.feature_object_type.models.UiSyncStatusBadgeState
+import com.anytypeio.anytype.feature_object_type.models.UiTemplatesAddIconState
+import com.anytypeio.anytype.feature_object_type.models.UiTemplatesHeaderState
+import com.anytypeio.anytype.feature_object_type.models.UiTemplatesListState
+import com.anytypeio.anytype.feature_object_type.models.UiTitleState
+import com.anytypeio.anytype.feature_object_type.models.toTemplateView
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
-import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -56,14 +68,12 @@ import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 import com.anytypeio.anytype.presentation.objects.toDVSort
 import com.anytypeio.anytype.presentation.objects.toUiObjectsListItem
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
-import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel.Companion.DELAY_BEFORE_CREATING_TEMPLATE
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -83,21 +93,16 @@ import timber.log.Timber
  */
 class ObjectTypeViewModel(
     private val vmParams: ObjectTypeVmParams,
-    private val openObject: OpenObject,
-    private val objectWatcher: ObjectWatcher,
     private val analytics: Analytics,
     private val urlBuilder: UrlBuilder,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val userPermissionProvider: UserPermissionProvider,
-    private val getObjectRelationListById: GetObjectRelationListById,
     private val storeOfRelations: StoreOfRelations,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val dateProvider: DateProvider,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val createObject: CreateObject,
     private val fieldParser: FieldParser,
-    private val setObjectListIsArchived: SetObjectListIsArchived,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val userSettingsRepository: UserSettingsRepository,
@@ -105,7 +110,8 @@ class ObjectTypeViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val createObjectSet: CreateObjectSet,
     private val stringResourceProvider: StringResourceProvider,
-    private val createTemplate: CreateTemplate
+    private val createTemplate: CreateTemplate,
+    private val duplicateObjects: DuplicateObjects
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //top bar
@@ -116,29 +122,32 @@ class ObjectTypeViewModel(
     val uiEditButtonState = MutableStateFlow<UiEditButton>(UiEditButton.Hidden)
 
     //header
-    val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.EMPTY)
-    val uiIconState = MutableStateFlow<UiIconState>(UiIconState.EMPTY)
+    val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Companion.EMPTY)
+    val uiIconState = MutableStateFlow<UiIconState>(UiIconState.Companion.EMPTY)
 
     //layout and fields buttons
     val uiFieldsButtonState = MutableStateFlow<UiFieldsButtonState>(UiFieldsButtonState.Hidden)
     val uiLayoutButtonState = MutableStateFlow<UiLayoutButtonState>(UiLayoutButtonState.Hidden)
 
+    //type layouts
+    val uiTypeLayoutsState = MutableStateFlow<UiLayoutTypeState>(UiLayoutTypeState.Hidden)
+
     //templates header
     val uiTemplatesHeaderState =
-        MutableStateFlow<UiTemplatesHeaderState>(UiTemplatesHeaderState.EMPTY)
+        MutableStateFlow<UiTemplatesHeaderState>(UiTemplatesHeaderState.Hidden)
     val uiTemplatesAddIconState =
         MutableStateFlow<UiTemplatesAddIconState>(UiTemplatesAddIconState.Hidden)
 
     //templates list
-    val uiTemplatesListState = MutableStateFlow<UiTemplatesListState>(UiTemplatesListState.EMPTY)
+    val uiTemplatesListState = MutableStateFlow<UiTemplatesListState>(UiTemplatesListState.Companion.EMPTY)
 
     //objects header
-    val uiObjectsHeaderState = MutableStateFlow<UiObjectsHeaderState>(UiObjectsHeaderState.EMPTY)
+    val uiObjectsHeaderState = MutableStateFlow<UiObjectsHeaderState>(UiObjectsHeaderState.Companion.EMPTY)
     val uiObjectsAddIconState =
         MutableStateFlow<UiObjectsAddIconState>(UiObjectsAddIconState.Hidden)
     val uiObjectsSettingsIconState =
         MutableStateFlow<UiObjectsSettingsIconState>(UiObjectsSettingsIconState.Hidden)
-    val uiMenuState = MutableStateFlow<UiMenuState>(UiMenuState.EMPTY)
+    val uiMenuState = MutableStateFlow<UiMenuState>(UiMenuState.Companion.EMPTY)
 
     //objects list
     val uiObjectsListState = MutableStateFlow<UiObjectsListState>(UiObjectsListState.Empty)
@@ -172,9 +181,8 @@ class ObjectTypeViewModel(
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch {
-            objectWatcher.unwatch(
-                target = vmParams.objectId,
-                space = vmParams.spaceId
+            storelessSubscriptionContainer.unsubscribe(
+                subscriptions = listOf("ObjectTypeSubscription-${vmParams.objectId}")
             )
         }
     }
@@ -205,7 +213,7 @@ class ObjectTypeViewModel(
         uiObjectsListState.value = UiObjectsListState.Empty
     }
 
-    //region Initialization
+    //region SETUP
     private fun setupObjectsMenuFlow() {
         viewModelScope.launch {
             _sortState.collect { sort ->
@@ -245,31 +253,42 @@ class ObjectTypeViewModel(
     private fun proceedWithObservingObjectType() {
         viewModelScope.launch {
             combine(
-                objectWatcher.watch(
-                    target = vmParams.objectId,
-                    space = vmParams.spaceId
+                storelessSubscriptionContainer.subscribe(
+                    StoreSearchByIdsParams(
+                        targets = listOf(vmParams.objectId),
+                        subscription = "ObjectTypeSubscription-${vmParams.objectId}",
+                        keys = defaultTypeKeys,
+                        space = vmParams.spaceId
+                    )
                 ),
                 userPermissionProvider.observe(space = vmParams.spaceId)
-            ) { objectView, permission ->
-                objectView to permission
+            ) { objWrapper, permission ->
+                objWrapper to permission
             }.catch {
                 Timber.e(it, "Error while observing object")
                 _objTypeState.value = null
                 errorState.value =
                     UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects(it.message ?: ""))
             }
-                .collect { (objectView, permission) ->
+                .collect { (objWrapper, permission) ->
                     if (permission != null) {
-                        val objType =
-                            objectView.details[vmParams.objectId]?.mapToObjectWrapperType()
-                        if (objType != null) {
+
+                        if (objWrapper.isNotEmpty()) {
+
+                            val objType = ObjectWrapper.Type(objWrapper[0].map)
 
                             _objTypeState.value = objType
 
-                            val objectPermissions = objectView.toObjectPermissionsForTypes(
+                            val objectPermissions = objType.toObjectPermissionsForTypes(
                                 participantCanEdit = permission.isOwnerOrEditor()
                             )
                             _objectTypePermissionsState.value = objectPermissions
+
+                            if (!objectPermissions.canCreateTemplatesForThisType) {
+                                uiTemplatesHeaderState.value = UiTemplatesHeaderState.Hidden
+                                uiTemplatesListState.value = UiTemplatesListState.Companion.EMPTY
+                                uiTemplatesAddIconState.value = UiTemplatesAddIconState.Hidden
+                            }
 
                             uiTitleState.value = UiTitleState(
                                 title = fieldParser.getObjectName(objectWrapper = objType),
@@ -289,14 +308,14 @@ class ObjectTypeViewModel(
                             }
                             val layout = objType.recommendedLayout ?: ObjectType.Layout.BASIC
                             uiLayoutButtonState.value = UiLayoutButtonState.Visible(layout = layout)
+                            updateDefaultTemplates(
+                                defaultTemplate = objType.defaultTemplateId
+                            )
                         } else {
                             _objTypeState.value = null
                             errorState.value =
                                 UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects("Type details are empty"))
                         }
-                        updateDefaultTemplates(
-                            defaultTemplate = objType?.defaultTemplateId
-                        )
                     }
                 }
         }
@@ -335,6 +354,7 @@ class ObjectTypeViewModel(
                 }
         }
     }
+    //endregion
 
     //region Objects subscription
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -432,7 +452,7 @@ class ObjectTypeViewModel(
         viewModelScope.launch {
             _objectTypePermissionsState
                 .flatMapLatest { permissions ->
-                    if (permissions != null) {
+                    if (permissions != null && permissions.canCreateTemplatesForThisType) {
                         loadTemplates(typeId = vmParams.objectId).map {
                             it to permissions
                         }
@@ -440,7 +460,7 @@ class ObjectTypeViewModel(
                         emptyFlow()
                     }
                 }.collect { (templates, permissions) ->
-                    uiTemplatesHeaderState.value = UiTemplatesHeaderState(
+                    uiTemplatesHeaderState.value = UiTemplatesHeaderState.Visible(
                         count = "${templates.size}"
                     )
                     val updated = templates.map { template ->
@@ -454,7 +474,7 @@ class ObjectTypeViewModel(
                     }
                     val result = buildList<TemplateView> {
                         addAll(updated)
-                        if (permissions.canCreateTemplatesForThisType) {
+                        if (permissions.participantCanEdit) {
                             add(
                                 TemplateView.New(
                                     targetTypeId = TypeId(vmParams.objectId),
@@ -553,8 +573,8 @@ class ObjectTypeViewModel(
         ).catch {
             Timber.e(it, "Error while observing templates")
         }.collect { templates ->
-            templates.map {
-                it.toTemplateView(
+            templates.map { objWrapper ->
+                objWrapper.toTemplateView(
                     objectId = vmParams.objectId,
                     urlBuilder = urlBuilder,
                     coverImageHashProvider = coverImageHashProvider,
@@ -571,25 +591,30 @@ class ObjectTypeViewModel(
     }
     //endregion
 
-    //region Ui Actions
-    fun closeObject() {
-        viewModelScope.launch {
-            commands.emit(ObjectTypeCommand.Back)
-        }
-    }
-    //endregion
-
-    //region Ui State
+    //region Ui STATE
     fun hideError() {
         errorState.value = UiErrorState.Hidden
     }
     //endregion
 
-    //region Ui Actions
+    //region Ui ACTIONS
     fun onTypeEvent(event: TypeEvent) {
         when (event) {
             TypeEvent.OnFieldsButtonClick -> TODO()
-            TypeEvent.OnLayoutButtonClick -> TODO()
+            TypeEvent.OnLayoutButtonClick -> {
+                val permissions = _objectTypePermissionsState.value
+                if (permissions?.canChangeRecommendedLayoutForThisType == true) {
+                    uiTypeLayoutsState.value = Visible(
+                        layouts = listOf(
+                            ObjectType.Layout.BASIC,
+                            ObjectType.Layout.NOTE,
+                            ObjectType.Layout.PROFILE,
+                            ObjectType.Layout.TODO
+                        ),
+                        selectedLayout = _objTypeState.value?.recommendedLayout
+                    )
+                }
+            }
             is TypeEvent.OnSyncStatusClick -> {
                 uiSyncStatusWidgetState.value =
                     event.status.toSyncStatusWidgetState()
@@ -600,7 +625,7 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnTemplatesAddIconClick -> {
-                proceedWithCreateTemplate(shouldOpen = true)
+                proceedWithCreateTemplate()
             }
             is TypeEvent.OnObjectTypeTitleUpdate -> {
                 updateTitle(event.title)
@@ -632,7 +657,7 @@ class ObjectTypeViewModel(
 
             TypeEvent.OnAlertDeleteConfirm -> {
                 uiAlertState.value = UiDeleteAlertState.Hidden
-                onDeletionAccepted()
+                onDeletionObjectTypeAccepted()
             }
 
             TypeEvent.OnAlertDeleteDismiss -> {
@@ -663,6 +688,30 @@ class ObjectTypeViewModel(
             is TypeEvent.OnTemplateItemClick -> {
                 onTemplateItemClick(event.item)
             }
+
+            TypeEvent.OnLayoutTypeDismiss -> {
+                uiTypeLayoutsState.value = Hidden
+            }
+            is TypeEvent.OnLayoutTypeItemClick -> {
+                proceedWithUpdatingLayout(layout = event.item)
+            }
+
+            TypeEvent.OnBackClick -> {
+                viewModelScope.launch {
+                    commands.emit(ObjectTypeCommand.Back)
+                }
+            }
+
+            is TypeEvent.OnTemplateMenuDeleteClick -> {
+                proceedWithTemplateDelete(
+                    template = event.item.id
+                )
+            }
+            is TypeEvent.OnTemplateMenuDuplicateClick -> {
+                proceedWithTemplateDuplicate(
+                    template = event.item.id
+                )
+            }
         }
     }
 
@@ -672,7 +721,7 @@ class ObjectTypeViewModel(
                 //do nothing
             }
             is TemplateView.New -> {
-                proceedWithCreateTemplate(shouldOpen = true)
+                proceedWithCreateTemplate()
             }
             is TemplateView.Template -> {
                 val typeKey = _objTypeState.value?.uniqueKey ?: return
@@ -689,7 +738,24 @@ class ObjectTypeViewModel(
         }
     }
 
-    private fun proceedWithCreateTemplate(shouldOpen: Boolean = false) {
+    private fun proceedWithUpdatingLayout(layout: ObjectType.Layout) {
+        viewModelScope.launch {
+            val params = SetObjectDetails.Params(
+                ctx = vmParams.objectId,
+                details = mapOf(Relations.RECOMMENDED_LAYOUT to layout.code.toDouble())
+            )
+            setObjectDetails.async(params).fold(
+                onFailure = { error ->
+                    Timber.e(error, "Error while updating object type recommended layout")
+                },
+                onSuccess = {
+                    Timber.d("Object type recommended layout updated to layout: $layout")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithCreateTemplate() {
         val params = CreateTemplate.Params(
             targetObjectTypeId = vmParams.objectId,
             spaceId = vmParams.spaceId
@@ -705,7 +771,7 @@ class ObjectTypeViewModel(
                             typeKey = typeKey,
                             spaceId = vmParams.spaceId.id
                         )
-                        if (shouldOpen) commands.emit(command)
+                        commands.emit(command)
                     }
                 },
                 onFailure = {
@@ -748,7 +814,7 @@ class ObjectTypeViewModel(
 //        }
     }
 
-    private fun onDeletionAccepted() {
+    private fun onDeletionObjectTypeAccepted() {
         val params = DeleteObjects.Params(
             targets = listOf(vmParams.objectId)
         )
@@ -760,6 +826,38 @@ class ObjectTypeViewModel(
                 },
                 onFailure = {
                     Timber.e(it, "Error while deleting object ${vmParams.objectId}")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithTemplateDelete(template: Id) {
+        val params = DeleteObjects.Params(
+            targets = listOf(template)
+        )
+        viewModelScope.launch {
+            deleteObjects.async(params).fold(
+                onSuccess = {
+                    Timber.d("Template $template deleted")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting template $template")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithTemplateDuplicate(template: Id) {
+        val params = DuplicateObjects.Params(
+            ids = listOf(template)
+        )
+        viewModelScope.launch {
+            duplicateObjects.async(params).fold(
+                onSuccess = {
+                    Timber.d("Template $template duplicated")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while duplicating template $template")
                 }
             )
         }
@@ -869,33 +967,12 @@ class ObjectTypeViewModel(
             )
         }
     }
-    //endregion
 
-    //region RESTRICTIONS
-
-    //
-
-    //region TEMPLATES
-    private suspend fun proceedWithCreatingTemplate(targetTypeId: Id, targetTypeKey: Id) {
-        delay(DELAY_BEFORE_CREATING_TEMPLATE)
-        val params = CreateTemplate.Params(
-            targetObjectTypeId = targetTypeId,
-            spaceId = vmParams.spaceId
-        )
-        createTemplate.async(params).fold(
-            onSuccess = { createObjectResult ->
-                val obj = ObjectWrapper.Basic(createObjectResult.details)
-                proceedWithNavigation(
-                    objectId = obj.id,
-                    objectLayout = obj.layout
-                )
-            },
-            onFailure = { e ->
-                Timber.e(e, "Error while creating new template")
-            }
-        )
+    fun closeObject() {
+        viewModelScope.launch {
+            commands.emit(ObjectTypeCommand.Back)
+        }
     }
-
     //endregion
 
     //region Navigation

@@ -396,6 +396,7 @@
     <string name="favourite">Favorite</string>
     <string name="template">Template</string>
     <string name="templates">Templates</string>
+    <string name="layout_type">Layout type</string>
     <string name="lock">Lock</string>
     <string name="unlock">Unlock</string>
     <string name="restore">Restore</string>
@@ -1857,6 +1858,8 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_menu_delete">Delete completely</string>
     <string name="object_type_objects_menu_open_set">Open Set</string>
     <string name="object_type_objects_menu_create_set">Create Set</string>
+    <string name="object_type_templates_menu_duplicate">Duplicate</string>
+    <string name="object_type_templates_menu_delete">Delete</string>
 
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>

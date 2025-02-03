@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Rastgele düz renk uygula</string>
     <string name="space_settings_apply_upload_image">Resim yükle</string>
     <string name="profile_settings_apply_upload_image">Resim yükle</string>
-    <string name="remove_image">Remove image</string>
+    <string name="remove_image">Görseli kaldır</string>
     <string name="delete_space">Alanı sil</string>
     <string name="you_can_store">Dosyalarınızın %1$s kadarını şifrelenmiş yedekleme düğümümüzde ücretsiz olarak saklayabilirsiniz. Sınıra ulaşırsanız dosyalar yalnızca yerel olarak depolanacaktır.</string>
     <string name="in_order_to_save">Yerel cihazınızda yer kazanmak için tüm dosyalarınızı şifrelenmiş yedekleme düğümümüze aktarabilirsiniz.  Dosyaları açtığınızda geri yüklenecektir.</string>
@@ -371,7 +371,7 @@
     <string name="scroll_to_select_position">Yeni konumu seçmek için kaydırın</string>
     <string name="block_action_add_below">Aşağıya ekleyin</string>
     <string name="content_desc_back_button">Geri düğmesi</string>
-    <string name="content_desc_share_button">Share button</string>
+    <string name="content_desc_share_button">Paylaş düğmesi</string>
     <string name="content_desc_home_button">Ana ekran düğmesi</string>
     <string name="content_desc_search_button">Arama düğmesi</string>
     <string name="content_desc_add_doc_button">Döküman ekle</string>
@@ -1215,7 +1215,7 @@
     <string name="multiplayer_notification_member_request_approved">Talep kabul edildi</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">%1$s alanına katılma isteğiniz salt okunur erişim haklarıyla onaylandı. Alan yakında cihazınızda kullanılabilir olacak.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">%1$s alanına katılma isteğiniz düzenleme erişim haklarıyla onaylandı. Alan yakında cihazınızda kullanılabilir olacak.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">Alan artık erişilebilir değil.</string>
     <string name="multiplayer_notification_member_removed_from_space">Alandan çıkarıldınız veya alan, sahibi tarafından silindi.</string>
     <string name="multiplayer_notification_member_permissions_changed">İzinler değiştirildi</string>
     <string name="multiplayer_notification_member_permission_change_read">%1$s alanındaki erişim haklarınız salt okunur olarak değiştirildi.</string>

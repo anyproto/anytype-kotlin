@@ -272,9 +272,6 @@
         <action
             android:id="@+id/actionCreateSpaceFromVault"
             app:destination="@id/createSpaceScreen" />
-        <action
-            android:id="@+id/actionShowIntroduceVaultScreen"
-            app:destination="@id/introduceVaultScreen" />
     </fragment>
 
     <dialog

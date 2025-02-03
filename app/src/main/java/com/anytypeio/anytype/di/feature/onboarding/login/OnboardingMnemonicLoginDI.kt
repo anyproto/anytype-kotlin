@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
@@ -73,6 +74,12 @@ object OnboardingMnemonicLoginModule {
         fun bindUriFileProvider(
             defaultProvider: DefaultUriFileProvider
         ): UriFileProvider
+
+        @Binds
+        @PerScreen
+        fun bindMigrationHelperDelegate(
+            impl: MigrationHelperDelegate.Impl
+        ): MigrationHelperDelegate
 
         @Binds
         @PerScreen

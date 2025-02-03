@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.auth
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.data.auth.repo.AuthRemote
 import com.anytypeio.anytype.middleware.EventProxy
@@ -27,6 +28,22 @@ class AuthMiddleware(
     override suspend fun createAccount(
         command: Command.AccountCreate
     ) : AccountSetup = middleware.accountCreate(command)
+
+    override suspend fun migrateAccount(
+        account: Id,
+        path: String
+    ) {
+        middleware.accountMigrate(
+            account = account,
+            path = path
+        )
+    }
+
+    override suspend fun cancelAccountMigration(account: Id) {
+        middleware.accountMigrateCancel(
+            account = account
+        )
+    }
 
     override suspend fun deleteAccount(): AccountStatus = middleware.accountDelete()
     override suspend fun restoreAccount(): AccountStatus = middleware.accountRestore()

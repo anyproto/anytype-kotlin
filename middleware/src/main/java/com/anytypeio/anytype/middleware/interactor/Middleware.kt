@@ -130,6 +130,25 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun accountMigrate(account: Id, path: String) {
+        val request = Rpc.Account.Migrate.Request(
+            id = account,
+            rootPath = path
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.accountMigrate(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun accountMigrateCancel(account: Id) {
+        val request = Rpc.Account.MigrateCancel.Request(id = account)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.accountMigrateCancel(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
     fun accountRecover() {
         val request = Rpc.Account.Recover.Request()
         logRequestIfDebug(request)

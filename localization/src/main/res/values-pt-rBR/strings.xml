@@ -371,6 +371,7 @@
     <string name="scroll_to_select_position">Role para selecionar uma nova posição</string>
     <string name="block_action_add_below">Adicionar abaixo</string>
     <string name="content_desc_back_button">Back button</string>
+    <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1214,6 +1215,7 @@
     <string name="multiplayer_notification_member_request_approved">Solicitação aprovada</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Seu pedido para participar do espaço %1$s foi aprovado com direitos de acesso somente, leitura. O espaço estará disponível no seu dispositivo em breve.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Seu pedido para ingressar no espaço %1$s foi aprovado com direitos de acesso para edição. O espaço estará disponível no seu dispositivo em breve.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
     <string name="multiplayer_notification_member_removed_from_space">Você foi removido do espaço ou o espaço foi excluído pelo proprietário.</string>
     <string name="multiplayer_notification_member_permissions_changed">Permissões alteradas</string>
     <string name="multiplayer_notification_member_permission_change_read">Seus direitos de acesso foram alterados para somente leitura no espaço %1$s.</string>
@@ -1556,6 +1558,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="all_content_snackbar_title">moved to bin</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
+    <string name="main_navigation_content_desc_home_button">Home button</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
     <string name="chat">Chat</string>

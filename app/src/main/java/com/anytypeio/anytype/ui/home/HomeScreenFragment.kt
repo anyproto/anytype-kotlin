@@ -140,7 +140,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                     )
                 }
             }
-
             BackHandler {
                 vm.onBackClicked(
                     isSpaceRoot = isSpaceRootScreen()

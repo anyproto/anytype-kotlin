@@ -69,6 +69,9 @@ object Relations {
 
     const val RECOMMENDED_LAYOUT = "recommendedLayout"
     const val RECOMMENDED_RELATIONS = "recommendedRelations"
+    const val RECOMMENDED_FEATURED_RELATIONS = "recommendedFeaturedRelations"
+    const val RECOMMENDED_HIDDEN_RELATIONS = "recommendedHiddenRelations"
+    const val RECOMMENDED_FILE_RELATIONS = "recommendedFileRelations"
     const val DEFAULT_TEMPLATE_ID = "defaultTemplateId"
 
     const val UNIQUE_KEY = "uniqueKey"

@@ -12,6 +12,10 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
+/**
+ * Login -> migration error
+ * App start, authorized - migration error
+ */
 class MigrationErrorViewModel(
     private val analytics: Analytics,
     private val delegate: MigrationHelperDelegate
@@ -22,69 +26,16 @@ class MigrationErrorViewModel(
 
     init {
         viewModelScope.launch {
-            viewActions.collect { action ->
-                when (action) {
-                    ViewAction.CloseScreen -> {
-                        sendAnalyticsEvent(ANALYTICS_TYPE_EXIT)
-                        proceedWithCloseScreen()
-                    }
-                    ViewAction.VisitForum -> {
-                        sendAnalyticsEvent(ANALYTICS_TYPE_CHECK_INSTRUCTIONS)
-                        proceedWithVisitingForum()
-                    }
-                    ViewAction.DownloadDesktop -> {
-                        sendAnalyticsEvent(ANALYTICS_TYPE_DESKTOP_DOWNLOAD)
-                        proceedWithDesktopDownload()
-                    }
-                    ViewAction.ToggleMigrationNotReady -> {
-                        // Do nothing
-                    }
-                    ViewAction.ToggleMigrationReady -> {
-                        sendAnalyticsEvent(ANALYTICS_TYPE_MIGRATION_COMPLETED)
-                    }
-                }
-            }
-        }
-        viewModelScope.launch {
             onStartMigrationRequested()
         }
     }
 
-
-    private fun proceedWithCloseScreen() {
-        viewModelScope.launch {
-            commands.emit(Command.Exit)
-        }
-    }
 
     @Deprecated("To be deleted")
     fun onAction(action: ViewAction) {
         viewModelScope.launch {
             viewActions.emit(action)
         }
-    }
-
-    @Deprecated("To be deleted")
-    private fun proceedWithVisitingForum() {
-        viewModelScope.launch {
-            commands.emit(Command.Browse(VISIT_FORUM_URL))
-        }
-    }
-
-    @Deprecated("To be deleted")
-    private fun proceedWithDesktopDownload() {
-        viewModelScope.launch {
-            commands.emit(Command.Browse(DOWNLOAD_DESKTOP_URL))
-        }
-    }
-
-    @Deprecated("To be deleted")
-    private fun sendAnalyticsEvent(type: String) {
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = ANALYTICS_EVENT_SCREEN,
-            props = Props(mapOf("type" to type))
-        )
     }
 
     sealed interface Command {

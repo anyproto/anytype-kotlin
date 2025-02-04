@@ -4,6 +4,7 @@ plugins {
     id 'com.google.devtools.ksp'
     alias(libs.plugins.compose.compiler)
     id "com.google.firebase.appdistribution"
+    id 'com.google.gms.google-services'
 }
 
 if (rootProject.ext.onCi) {
@@ -242,6 +243,9 @@ dependencies {
     implementation libs.middleware
 
     implementation libs.wireRuntime
+
+    implementation platform('com.google.firebase:firebase-bom:33.8.0')
+    implementation "com.google.firebase:firebase-messaging"
 
     //Unit/Integration tests dependencies
     testImplementation libs.androidXTestCore

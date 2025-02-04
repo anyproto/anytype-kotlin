@@ -30,6 +30,9 @@ dependencies {
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleRuntime
 
+    implementation platform('com.google.firebase:firebase-bom:33.8.0')
+    implementation "com.google.firebase:firebase-messaging"
+
     implementation libs.appcompat
     implementation libs.compose
     implementation libs.composeFoundation

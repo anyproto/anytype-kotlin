@@ -13,6 +13,7 @@ import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Login -> migration error
@@ -28,13 +29,23 @@ class MigrationErrorViewModel(
 
     init {
         viewModelScope.launch {
+            migrationState.collect { state ->
+                when(state) {
+                    MigrationHelperDelegate.State.Migrated -> {
+                        subscriptions.onStart()
+                        commands.emit(Command.GoToVault)
+                    }
+                    else -> {
+                        Timber.d("Migration state: $state")
+                    }
+                }
+            }
             onStartMigrationRequested()
         }
     }
 
     sealed interface Command {
-        object Exit: Command
-        data class Browse(val url: Url): Command
+        data object GoToVault: Command
     }
 
     class Factory @Inject constructor(

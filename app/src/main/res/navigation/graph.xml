@@ -407,6 +407,11 @@
             app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:popUpTo="@+id/splashScreen"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/actionOpenMigrationScreen"
+            app:destination="@id/accountMigrationScreen"
+            app:popUpTo="@id/splashScreen"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <dialog
@@ -635,6 +640,11 @@
         android:id="@+id/accountMigrationScreen"
         android:name="com.anytypeio.anytype.ui.update.MigrationErrorFragment"
         android:label="Migration-needed screen">
+        <action
+            android:id="@+id/actionOpenVault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <dialog

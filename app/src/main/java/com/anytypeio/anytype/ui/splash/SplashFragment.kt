@@ -273,7 +273,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             }
             is SplashViewModel.Command.NavigateToMigration -> {
                 findNavController().navigate(
-                    R.id.accountMigrationScreen
+                    R.id.actionOpenMigrationScreen
                 )
             }
             is SplashViewModel.Command.CheckAppStartIntent -> {

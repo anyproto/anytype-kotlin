@@ -13,11 +13,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.update.MigrationErrorViewModel
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.vault.VaultFragment
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -50,25 +53,19 @@ class MigrationErrorFragment : BaseComposeFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 vm.commands.collect { command ->
                     when(command) {
-                        is MigrationErrorViewModel.Command.Browse -> {
-                            browseUrl(command)
-                        }
-                        is MigrationErrorViewModel.Command.Exit -> {
-                            // TODO
+                        is MigrationErrorViewModel.Command.GoToVault -> {
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.actionOpenVault,
+                                    VaultFragment.args(null)
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while trying to open vault screen from onboarding")
+                            }
                         }
                     }
                 }
             }
-        }
-    }
-
-    private fun browseUrl(command: MigrationErrorViewModel.Command.Browse) {
-        try {
-            Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(command.url)
-            }.let(::startActivity)
-        } catch (e: Exception) {
-            Timber.e(e, "Error while browsing url")
         }
     }
 

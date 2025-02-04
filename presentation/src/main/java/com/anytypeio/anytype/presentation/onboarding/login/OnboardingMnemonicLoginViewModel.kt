@@ -269,7 +269,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     state.value = SetupState.Failed
                     when (e) {
                         is AccountMigrationNeededException -> {
-                            navigateToMigrationErrorScreen()
+                            viewModelScope.launch {
+                                command.emit(Command.NavigateToMigrationErrorScreen)
+                            }
                         }
                         is AccountIsDeletedException -> {
                             sideEffects.emit(value = SideEffect.Error.AccountDeletedError)
@@ -305,12 +307,6 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     navigateToDashboard()
                 }
             )
-        }
-    }
-
-    private fun navigateToMigrationErrorScreen() {
-        viewModelScope.launch {
-            command.emit(Command.NavigateToMigrationErrorScreen)
         }
     }
 

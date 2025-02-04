@@ -632,7 +632,7 @@
         tools:layout="@layout/fragment_template_select" />
 
     <fragment
-        android:id="@+id/migrationNeededScreen"
+        android:id="@+id/accountMigrationScreen"
         android:name="com.anytypeio.anytype.ui.update.MigrationErrorFragment"
         android:label="Migration-needed screen">
     </fragment>

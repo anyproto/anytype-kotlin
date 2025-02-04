@@ -7,6 +7,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.update.MigrationErrorViewModel
 import com.anytypeio.anytype.ui.update.MigrationErrorFragment
@@ -57,4 +58,5 @@ interface MigrationErrorDependencies : ComponentDependencies {
     fun auth(): AuthRepository
     fun path(): PathProvider
     fun dispatcher(): AppCoroutineDispatchers
+    fun subscriptions(): GlobalSubscriptionManager
 }

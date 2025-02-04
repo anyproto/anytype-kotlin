@@ -429,15 +429,7 @@ class OnboardingFragment : Fragment() {
                     }
                     OnboardingMnemonicLoginViewModel.Command.NavigateToMigrationErrorScreen -> {
                         runCatching {
-                            findNavController().navigate(
-                                R.id.migrationNeededScreen,
-                                null,
-                                navOptions {
-                                    popUpTo(R.id.onboarding_nav) {
-                                        inclusive = false
-                                    }
-                                }
-                            )
+                            findNavController().navigate(R.id.accountMigrationScreen)
                         }.onFailure {
                             Timber.e(it, "Error while trying to open migration screen from onboarding")
                         }

@@ -7,8 +7,6 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 
 interface AppNavigation {
 
-    fun exitFromMigrationScreen()
-
     fun openSpaceSettings()
 
     fun openObjectSet(
@@ -75,9 +73,6 @@ interface AppNavigation {
         data object ExitToDesktop : Command()
         data object ExitToVault : Command()
         data object ExitToSpaceHome : Command()
-
-        data object ExitFromMigrationScreen : Command()
-
         data class OpenObject(val target: Id, val space: Id) : Command()
         data class OpenChat(val target: Id, val space: Id) : Command()
         data class LaunchDocument(val target: Id, val space: Id) : Command()

@@ -22,7 +22,6 @@ class MigrationErrorViewModel(
 ) : ViewModel(), MigrationHelperDelegate by delegate {
 
     val commands = MutableSharedFlow<Command>()
-    private val viewActions = MutableSharedFlow<ViewAction>()
 
     init {
         viewModelScope.launch {
@@ -30,26 +29,9 @@ class MigrationErrorViewModel(
         }
     }
 
-
-    @Deprecated("To be deleted")
-    fun onAction(action: ViewAction) {
-        viewModelScope.launch {
-            viewActions.emit(action)
-        }
-    }
-
     sealed interface Command {
         object Exit: Command
         data class Browse(val url: Url): Command
-    }
-
-    @Deprecated("To be deleted")
-    sealed interface ViewAction {
-        object CloseScreen: ViewAction
-        object ToggleMigrationNotReady: ViewAction
-        object ToggleMigrationReady: ViewAction
-        object VisitForum: ViewAction
-        object DownloadDesktop: ViewAction
     }
 
     class Factory @Inject constructor(
@@ -65,14 +47,5 @@ class MigrationErrorViewModel(
         }
     }
 
-    companion object {
-        const val DOWNLOAD_DESKTOP_URL = "https://download.anytype.io/"
-        const val VISIT_FORUM_URL = "https://community.anytype.io/migration"
-    }
+    companion object
 }
-
-private const val ANALYTICS_EVENT_SCREEN = "MigrationGoneWrong"
-private const val ANALYTICS_TYPE_MIGRATION_COMPLETED = "complete"
-private const val ANALYTICS_TYPE_CHECK_INSTRUCTIONS = "instructions"
-private const val ANALYTICS_TYPE_DESKTOP_DOWNLOAD = "download"
-private const val ANALYTICS_TYPE_EXIT = "exit"

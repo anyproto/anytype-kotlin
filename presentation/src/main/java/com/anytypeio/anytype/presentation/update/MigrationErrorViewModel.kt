@@ -7,13 +7,15 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
 class MigrationErrorViewModel(
-    val analytics: Analytics
-) : ViewModel() {
+    private val analytics: Analytics,
+    private val delegate: MigrationHelperDelegate
+) : ViewModel(), MigrationHelperDelegate by delegate {
 
     val commands = MutableSharedFlow<Command>()
     private val viewActions = MutableSharedFlow<ViewAction>()
@@ -43,13 +45,11 @@ class MigrationErrorViewModel(
                 }
             }
         }
-    }
-
-    fun onAction(action: ViewAction) {
         viewModelScope.launch {
-            viewActions.emit(action)
+            onStartMigrationRequested()
         }
     }
+
 
     private fun proceedWithCloseScreen() {
         viewModelScope.launch {
@@ -57,18 +57,28 @@ class MigrationErrorViewModel(
         }
     }
 
+    @Deprecated("To be deleted")
+    fun onAction(action: ViewAction) {
+        viewModelScope.launch {
+            viewActions.emit(action)
+        }
+    }
+
+    @Deprecated("To be deleted")
     private fun proceedWithVisitingForum() {
         viewModelScope.launch {
             commands.emit(Command.Browse(VISIT_FORUM_URL))
         }
     }
 
+    @Deprecated("To be deleted")
     private fun proceedWithDesktopDownload() {
         viewModelScope.launch {
             commands.emit(Command.Browse(DOWNLOAD_DESKTOP_URL))
         }
     }
 
+    @Deprecated("To be deleted")
     private fun sendAnalyticsEvent(type: String) {
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -82,6 +92,7 @@ class MigrationErrorViewModel(
         data class Browse(val url: Url): Command
     }
 
+    @Deprecated("To be deleted")
     sealed interface ViewAction {
         object CloseScreen: ViewAction
         object ToggleMigrationNotReady: ViewAction
@@ -91,12 +102,14 @@ class MigrationErrorViewModel(
     }
 
     class Factory @Inject constructor(
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val delegate: MigrationHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return MigrationErrorViewModel(
-                analytics = analytics
+                analytics = analytics,
+                delegate = delegate
             ) as T
         }
     }

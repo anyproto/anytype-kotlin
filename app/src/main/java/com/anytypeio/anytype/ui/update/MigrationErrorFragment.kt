@@ -39,7 +39,7 @@ class MigrationErrorFragment : BaseComposeFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(typography = typography) {
-                LegacyMigrationErrorScreen(vm::onAction)
+                MigrationInProgressScreen()
             }
         }
     }

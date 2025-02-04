@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.subscriptions.GlobalSubscription
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -40,6 +41,8 @@ class MigrationErrorViewModel(
                     }
                 }
             }
+        }
+        viewModelScope.launch {
             onStartMigrationRequested()
         }
     }

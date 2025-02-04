@@ -11,7 +11,6 @@ class NavigationRouter(
         Timber.d("Navigate to $command")
         try {
             when (command) {
-                is AppNavigation.Command.ExitFromMigrationScreen -> navigation.exitFromMigrationScreen()
                 is AppNavigation.Command.OpenSettings -> navigation.openSpaceSettings()
                 is AppNavigation.Command.OpenObject -> navigation.openDocument(
                     target = command.target,

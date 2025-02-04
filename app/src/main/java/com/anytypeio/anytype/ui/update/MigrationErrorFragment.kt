@@ -54,7 +54,7 @@ class MigrationErrorFragment : BaseComposeFragment() {
                             browseUrl(command)
                         }
                         is MigrationErrorViewModel.Command.Exit -> {
-                            navigation().exitFromMigrationScreen()
+                            // TODO
                         }
                     }
                 }
@@ -70,6 +70,10 @@ class MigrationErrorFragment : BaseComposeFragment() {
         } catch (e: Exception) {
             Timber.e(e, "Error while browsing url")
         }
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        // Do nothing.
     }
 
     override fun injectDependencies() {

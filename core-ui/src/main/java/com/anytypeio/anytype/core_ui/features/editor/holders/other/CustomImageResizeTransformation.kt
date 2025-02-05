@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import java.security.MessageDigest
+import timber.log.Timber
 
 class CustomImageResizeTransformation(
     private val maxWidth: Int,
@@ -47,8 +48,17 @@ class CustomImageResizeTransformation(
                 }
                 else -> toTransform
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (e: IllegalArgumentException) {
+            Timber.e(
+                e,
+                "Failed to transform bitmap: Invalid dimensions or parameters provided. Width: ${toTransform.width}, Height: ${toTransform.height}, MaxWidth: $maxWidth, MaxHeight: $maxHeight"
+            )
+            toTransform
+        } catch (e: OutOfMemoryError) {
+            Timber.e(
+                e,
+                "Failed to transform bitmap: Insufficient memory to process the image."
+            )
             toTransform
         }
     }

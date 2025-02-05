@@ -585,8 +585,5 @@ class DefaultUserSettingsCache(
 
         const val COLLAPSED_WIDGETS_KEY = "prefs.user_settings.collapsed-widgets"
         const val ACTIVE_WIDGETS_VIEWS_KEY = "prefs.user_settings.active-widget-views"
-
-        const val TOOLTIP_SHOWN_KEY = "tooltip_shown_key"
-        const val SPACE_SWITCH_COUNT_KEY = "space_switch_count_key"
     }
 }

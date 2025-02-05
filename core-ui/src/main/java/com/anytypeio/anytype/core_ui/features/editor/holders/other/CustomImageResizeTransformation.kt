@@ -16,35 +16,40 @@ class CustomImageResizeTransformation(
         outWidth: Int,
         outHeight: Int
     ): Bitmap {
-        val imageWidth = toTransform.width
-        val imageHeight = toTransform.height
-        val targetAspectRatio = maxWidth.toFloat() / maxHeight
+        return try {
+            val imageWidth = toTransform.width
+            val imageHeight = toTransform.height
+            val targetAspectRatio = maxWidth.toFloat() / maxHeight
 
-        return when {
-            imageWidth > maxWidth && imageHeight > maxHeight -> {
-                val imageAspectRatio = imageWidth.toFloat() / imageHeight
+            when {
+                imageWidth > maxWidth && imageHeight > maxHeight -> {
+                    val imageAspectRatio = imageWidth.toFloat() / imageHeight
 
-                if (imageAspectRatio > targetAspectRatio) {
-                    val cropWidth = (imageHeight * targetAspectRatio).toInt()
-                    val cropStartX = (imageWidth - cropWidth) / 2
-                    Bitmap.createBitmap(toTransform, cropStartX, 0, cropWidth, imageHeight)
-                } else {
+                    if (imageAspectRatio > targetAspectRatio) {
+                        val cropWidth = (imageHeight * targetAspectRatio).toInt()
+                        val cropStartX = (imageWidth - cropWidth) / 2
+                        Bitmap.createBitmap(toTransform, cropStartX, 0, cropWidth, imageHeight)
+                    } else {
+                        val cropHeight = (imageWidth / targetAspectRatio).toInt()
+                        val cropStartY = (imageHeight - cropHeight) / 2
+                        Bitmap.createBitmap(toTransform, 0, cropStartY, imageWidth, cropHeight)
+                    }
+                }
+                imageWidth > maxWidth && imageHeight <= maxHeight -> {
+                    val scaleFactor = maxWidth.toFloat() / imageWidth
+                    val newHeight = (imageHeight * scaleFactor).toInt()
+                    Bitmap.createScaledBitmap(toTransform, maxWidth, newHeight, true)
+                }
+                imageHeight > maxHeight && imageWidth <= maxWidth -> {
                     val cropHeight = (imageWidth / targetAspectRatio).toInt()
                     val cropStartY = (imageHeight - cropHeight) / 2
                     Bitmap.createBitmap(toTransform, 0, cropStartY, imageWidth, cropHeight)
                 }
+                else -> toTransform
             }
-            imageWidth > maxWidth && imageHeight <= maxHeight -> {
-                val scaleFactor = maxWidth.toFloat() / imageWidth
-                val newHeight = (imageHeight * scaleFactor).toInt()
-                Bitmap.createScaledBitmap(toTransform, maxWidth, newHeight, true)
-            }
-            imageHeight > maxHeight && imageWidth <= maxWidth -> {
-                val cropHeight = (imageWidth / targetAspectRatio).toInt()
-                val cropStartY = (imageHeight - cropHeight) / 2
-                Bitmap.createBitmap(toTransform, 0, cropStartY, imageWidth, cropHeight)
-            }
-            else -> toTransform
+        } catch (e: Exception) {
+            e.printStackTrace()
+            toTransform
         }
     }
 

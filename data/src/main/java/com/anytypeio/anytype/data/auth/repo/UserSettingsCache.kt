@@ -47,11 +47,6 @@ interface UserSettingsCache {
     suspend fun getAllContentSort(space: SpaceId): Pair<Id, Boolean>?
     suspend fun setAllContentSort(space: SpaceId, sort: Id, isAsc: Boolean)
 
-    suspend fun setTooltipShown(shown: Boolean)
-    suspend fun isTooltipShown(): Boolean
-    suspend fun setSpaceSwitchCount(count: Int)
-    suspend fun getSpaceSwitchCount(): Int
-
     suspend fun setRelativeDates(account: Account, enabled: Boolean)
     suspend fun setDateFormat(account: Account, format: String)
 

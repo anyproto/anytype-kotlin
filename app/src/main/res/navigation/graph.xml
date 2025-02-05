@@ -643,7 +643,7 @@
         <action
             android:id="@+id/actionOpenVault"
             app:destination="@id/vaultScreen"
-            app:popUpTo="@id/vaultScreen"
+            app:popUpTo="@id/accountMigrationScreen"
             app:popUpToInclusive="true" />
     </fragment>
 

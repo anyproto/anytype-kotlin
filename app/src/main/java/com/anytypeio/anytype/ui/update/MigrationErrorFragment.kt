@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.ui.update
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +16,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.update.MigrationErrorViewModel
-import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import javax.inject.Inject
@@ -53,12 +50,9 @@ class MigrationErrorFragment : BaseComposeFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 vm.commands.collect { command ->
                     when(command) {
-                        is MigrationErrorViewModel.Command.GoToVault -> {
+                        is MigrationErrorViewModel.Command.Restart -> {
                             runCatching {
-                                findNavController().navigate(
-                                    R.id.actionOpenVault,
-                                    VaultFragment.args(null)
-                                )
+                                findNavController().navigate(R.id.actionOpenVault)
                             }.onFailure {
                                 Timber.e(it, "Error while trying to open vault screen from onboarding")
                             }

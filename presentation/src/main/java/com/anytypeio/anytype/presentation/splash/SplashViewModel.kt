@@ -39,6 +39,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -132,13 +133,15 @@ class SplashViewModel(
             loadingState.value = true
             launchAccount(BaseUseCase.None).proceed(
                 success = { analyticsId ->
-                    loadingState.value = false
-                    crashReporter.setUser(analyticsId)
-                    updateUserProps(analyticsId)
-                    val props = Props.empty()
-                    sendEvent(startTime, openAccount, props)
-                    proceedWithGlobalSubscriptions()
-                    commands.emit(Command.CheckAppStartIntent)
+                    delay(3000)
+                    commands.emit(Command.NavigateToMigration)
+//                    loadingState.value = false
+//                    crashReporter.setUser(analyticsId)
+//                    updateUserProps(analyticsId)
+//                    val props = Props.empty()
+//                    sendEvent(startTime, openAccount, props)
+//                    proceedWithGlobalSubscriptions()
+//                    commands.emit(Command.CheckAppStartIntent)
                 },
                 failure = { e ->
                     loadingState.value = false

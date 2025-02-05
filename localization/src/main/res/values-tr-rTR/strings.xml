@@ -1227,7 +1227,7 @@
     <string name="multiplayer_toast_permission_not_allowed">İzinlerin değiştirilmesine izin verilmiyor</string>
     <string name="multiplayer_toast_share_limit_reached">Paylaşım sınırına ulaşıldı</string>
     <string name="multiplayer_deeplink_to_your_object">Nesnenize derin linkleme ekleyin</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Bu derin linkleme çalışmıyor. Nesne silinmiş olabilir veya alan erişimiyle ilgili sorunlar olabilir.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Nesne mevcut değil. Nesnenin sahibinden paylaşmasını isteyin.</string>
     <string name="multiplayer_collaborate_on_spaces">Alanlar üzerinde işbirliği yapın</string>
     <string name="multiplayer_collaborate_step_1">1.  Ayarlara erişmek için Alan widget\'ına dokunun</string>
     <string name="multiplayer_collaborate_step_2">2.  Paylaşım bölümünü açın</string>

@@ -27,7 +27,7 @@ object FilePickerUtils {
 
     private fun Context.isPermissionGranted(permission: Array<String>): Boolean {
         val hasPermission = permission.isNotEmpty() && ContextCompat.checkSelfPermission(this, permission[0]) == PackageManager.PERMISSION_GRANTED
-        Timber.d("hasExternalStoragePermission, hasPermission:$hasPermission for permission:${permission[0]}")
+        Timber.d("hasExternalStoragePermission, hasPermission:$hasPermission for permission:${permission.getOrNull(0)}")
         return hasPermission
     }
 

@@ -1221,7 +1221,7 @@
     <string name="multiplayer_toast_permission_not_allowed">不允許更改權限</string>
     <string name="multiplayer_toast_share_limit_reached">已達到共享限制</string>
     <string name="multiplayer_deeplink_to_your_object">多重連結到您的物件</string>
-    <string name="multiplayer_deeplink_to_your_object_error">此多重連結不可用。 物件可能被刪除或空間存取發生問題。</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Object is not available. Ask the owner to share it.</string>
     <string name="multiplayer_collaborate_on_spaces">在空間進行協作</string>
     <string name="multiplayer_collaborate_step_1">1. 點擊空間小工具來進行設置</string>
     <string name="multiplayer_collaborate_step_2">2. 開放共享區塊</string>

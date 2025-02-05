@@ -1225,7 +1225,7 @@
     <string name="multiplayer_toast_permission_not_allowed">Ändern von Berechtigungen ist nicht erlaubt</string>
     <string name="multiplayer_toast_share_limit_reached">Freigabelimit erreicht</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink zu deinem Objekt</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Dieser Deeplink funktioniert nicht. Das Objekt könnte gelöscht worden sein oder es gibt Probleme mit dem Zugriff auf den Space.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Objekt ist nicht verfügbar. Bitte den Eigentümer, es zu teilen.</string>
     <string name="multiplayer_collaborate_on_spaces">Zusammenarbeiten in Spaces</string>
     <string name="multiplayer_collaborate_step_1">1. Tippe auf das Widget des aktiven Space, um die Einstellungen für den Space anzupassen</string>
     <string name="multiplayer_collaborate_step_2">2. Teilen-Bereich öffnen</string>

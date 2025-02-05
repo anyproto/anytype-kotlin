@@ -1225,7 +1225,7 @@
     <string name="multiplayer_toast_permission_not_allowed">No está permitido cambiar permisos</string>
     <string name="multiplayer_toast_share_limit_reached">No se puede compartir más</string>
     <string name="multiplayer_deeplink_to_your_object">Enlace directo al objeto</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Este enlace no funciona. Puede que se haya borrado el objeto o que existan problemas con el acceso al espacio.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Ese objeto no está disponible. Pide a su propietario que lo comparta.</string>
     <string name="multiplayer_collaborate_on_spaces">Colabora en espacios</string>
     <string name="multiplayer_collaborate_step_1">1. Toca el widget del espacio para acceder a los ajustes.</string>
     <string name="multiplayer_collaborate_step_2">2. Abre la sección Compartir.</string>

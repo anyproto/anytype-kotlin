@@ -1233,7 +1233,7 @@
     <string name="multiplayer_toast_permission_not_allowed">Змяненне правоў доступу забаронена</string>
     <string name="multiplayer_toast_share_limit_reached">Дасягнуты ліміт абагульвання</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink на ваш аб\'ект</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Гэта deeplink не працуе. Аб\'ект можа быць выдалены або могуць узнікнуць праблемы з доступам да прасторы.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Object is not available. Ask the owner to share it.</string>
     <string name="multiplayer_collaborate_on_spaces">Сумесная праца ў прасторы</string>
     <string name="multiplayer_collaborate_step_1">1. Націсніце віджэт \"Прастора\", каб атрымаць доступ да налад</string>
     <string name="multiplayer_collaborate_step_2">2. Адкрыйце раздзел \"Абагуліць\"</string>

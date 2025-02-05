@@ -1225,7 +1225,7 @@
     <string name="multiplayer_toast_permission_not_allowed">Não é permitido alterar as permissões</string>
     <string name="multiplayer_toast_share_limit_reached">Limite de compartilhamento atingido</string>
     <string name="multiplayer_deeplink_to_your_object">Desenvolver o seu objeto</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Este deeplink não está funcionando. Objeto pode ser apagado ou pode haver problemas com o acesso ao espaço.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Object is not available. Ask the owner to share it.</string>
     <string name="multiplayer_collaborate_on_spaces">Colaborar em espaços</string>
     <string name="multiplayer_collaborate_step_1">Toque no espaço para acessar as configurações</string>
     <string name="multiplayer_collaborate_step_2">Abrir a seção de Compartilhamento</string>

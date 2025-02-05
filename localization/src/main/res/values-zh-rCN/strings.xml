@@ -1223,7 +1223,7 @@
     <string name="multiplayer_toast_permission_not_allowed">不允许更改权限</string>
     <string name="multiplayer_toast_share_limit_reached">已达到共享限制</string>
     <string name="multiplayer_deeplink_to_your_object">深度链接到您的对象</string>
-    <string name="multiplayer_deeplink_to_your_object_error">这个深度链接不可用。对象可能被删除，或者可能存在空间访问问题。</string>
+    <string name="multiplayer_deeplink_to_your_object_error">对象不可用。请所有者分享一下。</string>
     <string name="multiplayer_collaborate_on_spaces">在空间中协作</string>
     <string name="multiplayer_collaborate_step_1">1. 点击空间小部件来访问设置</string>
     <string name="multiplayer_collaborate_step_2">2. 打开分享栏</string>

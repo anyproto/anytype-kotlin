@@ -1211,8 +1211,6 @@
     <string name="multiplayer_notification_member_request_approved">请求已批准</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">您加入 %1$s 空间的请求已获批准并获得了只读访问权限，该空间很快就会在您的设备中显示。</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">您加入 %1$s 空间的请求已获批准并获得了编辑访问权限，该空间很快就会在您的设备中显示。</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">您已经被从此空间里移除，或者此空间已被所有者删除。</string>
     <string name="multiplayer_notification_member_permissions_changed">权限更改成功</string>
     <string name="multiplayer_notification_member_permission_change_read">您在 %1$s 空间中的访问权限已更改为只读。</string>
     <string name="multiplayer_notification_member_permission_change_edit">您在 %1$s 空间中的访问权限已更改为可编辑。</string>

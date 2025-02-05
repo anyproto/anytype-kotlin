@@ -44,6 +44,7 @@ class MediaPermissionHelper(
         }
 
     fun openFilePicker(mimeType: Mimetype, requestCode: Int?) {
+        Timber.d("openFilePicker, mimeType:$mimeType, requestCode:$requestCode")
         if (isRequestInProgress) {
             Timber.w("Permission request already in progress")
             return
@@ -62,10 +63,12 @@ class MediaPermissionHelper(
 
             val hasPermission = mimeType.hasPermission(context)
             if (hasPermission) {
+                Timber.d("Permission already granted")
                 onPermissionSuccess(mimeType, requestCode)
                 isRequestInProgress = false
             } else {
                 val permissions = mimeType.getPermissionToRequestByMime()
+                Timber.d("Requesting permissions: $permissions")
                 if (permissions.isNotEmpty()) {
                     permissionReadStorage.launch(permissions)
                 } else {

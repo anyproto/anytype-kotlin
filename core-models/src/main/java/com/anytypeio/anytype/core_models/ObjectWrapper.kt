@@ -300,6 +300,11 @@ sealed class ObjectWrapper {
                         && spaceAccountStatus != SpaceStatus.SPACE_REMOVING
                         && spaceAccountStatus != SpaceStatus.SPACE_DELETED
             }
+
+        val isJoining : Boolean
+            get() {
+                return spaceAccountStatus == SpaceStatus.SPACE_JOINING
+            }
     }
 
     inline fun <reified T> getValue(relation: Key): T? {

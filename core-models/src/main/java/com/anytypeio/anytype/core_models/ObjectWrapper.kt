@@ -292,6 +292,7 @@ sealed class ObjectWrapper {
                 return spaceLocalStatus == SpaceStatus.LOADING
                         && spaceAccountStatus != SpaceStatus.SPACE_REMOVING
                         && spaceAccountStatus != SpaceStatus.SPACE_DELETED
+                        && spaceAccountStatus != SpaceStatus.SPACE_JOINING
             }
 
         val isActive: Boolean
@@ -299,11 +300,6 @@ sealed class ObjectWrapper {
                 return spaceLocalStatus == SpaceStatus.OK
                         && spaceAccountStatus != SpaceStatus.SPACE_REMOVING
                         && spaceAccountStatus != SpaceStatus.SPACE_DELETED
-            }
-
-        val isJoining : Boolean
-            get() {
-                return spaceAccountStatus == SpaceStatus.SPACE_JOINING
             }
     }
 

@@ -3854,7 +3854,7 @@ class EditorViewModel(
                                 )
                             )
                         } else {
-                            Timber.e("Block is not File or with wrong state, can't proceed with download")
+                            Timber.e("Can't proceed with opening full screen image")
                             sendToast("Something went wrong. Couldn't open image")
                         }
                     }

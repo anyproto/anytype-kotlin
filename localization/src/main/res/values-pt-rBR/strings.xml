@@ -1215,8 +1215,6 @@
     <string name="multiplayer_notification_member_request_approved">Solicitação aprovada</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Seu pedido para participar do espaço %1$s foi aprovado com direitos de acesso somente, leitura. O espaço estará disponível no seu dispositivo em breve.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Seu pedido para ingressar no espaço %1$s foi aprovado com direitos de acesso para edição. O espaço estará disponível no seu dispositivo em breve.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">Você foi removido do espaço ou o espaço foi excluído pelo proprietário.</string>
     <string name="multiplayer_notification_member_permissions_changed">Permissões alteradas</string>
     <string name="multiplayer_notification_member_permission_change_read">Seus direitos de acesso foram alterados para somente leitura no espaço %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Seus direitos de acesso foram alterados para editar no espaço %1$s.</string>

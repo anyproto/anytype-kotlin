@@ -1215,8 +1215,6 @@
     <string name="multiplayer_notification_member_request_approved">Verzoek goedgekeurd</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Je verzoek om deel te nemen aan de ruimte %1$s is goedgekeurd met alleen-lezen toegangsrechten. De ruimte zal binnenkort beschikbaar zijn op je apparaat.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Je verzoek om deel te nemen aan de ruimte %1$s is goedgekeurd met bewerktoegangsrechten. De ruimte zal binnenkort beschikbaar zijn op je apparaat.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">Je bent verwijderd uit de ruimte, of de ruimte is verwijderd door de eigenaar.</string>
     <string name="multiplayer_notification_member_permissions_changed">Machtigingen gewijzigd</string>
     <string name="multiplayer_notification_member_permission_change_read">Je toegangsrechten zijn gewijzigd naar alleen-lezen in de ruimte %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Je toegangsrechten zijn gewijzigd naar bewerken in de ruimte %1$s.</string>

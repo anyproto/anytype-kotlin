@@ -168,6 +168,9 @@ sealed class ObjectWrapper {
         val iconEmoji: String? by default
         val isDeleted: Boolean? by default
         val recommendedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_RELATIONS)
+        val recommendedFeaturedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_FEATURED_RELATIONS)
+        val recommendedHiddenRelations: List<Id> get() = getValues(Relations.RECOMMENDED_HIDDEN_RELATIONS)
+        val recommendedFileRelations: List<Id> get() = getValues(Relations.RECOMMENDED_FILE_RELATIONS)
         val recommendedLayout: ObjectType.Layout?
             get() = when (val value = map[Relations.RECOMMENDED_LAYOUT]) {
                 is Double -> ObjectType.Layout.entries.singleOrNull { layout ->

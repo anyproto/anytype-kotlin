@@ -39,6 +39,7 @@ import com.anytypeio.anytype.feature_object_type.models.UiDeleteAlertState
 import com.anytypeio.anytype.feature_object_type.models.UiEditButton
 import com.anytypeio.anytype.feature_object_type.models.UiErrorState
 import com.anytypeio.anytype.feature_object_type.models.UiFieldsButtonState
+import com.anytypeio.anytype.feature_object_type.models.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.models.UiIconState
 import com.anytypeio.anytype.feature_object_type.models.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.models.UiLayoutTypeState
@@ -53,8 +54,10 @@ import com.anytypeio.anytype.feature_object_type.models.UiTemplatesAddIconState
 import com.anytypeio.anytype.feature_object_type.models.UiTemplatesHeaderState
 import com.anytypeio.anytype.feature_object_type.models.UiTemplatesListState
 import com.anytypeio.anytype.feature_object_type.models.UiTitleState
+import com.anytypeio.anytype.feature_object_type.models.buildUiFieldsList
 import com.anytypeio.anytype.feature_object_type.models.toTemplateView
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
+import com.anytypeio.anytype.feature_object_type.ui.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -159,6 +162,9 @@ class ObjectTypeViewModel(
     //alerts
     val uiAlertState = MutableStateFlow<UiDeleteAlertState>(UiDeleteAlertState.Hidden)
 
+    //fields
+    val uiFieldsListState = MutableStateFlow<UiFieldsListState>(UiFieldsListState.EMPTY)
+
     private val _objTypeState = MutableStateFlow<ObjectWrapper.Type?>(null)
     private val _objectTypePermissionsState = MutableStateFlow<ObjectPermissions?>(null)
 
@@ -166,13 +172,6 @@ class ObjectTypeViewModel(
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
 
     init {
-        viewModelScope.launch {
-            //Just for the testing purpose
-            userSettingsRepository.setLastOpenedObject(
-                id = vmParams.objectId,
-                space = vmParams.spaceId
-            )
-        }
         proceedWithObservingSyncStatus()
         proceedWithObservingObjectType()
         setupObjectsMenuFlow()
@@ -261,16 +260,17 @@ class ObjectTypeViewModel(
                         space = vmParams.spaceId
                     )
                 ),
-                userPermissionProvider.observe(space = vmParams.spaceId)
-            ) { objWrapper, permission ->
-                objWrapper to permission
+                userPermissionProvider.observe(space = vmParams.spaceId),
+                storeOfRelations.observe()
+            ) { objWrapper, permission, relations ->
+                Triple(objWrapper, permission, relations)
             }.catch {
                 Timber.e(it, "Error while observing object")
                 _objTypeState.value = null
                 errorState.value =
                     UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects(it.message ?: ""))
             }
-                .collect { (objWrapper, permission) ->
+                .collect { (objWrapper, permission, relations) ->
                     if (permission != null) {
 
                         if (objWrapper.isNotEmpty()) {
@@ -310,6 +310,12 @@ class ObjectTypeViewModel(
                             uiLayoutButtonState.value = UiLayoutButtonState.Visible(layout = layout)
                             updateDefaultTemplates(
                                 defaultTemplate = objType.defaultTemplateId
+                            )
+
+                            val items = buildUiFieldsList(objType, relations, stringResourceProvider)
+                            uiFieldsListState.value = UiFieldsListState(items = items)
+                            uiFieldsButtonState.value = UiFieldsButtonState.Visible(
+                                count = items.size
                             )
                         } else {
                             _objTypeState.value = null
@@ -597,10 +603,14 @@ class ObjectTypeViewModel(
     }
     //endregion
 
-    //region Ui ACTIONS
+    //region Ui Events TYPES
     fun onTypeEvent(event: TypeEvent) {
         when (event) {
-            TypeEvent.OnFieldsButtonClick -> TODO()
+            TypeEvent.OnFieldsButtonClick -> {
+                viewModelScope.launch{
+                    commands.emit(ObjectTypeCommand.OpenFieldsScreen)
+                }
+            }
             TypeEvent.OnLayoutButtonClick -> {
                 val permissions = _objectTypePermissionsState.value
                 if (permissions?.canChangeRecommendedLayoutForThisType == true) {
@@ -972,6 +982,12 @@ class ObjectTypeViewModel(
         viewModelScope.launch {
             commands.emit(ObjectTypeCommand.Back)
         }
+    }
+    //endregion
+
+    //region Ui Events FIELDS
+    fun onFieldEvent(event: FieldEvent) {
+
     }
     //endregion
 

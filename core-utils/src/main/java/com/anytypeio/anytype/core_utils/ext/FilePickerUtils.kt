@@ -10,6 +10,7 @@ import timber.log.Timber
 object FilePickerUtils {
 
     fun Mimetype.hasPermission(context: Context): Boolean {
+        Timber.d("hasPermission check, mimetype:$this")
         return when (this) {
             Mimetype.MIME_VIDEO_ALL -> context.isPermissionGranted(getPermissionToRequestForVideos())
             Mimetype.MIME_IMAGE_ALL -> context.isPermissionGranted(getPermissionToRequestForImages())
@@ -26,7 +27,7 @@ object FilePickerUtils {
 
     private fun Context.isPermissionGranted(permission: Array<String>): Boolean {
         val hasPermission = permission.isNotEmpty() && ContextCompat.checkSelfPermission(this, permission[0]) == PackageManager.PERMISSION_GRANTED
-        Timber.d("hasExternalStoragePermission, hasPermission:$hasPermission for permission:$permission")
+        Timber.d("hasExternalStoragePermission, hasPermission:$hasPermission for permission:${permission.getOrNull(0)}")
         return hasPermission
     }
 

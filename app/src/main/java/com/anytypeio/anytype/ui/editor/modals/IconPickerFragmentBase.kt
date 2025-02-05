@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentPageIconPickerBinding
+import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
 import com.anytypeio.anytype.other.MediaPermissionHelper
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_CATEGORY_HEADER
@@ -85,13 +86,12 @@ abstract class IconPickerFragmentBase<T> :
             btnRemoveIcon.setOnClickListener { vm.onRemoveClicked(target) }
             tvTabRandom.setOnClickListener { vm.onRandomEmoji(target) }
             tvTabUpload.setOnClickListener {
-                try {
-                    pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
-                } catch (e: Exception) {
-                    Timber.w(e, "Error while opening photo picker")
-                    toast("Error while opening photo picker")
-                    permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, 0)
-                }
+                launchMediaPicker(
+                    pickMedia = pickMedia,
+                    permissionHelper = permissionHelper,
+                    mediaType = PickVisualMedia.ImageOnly,
+                    fallbackMimeType = Mimetype.MIME_IMAGE_ALL
+                )
             }
         }
         skipCollapsed()

@@ -1215,6 +1215,8 @@
     <string name="multiplayer_notification_member_request_approved">Anfrage genehmigt</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Deine Anfrage, dem Space %1$s beizutreten, wurde mit Nur-Lese-Rechten genehmigt. Der Bereich wird in Kürze auf deinem Gerät verfügbar sein.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Deine Anfrage, dem Space %1$s beizutreten, wurde mit Bearbeitungszugriffsrechten genehmigt. Der Space wird in Kürze auf deinem Gerät verfügbar sein.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
+    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
     <string name="multiplayer_notification_member_permissions_changed">Berechtigungen geändert</string>
     <string name="multiplayer_notification_member_permission_change_read">Deine Zugriffsrechte wurden im Space %1$s auf „Nur Lesen“ geändert.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Deine Zugriffsrechte wurden im Space %1$s auf „Bearbeiten“  geändert.</string>

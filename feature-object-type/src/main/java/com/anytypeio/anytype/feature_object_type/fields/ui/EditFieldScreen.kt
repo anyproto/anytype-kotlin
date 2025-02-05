@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.ui.fields
+package com.anytypeio.anytype.feature_object_type.fields.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -53,36 +53,38 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
-import com.anytypeio.anytype.feature_object_type.models.UiFieldEditOrNewState
-import com.anytypeio.anytype.feature_object_type.models.UiFieldObjectItem
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem
+import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditFieldScreen(
-    modifier: Modifier,
-    uiFieldEditOrNewState: UiFieldEditOrNewState.Visible,
+    uiFieldEditOrNewState: UiFieldEditOrNewState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
 
-    ModalBottomSheet(
-        modifier = modifier.fillMaxWidth(),
-        dragHandle = {
-            DragHandle()
-        },
-        scrimColor = colorResource(id = R.color.modal_screen_outside_background),
-        containerColor = colorResource(id = R.color.background_primary),
-        shape = RoundedCornerShape(16.dp),
-        sheetState = bottomSheetState,
-        onDismissRequest = {},
-    ) {
-        EditFieldContainer(
-            uiFieldEditOrNewState = uiFieldEditOrNewState,
-            fieldEvent = fieldEvent
-        )
+    if (uiFieldEditOrNewState is UiFieldEditOrNewState.Visible) {
+        ModalBottomSheet(
+            modifier = Modifier.fillMaxWidth(),
+            dragHandle = { DragHandle() },
+            scrimColor = colorResource(id = R.color.modal_screen_outside_background),
+            containerColor = colorResource(id = R.color.background_primary),
+            shape = RoundedCornerShape(16.dp),
+            sheetState = bottomSheetState,
+            onDismissRequest = {
+                fieldEvent(FieldEvent.OnFieldEditScreenDismiss)
+            },
+        ) {
+            EditFieldContainer(
+                uiFieldEditOrNewState = uiFieldEditOrNewState,
+                fieldEvent = fieldEvent
+            )
+        }
     }
 }
 
@@ -128,14 +130,14 @@ private fun ColumnScope.EditFieldContainer(
     Spacer(modifier = Modifier.height(10.dp))
     Divider()
     FieldType(
-        format = uiFieldEditOrNewState.format,
-        fieldTitle = title,
+        format = uiFieldEditOrNewState.item.format,
+        fieldTitle = uiFieldEditOrNewState.item.fieldTitle,
         fieldEvent = fieldEvent
     )
     Divider()
-    if (uiFieldEditOrNewState.format == RelationFormat.OBJECT) {
+    if (uiFieldEditOrNewState.item.format == RelationFormat.OBJECT) {
         LimitTypes(
-            objTypes = uiFieldEditOrNewState.limitObjectTypes,
+            objTypes = uiFieldEditOrNewState.item.limitObjectTypes,
             fieldEvent = fieldEvent
         )
         Divider()
@@ -383,7 +385,6 @@ private fun Section(modifier: Modifier, text: String) {
 @Composable
 private fun MyPreview() {
     EditFieldScreen(
-        modifier = Modifier,
         uiFieldEditOrNewState = UiFieldEditOrNewState.Visible.Edit(
             title = "Tag",
             format = RelationFormat.OBJECT,

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.ui
+package com.anytypeio.anytype.feature_object_type.fields.ui
 
 import android.os.Build
 import androidx.compose.foundation.Image
@@ -48,14 +48,14 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
-import com.anytypeio.anytype.feature_object_type.models.UiFieldsListItem
-import com.anytypeio.anytype.feature_object_type.models.UiFieldsListState
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.models.UiIconState
 import com.anytypeio.anytype.feature_object_type.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
-fun TypeFieldsMainScreen(
+fun FieldsMainScreen(
     uiFieldsListState: UiFieldsListState,
     uiTitleState: UiTitleState,
     uiIconState: UiIconState
@@ -158,7 +158,7 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
     Row(
         modifier = modifier.padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = CenterVertically
     ) {
         Text(
             text = stringResource(R.string.object_type_fields_info_text),
@@ -265,7 +265,7 @@ fun Modifier.bottomBorder(
 @DefaultPreviews
 @Composable
 fun PreviewTypeFieldsMainScreen() {
-    TypeFieldsMainScreen(
+    FieldsMainScreen(
         uiTitleState = UiTitleState(title = "Page", isEditable = false),
         uiIconState = UiIconState(icon = ObjectIcon.Empty.ObjectType, isEditable = false),
         uiFieldsListState = UiFieldsListState(

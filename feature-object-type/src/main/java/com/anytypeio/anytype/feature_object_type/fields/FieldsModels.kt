@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.models
+package com.anytypeio.anytype.feature_object_type.fields
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -48,6 +48,7 @@ sealed class UiFieldsListItem {
         val fieldKey: Key,
         val fieldTitle: String,
         val format: RelationFormat,
+        val limitObjectTypes: List<UiFieldObjectItem> = emptyList(),
         val canDrag: Boolean = false,
         val canDelete: Boolean = false
     ) : UiFieldsListItem()
@@ -74,20 +75,14 @@ data class UiFieldObjectItem(
 sealed class UiFieldEditOrNewState {
     data object Hidden : UiFieldEditOrNewState()
     sealed class Visible : UiFieldEditOrNewState() {
-        abstract val title: String
-        abstract val format: RelationFormat
-        abstract val limitObjectTypes: List<UiFieldObjectItem>
+        abstract val item: UiFieldsListItem.FieldItem
 
         data class Edit(
-            override val title: String,
-            override val format: RelationFormat,
-            override val limitObjectTypes: List<UiFieldObjectItem>
+            override val item: UiFieldsListItem.FieldItem
         ) : Visible()
 
         data class New(
-            override val title: String,
-            override val format: RelationFormat,
-            override val limitObjectTypes: List<UiFieldObjectItem>
+            override val item: UiFieldsListItem.FieldItem
         ) : Visible()
     }
 }

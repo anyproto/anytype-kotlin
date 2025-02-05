@@ -1227,7 +1227,7 @@
     <string name="multiplayer_toast_permission_not_allowed">Het wijzigen van machtigingen is niet toegestaan</string>
     <string name="multiplayer_toast_share_limit_reached">Deellimiet bereikt</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink naar je object</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Deze deeplink werkt niet. Het object is mogelijk verwijderd of er zijn problemen met de toegang tot de ruimte.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Object is niet beschikbaar. Vraag de eigenaar om het te delen.</string>
     <string name="multiplayer_collaborate_on_spaces">Samenwerken aan ruimtes</string>
     <string name="multiplayer_collaborate_step_1">1. Tik op de ruimtewidget om de instellingen te openen</string>
     <string name="multiplayer_collaborate_step_2">2. Open het gedeelte Delen</string>

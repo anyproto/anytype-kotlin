@@ -292,6 +292,7 @@ sealed class ObjectWrapper {
                 return spaceLocalStatus == SpaceStatus.LOADING
                         && spaceAccountStatus != SpaceStatus.SPACE_REMOVING
                         && spaceAccountStatus != SpaceStatus.SPACE_DELETED
+                        && spaceAccountStatus != SpaceStatus.SPACE_JOINING
             }
 
         val isActive: Boolean

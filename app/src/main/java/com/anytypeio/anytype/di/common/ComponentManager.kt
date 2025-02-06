@@ -96,7 +96,6 @@ import com.anytypeio.anytype.di.feature.templates.DaggerTemplateSelectComponent
 import com.anytypeio.anytype.di.feature.types.DaggerCreateObjectTypeComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeEditComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeIconPickComponent
-import com.anytypeio.anytype.di.feature.update.DaggerMigrationErrorComponent
 import com.anytypeio.anytype.di.feature.vault.DaggerVaultComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetSourceComponent

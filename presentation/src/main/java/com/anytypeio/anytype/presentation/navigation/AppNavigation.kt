@@ -57,8 +57,6 @@ interface AppNavigation {
 
     fun logout()
 
-    fun migrationErrorScreen()
-
     fun openTemplatesModal(typeId: Id)
 
     fun openAllContent(space: Id)
@@ -84,7 +82,6 @@ interface AppNavigation {
         ) : Command()
 
         object OpenSettings : Command()
-        object MigrationErrorScreen: Command()
 
         data class OpenShareScreen(
             val space: SpaceId

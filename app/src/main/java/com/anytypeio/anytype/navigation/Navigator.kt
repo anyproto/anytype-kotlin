@@ -258,10 +258,6 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.actionLogout)
     }
 
-    override fun migrationErrorScreen() {
-        navController?.navigate(R.id.accountMigrationScreen)
-    }
-
     override fun openRemoteFilesManageScreen(subscription: Id, space: Id) {
         navController?.navigate(
             resId = R.id.remoteStorageFragment,

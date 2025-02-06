@@ -57,7 +57,6 @@ class NavigationRouter(
                 is AppNavigation.Command.OpenTemplates -> navigation.openTemplatesModal(
                     typeId = command.typeId
                 )
-                is AppNavigation.Command.MigrationErrorScreen -> navigation.migrationErrorScreen()
                 is AppNavigation.Command.OpenDateObject -> navigation.openDateObject(
                     objectId = command.objectId,
                     space = command.space

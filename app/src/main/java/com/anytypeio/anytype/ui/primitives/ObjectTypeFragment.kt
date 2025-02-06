@@ -35,7 +35,6 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
 import com.anytypeio.anytype.feature_object_type.models.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.models.UiErrorState
 import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainScreen
-import com.anytypeio.anytype.feature_object_type.fields.ui.EditFieldScreen
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment

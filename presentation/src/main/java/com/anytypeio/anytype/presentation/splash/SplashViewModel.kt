@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -66,13 +67,15 @@ class SplashViewModel(
     private val getLastOpenedSpace: GetLastOpenedSpace,
     private val createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate,
     private val spaceViews: SpaceViewSubscriptionContainer,
-) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
+    private val migration: MigrationHelperDelegate
+) : ViewModel(),
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
+    MigrationHelperDelegate by migration
+{
 
-    val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
-
+    val state = MutableStateFlow<State>(State.Init)
     val commands = MutableSharedFlow<Command>(replay = 0)
-
-    val loadingState = MutableStateFlow(false)
+    var migrationRetryCount: Int = 0
 
     init {
         Timber.i("SplashViewModel, init")
@@ -80,9 +83,31 @@ class SplashViewModel(
     }
 
     fun onErrorClicked() {
-        if (BuildConfig.DEBUG && state.value is ViewState.Error) {
-            state.value = ViewState.Loading
+        if (state.value is State.Error) {
             proceedWithLaunchingAccount()
+        }
+    }
+
+    fun onRetryMigrationClicked() {
+        viewModelScope.launch {
+            migrationRetryCount = migrationRetryCount + 1
+            proceedWithMigration().collect { migrationState ->
+                when(migrationState) {
+                    is MigrationHelperDelegate.State.Failed -> {
+                        state.value = State.Migration.Failed
+                    }
+                    is MigrationHelperDelegate.State.Init -> {
+                        // Do nothing.
+                    }
+                    is MigrationHelperDelegate.State.InProgress -> {
+                        state.value = State.Migration.InProgress
+                    }
+                    is MigrationHelperDelegate.State.Migrated -> {
+                        state.value = State.Loading
+                        proceedWithLaunchingAccount()
+                    }
+                }
+            }
         }
     }
 
@@ -118,7 +143,7 @@ class SplashViewModel(
                 failure = { e ->
                     Timber.e(e, "Error while retrying launching wallet")
                     val msg = "Error while launching account: ${e.message}"
-                    state.value = ViewState.Error(msg)
+                    state.value = State.Error(msg)
                 },
                 success = {
                     proceedWithLaunchingAccount()
@@ -130,32 +155,47 @@ class SplashViewModel(
     private fun proceedWithLaunchingAccount() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            loadingState.value = true
+            state.value = State.Loading
             launchAccount(BaseUseCase.None).proceed(
                 success = { analyticsId ->
-                    delay(3000)
-                    commands.emit(Command.NavigateToMigration)
-//                    loadingState.value = false
-//                    crashReporter.setUser(analyticsId)
-//                    updateUserProps(analyticsId)
-//                    val props = Props.empty()
-//                    sendEvent(startTime, openAccount, props)
-//                    proceedWithGlobalSubscriptions()
-//                    commands.emit(Command.CheckAppStartIntent)
+                    state.value = State.Loading
+                    crashReporter.setUser(analyticsId)
+                    updateUserProps(analyticsId)
+                    val props = Props.empty()
+                    sendEvent(startTime, openAccount, props)
+                    proceedWithGlobalSubscriptions()
+                    commands.emit(Command.CheckAppStartIntent)
                 },
                 failure = { e ->
-                    loadingState.value = false
                     Timber.e(e, "Error while launching account")
                     when (e) {
                         is AccountMigrationNeededException -> {
                             commands.emit(Command.NavigateToMigration)
+                            // TODO add retry checking logic
+                            proceedWithMigration().collect { migrationState ->
+                                when(migrationState) {
+                                    is MigrationHelperDelegate.State.Failed -> {
+                                        state.value = State.Migration.Failed
+                                    }
+                                    is MigrationHelperDelegate.State.Init -> {
+                                        // Do nothing.
+                                    }
+                                    is MigrationHelperDelegate.State.InProgress -> {
+                                        state.value = State.Migration.InProgress
+                                    }
+                                    is MigrationHelperDelegate.State.Migrated -> {
+                                        state.value = State.Loading
+                                        proceedWithLaunchingAccount()
+                                    }
+                                }
+                            }
                         }
                         is NeedToUpdateApplicationException -> {
-                            state.value = ViewState.Error(ERROR_NEED_UPDATE)
+                            state.value = State.Error(ERROR_NEED_UPDATE)
                         }
                         else -> {
                             val msg = "$ERROR_MESSAGE : ${e.message ?: "Unknown error"}"
-                            state.value = ViewState.Error(msg)
+                            state.value = State.Error(msg)
                         }
                     }
                 }
@@ -398,5 +438,16 @@ class SplashViewModel(
         const val ERROR_MESSAGE = "An error occurred while starting account"
         const val ERROR_NEED_UPDATE = "Unable to retrieve account. Please update Anytype to the latest version."
         const val ERROR_CREATE_OBJECT = "Error while creating object: object type not found"
+    }
+
+    sealed class State {
+        data object Init : State()
+        data object Loading : State()
+        data object Success: State()
+        data class Error(val msg: String): State()
+        sealed class Migration : State() {
+            data object InProgress: Migration()
+            data object Failed : Migration()
+        }
     }
 }

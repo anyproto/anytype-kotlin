@@ -21,31 +21,13 @@ class MigrationErrorViewModel(
     private val analytics: Analytics,
     private val delegate: MigrationHelperDelegate,
     private val subscriptions: GlobalSubscriptionManager,
-    private val launchAccount: LaunchAccount
 ) : ViewModel(), MigrationHelperDelegate by delegate {
 
     val commands = MutableSharedFlow<Command>()
 
     init {
         viewModelScope.launch {
-            proceedWithMigration().collect { state ->
-                when(state) {
-                    MigrationHelperDelegate.State.Migrated -> {
-                        launchAccount.invoke(BaseUseCase.None).proceed(
-                            failure = {
-                                // TODO
-                            },
-                            success = {
-                                subscriptions.onStart()
-                                commands.emit(Command.Restart)
-                            }
-                        )
-                    }
-                    else -> {
-                        Timber.d("Migration state: $state")
-                    }
-                }
-            }
+            // TODO
         }
     }
 

@@ -16,11 +16,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.AlertIcon
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 
 @Composable
@@ -45,7 +51,7 @@ fun MigrationInProgressScreen() {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Migration is in progress",
+                text = stringResource(R.string.migration_migration_is_in_progress),
                 style = HeadlineHeading,
                 color = colorResource(R.color.text_primary),
                 textAlign = TextAlign.Center,
@@ -55,7 +61,7 @@ fun MigrationInProgressScreen() {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "This shouldn’t take long. Thanks for your patience.",
+                text = stringResource(R.string.migration_this_shouldn_t_take_long),
                 style = BodyCalloutRegular,
                 color = colorResource(R.color.text_secondary),
                 textAlign = TextAlign.Center,
@@ -67,8 +73,55 @@ fun MigrationInProgressScreen() {
     }
 }
 
+@Composable
+fun MigrationFailedScreen(
+    onRetryClicked: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = colorResource(id = R.color.background_primary))
+    ) {
+        Column(
+            modifier = Modifier.align(Alignment.Center)
+        ) {
+            AlertIcon(
+                icon = AlertConfig.Icon(
+                    gradient = GRADIENT_TYPE_RED,
+                    icon = R.drawable.ic_alert_error
+                )
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.migration_migration_failed),
+                style = HeadlineHeading,
+                color = colorResource(R.color.text_primary),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        }
+        ButtonPrimary(
+            modifier = Modifier
+                .padding(20.dp)
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth(),
+            text = stringResource(R.string.migration_error_try_again),
+            size = ButtonSize.Large,
+            onClick = onRetryClicked
+        )
+    }
+}
+
 @DefaultPreviews
 @Composable
-fun MigrationErrorScreenPreview() {
+fun MigrationInProgressScreenPreview() {
     MigrationInProgressScreen()
+}
+
+@DefaultPreviews
+@Composable
+fun MigrationFailedScreenPreview() {
+    MigrationFailedScreen(
+        onRetryClicked = {}
+    )
 }

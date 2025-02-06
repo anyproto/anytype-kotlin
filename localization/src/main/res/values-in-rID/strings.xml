@@ -1211,6 +1211,8 @@
     <string name="multiplayer_notification_member_request_approved">Permintaan disetujui</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Permintaanmu bergabug ke ruang %1$s telah disetujui dengan hak akses pembaca. Ruang ini akan tersedia di perangkatmu sebentar lagi.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Permintaanmu bergabung ke ruang %1$s telah disetujui dengan hak akses penyunting. Ruang ini akan tersedia di perangkatmu sebentar lagi.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
+    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
     <string name="multiplayer_notification_member_permissions_changed">Izin diubah</string>
     <string name="multiplayer_notification_member_permission_change_read">Hak aksesmu di ruang %1$s telah diganti menjadi pembaca.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Hak aksesmu di ruang %1$s telah diganti menjadi penyunting.</string>

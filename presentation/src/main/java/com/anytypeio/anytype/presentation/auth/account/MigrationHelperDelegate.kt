@@ -20,20 +20,16 @@ interface MigrationHelperDelegate {
     ) : MigrationHelperDelegate {
 
         override suspend fun proceedWithMigration(): Flow<State> {
-            return flow {
-                delay(3000)
-                emit(State.Migrated)
-            }
-//            return migrateAccount
-//                .stream(MigrateAccount.Params.Current)
-//                .map { result ->
-//                    when(result) {
-//                        is Resultat.Failure -> State.Failed(result.exception)
-//                        is Resultat.Loading -> State.InProgress
-//                        is Resultat.Success -> State.Migrated
-//                    }
-//                }
-//                .flowOn(dispatchers.io)
+            return migrateAccount
+                .stream(MigrateAccount.Params.Current)
+                .map { result ->
+                    when(result) {
+                        is Resultat.Failure -> State.Failed(result.exception)
+                        is Resultat.Loading -> State.InProgress
+                        is Resultat.Success -> State.Migrated
+                    }
+                }
+                .flowOn(dispatchers.io)
         }
     }
 

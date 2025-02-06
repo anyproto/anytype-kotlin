@@ -43,10 +43,10 @@
     <string name="space">Espaço</string>
     <string name="space_name">Nome do espaço</string>
     <string name="default_space">Entrar no Espaço</string>
-    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
+    <string name="space_settings_apply_random_gradient">Aplicar cor sólida aleatória</string>
     <string name="space_settings_apply_upload_image">Carregue uma imagem</string>
     <string name="profile_settings_apply_upload_image">Carregue uma imagem</string>
-    <string name="remove_image">Remove image</string>
+    <string name="remove_image">Remover imagem</string>
     <string name="delete_space">Excluir Espaço</string>
     <string name="you_can_store">Você pode armazenar até %1$s de seus arquivos em nosso nó de backup criptografado gratuitamente. Se você atingir o limite, os arquivos serão armazenados apenas localmente.</string>
     <string name="in_order_to_save">Para economizar espaço no seu dispositivo local, você pode descarregar todos os seus arquivos no nosso servidor de backup criptografado. Os arquivos serão carregados novamente quando forem abertos.</string>
@@ -223,7 +223,7 @@
     <string name="more">Mais</string>
     <string name="done">Concluído</string>
     <string name="select_scroll_and_move_blocks">Para iniciar, selecione os blocos</string>
-    <string name="block_code_plain_text">Plain text</string>
+    <string name="block_code_plain_text">Texto sem formatação</string>
     <string name="undo">Desfazer</string>
     <string name="redo">Refazer</string>
     <string name="block_action_copy">Copiar</string>
@@ -371,7 +371,7 @@
     <string name="scroll_to_select_position">Role para selecionar uma nova posição</string>
     <string name="block_action_add_below">Adicionar abaixo</string>
     <string name="content_desc_back_button">Back button</string>
-    <string name="content_desc_share_button">Share button</string>
+    <string name="content_desc_share_button">Botão de compartilhar</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -681,7 +681,7 @@
     <string name="today">Hoje</string>
     <string name="yesterday">Ontem</string>
     <string name="tomorrow">Amanhã</string>
-    <string name="open_selected_date">Open selected date</string>
+    <string name="open_selected_date">Abrir data selecionada</string>
     <string name="no_date">Sem data</string>
     <string name="exact_day">Dia exato</string>
     <string name="reorder">Reordenar</string>
@@ -850,7 +850,7 @@
     <string name="synced_files">Arquivos sincronizados</string>
     <string name="log_in">Entrar</string>
     <string name="create_object_section_library">Biblioteca Anytype</string>
-    <string name="bin_empty_title">Your trash is empty.</string>
+    <string name="bin_empty_title">Sua lixeira está vazia</string>
     <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Estilo</string>
@@ -1525,7 +1525,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
     <string name="all_content_sort_date_desc">Mais recente primeiro</string>
-    <string name="all_content_sort_date_asc">Oldest first</string>
+    <string name="all_content_sort_date_asc">Mais antigo primeiro</string>
     <string name="all_content_sort_date_updated">Atualização de data</string>
     <string name="all_content_sort_date_created">Data Criada</string>
     <string name="all_content_sort_date_used">Date last used</string>
@@ -1536,9 +1536,9 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="allContent_group_prev_7">Últimos 7 dias</string>
     <string name="allContent_group_prev_14">Últimos 14 dias</string>
     <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
-    <string name="introduce_vault_text_2">You can now easily reorder your Spaces using drag and drop and navigate them more easily.</string>
-    <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
-    <string name="introduce_vault_welcome_to_the_vault">Welcome to the Vault</string>
+    <string name="introduce_vault_text_2">Agora você pode facilmente reordenar seus Espaços usando arrastar e soltar e navegar com mais facilidade.</string>
+    <string name="introduce_vault_text_3">Por padrão, desfocamos o ícone do seu espaço como um plano de fundo. Se necessário, você pode alterá-lo nas configurações do espaço.</string>
+    <string name="introduce_vault_welcome_to_the_vault">Bem-vindo ao Cofre</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Simples e Flexível]]></string>
     <string name="allContent_empty_state_title">It’s empty here.</string>
     <string name="allContent_empty_state_description">Create your first objects to get started.</string>
@@ -1568,14 +1568,14 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="write_a_message">Escreva uma mensagem...</string>
     <string name="date_layout_mentioned_in">Mentions</string>
-    <string name="date_layout_empty_items">There is nothing here for this date yet</string>
+    <string name="date_layout_empty_items">Não há nada aqui para esta data ainda</string>
     <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
     <string name="date_layout_item_created_by">by</string>
     <string name="chat_attachment_object">Select existing object</string>
     <string name="chat_attachment_file">Upload file</string>
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Fazer upload</string>
-    <string name="chats_reply">Reply</string>
+    <string name="chats_reply">Responder</string>
     <string name="chats_add_reaction">Adicionar reação</string>
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>
@@ -1596,9 +1596,9 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="emoji_category_symbols">Symbols</string>
     <string name="emoji_category_flags">Flags</string>
     <string name="emoji_recently_used_section">Recently used</string>
-    <string name="chat_message_reactions_no_reactions_yet">No reactions yet</string>
-    <string name="chat_message_reactions_no_reactions_message">Probably someone has just removed the reaction or technical issue happened</string>
+    <string name="chat_message_reactions_no_reactions_yet">Nenhuma reação ainda</string>
+    <string name="chat_message_reactions_no_reactions_message">Provavelmente alguém acabou de remover a reação ou ocorreu um problema técnico</string>
     <string name="object_types_human">Human</string>
-    <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
-    <string name="chats_alert_delete_this_message">Delete this message?</string>
+    <string name="chats_alert_delete_this_message_description">Não pode ser restaurado após a confirmação</string>
+    <string name="chats_alert_delete_this_message">Excluir esta mensagem?</string>
 </resources>

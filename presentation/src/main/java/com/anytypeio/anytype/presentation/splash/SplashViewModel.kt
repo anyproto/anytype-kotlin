@@ -75,7 +75,8 @@ class SplashViewModel(
 
     val state = MutableStateFlow<State>(State.Init)
     val commands = MutableSharedFlow<Command>(replay = 0)
-    var migrationRetryCount: Int = 0
+
+    private var migrationRetryCount: Int = 0
 
     init {
         Timber.i("SplashViewModel, init")

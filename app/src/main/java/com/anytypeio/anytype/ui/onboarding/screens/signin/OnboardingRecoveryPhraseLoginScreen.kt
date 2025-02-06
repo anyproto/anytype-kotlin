@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
@@ -54,6 +55,8 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel.SetupState
 import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicInput
+import com.anytypeio.anytype.ui.update.MigrationFailedScreen
+import com.anytypeio.anytype.ui.update.MigrationInProgressScreen
 import kotlin.Unit
 
 @Composable
@@ -67,11 +70,12 @@ fun RecoveryScreenWrapper(
         onNextClicked = vm::onLoginClicked,
         onActionDoneClicked = vm::onActionDone,
         onScanQrClicked = onScanQrClick,
-        isLoading = vm.state.collectAsState().value is SetupState.InProgress,
+        state = vm.state.collectAsState().value,
         onEnterMyVaultClicked = vm::onEnterMyVaultClicked,
         onDebugAccountTraceClicked = {
             vm.onAccountThraceButtonClicked()
-        }
+        },
+        onRetryMigrationClicked = vm::onRetryMigrationClicked
     )
 }
 
@@ -81,9 +85,10 @@ fun RecoveryScreen(
     onNextClicked: (Mnemonic) -> Unit,
     onActionDoneClicked: (Mnemonic) -> Unit,
     onScanQrClicked: () -> Unit,
-    isLoading: Boolean,
+    state: SetupState,
     onEnterMyVaultClicked: () -> Unit,
-    onDebugAccountTraceClicked: () -> Unit
+    onDebugAccountTraceClicked: () -> Unit,
+    onRetryMigrationClicked: (Id) -> Unit
 ) {
     val focus = LocalFocusManager.current
     val context = LocalContext.current
@@ -186,7 +191,7 @@ fun RecoveryScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 18.dp),
-                        isLoading = isLoading
+                        isLoading = state is SetupState.InProgress
                     )
                 }
                 item {
@@ -207,7 +212,7 @@ fun RecoveryScreen(
                         onClick = {
                             onScanQrClicked.invoke()
                         },
-                        enabled = !isLoading,
+                        enabled = state !is SetupState.InProgress,
                         disabledBackgroundColor = Color.Transparent,
                         size = ButtonSize.Large,
                         modifier = Modifier
@@ -218,6 +223,13 @@ fun RecoveryScreen(
                 }
             }
         )
+        if (state is SetupState.Migration.InProgress) {
+            MigrationInProgressScreen()
+        } else if(state is SetupState.Migration.Failed) {
+            MigrationFailedScreen(
+                onRetryClicked = onRetryMigrationClicked(state.account)
+            )
+        }
     }
 }
 
@@ -267,7 +279,7 @@ fun RecoveryScreenPreview() {
         onNextClicked = {},
         onActionDoneClicked = {},
         onScanQrClicked = {},
-        isLoading = false,
+        state = SetupState.Idle,
         onEnterMyVaultClicked = {},
         onDebugAccountTraceClicked = {}
     )
@@ -282,7 +294,7 @@ fun RecoveryScreenLoadingPreview() {
         onNextClicked = {},
         onActionDoneClicked = {},
         onScanQrClicked = {},
-        isLoading = true,
+        state = SetupState.InProgress,
         onEnterMyVaultClicked = {},
         onDebugAccountTraceClicked = {}
     )

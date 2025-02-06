@@ -7,6 +7,7 @@ import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingLoginEvent
+import com.anytypeio.anytype.presentation.splash.SplashViewModel.State
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -69,6 +71,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     val command = MutableSharedFlow<Command>(replay = 0)
 
     private var debugClickCount = 0
+    private var migrationRetryCount: Int = 0
     private val _fiveClicks = MutableStateFlow(false)
 
     init {
@@ -269,9 +272,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     state.value = SetupState.Failed
                     when (e) {
                         is AccountMigrationNeededException -> {
-                            viewModelScope.launch {
-                                command.emit(Command.NavigateToMigrationErrorScreen)
-                            }
+                            proceedWithAccountMigration(id)
                         }
                         is AccountIsDeletedException -> {
                             sideEffects.emit(value = SideEffect.Error.AccountDeletedError)
@@ -307,6 +308,29 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     navigateToDashboard()
                 }
             )
+        }
+    }
+
+    private suspend fun proceedWithAccountMigration(id: String) {
+        proceedWithMigration().collect { migrationState ->
+            when (migrationState) {
+                is MigrationHelperDelegate.State.Failed -> {
+                    state.value = SetupState.Migration.Failed(
+                        account = id
+                    )
+                }
+                MigrationHelperDelegate.State.InProgress -> {
+                    state.value = SetupState.Migration.InProgress(
+                        account = id
+                    )
+                }
+                MigrationHelperDelegate.State.Migrated -> {
+                    proceedWithSelectingAccount(id)
+                }
+                MigrationHelperDelegate.State.Init -> {
+                    // Do nothing.
+                }
+            }
         }
     }
 
@@ -370,6 +394,15 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         }
     }
 
+    fun onRetryMigrationClicked(account: Id) {
+        if (state.value !is SetupState.InProgress) {
+            migrationRetryCount = migrationRetryCount + 1
+            viewModelScope.launch {
+                proceedWithAccountMigration(account)
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         goroutinesJob?.cancel()
@@ -392,6 +425,11 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         data object InProgress: SetupState()
         data object Failed: SetupState()
         data object Abort: SetupState()
+        sealed class Migration : SetupState() {
+            abstract val account: Id
+            data class InProgress(override val account: Id): Migration()
+            data class Failed(override val account: Id) : Migration()
+        }
     }
 
     sealed class Command {

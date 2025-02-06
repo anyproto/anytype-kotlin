@@ -1215,8 +1215,8 @@
     <string name="multiplayer_notification_member_request_approved">Talep kabul edildi</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">%1$s alanına katılma isteğiniz salt okunur erişim haklarıyla onaylandı. Alan yakında cihazınızda kullanılabilir olacak.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">%1$s alanına katılma isteğiniz düzenleme erişim haklarıyla onaylandı. Alan yakında cihazınızda kullanılabilir olacak.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">\"%1$s\" alanı artık erişilebilir değil.</string>
+    <string name="multiplayer_notification_member_removed_from_space">\"%1$s\" alanından çıkarıldınız veya alan sahibi tarafından silindi.</string>
     <string name="multiplayer_notification_member_permissions_changed">İzinler değiştirildi</string>
     <string name="multiplayer_notification_member_permission_change_read">%1$s alanındaki erişim haklarınız salt okunur olarak değiştirildi.</string>
     <string name="multiplayer_notification_member_permission_change_edit">%1$s alanındaki erişim haklarınız düzenleyici olarak değiştirildi.</string>

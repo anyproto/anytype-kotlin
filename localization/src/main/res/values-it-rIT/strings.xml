@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Applica colore tinta unita casuale</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="profile_settings_apply_upload_image">Upload image</string>
-    <string name="remove_image">Remove image</string>
+    <string name="remove_image">Rimuovi immagine</string>
     <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">Puoi archiviare gratuitamente fino a %1$s di file personali sul nostro nodo di backup crittografato. Se raggiungi il limite, i file verranno archiviati solo localmente.</string>
     <string name="in_order_to_save">Per risparmiare spazio sul tuo dispositivo locale, puoi liberare tutti i tuoi file trasferendoli al nostro nodo di backup criptato. I file verranno ricaricati quando li apri</string>
@@ -371,7 +371,7 @@
     <string name="scroll_to_select_position">Scroll to select new position</string>
     <string name="block_action_add_below">Aggiungi sotto</string>
     <string name="content_desc_back_button">Back button</string>
-    <string name="content_desc_share_button">Share button</string>
+    <string name="content_desc_share_button">Pulsante condivisione</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1216,8 +1216,8 @@
     <string name="multiplayer_notification_member_request_approved">Richiesta approvata</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">La tua richiesta di unirti allo spazio %1$s è stata approvata con diritti di accesso in sola lettura. Lo spazio sarà disponibile sul tuo dispositivo a breve.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">La tua richiesta di unirti allo spazio %1$s è stata approvata con diritti di accesso per la modifica. Lo spazio sarà disponibile sul tuo dispositivo a breve.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">Sei stato rimosso dallo spazio, oppure lo spazio è stato eliminato dal proprietario.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
+    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
     <string name="multiplayer_notification_member_permissions_changed">Autorizzazioni cambiate</string>
     <string name="multiplayer_notification_member_permission_change_read">I tuoi diritti di accesso sono stati impostati in sola lettura nello spazio %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">I tuoi diritti di accesso sono stati impostati per la modifica nello spazio %1$s.</string>
@@ -1228,7 +1228,7 @@
     <string name="multiplayer_toast_permission_not_allowed">Non è consentito modificare i permessi</string>
     <string name="multiplayer_toast_share_limit_reached">Limite di condivisione raggiunto</string>
     <string name="multiplayer_deeplink_to_your_object">Collegamento profondo al tuo oggetto</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Questo collegamento profondo non funziona. L\'oggetto potrebbe essere eliminato o potrebbero esserci problemi con l\'accesso allo spazio.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">L\'oggetto non è disponibile. Chiedere al proprietario di condividerlo.</string>
     <string name="multiplayer_collaborate_on_spaces">Collabora sugli spazi</string>
     <string name="multiplayer_collaborate_step_1">1. Tocca il widget Spazio per accedere alle impostazioni</string>
     <string name="multiplayer_collaborate_step_2">2. Apri sezione Condividi</string>

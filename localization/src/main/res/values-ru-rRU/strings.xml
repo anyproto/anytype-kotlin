@@ -1170,9 +1170,9 @@
     <string name="multiplayer_upgrade_button_request">✦ Обновите, чтобы добавить больше участников</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Обновите, чтобы добавить больше пространств</string>
     <string name="multiplayer_members">Участники</string>
-    <string name="multiplayer_leave_request">Оставить запрос</string>
+    <string name="multiplayer_leave_request">Запрос на выход</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>
-    <string name="multiplayer_approve_request">Утверждено</string>
+    <string name="multiplayer_approve_request">Подтвердить</string>
     <string name="multiplayer_view_request">Посмотреть запрос</string>
     <string name="multiplayer_owner">Владелец</string>
     <string name="multiplayer_can_edit">Can edit</string>
@@ -1223,8 +1223,8 @@
     <string name="multiplayer_notification_member_request_approved">Запрос одобрен</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами доступа только для чтения. Пространство будет доступно на вашем устройстве в ближайшее время.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами на редактирование. Пространство будет доступно в ближайшее время на устройстве.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">Вы были удалены из пространства, или оно было удалено владельцем.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
+    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
     <string name="multiplayer_notification_member_permissions_changed">Разрешения изменены</string>
     <string name="multiplayer_notification_member_permission_change_read">Ваши права доступа были изменены на только для чтения в пространстве %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Права доступа были изменены на редактирование в пространстве %1$s.</string>
@@ -1235,7 +1235,7 @@
     <string name="multiplayer_toast_permission_not_allowed">Изменение прав доступа не разрешено</string>
     <string name="multiplayer_toast_share_limit_reached">Достигнут лимит на совместное использование</string>
     <string name="multiplayer_deeplink_to_your_object">Прямая ссылка на ваш объект</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Эта прямая ссылка не работает. Объект может быть удален или могут быть проблемы с доступом к пространству.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Объект не доступен. Попросите владельца поделиться им.</string>
     <string name="multiplayer_collaborate_on_spaces">Сотрудничайте в пространствах</string>
     <string name="multiplayer_collaborate_step_1">1. Нажмите на виджет Пространства, чтобы получить доступ к настройкам</string>
     <string name="multiplayer_collaborate_step_2">2. Откройте раздел «Доступ»</string>

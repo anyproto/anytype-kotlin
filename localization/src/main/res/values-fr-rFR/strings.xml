@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Appliquer une couleur solide aléatoire</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="profile_settings_apply_upload_image">Upload image</string>
-    <string name="remove_image">Remove image</string>
+    <string name="remove_image">Supprimer l’image</string>
     <string name="delete_space">Supprimer l\'espace</string>
     <string name="you_can_store">Vous pouvez stocker gratuitement jusqu\'à %1$s de vos fichiers sur notre nœud de sauvegarde chiffré. Si vous atteignez la limite, les fichiers ne seront stockés que localement.</string>
     <string name="in_order_to_save">Afin d\'économiser de l\'espace sur votre appareil, vous pouvez décharger tous vos fichiers vers notre nœud de sauvegarde chiffré. Les fichiers seront rechargés lorsque vous les ouvrirez.</string>
@@ -371,7 +371,7 @@
     <string name="scroll_to_select_position">Faites défiler pour sélectionner une nouvelle position</string>
     <string name="block_action_add_below">Ajouter en dessous</string>
     <string name="content_desc_back_button">Back button</string>
-    <string name="content_desc_share_button">Share button</string>
+    <string name="content_desc_share_button">Bouton de partage</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1215,8 +1215,8 @@
     <string name="multiplayer_notification_member_request_approved">Demande approuvée</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Votre demande de rejoindre l\'espace %1$s a été approuvée avec des droits d\'accès en lecture seule. L\'espace sera bientôt disponible sur votre appareil.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Votre demande de rejoindre l\'espace %1$s a été approuvée avec les droits d\'accès en modification. L\'espace sera bientôt disponible sur votre appareil.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">Vous avez été retiré de l\'espace \'\' , ou l\'espace a été supprimé par le propriétaire.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">L\'espace \"%1$s\" n\'est plus accessible.</string>
+    <string name="multiplayer_notification_member_removed_from_space">Vous avez été retiré de l\'espace \"%1$s\", ou l\'espace a été supprimé par le propriétaire.</string>
     <string name="multiplayer_notification_member_permissions_changed">Permissions modifiées</string>
     <string name="multiplayer_notification_member_permission_change_read">Vos droits d\'accès ont été changés en lecture seule dans l\'espace %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Vos droits d\'accès ont été modifiés pour éditer dans l\'espace %1$s.</string>
@@ -1227,7 +1227,7 @@
     <string name="multiplayer_toast_permission_not_allowed">La modification des permissions n\'est pas autorisée</string>
     <string name="multiplayer_toast_share_limit_reached">Limite de partage atteinte</string>
     <string name="multiplayer_deeplink_to_your_object">Lien profond vers votre objet</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Ce lien profond ne fonctionne pas. L\'objet peut être supprimé ou il peut y avoir des problèmes d\'accès à l\'espace.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">L\'objet n\'est pas disponible. Demandez au propriétaire de le partager.</string>
     <string name="multiplayer_collaborate_on_spaces">Collaborez dans les espaces</string>
     <string name="multiplayer_collaborate_step_1">1. Appuyez sur le widget de l’espace pour accéder aux paramètres</string>
     <string name="multiplayer_collaborate_step_2">2. Ouvrez la section Partage</string>

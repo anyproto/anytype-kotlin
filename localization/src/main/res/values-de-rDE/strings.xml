@@ -1215,8 +1215,8 @@
     <string name="multiplayer_notification_member_request_approved">Anfrage genehmigt</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Deine Anfrage, dem Space %1$s beizutreten, wurde mit Nur-Lese-Rechten genehmigt. Der Bereich wird in Kürze auf deinem Gerät verfügbar sein.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Deine Anfrage, dem Space %1$s beizutreten, wurde mit Bearbeitungszugriffsrechten genehmigt. Der Space wird in Kürze auf deinem Gerät verfügbar sein.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">Du wurdest aus dem Space entfernt oder der Space wurde vom Eigentümer/von der Eigentümerin gelöscht.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
+    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
     <string name="multiplayer_notification_member_permissions_changed">Berechtigungen geändert</string>
     <string name="multiplayer_notification_member_permission_change_read">Deine Zugriffsrechte wurden im Space %1$s auf „Nur Lesen“ geändert.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Deine Zugriffsrechte wurden im Space %1$s auf „Bearbeiten“  geändert.</string>
@@ -1227,7 +1227,7 @@
     <string name="multiplayer_toast_permission_not_allowed">Ändern von Berechtigungen ist nicht erlaubt</string>
     <string name="multiplayer_toast_share_limit_reached">Freigabelimit erreicht</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink zu deinem Objekt</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Dieser Deeplink funktioniert nicht. Das Objekt könnte gelöscht worden sein oder es gibt Probleme mit dem Zugriff auf den Space.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Objekt ist nicht verfügbar. Bitte den Eigentümer, es zu teilen.</string>
     <string name="multiplayer_collaborate_on_spaces">Zusammenarbeiten in Spaces</string>
     <string name="multiplayer_collaborate_step_1">1. Tippe auf das Widget des aktiven Space, um die Einstellungen für den Space anzupassen</string>
     <string name="multiplayer_collaborate_step_2">2. Teilen-Bereich öffnen</string>

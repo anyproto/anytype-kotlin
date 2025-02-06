@@ -18,7 +18,6 @@ import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
-import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.FragmentSplashBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
@@ -276,11 +275,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 findNavController().navigate(
                     R.id.action_splashFragment_to_authStart,
                     args = OnboardingFragment.args(deepLink)
-                )
-            }
-            is SplashViewModel.Command.NavigateToMigration -> {
-                findNavController().navigate(
-                    R.id.actionOpenMigrationScreen
                 )
             }
             is SplashViewModel.Command.CheckAppStartIntent -> {

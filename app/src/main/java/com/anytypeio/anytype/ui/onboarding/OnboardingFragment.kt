@@ -427,13 +427,6 @@ class OnboardingFragment : Fragment() {
                             Timber.e(it, "Error while trying to open vault screen from onboarding")
                         }
                     }
-                    OnboardingMnemonicLoginViewModel.Command.NavigateToMigrationErrorScreen -> {
-                        runCatching {
-                            findNavController().navigate(R.id.accountMigrationScreen)
-                        }.onFailure {
-                            Timber.e(it, "Error while trying to open migration screen from onboarding")
-                        }
-                    }
                     is OnboardingMnemonicLoginViewModel.Command.ShareDebugGoroutines -> {
                         try {
                             this@OnboardingFragment.shareFirstFileFromPath(command.path, command.uriFileProvider)

@@ -227,7 +227,9 @@ fun RecoveryScreen(
             MigrationInProgressScreen()
         } else if(state is SetupState.Migration.Failed) {
             MigrationFailedScreen(
-                onRetryClicked = onRetryMigrationClicked(state.account)
+                onRetryClicked = {
+                    onRetryMigrationClicked(state.account)
+                }
             )
         }
     }
@@ -281,7 +283,8 @@ fun RecoveryScreenPreview() {
         onScanQrClicked = {},
         state = SetupState.Idle,
         onEnterMyVaultClicked = {},
-        onDebugAccountTraceClicked = {}
+        onDebugAccountTraceClicked = {},
+        onRetryMigrationClicked = {}
     )
 }
 
@@ -296,6 +299,7 @@ fun RecoveryScreenLoadingPreview() {
         onScanQrClicked = {},
         state = SetupState.InProgress,
         onEnterMyVaultClicked = {},
-        onDebugAccountTraceClicked = {}
+        onDebugAccountTraceClicked = {},
+        onRetryMigrationClicked = {}
     )
 }

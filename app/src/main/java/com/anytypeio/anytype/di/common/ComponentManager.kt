@@ -834,12 +834,6 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val migrationErrorComponent = Component {
-        DaggerMigrationErrorComponent
-            .factory()
-            .create(findComponentDependencies())
-    }
-
     val onboardingComponent = Component {
         DaggerOnboardingComponent
             .factory()

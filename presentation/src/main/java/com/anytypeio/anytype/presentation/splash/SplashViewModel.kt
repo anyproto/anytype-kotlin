@@ -419,7 +419,6 @@ class SplashViewModel(
         ) : Command()
         data class NavigateToVault(val deeplink: String? = null) : Command()
         data object NavigateToAuthStart : Command()
-        data object NavigateToMigration: Command()
         data object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id, val space: Id, val chat: Id?) : Command()
         data class NavigateToObjectSet(val id: Id, val space: Id, val chat: Id?) : Command()

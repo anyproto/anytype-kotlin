@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -53,10 +54,10 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
+import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem
-import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.feature_object_type.stub.createDummyFieldItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,7 +95,9 @@ private fun ColumnScope.EditFieldContainer(
     fieldEvent: (FieldEvent) -> Unit
     ) {
 
-    var innerValue by remember(uiFieldEditOrNewState.title) { mutableStateOf(uiFieldEditOrNewState.title) }
+    var innerValue by remember(uiFieldEditOrNewState.item.fieldTitle) {
+        mutableStateOf(uiFieldEditOrNewState.item.fieldTitle)
+    }
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -131,7 +134,6 @@ private fun ColumnScope.EditFieldContainer(
     Divider()
     FieldType(
         format = uiFieldEditOrNewState.item.format,
-        fieldTitle = uiFieldEditOrNewState.item.fieldTitle,
         fieldEvent = fieldEvent
     )
     Divider()
@@ -150,8 +152,8 @@ private fun ColumnScope.EditFieldContainer(
         text = stringResource(R.string.object_type_fields_btn_save),
         onClick = {
             val name = innerValue
-            val format = uiFieldEditOrNewState.format
-            val ids = uiFieldEditOrNewState.limitObjectTypes.map { it.id }
+            val format = uiFieldEditOrNewState.item.format
+            val ids = uiFieldEditOrNewState.item.limitObjectTypes.map { it.id }
             fieldEvent(
                 FieldEvent.OnSaveButtonClicked(
                     name = name,
@@ -246,7 +248,6 @@ fun ColumnScope.NameTextField(
 
 @Composable
 private fun ColumnScope.FieldType(
-    fieldTitle: String,
     format: RelationFormat,
     fieldEvent: (FieldEvent) -> Unit
 ) {
@@ -281,7 +282,7 @@ private fun ColumnScope.FieldType(
                 .fillMaxWidth()
                 .padding(start = 34.dp)
                 .align(Alignment.CenterStart),
-            text = fieldTitle,
+            text = stringResource(format.getPrettyName()),
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             maxLines = 1,
@@ -386,22 +387,7 @@ private fun Section(modifier: Modifier, text: String) {
 private fun MyPreview() {
     EditFieldScreen(
         uiFieldEditOrNewState = UiFieldEditOrNewState.Visible.Edit(
-            title = "Tag",
-            format = RelationFormat.OBJECT,
-            limitObjectTypes = listOf(
-                UiFieldObjectItem(
-                    id = "1",
-                    key = "1",
-                    title = "Page",
-                    icon = ObjectIcon.Empty.ObjectType
-                ),
-                UiFieldObjectItem(
-                    id = "2",
-                    key = "2",
-                    title = "Note",
-                    icon = ObjectIcon.Empty.ObjectType
-                )
-            )
+            item = createDummyFieldItem()
         ),
         fieldEvent = {}
     )

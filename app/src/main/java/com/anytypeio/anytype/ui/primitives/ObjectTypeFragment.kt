@@ -34,6 +34,8 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
 import com.anytypeio.anytype.feature_object_type.models.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.models.UiErrorState
+import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainScreen
+import com.anytypeio.anytype.feature_object_type.fields.ui.EditFieldScreen
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
@@ -95,6 +97,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         Timber.e(e, "Error while exiting back from object type screen")
                     }
                 }
+
                 is ObjectTypeCommand.SendToast.Error -> TODO()
                 is ObjectTypeCommand.SendToast.UnexpectedLayout -> TODO()
                 ObjectTypeCommand.OpenEmojiPicker -> {
@@ -104,6 +107,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         Timber.w("Error while opening emoji picker")
                     }
                 }
+
                 is ObjectTypeCommand.OpenTemplate -> {
                     findNavController().navigate(
                         R.id.nav_editor_modal,
@@ -115,6 +119,14 @@ class ObjectTypeFragment : BaseComposeFragment() {
                             EditorModalFragment.ARG_SPACE_ID to command.spaceId
                         )
                     )
+                }
+
+                ObjectTypeCommand.OpenFieldsScreen -> {
+                    navComposeController.navigate(OBJ_TYPE_FIELDS)
+                }
+
+                ObjectTypeCommand.OpenEditFieldScreen -> {
+                    navComposeController.navigate(OBJ_TYPE_FIELD_EDIT)
                 }
             }
         }
@@ -162,6 +174,15 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     onTypeEvent = vm::onTypeEvent
                 )
             }
+            composable(route = OBJ_TYPE_FIELDS) {
+                FieldsMainScreen(
+                    uiFieldsListState = vm.uiFieldsListState.collectAsStateWithLifecycle().value,
+                    uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
+                    uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
+                    uiFieldEditOrNewState = vm.uiFieldEditOrNewState.collectAsStateWithLifecycle().value,
+                    fieldEvent = vm::onFieldEvent
+                )
+            }
         }
         LaunchedEffect(Unit) {
             vm.navigation.collect { nav ->
@@ -175,6 +196,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                             )
                         )
                     }
+
                     is OpenObjectNavigation.OpenDataView -> {
                         findNavController().navigate(
                             R.id.dataViewNavigation,
@@ -184,6 +206,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                             )
                         )
                     }
+
                     is OpenObjectNavigation.OpenParticipant -> {
                         runCatching {
                             findNavController().navigate(
@@ -197,6 +220,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                             Timber.w("Error while opening participant screen")
                         }
                     }
+
                     is OpenObjectNavigation.OpenChat -> {
                         findNavController().navigate(
                             R.id.chatScreen,
@@ -206,9 +230,11 @@ class ObjectTypeFragment : BaseComposeFragment() {
                             )
                         )
                     }
+
                     OpenObjectNavigation.NonValidObject -> {
                         toast(getString(R.string.error_non_valid_object))
                     }
+
                     is OpenObjectNavigation.OpenDateObject -> {
                         runCatching {
                             findNavController().navigate(
@@ -222,9 +248,11 @@ class ObjectTypeFragment : BaseComposeFragment() {
                             Timber.e(it, "Failed to navigate to date object screen")
                         }
                     }
+
                     is OpenObjectNavigation.UnexpectedLayoutError -> {
                         toast(getString(R.string.error_unexpected_layout))
                     }
+
                     else -> {
                         // Do nothing.
                     }
@@ -241,6 +269,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
             UiErrorState.Hidden -> {
 
             }
+
             is UiErrorState.Show -> {
                 val message = when (val r = state.reason) {
                     is UiErrorState.Reason.ErrorGettingObjects -> r.msg
@@ -274,6 +303,8 @@ class ObjectTypeFragment : BaseComposeFragment() {
 
     companion object DateLayoutNavigation {
         private const val OBJ_TYPE_MAIN = "obj_type_main"
+        private const val OBJ_TYPE_FIELDS = "obj_fields"
+        private const val OBJ_TYPE_FIELD_EDIT = "obj_type_field_edit"
         const val ARG_SPACE = "arg.object.type.space"
         const val ARG_OBJECT_ID = "arg.object.type.object_id"
 

@@ -23,4 +23,6 @@ sealed class ObjectTypeCommand {
     data object OpenEmojiPicker : ObjectTypeCommand()
 
     data object OpenFieldsScreen : ObjectTypeCommand()
+
+    data object OpenEditFieldScreen : ObjectTypeCommand()
 }

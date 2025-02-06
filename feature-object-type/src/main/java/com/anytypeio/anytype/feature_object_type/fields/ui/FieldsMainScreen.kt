@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.extensions.swapList
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -48,6 +49,8 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
+import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.models.UiIconState
@@ -58,7 +61,9 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 fun FieldsMainScreen(
     uiFieldsListState: UiFieldsListState,
     uiTitleState: UiTitleState,
-    uiIconState: UiIconState
+    uiIconState: UiIconState,
+    uiFieldEditOrNewState: UiFieldEditOrNewState,
+    fieldEvent: (FieldEvent) -> Unit
 ) {
     val items = remember { mutableStateListOf<UiFieldsListItem>() }
     items.swapList(uiFieldsListState.items)
@@ -78,10 +83,14 @@ fun FieldsMainScreen(
             }
             Column(modifier = modifier) {
                 Box(
-                    modifier = Modifier.fillMaxWidth().height(48.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
                 ) {
                     Text(
-                        modifier = Modifier.wrapContentSize().align(Alignment.Center),
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .align(Alignment.Center),
                         text = stringResource(R.string.object_type_fields_title),
                         style = Title1,
                         color = colorResource(R.color.text_primary)
@@ -127,7 +136,10 @@ fun FieldsMainScreen(
                                     modifier = Modifier
                                         .padding(horizontal = 16.dp)
                                         .bottomBorder()
-                                        .animateItem(),
+                                        .animateItem()
+                                        .noRippleThrottledClickable {
+                                            fieldEvent(FieldEvent.OnFieldItemClick(item = item))
+                                        },
                                     item = item
                                 )
                             }
@@ -151,6 +163,13 @@ fun FieldsMainScreen(
             }
         }
     )
+
+    if (uiFieldEditOrNewState is UiFieldEditOrNewState.Visible) {
+        EditFieldScreen(
+            uiFieldEditOrNewState = uiFieldEditOrNewState,
+            fieldEvent = fieldEvent
+        )
+    }
 }
 
 @Composable
@@ -166,7 +185,9 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
             color = colorResource(id = R.color.text_primary),
         )
         ListWidgetObjectIcon(
-            modifier = Modifier.size(18.dp).padding(start = 4.dp),
+            modifier = Modifier
+                .size(18.dp)
+                .padding(start = 4.dp),
             icon = uiIconState.icon,
             backgroundColor = R.color.transparent_black
         )
@@ -302,5 +323,7 @@ fun PreviewTypeFieldsMainScreen() {
                 )
             )
         ),
+        fieldEvent = {},
+        uiFieldEditOrNewState = UiFieldEditOrNewState.Hidden
     )
 }

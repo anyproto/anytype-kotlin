@@ -38,8 +38,9 @@ import com.anytypeio.anytype.feature_object_type.models.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.models.UiDeleteAlertState
 import com.anytypeio.anytype.feature_object_type.models.UiEditButton
 import com.anytypeio.anytype.feature_object_type.models.UiErrorState
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.models.UiFieldsButtonState
-import com.anytypeio.anytype.feature_object_type.models.UiFieldsListState
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.models.UiIconState
 import com.anytypeio.anytype.feature_object_type.models.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.models.UiLayoutTypeState
@@ -57,7 +58,7 @@ import com.anytypeio.anytype.feature_object_type.models.UiTitleState
 import com.anytypeio.anytype.feature_object_type.models.buildUiFieldsList
 import com.anytypeio.anytype.feature_object_type.models.toTemplateView
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
-import com.anytypeio.anytype.feature_object_type.ui.fields.FieldEvent
+import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -164,6 +165,7 @@ class ObjectTypeViewModel(
 
     //fields
     val uiFieldsListState = MutableStateFlow<UiFieldsListState>(UiFieldsListState.EMPTY)
+    val uiFieldEditOrNewState = MutableStateFlow<UiFieldEditOrNewState>(UiFieldEditOrNewState.Hidden)
 
     private val _objTypeState = MutableStateFlow<ObjectWrapper.Type?>(null)
     private val _objectTypePermissionsState = MutableStateFlow<ObjectPermissions?>(null)
@@ -312,7 +314,14 @@ class ObjectTypeViewModel(
                                 defaultTemplate = objType.defaultTemplateId
                             )
 
-                            val items = buildUiFieldsList(objType, relations, stringResourceProvider)
+                            val items = buildUiFieldsList(
+                                objType = objType,
+                                relations = relations,
+                                stringResourceProvider = stringResourceProvider,
+                                urlBuilder = urlBuilder,
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
+                            )
                             uiFieldsListState.value = UiFieldsListState(items = items)
                             uiFieldsButtonState.value = UiFieldsButtonState.Visible(
                                 count = items.size
@@ -605,6 +614,7 @@ class ObjectTypeViewModel(
 
     //region Ui Events TYPES
     fun onTypeEvent(event: TypeEvent) {
+        Timber.d("onTypeEvent: $event")
         when (event) {
             TypeEvent.OnFieldsButtonClick -> {
                 viewModelScope.launch{
@@ -987,7 +997,20 @@ class ObjectTypeViewModel(
 
     //region Ui Events FIELDS
     fun onFieldEvent(event: FieldEvent) {
-
+        Timber.d("onFieldEvent: $event")
+        when (event) {
+            FieldEvent.OnChangeTypeClick -> TODO()
+            FieldEvent.OnFieldEditScreenDismiss -> {
+                uiFieldEditOrNewState.value = UiFieldEditOrNewState.Hidden
+            }
+            is FieldEvent.OnFieldItemClick -> {
+                uiFieldEditOrNewState.value = UiFieldEditOrNewState.Visible.Edit(
+                    event.item
+                )
+            }
+            FieldEvent.OnLimitTypesClick -> TODO()
+            is FieldEvent.OnSaveButtonClicked -> TODO()
+        }
     }
     //endregion
 

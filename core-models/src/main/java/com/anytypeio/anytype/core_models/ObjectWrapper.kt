@@ -211,7 +211,7 @@ sealed class ObjectWrapper {
             get() {
                 val value = map[Relations.RELATION_FORMAT]
                 return if (value is Double) {
-                    RelationFormat.values().firstOrNull { f ->
+                    RelationFormat.entries.firstOrNull { f ->
                         f.code == value.toInt()
                     } ?: RelationFormat.UNDEFINED
                 } else {
@@ -237,10 +237,10 @@ sealed class ObjectWrapper {
         val restrictions: List<ObjectRestriction>
             get() = when (val value = map[Relations.RESTRICTIONS]) {
                 is Double -> buildList {
-                    ObjectRestriction.values().firstOrNull { it.code == value.toInt() }
+                    ObjectRestriction.entries.firstOrNull { it.code == value.toInt() }
                 }
                 is List<*> -> value.typeOf<Double>().mapNotNull { code ->
-                    ObjectRestriction.values().firstOrNull { it.code == code.toInt() }
+                    ObjectRestriction.entries.firstOrNull { it.code == code.toInt() }
                 }
                 else -> emptyList()
             }

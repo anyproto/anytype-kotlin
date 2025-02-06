@@ -250,7 +250,7 @@
     <string name="linked_to">Vinculado a</string>
     <string name="remove_link">Remover link</string>
     <string name="mention_suggester_new_page">Criar novo objeto</string>
-    <string name="mention_section_dates">Dates</string>
+    <string name="mention_section_dates">Datas</string>
     <string name="mention_section_objects">Objetos</string>
     <string name="mention_suggester_create_object">Criar objeto</string>
     <string name="your_search_query">Pesquisar</string>
@@ -295,7 +295,7 @@
     <string name="enter_value">Inserir valor</string>
     <string name="ityem_relations">Relações</string>
     <string name="add_sort">Adicionar ordenação</string>
-    <string name="apply">Apply</string>
+    <string name="apply">Aplicar</string>
     <string name="add_filter">Adicionar um filtro</string>
     <string name="relation_format_tag">Selecionar vários</string>
     <string name="unknown_number_of_objects">Número desconhecido de objetos</string>
@@ -470,7 +470,7 @@
     <string name="open_source">Código aberto</string>
     <string name="reload_object_content">Recarregar conteúdo do objeto</string>
     <string name="open_link">Abrir link</string>
-    <string name="open_file">Open file</string>
+    <string name="open_file">Abrir arquivo</string>
     <string name="copy_email">Copiar e-mail</string>
     <string name="copy_phone_number">Copiar número de telefone</string>
     <string name="send_email">Enviar email</string>
@@ -1227,12 +1227,12 @@
     <string name="multiplayer_toast_permission_not_allowed">Não é permitido alterar as permissões</string>
     <string name="multiplayer_toast_share_limit_reached">Limite de compartilhamento atingido</string>
     <string name="multiplayer_deeplink_to_your_object">Desenvolver o seu objeto</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Object is not available. Ask the owner to share it.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">O objeto não está disponível. Peça ao proprietário para compartilhá-lo.</string>
     <string name="multiplayer_collaborate_on_spaces">Colaborar em espaços</string>
     <string name="multiplayer_collaborate_step_1">Toque no espaço para acessar as configurações</string>
     <string name="multiplayer_collaborate_step_2">Abrir a seção de Compartilhamento</string>
     <string name="multiplayer_collaborate_step_3">Gerar um link de convite e compartilhá-lo</string>
-    <string name="profile_view_edit_button">Edit Profile</string>
+    <string name="profile_view_edit_button">Editar Perfil</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d membro</item>
         <item quantity="other">%1$d membros</item>
@@ -1509,12 +1509,12 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="version_history_error_get_version">Erro ao obter histórico de versões</string>
     <string name="version_history_error_get_members">Erro ao obter membros</string>
     <string name="new_object">Novo objeto</string>
-    <string name="vault_my_spaces">My Spaces</string>
-    <string name="all_content_title_all_content">All Objects</string>
+    <string name="vault_my_spaces">Meus Espaços</string>
+    <string name="all_content_title_all_content">Todos os Objetos</string>
     <string name="all_content_title_only_unlinked">Apenas desvinculados</string>
     <string name="all_content_title_only_unlinked_description">Objetos não vinculados que não tenham um link direto ou backlink com outros objetos no gráfico.</string>
     <string name="all_content_view_bin">Visualizar lixeira</string>
-    <string name="all_content_title_tab_pages">Pages</string>
+    <string name="all_content_title_tab_pages">Páginas</string>
     <string name="all_content_title_tab_lists">Groups</string>
     <string name="all_content_title_tab_media">Mídias</string>
     <string name="all_content_title_tab_bookmarks">Marca página</string>
@@ -1530,7 +1530,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="all_content_sort_date_created">Data Criada</string>
     <string name="all_content_sort_date_used">Date last used</string>
     <string name="all_content_sort_name">Nome</string>
-    <string name="all_content">All Objects</string>
+    <string name="all_content">Todos os Objetos</string>
     <string name="allContent_group_today">Hoje</string>
     <string name="allContent_group_yesterday">Ontem</string>
     <string name="allContent_group_prev_7">Últimos 7 dias</string>
@@ -1539,7 +1539,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="introduce_vault_text_2">You can now easily reorder your Spaces using drag and drop and navigate them more easily.</string>
     <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
     <string name="introduce_vault_welcome_to_the_vault">Welcome to the Vault</string>
-    <string name="introduce_vault_simple_flexible"><![CDATA[Simple & Flexible]]></string>
+    <string name="introduce_vault_simple_flexible"><![CDATA[Simples e Flexível]]></string>
     <string name="allContent_empty_state_title">It’s empty here.</string>
     <string name="allContent_empty_state_description">Create your first objects to get started.</string>
     <string name="all_content_no_results_title">No results found.</string>

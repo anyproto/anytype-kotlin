@@ -91,23 +91,33 @@ class SplashViewModel(
     fun onRetryMigrationClicked() {
         viewModelScope.launch {
             migrationRetryCount = migrationRetryCount + 1
+            proceedWithAccountMigration()
+        }
+    }
+
+    private suspend fun proceedWithAccountMigration() {
+        if (migrationRetryCount <= 1) {
             proceedWithMigration().collect { migrationState ->
-                when(migrationState) {
+                when (migrationState) {
                     is MigrationHelperDelegate.State.Failed -> {
                         state.value = State.Migration.Failed
                     }
+
                     is MigrationHelperDelegate.State.Init -> {
                         // Do nothing.
                     }
+
                     is MigrationHelperDelegate.State.InProgress -> {
                         state.value = State.Migration.InProgress
                     }
+
                     is MigrationHelperDelegate.State.Migrated -> {
-                        state.value = State.Loading
                         proceedWithLaunchingAccount()
                     }
                 }
             }
+        } else {
+            Timber.e("Failed to migration account after retry")
         }
     }
 
@@ -170,25 +180,7 @@ class SplashViewModel(
                     Timber.e(e, "Error while launching account")
                     when (e) {
                         is AccountMigrationNeededException -> {
-                            commands.emit(Command.NavigateToMigration)
-                            // TODO add retry checking logic
-                            proceedWithMigration().collect { migrationState ->
-                                when(migrationState) {
-                                    is MigrationHelperDelegate.State.Failed -> {
-                                        state.value = State.Migration.Failed
-                                    }
-                                    is MigrationHelperDelegate.State.Init -> {
-                                        // Do nothing.
-                                    }
-                                    is MigrationHelperDelegate.State.InProgress -> {
-                                        state.value = State.Migration.InProgress
-                                    }
-                                    is MigrationHelperDelegate.State.Migrated -> {
-                                        state.value = State.Loading
-                                        proceedWithLaunchingAccount()
-                                    }
-                                }
-                            }
+                            proceedWithAccountMigration()
                         }
                         is NeedToUpdateApplicationException -> {
                             state.value = State.Error(ERROR_NEED_UPDATE)

@@ -88,7 +88,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                                         MigrationFailedScreen(
                                             onRetryClicked = vm::onRetryMigrationClicked
                                         )
-                                    }                                }
+                                    }
+                                }
                                 binding.compose.visible()
                             }
                             is SplashViewModel.State.Success -> {

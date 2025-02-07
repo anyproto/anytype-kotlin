@@ -173,7 +173,7 @@
     <string name="hint_toggle">Blok değiştir</string>
     <string name="hint_paste_link">Bağlantıyı yapıştır</string>
     <string name="empty_tap_to_create_new_block">Boş. Yeni bir blok oluşturmak için dokunun.</string>
-    <string name="untitled">Untitled</string>
+    <string name="untitled">Başlıksız</string>
     <string name="untitled_set">Başlıksız set</string>
     <string name="untitled_collection">Başlıksız koleksiyon</string>
     <string name="archived">Arşivlenmiş</string>

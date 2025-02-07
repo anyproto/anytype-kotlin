@@ -173,7 +173,7 @@
     <string name="hint_toggle">Перемкнути блок</string>
     <string name="hint_paste_link">Вставити посилання</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
-    <string name="untitled">Без назви</string>
+    <string name="untitled">Untitled</string>
     <string name="untitled_set">Безіменний набір</string>
     <string name="untitled_collection">Безіменна колекція</string>
     <string name="archived">Archived</string>

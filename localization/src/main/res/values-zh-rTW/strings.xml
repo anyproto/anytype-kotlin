@@ -173,7 +173,7 @@
     <string name="hint_toggle">摺疊區塊</string>
     <string name="hint_paste_link">貼上連結</string>
     <string name="empty_tap_to_create_new_block">空的。點擊以新建區塊</string>
-    <string name="untitled">未命名</string>
+    <string name="untitled">Untitled</string>
     <string name="untitled_set">未命名的集合</string>
     <string name="untitled_collection">未命名集錦</string>
     <string name="archived">已封存</string>

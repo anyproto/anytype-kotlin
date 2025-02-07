@@ -173,7 +173,7 @@
     <string name="hint_toggle">Balok bukaan</string>
     <string name="hint_paste_link">Tempelkan tautan</string>
     <string name="empty_tap_to_create_new_block">Kosong. Sentuh untuk membuat blok baru.</string>
-    <string name="untitled">Nirjudul</string>
+    <string name="untitled">Untitled</string>
     <string name="untitled_set">Set tidak berjudul</string>
     <string name="untitled_collection">Koleksi tidak berjudul</string>
     <string name="archived">Diarsipkan</string>

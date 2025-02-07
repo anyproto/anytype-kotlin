@@ -263,16 +263,16 @@ class ObjectTypeViewModel(
                     )
                 ),
                 userPermissionProvider.observe(space = vmParams.spaceId),
-                storeOfRelations.observe()
-            ) { objWrapper, permission, relations ->
-                Triple(objWrapper, permission, relations)
+                storeOfRelations.trackChanges(),
+            ) { objWrapper, permission, _ ->
+                objWrapper to permission
             }.catch {
                 Timber.e(it, "Error while observing object")
                 _objTypeState.value = null
                 errorState.value =
                     UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects(it.message ?: ""))
             }
-                .collect { (objWrapper, permission, relations) ->
+                .collect { (objWrapper, permission) ->
                     if (permission != null) {
 
                         if (objWrapper.isNotEmpty()) {
@@ -316,11 +316,11 @@ class ObjectTypeViewModel(
 
                             val items = buildUiFieldsList(
                                 objType = objType,
-                                relations = relations,
                                 stringResourceProvider = stringResourceProvider,
                                 urlBuilder = urlBuilder,
                                 fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
+                                storeOfObjectTypes = storeOfObjectTypes,
+                                storeOfRelations = storeOfRelations
                             )
                             uiFieldsListState.value = UiFieldsListState(items = items)
                             uiFieldsButtonState.value = UiFieldsButtonState.Visible(

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem
@@ -51,6 +52,79 @@ fun ObjectWrapper.Basic.toTemplateView(
 }
 //endregion
 
+/**
+ * Extension function to safely get a name for the relation.
+ * If the name is blank, returns a default untitled title.
+ */
+private fun ObjectWrapper.Relation.getName(stringResourceProvider: StringResourceProvider): String =
+    if (name.isNullOrBlank()) {
+        stringResourceProvider.getUntitledObjectTitle()
+    } else {
+        name!!
+    }
+
+suspend fun buildUiFieldsList(
+    objType: ObjectWrapper.Type,
+    stringResourceProvider: StringResourceProvider,
+    fieldParser: FieldParser,
+    urlBuilder: UrlBuilder,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    storeOfRelations: StoreOfRelations,
+): List<UiFieldsListItem> {
+
+    val parsedFields = fieldParser.getObjectTypeParsedFields(
+        objectType = objType,
+        storeOfRelations = storeOfRelations
+    )
+
+    suspend fun mapRelationsAndFilterDescription(
+        fields: List<ObjectWrapper.Relation>,
+        canDrag: Boolean,
+        stringResourceProvider: StringResourceProvider
+    ) = fields.mapNotNull { field ->
+        if (field.key != Relations.DESCRIPTION) {
+            mapToUiFieldsListItem(
+                relation = field,
+                canDrag = canDrag,
+                stringResourceProvider = stringResourceProvider,
+                fieldParser = fieldParser,
+                urlBuilder = urlBuilder,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+        } else {
+            null
+        }
+    }
+
+    val headerItems = mapRelationsAndFilterDescription(
+        fields = parsedFields.featured,
+        canDrag = true,
+        stringResourceProvider = stringResourceProvider
+    )
+
+    val sidebarItems = mapRelationsAndFilterDescription(
+        fields = parsedFields.sidebar,
+        canDrag = true,
+        stringResourceProvider = stringResourceProvider
+    )
+
+    val hiddenItems = mapRelationsAndFilterDescription(
+        fields = parsedFields.hidden,
+        canDrag = false,
+        stringResourceProvider = stringResourceProvider
+    )
+
+    return buildList {
+        add(Section.Header())
+        addAll(headerItems)
+
+        add(Section.FieldsMenu())
+        addAll(sidebarItems)
+
+        add(Section.Hidden())
+        addAll(hiddenItems)
+    }
+}
 
 /**
  * Maps a [Relation] to its corresponding [com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem] based on the relation format.
@@ -64,7 +138,8 @@ private suspend fun mapToUiFieldsListItem(
     urlBuilder: UrlBuilder
 ): UiFieldsListItem? {
     val limitObjectTypes = if (relation.format == RelationFormat.OBJECT &&
-        relation.relationFormatObjectTypes.isNotEmpty()) {
+        relation.relationFormatObjectTypes.isNotEmpty()
+    ) {
         relation.relationFormatObjectTypes.mapNotNull { key ->
             storeOfObjectTypes.getByKey(key)?.let { objType ->
                 UiFieldObjectItem(
@@ -86,77 +161,5 @@ private suspend fun mapToUiFieldsListItem(
         limitObjectTypes = limitObjectTypes,
         canDrag = canDrag
     )
-}
-
-/**
- * Extension function to safely get a name for the relation.
- * If the name is blank, returns a default untitled title.
- */
-private fun ObjectWrapper.Relation.getName(stringResourceProvider: StringResourceProvider): String =
-    if (name.isNullOrBlank()) {
-        stringResourceProvider.getUntitledObjectTitle()
-    } else {
-        name!!
-    }
-
-/**
- * Builds the list of UI fields to display.
- *
- * This helper maps recommended relation keys (for featured, sidebar, and hidden sections, etc.)
- * into their corresponding [com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem]s using the provided relations map.
- * For each section, if there are any items, a section header is inserted before the items.
- * Note that any relation with the key [Relations.DESCRIPTION] is explicitly filtered out.
- *
- * @param objType the type object that contains lists of recommended relation keys for each section.
- * @param relations a map of relation identifiers to their corresponding [ObjectWrapper.Relation]s.
- *                  Relations with the key [Relations.DESCRIPTION] are excluded from the UI.
- * @return a list of [com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem] organized into sections (featured, sidebar, hidden) for display.
- */
-suspend fun buildUiFieldsList(
-    objType: ObjectWrapper.Type,
-    relations: Map<Id, ObjectWrapper.Relation>,
-    stringResourceProvider: StringResourceProvider,
-    fieldParser: FieldParser,
-    urlBuilder: UrlBuilder,
-    storeOfObjectTypes: StoreOfObjectTypes
-): List<UiFieldsListItem> {
-
-    suspend fun mapRelations(
-        keys: List<String>,
-        canDrag: Boolean,
-        stringResourceProvider: StringResourceProvider
-    ) = keys.mapNotNull { key ->
-        if (key != Relations.DESCRIPTION) {
-            relations[key]?.let {
-                mapToUiFieldsListItem(
-                    relation = it,
-                    canDrag = canDrag,
-                    stringResourceProvider = stringResourceProvider,
-                    fieldParser = fieldParser,
-                    urlBuilder = urlBuilder,
-                    storeOfObjectTypes = storeOfObjectTypes
-                )
-            }
-        } else {
-            null
-        }
-    }
-
-    val featuredItems =
-        mapRelations(objType.recommendedFeaturedRelations, true, stringResourceProvider)
-    val sidebarItems = mapRelations(objType.recommendedRelations, true, stringResourceProvider)
-    val hiddenItems =
-        mapRelations(objType.recommendedHiddenRelations, false, stringResourceProvider)
-
-    return buildList {
-        add(Section.Header())
-        addAll(featuredItems)
-
-        add(Section.FieldsMenu())
-        addAll(sidebarItems)
-
-//            add(Section.Hidden)
-        addAll(hiddenItems)
-    }
 }
 

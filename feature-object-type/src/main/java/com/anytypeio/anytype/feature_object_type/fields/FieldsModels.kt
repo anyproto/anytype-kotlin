@@ -57,11 +57,12 @@ sealed class UiFieldsListItem {
         data class Header(
             override val id: Id = "section_header",
         ) : Section()
-
         data class FieldsMenu(
             override val id: Id = "section_fields_menu",
         ) : Section()
-        //data object Hidden: Section()
+        data class Hidden(
+            override val id: Id = "section_hidden",
+        ): Section()
     }
 }
 //endregion

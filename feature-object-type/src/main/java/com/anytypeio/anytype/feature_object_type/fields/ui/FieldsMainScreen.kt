@@ -50,6 +50,7 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
+import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
@@ -126,6 +127,7 @@ fun FieldsMainScreen(
                             is UiFieldsListItem.FieldItem -> "field"
                             is UiFieldsListItem.Section.FieldsMenu -> "section"
                             is UiFieldsListItem.Section.Header -> "section"
+                            is UiFieldsListItem.Section.Hidden -> "hidden"
                         }
                     },
                     itemContent = { index ->
@@ -138,7 +140,7 @@ fun FieldsMainScreen(
                                         .bottomBorder()
                                         .animateItem()
                                         .noRippleThrottledClickable {
-                                            fieldEvent(FieldEvent.OnFieldItemClick(item = item))
+                                            fieldEvent(OnFieldItemClick(item = item))
                                         },
                                     item = item
                                 )
@@ -152,6 +154,13 @@ fun FieldsMainScreen(
                             )
 
                             is UiFieldsListItem.Section.Header -> Section(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(52.dp),
+                                item = item
+                            )
+
+                            is UiFieldsListItem.Section.Hidden -> Section(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(52.dp),
@@ -207,6 +216,7 @@ private fun Section(modifier: Modifier, item: UiFieldsListItem.Section) {
     val title = when (item) {
         is UiFieldsListItem.Section.Header -> stringResource(R.string.object_type_fields_section_header)
         is UiFieldsListItem.Section.FieldsMenu -> stringResource(R.string.object_type_fields_section_fields_menu)
+        is UiFieldsListItem.Section.Hidden -> stringResource(R.string.object_type_fields_section_hidden)
     }
     Box(modifier = modifier) {
         Text(

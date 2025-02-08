@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Beri warna polos acak</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="profile_settings_apply_upload_image">Upload image</string>
-    <string name="remove_image">Remove image</string>
+    <string name="remove_image">Hapus gambar</string>
     <string name="delete_space">Hapus ruang</string>
     <string name="you_can_store">Kamu bisa menyimpan berkasmu hingga %1$s di simpul cadangan terenkripsi kami secara gratis. Jika melewati batas, berkasmu hanya akan disimpan secara lokal.</string>
     <string name="in_order_to_save">Untuk menghemat penyimpanan ruang pada perangkat lokal, anda dapat melepaskan semua berkas ke simpul cadangan terenkripsi kami. Berkas - berkas akan diunduh kembali saat kamu membuka mereka. </string>
@@ -173,7 +173,7 @@
     <string name="hint_toggle">Balok bukaan</string>
     <string name="hint_paste_link">Tempelkan tautan</string>
     <string name="empty_tap_to_create_new_block">Kosong. Sentuh untuk membuat blok baru.</string>
-    <string name="untitled">Untitled</string>
+    <string name="untitled">Nirjudul</string>
     <string name="untitled_set">Set tidak berjudul</string>
     <string name="untitled_collection">Koleksi tidak berjudul</string>
     <string name="archived">Diarsipkan</string>
@@ -370,7 +370,7 @@
     <string name="scroll_to_select_position">Scroll to select new position</string>
     <string name="block_action_add_below">Tambah di bawah</string>
     <string name="content_desc_back_button">Tombol kembali</string>
-    <string name="content_desc_share_button">Share button</string>
+    <string name="content_desc_share_button">Tombol bagikan</string>
     <string name="content_desc_home_button">Tombol beranda</string>
     <string name="content_desc_search_button">Tombol cari</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1211,8 +1211,8 @@
     <string name="multiplayer_notification_member_request_approved">Permintaan disetujui</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Permintaanmu bergabug ke ruang %1$s telah disetujui dengan hak akses pembaca. Ruang ini akan tersedia di perangkatmu sebentar lagi.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Permintaanmu bergabung ke ruang %1$s telah disetujui dengan hak akses penyunting. Ruang ini akan tersedia di perangkatmu sebentar lagi.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">Ruang \"%1$s\" tidak dapat diakses lagi.</string>
+    <string name="multiplayer_notification_member_removed_from_space">Kamu telah dikeluarkan dari ruang \"%1$s\", atau ruang tersebut telah dihapus oleh pemiliknya.</string>
     <string name="multiplayer_notification_member_permissions_changed">Izin diubah</string>
     <string name="multiplayer_notification_member_permission_change_read">Hak aksesmu di ruang %1$s telah diganti menjadi pembaca.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Hak aksesmu di ruang %1$s telah diganti menjadi penyunting.</string>

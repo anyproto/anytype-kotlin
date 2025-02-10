@@ -370,7 +370,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             val spaceAccessType = views
                 .map {
-                    val space = it.firstOrNull { it is WidgetView.SpaceWidget }
+                    val space = it.firstOrNull { it is WidgetView.SpaceWidget.View }
                     if (space is WidgetView.SpaceWidget.View) {
                         space.space
                             .spaceAccessType
@@ -378,6 +378,7 @@ class HomeScreenViewModel(
                         null
                     }
                 }
+                .distinctUntilChanged()
             combine(
                 spaceAccessType,
                 userPermissions

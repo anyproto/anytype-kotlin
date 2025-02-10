@@ -173,7 +173,7 @@
     <string name="hint_toggle">Ekspanderbar blokk</string>
     <string name="hint_paste_link">Lim inn lenke</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
-    <string name="untitled">Uten tittel</string>
+    <string name="untitled">Untitled</string>
     <string name="untitled_set">Navnløst sett</string>
     <string name="untitled_collection">Navnløs samling</string>
     <string name="archived">Arkivert</string>
@@ -1215,8 +1215,8 @@
     <string name="multiplayer_notification_member_request_approved">Request approved</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space, or the space was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
+    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
     <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
     <string name="multiplayer_notification_member_permission_change_read">Your access rights were changed to read-only in the %1$s space.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
@@ -1227,7 +1227,7 @@
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
     <string name="multiplayer_toast_share_limit_reached">Sharing limit reached</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
-    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Object is not available. Ask the owner to share it.</string>
     <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
     <string name="multiplayer_collaborate_step_1">1.  Tap the Space widget to access settings</string>
     <string name="multiplayer_collaborate_step_2">2.  Open Share section</string>

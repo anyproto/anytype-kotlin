@@ -6,7 +6,6 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import kotlinx.coroutines.flow.firstOrNull
 
 sealed class NavPanelState {
 

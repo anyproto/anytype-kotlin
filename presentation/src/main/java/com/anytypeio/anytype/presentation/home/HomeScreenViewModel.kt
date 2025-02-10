@@ -368,15 +368,28 @@ class HomeScreenViewModel(
 
     private fun proceedWithNavPanelState() {
         viewModelScope.launch {
-            userPermissions
-                .map { permission ->
-                    NavPanelState.fromPermission(
-                        permission = permission,
-                        forceHome = false
-                    )
-                }.collect {
-                    navPanelState.value = it
+            val spaceAccessType = views
+                .map {
+                    val space = it.firstOrNull { it is WidgetView.SpaceWidget }
+                    if (space is WidgetView.SpaceWidget.View) {
+                        space.space
+                            .spaceAccessType
+                    } else {
+                        null
+                    }
                 }
+            combine(
+                spaceAccessType,
+                userPermissions
+            ) { type, permission ->
+                NavPanelState.fromPermission(
+                    permission = permission,
+                    forceHome = false,
+                    spaceAccessType = type
+                )
+            }.collect {
+                navPanelState.value = it
+            }
         }
     }
 

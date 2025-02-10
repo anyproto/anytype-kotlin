@@ -174,18 +174,25 @@ fun BottomNavigationMenu(
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (state is NavPanelState.Default) {
-            when (state.leftButtonState) {
+            when (val left = state.leftButtonState) {
                 is NavPanelState.LeftButtonState.AddMembers -> {
                     MenuItem(
                         modifier = Modifier
                             .width(72.dp)
-                            .height(52.dp),
+                            .height(52.dp)
+                            .alpha(
+                                if (left.isActive)
+                                    FULL_ALPHA
+                                else
+                                    DEFAULT_DISABLED_ALPHA
+                            )
+                        ,
                         contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
                         res = BottomNavigationItem.ADD_MEMBERS.res,
-                        onClick = onShareButtonClicked
+                        onClick = onShareButtonClicked,
+                        enabled = left.isActive
                     )
                 }
-
                 is NavPanelState.LeftButtonState.Comment -> {
                     // TODO
                 }

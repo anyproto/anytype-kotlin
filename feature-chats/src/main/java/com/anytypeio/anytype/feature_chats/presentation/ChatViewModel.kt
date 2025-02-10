@@ -269,13 +269,13 @@ class ChatViewModel @Inject constructor(
         )
         if (isMentionTriggered(text, selection.start)) {
             val results = getMentionedMembers(query)
-            if (query != null) {
+            if (query != null && results.isNotEmpty()) {
                 mentionPanelState.value = MentionPanelState.Visible(
                     results = results,
                     query = query
                 )
             } else {
-                Timber.w("Query is empty when mention is triggered")
+                Timber.w("Query is empty or results are empty when mention is triggered")
             }
         } else if (shouldHideMention(text, selection.start)) {
             mentionPanelState.value = MentionPanelState.Hidden

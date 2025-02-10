@@ -267,101 +267,59 @@ class ChatViewModel @Inject constructor(
             text = text,
             selectionStart = selection.start
         )
-        when(mentionPanelState.value) {
-            MentionPanelState.Hidden -> {
-                if (isMentionTriggered(text, selection.start) && query != null) {
-                    mentionPanelState.value = MentionPanelState.Visible(
-                        results = members.get().let { store ->
-                            when(store) {
-                                is Store.Data -> {
-                                    store.members.map { member ->
-                                        MentionPanelState.Member(
-                                            member.id,
-                                            name = member.name.orEmpty(),
-                                            icon = SpaceMemberIconView.icon(
-                                                obj = member,
-                                                urlBuilder = urlBuilder
-                                            )
-                                        )
-                                    }
-                                }
-                                Store.Empty -> {
-                                    emptyList()
-                                }
-                            }
-                        },
-                        query = query
-                    )
-                } else {
-                    if (query != null) {
-                        val results = members.get().let { store ->
-                            when(store) {
-                                is Store.Data -> {
-                                    store.members.map { member ->
-                                        MentionPanelState.Member(
-                                            member.id,
-                                            name = member.name.orEmpty(),
-                                            icon = SpaceMemberIconView.icon(
-                                                obj = member,
-                                                urlBuilder = urlBuilder
-                                            )
-                                        )
-                                    }.filter { m -> m.name.contains(query.query, true) }
-                                }
-                                Store.Empty -> {
-                                    emptyList()
-                                }
-                            }
-                        }
-                        mentionPanelState.value = MentionPanelState.Visible(
-                            query = query,
-                            results = results
+        if (isMentionTriggered(text, selection.start)) {
+            val results = getMentionedMembers(query)
+            if (query != null) {
+                mentionPanelState.value = MentionPanelState.Visible(
+                    results = results,
+                    query = query
+                )
+            } else {
+                Timber.w("Query is empty when mention is triggered")
+            }
+        } else if (shouldHideMention(text, selection.start)) {
+            mentionPanelState.value = MentionPanelState.Hidden
+        } else {
+            val results = getMentionedMembers(query)
+            if (results.isNotEmpty() && query != null) {
+                mentionPanelState.value = MentionPanelState.Visible(
+                    results = results,
+                    query = query
+                )
+            } else {
+                mentionPanelState.value = MentionPanelState.Hidden
+            }
+        }
+    }
+
+    private fun getMentionedMembers(query: MentionPanelState.Query?): List<MentionPanelState.Member> {
+        val results = members.get().let { store ->
+            when (store) {
+                is Store.Data -> {
+                    store.members.map { member ->
+                        MentionPanelState.Member(
+                            member.id,
+                            name = member.name.orEmpty(),
+                            icon = SpaceMemberIconView.icon(
+                                obj = member,
+                                urlBuilder = urlBuilder
+                            )
                         )
-                    } else {
-                        mentionPanelState.value = MentionPanelState.Hidden
+                    }.filter { m ->
+                        if (query != null) {
+                            m.name.contains(query.query, true)
+                        } else {
+                            true
+                        }
                     }
                 }
-            }
-            is MentionPanelState.Visible -> {
-                if (shouldHideMention(text, selection.start)) {
-                    mentionPanelState.value = MentionPanelState.Hidden
-                } else {
-                    val results = members.get().let { store ->
-                        when(store) {
-                            is Store.Data -> {
-                                store.members.map { member ->
-                                    MentionPanelState.Member(
-                                        member.id,
-                                        name = member.name.orEmpty(),
-                                        icon = SpaceMemberIconView.icon(
-                                            obj = member,
-                                            urlBuilder = urlBuilder
-                                        )
-                                    )
-                                }.filter { m ->
-                                    if (query != null) {
-                                        m.name.contains(query.query, true)
-                                    } else {
-                                        true
-                                    }
-                                }
-                            }
-                            Store.Empty -> {
-                                emptyList()
-                            }
-                        }
-                    }
-                    if (results.isNotEmpty() && query != null) {
-                        mentionPanelState.value = MentionPanelState.Visible(
-                            results = results,
-                            query = query
-                        )
-                    } else {
-                        mentionPanelState.value = MentionPanelState.Hidden
-                    }
+
+                Store.Empty -> {
+                    emptyList()
                 }
             }
         }
+        return results
     }
 
     fun onMessageSent(msg: String, markup: List<Block.Content.Text.Mark>) {

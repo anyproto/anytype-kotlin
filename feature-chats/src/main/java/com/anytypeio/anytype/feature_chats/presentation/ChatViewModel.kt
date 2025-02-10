@@ -263,30 +263,111 @@ class ChatViewModel @Inject constructor(
         selection: IntRange,
         text: String
     ) {
-        if (isMentionTriggered(text, selection.start)) {
-            mentionPanelState.value = MentionPanelState.Visible(
-                results = members.get().let { store ->
-                    when(store) {
-                        is Store.Data -> {
-                            store.members.map { member ->
-                                MentionPanelState.Member(
-                                    member.id,
-                                    name = member.name.orEmpty(),
-                                    icon = SpaceMemberIconView.icon(
-                                        obj = member,
-                                        urlBuilder = urlBuilder
-                                    )
-                                )
+        val query = resolveMentionQuery(
+            text = text,
+            selectionStart = selection.start
+        )
+        Timber.d("Query: ${query}")
+        when(val curr = mentionPanelState.value) {
+            MentionPanelState.Hidden -> {
+                if (isMentionTriggered(text, selection.start)) {
+                    mentionPanelState.value = MentionPanelState.Visible(
+                        results = members.get().let { store ->
+                            when(store) {
+                                is Store.Data -> {
+                                    store.members.map { member ->
+                                        MentionPanelState.Member(
+                                            member.id,
+                                            name = member.name.orEmpty(),
+                                            icon = SpaceMemberIconView.icon(
+                                                obj = member,
+                                                urlBuilder = urlBuilder
+                                            )
+                                        )
+                                    }
+                                }
+                                Store.Empty -> {
+                                    emptyList()
+                                }
+                            }
+                        },
+                        query = query
+                    )
+                } else {
+                    if (query != null) {
+                        val results = members.get().let { store ->
+                            when(store) {
+                                is Store.Data -> {
+                                    store.members.map { member ->
+                                        MentionPanelState.Member(
+                                            member.id,
+                                            name = member.name.orEmpty(),
+                                            icon = SpaceMemberIconView.icon(
+                                                obj = member,
+                                                urlBuilder = urlBuilder
+                                            )
+                                        )
+                                    }.filter { m ->
+                                        if (query != null) {
+                                            m.name.contains(query.query, true)
+                                        } else {
+                                            true
+                                        }
+                                    }
+                                }
+                                Store.Empty -> {
+                                    emptyList()
+                                }
                             }
                         }
-                        Store.Empty -> {
-                            emptyList()
-                        }
+                        mentionPanelState.value = MentionPanelState.Visible(
+                            query = query,
+                            results = results
+                        )
+                    } else {
+                        mentionPanelState.value = MentionPanelState.Hidden
                     }
                 }
-            )
-        } else {
-            mentionPanelState.value = MentionPanelState.Hidden
+            }
+            is MentionPanelState.Visible -> {
+                if (shouldHideMention(text, selection.start)) {
+                    mentionPanelState.value = MentionPanelState.Hidden
+                } else {
+                    val results = members.get().let { store ->
+                        when(store) {
+                            is Store.Data -> {
+                                store.members.map { member ->
+                                    MentionPanelState.Member(
+                                        member.id,
+                                        name = member.name.orEmpty(),
+                                        icon = SpaceMemberIconView.icon(
+                                            obj = member,
+                                            urlBuilder = urlBuilder
+                                        )
+                                    )
+                                }.filter { m ->
+                                    if (query != null) {
+                                        m.name.contains(query.query, true)
+                                    } else {
+                                        true
+                                    }
+                                }
+                            }
+                            Store.Empty -> {
+                                emptyList()
+                            }
+                        }
+                    }
+                    if (results.isNotEmpty()) {
+                        mentionPanelState.value = MentionPanelState.Visible(
+                            results = results,
+                            query = query
+                        )
+                    } else {
+                        mentionPanelState.value = MentionPanelState.Hidden
+                    }
+                }
+            }
         }
     }
 
@@ -632,18 +713,38 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
-        // Ensure selectionStart is valid and not out of bounds
-        if (selectionStart <= 0 || selectionStart > text.length) {
-            return false
-        }
-
-        // Check the character before the cursor position
+    fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
+        if (selectionStart <= 0 || selectionStart > text.length) return false
         val previousChar = text[selectionStart - 1]
-
-        // Trigger mention if the previous character is '@'
         return previousChar == '@'
+                && (selectionStart == 1 || !text[selectionStart - 2].isLetterOrDigit())
     }
+
+    fun shouldHideMention(text: String, selectionStart: Int): Boolean {
+        if (selectionStart > text.length) return false
+
+        // Check if the current character is a space
+        val currentChar = if (selectionStart > 0) text[selectionStart - 1] else null
+
+        // Hide mention when a space is typed, or '@' character has been deleted (even if it was the first character)
+        val atCharExists = text.lastIndexOf('@', selectionStart - 1) != -1
+        return currentChar == ' ' || !atCharExists
+    }
+
+    fun resolveMentionQuery(text: String, selectionStart: Int): MentionPanelState.Query? {
+        val atIndex = text.lastIndexOf('@', selectionStart - 1)
+        if (atIndex == -1 || (atIndex > 0 && text[atIndex - 1].isLetterOrDigit())) return null
+
+        // Check if there's a space immediately after '@'
+        if (atIndex + 1 < text.length && text[atIndex + 1] == ' ') return null
+
+        val endIndex = text.indexOf(' ', atIndex).takeIf { it != -1 } ?: text.length
+        val query = text.substring(atIndex + 1, endIndex)
+
+        // Allow empty queries if there's no space after '@'
+        return MentionPanelState.Query(query, atIndex until endIndex)
+    }
+
 
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()
@@ -672,12 +773,19 @@ class ChatViewModel @Inject constructor(
 
     sealed class MentionPanelState {
         data object Hidden : MentionPanelState()
-        data class Visible(val results: List<Member>) : MentionPanelState()
+        data class Visible(
+            val results: List<Member>,
+            val query: Query?
+        ) : MentionPanelState()
         data class Member(
             val id: Id,
             val name: String,
             val icon: SpaceMemberIconView,
             val isUser: Boolean = false
+        )
+        data class Query(
+            val query: String,
+            val range: IntRange
         )
     }
 

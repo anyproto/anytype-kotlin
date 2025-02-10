@@ -359,14 +359,29 @@ fun ChatScreen(
                                         val query = mentionPanelState.query
                                         val input = text.text
 
-//                                        val adjustedStart = (start - 1).coerceAtLeast(0)
-
                                         val replacementText = member.name + " "
+
+                                        val lengthDifference = replacementText.length - (query.range.last - query.range.first)
 
                                         val updatedText = input.replaceRange(
                                             query.range,
                                             replacementText
                                         )
+
+                                        val updatedSpans = spans.map { span ->
+                                            if (span.start > query.range.last) {
+                                                when(span) {
+                                                    is ChatBoxSpan.Mention -> {
+                                                        span.copy(
+                                                            start = span.start + lengthDifference,
+                                                            end = span.end + lengthDifference
+                                                        )
+                                                    }
+                                                }
+                                            } else {
+                                                span
+                                            }
+                                        }
 
                                         text = text.copy(
                                             text = updatedText,
@@ -384,7 +399,7 @@ fun ChatScreen(
                                             param = member.id
                                         )
 
-                                        spans = spans + mentionSpan
+                                        spans = updatedSpans + mentionSpan
 
                                         onTextChanged(text)
                                     }
@@ -428,9 +443,7 @@ fun ChatScreen(
             onValueChange = { t, s ->
                 text = t
                 spans = s
-                onTextChanged(
-                    t
-                )
+                onTextChanged(t)
             },
             text = text,
             spans = spans

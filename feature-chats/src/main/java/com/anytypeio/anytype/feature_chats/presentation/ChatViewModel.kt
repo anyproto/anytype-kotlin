@@ -388,7 +388,7 @@ class ChatViewModel @Inject constructor(
                         params = Command.ChatCommand.AddMessage(
                             chat = vmParams.ctx,
                             message = Chat.Message.new(
-                                text = msg,
+                                text = msg.trim(),
                                 attachments = attachments,
                                 marks = markup
                             )
@@ -411,7 +411,7 @@ class ChatViewModel @Inject constructor(
                             chat = vmParams.ctx,
                             message = Chat.Message.updated(
                                 id = mode.msg,
-                                text = msg,
+                                text = msg.trim(),
                                 attachments = editedMessage?.attachments.orEmpty()
                             )
                         )
@@ -430,7 +430,7 @@ class ChatViewModel @Inject constructor(
                         params = Command.ChatCommand.AddMessage(
                             chat = vmParams.ctx,
                             message = Chat.Message.new(
-                                text = msg,
+                                text = msg.trim(),
                                 replyToMessageId = mode.msg,
                                 attachments = attachments,
                                 marks = markup

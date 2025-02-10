@@ -91,6 +91,7 @@ import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companio
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
+import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
@@ -1777,51 +1778,15 @@ class HomeScreenViewModel(
 
     fun onNavBarShareIconClicked() {
         viewModelScope.launch {
-            when(val state = navPanelState.value) {
-                is NavPanelState.Default -> {
-                    when(state.leftButtonState) {
-                        is NavPanelState.LeftButtonState.AddMembers -> {
-                            analytics.sendEvent(
-                                eventName = EventsDictionary.screenSettingsSpaceShare,
-                                props = Props(
-                                    mapOf(
-                                        EventsPropertiesKey.route to EventsDictionary.Routes.navigation
-                                    )
-                                )
-                            )
-                        }
-                        is NavPanelState.LeftButtonState.Comment -> {
-                            analytics.sendEvent(eventName = EventsDictionary.clickQuote)
-                        }
-                        NavPanelState.LeftButtonState.Home -> {
-                            // Do nothing.
-                        }
-                        NavPanelState.LeftButtonState.ViewMembers -> {
-                            analytics.sendEvent(
-                                eventName = EventsDictionary.screenSettingsSpaceMembers,
-                                props = Props(
-                                    mapOf(
-                                        EventsPropertiesKey.route to EventsDictionary.Routes.navigation
-                                    )
-                                )
-                            )
-                        }
-                    }
-                }
-                NavPanelState.Init -> {
-                    // Do nothing.
-                }
-            }
+            navPanelState.value.leftButtonClickAnalytics(analytics)
         }
         viewModelScope.launch {
-            commands.emit(
-                Command.ShareSpace(SpaceId(spaceManager.get()))
-            )
+            commands.emit(Command.ShareSpace(SpaceId(spaceManager.get())))
         }
     }
 
     fun onHomeButtonClicked() {
-        // Do nothing
+        // Do nothing, as home button is not visible on space home screen.
     }
 
     fun onSpaceWidgetClicked() {

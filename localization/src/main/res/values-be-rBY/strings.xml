@@ -173,7 +173,7 @@
     <string name="hint_toggle">Пераключыць блакіраванне</string>
     <string name="hint_paste_link">Уставіць спасылку</string>
     <string name="empty_tap_to_create_new_block">Пусты. Націсніце, каб стварыць новы блок</string>
-    <string name="untitled">Бяз назвы</string>
+    <string name="untitled">Untitled</string>
     <string name="untitled_set">Набор без назвы</string>
     <string name="untitled_collection">Калекцыя без назвы</string>
     <string name="archived">Заархівавана</string>

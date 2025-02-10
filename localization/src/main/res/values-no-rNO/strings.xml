@@ -173,7 +173,7 @@
     <string name="hint_toggle">Ekspanderbar blokk</string>
     <string name="hint_paste_link">Lim inn lenke</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
-    <string name="untitled">Uten tittel</string>
+    <string name="untitled">Untitled</string>
     <string name="untitled_set">Navnløst sett</string>
     <string name="untitled_collection">Navnløs samling</string>
     <string name="archived">Arkivert</string>

@@ -173,7 +173,7 @@
     <string name="hint_toggle">切换块</string>
     <string name="hint_paste_link">粘贴链接</string>
     <string name="empty_tap_to_create_new_block">空的。点击创建一个新块</string>
-    <string name="untitled">无标题</string>
+    <string name="untitled">Untitled</string>
     <string name="untitled_set">无标题集</string>
     <string name="untitled_collection">无标题集锦</string>
     <string name="archived">已归档</string>

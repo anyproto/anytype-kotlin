@@ -173,7 +173,7 @@
     <string name="hint_toggle">Blocco espandibile</string>
     <string name="hint_paste_link">Incolla link</string>
     <string name="empty_tap_to_create_new_block">Vuoto. Tocca per creare un nuovo blocco</string>
-    <string name="untitled">Senza titolo</string>
+    <string name="untitled">Untitled</string>
     <string name="untitled_set">Insieme senza titolo</string>
     <string name="untitled_collection">Collezione senza titolo</string>
     <string name="archived">Archiviato</string>

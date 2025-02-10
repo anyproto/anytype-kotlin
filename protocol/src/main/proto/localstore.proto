@@ -64,4 +64,5 @@ message ObjectStoreChecksums {
     int32 linksErase = 14;
     int32 marketplaceForceReindexCounter = 15;
     int32 reindexDeletedObjects = 16;
+    int32 reindexParticipants = 17;
 }

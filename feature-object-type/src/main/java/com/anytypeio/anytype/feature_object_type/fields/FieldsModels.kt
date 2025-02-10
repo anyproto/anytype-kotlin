@@ -54,14 +54,23 @@ sealed class UiFieldsListItem {
     ) : UiFieldsListItem()
 
     sealed class Section : UiFieldsListItem() {
+        abstract val canAdd: Boolean
         data class Header(
             override val id: Id = "section_header",
+            override val canAdd: Boolean = false
         ) : Section()
         data class FieldsMenu(
             override val id: Id = "section_fields_menu",
+            override val canAdd: Boolean = false
         ) : Section()
         data class Hidden(
             override val id: Id = "section_hidden",
+            override val canAdd: Boolean = false
+        ): Section()
+
+        data class Local(
+            override val id: Id = "section_local",
+            override val canAdd: Boolean = false
         ): Section()
     }
 }

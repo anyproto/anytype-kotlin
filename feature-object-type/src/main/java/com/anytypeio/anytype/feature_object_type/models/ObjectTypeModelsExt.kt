@@ -70,19 +70,24 @@ suspend fun buildUiFieldsList(
     urlBuilder: UrlBuilder,
     storeOfObjectTypes: StoreOfObjectTypes,
     storeOfRelations: StoreOfRelations,
+    objTypeConflictingFields: List<Id>
 ): List<UiFieldsListItem> {
 
     val parsedFields = fieldParser.getObjectTypeParsedFields(
         objectType = objType,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        objectTypeConflictingFieldsIds = objTypeConflictingFields
     )
 
     suspend fun mapRelationsAndFilterDescription(
         fields: List<ObjectWrapper.Relation>,
         canDrag: Boolean,
-        stringResourceProvider: StringResourceProvider
+        stringResourceProvider: StringResourceProvider,
+        filterByDescription: Boolean = false
     ) = fields.mapNotNull { field ->
-        if (field.key != Relations.DESCRIPTION) {
+        if (filterByDescription && field.key == Relations.DESCRIPTION) {
+            null
+        } else {
             mapToUiFieldsListItem(
                 relation = field,
                 canDrag = canDrag,
@@ -91,38 +96,50 @@ suspend fun buildUiFieldsList(
                 urlBuilder = urlBuilder,
                 storeOfObjectTypes = storeOfObjectTypes
             )
-        } else {
-            null
         }
     }
 
     val headerItems = mapRelationsAndFilterDescription(
         fields = parsedFields.featured,
         canDrag = true,
-        stringResourceProvider = stringResourceProvider
+        stringResourceProvider = stringResourceProvider,
+        filterByDescription = true
     )
 
     val sidebarItems = mapRelationsAndFilterDescription(
         fields = parsedFields.sidebar,
         canDrag = true,
-        stringResourceProvider = stringResourceProvider
+        stringResourceProvider = stringResourceProvider,
+        filterByDescription = true
     )
 
     val hiddenItems = mapRelationsAndFilterDescription(
         fields = parsedFields.hidden,
-        canDrag = false,
+        canDrag = true,
         stringResourceProvider = stringResourceProvider
     )
 
+    val conflictedItems = mapRelationsAndFilterDescription(
+        fields = parsedFields.conflicted,
+        canDrag = false,
+        stringResourceProvider = stringResourceProvider,
+        filterByDescription = true
+    )
+
     return buildList {
-        add(Section.Header())
+        add(Section.Header(canAdd = true))
         addAll(headerItems)
 
-        add(Section.FieldsMenu())
+        add(Section.FieldsMenu(canAdd = true))
         addAll(sidebarItems)
 
         add(Section.Hidden())
         addAll(hiddenItems)
+
+        if (conflictedItems.isNotEmpty()) {
+            add(Section.Local())
+            addAll(conflictedItems)
+        }
     }
 }
 

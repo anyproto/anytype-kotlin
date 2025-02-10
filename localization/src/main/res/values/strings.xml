@@ -1863,6 +1863,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_section_header">Header</string>
     <string name="object_type_fields_section_fields_menu">Fields menu</string>
     <string name="object_type_fields_section_hidden">Hidden</string>
+    <string name="object_type_fields_section_local_fields">Local fields</string>
     <string name="object_type_fields_title">Fields</string>
     <string name="object_type_fields_info_text">You editing type</string>
     <string name="object_type_fields_edit_field">Edit field</string>

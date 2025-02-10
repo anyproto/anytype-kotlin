@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +43,9 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
+import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
+import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -68,6 +72,19 @@ fun FieldsMainScreen(
 ) {
     val items = remember { mutableStateListOf<UiFieldsListItem>() }
     items.swapList(uiFieldsListState.items)
+
+    val lazyListState = rememberLazyListState()
+    val dragDropState = rememberDragDropState(
+        lazyListState = lazyListState,
+        onDragEnd = {
+//            onOrderChanged(
+//                spaceList.map { it.space.id }
+//            )
+        },
+        onMove = { fromIndex, toIndex ->
+            //spaceList = spaceList.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+        }
+    )
 
     Scaffold(
         modifier = Modifier
@@ -118,7 +135,11 @@ fun FieldsMainScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             }
-            LazyColumn(modifier = contentModifier) {
+            LazyColumn(
+                modifier = contentModifier
+                    .dragContainer(dragDropState),
+                state = lazyListState
+            ) {
                 items(
                     count = items.size,
                     key = { items[it].id },
@@ -128,44 +149,65 @@ fun FieldsMainScreen(
                             is UiFieldsListItem.Section.FieldsMenu -> "section"
                             is UiFieldsListItem.Section.Header -> "section"
                             is UiFieldsListItem.Section.Hidden -> "hidden"
+                            is UiFieldsListItem.Section.Local -> "local"
                         }
                     },
                     itemContent = { index ->
                         val item = items[index]
                         when (item) {
                             is UiFieldsListItem.FieldItem -> {
-                                FieldItem(
-                                    modifier = Modifier
-                                        .padding(horizontal = 16.dp)
-                                        .bottomBorder()
-                                        .animateItem()
-                                        .noRippleThrottledClickable {
-                                            fieldEvent(OnFieldItemClick(item = item))
-                                        },
-                                    item = item
-                                )
+                                DraggableItem(
+                                    dragDropState = dragDropState,
+                                    index = index
+                                ) {
+                                    FieldItem(
+                                        modifier = Modifier
+                                            .height(52.dp)
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 20.dp)
+                                            .bottomBorder()
+                                            .animateItem()
+                                            .noRippleThrottledClickable {
+                                                fieldEvent(OnFieldItemClick(item = item))
+                                            },
+                                        item = item
+                                    )
+                                }
                             }
 
                             is UiFieldsListItem.Section.FieldsMenu -> Section(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(52.dp),
+                                    .height(52.dp)
+                                    .padding(horizontal = 20.dp),
                                 item = item
                             )
 
                             is UiFieldsListItem.Section.Header -> Section(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(52.dp),
+                                    .height(52.dp)
+                                    .padding(horizontal = 20.dp),
                                 item = item
                             )
 
                             is UiFieldsListItem.Section.Hidden -> Section(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(52.dp),
+                                    .height(52.dp)
+                                    .padding(horizontal = 20.dp),
                                 item = item
                             )
+
+                            is UiFieldsListItem.Section.Local -> {
+                                Section(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(52.dp)
+                                        .padding(horizontal = 20.dp),
+                                    item = item
+                                )
+                            }
                         }
                     }
                 )
@@ -217,23 +259,27 @@ private fun Section(modifier: Modifier, item: UiFieldsListItem.Section) {
         is UiFieldsListItem.Section.Header -> stringResource(R.string.object_type_fields_section_header)
         is UiFieldsListItem.Section.FieldsMenu -> stringResource(R.string.object_type_fields_section_fields_menu)
         is UiFieldsListItem.Section.Hidden -> stringResource(R.string.object_type_fields_section_hidden)
+        is UiFieldsListItem.Section.Local -> stringResource(R.string.object_type_fields_section_local_fields)
     }
     Box(modifier = modifier) {
         Text(
             modifier = Modifier
-                .padding(start = 20.dp, bottom = 7.dp)
+                .padding(bottom = 7.dp)
                 .align(Alignment.BottomStart),
             text = title,
             style = BodyCalloutMedium,
             color = colorResource(id = R.color.text_secondary),
         )
-        Image(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 20.dp, bottom = 6.dp),
-            painter = painterResource(R.drawable.ic_default_plus),
-            contentDescription = "$title plus button"
-        )
+        if (item.canAdd) {
+            Image(
+                modifier = Modifier
+                    .size(24.dp)
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 6.dp),
+                painter = painterResource(R.drawable.ic_default_plus),
+                contentDescription = "$title plus button"
+            )
+        }
     }
 }
 
@@ -243,30 +289,40 @@ private fun FieldItem(
     item: UiFieldsListItem.FieldItem
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         verticalAlignment = CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .padding(start = 0.dp, top = 14.dp, end = 12.dp, bottom = 14.dp)
-                .wrapContentSize()
-        ) {
-            item.format.simpleIcon()?.let {
-                Image(
-                    painter = painterResource(id = it),
-                    contentDescription = "Relation format icon",
-                    modifier = Modifier.size(24.dp)
-                )
-            }
+        val formatIcon = item.format.simpleIcon()
+        if (formatIcon != null) {
+            Image(
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .size(24.dp),
+                painter = painterResource(id = formatIcon),
+                contentDescription = "Relation format icon",
+            )
         }
 
         Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1.0f)
+                .padding(end = 16.dp),
             text = item.fieldTitle,
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+
+        if (item.canDrag) {
+            Image(
+                modifier = Modifier
+                    .size(24.dp),
+                painter = painterResource(R.drawable.ic_dnd),
+                contentDescription = "Icon drag"
+            )
+        }
     }
 }
 
@@ -318,7 +374,9 @@ fun PreviewTypeFieldsMainScreen() {
                     canDrag = true,
                     canDelete = true
                 ),
-                UiFieldsListItem.Section.FieldsMenu(),
+                UiFieldsListItem.Section.FieldsMenu(
+                    canAdd = true
+                ),
                 UiFieldsListItem.FieldItem(
                     id = "id3",
                     fieldKey = "key3",

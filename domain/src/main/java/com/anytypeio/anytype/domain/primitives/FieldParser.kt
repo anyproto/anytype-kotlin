@@ -33,6 +33,7 @@ interface FieldParser {
         actionSuccess: suspend (ObjectWrapper.Basic) -> Unit,
         actionFailure: suspend (Throwable) -> Unit
     )
+
     fun getObjectName(objectWrapper: ObjectWrapper.Basic): String
     fun getObjectName(objectWrapper: ObjectWrapper.Type): String
     fun getObjectTypeIdAndName(
@@ -48,6 +49,7 @@ interface FieldParser {
 
     suspend fun getObjectTypeParsedFields(
         objectType: ObjectWrapper.Type,
+        objectTypeConflictingFieldsIds: List<Id>,
         storeOfRelations: StoreOfRelations
     ): ParsedFields
 }
@@ -129,13 +131,16 @@ class FieldParserImpl @Inject constructor(
         val result = when (objectWrapper.layout) {
             ObjectType.Layout.DATE -> {
                 val relativeDate = dateProvider.calculateRelativeDates(
-                    dateInSeconds = objectWrapper.getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
+                    dateInSeconds = objectWrapper.getSingleValue<Double>(Relations.TIMESTAMP)
+                        ?.toLong()
                 )
                 stringResourceProvider.getRelativeDateName(relativeDate)
             }
+
             ObjectType.Layout.NOTE -> {
                 objectWrapper.snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
             }
+
             in SupportedLayouts.fileLayouts -> {
                 val fileName = if (objectWrapper.name.isNullOrBlank()) {
                     stringResourceProvider.getUntitledObjectTitle()
@@ -148,6 +153,7 @@ class FieldParserImpl @Inject constructor(
                     else -> "$fileName.${objectWrapper.fileExt}"
                 }
             }
+
             else -> {
                 objectWrapper.name
             }
@@ -194,14 +200,17 @@ class FieldParserImpl @Inject constructor(
 
         val featuredFields = objectType.recommendedFeaturedRelations
             .mapNotNull { storeOfRelations.getById(it) }
+            .filter { it.isValid && it.isDeleted != true }
             .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
 
         val mainSidebarFields = objectType.recommendedRelations
             .mapNotNull { storeOfRelations.getById(it) }
+            .filter { it.isValid && it.isDeleted != true }
             .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
 
         val hiddenFields = objectType.recommendedHiddenRelations
             .mapNotNull { storeOfRelations.getById(it) }
+            .filter { it.isValid && it.isDeleted != true }
 
         val allConflictedKeys = obj.map.keys.filter {
             !featuredFields.map { it.key }.contains(it) ||
@@ -242,24 +251,43 @@ class FieldParserImpl @Inject constructor(
 
     override suspend fun getObjectTypeParsedFields(
         objectType: ObjectWrapper.Type,
+        objectTypeConflictingFieldsIds: List<Id>,
         storeOfRelations: StoreOfRelations
     ): ParsedFields {
 
         val featuredFields = objectType.recommendedFeaturedRelations
             .mapNotNull { storeOfRelations.getById(it) }
+            .filter { it.isValid && it.isDeleted != true }
             .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
 
         val mainSidebarFields = objectType.recommendedRelations
             .mapNotNull { storeOfRelations.getById(it) }
+            .filter { it.isValid && it.isDeleted != true }
             .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
 
         val hiddenFields = objectType.recommendedHiddenRelations
             .mapNotNull { storeOfRelations.getById(it) }
+            .filter { it.isValid && it.isDeleted != true }
+
+        val existingIds = (featuredFields + mainSidebarFields + hiddenFields)
+            .map { it.id }
+            .toSet()
+
+        val filteredConflictedFieldsIds = objectTypeConflictingFieldsIds.filter { it !in existingIds }
+
+        val allConflictedFields = storeOfRelations
+            .getById(filteredConflictedFieldsIds)
+            .filter { it.isValid && it.isDeleted != true }
+
+        val conflictedFieldsWithoutSystem = allConflictedFields.filterNot {
+            Relations.systemRelationKeys.contains(it.key)
+        }
 
         return ParsedFields(
             featured = featuredFields,
             sidebar = mainSidebarFields,
             hidden = hiddenFields,
+            conflicted = conflictedFieldsWithoutSystem
         )
     }
     //

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Command.ObjectTypeConflictingFields
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
@@ -469,4 +470,6 @@ interface BlockRemote {
     suspend fun debugAccountSelectTrace(dir: String): String
 
     suspend fun setDeviceNetworkState(type: DeviceNetworkType)
+
+    suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id>
 }

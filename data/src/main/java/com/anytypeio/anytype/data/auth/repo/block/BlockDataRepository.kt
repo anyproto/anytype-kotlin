@@ -2,6 +2,7 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Command.ObjectTypeConflictingFields
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
@@ -1106,5 +1107,9 @@ class BlockDataRepository(
 
     override suspend fun setDeviceNetworkState(type: DeviceNetworkType) {
         remote.setDeviceNetworkState(type)
+    }
+
+    override suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {
+        return remote.objectTypeListConflictingRelations(command)
     }
 }

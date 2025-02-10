@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.block
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Command.ObjectTypeConflictingFields
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
@@ -1076,5 +1077,9 @@ class BlockMiddleware(
 
     override suspend fun setDeviceNetworkState(type: DeviceNetworkType) {
         middleware.setDeviceNetworkState(type)
+    }
+
+    override suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {
+        return middleware.objectTypeListConflictingRelations(command)
     }
 }

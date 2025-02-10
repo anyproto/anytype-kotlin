@@ -2476,4 +2476,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun objectTypeListConflictingRelations(request: Rpc.ObjectType.ListConflictingRelations.Request): Rpc.ObjectType.ListConflictingRelations.Response {
+        val encoded = Service.objectTypeListConflictingRelations(
+            Rpc.ObjectType.ListConflictingRelations.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.ObjectType.ListConflictingRelations.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.ObjectType.ListConflictingRelations.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

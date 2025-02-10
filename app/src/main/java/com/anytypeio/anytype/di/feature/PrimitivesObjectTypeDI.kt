@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
@@ -110,6 +111,14 @@ object ObjectTypeModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): DeleteObjects = DeleteObjects(repo, dispatchers)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun getObjectTypeConflictingFields(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetObjectTypeConflictingFields = GetObjectTypeConflictingFields(repo, dispatchers)
 
     @JvmStatic
     @Provides

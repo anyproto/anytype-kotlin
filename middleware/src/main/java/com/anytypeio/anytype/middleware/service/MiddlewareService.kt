@@ -615,4 +615,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun debugExportLogs(request: Rpc.Debug.ExportLog.Request): Rpc.Debug.ExportLog.Response
+
+    @Throws(Exception::class)
+    fun objectTypeListConflictingRelations(request: Rpc.ObjectType.ListConflictingRelations.Request) : Rpc.ObjectType.ListConflictingRelations.Response
 }

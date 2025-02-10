@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.models.ObjectTypeVmParams
@@ -44,7 +45,8 @@ class ObjectTypeVMFactory @Inject constructor(
     private val createObjectSet: CreateObjectSet,
     private val stringResourceProvider: StringResourceProvider,
     private val createTemplate: CreateTemplate,
-    private val duplicateObjects: DuplicateObjects
+    private val duplicateObjects: DuplicateObjects,
+    private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -69,6 +71,7 @@ class ObjectTypeVMFactory @Inject constructor(
             createObjectSet = createObjectSet,
             stringResourceProvider = stringResourceProvider,
             createTemplate = createTemplate,
-            duplicateObjects = duplicateObjects
+            duplicateObjects = duplicateObjects,
+            getObjectTypeConflictingFields = getObjectTypeConflictingFields
         ) as T
 }

@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.models.ObjectTypeVmParams
@@ -115,7 +116,8 @@ class ObjectTypeViewModel(
     private val createObjectSet: CreateObjectSet,
     private val stringResourceProvider: StringResourceProvider,
     private val createTemplate: CreateTemplate,
-    private val duplicateObjects: DuplicateObjects
+    private val duplicateObjects: DuplicateObjects,
+    private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //top bar
@@ -169,6 +171,7 @@ class ObjectTypeViewModel(
 
     private val _objTypeState = MutableStateFlow<ObjectWrapper.Type?>(null)
     private val _objectTypePermissionsState = MutableStateFlow<ObjectPermissions?>(null)
+    private val _objectTypeConflictingFieldIds = MutableStateFlow<List<Id>>(emptyList())
 
     val commands = MutableSharedFlow<ObjectTypeCommand>()
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
@@ -176,6 +179,7 @@ class ObjectTypeViewModel(
     init {
         proceedWithObservingSyncStatus()
         proceedWithObservingObjectType()
+        proceedWithGetObjectTypeConflictingFields()
         setupObjectsMenuFlow()
     }
 
@@ -263,16 +267,17 @@ class ObjectTypeViewModel(
                     )
                 ),
                 userPermissionProvider.observe(space = vmParams.spaceId),
+                _objectTypeConflictingFieldIds,
                 storeOfRelations.trackChanges(),
-            ) { objWrapper, permission, _ ->
-                objWrapper to permission
+            ) { objWrapper, permission, conflictingFields, _ ->
+                Triple(objWrapper, permission, conflictingFields)
             }.catch {
                 Timber.e(it, "Error while observing object")
                 _objTypeState.value = null
                 errorState.value =
                     UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects(it.message ?: ""))
             }
-                .collect { (objWrapper, permission) ->
+                .collect { (objWrapper, permission, conflictingFields) ->
                     if (permission != null) {
 
                         if (objWrapper.isNotEmpty()) {
@@ -320,7 +325,8 @@ class ObjectTypeViewModel(
                                 urlBuilder = urlBuilder,
                                 fieldParser = fieldParser,
                                 storeOfObjectTypes = storeOfObjectTypes,
-                                storeOfRelations = storeOfRelations
+                                storeOfRelations = storeOfRelations,
+                                objTypeConflictingFields = conflictingFields
                             )
                             uiFieldsListState.value = UiFieldsListState(items = items)
                             uiFieldsButtonState.value = UiFieldsButtonState.Visible(
@@ -656,7 +662,7 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnCreateSetClick -> {
-                onCreateSet()
+                proceedWithCreateSet()
             }
 
             is TypeEvent.OnOpenSetClick -> {
@@ -775,32 +781,6 @@ class ObjectTypeViewModel(
         }
     }
 
-    private fun proceedWithCreateTemplate() {
-        val params = CreateTemplate.Params(
-            targetObjectTypeId = vmParams.objectId,
-            spaceId = vmParams.spaceId
-        )
-        viewModelScope.launch {
-            createTemplate.async(params).fold(
-                onSuccess = { template ->
-                    val typeKey = _objTypeState.value?.uniqueKey
-                    if (typeKey != null) {
-                        val command = ObjectTypeCommand.OpenTemplate(
-                            templateId = template.id,
-                            typeId = vmParams.objectId,
-                            typeKey = typeKey,
-                            spaceId = vmParams.spaceId.id
-                        )
-                        commands.emit(command)
-                    }
-                },
-                onFailure = {
-                    Timber.e(it, "Error while creating template")
-                }
-            )
-        }
-    }
-
     fun onSortClicked(sort: ObjectsListSort) {
         Timber.d("onSortClicked: $sort")
         val newSort = when (sort) {
@@ -832,55 +812,6 @@ class ObjectTypeViewModel(
 //                sort = sort.toAnalyticsSortType().second
 //            )
 //        }
-    }
-
-    private fun onDeletionObjectTypeAccepted() {
-        val params = DeleteObjects.Params(
-            targets = listOf(vmParams.objectId)
-        )
-        viewModelScope.launch {
-            deleteObjects.async(params).fold(
-                onSuccess = {
-                    Timber.d("Object ${vmParams.objectId} deleted")
-                    commands.emit(ObjectTypeCommand.Back)
-                },
-                onFailure = {
-                    Timber.e(it, "Error while deleting object ${vmParams.objectId}")
-                }
-            )
-        }
-    }
-
-    private fun proceedWithTemplateDelete(template: Id) {
-        val params = DeleteObjects.Params(
-            targets = listOf(template)
-        )
-        viewModelScope.launch {
-            deleteObjects.async(params).fold(
-                onSuccess = {
-                    Timber.d("Template $template deleted")
-                },
-                onFailure = {
-                    Timber.e(it, "Error while deleting template $template")
-                }
-            )
-        }
-    }
-
-    private fun proceedWithTemplateDuplicate(template: Id) {
-        val params = DuplicateObjects.Params(
-            ids = listOf(template)
-        )
-        viewModelScope.launch {
-            duplicateObjects.async(params).fold(
-                onSuccess = {
-                    Timber.d("Template $template duplicated")
-                },
-                onFailure = {
-                    Timber.e(it, "Error while duplicating template $template")
-                }
-            )
-        }
     }
 
     private fun updateTitle(input: String) {
@@ -935,59 +866,6 @@ class ObjectTypeViewModel(
         }
     }
 
-    private fun onCreateSet() {
-        val typeName = _objTypeState.value?.name.orEmpty()
-        val emoji = _objTypeState.value?.iconEmoji.orNull()
-        val params = CreateObjectSet.Params(
-            space = vmParams.spaceId.id,
-            type = vmParams.objectId,
-            details = mapOf(
-                Relations.NAME to "${stringResourceProvider.getSetOfObjectsTitle()} $typeName",
-                Relations.ICON_EMOJI to emoji
-            )
-        )
-        viewModelScope.launch {
-            createObjectSet.run(params).process(
-                failure = {},
-                success = { response ->
-                    val obj = ObjectWrapper.Basic(response.details)
-                    proceedWithNavigation(
-                        objectId = obj.id,
-                        objectLayout = obj.layout
-                    )
-                }
-            )
-        }
-    }
-
-    private fun proceedWithCreateObjectOfThisType() {
-        val uniqueKeys = _objTypeState.value?.uniqueKey ?: return
-        val defaultTemplate =
-            uiTemplatesListState.value.items.firstOrNull { it.isDefault } as? TemplateView.Template
-        val params = CreateObject.Param(
-            space = vmParams.spaceId,
-            type = TypeKey(uniqueKeys),
-            template = defaultTemplate?.id,
-            prefilled = mapOf(
-                Relations.ORIGIN to ObjectOrigin.BUILT_IN.code.toDouble()
-            )
-        )
-        viewModelScope.launch {
-            createObject.async(params).fold(
-                onSuccess = { result ->
-                    //todo need to check this logic
-//                    proceedWithNavigation(
-//                        objectId = result.objectId,
-//                        objectLayout = result.obj.layout
-//                    )
-                },
-                onFailure = {
-                    Timber.e(it, "Error while creating object")
-                }
-            )
-        }
-    }
-
     fun closeObject() {
         viewModelScope.launch {
             commands.emit(ObjectTypeCommand.Back)
@@ -1032,6 +910,155 @@ class ObjectTypeViewModel(
             }
         } else {
             Timber.w("No navigation destination found for object $objectId with layout $objectLayout")
+        }
+    }
+    //endregion
+
+    //region UseCases
+    private fun proceedWithGetObjectTypeConflictingFields() {
+        viewModelScope.launch {
+            getObjectTypeConflictingFields.async(
+                GetObjectTypeConflictingFields.Params(
+                    objectTypeId = vmParams.objectId,
+                    spaceId = vmParams.spaceId.id
+                )
+            ).fold(
+                onSuccess = { fields ->
+                    Timber.d("Fields: $fields")
+                    _objectTypeConflictingFieldIds.value = fields
+                },
+                onFailure = {
+                    Timber.e(it, "Error while getting conflicting fields")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithCreateObjectOfThisType() {
+        val uniqueKeys = _objTypeState.value?.uniqueKey ?: return
+        val defaultTemplate =
+            uiTemplatesListState.value.items.firstOrNull { it.isDefault } as? TemplateView.Template
+        val params = CreateObject.Param(
+            space = vmParams.spaceId,
+            type = TypeKey(uniqueKeys),
+            template = defaultTemplate?.id,
+            prefilled = mapOf(
+                Relations.ORIGIN to ObjectOrigin.BUILT_IN.code.toDouble()
+            )
+        )
+        viewModelScope.launch {
+            createObject.async(params).fold(
+                onSuccess = { result ->
+                    //todo need to check this logic
+//                    proceedWithNavigation(
+//                        objectId = result.objectId,
+//                        objectLayout = result.obj.layout
+//                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while creating object")
+                }
+            )
+        }
+    }
+
+    private fun onDeletionObjectTypeAccepted() {
+        val params = DeleteObjects.Params(
+            targets = listOf(vmParams.objectId)
+        )
+        viewModelScope.launch {
+            deleteObjects.async(params).fold(
+                onSuccess = {
+                    Timber.d("Object ${vmParams.objectId} deleted")
+                    commands.emit(ObjectTypeCommand.Back)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting object ${vmParams.objectId}")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithTemplateDelete(template: Id) {
+        val params = DeleteObjects.Params(
+            targets = listOf(template)
+        )
+        viewModelScope.launch {
+            deleteObjects.async(params).fold(
+                onSuccess = {
+                    Timber.d("Template $template deleted")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting template $template")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithCreateSet() {
+        val typeName = _objTypeState.value?.name.orEmpty()
+        val emoji = _objTypeState.value?.iconEmoji.orNull()
+        val params = CreateObjectSet.Params(
+            space = vmParams.spaceId.id,
+            type = vmParams.objectId,
+            details = mapOf(
+                Relations.NAME to "${stringResourceProvider.getSetOfObjectsTitle()} $typeName",
+                Relations.ICON_EMOJI to emoji
+            )
+        )
+        viewModelScope.launch {
+            createObjectSet.run(params).process(
+                failure = {},
+                success = { response ->
+                    val obj = ObjectWrapper.Basic(response.details)
+                    proceedWithNavigation(
+                        objectId = obj.id,
+                        objectLayout = obj.layout
+                    )
+                }
+            )
+        }
+    }
+
+    private fun proceedWithCreateTemplate() {
+        val params = CreateTemplate.Params(
+            targetObjectTypeId = vmParams.objectId,
+            spaceId = vmParams.spaceId
+        )
+        viewModelScope.launch {
+            createTemplate.async(params).fold(
+                onSuccess = { template ->
+                    val typeKey = _objTypeState.value?.uniqueKey
+                    if (typeKey != null) {
+                        val command = ObjectTypeCommand.OpenTemplate(
+                            templateId = template.id,
+                            typeId = vmParams.objectId,
+                            typeKey = typeKey,
+                            spaceId = vmParams.spaceId.id
+                        )
+                        commands.emit(command)
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while creating template")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithTemplateDuplicate(template: Id) {
+        val params = DuplicateObjects.Params(
+            ids = listOf(template)
+        )
+        viewModelScope.launch {
+            duplicateObjects.async(params).fold(
+                onSuccess = {
+                    Timber.d("Template $template duplicated")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while duplicating template $template")
+                }
+            )
         }
     }
     //endregion

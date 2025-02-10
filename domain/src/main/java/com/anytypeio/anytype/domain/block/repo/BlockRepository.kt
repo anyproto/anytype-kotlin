@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.block.repo
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Command.ObjectTypeConflictingFields
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
@@ -512,4 +513,6 @@ interface BlockRepository {
     suspend fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct?
 
     suspend fun setDeviceNetworkState(type: DeviceNetworkType)
+
+    suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id>
 }

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Command.ObjectTypeConflictingFields
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
@@ -2875,6 +2876,18 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.debugExportLogs(request) }
         logResponseIfDebug(response, time)
         return response.path
+    }
+
+    @Throws(Exception::class)
+    fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {
+        val request = Rpc.ObjectType.ListConflictingRelations.Request(
+            spaceId = command.spaceId,
+            typeObjectId = command.objectTypeId
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectTypeListConflictingRelations(request) }
+        logResponseIfDebug(response, time)
+        return response.relationIds
     }
 
     private fun logRequestIfDebug(request: Any) {

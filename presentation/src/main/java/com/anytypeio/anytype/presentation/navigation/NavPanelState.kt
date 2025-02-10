@@ -1,5 +1,10 @@
 package com.anytypeio.anytype.presentation.navigation
 
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 
 sealed class NavPanelState {
@@ -66,6 +71,48 @@ sealed class NavPanelState {
                     Init
                 }
             }
+        }
+    }
+}
+
+suspend fun NavPanelState.leftButtonClickAnalytics(analytics: Analytics) {
+    when (val state = this) {
+        is NavPanelState.Default -> {
+            when (state.leftButtonState) {
+                is NavPanelState.LeftButtonState.AddMembers -> {
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.screenSettingsSpaceShare,
+                        props = Props(
+                            mapOf(
+                                EventsPropertiesKey.route to EventsDictionary.Routes.navigation
+                            )
+                        )
+                    )
+                }
+
+                is NavPanelState.LeftButtonState.Comment -> {
+                    analytics.sendEvent(eventName = EventsDictionary.clickQuote)
+                }
+
+                NavPanelState.LeftButtonState.Home -> {
+                    // Do nothing.
+                }
+
+                NavPanelState.LeftButtonState.ViewMembers -> {
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.screenSettingsSpaceMembers,
+                        props = Props(
+                            mapOf(
+                                EventsPropertiesKey.route to EventsDictionary.Routes.navigation
+                            )
+                        )
+                    )
+                }
+            }
+        }
+
+        NavPanelState.Init -> {
+            // Do nothing.
         }
     }
 }

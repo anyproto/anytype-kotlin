@@ -13,7 +13,9 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.asSpaceType
@@ -289,6 +291,38 @@ class SpaceSettingsViewModel(
     }
 
     fun onSharePrivateSpaceClicked() {
+        viewModelScope.launch {
+            val data = spaceViewState.value
+            when(data) {
+                is ViewState.Success -> {
+                    when(data.data.spaceType) {
+                        PRIVATE_SPACE_TYPE -> {
+                            analytics.sendEvent(
+                                eventName = EventsDictionary.screenSettingsSpaceShare,
+                                props = Props(
+                                    mapOf(
+                                        EventsPropertiesKey.route to EventsDictionary.Routes.settings
+                                    )
+                                )
+                            )
+                        }
+                        SHARED_SPACE_TYPE -> {
+                            analytics.sendEvent(
+                                eventName = EventsDictionary.screenSettingsSpaceMembers,
+                                props = Props(
+                                    mapOf(
+                                        EventsPropertiesKey.route to EventsDictionary.Routes.settings
+                                    )
+                                )
+                            )
+                        }
+                    }
+                }
+                else -> {
+                    // Do nothing.
+                }
+            }
+        }
         viewModelScope.launch {
             val data = spaceViewState.value
             if (data is ViewState.Success) {

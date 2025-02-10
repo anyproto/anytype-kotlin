@@ -1764,7 +1764,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onSpaceShareIconClicked(spaceView: ObjectWrapper.SpaceView) {
+    fun onSpaceWidgetShareIconClicked(spaceView: ObjectWrapper.SpaceView) {
         viewModelScope.launch {
             val space = spaceView.targetSpaceId
             if (space != null) {
@@ -1775,7 +1775,44 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onSpaceShareIconClicked() {
+    fun onNavBarShareIconClicked() {
+        viewModelScope.launch {
+            when(val state = navPanelState.value) {
+                is NavPanelState.Default -> {
+                    when(state.leftButtonState) {
+                        is NavPanelState.LeftButtonState.AddMembers -> {
+                            analytics.sendEvent(
+                                eventName = EventsDictionary.screenSettingsSpaceShare,
+                                props = Props(
+                                    mapOf(
+                                        EventsPropertiesKey.route to EventsDictionary.Routes.navigation
+                                    )
+                                )
+                            )
+                        }
+                        is NavPanelState.LeftButtonState.Comment -> {
+                            analytics.sendEvent(eventName = EventsDictionary.clickQuote)
+                        }
+                        NavPanelState.LeftButtonState.Home -> {
+                            // Do nothing.
+                        }
+                        NavPanelState.LeftButtonState.ViewMembers -> {
+                            analytics.sendEvent(
+                                eventName = EventsDictionary.screenSettingsSpaceMembers,
+                                props = Props(
+                                    mapOf(
+                                        EventsPropertiesKey.route to EventsDictionary.Routes.navigation
+                                    )
+                                )
+                            )
+                        }
+                    }
+                }
+                NavPanelState.Init -> {
+                    // Do nothing.
+                }
+            }
+        }
         viewModelScope.launch {
             commands.emit(
                 Command.ShareSpace(SpaceId(spaceManager.get()))
@@ -1787,7 +1824,7 @@ class HomeScreenViewModel(
         // Do nothing
     }
 
-    fun onSpaceSettingsClicked() {
+    fun onSpaceWidgetClicked() {
         viewModelScope.launch {
             commands.emit(
                 Command.OpenSpaceSettings(
@@ -1823,10 +1860,6 @@ class HomeScreenViewModel(
             }
             commands.emit(Command.Exit)
         }
-    }
-
-    fun onBackLongClicked() {
-        navigate(destination = Navigation.OpenSpaceSwitcher)
     }
 
     override fun onCleared() {

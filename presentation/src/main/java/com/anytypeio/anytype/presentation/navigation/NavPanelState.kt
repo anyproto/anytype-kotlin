@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.navigation
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 
 sealed class NavPanelState {

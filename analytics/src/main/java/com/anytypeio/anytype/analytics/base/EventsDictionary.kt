@@ -191,6 +191,8 @@ object EventsDictionary {
     const val CLICK_ONBOARDING_TOOLTIP_TYPE_CLOSE = "Close"
 
     // Sharing spaces
+
+    const val clickQuote = "ClickQuote"
     const val shareSpace = "ShareSpace"
     const val screenSettingsSpaceShare = "ScreenSettingsSpaceShare"
     const val screenStopShare = "ScreenStopShare"

@@ -173,7 +173,7 @@
     <string name="hint_toggle">Alternar bloco</string>
     <string name="hint_paste_link">Colar link</string>
     <string name="empty_tap_to_create_new_block">Vazio. Toque para criar um novo bloco</string>
-    <string name="untitled">Sem título</string>
+    <string name="untitled">Untitled</string>
     <string name="untitled_set">Conjunto sem título</string>
     <string name="untitled_collection">Coleção sem título</string>
     <string name="archived">Arquivado</string>

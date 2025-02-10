@@ -173,7 +173,7 @@
     <string name="hint_toggle">Open/sluit blok</string>
     <string name="hint_paste_link">Plak koppeling</string>
     <string name="empty_tap_to_create_new_block">Leeg. Tik om een nieuw blok aan te maken</string>
-    <string name="untitled">Naamloos</string>
+    <string name="untitled">Untitled</string>
     <string name="untitled_set">Naamloze set</string>
     <string name="untitled_collection">Naamloze collectie</string>
     <string name="archived">Gearchiveerd</string>

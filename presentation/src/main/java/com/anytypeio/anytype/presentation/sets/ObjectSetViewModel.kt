@@ -78,6 +78,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
+import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
@@ -126,6 +127,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -1620,17 +1622,19 @@ class ObjectSetViewModel(
 
     fun onHomeButtonClicked() {
         viewModelScope.launch {
+            navPanelState.firstOrNull()?.leftButtonClickAnalytics(analytics)
+        }
+        viewModelScope.launch {
             dispatch(AppNavigation.Command.ExitToSpaceHome)
         }
     }
 
     fun onShareButtonClicked() {
         viewModelScope.launch {
-            dispatch(
-                AppNavigation.Command.OpenShareScreen(
-                    vmParams.space
-                )
-            )
+            navPanelState.firstOrNull()?.leftButtonClickAnalytics(analytics)
+        }
+        viewModelScope.launch {
+            dispatch(AppNavigation.Command.OpenShareScreen(vmParams.space))
         }
     }
 

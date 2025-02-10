@@ -91,6 +91,7 @@ import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companio
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
+import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
@@ -1764,7 +1765,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onSpaceShareIconClicked(spaceView: ObjectWrapper.SpaceView) {
+    fun onSpaceWidgetShareIconClicked(spaceView: ObjectWrapper.SpaceView) {
         viewModelScope.launch {
             val space = spaceView.targetSpaceId
             if (space != null) {
@@ -1775,19 +1776,20 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onSpaceShareIconClicked() {
+    fun onNavBarShareIconClicked() {
         viewModelScope.launch {
-            commands.emit(
-                Command.ShareSpace(SpaceId(spaceManager.get()))
-            )
+            navPanelState.value.leftButtonClickAnalytics(analytics)
+        }
+        viewModelScope.launch {
+            commands.emit(Command.ShareSpace(SpaceId(spaceManager.get())))
         }
     }
 
     fun onHomeButtonClicked() {
-        // Do nothing
+        // Do nothing, as home button is not visible on space home screen.
     }
 
-    fun onSpaceSettingsClicked() {
+    fun onSpaceWidgetClicked() {
         viewModelScope.launch {
             commands.emit(
                 Command.OpenSpaceSettings(
@@ -1823,10 +1825,6 @@ class HomeScreenViewModel(
             }
             commands.emit(Command.Exit)
         }
-    }
-
-    fun onBackLongClicked() {
-        navigate(destination = Navigation.OpenSpaceSwitcher)
     }
 
     override fun onCleared() {

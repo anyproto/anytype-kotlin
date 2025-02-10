@@ -1512,7 +1512,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="version_history_error_get_version">Sürüm geçmişi alınırken hata oluştu</string>
     <string name="version_history_error_get_members">Üyeler alınırken hata oluştu</string>
     <string name="new_object">Yeni nesne</string>
-    <string name="vault_my_spaces">Benim Alanlarım</string>
+    <string name="vault_my_spaces">Alanlarım</string>
     <string name="all_content_title_all_content">Tüm Nesneler</string>
     <string name="all_content_title_only_unlinked">Sadece bağlantısız</string>
     <string name="all_content_title_only_unlinked_description">Grafikteki diğer nesnelerle doğrudan bağlantısı veya geri bağlantısı olmayan bağlantısız nesneler.</string>

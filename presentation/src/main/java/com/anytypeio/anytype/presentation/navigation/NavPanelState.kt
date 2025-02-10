@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 
 sealed class NavPanelState {
@@ -26,7 +27,8 @@ sealed class NavPanelState {
     companion object {
         fun fromPermission(
             permission: SpaceMemberPermissions?,
-            forceHome: Boolean = true
+            forceHome: Boolean = true,
+            spaceAccessType: SpaceAccessType? = null
         ) : NavPanelState {
             return when(permission) {
                 SpaceMemberPermissions.READER -> {
@@ -54,7 +56,7 @@ sealed class NavPanelState {
                             LeftButtonState.Home
                         else
                             LeftButtonState.AddMembers(
-                                isActive = true
+                                isActive = spaceAccessType != SpaceAccessType.DEFAULT
                             )
                     )
                 }

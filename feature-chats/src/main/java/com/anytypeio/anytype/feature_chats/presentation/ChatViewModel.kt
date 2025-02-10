@@ -291,7 +291,7 @@ class ChatViewModel @Inject constructor(
                                 }
                             }
                         },
-                        query = query
+                        query = query!!
                     )
                 } else {
                     if (query != null) {
@@ -361,7 +361,7 @@ class ChatViewModel @Inject constructor(
                     if (results.isNotEmpty()) {
                         mentionPanelState.value = MentionPanelState.Visible(
                             results = results,
-                            query = query
+                            query = query!!
                         )
                     } else {
                         mentionPanelState.value = MentionPanelState.Hidden
@@ -735,9 +735,6 @@ class ChatViewModel @Inject constructor(
         val atIndex = text.lastIndexOf('@', selectionStart - 1)
         if (atIndex == -1 || (atIndex > 0 && text[atIndex - 1].isLetterOrDigit())) return null
 
-        // Check if there's a space immediately after '@'
-        if (atIndex + 1 < text.length && text[atIndex + 1] == ' ') return null
-
         val endIndex = text.indexOf(' ', atIndex).takeIf { it != -1 } ?: text.length
         val query = text.substring(atIndex + 1, endIndex)
 
@@ -775,7 +772,7 @@ class ChatViewModel @Inject constructor(
         data object Hidden : MentionPanelState()
         data class Visible(
             val results: List<Member>,
-            val query: Query?
+            val query: Query
         ) : MentionPanelState()
         data class Member(
             val id: Id,

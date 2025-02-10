@@ -355,28 +355,29 @@ fun ChatScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .noRippleClickable {
-                                        val start = text.selection.start
-                                        val end = text.selection.end
+
+                                        val query = mentionPanelState.query
                                         val input = text.text
 
-                                        val adjustedStart = (start - 1).coerceAtLeast(0)
+//                                        val adjustedStart = (start - 1).coerceAtLeast(0)
 
                                         val replacementText = member.name + " "
+
                                         val updatedText = input.replaceRange(
-                                            startIndex = adjustedStart,
-                                            endIndex = end,
-                                            replacement = replacementText
+                                            query.range,
+                                            replacementText
                                         )
 
                                         text = text.copy(
                                             text = updatedText,
                                             selection = TextRange(
-                                                index = (adjustedStart + replacementText.length))
+                                                index = (query.range.start + replacementText.length)
+                                            )
                                         )
 
                                         val mentionSpan = ChatBoxSpan.Mention(
-                                            start = adjustedStart,
-                                            end = adjustedStart + member.name.length,
+                                            start = query.range.start,
+                                            end = query.range.start + member.name.length,
                                             style = SpanStyle(
                                                 textDecoration = TextDecoration.Underline
                                             ),

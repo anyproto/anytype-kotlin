@@ -361,7 +361,7 @@ fun ChatScreen(
 
                                         val replacementText = member.name + " "
 
-                                        val lengthDifference = replacementText.length - (query.range.last - query.range.first)
+                                        val lengthDifference = replacementText.length - (query.range.last - query.range.first + 1)
 
                                         val updatedText = input.replaceRange(
                                             query.range,

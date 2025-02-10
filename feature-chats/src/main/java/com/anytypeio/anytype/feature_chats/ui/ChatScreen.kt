@@ -368,6 +368,8 @@ fun ChatScreen(
                                             replacementText
                                         )
 
+                                        // After inserting a mention, all existing spans after the insertion point are shifted based on the text length difference.
+
                                         val updatedSpans = spans.map { span ->
                                             if (span.start > query.range.last) {
                                                 when(span) {

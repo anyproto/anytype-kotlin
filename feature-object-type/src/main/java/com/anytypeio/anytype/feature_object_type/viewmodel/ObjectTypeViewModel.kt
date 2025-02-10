@@ -179,7 +179,6 @@ class ObjectTypeViewModel(
     init {
         proceedWithObservingSyncStatus()
         proceedWithObservingObjectType()
-        proceedWithGetObjectTypeConflictingFields()
         setupObjectsMenuFlow()
     }
 
@@ -197,6 +196,7 @@ class ObjectTypeViewModel(
         setupSubscriptionToObjects()
         setupSubscriptionToSets()
         setupSubscriptionToTemplates()
+        proceedWithGetObjectTypeConflictingFields()
         viewModelScope.launch {
             sendAnalyticsScreenObjectType(
                 analytics = analytics

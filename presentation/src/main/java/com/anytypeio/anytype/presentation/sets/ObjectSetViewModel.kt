@@ -1639,11 +1639,7 @@ class ObjectSetViewModel(
             navPanelState.firstOrNull()?.leftButtonClickAnalytics(analytics)
         }
         viewModelScope.launch {
-            dispatch(
-                AppNavigation.Command.OpenShareScreen(
-                    vmParams.space
-                )
-            )
+            dispatch(AppNavigation.Command.OpenShareScreen(vmParams.space))
         }
     }
 

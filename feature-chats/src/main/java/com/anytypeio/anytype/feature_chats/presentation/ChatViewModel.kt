@@ -267,10 +267,9 @@ class ChatViewModel @Inject constructor(
             text = text,
             selectionStart = selection.start
         )
-        Timber.d("Query: ${query}")
-        when(val curr = mentionPanelState.value) {
+        when(mentionPanelState.value) {
             MentionPanelState.Hidden -> {
-                if (isMentionTriggered(text, selection.start)) {
+                if (isMentionTriggered(text, selection.start) && query != null) {
                     mentionPanelState.value = MentionPanelState.Visible(
                         results = members.get().let { store ->
                             when(store) {
@@ -291,7 +290,7 @@ class ChatViewModel @Inject constructor(
                                 }
                             }
                         },
-                        query = query!!
+                        query = query
                     )
                 } else {
                     if (query != null) {
@@ -307,13 +306,7 @@ class ChatViewModel @Inject constructor(
                                                 urlBuilder = urlBuilder
                                             )
                                         )
-                                    }.filter { m ->
-                                        if (query != null) {
-                                            m.name.contains(query.query, true)
-                                        } else {
-                                            true
-                                        }
-                                    }
+                                    }.filter { m -> m.name.contains(query.query, true) }
                                 }
                                 Store.Empty -> {
                                     emptyList()
@@ -358,10 +351,10 @@ class ChatViewModel @Inject constructor(
                             }
                         }
                     }
-                    if (results.isNotEmpty()) {
+                    if (results.isNotEmpty() && query != null) {
                         mentionPanelState.value = MentionPanelState.Visible(
                             results = results,
-                            query = query!!
+                            query = query
                         )
                     } else {
                         mentionPanelState.value = MentionPanelState.Hidden
@@ -722,10 +715,8 @@ class ChatViewModel @Inject constructor(
 
     fun shouldHideMention(text: String, selectionStart: Int): Boolean {
         if (selectionStart > text.length) return false
-
         // Check if the current character is a space
         val currentChar = if (selectionStart > 0) text[selectionStart - 1] else null
-
         // Hide mention when a space is typed, or '@' character has been deleted (even if it was the first character)
         val atCharExists = text.lastIndexOf('@', selectionStart - 1) != -1
         return currentChar == ' ' || !atCharExists
@@ -734,10 +725,8 @@ class ChatViewModel @Inject constructor(
     fun resolveMentionQuery(text: String, selectionStart: Int): MentionPanelState.Query? {
         val atIndex = text.lastIndexOf('@', selectionStart - 1)
         if (atIndex == -1 || (atIndex > 0 && text[atIndex - 1].isLetterOrDigit())) return null
-
         val endIndex = text.indexOf(' ', atIndex).takeIf { it != -1 } ?: text.length
         val query = text.substring(atIndex + 1, endIndex)
-
         // Allow empty queries if there's no space after '@'
         return MentionPanelState.Query(query, atIndex until endIndex)
     }

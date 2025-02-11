@@ -69,12 +69,14 @@ sealed interface ChatView {
 
         sealed class ChatBoxAttachment {
             data class Media(
-                val uri: String
+                val uri: String,
+                val isUploading: Boolean = false
             ): ChatBoxAttachment()
             data class File(
                 val uri: String,
                 val name: String,
-                val size: Int
+                val size: Int,
+                val isUploading: Boolean = false,
             ): ChatBoxAttachment()
             data class Link(
                 val target: Id,

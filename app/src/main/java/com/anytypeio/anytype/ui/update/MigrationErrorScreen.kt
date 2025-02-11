@@ -110,11 +110,13 @@ fun MigrationFailedScreen(
                 textAlign = TextAlign.Center
             )
             if (description.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = description,
                     color = colorResource(R.color.text_secondary),
                     style = BodyCalloutRegular,
-                    modifier = Modifier.padding(horizontal = 20.dp)
+                    modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -150,7 +152,7 @@ fun MigrationFailedScreenPreview() {
 fun MigrationFailedGenericScreenPreview() {
     MigrationFailedScreen(
         state = MigrationHelperDelegate.State.Failed.UnknownError(
-            Exception("Some oderror")
+            Exception(stringResource(R.string.default_text_placeholder))
         ),
         onRetryClicked = {}
     )

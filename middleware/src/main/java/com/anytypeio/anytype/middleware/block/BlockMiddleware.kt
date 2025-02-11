@@ -1082,4 +1082,12 @@ class BlockMiddleware(
     override suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {
         return middleware.objectTypeListConflictingRelations(command)
     }
+
+    override suspend fun objectTypeSetRecommendedHeaderFields(command: Command.ObjectTypeSetRecommendedHeaderFields) {
+        middleware.objectTypeSetRecommendedHeaderFields(command)
+    }
+
+    override suspend fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields) {
+        middleware.objectTypeSetRecommendedFields(command)
+    }
 }

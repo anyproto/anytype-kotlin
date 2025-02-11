@@ -2890,6 +2890,28 @@ class Middleware @Inject constructor(
         return response.relationIds
     }
 
+    @Throws(Exception::class)
+    fun objectTypeSetRecommendedHeaderFields(command: Command.ObjectTypeSetRecommendedHeaderFields) {
+        val request = Rpc.ObjectType.Recommended.FeaturedRelationsSet.Request(
+            typeObjectId = command.objectTypeId,
+            relationObjectIds = command.fields
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectTypeHeaderRecommendedFieldsSet(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields) {
+        val request = Rpc.ObjectType.Recommended.RelationsSet.Request(
+            typeObjectId = command.objectTypeId,
+            relationObjectIds = command.fields
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectTypeRecommendedFieldsSet(request) }
+        logResponseIfDebug(response, time)
+    }
+
     private fun logRequestIfDebug(request: Any) {
         if (BuildConfig.DEBUG) {
             logger.logRequest(request).also {

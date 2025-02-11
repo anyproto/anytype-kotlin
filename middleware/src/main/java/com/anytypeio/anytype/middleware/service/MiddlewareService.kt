@@ -618,4 +618,10 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun objectTypeListConflictingRelations(request: Rpc.ObjectType.ListConflictingRelations.Request) : Rpc.ObjectType.ListConflictingRelations.Response
+
+    @Throws(Exception::class)
+    fun objectTypeHeaderRecommendedFieldsSet(request: Rpc.ObjectType.Recommended.FeaturedRelationsSet.Request) : Rpc.ObjectType.Recommended.FeaturedRelationsSet.Response
+
+    @Throws(Exception::class)
+    fun objectTypeRecommendedFieldsSet(request: Rpc.ObjectType.Recommended.RelationsSet.Request) : Rpc.ObjectType.Recommended.RelationsSet.Response
 }

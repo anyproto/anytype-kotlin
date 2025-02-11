@@ -1112,4 +1112,12 @@ class BlockDataRepository(
     override suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {
         return remote.objectTypeListConflictingRelations(command)
     }
+
+    override suspend fun objectTypeSetRecommendedHeaderFields(command: Command.ObjectTypeSetRecommendedHeaderFields) {
+        remote.objectTypeSetRecommendedHeaderFields(command)
+    }
+
+    override suspend fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields) {
+        remote.objectTypeSetRecommendedFields(command)
+    }
 }

@@ -472,4 +472,7 @@ interface BlockRemote {
     suspend fun setDeviceNetworkState(type: DeviceNetworkType)
 
     suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id>
+
+    suspend fun objectTypeSetRecommendedHeaderFields(command: Command.ObjectTypeSetRecommendedHeaderFields)
+    suspend fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields)
 }

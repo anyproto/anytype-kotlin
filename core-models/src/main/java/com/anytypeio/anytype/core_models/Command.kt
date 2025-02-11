@@ -657,4 +657,14 @@ sealed class Command {
         val spaceId: String,
         val objectTypeId: String
     ) : Command()
+
+    data class ObjectTypeSetRecommendedHeaderFields(
+        val objectTypeId: String,
+        val fields: List<Id>
+    ) : Command()
+
+    data class ObjectTypeSetRecommendedFields(
+        val objectTypeId: String,
+        val fields: List<Id>
+    ) : Command()
 }

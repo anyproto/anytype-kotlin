@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -14,7 +15,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -24,6 +27,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.feature_chats.R
+import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
@@ -85,7 +89,15 @@ internal fun ChatBoxAttachments(
                                         end = 4.dp
                                     )
                                     .size(72.dp)
-                                    .clip(RoundedCornerShape(8.dp)),
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .alpha(
+                                        if (attachment.state is ChatView.Message.ChatBoxAttachment.State.Uploading) {
+                                            0.3f
+                                        } else {
+                                            1f
+                                        }
+                                    )
+                                ,
                                 contentScale = ContentScale.Crop
                             )
                             Image(
@@ -152,6 +164,10 @@ private fun BoxScope.ChatBoxAttachmentState(state: ChatView.Message.ChatBoxAttac
                 painter = painterResource(R.drawable.ic_chat_box_attachment_error_circle),
                 contentDescription = null,
                 modifier = Modifier
+                    .padding(
+                        top = 12.dp,
+                        end = 4.dp
+                    )
                     .align(alignment = Alignment.Center)
             )
         }
@@ -159,10 +175,13 @@ private fun BoxScope.ChatBoxAttachmentState(state: ChatView.Message.ChatBoxAttac
         ChatView.Message.ChatBoxAttachment.State.Uploaded -> {
             // Do nothing.
         }
-
         ChatView.Message.ChatBoxAttachment.State.Uploading -> {
             CircularProgressIndicator(
                 modifier = Modifier
+                    .padding(
+                        top = 12.dp,
+                        end = 4.dp
+                    )
                     .align(alignment = Alignment.Center)
                     .size(36.dp),
                 color = colorResource(R.color.glyph_active),

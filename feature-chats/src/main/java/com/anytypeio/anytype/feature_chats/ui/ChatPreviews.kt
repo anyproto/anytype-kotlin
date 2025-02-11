@@ -117,7 +117,7 @@ fun ChatScreenPreview() {
         onMarkupLinkClicked = {},
         onAttachObjectClicked = {},
         onReplyMessage = {},
-        chatBoxMode = ChatViewModel.ChatBoxMode.Default,
+        chatBoxMode = ChatViewModel.ChatBoxMode.Default(),
         onClearReplyClicked = {},
         onChatBoxMediaPicked = {},
         onChatBoxFilePicked = {},

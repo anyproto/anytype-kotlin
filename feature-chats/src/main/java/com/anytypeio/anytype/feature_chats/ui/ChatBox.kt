@@ -39,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -73,7 +74,7 @@ import timber.log.Timber
 fun ChatBox(
     text: TextFieldValue,
     spans: List<ChatBoxSpan>,
-    mode: ChatBoxMode = ChatBoxMode.Default,
+    mode: ChatBoxMode = ChatBoxMode.Default(),
     modifier: Modifier = Modifier,
     chatBoxFocusRequester: FocusRequester,
     onMessageSent: (String, List<ChatBoxSpan>) -> Unit,
@@ -294,11 +295,18 @@ fun ChatBox(
                     modifier = Modifier
                         .padding(horizontal = 4.dp, vertical = 8.dp)
                         .clip(CircleShape)
-                        .clickable {
-                            onMessageSent(text.text, spans)
-                            clearText()
-                            resetScroll()
-                        }
+                        .then(
+                            if (mode.isSendingMessageBlocked) {
+                                Modifier
+                            } else {
+                                Modifier
+                                    .clickable {
+                                        onMessageSent(text.text, spans)
+                                        clearText()
+                                        resetScroll()
+                                    }
+                            }
+                        )
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_send_message),
@@ -306,6 +314,7 @@ fun ChatBox(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .padding(horizontal = 4.dp, vertical = 4.dp)
+                            .alpha(if (mode.isSendingMessageBlocked) 0.5f else 1f)
                     )
                 }
             }

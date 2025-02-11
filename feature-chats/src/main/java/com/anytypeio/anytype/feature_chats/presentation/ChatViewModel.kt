@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
-import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.onFailure
@@ -75,13 +74,11 @@ class ChatViewModel @Inject constructor(
     val commands = MutableSharedFlow<ViewModelCommand>()
     val uXCommands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
-    val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
+    val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default())
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
-
-    private val isSendingMessage = MutableStateFlow<Boolean>(false)
 
     init {
         viewModelScope.launch {
@@ -330,7 +327,7 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
         viewModelScope.launch {
-            isSendingMessage.value = true
+            chatBoxMode.value = chatBoxMode.value.updateIsSendingBlocked(isBlocked = true)
             val attachments = buildList {
                 val currAttachments = chatBoxAttachments.value
                 currAttachments.forEachIndexed { idx, attachment ->
@@ -448,15 +445,14 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess { (id, payload) ->
-                        isSendingMessage.value = false
                         chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
-                        isSendingMessage.value = false
                         Timber.e(it, "Error while adding message")
                     }
+                    chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.EditMessage -> {
                     val editedMessage = data.value.find {
@@ -478,7 +474,7 @@ class ChatViewModel @Inject constructor(
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }.onSuccess {
-                        chatBoxMode.value = ChatBoxMode.Default
+                        chatBoxMode.value = ChatBoxMode.Default()
                     }
                 }
                 is ChatBoxMode.Reply -> {
@@ -494,15 +490,13 @@ class ChatViewModel @Inject constructor(
                         )
                     ).onSuccess { (id, payload) ->
                         chatBoxAttachments.value = emptyList()
-                        isSendingMessage.value = false
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
-                        isSendingMessage.value = false
                         Timber.e(it, "Error while adding message")
                     }
-                    chatBoxMode.value = ChatBoxMode.Default
+                    chatBoxMode.value = ChatBoxMode.Default()
                 }
             }
         }
@@ -532,7 +526,7 @@ class ChatViewModel @Inject constructor(
 
     fun onClearReplyClicked() {
         viewModelScope.launch {
-            chatBoxMode.value = ChatBoxMode.Default
+            chatBoxMode.value = ChatBoxMode.Default()
         }
     }
 
@@ -580,7 +574,8 @@ class ChatViewModel @Inject constructor(
                         ""
                     }
                 },
-                author = msg.author
+                author = msg.author,
+                isSendingMessageBlocked = false
             )
         }
     }
@@ -644,7 +639,7 @@ class ChatViewModel @Inject constructor(
 
     fun onExitEditMessageMode() {
         viewModelScope.launch {
-            chatBoxMode.value = ChatBoxMode.Default
+            chatBoxMode.value = ChatBoxMode.Default()
         }
     }
 
@@ -764,13 +759,30 @@ class ChatViewModel @Inject constructor(
     }
 
     sealed class ChatBoxMode {
-        data object Default : ChatBoxMode()
-        data class EditMessage(val msg: Id) : ChatBoxMode()
+
+        abstract val isSendingMessageBlocked: Boolean
+
+        data class Default(
+            override val isSendingMessageBlocked: Boolean = false
+        ) : ChatBoxMode()
+        data class EditMessage(
+            val msg: Id,
+            override val isSendingMessageBlocked: Boolean = false
+        ) : ChatBoxMode()
         data class Reply(
             val msg: Id,
             val text: String,
-            val author: String
+            val author: String,
+            override val isSendingMessageBlocked: Boolean = false
         ): ChatBoxMode()
+    }
+
+    fun ChatBoxMode.updateIsSendingBlocked(isBlocked: Boolean): ChatBoxMode {
+        return when (this) {
+            is ChatBoxMode.Default -> copy(isSendingMessageBlocked = isBlocked)
+            is ChatBoxMode.EditMessage -> copy(isSendingMessageBlocked = isBlocked)
+            is ChatBoxMode.Reply -> copy(isSendingMessageBlocked = isBlocked)
+        }
     }
 
     sealed class MentionPanelState {

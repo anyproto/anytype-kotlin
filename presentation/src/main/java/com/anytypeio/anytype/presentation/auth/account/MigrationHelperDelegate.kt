@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.auth.account
 
+import com.anytypeio.anytype.core_models.exceptions.MigrationFailedException
 import com.anytypeio.anytype.domain.auth.interactor.MigrateAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
@@ -24,7 +25,13 @@ interface MigrationHelperDelegate {
                 .stream(MigrateAccount.Params.Current)
                 .map { result ->
                     when(result) {
-                        is Resultat.Failure -> State.Failed(result.exception)
+                        is Resultat.Failure -> {
+                            if (result.exception is MigrationFailedException.NotEnoughSpace) {
+                                State.Failed.NotEnoughSpace
+                            } else {
+                                State.Failed.UnknownError(result.exception)
+                            }
+                        }
                         is Resultat.Loading -> State.InProgress
                         is Resultat.Success -> State.Migrated
                     }
@@ -36,7 +43,10 @@ interface MigrationHelperDelegate {
     sealed class State {
         data object Init: State()
         data object InProgress : State()
-        data class Failed(val error: Throwable) : State()
+        sealed class Failed : State() {
+            data class UnknownError(val error: Throwable) : Failed()
+            data object NotEnoughSpace : Failed()
+        }
         data object Migrated : State()
     }
 }

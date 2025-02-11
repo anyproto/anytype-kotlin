@@ -4,6 +4,7 @@ import anytype.Rpc
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
+import com.anytypeio.anytype.core_models.exceptions.MigrationFailedException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
@@ -113,7 +114,12 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Account.Migrate.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Account.Migrate.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Account.Migrate.Response.Error.Code.NOT_ENOUGH_FREE_SPACE -> {
+                    throw MigrationFailedException.NotEnoughSpace()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }

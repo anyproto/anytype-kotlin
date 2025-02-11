@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
+import com.anytypeio.anytype.core_models.exceptions.MigrationFailedException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -101,17 +102,14 @@ class SplashViewModel(
             proceedWithMigration().collect { migrationState ->
                 when (migrationState) {
                     is MigrationHelperDelegate.State.Failed -> {
-                        state.value = State.Migration.Failed
+                        state.value = State.Migration.Failed(migrationState)
                     }
-
                     is MigrationHelperDelegate.State.Init -> {
                         // Do nothing.
                     }
-
                     is MigrationHelperDelegate.State.InProgress -> {
                         state.value = State.Migration.InProgress
                     }
-
                     is MigrationHelperDelegate.State.Migrated -> {
                         proceedWithLaunchingAccount()
                     }
@@ -439,7 +437,7 @@ class SplashViewModel(
         data class Error(val msg: String): State()
         sealed class Migration : State() {
             data object InProgress: Migration()
-            data object Failed : Migration()
+            data class Failed(val state: MigrationHelperDelegate.State.Failed) : Migration()
         }
     }
 }

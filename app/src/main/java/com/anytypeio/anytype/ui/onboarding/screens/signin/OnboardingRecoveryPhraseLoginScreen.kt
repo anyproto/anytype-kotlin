@@ -227,6 +227,7 @@ fun RecoveryScreen(
             MigrationInProgressScreen()
         } else if(state is SetupState.Migration.Failed) {
             MigrationFailedScreen(
+                state = state.state,
                 onRetryClicked = {
                     onRetryMigrationClicked(state.account)
                 }

@@ -316,6 +316,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
             when (migrationState) {
                 is MigrationHelperDelegate.State.Failed -> {
                     state.value = SetupState.Migration.Failed(
+                        state = migrationState,
                         account = id
                     )
                 }
@@ -428,7 +429,10 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         sealed class Migration : SetupState() {
             abstract val account: Id
             data class InProgress(override val account: Id): Migration()
-            data class Failed(override val account: Id) : Migration()
+            data class Failed(
+                val state: MigrationHelperDelegate.State.Failed,
+                override val account: Id
+            ) : Migration()
         }
     }
 

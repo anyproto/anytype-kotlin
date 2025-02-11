@@ -1880,5 +1880,6 @@ Please provide specific details of your needs here.</string>
     <string name="migration_this_shouldn_t_take_long">This shouldn’t take long. Thanks for your patience.</string>
     <string name="migration_error_try_again">Try again</string>
     <string name="migration_migration_failed">Migration failed</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
 
 </resources>

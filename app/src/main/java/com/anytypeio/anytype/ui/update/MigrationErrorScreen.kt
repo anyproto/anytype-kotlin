@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 
 @Composable
 fun MigrationInProgressScreen() {
@@ -75,8 +76,17 @@ fun MigrationInProgressScreen() {
 
 @Composable
 fun MigrationFailedScreen(
+    state: MigrationHelperDelegate.State.Failed,
     onRetryClicked: () -> Unit
 ) {
+    val description = when(state) {
+        MigrationHelperDelegate.State.Failed.NotEnoughSpace -> {
+            stringResource(R.string.migration_error_please_free_up_space_and_run_the_process_again)
+        }
+        is MigrationHelperDelegate.State.Failed.UnknownError -> {
+            state.error.message ?: stringResource(R.string.unknown_error)
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -99,6 +109,14 @@ fun MigrationFailedScreen(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
+            if (description.isNotEmpty()) {
+                Text(
+                    text = description,
+                    color = colorResource(R.color.text_secondary),
+                    style = BodyCalloutRegular,
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                )
+            }
         }
         ButtonPrimary(
             modifier = Modifier
@@ -122,6 +140,18 @@ fun MigrationInProgressScreenPreview() {
 @Composable
 fun MigrationFailedScreenPreview() {
     MigrationFailedScreen(
+        state = MigrationHelperDelegate.State.Failed.NotEnoughSpace,
+        onRetryClicked = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun MigrationFailedGenericScreenPreview() {
+    MigrationFailedScreen(
+        state = MigrationHelperDelegate.State.Failed.UnknownError(
+            Exception("Some oderror")
+        ),
         onRetryClicked = {}
     )
 }

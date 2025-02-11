@@ -83,8 +83,9 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                                 binding.compose.setContent {
                                     if (state is SplashViewModel.State.Migration.InProgress) {
                                         MigrationInProgressScreen()
-                                    } else {
+                                    } else if (state is SplashViewModel.State.Migration.Failed) {
                                         MigrationFailedScreen(
+                                            state = state.state,
                                             onRetryClicked = vm::onRetryMigrationClicked
                                         )
                                     }

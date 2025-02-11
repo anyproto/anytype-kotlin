@@ -29,6 +29,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,6 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -124,114 +126,10 @@ fun ChatBox(
                 onExitClicked = onExitEditMessageMode
             )
         }
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            attachments.forEach { attachment ->
-                when(attachment) {
-                    is ChatView.Message.ChatBoxAttachment.Link -> {
-                        item {
-                            Box {
-                                AttachedObject(
-                                    modifier = Modifier
-                                        .padding(
-                                            top = 12.dp,
-                                            end = 4.dp
-                                        )
-                                        .width(216.dp),
-                                    title = attachment.wrapper.title,
-                                    type = attachment.wrapper.type,
-                                    icon = attachment.wrapper.icon,
-                                    onAttachmentClicked = {
-                                        // TODO
-                                    }
-                                )
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
-                                    contentDescription = "Close icon",
-                                    modifier = Modifier
-                                        .align(
-                                            Alignment.TopEnd
-                                        )
-                                        .padding(top = 6.dp)
-                                        .noRippleClickable {
-                                            onClearAttachmentClicked(attachment)
-                                        }
-                                )
-                            }
-                        }
-                    }
-                    is ChatView.Message.ChatBoxAttachment.Media -> {
-                        item {
-                            Box(modifier = Modifier.padding()) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(attachment.uri),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(
-                                            top = 12.dp,
-                                            end = 4.dp
-                                        )
-                                        .size(72.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-
-                                    ,
-                                    contentScale = ContentScale.Crop
-                                )
-                                Image(
-                                    painter = painterResource(R.drawable.ic_clear_chatbox_attachment),
-                                    contentDescription = "Clear attachment icon",
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(top = 6.dp)
-                                        .noRippleClickable {
-                                            onClearAttachmentClicked(attachment)
-                                        }
-                                )
-                            }
-                        }
-                    }
-                    is ChatView.Message.ChatBoxAttachment.File -> {
-                        item {
-                            Box {
-                                AttachedObject(
-                                    modifier = Modifier
-                                        .padding(
-                                            top = 12.dp,
-                                            end = 4.dp
-                                        )
-                                        .width(216.dp),
-                                    title = attachment.name,
-                                    type = stringResource(R.string.file),
-                                    icon = ObjectIcon.File(
-                                        mime = null,
-                                        fileName = null
-                                    ),
-                                    onAttachmentClicked = {
-                                        // TODO
-                                    }
-                                )
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
-                                    contentDescription = "Close icon",
-                                    modifier = Modifier
-                                        .align(
-                                            Alignment.TopEnd
-                                        )
-                                        .padding(top = 6.dp)
-                                        .noRippleClickable {
-                                            onClearAttachmentClicked(attachment)
-                                        }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        ChatBoxAttachments(
+            attachments = attachments,
+            onClearAttachmentClicked = onClearAttachmentClicked
+        )
         when(mode) {
             is ChatBoxMode.Default -> {
 

@@ -57,7 +57,7 @@ import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem
-import com.anytypeio.anytype.feature_object_type.stub.createDummyFieldItem
+import com.anytypeio.anytype.feature_object_type.stub.createDummyFieldDraggableItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -387,7 +387,7 @@ private fun Section(modifier: Modifier, text: String) {
 private fun MyPreview() {
     EditFieldScreen(
         uiFieldEditOrNewState = UiFieldEditOrNewState.Visible.Edit(
-            item = createDummyFieldItem()
+            item = createDummyFieldDraggableItem()
         ),
         fieldEvent = {}
     )

@@ -18,12 +18,15 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -41,8 +44,8 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
-import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.foundation.util.DragDropState
 import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
 import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
 import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
@@ -70,19 +73,17 @@ fun FieldsMainScreen(
     uiFieldEditOrNewState: UiFieldEditOrNewState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
-    val items = remember { mutableStateListOf<UiFieldsListItem>() }
-    items.swapList(uiFieldsListState.items)
+
+    var items by remember { mutableStateOf<List<UiFieldsListItem>>(uiFieldsListState.items) }
+
+    items = uiFieldsListState.items
 
     val lazyListState = rememberLazyListState()
     val dragDropState = rememberDragDropState(
         lazyListState = lazyListState,
-        onDragEnd = {
-//            onOrderChanged(
-//                spaceList.map { it.space.id }
-//            )
-        },
+        onDragEnd = { fieldEvent(FieldOrderChanged(items)) },
         onMove = { fromIndex, toIndex ->
-            //spaceList = spaceList.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+            items = items.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
         }
     )
 
@@ -145,37 +146,49 @@ fun FieldsMainScreen(
                     key = { items[it].id },
                     contentType = { index ->
                         when (items[index]) {
-                            is UiFieldsListItem.FieldItem -> "field"
-                            is UiFieldsListItem.Section.FieldsMenu -> "section"
-                            is UiFieldsListItem.Section.Header -> "section"
-                            is UiFieldsListItem.Section.Hidden -> "hidden"
-                            is UiFieldsListItem.Section.Local -> "local"
+                            is UiFieldsListItem.Item.Default -> FieldsItemsContentType.FIELD_ITEM_DEFAULT
+                            is UiFieldsListItem.Item.Draggable -> FieldsItemsContentType.FIELD_ITEM_DRAGGABLE
+                            is UiFieldsListItem.Section.SideBar -> FieldsItemsContentType.SECTION_SIDEBAR
+                            is UiFieldsListItem.Section.Header -> FieldsItemsContentType.SECTION_HEADER
+                            is UiFieldsListItem.Section.Hidden -> FieldsItemsContentType.SECTION_HIDDEN
+                            is UiFieldsListItem.Section.Local -> FieldsItemsContentType.SECTION_LOCAL
                         }
                     },
                     itemContent = { index ->
                         val item = items[index]
                         when (item) {
-                            is UiFieldsListItem.FieldItem -> {
-                                DraggableItem(
+                            is UiFieldsListItem.Item.Draggable -> {
+                                FieldItemDraggable(
+                                    modifier = Modifier
+                                        .height(52.dp)
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 20.dp)
+                                        .bottomBorder()
+                                        .animateItem()
+                                        .noRippleThrottledClickable {
+                                            fieldEvent(OnFieldItemClick(item = item))
+                                        },
+                                    item = item,
                                     dragDropState = dragDropState,
                                     index = index
-                                ) {
-                                    FieldItem(
-                                        modifier = Modifier
-                                            .height(52.dp)
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 20.dp)
-                                            .bottomBorder()
-                                            .animateItem()
-                                            .noRippleThrottledClickable {
-                                                fieldEvent(OnFieldItemClick(item = item))
-                                            },
-                                        item = item
-                                    )
-                                }
+                                )
+                            }
+                            is UiFieldsListItem.Item.Default -> {
+                                FieldItem(
+                                    modifier = Modifier
+                                        .height(52.dp)
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 20.dp)
+                                        .bottomBorder()
+                                        .animateItem()
+                                        .noRippleThrottledClickable {
+                                            fieldEvent(OnFieldItemClick(item = item))
+                                        },
+                                    item = item
+                                )
                             }
 
-                            is UiFieldsListItem.Section.FieldsMenu -> Section(
+                            is UiFieldsListItem.Section.SideBar -> Section(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(52.dp)
@@ -257,7 +270,7 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
 private fun Section(modifier: Modifier, item: UiFieldsListItem.Section) {
     val title = when (item) {
         is UiFieldsListItem.Section.Header -> stringResource(R.string.object_type_fields_section_header)
-        is UiFieldsListItem.Section.FieldsMenu -> stringResource(R.string.object_type_fields_section_fields_menu)
+        is UiFieldsListItem.Section.SideBar -> stringResource(R.string.object_type_fields_section_fields_menu)
         is UiFieldsListItem.Section.Hidden -> stringResource(R.string.object_type_fields_section_hidden)
         is UiFieldsListItem.Section.Local -> stringResource(R.string.object_type_fields_section_local_fields)
     }
@@ -286,7 +299,7 @@ private fun Section(modifier: Modifier, item: UiFieldsListItem.Section) {
 @Composable
 private fun FieldItem(
     modifier: Modifier,
-    item: UiFieldsListItem.FieldItem
+    item: UiFieldsListItem.Item.Default
 ) {
     Row(
         modifier = modifier,
@@ -314,8 +327,47 @@ private fun FieldItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+    }
+}
 
-        if (item.canDrag) {
+@Composable
+private fun LazyItemScope.FieldItemDraggable(
+    modifier: Modifier,
+    item: UiFieldsListItem.Item.Draggable,
+    dragDropState: DragDropState,
+    index: Int
+) {
+    DraggableItem(
+        dragDropState = dragDropState,
+        index = index
+    ) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = CenterVertically
+        ) {
+            val formatIcon = item.format.simpleIcon()
+            if (formatIcon != null) {
+                Image(
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                        .size(24.dp),
+                    painter = painterResource(id = formatIcon),
+                    contentDescription = "Relation format icon",
+                )
+            }
+
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1.0f)
+                    .padding(end = 16.dp),
+                text = item.fieldTitle,
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
             Image(
                 modifier = Modifier
                     .size(24.dp),
@@ -358,32 +410,30 @@ fun PreviewTypeFieldsMainScreen() {
         uiFieldsListState = UiFieldsListState(
             items = listOf(
                 UiFieldsListItem.Section.Header(),
-                UiFieldsListItem.FieldItem(
+                UiFieldsListItem.Item.Draggable(
                     id = "id1",
                     fieldKey = "key1",
                     fieldTitle = "Status",
                     format = RelationFormat.STATUS,
-                    canDrag = true,
                     canDelete = true
                 ),
-                UiFieldsListItem.FieldItem(
+                UiFieldsListItem.Item.Draggable(
                     id = "id2",
                     fieldKey = "key2",
                     fieldTitle = "Name",
                     format = RelationFormat.LONG_TEXT,
-                    canDrag = true,
                     canDelete = true
                 ),
-                UiFieldsListItem.Section.FieldsMenu(
+                UiFieldsListItem.Section.SideBar(
                     canAdd = true
                 ),
-                UiFieldsListItem.FieldItem(
+                UiFieldsListItem.Item.Default(
                     id = "id3",
                     fieldKey = "key3",
                     fieldTitle = "Links",
                     format = RelationFormat.URL,
                 ),
-                UiFieldsListItem.FieldItem(
+                UiFieldsListItem.Item.Default(
                     id = "id4",
                     fieldKey = "key4",
                     fieldTitle = "Date",
@@ -394,4 +444,13 @@ fun PreviewTypeFieldsMainScreen() {
         fieldEvent = {},
         uiFieldEditOrNewState = UiFieldEditOrNewState.Hidden
     )
+}
+
+object FieldsItemsContentType {
+    const val FIELD_ITEM_DRAGGABLE = "content_type_field_item_draggable"
+    const val FIELD_ITEM_DEFAULT = "content_type_field_item_default"
+    const val SECTION_HEADER = "content_type_section_header"
+    const val SECTION_SIDEBAR = "content_type_section_sidebar"
+    const val SECTION_HIDDEN = "content_type_section_hidden"
+    const val SECTION_LOCAL = "content_type_section_local"
 }

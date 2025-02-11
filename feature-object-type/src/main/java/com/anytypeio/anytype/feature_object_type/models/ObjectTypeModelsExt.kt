@@ -16,7 +16,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.FieldItem
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Item
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -127,17 +127,22 @@ suspend fun buildUiFieldsList(
     )
 
     return buildList {
-        add(Section.Header(canAdd = true))
-        addAll(headerItems)
 
-        add(Section.FieldsMenu(canAdd = true))
+        if (headerItems.isNotEmpty()) {
+            add(Section.Header(canAdd = false))
+            addAll(headerItems)
+        }
+
+        add(Section.SideBar(canAdd = true))
         addAll(sidebarItems)
 
-        add(Section.Hidden())
-        addAll(hiddenItems)
+        if (hiddenItems.isNotEmpty()) {
+            add(Section.Hidden(canAdd = false))
+            addAll(hiddenItems)
+        }
 
         if (conflictedItems.isNotEmpty()) {
-            add(Section.Local())
+            add(Section.Local(canAdd = false))
             addAll(conflictedItems)
         }
     }
@@ -170,13 +175,22 @@ private suspend fun mapToUiFieldsListItem(
     } else {
         emptyList()
     }
-    return FieldItem(
-        id = relation.id,
-        fieldKey = relation.key,
-        fieldTitle = relation.getName(stringResourceProvider),
-        format = relation.format,
-        limitObjectTypes = limitObjectTypes,
-        canDrag = canDrag
-    )
+    return if (canDrag) {
+        Item.Draggable(
+            id = relation.id,
+            fieldKey = relation.key,
+            fieldTitle = relation.getName(stringResourceProvider),
+            format = relation.format,
+            limitObjectTypes = limitObjectTypes,
+        )
+    } else {
+        Item.Default(
+            id = relation.id,
+            fieldKey = relation.key,
+            fieldTitle = relation.getName(stringResourceProvider),
+            format = relation.format,
+            limitObjectTypes = limitObjectTypes,
+        )
+    }
 }
 

@@ -60,6 +60,8 @@ import com.anytypeio.anytype.feature_object_type.models.buildUiFieldsList
 import com.anytypeio.anytype.feature_object_type.models.toTemplateView
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -145,10 +147,12 @@ class ObjectTypeViewModel(
         MutableStateFlow<UiTemplatesAddIconState>(UiTemplatesAddIconState.Hidden)
 
     //templates list
-    val uiTemplatesListState = MutableStateFlow<UiTemplatesListState>(UiTemplatesListState.Companion.EMPTY)
+    val uiTemplatesListState =
+        MutableStateFlow<UiTemplatesListState>(UiTemplatesListState.Companion.EMPTY)
 
     //objects header
-    val uiObjectsHeaderState = MutableStateFlow<UiObjectsHeaderState>(UiObjectsHeaderState.Companion.EMPTY)
+    val uiObjectsHeaderState =
+        MutableStateFlow<UiObjectsHeaderState>(UiObjectsHeaderState.Companion.EMPTY)
     val uiObjectsAddIconState =
         MutableStateFlow<UiObjectsAddIconState>(UiObjectsAddIconState.Hidden)
     val uiObjectsSettingsIconState =
@@ -167,7 +171,8 @@ class ObjectTypeViewModel(
 
     //fields
     val uiFieldsListState = MutableStateFlow<UiFieldsListState>(UiFieldsListState.EMPTY)
-    val uiFieldEditOrNewState = MutableStateFlow<UiFieldEditOrNewState>(UiFieldEditOrNewState.Hidden)
+    val uiFieldEditOrNewState =
+        MutableStateFlow<UiFieldEditOrNewState>(UiFieldEditOrNewState.Hidden)
 
     private val _objTypeState = MutableStateFlow<ObjectWrapper.Type?>(null)
     private val _objectTypePermissionsState = MutableStateFlow<ObjectPermissions?>(null)
@@ -363,7 +368,6 @@ class ObjectTypeViewModel(
                 .observe()
                 .catch { Timber.e(it, "Error while observing sync status") }
                 .collect { syncAndP2pState ->
-                    Timber.d("Sync status: $syncAndP2pState")
                     uiSyncStatusBadgeState.value = UiSyncStatusBadgeState.Visible(syncAndP2pState)
                     val state = uiSyncStatusWidgetState.value
 //                    uiSyncStatusWidgetState.value = when (state) {
@@ -623,10 +627,11 @@ class ObjectTypeViewModel(
         Timber.d("onTypeEvent: $event")
         when (event) {
             TypeEvent.OnFieldsButtonClick -> {
-                viewModelScope.launch{
+                viewModelScope.launch {
                     commands.emit(ObjectTypeCommand.OpenFieldsScreen)
                 }
             }
+
             TypeEvent.OnLayoutButtonClick -> {
                 val permissions = _objectTypePermissionsState.value
                 if (permissions?.canChangeRecommendedLayoutForThisType == true) {
@@ -641,6 +646,7 @@ class ObjectTypeViewModel(
                     )
                 }
             }
+
             is TypeEvent.OnSyncStatusClick -> {
                 uiSyncStatusWidgetState.value =
                     event.status.toSyncStatusWidgetState()
@@ -653,6 +659,7 @@ class ObjectTypeViewModel(
             TypeEvent.OnTemplatesAddIconClick -> {
                 proceedWithCreateTemplate()
             }
+
             is TypeEvent.OnObjectTypeTitleUpdate -> {
                 updateTitle(event.title)
             }
@@ -706,7 +713,7 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnObjectTypeIconClick -> {
-                viewModelScope.launch{
+                viewModelScope.launch {
                     commands.emit(OpenEmojiPicker)
                 }
             }
@@ -718,6 +725,7 @@ class ObjectTypeViewModel(
             TypeEvent.OnLayoutTypeDismiss -> {
                 uiTypeLayoutsState.value = Hidden
             }
+
             is TypeEvent.OnLayoutTypeItemClick -> {
                 proceedWithUpdatingLayout(layout = event.item)
             }
@@ -733,6 +741,7 @@ class ObjectTypeViewModel(
                     template = event.item.id
                 )
             }
+
             is TypeEvent.OnTemplateMenuDuplicateClick -> {
                 proceedWithTemplateDuplicate(
                     template = event.item.id
@@ -746,9 +755,11 @@ class ObjectTypeViewModel(
             is TemplateView.Blank -> {
                 //do nothing
             }
+
             is TemplateView.New -> {
                 proceedWithCreateTemplate()
             }
+
             is TemplateView.Template -> {
                 val typeKey = _objTypeState.value?.uniqueKey ?: return
                 val command = ObjectTypeCommand.OpenTemplate(
@@ -881,13 +892,47 @@ class ObjectTypeViewModel(
             FieldEvent.OnFieldEditScreenDismiss -> {
                 uiFieldEditOrNewState.value = UiFieldEditOrNewState.Hidden
             }
+
             is FieldEvent.OnFieldItemClick -> {
-                uiFieldEditOrNewState.value = UiFieldEditOrNewState.Visible.Edit(
-                    event.item
-                )
+                when (event.item) {
+                    is UiFieldsListItem.Item -> {
+                        uiFieldEditOrNewState.value = Edit(
+                            event.item
+                        )
+                    }
+
+                    else -> {}
+                }
             }
+
             FieldEvent.OnLimitTypesClick -> TODO()
             is FieldEvent.OnSaveButtonClicked -> TODO()
+            is FieldEvent.FieldOrderChanged -> {
+                val newItems = event.items
+                uiFieldsListState.value = UiFieldsListState(items = newItems)
+                val headerItems = mutableListOf<Id>()
+                val sideBarItems = mutableListOf<Id>()
+                val hiddenItems = mutableListOf<Id>()
+                var currentSection: UiFieldsListItem.Section? = null
+                newItems.forEach { item ->
+                    when (item) {
+                        is UiFieldsListItem.Item -> {
+                            when (currentSection) {
+                                is UiFieldsListItem.Section.Header -> headerItems.add(item.id)
+                                is UiFieldsListItem.Section.SideBar -> sideBarItems.add(item.id)
+                                is UiFieldsListItem.Section.Hidden -> hiddenItems.add(item.id)
+                                else -> {}
+                            }
+                        }
+                        is UiFieldsListItem.Section -> currentSection = item
+                    }
+                }
+                proceedWithUpdatingTypeFields(
+                    headerFields = headerItems,
+                    sidebarFields = sideBarItems,
+                    hiddenFields = hiddenItems
+                )
+            }
         }
     }
     //endregion
@@ -915,6 +960,31 @@ class ObjectTypeViewModel(
     //endregion
 
     //region UseCases
+    private fun proceedWithUpdatingTypeFields(
+        headerFields: List<Id>,
+        sidebarFields: List<Id>,
+        hiddenFields: List<Id>
+    ) {
+        viewModelScope.launch {
+            val params = SetObjectDetails.Params(
+                ctx = vmParams.objectId,
+                details = mapOf(
+                    Relations.RECOMMENDED_FEATURED_RELATIONS to headerFields,
+                    Relations.RECOMMENDED_RELATIONS to sidebarFields,
+                    Relations.RECOMMENDED_HIDDEN_RELATIONS to hiddenFields
+                )
+            )
+            setObjectDetails.async(params).fold(
+                onSuccess = {
+                    Timber.d("Fields updated")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while updating fields")
+                }
+            )
+        }
+    }
+
     private fun proceedWithGetObjectTypeConflictingFields() {
         viewModelScope.launch {
             getObjectTypeConflictingFields.async(

@@ -7,7 +7,7 @@ sealed class FieldEvent {
 
     data object OnFieldEditScreenDismiss : FieldEvent()
 
-    data class OnFieldItemClick(val item: UiFieldsListItem.FieldItem) : FieldEvent()
+    data class OnFieldItemClick(val item: UiFieldsListItem) : FieldEvent()
 
     data class OnSaveButtonClicked(
         val name: String,
@@ -16,4 +16,6 @@ sealed class FieldEvent {
     ) : FieldEvent()
     data object OnChangeTypeClick : FieldEvent()
     data object OnLimitTypesClick : FieldEvent()
+
+    data class FieldOrderChanged(val items: List<UiFieldsListItem>) : FieldEvent()
 }

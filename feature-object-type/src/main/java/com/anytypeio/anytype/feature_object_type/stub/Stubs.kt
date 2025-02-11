@@ -5,8 +5,8 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
-fun createDummyFieldItem(): UiFieldsListItem.FieldItem {
-    return UiFieldsListItem.FieldItem(
+fun createDummyFieldDraggableItem(): UiFieldsListItem.Item.Draggable {
+    return UiFieldsListItem.Item.Draggable(
         id = "dummyId",
         fieldKey = "dummyKey",
         fieldTitle = "Field Title",
@@ -34,7 +34,6 @@ fun createDummyFieldItem(): UiFieldsListItem.FieldItem {
 
                 ),
         ),
-        canDrag = true,
         canDelete = true
     )
 }

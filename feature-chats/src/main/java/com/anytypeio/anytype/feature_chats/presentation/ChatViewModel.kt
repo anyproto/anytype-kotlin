@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.onFailure
@@ -79,6 +80,8 @@ class ChatViewModel @Inject constructor(
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
+
+    private val isSendingMessage = MutableStateFlow<Boolean>(false)
 
     init {
         viewModelScope.launch {
@@ -327,8 +330,10 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
         viewModelScope.launch {
+            isSendingMessage.value = true
             val attachments = buildList {
-                chatBoxAttachments.value.forEach { attachment ->
+                val currAttachments = chatBoxAttachments.value
+                currAttachments.forEachIndexed { idx, attachment ->
                     when(attachment) {
                         is ChatView.Message.ChatBoxAttachment.Link -> {
                             add(
@@ -339,6 +344,14 @@ class ChatViewModel @Inject constructor(
                             )
                         }
                         is ChatView.Message.ChatBoxAttachment.Media -> {
+                            chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                set(
+                                    index = idx,
+                                    element = attachment.copy(
+                                        state = ChatView.Message.ChatBoxAttachment.State.Uploading
+                                    )
+                                )
+                            }
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
@@ -352,6 +365,23 @@ class ChatViewModel @Inject constructor(
                                         type = Chat.Message.Attachment.Type.Image
                                     )
                                 )
+                                chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                    set(
+                                        index = idx,
+                                        element = attachment.copy(
+                                            state = ChatView.Message.ChatBoxAttachment.State.Uploaded
+                                        )
+                                    )
+                                }
+                            }.onFailure {
+                                chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                    set(
+                                        index = idx,
+                                        element = attachment.copy(
+                                            state = ChatView.Message.ChatBoxAttachment.State.Uploading
+                                        )
+                                    )
+                                }
                             }
                         }
                         is ChatView.Message.ChatBoxAttachment.File -> {
@@ -359,6 +389,14 @@ class ChatViewModel @Inject constructor(
                                 copyFileToCacheDirectory.copy(attachment.uri)
                             }
                             if (path != null) {
+                                chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                    set(
+                                        index = idx,
+                                        element = attachment.copy(
+                                            state = ChatView.Message.ChatBoxAttachment.State.Uploading
+                                        )
+                                    )
+                                }
                                 uploadFile.async(
                                     UploadFile.Params(
                                         space = vmParams.space,
@@ -373,8 +411,24 @@ class ChatViewModel @Inject constructor(
                                             type = Chat.Message.Attachment.Type.File
                                         )
                                     )
+                                    chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                        set(
+                                            index = idx,
+                                            element = attachment.copy(
+                                                state = ChatView.Message.ChatBoxAttachment.State.Uploaded
+                                            )
+                                        )
+                                    }
                                 }.onFailure {
                                     Timber.e(it, "Error while uploading file as attachment")
+                                    chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                        set(
+                                            index = idx,
+                                            element = attachment.copy(
+                                                state = ChatView.Message.ChatBoxAttachment.State.Failed
+                                            )
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -394,11 +448,13 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess { (id, payload) ->
+                        isSendingMessage.value = false
                         chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
+                        isSendingMessage.value = false
                         Timber.e(it, "Error while adding message")
                     }
                 }
@@ -438,10 +494,12 @@ class ChatViewModel @Inject constructor(
                         )
                     ).onSuccess { (id, payload) ->
                         chatBoxAttachments.value = emptyList()
+                        isSendingMessage.value = false
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
+                        isSendingMessage.value = false
                         Timber.e(it, "Error while adding message")
                     }
                     chatBoxMode.value = ChatBoxMode.Default

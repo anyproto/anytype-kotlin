@@ -74,7 +74,7 @@ class ChatViewModel @Inject constructor(
     val commands = MutableSharedFlow<ViewModelCommand>()
     val uXCommands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
-    val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
+    val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default())
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
@@ -327,8 +327,10 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
         viewModelScope.launch {
+            chatBoxMode.value = chatBoxMode.value.updateIsSendingBlocked(isBlocked = true)
             val attachments = buildList {
-                chatBoxAttachments.value.forEach { attachment ->
+                val currAttachments = chatBoxAttachments.value
+                currAttachments.forEachIndexed { idx, attachment ->
                     when(attachment) {
                         is ChatView.Message.ChatBoxAttachment.Link -> {
                             add(
@@ -339,6 +341,14 @@ class ChatViewModel @Inject constructor(
                             )
                         }
                         is ChatView.Message.ChatBoxAttachment.Media -> {
+                            chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                set(
+                                    index = idx,
+                                    element = attachment.copy(
+                                        state = ChatView.Message.ChatBoxAttachment.State.Uploading
+                                    )
+                                )
+                            }
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
@@ -352,6 +362,23 @@ class ChatViewModel @Inject constructor(
                                         type = Chat.Message.Attachment.Type.Image
                                     )
                                 )
+                                chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                    set(
+                                        index = idx,
+                                        element = attachment.copy(
+                                            state = ChatView.Message.ChatBoxAttachment.State.Uploaded
+                                        )
+                                    )
+                                }
+                            }.onFailure {
+                                chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                    set(
+                                        index = idx,
+                                        element = attachment.copy(
+                                            state = ChatView.Message.ChatBoxAttachment.State.Uploading
+                                        )
+                                    )
+                                }
                             }
                         }
                         is ChatView.Message.ChatBoxAttachment.File -> {
@@ -359,6 +386,14 @@ class ChatViewModel @Inject constructor(
                                 copyFileToCacheDirectory.copy(attachment.uri)
                             }
                             if (path != null) {
+                                chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                    set(
+                                        index = idx,
+                                        element = attachment.copy(
+                                            state = ChatView.Message.ChatBoxAttachment.State.Uploading
+                                        )
+                                    )
+                                }
                                 uploadFile.async(
                                     UploadFile.Params(
                                         space = vmParams.space,
@@ -373,8 +408,24 @@ class ChatViewModel @Inject constructor(
                                             type = Chat.Message.Attachment.Type.File
                                         )
                                     )
+                                    chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                        set(
+                                            index = idx,
+                                            element = attachment.copy(
+                                                state = ChatView.Message.ChatBoxAttachment.State.Uploaded
+                                            )
+                                        )
+                                    }
                                 }.onFailure {
                                     Timber.e(it, "Error while uploading file as attachment")
+                                    chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                        set(
+                                            index = idx,
+                                            element = attachment.copy(
+                                                state = ChatView.Message.ChatBoxAttachment.State.Failed
+                                            )
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -401,6 +452,7 @@ class ChatViewModel @Inject constructor(
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
+                    chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.EditMessage -> {
                     val editedMessage = data.value.find {
@@ -422,7 +474,7 @@ class ChatViewModel @Inject constructor(
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }.onSuccess {
-                        chatBoxMode.value = ChatBoxMode.Default
+                        chatBoxMode.value = ChatBoxMode.Default()
                     }
                 }
                 is ChatBoxMode.Reply -> {
@@ -444,7 +496,7 @@ class ChatViewModel @Inject constructor(
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
-                    chatBoxMode.value = ChatBoxMode.Default
+                    chatBoxMode.value = ChatBoxMode.Default()
                 }
             }
         }
@@ -474,7 +526,7 @@ class ChatViewModel @Inject constructor(
 
     fun onClearReplyClicked() {
         viewModelScope.launch {
-            chatBoxMode.value = ChatBoxMode.Default
+            chatBoxMode.value = ChatBoxMode.Default()
         }
     }
 
@@ -522,7 +574,8 @@ class ChatViewModel @Inject constructor(
                         ""
                     }
                 },
-                author = msg.author
+                author = msg.author,
+                isSendingMessageBlocked = false
             )
         }
     }
@@ -586,7 +639,7 @@ class ChatViewModel @Inject constructor(
 
     fun onExitEditMessageMode() {
         viewModelScope.launch {
-            chatBoxMode.value = ChatBoxMode.Default
+            chatBoxMode.value = ChatBoxMode.Default()
         }
     }
 
@@ -706,13 +759,30 @@ class ChatViewModel @Inject constructor(
     }
 
     sealed class ChatBoxMode {
-        data object Default : ChatBoxMode()
-        data class EditMessage(val msg: Id) : ChatBoxMode()
+
+        abstract val isSendingMessageBlocked: Boolean
+
+        data class Default(
+            override val isSendingMessageBlocked: Boolean = false
+        ) : ChatBoxMode()
+        data class EditMessage(
+            val msg: Id,
+            override val isSendingMessageBlocked: Boolean = false
+        ) : ChatBoxMode()
         data class Reply(
             val msg: Id,
             val text: String,
-            val author: String
+            val author: String,
+            override val isSendingMessageBlocked: Boolean = false
         ): ChatBoxMode()
+    }
+
+    fun ChatBoxMode.updateIsSendingBlocked(isBlocked: Boolean): ChatBoxMode {
+        return when (this) {
+            is ChatBoxMode.Default -> copy(isSendingMessageBlocked = isBlocked)
+            is ChatBoxMode.EditMessage -> copy(isSendingMessageBlocked = isBlocked)
+            is ChatBoxMode.Reply -> copy(isSendingMessageBlocked = isBlocked)
+        }
     }
 
     sealed class MentionPanelState {

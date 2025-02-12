@@ -61,6 +61,15 @@ sealed class UiFieldsListItem {
             override val limitObjectTypes: List<UiFieldObjectItem> = emptyList(),
             override val canDelete: Boolean = false
         ) : Item()
+
+        data class Local(
+            override val id: Id,
+            override val fieldKey: Key,
+            override val fieldTitle: String,
+            override val format: RelationFormat,
+            override val limitObjectTypes: List<UiFieldObjectItem> = emptyList(),
+            override val canDelete: Boolean = false
+        ) : Item()
     }
 
     sealed class Section : UiFieldsListItem() {

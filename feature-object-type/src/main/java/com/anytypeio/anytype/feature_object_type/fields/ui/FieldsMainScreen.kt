@@ -1,8 +1,10 @@
 package com.anytypeio.anytype.feature_object_type.fields.ui
 
 import android.os.Build
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,11 +17,15 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -47,9 +54,10 @@ import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.foundation.util.DragDropState
 import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
-import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
+import com.anytypeio.anytype.core_ui.foundation.util.dragHandle
 import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -65,6 +73,7 @@ import com.anytypeio.anytype.feature_object_type.models.UiIconState
 import com.anytypeio.anytype.feature_object_type.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FieldsMainScreen(
     uiFieldsListState: UiFieldsListState,
@@ -137,8 +146,7 @@ fun FieldsMainScreen(
                     .padding(paddingValues)
             }
             LazyColumn(
-                modifier = contentModifier
-                    .dragContainer(dragDropState),
+                modifier = contentModifier,
                 state = lazyListState
             ) {
                 items(
@@ -148,6 +156,7 @@ fun FieldsMainScreen(
                         when (items[index]) {
                             is UiFieldsListItem.Item.Default -> FieldsItemsContentType.FIELD_ITEM_DEFAULT
                             is UiFieldsListItem.Item.Draggable -> FieldsItemsContentType.FIELD_ITEM_DRAGGABLE
+                            is UiFieldsListItem.Item.Local -> FieldsItemsContentType.FIELD_ITEM_LOCAL
                             is UiFieldsListItem.Section.SideBar -> FieldsItemsContentType.SECTION_SIDEBAR
                             is UiFieldsListItem.Section.Header -> FieldsItemsContentType.SECTION_HEADER
                             is UiFieldsListItem.Section.Hidden -> FieldsItemsContentType.SECTION_HIDDEN
@@ -164,15 +173,14 @@ fun FieldsMainScreen(
                                         .fillMaxWidth()
                                         .padding(horizontal = 20.dp)
                                         .bottomBorder()
-                                        .animateItem()
-                                        .noRippleThrottledClickable {
-                                            fieldEvent(OnFieldItemClick(item = item))
-                                        },
+                                        .animateItem(),
                                     item = item,
                                     dragDropState = dragDropState,
-                                    index = index
+                                    index = index,
+                                    fieldEvent = fieldEvent,
                                 )
                             }
+
                             is UiFieldsListItem.Item.Default -> {
                                 FieldItem(
                                     modifier = Modifier
@@ -181,10 +189,25 @@ fun FieldsMainScreen(
                                         .padding(horizontal = 20.dp)
                                         .bottomBorder()
                                         .animateItem()
-                                        .noRippleThrottledClickable {
-                                            fieldEvent(OnFieldItemClick(item = item))
-                                        },
-                                    item = item
+                                        .combinedClickable(
+                                            onClick = { fieldEvent(OnFieldItemClick(item = item)) },
+                                            onLongClick = { fieldEvent(OnFieldItemLongClick(item = item)) }
+                                        ),
+                                    item = item,
+                                    fieldEvent = fieldEvent
+                                )
+                            }
+
+                            is UiFieldsListItem.Item.Local -> {
+                                FieldItemLocal(
+                                    modifier = Modifier
+                                        .height(52.dp)
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 20.dp)
+                                        .bottomBorder()
+                                        .animateItem(),
+                                    item = item,
+                                    fieldEvent = fieldEvent
                                 )
                             }
 
@@ -281,7 +304,7 @@ private fun Section(modifier: Modifier, item: UiFieldsListItem.Section) {
                 .align(Alignment.BottomStart),
             text = title,
             style = BodyCalloutMedium,
-            color = colorResource(id = R.color.text_secondary),
+            color = colorResource(id = R.color.text_primary),
         )
         if (item.canAdd) {
             Image(
@@ -299,8 +322,12 @@ private fun Section(modifier: Modifier, item: UiFieldsListItem.Section) {
 @Composable
 private fun FieldItem(
     modifier: Modifier,
-    item: UiFieldsListItem.Item.Default
+    item: UiFieldsListItem.Item.Default,
+    fieldEvent: (FieldEvent) -> Unit
 ) {
+
+    val isMenuExpanded = remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier,
         verticalAlignment = CenterVertically
@@ -327,22 +354,106 @@ private fun FieldItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+        ItemDropDownMenu(
+            item = item,
+            showMenu = isMenuExpanded.value,
+            onDismissRequest = {
+                isMenuExpanded.value = false
+            },
+            onFieldEvent = {
+                isMenuExpanded.value = false
+                fieldEvent(it)
+            }
+        )
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun FieldItemLocal(
+    modifier: Modifier,
+    item: UiFieldsListItem.Item.Local,
+    fieldEvent: (FieldEvent) -> Unit
+) {
+    val isMenuExpanded = remember { mutableStateOf(false) }
+
+    Row(
+        modifier = modifier
+            .combinedClickable(
+                onClick = { fieldEvent(OnFieldItemClick(item = item)) },
+                onLongClick = { isMenuExpanded.value = true }
+            ),
+        verticalAlignment = CenterVertically
+    ) {
+        val formatIcon = item.format.simpleIcon()
+        if (formatIcon != null) {
+            Image(
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .size(24.dp),
+                painter = painterResource(id = formatIcon),
+                contentDescription = "Relation format icon",
+            )
+        }
+
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1.0f)
+                .padding(end = 16.dp),
+            text = item.fieldTitle,
+            style = BodyRegular,
+            color = colorResource(id = R.color.text_primary),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Image(
+            modifier = Modifier
+                .size(24.dp)
+                .noRippleThrottledClickable {
+                    isMenuExpanded.value = true
+                },
+            painter = painterResource(R.drawable.ic_space_list_dots),
+            contentDescription = "Local item menu"
+        )
+        ItemDropDownMenu(
+            item = item,
+            showMenu = isMenuExpanded.value,
+            onDismissRequest = {
+                isMenuExpanded.value = false
+            },
+            onFieldEvent = {
+                isMenuExpanded.value = false
+                fieldEvent(it)
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun LazyItemScope.FieldItemDraggable(
     modifier: Modifier,
     item: UiFieldsListItem.Item.Draggable,
     dragDropState: DragDropState,
-    index: Int
+    index: Int,
+    fieldEvent: (FieldEvent) -> Unit
 ) {
+    val isMenuExpanded = remember { mutableStateOf(false) }
+
     DraggableItem(
         dragDropState = dragDropState,
         index = index
-    ) {
+    ) { isDragging ->
         Row(
-            modifier = modifier,
+            modifier = modifier
+                .combinedClickable(
+                    onClick = { fieldEvent(OnFieldItemClick(item = item)) },
+                    onLongClick = {
+                        isMenuExpanded.value = true
+                    }
+                ),
             verticalAlignment = CenterVertically
         ) {
             val formatIcon = item.format.simpleIcon()
@@ -370,9 +481,22 @@ private fun LazyItemScope.FieldItemDraggable(
 
             Image(
                 modifier = Modifier
-                    .size(24.dp),
+                    .size(24.dp)
+                    .dragHandle(dragDropState, index),
                 painter = painterResource(R.drawable.ic_dnd),
                 contentDescription = "Icon drag"
+            )
+
+            ItemDropDownMenu(
+                item = item,
+                showMenu = isMenuExpanded.value,
+                onDismissRequest = {
+                    isMenuExpanded.value = false
+                },
+                onFieldEvent = {
+                    isMenuExpanded.value = false
+                    fieldEvent(it)
+                }
             )
         }
     }
@@ -400,6 +524,85 @@ fun Modifier.bottomBorder(
         }
     }
 )
+
+@Composable
+fun ItemDropDownMenu(
+    item: UiFieldsListItem.Item,
+    showMenu: Boolean,
+    onDismissRequest: () -> Unit,
+    onFieldEvent: (FieldEvent) -> Unit,
+) {
+    DropdownMenu(
+        modifier = Modifier
+            .width(244.dp),
+        expanded = showMenu,
+        offset = DpOffset(x = 0.dp, y = 0.dp),
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        shape = RoundedCornerShape(10.dp),
+        containerColor = colorResource(id = R.color.background_secondary),
+    ) {
+        when (item) {
+            is UiFieldsListItem.Item.Default -> {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.object_type_fields_menu_delete),
+                            style = BodyCalloutRegular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                    },
+                    onClick = {
+                        onFieldEvent(FieldItemMenu.OnDeleteFromTypeClick(item))
+                    },
+                )
+            }
+
+            is UiFieldsListItem.Item.Draggable -> {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.object_type_fields_menu_delete),
+                            style = BodyCalloutRegular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                    },
+                    onClick = {
+                        onFieldEvent(FieldItemMenu.OnDeleteFromTypeClick(item))
+                    },
+                )
+            }
+
+            is UiFieldsListItem.Item.Local -> {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.object_type_fields_menu_add_to_type),
+                            style = BodyCalloutRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    onClick = {
+                        onFieldEvent(FieldItemMenu.OnAddLocalToTypeClick(item))
+                    },
+                )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.object_type_fields_menu_remove),
+                            style = BodyCalloutRegular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                    },
+                    onClick = {
+                        onFieldEvent(FieldItemMenu.OnRemoveLocalClick(item))
+                    },
+                )
+            }
+        }
+    }
+}
 
 @DefaultPreviews
 @Composable
@@ -438,6 +641,19 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldKey = "key4",
                     fieldTitle = "Date",
                     format = RelationFormat.DATE,
+                ),
+                UiFieldsListItem.Section.Local(),
+                UiFieldsListItem.Item.Local(
+                    id = "id5",
+                    fieldKey = "key5",
+                    fieldTitle = "Local field",
+                    format = RelationFormat.LONG_TEXT,
+                ),
+                UiFieldsListItem.Item.Local(
+                    id = "id6",
+                    fieldKey = "key6",
+                    fieldTitle = "Local field 2",
+                    format = RelationFormat.LONG_TEXT,
                 )
             )
         ),
@@ -449,6 +665,7 @@ fun PreviewTypeFieldsMainScreen() {
 object FieldsItemsContentType {
     const val FIELD_ITEM_DRAGGABLE = "content_type_field_item_draggable"
     const val FIELD_ITEM_DEFAULT = "content_type_field_item_default"
+    const val FIELD_ITEM_LOCAL = "content_type_field_item_local"
     const val SECTION_HEADER = "content_type_section_header"
     const val SECTION_SIDEBAR = "content_type_section_sidebar"
     const val SECTION_HIDDEN = "content_type_section_hidden"

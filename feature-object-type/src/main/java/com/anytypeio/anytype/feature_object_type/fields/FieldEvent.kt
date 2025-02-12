@@ -9,13 +9,22 @@ sealed class FieldEvent {
 
     data class OnFieldItemClick(val item: UiFieldsListItem) : FieldEvent()
 
+    data class OnFieldItemLongClick(val item: UiFieldsListItem) : FieldEvent()
+
     data class OnSaveButtonClicked(
         val name: String,
         val format: RelationFormat,
         val limitObjectTypes: List<Id>
     ) : FieldEvent()
+
     data object OnChangeTypeClick : FieldEvent()
     data object OnLimitTypesClick : FieldEvent()
 
     data class FieldOrderChanged(val items: List<UiFieldsListItem>) : FieldEvent()
+
+    sealed class FieldItemMenu : FieldEvent() {
+        data class OnDeleteFromTypeClick(val item: UiFieldsListItem) : FieldItemMenu()
+        data class OnRemoveLocalClick(val item: UiFieldsListItem) : FieldItemMenu()
+        data class OnAddLocalToTypeClick(val item: UiFieldsListItem) : FieldItemMenu()
+    }
 }

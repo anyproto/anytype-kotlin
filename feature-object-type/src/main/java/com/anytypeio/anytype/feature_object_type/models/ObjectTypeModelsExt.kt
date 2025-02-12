@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -79,18 +78,12 @@ suspend fun buildUiFieldsList(
         objectTypeConflictingFieldsIds = objTypeConflictingFields
     )
 
-    suspend fun mapRelationsAndFilterDescription(
-        fields: List<ObjectWrapper.Relation>,
-        canDrag: Boolean,
-        stringResourceProvider: StringResourceProvider,
-        filterByDescription: Boolean = false
-    ) = fields.mapNotNull { field ->
-        if (filterByDescription && field.key == Relations.DESCRIPTION) {
+    val headerItems = parsedFields.featured.mapNotNull { field ->
+        if (field.key == Relations.DESCRIPTION) {
             null
         } else {
-            mapToUiFieldsListItem(
+            mapToUiFieldsDraggableListItem(
                 relation = field,
-                canDrag = canDrag,
                 stringResourceProvider = stringResourceProvider,
                 fieldParser = fieldParser,
                 urlBuilder = urlBuilder,
@@ -99,32 +92,47 @@ suspend fun buildUiFieldsList(
         }
     }
 
-    val headerItems = mapRelationsAndFilterDescription(
-        fields = parsedFields.featured,
-        canDrag = true,
-        stringResourceProvider = stringResourceProvider,
-        filterByDescription = true
-    )
+    val sidebarItems = parsedFields.sidebar.mapNotNull { field ->
+        if (field.key == Relations.DESCRIPTION) {
+            null
+        } else {
+            mapToUiFieldsDraggableListItem(
+                relation = field,
+                stringResourceProvider = stringResourceProvider,
+                fieldParser = fieldParser,
+                urlBuilder = urlBuilder,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+        }
+    }
 
-    val sidebarItems = mapRelationsAndFilterDescription(
-        fields = parsedFields.sidebar,
-        canDrag = true,
-        stringResourceProvider = stringResourceProvider,
-        filterByDescription = true
-    )
+    val hiddenItems = parsedFields.hidden.mapNotNull { field ->
+        if (field.key == Relations.DESCRIPTION) {
+            null
+        } else {
+            mapToUiFieldsDraggableListItem(
+                relation = field,
+                stringResourceProvider = stringResourceProvider,
+                fieldParser = fieldParser,
+                urlBuilder = urlBuilder,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+        }
+    }
 
-    val hiddenItems = mapRelationsAndFilterDescription(
-        fields = parsedFields.hidden,
-        canDrag = true,
-        stringResourceProvider = stringResourceProvider
-    )
-
-    val conflictedItems = mapRelationsAndFilterDescription(
-        fields = parsedFields.conflicted,
-        canDrag = false,
-        stringResourceProvider = stringResourceProvider,
-        filterByDescription = true
-    )
+    val conflictedItems = parsedFields.conflicted.mapNotNull { field ->
+        if (field.key == Relations.DESCRIPTION) {
+            null
+        } else {
+            mapToUiFieldsLocalListItem(
+                relation = field,
+                stringResourceProvider = stringResourceProvider,
+                fieldParser = fieldParser,
+                urlBuilder = urlBuilder,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+        }
+    }
 
     return buildList {
 
@@ -148,12 +156,8 @@ suspend fun buildUiFieldsList(
     }
 }
 
-/**
- * Maps a [Relation] to its corresponding [com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem] based on the relation format.
- */
-private suspend fun mapToUiFieldsListItem(
+private suspend fun mapToUiFieldsDraggableListItem(
     relation: ObjectWrapper.Relation,
-    canDrag: Boolean,
     stringResourceProvider: StringResourceProvider,
     storeOfObjectTypes: StoreOfObjectTypes,
     fieldParser: FieldParser,
@@ -175,22 +179,44 @@ private suspend fun mapToUiFieldsListItem(
     } else {
         emptyList()
     }
-    return if (canDrag) {
-        Item.Draggable(
-            id = relation.id,
-            fieldKey = relation.key,
-            fieldTitle = relation.getName(stringResourceProvider),
-            format = relation.format,
-            limitObjectTypes = limitObjectTypes,
-        )
+    return Item.Draggable(
+        id = relation.id,
+        fieldKey = relation.key,
+        fieldTitle = relation.getName(stringResourceProvider),
+        format = relation.format,
+        limitObjectTypes = limitObjectTypes,
+    )
+}
+
+private suspend fun mapToUiFieldsLocalListItem(
+    relation: ObjectWrapper.Relation,
+    stringResourceProvider: StringResourceProvider,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    fieldParser: FieldParser,
+    urlBuilder: UrlBuilder
+): UiFieldsListItem? {
+    val limitObjectTypes = if (relation.format == RelationFormat.OBJECT &&
+        relation.relationFormatObjectTypes.isNotEmpty()
+    ) {
+        relation.relationFormatObjectTypes.mapNotNull { key ->
+            storeOfObjectTypes.getByKey(key)?.let { objType ->
+                UiFieldObjectItem(
+                    id = objType.id,
+                    key = objType.uniqueKey,
+                    title = fieldParser.getObjectName(objType),
+                    icon = objType.objectIcon(urlBuilder)
+                )
+            }
+        }
     } else {
-        Item.Default(
-            id = relation.id,
-            fieldKey = relation.key,
-            fieldTitle = relation.getName(stringResourceProvider),
-            format = relation.format,
-            limitObjectTypes = limitObjectTypes,
-        )
+        emptyList()
     }
+    return Item.Local(
+        id = relation.id,
+        fieldKey = relation.key,
+        fieldTitle = relation.getName(stringResourceProvider),
+        format = relation.format,
+        limitObjectTypes = limitObjectTypes,
+    )
 }
 

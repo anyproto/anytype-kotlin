@@ -162,4 +162,11 @@ sealed class TypeFieldsCommand {
 }
 //endregion
 
+//region Section Local Fields Info
+sealed class UiLocalsFieldsInfoState {
+    data object Hidden : UiLocalsFieldsInfoState()
+    data object Visible : UiLocalsFieldsInfoState()
+}
+//endregion
+
 

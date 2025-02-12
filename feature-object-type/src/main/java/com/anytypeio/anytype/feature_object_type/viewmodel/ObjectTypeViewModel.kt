@@ -60,6 +60,7 @@ import com.anytypeio.anytype.feature_object_type.models.buildUiFieldsList
 import com.anytypeio.anytype.feature_object_type.models.toTemplateView
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
+import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand.OpenEmojiPicker
@@ -168,6 +169,8 @@ class ObjectTypeViewModel(
 
     //alerts
     val uiAlertState = MutableStateFlow<UiDeleteAlertState>(UiDeleteAlertState.Hidden)
+    val uiFieldLocalInfoState =
+        MutableStateFlow<UiLocalsFieldsInfoState>(UiLocalsFieldsInfoState.Hidden)
 
     //fields
     val uiFieldsListState = MutableStateFlow<UiFieldsListState>(UiFieldsListState.EMPTY)
@@ -907,6 +910,7 @@ class ObjectTypeViewModel(
                             )
                         }
                     }
+
                     else -> {}
                 }
             }
@@ -942,6 +946,17 @@ class ObjectTypeViewModel(
             }
 
             is FieldEvent.FieldItemMenu -> proceedWithFieldItemMenuClick(event)
+            FieldEvent.FieldLocalInfo.OnDismiss -> {
+                uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Hidden
+            }
+
+            FieldEvent.Section.OnLocalInfoClick -> {
+                uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Visible
+            }
+
+            FieldEvent.Section.OnAddIconClick -> {
+                //todo need to implement
+            }
         }
     }
 
@@ -951,6 +966,7 @@ class ObjectTypeViewModel(
             is FieldEvent.FieldItemMenu.OnAddLocalToTypeClick -> {
                 //todo need to implement
             }
+
             is FieldEvent.FieldItemMenu.OnRemoveLocalClick -> TODO()
         }
     }

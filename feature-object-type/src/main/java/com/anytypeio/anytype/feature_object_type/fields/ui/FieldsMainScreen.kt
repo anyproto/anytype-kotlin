@@ -68,7 +68,9 @@ import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
+import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.models.UiIconState
 import com.anytypeio.anytype.feature_object_type.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -80,6 +82,7 @@ fun FieldsMainScreen(
     uiTitleState: UiTitleState,
     uiIconState: UiIconState,
     uiFieldEditOrNewState: UiFieldEditOrNewState,
+    uiFieldLocalInfoState: UiLocalsFieldsInfoState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
@@ -210,34 +213,34 @@ fun FieldsMainScreen(
                             is UiFieldsListItem.Section.SideBar -> Section(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(52.dp)
-                                    .padding(horizontal = 20.dp),
-                                item = item
+                                    .height(52.dp),
+                                item = item,
+                                fieldEvent = fieldEvent
                             )
 
                             is UiFieldsListItem.Section.Header -> Section(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(52.dp)
-                                    .padding(horizontal = 20.dp),
-                                item = item
+                                    .height(52.dp),
+                                item = item,
+                                fieldEvent = fieldEvent
                             )
 
                             is UiFieldsListItem.Section.Hidden -> Section(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(52.dp)
-                                    .padding(horizontal = 20.dp),
-                                item = item
+                                    .height(52.dp),
+                                item = item,
+                                fieldEvent = fieldEvent
                             )
 
                             is UiFieldsListItem.Section.Local -> {
                                 Section(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(52.dp)
-                                        .padding(horizontal = 20.dp),
-                                    item = item
+                                        .height(52.dp),
+                                    item = item,
+                                    fieldEvent = fieldEvent
                                 )
                             }
                         }
@@ -250,6 +253,13 @@ fun FieldsMainScreen(
     if (uiFieldEditOrNewState is UiFieldEditOrNewState.Visible) {
         EditFieldScreen(
             uiFieldEditOrNewState = uiFieldEditOrNewState,
+            fieldEvent = fieldEvent
+        )
+    }
+
+    if (uiFieldLocalInfoState is UiLocalsFieldsInfoState.Visible) {
+        SectionLocalFieldsInfo(
+            state = uiFieldLocalInfoState,
             fieldEvent = fieldEvent
         )
     }
@@ -286,7 +296,11 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
 }
 
 @Composable
-private fun Section(modifier: Modifier, item: UiFieldsListItem.Section) {
+private fun Section(
+    modifier: Modifier,
+    item: UiFieldsListItem.Section,
+    fieldEvent: (FieldEvent) -> Unit
+) {
     val (title, textColor) = when (item) {
         is UiFieldsListItem.Section.Header -> stringResource(R.string.object_type_fields_section_header) to colorResource(
             id = R.color.text_secondary
@@ -308,21 +322,51 @@ private fun Section(modifier: Modifier, item: UiFieldsListItem.Section) {
     Box(modifier = modifier) {
         Text(
             modifier = Modifier
-                .padding(bottom = 7.dp)
+                .padding(bottom = 7.dp, start = 20.dp)
                 .align(Alignment.BottomStart),
             text = title,
             style = BodyCalloutMedium,
             color = textColor,
         )
         if (item.canAdd) {
-            Image(
+            Box(
                 modifier = Modifier
-                    .size(24.dp)
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 6.dp),
-                painter = painterResource(R.drawable.ic_default_plus),
-                contentDescription = "$title plus button"
-            )
+                    .width(54.dp)
+                    .height(40.dp)
+                    .noRippleThrottledClickable {
+                        fieldEvent(FieldEvent.Section.OnAddIconClick)
+                    }
+            ) {
+                Image(
+                    modifier = Modifier
+                        .padding(bottom = 6.dp, end = 20.dp)
+                        .wrapContentSize()
+                        .align(Alignment.BottomEnd),
+                    painter = painterResource(R.drawable.ic_default_plus),
+                    contentDescription = "$title plus button"
+                )
+            }
+        }
+        if (item is Section.Local) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .height(37.dp)
+                    .width(44.dp)
+                    .noRippleThrottledClickable {
+                        fieldEvent(FieldEvent.Section.OnLocalInfoClick)
+                    }
+            ) {
+                Image(
+                    modifier = Modifier
+                        .padding(bottom = 9.dp, end = 20.dp)
+                        .wrapContentSize()
+                        .align(Alignment.BottomEnd),
+                    painter = painterResource(R.drawable.ic_section_local_fields),
+                    contentDescription = "Section local fields info"
+                )
+            }
         }
     }
 }
@@ -694,7 +738,8 @@ fun PreviewTypeFieldsMainScreen() {
             )
         ),
         fieldEvent = {},
-        uiFieldEditOrNewState = UiFieldEditOrNewState.Hidden
+        uiFieldEditOrNewState = UiFieldEditOrNewState.Hidden,
+        uiFieldLocalInfoState = UiLocalsFieldsInfoState.Hidden
     )
 }
 

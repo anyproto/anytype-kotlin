@@ -25,4 +25,13 @@ sealed class FieldEvent {
         data class OnRemoveLocalClick(val item: UiFieldsListItem) : FieldItemMenu()
         data class OnAddLocalToTypeClick(val item: UiFieldsListItem) : FieldItemMenu()
     }
+
+    sealed class FieldLocalInfo : FieldEvent() {
+        data object OnDismiss : FieldLocalInfo()
+    }
+
+    sealed class Section : FieldEvent() {
+        data object OnAddIconClick : Section()
+        data object OnLocalInfoClick : Section()
+    }
 }

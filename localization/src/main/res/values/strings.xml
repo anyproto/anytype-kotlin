@@ -1873,6 +1873,9 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_menu_delete">Delete</string>
     <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
     <string name="object_type_fields_menu_remove">Remove</string>
+    <string name="object_type_fields_local_info_title">Local fields</string>
+    <string name="object_type_fields_local_info_description">Some fields are not included in the object type. Please add them if you want to see them in all objects of this type, or remove them.</string>
+    <string name="object_type_fields_local_info_button">Got it</string>
 
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>

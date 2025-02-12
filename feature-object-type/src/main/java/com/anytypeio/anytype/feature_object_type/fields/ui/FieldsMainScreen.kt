@@ -188,11 +188,7 @@ fun FieldsMainScreen(
                                         .fillMaxWidth()
                                         .padding(horizontal = 20.dp)
                                         .bottomBorder()
-                                        .animateItem()
-                                        .combinedClickable(
-                                            onClick = { fieldEvent(OnFieldItemClick(item = item)) },
-                                            onLongClick = { fieldEvent(OnFieldItemLongClick(item = item)) }
-                                        ),
+                                        .animateItem(),
                                     item = item,
                                     fieldEvent = fieldEvent
                                 )
@@ -291,11 +287,23 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
 
 @Composable
 private fun Section(modifier: Modifier, item: UiFieldsListItem.Section) {
-    val title = when (item) {
-        is UiFieldsListItem.Section.Header -> stringResource(R.string.object_type_fields_section_header)
-        is UiFieldsListItem.Section.SideBar -> stringResource(R.string.object_type_fields_section_fields_menu)
-        is UiFieldsListItem.Section.Hidden -> stringResource(R.string.object_type_fields_section_hidden)
-        is UiFieldsListItem.Section.Local -> stringResource(R.string.object_type_fields_section_local_fields)
+    val (title, textColor) = when (item) {
+        is UiFieldsListItem.Section.Header -> stringResource(R.string.object_type_fields_section_header) to colorResource(
+            id = R.color.text_secondary
+        )
+
+        is UiFieldsListItem.Section.SideBar ->
+            stringResource(R.string.object_type_fields_section_fields_menu) to colorResource(
+                id = R.color.text_secondary
+            )
+
+        is UiFieldsListItem.Section.Hidden -> stringResource(R.string.object_type_fields_section_hidden) to colorResource(
+            id = R.color.text_secondary
+        )
+
+        is UiFieldsListItem.Section.Local -> stringResource(R.string.object_type_fields_section_local_fields) to colorResource(
+            id = R.color.text_primary
+        )
     }
     Box(modifier = modifier) {
         Text(
@@ -304,7 +312,7 @@ private fun Section(modifier: Modifier, item: UiFieldsListItem.Section) {
                 .align(Alignment.BottomStart),
             text = title,
             style = BodyCalloutMedium,
-            color = colorResource(id = R.color.text_primary),
+            color = textColor,
         )
         if (item.canAdd) {
             Image(
@@ -319,6 +327,7 @@ private fun Section(modifier: Modifier, item: UiFieldsListItem.Section) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FieldItem(
     modifier: Modifier,
@@ -329,7 +338,11 @@ private fun FieldItem(
     val isMenuExpanded = remember { mutableStateOf(false) }
 
     Row(
-        modifier = modifier,
+        modifier = modifier
+            .combinedClickable(
+                onClick = { fieldEvent(OnFieldItemClick(item = item)) },
+                onLongClick = { isMenuExpanded.value = true }
+            ),
         verticalAlignment = CenterVertically
     ) {
         val formatIcon = item.format.simpleIcon()
@@ -447,13 +460,7 @@ private fun LazyItemScope.FieldItemDraggable(
         index = index
     ) { isDragging ->
         Row(
-            modifier = modifier
-                .combinedClickable(
-                    onClick = { fieldEvent(OnFieldItemClick(item = item)) },
-                    onLongClick = {
-                        isMenuExpanded.value = true
-                    }
-                ),
+            modifier = modifier,
             verticalAlignment = CenterVertically
         ) {
             val formatIcon = item.format.simpleIcon()
@@ -467,17 +474,32 @@ private fun LazyItemScope.FieldItemDraggable(
                 )
             }
 
-            Text(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1.0f)
-                    .padding(end = 16.dp),
-                text = item.fieldTitle,
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+                    .weight(1f) // fill remaining space
+                    .combinedClickable(
+                        onClick = {
+                            // normal click => open/edit
+                            fieldEvent(OnFieldItemClick(item = item))
+                        },
+                        onLongClick = {
+                            // show your menu, only if NOT dragging
+                            isMenuExpanded.value = true
+                        }
+                    )
+                    .padding(end = 16.dp)
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 16.dp),
+                    text = item.fieldTitle,
+                    style = BodyRegular,
+                    color = colorResource(id = R.color.text_primary),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
 
             Image(
                 modifier = Modifier
@@ -623,7 +645,7 @@ fun PreviewTypeFieldsMainScreen() {
                 UiFieldsListItem.Item.Draggable(
                     id = "id2",
                     fieldKey = "key2",
-                    fieldTitle = "Name",
+                    fieldTitle = "Very long field title, just to test how it looks",
                     format = RelationFormat.LONG_TEXT,
                     canDelete = true
                 ),
@@ -639,8 +661,15 @@ fun PreviewTypeFieldsMainScreen() {
                 UiFieldsListItem.Item.Default(
                     id = "id4",
                     fieldKey = "key4",
-                    fieldTitle = "Date",
+                    fieldTitle = "Very long field title, just to test how it looks",
                     format = RelationFormat.DATE,
+                ),
+                UiFieldsListItem.Section.Hidden(),
+                UiFieldsListItem.Item.Draggable(
+                    id = "id555",
+                    fieldKey = "key555",
+                    fieldTitle = "Hidden field",
+                    format = RelationFormat.LONG_TEXT,
                 ),
                 UiFieldsListItem.Section.Local(),
                 UiFieldsListItem.Item.Local(
@@ -652,7 +681,7 @@ fun PreviewTypeFieldsMainScreen() {
                 UiFieldsListItem.Item.Local(
                     id = "id6",
                     fieldKey = "key6",
-                    fieldTitle = "Local field 2",
+                    fieldTitle = "Local Very long field title, just to test how it looks",
                     format = RelationFormat.LONG_TEXT,
                 )
             )

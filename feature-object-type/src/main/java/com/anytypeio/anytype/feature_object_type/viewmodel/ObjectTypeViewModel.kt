@@ -896,11 +896,17 @@ class ObjectTypeViewModel(
             is FieldEvent.OnFieldItemClick -> {
                 when (event.item) {
                     is UiFieldsListItem.Item -> {
-                        uiFieldEditOrNewState.value = Edit(
-                            event.item
-                        )
+                        val permissions = _objectTypePermissionsState.value
+                        if (permissions?.participantCanEdit == true && event.item.isEditableField) {
+                            uiFieldEditOrNewState.value = Edit(
+                                event.item
+                            )
+                        } else {
+                            uiFieldEditOrNewState.value = ViewOnly(
+                                event.item
+                            )
+                        }
                     }
-
                     else -> {}
                 }
             }

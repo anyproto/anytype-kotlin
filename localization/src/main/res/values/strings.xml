@@ -1868,6 +1868,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_info_text">You editing type</string>
     <string name="object_type_fields_edit_field">Edit field</string>
     <string name="object_type_fields_new_field">New field</string>
+    <string name="object_type_fields_preview_field">Preview field</string>
     <string name="object_type_fields_btn_save">Save</string>
     <string name="object_type_fields_menu_delete">Delete</string>
     <string name="object_type_fields_menu_add_to_type">Add to the current type</string>

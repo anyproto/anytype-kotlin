@@ -5,7 +5,7 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
-fun createDummyFieldDraggableItem(): UiFieldsListItem.Item.Draggable {
+fun createDummyFieldDraggableItem(isEditableField: Boolean = true): UiFieldsListItem.Item.Draggable {
     return UiFieldsListItem.Item.Draggable(
         id = "dummyId",
         fieldKey = "dummyKey",
@@ -17,7 +17,6 @@ fun createDummyFieldDraggableItem(): UiFieldsListItem.Item.Draggable {
                 key = "dummyKey1",
                 title = "Dummy Object Type 1",
                 icon = ObjectIcon.Empty.ObjectType,
-
                 ),
             UiFieldObjectItem(
                 id = "dummyObjectId1",
@@ -34,6 +33,7 @@ fun createDummyFieldDraggableItem(): UiFieldsListItem.Item.Draggable {
 
                 ),
         ),
+        isEditableField = isEditableField,
         canDelete = true
     )
 }

@@ -43,6 +43,7 @@ sealed class UiFieldsListItem {
         abstract val format: RelationFormat
         abstract val limitObjectTypes: List<UiFieldObjectItem>
         abstract val canDelete: Boolean
+        abstract val isEditableField: Boolean
 
         data class Default(
             override val id: Id,
@@ -50,7 +51,8 @@ sealed class UiFieldsListItem {
             override val fieldTitle: String,
             override val format: RelationFormat,
             override val limitObjectTypes: List<UiFieldObjectItem> = emptyList(),
-            override val canDelete: Boolean = false
+            override val canDelete: Boolean = false,
+            override val isEditableField: Boolean
         ) : Item()
 
         data class Draggable(
@@ -59,7 +61,8 @@ sealed class UiFieldsListItem {
             override val fieldTitle: String,
             override val format: RelationFormat,
             override val limitObjectTypes: List<UiFieldObjectItem> = emptyList(),
-            override val canDelete: Boolean = false
+            override val canDelete: Boolean = false,
+            override val isEditableField: Boolean
         ) : Item()
 
         data class Local(
@@ -68,7 +71,8 @@ sealed class UiFieldsListItem {
             override val fieldTitle: String,
             override val format: RelationFormat,
             override val limitObjectTypes: List<UiFieldObjectItem> = emptyList(),
-            override val canDelete: Boolean = false
+            override val canDelete: Boolean = false,
+            override val isEditableField: Boolean
         ) : Item()
     }
 
@@ -130,6 +134,10 @@ sealed class UiFieldEditOrNewState {
         ) : Visible()
 
         data class New(
+            override val item: UiFieldsListItem.Item
+        ) : Visible()
+
+        data class ViewOnly(
             override val item: UiFieldsListItem.Item
         ) : Visible()
     }

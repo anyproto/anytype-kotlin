@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.primitives.ParsedFields
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_models.primitives.Value
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -52,6 +53,8 @@ interface FieldParser {
         objectTypeConflictingFieldsIds: List<Id>,
         storeOfRelations: StoreOfRelations
     ): ParsedFields
+
+    fun isFieldEditable(relation: ObjectWrapper.Relation): Boolean
 }
 
 class FieldParserImpl @Inject constructor(
@@ -291,4 +294,13 @@ class FieldParserImpl @Inject constructor(
         )
     }
     //
+
+    override fun isFieldEditable(relation: ObjectWrapper.Relation): Boolean {
+        val isReadOnlyField = relation.isReadOnly == true
+        val isHiddenField = relation.isHidden == true
+        val isArchivedField = relation.isArchived == true
+        val isDeletedField = relation.isDeleted == true
+        val isSystemField = Relations.systemRelationKeys.contains(relation.key)
+        return !isReadOnlyField && !isHiddenField && !isArchivedField && !isDeletedField && !isSystemField
+    }
 }

@@ -185,6 +185,7 @@ private suspend fun mapToUiFieldsDraggableListItem(
         fieldTitle = relation.getName(stringResourceProvider),
         format = relation.format,
         limitObjectTypes = limitObjectTypes,
+        isEditableField = fieldParser.isFieldEditable(relation),
     )
 }
 
@@ -217,6 +218,7 @@ private suspend fun mapToUiFieldsLocalListItem(
         fieldTitle = relation.getName(stringResourceProvider),
         format = relation.format,
         limitObjectTypes = limitObjectTypes,
+        isEditableField = fieldParser.isFieldEditable(relation),
     )
 }
 

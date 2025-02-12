@@ -103,6 +103,8 @@ private fun ColumnScope.EditFieldContainer(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val isEditableField = uiFieldEditOrNewState.item.isEditableField
+
     val title = when (uiFieldEditOrNewState) {
         is UiFieldEditOrNewState.Visible.Edit -> {
             stringResource(R.string.object_type_fields_edit_field)
@@ -110,6 +112,10 @@ private fun ColumnScope.EditFieldContainer(
 
         is UiFieldEditOrNewState.Visible.New -> {
             stringResource(R.string.object_type_fields_new_field)
+        }
+
+        is UiFieldEditOrNewState.Visible.ViewOnly -> {
+            stringResource(R.string.object_type_fields_preview_field)
         }
     }
     Box(
@@ -125,6 +131,7 @@ private fun ColumnScope.EditFieldContainer(
     }
     NameTextField(
         innerValue = innerValue,
+        isEditableField = isEditableField,
         focusRequester = focusRequester,
         keyboardController = keyboardController
     ) {
@@ -134,41 +141,46 @@ private fun ColumnScope.EditFieldContainer(
     Divider()
     FieldType(
         format = uiFieldEditOrNewState.item.format,
+        isEditableField = isEditableField,
         fieldEvent = fieldEvent
     )
     Divider()
     if (uiFieldEditOrNewState.item.format == RelationFormat.OBJECT) {
         LimitTypes(
             objTypes = uiFieldEditOrNewState.item.limitObjectTypes,
+            isEditableField = isEditableField,
             fieldEvent = fieldEvent
         )
         Divider()
     }
     Spacer(modifier = Modifier.height(14.dp))
-    ButtonPrimary(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp),
-        text = stringResource(R.string.object_type_fields_btn_save),
-        onClick = {
-            val name = innerValue
-            val format = uiFieldEditOrNewState.item.format
-            val ids = uiFieldEditOrNewState.item.limitObjectTypes.map { it.id }
-            fieldEvent(
-                FieldEvent.OnSaveButtonClicked(
-                    name = name,
-                    format = format,
-                    limitObjectTypes = ids
+    if (isEditableField) {
+        ButtonPrimary(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            text = stringResource(R.string.object_type_fields_btn_save),
+            onClick = {
+                val name = innerValue
+                val format = uiFieldEditOrNewState.item.format
+                val ids = uiFieldEditOrNewState.item.limitObjectTypes.map { it.id }
+                fieldEvent(
+                    FieldEvent.OnSaveButtonClicked(
+                        name = name,
+                        format = format,
+                        limitObjectTypes = ids
+                    )
                 )
-            )
-        },
-        size = ButtonSize.Large
-    )
+            },
+            size = ButtonSize.Large
+        )
+    }
 }
 
 @Composable
 fun ColumnScope.NameTextField(
     innerValue: String,
+    isEditableField: Boolean,
     focusRequester: FocusRequester,
     keyboardController: SoftwareKeyboardController?,
     onNameUpdate: (String) -> Unit
@@ -206,7 +218,7 @@ fun ColumnScope.NameTextField(
         },
         textStyle = HeadlineHeading.copy(color = colorResource(id = R.color.text_primary)),
         singleLine = true,
-        enabled = true,
+        enabled = isEditableField,
         cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
         modifier = Modifier
             .fillMaxWidth()
@@ -249,6 +261,7 @@ fun ColumnScope.NameTextField(
 @Composable
 private fun ColumnScope.FieldType(
     format: RelationFormat,
+    isEditableField: Boolean,
     fieldEvent: (FieldEvent) -> Unit
 ) {
     val icon = format.simpleIcon()
@@ -265,7 +278,9 @@ private fun ColumnScope.FieldType(
             .height(52.dp)
             .padding(horizontal = 20.dp)
             .noRippleThrottledClickable {
-                fieldEvent(FieldEvent.OnChangeTypeClick)
+                if (isEditableField) {
+                    fieldEvent(FieldEvent.OnChangeTypeClick)
+                }
             }
     ) {
         if (icon != null) {
@@ -288,19 +303,22 @@ private fun ColumnScope.FieldType(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Image(
-            modifier = Modifier
-                .wrapContentSize()
-                .align(Alignment.CenterEnd),
-            painter = painterResource(id = R.drawable.ic_arrow_forward_24),
-            contentDescription = "Relation format icon",
-        )
+        if (isEditableField) {
+            Image(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .align(Alignment.CenterEnd),
+                painter = painterResource(id = R.drawable.ic_arrow_forward_24),
+                contentDescription = "Change field format icon",
+            )
+        }
     }
 }
 
 @Composable
 private fun ColumnScope.LimitTypes(
     objTypes: List<UiFieldObjectItem>,
+    isEditableField: Boolean,
     fieldEvent: (FieldEvent) -> Unit
 ) {
     val size = objTypes.size
@@ -317,7 +335,12 @@ private fun ColumnScope.LimitTypes(
             .height(52.dp)
             .padding(horizontal = 20.dp)
             .noRippleThrottledClickable {
-                fieldEvent(FieldEvent.OnLimitTypesClick)
+                //todo this is not correct
+                // - user should be able to see all object types(open types screen in preview mode)
+                // but only in case when there are >1 types
+                if (isEditableField) {
+                    fieldEvent(FieldEvent.OnLimitTypesClick)
+                }
             }
     ) {
         if (objTypes.isNotEmpty()) {
@@ -358,13 +381,15 @@ private fun ColumnScope.LimitTypes(
                 overflow = TextOverflow.Ellipsis
             )
         }
-        Image(
-            modifier = Modifier
-                .wrapContentSize()
-                .align(Alignment.CenterEnd),
-            painter = painterResource(id = R.drawable.ic_arrow_forward_24),
-            contentDescription = "Relation format icon",
-        )
+        if (isEditableField)  {
+            Image(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .align(Alignment.CenterEnd),
+                painter = painterResource(id = R.drawable.ic_arrow_forward_24),
+                contentDescription = "Change field object types icon",
+            )
+        }
     }
 }
 
@@ -388,6 +413,19 @@ private fun MyPreview() {
     EditFieldScreen(
         uiFieldEditOrNewState = UiFieldEditOrNewState.Visible.Edit(
             item = createDummyFieldDraggableItem()
+        ),
+        fieldEvent = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun MyPreviewOnlyPreview() {
+    EditFieldScreen(
+        uiFieldEditOrNewState = UiFieldEditOrNewState.Visible.ViewOnly(
+            item = createDummyFieldDraggableItem(
+                isEditableField = false
+            )
         ),
         fieldEvent = {}
     )

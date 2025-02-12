@@ -640,14 +640,16 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldKey = "key1",
                     fieldTitle = "Status",
                     format = RelationFormat.STATUS,
-                    canDelete = true
+                    canDelete = true,
+                    isEditableField = true
                 ),
                 UiFieldsListItem.Item.Draggable(
                     id = "id2",
                     fieldKey = "key2",
                     fieldTitle = "Very long field title, just to test how it looks",
                     format = RelationFormat.LONG_TEXT,
-                    canDelete = true
+                    canDelete = true,
+                    isEditableField = true
                 ),
                 UiFieldsListItem.Section.SideBar(
                     canAdd = true
@@ -657,12 +659,14 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldKey = "key3",
                     fieldTitle = "Links",
                     format = RelationFormat.URL,
+                    isEditableField = true
                 ),
                 UiFieldsListItem.Item.Default(
                     id = "id4",
                     fieldKey = "key4",
                     fieldTitle = "Very long field title, just to test how it looks",
                     format = RelationFormat.DATE,
+                    isEditableField = true
                 ),
                 UiFieldsListItem.Section.Hidden(),
                 UiFieldsListItem.Item.Draggable(
@@ -670,6 +674,7 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldKey = "key555",
                     fieldTitle = "Hidden field",
                     format = RelationFormat.LONG_TEXT,
+                    isEditableField = true
                 ),
                 UiFieldsListItem.Section.Local(),
                 UiFieldsListItem.Item.Local(
@@ -677,12 +682,14 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldKey = "key5",
                     fieldTitle = "Local field",
                     format = RelationFormat.LONG_TEXT,
+                    isEditableField = true
                 ),
                 UiFieldsListItem.Item.Local(
                     id = "id6",
                     fieldKey = "key6",
                     fieldTitle = "Local Very long field title, just to test how it looks",
                     format = RelationFormat.LONG_TEXT,
+                    isEditableField = true
                 )
             )
         ),

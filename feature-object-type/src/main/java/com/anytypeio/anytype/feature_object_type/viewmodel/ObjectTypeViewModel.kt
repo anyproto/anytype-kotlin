@@ -935,10 +935,6 @@ class ObjectTypeViewModel(
                 )
             }
 
-            is FieldEvent.OnFieldItemLongClick -> {
-
-            }
-
             is FieldEvent.FieldItemMenu -> proceedWithFieldItemMenuClick(event)
         }
     }
@@ -946,7 +942,9 @@ class ObjectTypeViewModel(
     private fun proceedWithFieldItemMenuClick(event: FieldEvent.FieldItemMenu) {
         when (event) {
             is FieldEvent.FieldItemMenu.OnDeleteFromTypeClick -> TODO()
-            is FieldEvent.FieldItemMenu.OnAddLocalToTypeClick -> TODO()
+            is FieldEvent.FieldItemMenu.OnAddLocalToTypeClick -> {
+                //todo need to implement
+            }
             is FieldEvent.FieldItemMenu.OnRemoveLocalClick -> TODO()
         }
     }

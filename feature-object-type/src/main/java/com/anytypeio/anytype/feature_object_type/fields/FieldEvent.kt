@@ -9,8 +9,6 @@ sealed class FieldEvent {
 
     data class OnFieldItemClick(val item: UiFieldsListItem) : FieldEvent()
 
-    data class OnFieldItemLongClick(val item: UiFieldsListItem) : FieldEvent()
-
     data class OnSaveButtonClicked(
         val name: String,
         val format: RelationFormat,

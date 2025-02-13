@@ -764,15 +764,19 @@ class ObjectTypeViewModel(
             }
 
             is TypeEvent.OnTemplateMenuDeleteClick -> {
-                proceedWithTemplateDelete(
-                    template = event.item.id
-                )
+                if (event.item is TemplateView.Template) {
+                    proceedWithTemplateDelete(
+                        template = event.item.id
+                    )
+                }
             }
 
             is TypeEvent.OnTemplateMenuDuplicateClick -> {
-                proceedWithTemplateDuplicate(
-                    template = event.item.id
-                )
+                if (event.item is TemplateView.Template) {
+                    proceedWithTemplateDuplicate(
+                        template = event.item.id
+                    )
+                }
             }
         }
     }
@@ -1079,11 +1083,10 @@ class ObjectTypeViewModel(
         viewModelScope.launch {
             createObject.async(params).fold(
                 onSuccess = { result ->
-                    //todo need to check this logic
-//                    proceedWithNavigation(
-//                        objectId = result.objectId,
-//                        objectLayout = result.obj.layout
-//                    )
+                    proceedWithNavigation(
+                        objectId = result.objectId,
+                        objectLayout = result.obj.layout
+                    )
                 },
                 onFailure = {
                     Timber.e(it, "Error while creating object")

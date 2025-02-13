@@ -40,8 +40,8 @@ sealed class TypeEvent {
     //region Templates
     data object OnTemplatesAddIconClick : TypeEvent()
     data class OnTemplateItemClick(val item: TemplateView) : TypeEvent()
-    data class OnTemplateMenuDuplicateClick(val item: TemplateView.Template) : TypeEvent()
-    data class OnTemplateMenuDeleteClick(val item: TemplateView.Template) : TypeEvent()
+    data class OnTemplateMenuDuplicateClick(val item: TemplateView) : TypeEvent()
+    data class OnTemplateMenuDeleteClick(val item: TemplateView) : TypeEvent()
     //endregion
 
     //region Layout type

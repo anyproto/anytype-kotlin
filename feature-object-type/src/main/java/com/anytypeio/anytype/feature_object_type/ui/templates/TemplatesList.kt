@@ -47,7 +47,6 @@ fun TemplatesList(
     Timber.d("TemplatesList :$uiTemplatesListState")
 
     val scrollState = rememberLazyListState()
-    var isMenuExpanded by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
 
     LazyRow(
@@ -69,6 +68,7 @@ fun TemplatesList(
                 }
             },
             itemContent = {
+                var isMenuExpanded by remember { mutableStateOf(false) }
                 val item = uiTemplatesListState.items[it]
                 Box(
                     modifier = Modifier
@@ -97,60 +97,53 @@ fun TemplatesList(
                         item = item,
                         showDefaultIcon = true
                     )
-                }
-                when (item) {
-                    is TemplateView.Blank -> item.id
-                    is TemplateView.New -> "new"
-                    is TemplateView.Template -> item.id
-                        .also {
-                            DropdownMenu(
-                                modifier = Modifier.width(244.dp),
-                                expanded = isMenuExpanded,
-                                onDismissRequest = { isMenuExpanded = false },
-                                shape = RoundedCornerShape(size = 10.dp),
-                                containerColor = colorResource(id = R.color.background_primary),
-                                shadowElevation = 5.dp,
-                                offset = DpOffset(
-                                    x = 20.dp,
-                                    y = (-300).dp
-                                )
-                            ) {
-                                DropdownMenuItem(
-                                    modifier = Modifier.height(44.dp),
-                                    onClick = {
-                                        onTypeEvent(TypeEvent.OnTemplateMenuDuplicateClick(item))
-                                        isMenuExpanded = false
-                                    }
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.object_type_templates_menu_duplicate),
-                                        style = BodyRegular,
-                                        color = colorResource(id = R.color.text_primary),
-                                        modifier = Modifier
-                                    )
-                                }
-                                Divider(
-                                    height = 0.5.dp,
-                                    paddingStart = 0.dp,
-                                    paddingEnd = 0.dp,
-                                    color = colorResource(R.color.shape_primary)
-                                )
-                                DropdownMenuItem(
-                                    modifier = Modifier.height(44.dp),
-                                    onClick = {
-                                        onTypeEvent(TypeEvent.OnTemplateMenuDeleteClick(item))
-                                        isMenuExpanded = false
-                                    }
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.object_type_templates_menu_delete),
-                                        style = BodyRegular,
-                                        color = colorResource(id = R.color.palette_system_red),
-                                        modifier = Modifier
-                                    )
-                                }
+                    DropdownMenu(
+                        modifier = Modifier.width(244.dp),
+                        expanded = isMenuExpanded,
+                        onDismissRequest = { isMenuExpanded = false },
+                        shape = RoundedCornerShape(size = 10.dp),
+                        containerColor = colorResource(id = R.color.background_primary),
+                        shadowElevation = 5.dp,
+                        offset = DpOffset(
+                            x = 20.dp,
+                            y = (-300).dp
+                        )
+                    ) {
+                        DropdownMenuItem(
+                            modifier = Modifier.height(44.dp),
+                            onClick = {
+                                onTypeEvent(TypeEvent.OnTemplateMenuDuplicateClick(item))
+                                isMenuExpanded = false
                             }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.object_type_templates_menu_duplicate),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.text_primary),
+                                modifier = Modifier
+                            )
                         }
+                        Divider(
+                            height = 0.5.dp,
+                            paddingStart = 0.dp,
+                            paddingEnd = 0.dp,
+                            color = colorResource(R.color.shape_primary)
+                        )
+                        DropdownMenuItem(
+                            modifier = Modifier.height(44.dp),
+                            onClick = {
+                                onTypeEvent(TypeEvent.OnTemplateMenuDeleteClick(item))
+                                isMenuExpanded = false
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.object_type_templates_menu_delete),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.palette_system_red),
+                                modifier = Modifier
+                            )
+                        }
+                    }
                 }
             }
         )

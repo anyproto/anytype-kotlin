@@ -303,7 +303,8 @@ fun Bubble(
             ReactionList(
                 reactions = reactions,
                 onReacted = onReacted,
-                onViewReaction = onViewChatReaction
+                onViewReaction = onViewChatReaction,
+                onAddNewReaction = onAddReactionClicked
             )
         }
         MaterialTheme(

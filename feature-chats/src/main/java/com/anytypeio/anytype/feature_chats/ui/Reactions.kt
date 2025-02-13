@@ -2,8 +2,10 @@ package com.anytypeio.anytype.feature_chats.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +13,9 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,8 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.feature_chats.R
@@ -31,7 +37,8 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatView
 fun ReactionList(
     reactions: List<ChatView.Message.Reaction>,
     onReacted: (String) -> Unit,
-    onViewReaction: (String) -> Unit
+    onViewReaction: (String) -> Unit,
+    onAddNewReaction: () -> Unit
 ) {
     FlowRow(
         modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 4.dp),
@@ -95,11 +102,25 @@ fun ReactionList(
                 )
             }
         }
+        Box(
+            modifier = Modifier
+                .padding(end = 8.dp)
+                .size(28.dp)
+                .clip(CircleShape)
+                .clickable {
+                    onAddNewReaction()
+                }
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_add_reaction),
+                contentDescription = null,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@DefaultPreviews
 @Composable
 fun ReactionListPreview() {
     ReactionList(
@@ -136,6 +157,7 @@ fun ReactionListPreview() {
             )
         ),
         onReacted = {},
-        onViewReaction = {}
+        onViewReaction = {},
+        onAddNewReaction = {}
     )
 }

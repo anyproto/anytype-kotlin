@@ -200,116 +200,54 @@ class FieldParserImpl @Inject constructor(
         storeOfRelations: StoreOfRelations
     ): ParsedFields {
 
-        val featuredFields = objectType.recommendedFeaturedRelations
-            .mapNotNull { storeOfRelations.getById(it) }
-            .filter { it.isValid && it.isDeleted != true }
-            .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
+        //todo: implement this method
 
-        val mainSidebarFields = objectType.recommendedRelations
-            .mapNotNull { storeOfRelations.getById(it) }
-            .filter { it.isValid && it.isDeleted != true }
-            .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
-
-        val hiddenFields = objectType.recommendedHiddenRelations
-            .mapNotNull { storeOfRelations.getById(it) }
-            .filter { it.isValid && it.isDeleted != true }
-
-        val allConflictedKeys = obj.map.keys.filter {
-            !featuredFields.map { it.key }.contains(it) ||
-                    !mainSidebarFields.map { it.key }.contains(it) ||
-                    !hiddenFields.map { it.key }.contains(it)
-        }
-
-        val deletedObjectKeys = allConflictedKeys.filter {
-            val r = storeOfRelations.getByKey(it)
-            r == null || !r.isValid || r.isDeleted == true
-        }
-
-        val conflictedWithoutDeletedKeys = allConflictedKeys.filterNot {
-            deletedObjectKeys.contains(it) == true
-        }
-
-        val systemConflictedKeys = conflictedWithoutDeletedKeys.filter {
-            Relations.systemRelationKeys.contains(it)
-        }
-
-        val systemConflictedFields = storeOfRelations.getByKeys(systemConflictedKeys)
-
-        val conflictedKeys = conflictedWithoutDeletedKeys.filterNot {
-            Relations.systemRelationKeys.contains(it)
-        }
-
-        val conflictedFields = storeOfRelations.getByKeys(conflictedKeys)
-
-        val sideBarFields = mainSidebarFields + systemConflictedFields
-
-        return ParsedFields(
-            featured = featuredFields,
-            sidebar = sideBarFields,
-            hidden = hiddenFields,
-            conflictedWithoutSystem = conflictedFields
-        )
+        return ParsedFields()
     }
 
+    //region Parsed Fields Logic
     override suspend fun getObjectTypeParsedFields(
         objectType: ObjectWrapper.Type,
         objectTypeConflictingFieldsIds: List<Id>,
         storeOfRelations: StoreOfRelations
     ): ParsedFields {
 
+        // Get valid relations for a given list of IDs.
+        suspend fun List<Id>.getValidRelations(): List<ObjectWrapper.Relation> =
+            mapNotNull { id ->
+                storeOfRelations.getById(id)?.takeIf { it.isFieldValid() }
+            }
+
+        // Featured fields: from recommendedFeaturedRelations but not hidden.
         val featuredFields = objectType.recommendedFeaturedRelations
-            .mapNotNull {
-                val r = storeOfRelations.getById(it)
-                if (r?.isFieldValid() == true) {
-                    r
-                } else {
-                    null
-                }
-            }
+            .getValidRelations()
             .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
 
+        // Sidebar fields: from recommendedRelations but not hidden.
         val mainSidebarFields = objectType.recommendedRelations
-            .mapNotNull {
-                val r = storeOfRelations.getById(it)
-                if (r?.isFieldValid() == true) {
-                    r
-                } else {
-                    null
-                }
-            }
+            .getValidRelations()
             .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
 
+        // Hidden fields: directly from recommendedHiddenRelations.
         val hiddenFields = objectType.recommendedHiddenRelations
-            .mapNotNull {
-                val r = storeOfRelations.getById(it)
-                if (r?.isFieldValid() == true) {
-                    r
-                } else {
-                    null
-                }
-            }
-            .filter { it.isValid && it.isDeleted != true }
+            .getValidRelations()
 
+        // Get all IDs already present.
         val existingIds = (featuredFields + mainSidebarFields + hiddenFields)
             .map { it.id }
             .toSet()
 
+        // Filter out conflicted field IDs that are already present.
         val filteredConflictedFieldsIds = objectTypeConflictingFieldsIds.filter { it !in existingIds }
 
+        // Get valid conflicted fields.
         val allConflictedFields = storeOfRelations
             .getById(filteredConflictedFieldsIds)
             .filter { it.isFieldValid() }
 
-        val conflictedFieldsWithoutSystem = mutableListOf<ObjectWrapper.Relation>()
-        val conflictedSystemFields = mutableListOf<ObjectWrapper.Relation>()
-
-        allConflictedFields.map {
-            if (Relations.systemRelationKeys.contains(it.key)) {
-                conflictedSystemFields.add(it)
-            } else {
-                conflictedFieldsWithoutSystem.add(it)
-            }
-        }
+        // Partition conflicted fields into system and non‑system using partition().
+        val (conflictedSystemFields, conflictedFieldsWithoutSystem) = allConflictedFields
+            .partition { Relations.systemRelationKeys.contains(it.key) }
 
         return ParsedFields(
             featured = featuredFields,
@@ -322,7 +260,6 @@ class FieldParserImpl @Inject constructor(
 
     private fun ObjectWrapper.Relation.isFieldValid(): Boolean =
         isValid && isDeleted != true && isArchived != true && isHidden != true
-    //
 
     override fun isFieldEditable(relation: ObjectWrapper.Relation): Boolean {
         val isReadOnlyField = relation.isReadOnly == true
@@ -332,4 +269,5 @@ class FieldParserImpl @Inject constructor(
         val isSystemField = Relations.systemRelationKeys.contains(relation.key)
         return !isReadOnlyField && !isHiddenField && !isArchivedField && !isDeletedField && !isSystemField
     }
+    //endregion
 }

@@ -208,8 +208,11 @@ class SelectWidgetSourceViewModel(
                             isInEditMode = curr.isInEditMode
                         )
                     }
-                    if (view.layout == ObjectType.Layout.DATE ||
-                        view.layout == ObjectType.Layout.PARTICIPANT
+                    if (view.layout == ObjectType.Layout.DATE
+                        || view.layout == ObjectType.Layout.PARTICIPANT
+                        || view.layout == ObjectType.Layout.IMAGE
+                        || view.layout == ObjectType.Layout.VIDEO
+                        || view.layout == ObjectType.Layout.FILE
                     ) {
                         isDismissed.value = true
                     }

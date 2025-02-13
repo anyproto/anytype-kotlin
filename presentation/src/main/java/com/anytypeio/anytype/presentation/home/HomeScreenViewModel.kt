@@ -674,7 +674,11 @@ class HomeScreenViewModel(
                     when (dispatch) {
                         is WidgetDispatchEvent.SourcePicked.Default -> {
                             if (dispatch.sourceLayout == ObjectType.Layout.DATE.code ||
-                                dispatch.sourceLayout == ObjectType.Layout.PARTICIPANT.code) {
+                                dispatch.sourceLayout == ObjectType.Layout.PARTICIPANT.code ||
+                                dispatch.sourceLayout == ObjectType.Layout.IMAGE.code ||
+                                dispatch.sourceLayout == ObjectType.Layout.VIDEO.code ||
+                                dispatch.sourceLayout == ObjectType.Layout.FILE.code
+                            ) {
                                 proceedWithCreatingWidget(
                                     ctx = config.widgets,
                                     source = dispatch.source,

@@ -1253,7 +1253,7 @@
         <item quantity="many">%1$d запытаў</item>
         <item quantity="other">%1$d запытаў</item>
     </plurals>
-    <string name="multiplayer_you_as_member">вы</string>
+    <string name="multiplayer_you_as_member">You</string>
     <string name="multiplayer_spaces">Прасторы</string>
     <string name="multiplayer_space_status_joining">Далучаецца</string>
     <string name="multiplayer_space_status_active">Актыўны</string>

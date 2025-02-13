@@ -120,7 +120,21 @@ suspend fun buildUiFieldsList(
         }
     }
 
-    val conflictedItems = parsedFields.conflicted.mapNotNull { field ->
+    val conflictedItems = parsedFields.conflictedWithoutSystem.mapNotNull { field ->
+        if (field.key == Relations.DESCRIPTION) {
+            null
+        } else {
+            mapToUiFieldsLocalListItem(
+                relation = field,
+                stringResourceProvider = stringResourceProvider,
+                fieldParser = fieldParser,
+                urlBuilder = urlBuilder,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+        }
+    }
+
+    val conflictedSystemItems = parsedFields.conflictedSystem.mapNotNull { field ->
         if (field.key == Relations.DESCRIPTION) {
             null
         } else {
@@ -136,18 +150,15 @@ suspend fun buildUiFieldsList(
 
     return buildList {
 
-        if (headerItems.isNotEmpty()) {
-            add(Section.Header(canAdd = false))
-            addAll(headerItems)
-        }
+        add(Section.Header(canAdd = false))
+        addAll(headerItems)
 
         add(Section.SideBar(canAdd = true))
         addAll(sidebarItems)
 
-        if (hiddenItems.isNotEmpty()) {
-            add(Section.Hidden(canAdd = false))
-            addAll(hiddenItems)
-        }
+        add(Section.Hidden(canAdd = false))
+        addAll(hiddenItems)
+        addAll(conflictedSystemItems)
 
         if (conflictedItems.isNotEmpty()) {
             add(Section.Local(canAdd = false))

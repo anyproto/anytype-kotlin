@@ -15,7 +15,6 @@ import com.anytypeio.anytype.core_models.primitives.ParsedFields
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_models.primitives.Value
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -248,7 +247,7 @@ class FieldParserImpl @Inject constructor(
             featured = featuredFields,
             sidebar = sideBarFields,
             hidden = hiddenFields,
-            conflicted = conflictedFields
+            conflictedWithoutSystem = conflictedFields
         )
     }
 
@@ -259,17 +258,36 @@ class FieldParserImpl @Inject constructor(
     ): ParsedFields {
 
         val featuredFields = objectType.recommendedFeaturedRelations
-            .mapNotNull { storeOfRelations.getById(it) }
-            .filter { it.isValid && it.isDeleted != true }
+            .mapNotNull {
+                val r = storeOfRelations.getById(it)
+                if (r?.isFieldValid() == true) {
+                    r
+                } else {
+                    null
+                }
+            }
             .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
 
         val mainSidebarFields = objectType.recommendedRelations
-            .mapNotNull { storeOfRelations.getById(it) }
-            .filter { it.isValid && it.isDeleted != true }
+            .mapNotNull {
+                val r = storeOfRelations.getById(it)
+                if (r?.isFieldValid() == true) {
+                    r
+                } else {
+                    null
+                }
+            }
             .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
 
         val hiddenFields = objectType.recommendedHiddenRelations
-            .mapNotNull { storeOfRelations.getById(it) }
+            .mapNotNull {
+                val r = storeOfRelations.getById(it)
+                if (r?.isFieldValid() == true) {
+                    r
+                } else {
+                    null
+                }
+            }
             .filter { it.isValid && it.isDeleted != true }
 
         val existingIds = (featuredFields + mainSidebarFields + hiddenFields)
@@ -280,19 +298,30 @@ class FieldParserImpl @Inject constructor(
 
         val allConflictedFields = storeOfRelations
             .getById(filteredConflictedFieldsIds)
-            .filter { it.isValid && it.isDeleted != true }
+            .filter { it.isFieldValid() }
 
-        val conflictedFieldsWithoutSystem = allConflictedFields.filterNot {
-            Relations.systemRelationKeys.contains(it.key)
+        val conflictedFieldsWithoutSystem = mutableListOf<ObjectWrapper.Relation>()
+        val conflictedSystemFields = mutableListOf<ObjectWrapper.Relation>()
+
+        allConflictedFields.map {
+            if (Relations.systemRelationKeys.contains(it.key)) {
+                conflictedSystemFields.add(it)
+            } else {
+                conflictedFieldsWithoutSystem.add(it)
+            }
         }
 
         return ParsedFields(
             featured = featuredFields,
             sidebar = mainSidebarFields,
             hidden = hiddenFields,
-            conflicted = conflictedFieldsWithoutSystem
+            conflictedWithoutSystem = conflictedFieldsWithoutSystem,
+            conflictedSystem = conflictedSystemFields
         )
     }
+
+    private fun ObjectWrapper.Relation.isFieldValid(): Boolean =
+        isValid && isDeleted != true && isArchived != true && isHidden != true
     //
 
     override fun isFieldEditable(relation: ObjectWrapper.Relation): Boolean {

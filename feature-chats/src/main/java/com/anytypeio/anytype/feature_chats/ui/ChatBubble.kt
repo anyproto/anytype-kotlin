@@ -80,6 +80,7 @@ fun Bubble(
     attachments: List<ChatView.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
     isEdited: Boolean = false,
+    isMaxUserReactionCountReached: Boolean = false,
     reactions: List<ChatView.Message.Reaction> = emptyList(),
     onReacted: (String) -> Unit,
     onDeleteMessage: () -> Unit,
@@ -304,7 +305,8 @@ fun Bubble(
                 reactions = reactions,
                 onReacted = onReacted,
                 onViewReaction = onViewChatReaction,
-                onAddNewReaction = onAddReactionClicked
+                onAddNewReaction = onAddReactionClicked,
+                isMaxReactionCountReached = isMaxUserReactionCountReached
             )
         }
         MaterialTheme(

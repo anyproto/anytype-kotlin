@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_chats.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
@@ -38,7 +36,8 @@ fun ReactionList(
     reactions: List<ChatView.Message.Reaction>,
     onReacted: (String) -> Unit,
     onViewReaction: (String) -> Unit,
-    onAddNewReaction: () -> Unit
+    onAddNewReaction: () -> Unit,
+    isMaxReactionCountReached: Boolean = false,
 ) {
     FlowRow(
         modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 4.dp),
@@ -102,20 +101,22 @@ fun ReactionList(
                 )
             }
         }
-        Box(
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .size(28.dp)
-                .clip(CircleShape)
-                .clickable {
-                    onAddNewReaction()
-                }
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_add_reaction),
-                contentDescription = null,
-                modifier = Modifier.align(Alignment.Center)
-            )
+        if (!isMaxReactionCountReached) {
+            Box(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .clickable {
+                        onAddNewReaction()
+                    }
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_add_reaction),
+                    contentDescription = null,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
         }
     }
 }

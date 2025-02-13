@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
@@ -27,6 +28,9 @@ sealed interface ChatView {
         val avatar: Avatar = Avatar.Initials(),
         val reply: Reply? = null
     ) : ChatView {
+
+        val isMaxUserReactionCountReached: Boolean =
+            reactions.count { it.isSelected } >= ChatConfig.MAX_REACTION_COUNT
 
         data class Content(val msg: String, val parts: List<Part>) {
             data class Part(

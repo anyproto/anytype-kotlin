@@ -121,6 +121,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentEditorBinding
+import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.ext.extractMarks
@@ -956,22 +957,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     ).showChildFragment()
                 }
                 is Command.OpenPhotoPicker -> {
-                    try {
-                        pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
-                    } catch (e: Exception) {
-                        Timber.w(e, "Error while opening photo picker")
-                        toast("Error while opening photo picker")
-                        pickerDelegate.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
-                    }
+                    launchMediaPicker(
+                        pickMedia = pickMedia,
+                        pickerDelegate = pickerDelegate,
+                        mediaType = PickVisualMedia.ImageOnly,
+                        fallbackMimeType = Mimetype.MIME_IMAGE_ALL
+                    )
                 }
                 is Command.OpenVideoPicker -> {
-                    try {
-                        pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.VideoOnly))
-                    } catch (e: Exception) {
-                        Timber.e(e, "Error while opening video picker")
-                        toast("Error while opening video picker")
-                        pickerDelegate.openFilePicker(Mimetype.MIME_VIDEO_ALL, null)
-                    }
+                    launchMediaPicker(
+                        pickMedia = pickMedia,
+                        pickerDelegate = pickerDelegate,
+                        mediaType = PickVisualMedia.VideoOnly,
+                        fallbackMimeType = Mimetype.MIME_VIDEO_ALL
+                    )
                 }
                 is Command.OpenFilePicker -> {
                     pickerDelegate.openFilePicker(Mimetype.MIME_FILE_ALL, null)

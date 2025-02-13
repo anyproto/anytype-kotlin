@@ -50,6 +50,7 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
+import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.mapFileObjectToView
@@ -74,6 +75,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -874,11 +876,10 @@ class CollectionViewModel(
     }
 
     fun onShareButtonClicked() {
+        viewModelScope.launch {
+            navPanelState.value.leftButtonClickAnalytics(analytics)
+        }
         launch { commands.emit(OpenShareScreen(vmParams.spaceId)) }
-    }
-
-    fun onBackLongClicked() {
-        launch { commands.emit(ExitToSpaceWidgets) }
     }
 
     fun onSearchClicked(space: Id) {

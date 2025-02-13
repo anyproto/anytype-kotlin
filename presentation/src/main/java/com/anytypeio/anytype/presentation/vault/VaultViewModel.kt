@@ -103,7 +103,7 @@ class VaultViewModel(
                 }
                 .combine(observeVaultSettings.flow()) { spaces, settings ->
                     spaces
-                        .filter { space -> space.isActive || space.isLoading }
+                        .filter { space -> (space.isActive || space.isLoading) }
                         .distinctBy { it.id }
                         .map { space ->
                             VaultSpaceView(
@@ -185,23 +185,6 @@ class VaultViewModel(
                     )
                 )
             )
-        }
-        viewModelScope.launch {
-            getVaultSettings.async(Unit)
-                .onSuccess { settings ->
-                    if (settings.showIntroduceVault) {
-                        commands.emit(Command.ShowIntroduceVault)
-                        setVaultSettings.async(
-                            params = settings.copy(
-                                showIntroduceVault = false
-                            )
-                        ).onFailure {
-                            Timber.e(it, "Error while setting vault settings")
-                        }
-                    }
-                }.onFailure {
-                    Timber.e(it, "Error while getting vault settings")
-                }
         }
         viewModelScope.launch {
             when (deeplink) {
@@ -397,7 +380,6 @@ class VaultViewModel(
         data class EnterSpaceLevelChat(val space: Space, val chat: Id): Command()
         data object CreateNewSpace: Command()
         data object OpenProfileSettings: Command()
-        data object ShowIntroduceVault : Command()
 
         sealed class Deeplink : Command() {
             data object DeepLinkToObjectNotWorking: Deeplink()

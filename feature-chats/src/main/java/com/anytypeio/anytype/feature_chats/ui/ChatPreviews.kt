@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
@@ -116,7 +117,7 @@ fun ChatScreenPreview() {
         onMarkupLinkClicked = {},
         onAttachObjectClicked = {},
         onReplyMessage = {},
-        chatBoxMode = ChatViewModel.ChatBoxMode.Default,
+        chatBoxMode = ChatViewModel.ChatBoxMode.Default(),
         onClearReplyClicked = {},
         onChatBoxMediaPicked = {},
         onChatBoxFilePicked = {},
@@ -188,8 +189,7 @@ fun BubbleEditedPreview() {
     )
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@DefaultPreviews
 @Composable
 fun BubbleWithAttachmentPreview() {
     Bubble(

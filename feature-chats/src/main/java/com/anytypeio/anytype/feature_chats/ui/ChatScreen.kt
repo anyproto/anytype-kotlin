@@ -355,35 +355,53 @@ fun ChatScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .noRippleClickable {
-                                        val start = text.selection.start
-                                        val end = text.selection.end
+
+                                        val query = mentionPanelState.query
                                         val input = text.text
 
-                                        val adjustedStart = (start - 1).coerceAtLeast(0)
-
                                         val replacementText = member.name + " "
+
+                                        val lengthDifference = replacementText.length - (query.range.last - query.range.first + 1)
+
                                         val updatedText = input.replaceRange(
-                                            startIndex = adjustedStart,
-                                            endIndex = end,
-                                            replacement = replacementText
+                                            query.range,
+                                            replacementText
                                         )
+
+                                        // After inserting a mention, all existing spans after the insertion point are shifted based on the text length difference.
+
+                                        val updatedSpans = spans.map { span ->
+                                            if (span.start > query.range.last) {
+                                                when(span) {
+                                                    is ChatBoxSpan.Mention -> {
+                                                        span.copy(
+                                                            start = span.start + lengthDifference,
+                                                            end = span.end + lengthDifference
+                                                        )
+                                                    }
+                                                }
+                                            } else {
+                                                span
+                                            }
+                                        }
 
                                         text = text.copy(
                                             text = updatedText,
                                             selection = TextRange(
-                                                index = (adjustedStart + replacementText.length))
+                                                index = (query.range.start + replacementText.length)
+                                            )
                                         )
 
                                         val mentionSpan = ChatBoxSpan.Mention(
-                                            start = adjustedStart,
-                                            end = adjustedStart + member.name.length,
+                                            start = query.range.start,
+                                            end = query.range.start + member.name.length,
                                             style = SpanStyle(
                                                 textDecoration = TextDecoration.Underline
                                             ),
                                             param = member.id
                                         )
 
-                                        spans = spans + mentionSpan
+                                        spans = updatedSpans + mentionSpan
 
                                         onTextChanged(text)
                                     }
@@ -427,9 +445,7 @@ fun ChatScreen(
             onValueChange = { t, s ->
                 text = t
                 spans = s
-                onTextChanged(
-                    t
-                )
+                onTextChanged(t)
             },
             text = text,
             spans = spans

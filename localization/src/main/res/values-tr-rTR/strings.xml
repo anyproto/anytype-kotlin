@@ -371,6 +371,7 @@
     <string name="scroll_to_select_position">Yeni konumu seçmek için kaydırın</string>
     <string name="block_action_add_below">Aşağıya ekleyin</string>
     <string name="content_desc_back_button">Geri düğmesi</string>
+    <string name="content_desc_share_button">Paylaş düğmesi</string>
     <string name="content_desc_home_button">Ana ekran düğmesi</string>
     <string name="content_desc_search_button">Arama düğmesi</string>
     <string name="content_desc_add_doc_button">Döküman ekle</string>
@@ -1214,7 +1215,8 @@
     <string name="multiplayer_notification_member_request_approved">Talep kabul edildi</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">%1$s alanına katılma isteğiniz salt okunur erişim haklarıyla onaylandı. Alan yakında cihazınızda kullanılabilir olacak.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">%1$s alanına katılma isteğiniz düzenleme erişim haklarıyla onaylandı. Alan yakında cihazınızda kullanılabilir olacak.</string>
-    <string name="multiplayer_notification_member_removed_from_space">Alandan çıkarıldınız veya alan, sahibi tarafından silindi.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">\"%1$s\" alanı artık erişilebilir değil.</string>
+    <string name="multiplayer_notification_member_removed_from_space">\"%1$s\" alanından çıkarıldınız veya alan sahibi tarafından silindi.</string>
     <string name="multiplayer_notification_member_permissions_changed">İzinler değiştirildi</string>
     <string name="multiplayer_notification_member_permission_change_read">%1$s alanındaki erişim haklarınız salt okunur olarak değiştirildi.</string>
     <string name="multiplayer_notification_member_permission_change_edit">%1$s alanındaki erişim haklarınız düzenleyici olarak değiştirildi.</string>
@@ -1225,7 +1227,7 @@
     <string name="multiplayer_toast_permission_not_allowed">İzinlerin değiştirilmesine izin verilmiyor</string>
     <string name="multiplayer_toast_share_limit_reached">Paylaşım sınırına ulaşıldı</string>
     <string name="multiplayer_deeplink_to_your_object">Nesnenize derin linkleme ekleyin</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Bu derin linkleme çalışmıyor. Nesne silinmiş olabilir veya alan erişimiyle ilgili sorunlar olabilir.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Nesne mevcut değil. Nesnenin sahibinden paylaşmasını isteyin.</string>
     <string name="multiplayer_collaborate_on_spaces">Alanlar üzerinde işbirliği yapın</string>
     <string name="multiplayer_collaborate_step_1">1.  Ayarlara erişmek için Alan widget\'ına dokunun</string>
     <string name="multiplayer_collaborate_step_2">2.  Paylaşım bölümünü açın</string>
@@ -1510,7 +1512,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="version_history_error_get_version">Sürüm geçmişi alınırken hata oluştu</string>
     <string name="version_history_error_get_members">Üyeler alınırken hata oluştu</string>
     <string name="new_object">Yeni nesne</string>
-    <string name="vault_my_spaces">Benim Alanlarım</string>
+    <string name="vault_my_spaces">Alanlarım</string>
     <string name="all_content_title_all_content">Tüm Nesneler</string>
     <string name="all_content_title_only_unlinked">Sadece bağlantısız</string>
     <string name="all_content_title_only_unlinked_description">Grafikteki diğer nesnelerle doğrudan bağlantısı veya geri bağlantısı olmayan bağlantısız nesneler.</string>
@@ -1559,6 +1561,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="all_content_snackbar_title">çöp kutusuna taşındı</string>
     <string name="main_navigation_content_desc_back_button">Geri düğmesi</string>
     <string name="main_navigation_content_desc_members_button">Paylaş ve üyeler butonu</string>
+    <string name="main_navigation_content_desc_home_button">Ana ekran düğmesi</string>
     <string name="main_navigation_content_desc_search_button">Nesneleri ara butonu</string>
     <string name="main_navigation_content_desc_create_button">Nesne oluştur butonu</string>
     <string name="chat">Sohbet</string>

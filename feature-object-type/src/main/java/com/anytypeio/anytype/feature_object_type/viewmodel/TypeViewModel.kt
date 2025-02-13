@@ -133,6 +133,7 @@ class ObjectTypeViewModel(
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
+    //region UI STATE
     //top bar
     val uiSyncStatusWidgetState =
         MutableStateFlow<SyncStatusWidgetState>(SyncStatusWidgetState.Hidden)
@@ -187,33 +188,27 @@ class ObjectTypeViewModel(
     val uiFieldEditOrNewState =
         MutableStateFlow<UiFieldEditOrNewState>(UiFieldEditOrNewState.Hidden)
 
+    //error
+    val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
+    //endregion
+
+    //region INNER STATE
     private val _objTypeState = MutableStateFlow<ObjectWrapper.Type?>(null)
     private val _objectTypePermissionsState = MutableStateFlow<ObjectPermissions?>(null)
     private val _objectTypeConflictingFieldIds = MutableStateFlow<List<Id>>(emptyList())
+    //endregion
 
-    val commands = MutableSharedFlow<ObjectTypeCommand>()
-    val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
-
+    //region INIT AND LIFE CYCLE
     init {
+        Timber.d("init, vmParams: $vmParams")
         proceedWithObservingSyncStatus()
         proceedWithObservingObjectType()
         setupObjectsMenuFlow()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        viewModelScope.launch {
-            storelessSubscriptionContainer.unsubscribe(
-                subscriptions = listOf("ObjectTypeSubscription-${vmParams.objectId}")
-            )
-        }
-    }
-
     fun onStart() {
         Timber.d("onStart, vmParams: $vmParams")
-        setupSubscriptionToObjects()
-        setupSubscriptionToSets()
-        setupSubscriptionToTemplates()
+        startSubscriptions()
         proceedWithGetObjectTypeConflictingFields()
         viewModelScope.launch {
             sendAnalyticsScreenObjectType(
@@ -224,19 +219,22 @@ class ObjectTypeViewModel(
 
     fun onStop() {
         Timber.d("onStop")
-        viewModelScope.launch {
-            storelessSubscriptionContainer.unsubscribe(
-                listOf(
-                    "ObjectsListSubscription-${vmParams.objectId}",
-                    "ObjectTypeSetByTypeSubscription-${vmParams.objectId}",
-                    "ObjectTypeTemplatesSubscription-${vmParams.objectId}"
-                )
-            )
-        }
+        stopSubscriptions()
         uiObjectsListState.value = UiObjectsListState.Empty
     }
 
-    //region SETUP
+    override fun onCleared() {
+        Timber.d("onCleared")
+        super.onCleared()
+        viewModelScope.launch {
+            storelessSubscriptionContainer.unsubscribe(
+                subscriptions = listOf("ObjectTypeSubscription-${vmParams.objectId}")
+            )
+        }
+    }
+    //endregion
+
+    //region DATA
     private fun setupObjectsMenuFlow() {
         viewModelScope.launch {
             _sortState.collect { sort ->
@@ -392,11 +390,27 @@ class ObjectTypeViewModel(
                 }
         }
     }
-    //endregion
 
-    //region Objects subscription
+    private fun startSubscriptions() {
+        startObjectsSubscription()
+        startSetSubscription()
+        startTemplatesSubscription()
+    }
+
+    private fun stopSubscriptions() {
+        viewModelScope.launch {
+            storelessSubscriptionContainer.unsubscribe(
+                listOf(
+                    objectsSubId(vmParams.objectId),
+                    setsSubId(vmParams.objectId),
+                    templatesSubId(vmParams.objectId),
+                )
+            )
+        }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun setupSubscriptionToObjects() {
+    private fun startObjectsSubscription() {
         viewModelScope.launch {
             combine(
                 restartSubscription,
@@ -408,7 +422,7 @@ class ObjectTypeViewModel(
                 if (objType == null || permission == null) {
                     emptyFlow()
                 } else {
-                    loadData(
+                    loadObjects(
                         typeName = objType.name.orEmpty(),
                         permissions = permission
                     ).map { items ->
@@ -447,12 +461,12 @@ class ObjectTypeViewModel(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun setupSubscriptionToSets() {
+    private fun startSetSubscription() {
         viewModelScope.launch {
             _objectTypePermissionsState
                 .flatMapLatest { permissions ->
                     if (permissions != null) {
-                        loadSets().map {
+                        loadSet().map {
                             it to permissions
                         }
                     } else {
@@ -486,7 +500,7 @@ class ObjectTypeViewModel(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun setupSubscriptionToTemplates() {
+    private fun startTemplatesSubscription() {
         viewModelScope.launch {
             _objectTypePermissionsState
                 .flatMapLatest { permissions ->
@@ -529,7 +543,7 @@ class ObjectTypeViewModel(
         }
     }
 
-    private fun loadData(
+    private fun loadObjects(
         typeName: String,
         permissions: ObjectPermissions
     ): Flow<List<UiObjectsListItem>> {
@@ -542,7 +556,7 @@ class ObjectTypeViewModel(
             space = vmParams.spaceId,
             limit = 20,
             keys = defaultKeys,
-            subscription = "ObjectsListSubscription-${vmParams.objectId}"
+            subscription = objectsSubId(vmParams.objectId)
         )
 
         return storelessSubscriptionContainer.subscribe(searchParams)
@@ -565,7 +579,7 @@ class ObjectTypeViewModel(
             }
     }
 
-    private fun loadSets(): Flow<List<ObjectWrapper.Basic>> {
+    private fun loadSet(): Flow<List<ObjectWrapper.Basic>> {
 
         val searchParams = StoreSearchParams(
             filters = filtersForSetsSearch(objectTypeId = vmParams.objectId),
@@ -573,7 +587,7 @@ class ObjectTypeViewModel(
             space = vmParams.spaceId,
             limit = 1,
             keys = defaultKeys,
-            subscription = "ObjectTypeSetByTypeSubscription-${vmParams.objectId}"
+            subscription = setsSubId(vmParams.objectId)
         )
 
         return storelessSubscriptionContainer.subscribe(searchParams)
@@ -591,7 +605,7 @@ class ObjectTypeViewModel(
             space = vmParams.spaceId,
             limit = 200,
             keys = defaultKeys,
-            subscription = "ObjectTypeTemplatesSubscription-${vmParams.objectId}"
+            subscription = templatesSubId(vmParams.objectId)
         )
 
         return storelessSubscriptionContainer.subscribe(searchParams).map { templates ->
@@ -635,7 +649,7 @@ class ObjectTypeViewModel(
     }
     //endregion
 
-    //region Ui Events TYPES
+    //region Ui EVENTS - TYPES
     fun onTypeEvent(event: TypeEvent) {
         Timber.d("onTypeEvent: $event")
         when (event) {
@@ -703,7 +717,7 @@ class ObjectTypeViewModel(
 
             TypeEvent.OnAlertDeleteConfirm -> {
                 uiAlertState.value = UiDeleteAlertState.Hidden
-                onDeletionObjectTypeAccepted()
+                proceedWithObjectTypeDelete()
             }
 
             TypeEvent.OnAlertDeleteDismiss -> {
@@ -897,7 +911,7 @@ class ObjectTypeViewModel(
     }
     //endregion
 
-    //region Ui Events FIELDS
+    //region Ui EVENTS - FIELDS
     fun onFieldEvent(event: FieldEvent) {
         Timber.d("onFieldEvent: $event")
         when (event) {
@@ -982,7 +996,8 @@ class ObjectTypeViewModel(
     }
     //endregion
 
-    //region Navigation
+    //region NAVIGATION
+    val commands = MutableSharedFlow<ObjectTypeCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
 
     private fun proceedWithNavigation(
@@ -1004,7 +1019,7 @@ class ObjectTypeViewModel(
     }
     //endregion
 
-    //region UseCases
+    //region USE CASES
     private fun proceedWithUpdatingTypeFields(
         headerFields: List<Id>,
         sidebarFields: List<Id>,
@@ -1077,7 +1092,7 @@ class ObjectTypeViewModel(
         }
     }
 
-    private fun onDeletionObjectTypeAccepted() {
+    private fun proceedWithObjectTypeDelete() {
         val params = DeleteObjects.Params(
             targets = listOf(vmParams.objectId)
         )
@@ -1201,6 +1216,10 @@ class ObjectTypeViewModel(
 
     companion object {
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
+
+        fun objectsSubId(objectId: Id) = "TYPE-OBJECTS-SUB-ID-$objectId"
+        fun setsSubId(objectId: Id) = "TYPE-SET-ID--$objectId"
+        fun templatesSubId(objectId: Id) = "TYPE-TEMPLATES-SUB-ID--$objectId"
     }
 }
 

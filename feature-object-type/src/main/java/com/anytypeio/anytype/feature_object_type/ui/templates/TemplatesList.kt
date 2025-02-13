@@ -109,10 +109,52 @@ fun TemplatesList(
                             y = (-300).dp
                         )
                     ) {
+                        if (!item.isDefault) {
+                            DropdownMenuItem(
+                                modifier = Modifier.height(44.dp),
+                                onClick = {
+                                    onTypeEvent(TypeEvent.OnTemplateMenuClick.SetAsDefault(item))
+                                    isMenuExpanded = false
+                                }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.object_type_templates_menu_set_default),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary),
+                                    modifier = Modifier
+                                )
+                            }
+                            Divider(
+                                height = 0.5.dp,
+                                paddingStart = 0.dp,
+                                paddingEnd = 0.dp,
+                                color = colorResource(R.color.shape_primary)
+                            )
+                        }
                         DropdownMenuItem(
                             modifier = Modifier.height(44.dp),
                             onClick = {
-                                onTypeEvent(TypeEvent.OnTemplateMenuDuplicateClick(item))
+                                onTypeEvent(TypeEvent.OnTemplateMenuClick.Edit(item))
+                                isMenuExpanded = false
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.object_type_templates_menu_edit),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.text_primary),
+                                modifier = Modifier
+                            )
+                        }
+                        Divider(
+                            height = 0.5.dp,
+                            paddingStart = 0.dp,
+                            paddingEnd = 0.dp,
+                            color = colorResource(R.color.shape_primary)
+                        )
+                        DropdownMenuItem(
+                            modifier = Modifier.height(44.dp),
+                            onClick = {
+                                onTypeEvent(TypeEvent.OnTemplateMenuClick.Duplicate(item))
                                 isMenuExpanded = false
                             }
                         ) {
@@ -132,7 +174,7 @@ fun TemplatesList(
                         DropdownMenuItem(
                             modifier = Modifier.height(44.dp),
                             onClick = {
-                                onTypeEvent(TypeEvent.OnTemplateMenuDeleteClick(item))
+                                onTypeEvent(TypeEvent.OnTemplateMenuClick.Delete(item))
                                 isMenuExpanded = false
                             }
                         ) {

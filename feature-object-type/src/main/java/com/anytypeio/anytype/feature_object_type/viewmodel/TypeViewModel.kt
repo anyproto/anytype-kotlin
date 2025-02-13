@@ -763,22 +763,38 @@ class ObjectTypeViewModel(
                 }
             }
 
-            is TypeEvent.OnTemplateMenuDeleteClick -> {
+            is TypeEvent.OnTemplateMenuClick -> proceedWithTemplateMenuClick(event)
+        }
+    }
+
+    private fun proceedWithTemplateMenuClick(event: TypeEvent.OnTemplateMenuClick) {
+        when (event) {
+            is TypeEvent.OnTemplateMenuClick.Delete -> {
                 if (event.item is TemplateView.Template) {
                     proceedWithTemplateDelete(
                         template = event.item.id
                     )
                 }
             }
-
-            is TypeEvent.OnTemplateMenuDuplicateClick -> {
+            is TypeEvent.OnTemplateMenuClick.Duplicate -> {
                 if (event.item is TemplateView.Template) {
                     proceedWithTemplateDuplicate(
                         template = event.item.id
                     )
                 }
             }
+            is TypeEvent.OnTemplateMenuClick.Edit -> {
+                onTemplateItemClick(event.item)
+            }
+            is TypeEvent.OnTemplateMenuClick.SetAsDefault -> {
+                if (event.item is TemplateView.Template) {
+                    proceedWithSetDefaultTemplate(
+                        template = event.item.id
+                    )
+                }
+            }
         }
+
     }
 
     private fun onTemplateItemClick(item: TemplateView) {
@@ -1190,6 +1206,23 @@ class ObjectTypeViewModel(
                 },
                 onFailure = {
                     Timber.e(it, "Error while duplicating template $template")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithSetDefaultTemplate(template: Id) {
+        val params = SetObjectDetails.Params(
+            ctx = vmParams.objectId,
+            details = mapOf(Relations.DEFAULT_TEMPLATE_ID to template)
+        )
+        viewModelScope.launch{
+            setObjectDetails.async(params).fold(
+                onSuccess = {
+                    Timber.d("Template $template set as default")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while setting template $template as default")
                 }
             )
         }

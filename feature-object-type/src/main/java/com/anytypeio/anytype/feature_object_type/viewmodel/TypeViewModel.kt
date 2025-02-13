@@ -346,7 +346,7 @@ class ObjectTypeViewModel(
                             )
                             uiFieldsListState.value = UiFieldsListState(items = items)
                             uiFieldsButtonState.value = UiFieldsButtonState.Visible(
-                                count = items.size
+                                count = items.filter { it is UiFieldsListItem.Item }.count()
                             )
                         } else {
                             _objTypeState.value = null

@@ -1241,7 +1241,7 @@
         <item quantity="one">%1$d request</item>
         <item quantity="other">%1$d requests</item>
     </plurals>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_you_as_member">You</string>
     <string name="multiplayer_spaces">Rom</string>
     <string name="multiplayer_space_status_joining">Kobler til</string>
     <string name="multiplayer_space_status_active">Aktiv</string>

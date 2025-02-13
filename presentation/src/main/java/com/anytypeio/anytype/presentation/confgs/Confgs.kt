@@ -6,7 +6,8 @@ import com.anytypeio.anytype.presentation.BuildConfig
 object ChatConfig {
 
     const val MAX_ATTACHMENT_COUNT = 10
-    const val MAX_REACTION_COUNT = 3
+    const val MAX_USER_REACTION_COUNT = 3
+    const val MAX_REACTION_COUNT = 12
 
     /**
      * Spaces for beta-testing space-level chats

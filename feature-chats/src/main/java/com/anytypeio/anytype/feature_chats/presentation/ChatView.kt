@@ -29,8 +29,9 @@ sealed interface ChatView {
         val reply: Reply? = null
     ) : ChatView {
 
-        val isMaxUserReactionCountReached: Boolean =
-            reactions.count { it.isSelected } >= ChatConfig.MAX_REACTION_COUNT
+        val isMaxReactionCountReached: Boolean =
+            reactions.size >= ChatConfig.MAX_REACTION_COUNT ||
+            reactions.count { it.isSelected } >= ChatConfig.MAX_USER_REACTION_COUNT
 
         data class Content(val msg: String, val parts: List<Part>) {
             data class Part(

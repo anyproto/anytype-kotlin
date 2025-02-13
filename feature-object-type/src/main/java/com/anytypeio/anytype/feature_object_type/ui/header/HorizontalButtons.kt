@@ -24,8 +24,8 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
-import com.anytypeio.anytype.feature_object_type.models.UiFieldsButtonState
-import com.anytypeio.anytype.feature_object_type.models.UiLayoutButtonState
+import com.anytypeio.anytype.feature_object_type.ui.UiFieldsButtonState
+import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 
 @Composable
 fun HorizontalButtons(

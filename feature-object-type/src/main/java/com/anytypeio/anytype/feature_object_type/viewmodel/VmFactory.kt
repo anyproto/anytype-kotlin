@@ -19,7 +19,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
-import com.anytypeio.anytype.feature_object_type.models.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.stub
+package com.anytypeio.anytype.feature_object_type.ui
 
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem

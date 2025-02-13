@@ -107,7 +107,7 @@ import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
-import com.anytypeio.anytype.feature_object_type.models.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel

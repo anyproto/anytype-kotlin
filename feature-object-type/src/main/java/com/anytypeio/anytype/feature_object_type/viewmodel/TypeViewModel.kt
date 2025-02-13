@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -35,34 +36,34 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
-import com.anytypeio.anytype.feature_object_type.models.ObjectTypeVmParams
-import com.anytypeio.anytype.feature_object_type.models.UiDeleteAlertState
-import com.anytypeio.anytype.feature_object_type.models.UiEditButton
-import com.anytypeio.anytype.feature_object_type.models.UiErrorState
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
+import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
-import com.anytypeio.anytype.feature_object_type.models.UiFieldsButtonState
+import com.anytypeio.anytype.feature_object_type.ui.UiFieldsButtonState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
-import com.anytypeio.anytype.feature_object_type.models.UiIconState
-import com.anytypeio.anytype.feature_object_type.models.UiLayoutButtonState
-import com.anytypeio.anytype.feature_object_type.models.UiLayoutTypeState
-import com.anytypeio.anytype.feature_object_type.models.UiLayoutTypeState.*
-import com.anytypeio.anytype.feature_object_type.models.UiMenuSetItem
-import com.anytypeio.anytype.feature_object_type.models.UiMenuState
-import com.anytypeio.anytype.feature_object_type.models.UiObjectsAddIconState
-import com.anytypeio.anytype.feature_object_type.models.UiObjectsHeaderState
-import com.anytypeio.anytype.feature_object_type.models.UiObjectsSettingsIconState
-import com.anytypeio.anytype.feature_object_type.models.UiSyncStatusBadgeState
-import com.anytypeio.anytype.feature_object_type.models.UiTemplatesAddIconState
-import com.anytypeio.anytype.feature_object_type.models.UiTemplatesHeaderState
-import com.anytypeio.anytype.feature_object_type.models.UiTemplatesListState
-import com.anytypeio.anytype.feature_object_type.models.UiTitleState
-import com.anytypeio.anytype.feature_object_type.models.buildUiFieldsList
-import com.anytypeio.anytype.feature_object_type.models.toTemplateView
+import com.anytypeio.anytype.feature_object_type.ui.UiIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
+import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
+import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState.*
+import com.anytypeio.anytype.feature_object_type.ui.UiMenuSetItem
+import com.anytypeio.anytype.feature_object_type.ui.UiMenuState
+import com.anytypeio.anytype.feature_object_type.ui.UiObjectsAddIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiObjectsHeaderState
+import com.anytypeio.anytype.feature_object_type.ui.UiObjectsSettingsIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
+import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesAddIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesHeaderState
+import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesListState
+import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
+import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
+import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -148,7 +149,7 @@ class ObjectTypeViewModel(
     val uiLayoutButtonState = MutableStateFlow<UiLayoutButtonState>(UiLayoutButtonState.Hidden)
 
     //type layouts
-    val uiTypeLayoutsState = MutableStateFlow<UiLayoutTypeState>(UiLayoutTypeState.Hidden)
+    val uiTypeLayoutsState = MutableStateFlow<UiLayoutTypeState>(Hidden)
 
     //templates header
     val uiTemplatesHeaderState =
@@ -1188,9 +1189,40 @@ class ObjectTypeViewModel(
         userInput.value = input
     }
 
+    private fun proceedWithGettingNonTypeFields(typeAllFieldsIds: List<Id>) {
+
+        viewModelScope.launch{
+            storeOfRelations.getAll()
+        }
+
+    }
+
     //endregion
 
     companion object {
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
     }
+}
+
+sealed class ObjectTypeCommand {
+
+    sealed class SendToast : ObjectTypeCommand() {
+        data class Error(val message: String) : SendToast()
+        data class UnexpectedLayout(val layout: String) : SendToast()
+    }
+
+    data object Back : ObjectTypeCommand()
+
+    data class OpenTemplate(
+        val templateId: Id,
+        val typeId: Id,
+        val typeKey: Key,
+        val spaceId: Id
+    ): ObjectTypeCommand()
+
+    data object OpenEmojiPicker : ObjectTypeCommand()
+
+    data object OpenFieldsScreen : ObjectTypeCommand()
+
+    data object OpenEditFieldScreen : ObjectTypeCommand()
 }

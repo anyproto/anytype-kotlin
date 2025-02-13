@@ -71,8 +71,8 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
-import com.anytypeio.anytype.feature_object_type.models.UiIconState
-import com.anytypeio.anytype.feature_object_type.models.UiTitleState
+import com.anytypeio.anytype.feature_object_type.ui.UiIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -160,10 +160,12 @@ fun FieldsMainScreen(
                             is UiFieldsListItem.Item.Default -> FieldsItemsContentType.FIELD_ITEM_DEFAULT
                             is UiFieldsListItem.Item.Draggable -> FieldsItemsContentType.FIELD_ITEM_DRAGGABLE
                             is UiFieldsListItem.Item.Local -> FieldsItemsContentType.FIELD_ITEM_LOCAL
-                            is UiFieldsListItem.Section.SideBar -> FieldsItemsContentType.SECTION_SIDEBAR
-                            is UiFieldsListItem.Section.Header -> FieldsItemsContentType.SECTION_HEADER
-                            is UiFieldsListItem.Section.Hidden -> FieldsItemsContentType.SECTION_HIDDEN
-                            is UiFieldsListItem.Section.Local -> FieldsItemsContentType.SECTION_LOCAL
+                            is Section.SideBar -> FieldsItemsContentType.SECTION_SIDEBAR
+                            is Section.Header -> FieldsItemsContentType.SECTION_HEADER
+                            is Section.Hidden -> FieldsItemsContentType.SECTION_HIDDEN
+                            is Section.Local -> FieldsItemsContentType.SECTION_LOCAL
+                            is Section.LibraryFields -> TODO()
+                            is Section.SpaceFields -> TODO()
                         }
                     },
                     itemContent = { index ->
@@ -210,7 +212,7 @@ fun FieldsMainScreen(
                                 )
                             }
 
-                            is UiFieldsListItem.Section.SideBar -> Section(
+                            is Section.SideBar -> Section(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(52.dp),
@@ -218,7 +220,7 @@ fun FieldsMainScreen(
                                 fieldEvent = fieldEvent
                             )
 
-                            is UiFieldsListItem.Section.Header -> Section(
+                            is Section.Header -> Section(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(52.dp),
@@ -226,7 +228,7 @@ fun FieldsMainScreen(
                                 fieldEvent = fieldEvent
                             )
 
-                            is UiFieldsListItem.Section.Hidden -> Section(
+                            is Section.Hidden -> Section(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(52.dp),
@@ -234,7 +236,7 @@ fun FieldsMainScreen(
                                 fieldEvent = fieldEvent
                             )
 
-                            is UiFieldsListItem.Section.Local -> {
+                            is Section.Local -> {
                                 Section(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -243,6 +245,9 @@ fun FieldsMainScreen(
                                     fieldEvent = fieldEvent
                                 )
                             }
+
+                            is Section.LibraryFields -> TODO()
+                            is Section.SpaceFields -> TODO()
                         }
                     }
                 )
@@ -302,22 +307,25 @@ private fun Section(
     fieldEvent: (FieldEvent) -> Unit
 ) {
     val (title, textColor) = when (item) {
-        is UiFieldsListItem.Section.Header -> stringResource(R.string.object_type_fields_section_header) to colorResource(
+        is Section.Header -> stringResource(R.string.object_type_fields_section_header) to colorResource(
             id = R.color.text_secondary
         )
 
-        is UiFieldsListItem.Section.SideBar ->
+        is Section.SideBar ->
             stringResource(R.string.object_type_fields_section_fields_menu) to colorResource(
                 id = R.color.text_secondary
             )
 
-        is UiFieldsListItem.Section.Hidden -> stringResource(R.string.object_type_fields_section_hidden) to colorResource(
+        is Section.Hidden -> stringResource(R.string.object_type_fields_section_hidden) to colorResource(
             id = R.color.text_secondary
         )
 
-        is UiFieldsListItem.Section.Local -> stringResource(R.string.object_type_fields_section_local_fields) to colorResource(
+        is Section.Local -> stringResource(R.string.object_type_fields_section_local_fields) to colorResource(
             id = R.color.text_primary
         )
+
+        is Section.LibraryFields -> TODO()
+        is Section.SpaceFields -> TODO()
     }
     Box(modifier = modifier) {
         Text(

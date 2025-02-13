@@ -57,7 +57,7 @@ import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem
-import com.anytypeio.anytype.feature_object_type.stub.createDummyFieldDraggableItem
+import com.anytypeio.anytype.feature_object_type.ui.createDummyFieldDraggableItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

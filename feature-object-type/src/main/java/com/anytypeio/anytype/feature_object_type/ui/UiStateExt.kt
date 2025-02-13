@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.models
+package com.anytypeio.anytype.feature_object_type.ui
 
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id

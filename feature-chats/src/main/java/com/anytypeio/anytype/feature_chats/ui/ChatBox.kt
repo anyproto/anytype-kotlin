@@ -11,8 +11,8 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,16 +20,12 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,7 +40,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -53,10 +48,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
+import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
 import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -64,8 +58,6 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import kotlin.collections.forEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -89,6 +81,8 @@ fun ChatBox(
     onExitEditMessageMode: () -> Unit,
     onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit
 ) {
+
+    val length = text.text.length
 
     val uploadMediaLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickMultipleVisualMedia(maxItems = ChatConfig.MAX_ATTACHMENT_COUNT)
@@ -276,15 +270,52 @@ fun ChatBox(
                     }
                 }
             }
-            ChatBoxUserInput(
-                text = text,
-                spans = spans,
-                onValueChange = onValueChange,
+            Box(
                 modifier = Modifier
                     .weight(1f)
                     .align(Alignment.Bottom)
-                    .focusRequester(chatBoxFocusRequester)
-            )
+            ) {
+                ChatBoxUserInput(
+                    text = text,
+                    spans = spans,
+                    onValueChange = onValueChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(chatBoxFocusRequester)
+                )
+                if (length >= ChatConfig.MAX_MESSAGE_CHARACTER_OFFSET_LIMIT) {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .background(
+                                color = colorResource(R.color.background_secondary),
+                                shape = RoundedCornerShape(100.dp)
+                            )
+                            .clip(RoundedCornerShape(100.dp))
+                            .border(
+                                color = colorResource(R.color.shape_tertiary),
+                                width = 1.dp,
+                                shape = RoundedCornerShape(100.dp)
+                            )
+                            .align(Alignment.TopCenter)
+                    ) {
+                        Text(
+                            text = "${text.text.length} / ${ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT}",
+                            modifier = Modifier.padding(
+                                horizontal = 8.dp,
+                                vertical = 3.dp
+                            ).align(
+                                Alignment.Center
+                            ),
+                            style = Caption1Regular,
+                            color = if (length > ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT)
+                                colorResource(R.color.palette_system_red)
+                            else
+                                colorResource(R.color.text_primary)
+                        )
+                    }
+                }
+            }
             AnimatedVisibility(
                 visible = attachments.isNotEmpty() || text.text.isNotEmpty(),
                 exit = fadeOut() + scaleOut(),
@@ -296,7 +327,7 @@ fun ChatBox(
                         .padding(horizontal = 4.dp, vertical = 8.dp)
                         .clip(CircleShape)
                         .then(
-                            if (mode.isSendingMessageBlocked) {
+                            if (mode.isSendingMessageBlocked || length > ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT) {
                                 Modifier
                             } else {
                                 Modifier
@@ -314,7 +345,12 @@ fun ChatBox(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .padding(horizontal = 4.dp, vertical = 4.dp)
-                            .alpha(if (mode.isSendingMessageBlocked) 0.5f else 1f)
+                            .alpha(
+                                if (mode.isSendingMessageBlocked || length > ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT)
+                                    0.3f
+                                else
+                                    FULL_ALPHA
+                            )
                     )
                 }
             }

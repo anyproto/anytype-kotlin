@@ -9,6 +9,9 @@ object ChatConfig {
     const val MAX_USER_REACTION_COUNT = 3
     const val MAX_REACTION_COUNT = 12
 
+    const val MAX_MESSAGE_CHARACTER_LIMIT = 20
+    const val MAX_MESSAGE_CHARACTER_OFFSET_LIMIT = 15
+
     /**
      * Spaces for beta-testing space-level chats
      */

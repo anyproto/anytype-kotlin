@@ -1253,7 +1253,7 @@
         <item quantity="many">%1$d requests</item>
         <item quantity="other">%1$d requests</item>
     </plurals>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_you_as_member">You</string>
     <string name="multiplayer_spaces">Spaces</string>
     <string name="multiplayer_space_status_joining">Joining</string>
     <string name="multiplayer_space_status_active">Active</string>

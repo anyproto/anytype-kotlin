@@ -1241,7 +1241,7 @@
         <item quantity="one">%1$d verzoek</item>
         <item quantity="other">%1$d verzoeken</item>
     </plurals>
-    <string name="multiplayer_you_as_member">jij</string>
+    <string name="multiplayer_you_as_member">You</string>
     <string name="multiplayer_spaces">Ruimtes</string>
     <string name="multiplayer_space_status_joining">Deelnemen</string>
     <string name="multiplayer_space_status_active">Actief</string>

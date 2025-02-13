@@ -75,6 +75,8 @@ import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 import com.anytypeio.anytype.presentation.objects.toDVSort
 import com.anytypeio.anytype.presentation.objects.toUiObjectsListItem
+import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase.Companion.DEBOUNCE_DURATION
+import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase.Companion.DEFAULT_INPUT
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
@@ -82,15 +84,22 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -1166,6 +1175,19 @@ class ObjectTypeViewModel(
             )
         }
     }
+    //endregion
+
+    //region NEW FIELDS
+    private val userInput = MutableStateFlow(DEFAULT_INPUT)
+    @OptIn(FlowPreview::class)
+    private val searchQuery = userInput.take(1).onCompletion {
+        emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
+    }
+
+    fun onFieldsSearchUpdate(input: String) {
+        userInput.value = input
+    }
+
     //endregion
 
     companion object {

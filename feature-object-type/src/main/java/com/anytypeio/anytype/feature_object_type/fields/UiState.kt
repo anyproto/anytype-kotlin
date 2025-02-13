@@ -114,6 +114,24 @@ sealed class UiFieldsListItem {
                 const val ID = "section_local"
             }
         }
+
+        data class SpaceFields(
+            override val id: Id = ID,
+            override val canAdd: Boolean = false
+        ) : Section() {
+            companion object {
+                const val ID = "section_space_fields"
+            }
+        }
+
+        data class LibraryFields(
+            override val id: Id = ID,
+            override val canAdd: Boolean = false
+        ) : Section() {
+            companion object {
+                const val ID = "section_library_fields"
+            }
+        }
     }
 }
 //endregion
@@ -166,6 +184,13 @@ sealed class TypeFieldsCommand {
 sealed class UiLocalsFieldsInfoState {
     data object Hidden : UiLocalsFieldsInfoState()
     data object Visible : UiLocalsFieldsInfoState()
+}
+//endregion
+
+//region Add Fields screen
+sealed class UiAddFieldScreenState {
+    data object Hidden : UiAddFieldScreenState()
+    data class Visible(val item: UiFieldsListItem) : UiAddFieldScreenState()
 }
 //endregion
 

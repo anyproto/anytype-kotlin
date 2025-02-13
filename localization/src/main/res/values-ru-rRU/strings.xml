@@ -1170,9 +1170,9 @@
     <string name="multiplayer_upgrade_button_request">✦ Обновите, чтобы добавить больше участников</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Обновите, чтобы добавить больше пространств</string>
     <string name="multiplayer_members">Участники</string>
-    <string name="multiplayer_leave_request">Запрос на выход</string>
+    <string name="multiplayer_leave_request">Оставить запрос</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>
-    <string name="multiplayer_approve_request">Подтвердить</string>
+    <string name="multiplayer_approve_request">Утверждено</string>
     <string name="multiplayer_view_request">Посмотреть запрос</string>
     <string name="multiplayer_owner">Владелец</string>
     <string name="multiplayer_can_edit">Can edit</string>
@@ -1253,7 +1253,7 @@
         <item quantity="many">%1$d запросов</item>
         <item quantity="other">%1$d запросы</item>
     </plurals>
-    <string name="multiplayer_you_as_member">вы</string>
+    <string name="multiplayer_you_as_member">You</string>
     <string name="multiplayer_spaces">Пространства</string>
     <string name="multiplayer_space_status_joining">Присоединяется</string>
     <string name="multiplayer_space_status_active">Активно</string>

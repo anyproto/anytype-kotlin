@@ -1,21 +1,13 @@
-package com.anytypeio.anytype.feature_object_type.models
+package com.anytypeio.anytype.feature_object_type.ui
 
 import androidx.compose.runtime.Immutable
-import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TypeId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
-import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
-import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
-import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.templates.TemplateView
 

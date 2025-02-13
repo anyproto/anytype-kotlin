@@ -41,9 +41,9 @@ import com.anytypeio.anytype.core_ui.syncstatus.StatusBadge
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.feature_object_type.R
-import com.anytypeio.anytype.feature_object_type.models.UiEditButton
-import com.anytypeio.anytype.feature_object_type.models.UiSyncStatusBadgeState
-import com.anytypeio.anytype.feature_object_type.models.UiTitleState
+import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
+import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
+import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 
 

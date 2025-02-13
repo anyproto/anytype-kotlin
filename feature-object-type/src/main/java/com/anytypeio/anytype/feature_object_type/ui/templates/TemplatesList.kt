@@ -32,7 +32,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.widgets.TemplateItemContent
-import com.anytypeio.anytype.feature_object_type.models.UiTemplatesListState
+import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesListState
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import timber.log.Timber

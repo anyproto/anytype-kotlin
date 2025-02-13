@@ -27,9 +27,9 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent.OnTemplatesAddIconClick
-import com.anytypeio.anytype.feature_object_type.models.UiTemplatesAddIconState
-import com.anytypeio.anytype.feature_object_type.models.UiTemplatesHeaderState
-import com.anytypeio.anytype.feature_object_type.models.UiTemplatesListState
+import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesAddIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesHeaderState
+import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesListState
 
 
 @Composable

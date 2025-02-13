@@ -168,6 +168,9 @@ sealed class ObjectWrapper {
         val iconEmoji: String? by default
         val isDeleted: Boolean? by default
         val recommendedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_RELATIONS)
+        val recommendedFeaturedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_FEATURED_RELATIONS)
+        val recommendedHiddenRelations: List<Id> get() = getValues(Relations.RECOMMENDED_HIDDEN_RELATIONS)
+        val recommendedFileRelations: List<Id> get() = getValues(Relations.RECOMMENDED_FILE_RELATIONS)
         val recommendedLayout: ObjectType.Layout?
             get() = when (val value = map[Relations.RECOMMENDED_LAYOUT]) {
                 is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
@@ -208,7 +211,7 @@ sealed class ObjectWrapper {
             get() {
                 val value = map[Relations.RELATION_FORMAT]
                 return if (value is Double) {
-                    RelationFormat.values().firstOrNull { f ->
+                    RelationFormat.entries.firstOrNull { f ->
                         f.code == value.toInt()
                     } ?: RelationFormat.UNDEFINED
                 } else {
@@ -234,10 +237,10 @@ sealed class ObjectWrapper {
         val restrictions: List<ObjectRestriction>
             get() = when (val value = map[Relations.RESTRICTIONS]) {
                 is Double -> buildList {
-                    ObjectRestriction.values().firstOrNull { it.code == value.toInt() }
+                    ObjectRestriction.entries.firstOrNull { it.code == value.toInt() }
                 }
                 is List<*> -> value.typeOf<Double>().mapNotNull { code ->
-                    ObjectRestriction.values().firstOrNull { it.code == code.toInt() }
+                    ObjectRestriction.entries.firstOrNull { it.code == code.toInt() }
                 }
                 else -> emptyList()
             }

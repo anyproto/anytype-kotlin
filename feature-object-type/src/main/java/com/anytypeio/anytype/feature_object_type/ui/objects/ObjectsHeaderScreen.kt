@@ -34,11 +34,11 @@ import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
-import com.anytypeio.anytype.feature_object_type.models.UiMenuSetItem
-import com.anytypeio.anytype.feature_object_type.models.UiMenuState
-import com.anytypeio.anytype.feature_object_type.models.UiObjectsAddIconState
-import com.anytypeio.anytype.feature_object_type.models.UiObjectsHeaderState
-import com.anytypeio.anytype.feature_object_type.models.UiObjectsSettingsIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiMenuSetItem
+import com.anytypeio.anytype.feature_object_type.ui.UiMenuState
+import com.anytypeio.anytype.feature_object_type.ui.UiObjectsAddIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiObjectsHeaderState
+import com.anytypeio.anytype.feature_object_type.ui.UiObjectsSettingsIconState
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import timber.log.Timber

@@ -45,7 +45,7 @@ import com.anytypeio.anytype.core_ui.views.AvatarTitle
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.feature_object_type.R
-import com.anytypeio.anytype.feature_object_type.models.UiLayoutTypeState
+import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 
 @OptIn(ExperimentalMaterial3Api::class)

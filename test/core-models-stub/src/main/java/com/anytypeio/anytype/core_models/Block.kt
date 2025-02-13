@@ -215,16 +215,6 @@ fun StubCallout(
     backgroundColor = backgroundColor
 )
 
-fun StubRelation(
-    relationKey: String = MockDataFactory.randomString(),
-    format: RelationFormat = Relation.Format.SHORT_TEXT
-): Relation = Relation(
-    key = relationKey,
-    name = MockDataFactory.randomString(),
-    format = format,
-    source = Relation.Source.values().random()
-)
-
 fun StubBookmark(
     id: Id = MockDataFactory.randomString(),
     url: Url? = MockDataFactory.randomString(),

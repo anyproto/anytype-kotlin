@@ -1241,7 +1241,7 @@
         <item quantity="one">%1$d solicitud</item>
         <item quantity="other">%1$d solicitudes</item>
     </plurals>
-    <string name="multiplayer_you_as_member">You</string>
+    <string name="multiplayer_you_as_member">Tú</string>
     <string name="multiplayer_spaces">Espacios</string>
     <string name="multiplayer_space_status_joining">Accediendo</string>
     <string name="multiplayer_space_status_active">Activo</string>

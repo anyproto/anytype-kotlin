@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature.chats
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -50,6 +51,7 @@ object ChatReactionModule {
 interface ChatReactionDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun repo(): BlockRepository
+    fun auth(): AuthRepository
     fun urlBuilder(): UrlBuilder
     fun members(): ActiveSpaceMemberSubscriptionContainer
 }

@@ -80,6 +80,8 @@ class ChatViewModel @Inject constructor(
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
 
+    private var account: Id = ""
+
     init {
         viewModelScope.launch {
             spaceViews
@@ -98,9 +100,16 @@ class ChatViewModel @Inject constructor(
                 }
         }
         viewModelScope.launch {
-            val account = requireNotNull(getAccount.async(Unit).getOrNull())
+            getAccount
+                .async(Unit)
+                .onSuccess { acc ->
+                    account = acc.id
+                }
+                .onFailure {
+                    Timber.e("Failed to find account for space-level chat")
+                }
             proceedWithObservingChatMessages(
-                account = account.id,
+                account = account,
                 chat = vmParams.ctx
             )
         }
@@ -303,7 +312,8 @@ class ChatViewModel @Inject constructor(
                             icon = SpaceMemberIconView.icon(
                                 obj = member,
                                 urlBuilder = urlBuilder
-                            )
+                            ),
+                            isUser = member.identity == account
                         )
                     }.filter { m ->
                         if (query != null) {

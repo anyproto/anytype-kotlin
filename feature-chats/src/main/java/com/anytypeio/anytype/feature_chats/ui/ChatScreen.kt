@@ -352,6 +352,7 @@ fun ChatScreen(
                             ChatMemberItem(
                                 name = member.name,
                                 icon = member.icon,
+                                isUser = member.isUser,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .noRippleClickable {

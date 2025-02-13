@@ -28,6 +28,7 @@ import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SectionLocalFieldsInfo(
+    modifier: Modifier,
     state: UiLocalsFieldsInfoState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
@@ -38,7 +39,7 @@ fun SectionLocalFieldsInfo(
 
     if (state is UiLocalsFieldsInfoState.Visible) {
         ModalBottomSheet(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier,
             dragHandle = { DragHandle() },
             scrimColor = colorResource(id = R.color.modal_screen_outside_background),
             containerColor = colorResource(id = R.color.background_primary),
@@ -60,7 +61,8 @@ fun SectionLocalFieldsInfo(
             )
             Spacer(modifier = Modifier.height(7.dp))
             Text(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 20.dp),
                 textAlign = TextAlign.Center,
                 style = BodyCalloutRegular,
@@ -87,6 +89,7 @@ fun SectionLocalFieldsInfo(
 @Composable
 fun SectionLocalFieldsInfoPreview() {
     SectionLocalFieldsInfo(
+        modifier = Modifier.fillMaxWidth(),
         state = UiLocalsFieldsInfoState.Visible,
         fieldEvent = {}
     )

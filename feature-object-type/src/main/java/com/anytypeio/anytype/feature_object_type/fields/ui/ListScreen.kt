@@ -265,6 +265,7 @@ fun FieldsMainScreen(
 
     if (uiFieldLocalInfoState is UiLocalsFieldsInfoState.Visible) {
         SectionLocalFieldsInfo(
+            modifier = Modifier.fillMaxWidth(),
             state = uiFieldLocalInfoState,
             fieldEvent = fieldEvent
         )

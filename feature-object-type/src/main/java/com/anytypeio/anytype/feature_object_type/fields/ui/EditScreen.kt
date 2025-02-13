@@ -61,13 +61,14 @@ import com.anytypeio.anytype.feature_object_type.ui.createDummyFieldDraggableIte
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditFieldScreen(
+    modifier: Modifier,
     uiFieldEditOrNewState: UiFieldEditOrNewState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
     if (uiFieldEditOrNewState is UiFieldEditOrNewState.Visible) {
         val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier,
             dragHandle = { DragHandle() },
             scrimColor = colorResource(id = R.color.modal_screen_outside_background),
             containerColor = colorResource(id = R.color.background_primary),
@@ -75,13 +76,18 @@ fun EditFieldScreen(
             sheetState = bottomSheetState,
             onDismissRequest = { fieldEvent(FieldEvent.OnFieldEditScreenDismiss) },
         ) {
-            EditFieldContent(uiState = uiFieldEditOrNewState, fieldEvent = fieldEvent)
+            EditFieldContent(
+                modifier = Modifier.fillMaxWidth(),
+                uiState = uiFieldEditOrNewState,
+                fieldEvent = fieldEvent
+            )
         }
     }
 }
 
 @Composable
 private fun EditFieldContent(
+    modifier: Modifier,
     uiState: UiFieldEditOrNewState.Visible,
     fieldEvent: (FieldEvent) -> Unit
 ) {
@@ -98,7 +104,7 @@ private fun EditFieldContent(
         is UiFieldEditOrNewState.Visible.ViewOnly -> stringResource(R.string.object_type_fields_preview_field)
     }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier) {
         // Header title
         Box(
             modifier = Modifier
@@ -115,6 +121,7 @@ private fun EditFieldContent(
 
         // Name text field
         NameTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = innerValue,
             isEditable = isEditable,
             focusRequester = focusRequester,
@@ -168,6 +175,7 @@ private fun EditFieldContent(
 
 @Composable
 fun NameTextField(
+    modifier: Modifier,
     value: String,
     isEditable: Boolean,
     focusRequester: FocusRequester,
@@ -176,7 +184,7 @@ fun NameTextField(
 ) {
     val focusManager = LocalFocusManager.current
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -355,6 +363,7 @@ fun Section(modifier: Modifier, text: String) {
 @Composable
 private fun MyPreview() {
     EditFieldScreen(
+        modifier = Modifier.fillMaxWidth(),
         uiFieldEditOrNewState = UiFieldEditOrNewState.Visible.Edit(
             item = createDummyFieldDraggableItem()
         ),
@@ -366,6 +375,7 @@ private fun MyPreview() {
 @Composable
 private fun MyPreviewOnlyPreview() {
     EditFieldScreen(
+        modifier = Modifier.fillMaxWidth(),
         uiFieldEditOrNewState = UiFieldEditOrNewState.Visible.ViewOnly(
             item = createDummyFieldDraggableItem(
                 isEditableField = false

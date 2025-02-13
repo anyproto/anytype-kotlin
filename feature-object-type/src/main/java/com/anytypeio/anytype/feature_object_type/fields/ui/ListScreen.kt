@@ -257,6 +257,7 @@ fun FieldsMainScreen(
 
     if (uiFieldEditOrNewState is UiFieldEditOrNewState.Visible) {
         EditFieldScreen(
+            modifier = Modifier.fillMaxWidth(),
             uiFieldEditOrNewState = uiFieldEditOrNewState,
             fieldEvent = fieldEvent
         )

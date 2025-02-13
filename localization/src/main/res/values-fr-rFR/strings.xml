@@ -1241,7 +1241,7 @@
         <item quantity="one">%1$d requête</item>
         <item quantity="other">%1$d requêtes</item>
     </plurals>
-    <string name="multiplayer_you_as_member">vous</string>
+    <string name="multiplayer_you_as_member">Vous</string>
     <string name="multiplayer_spaces">Espaces</string>
     <string name="multiplayer_space_status_joining">Connexion</string>
     <string name="multiplayer_space_status_active">Actif</string>

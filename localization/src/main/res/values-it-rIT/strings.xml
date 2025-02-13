@@ -1242,7 +1242,7 @@
         <item quantity="one">%1$d richiesta</item>
         <item quantity="other">%1$d richieste</item>
     </plurals>
-    <string name="multiplayer_you_as_member">tu</string>
+    <string name="multiplayer_you_as_member">You</string>
     <string name="multiplayer_spaces">Spazi</string>
     <string name="multiplayer_space_status_joining">Accesso in corso</string>
     <string name="multiplayer_space_status_active">Attivo</string>

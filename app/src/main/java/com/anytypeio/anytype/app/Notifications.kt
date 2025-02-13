@@ -83,11 +83,14 @@ class AnytypeNotificationService @Inject constructor(
                 )
             }
             is NotificationPayload.ParticipantRemove -> {
+                val placeholder = context.resources.getString(R.string.untitled)
                 val body = context.resources.getString(
-                    R.string.multiplayer_notification_member_removed_from_space
+                    R.string.multiplayer_notification_member_removed_from_space,
+                    payload.spaceName.ifEmpty { placeholder }
                 )
                 val title = context.resources.getString(
-                    R.string.multiplayer_notification_member_removed_from_space_title
+                    R.string.multiplayer_notification_member_removed_from_space_title,
+                    payload.spaceName.ifEmpty { placeholder }
                 )
                 showBasicNotification(
                     tag = notification.id,
@@ -143,7 +146,7 @@ class AnytypeNotificationService @Inject constructor(
                     R.string.multiplayer_notification_request_declined
                 )
                 val body = context.resources.getString(
-                    com.anytypeio.anytype.core_ui.R.string.multiplayer_notification_member_join_request_declined,
+                    R.string.multiplayer_notification_member_join_request_declined,
                     payload.spaceName.ifEmpty { placeholder }
                 )
                 showBasicNotification(

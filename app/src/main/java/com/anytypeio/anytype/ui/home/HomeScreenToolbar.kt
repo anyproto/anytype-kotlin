@@ -95,7 +95,7 @@ fun HomeScreenToolbar(
             } else
                 stringResource(id = R.string.three_dots_text_placeholder),
             style = Relations2,
-            color = colorResource(R.color.text_secondary),
+            color = colorResource(R.color.transparent_active),
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(

@@ -370,6 +370,7 @@
     <string name="scroll_to_select_position">Scroll to select new position</string>
     <string name="block_action_add_below">Tambah di bawah</string>
     <string name="content_desc_back_button">Tombol kembali</string>
+    <string name="content_desc_share_button">Tombol bagikan</string>
     <string name="content_desc_home_button">Tombol beranda</string>
     <string name="content_desc_search_button">Tombol cari</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1210,7 +1211,8 @@
     <string name="multiplayer_notification_member_request_approved">Permintaan disetujui</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Permintaanmu bergabug ke ruang %1$s telah disetujui dengan hak akses pembaca. Ruang ini akan tersedia di perangkatmu sebentar lagi.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Permintaanmu bergabung ke ruang %1$s telah disetujui dengan hak akses penyunting. Ruang ini akan tersedia di perangkatmu sebentar lagi.</string>
-    <string name="multiplayer_notification_member_removed_from_space">Kamu telah dikeluarkan dari ruang ini, atau ruang tersebut telah dihapus oleh pemiliknya.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">Ruang \"%1$s\" tidak dapat diakses lagi.</string>
+    <string name="multiplayer_notification_member_removed_from_space">Kamu telah dikeluarkan dari ruang \"%1$s\", atau ruang tersebut telah dihapus oleh pemiliknya.</string>
     <string name="multiplayer_notification_member_permissions_changed">Izin diubah</string>
     <string name="multiplayer_notification_member_permission_change_read">Hak aksesmu di ruang %1$s telah diganti menjadi pembaca.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Hak aksesmu di ruang %1$s telah diganti menjadi penyunting.</string>
@@ -1221,7 +1223,7 @@
     <string name="multiplayer_toast_permission_not_allowed">Mengubah izin tidak diperbolehkan</string>
     <string name="multiplayer_toast_share_limit_reached">Batas berbagi tercapai</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
-    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Objek tidak tersedia. Mintalah pemiliknya untuk membagikannya.</string>
     <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
     <string name="multiplayer_collaborate_step_1">1. Ketuk gawit Ruang untuk mengakses setelan</string>
     <string name="multiplayer_collaborate_step_2">2. Buka bagian Bagikan</string>
@@ -1546,6 +1548,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_snackbar_title">moved to bin</string>
     <string name="main_navigation_content_desc_back_button">Tombol kembali</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
+    <string name="main_navigation_content_desc_home_button">Tombol beranda</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
     <string name="chat">Chat</string>

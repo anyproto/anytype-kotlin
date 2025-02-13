@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.ui.settings.typography
 
+@Deprecated("Outdated. To be deleted soon.")
 class IntroduceVaultFragment : BaseBottomSheetComposeFragment() {
 
     override fun onCreateView(

@@ -69,17 +69,26 @@ sealed interface ChatView {
 
         sealed class ChatBoxAttachment {
             data class Media(
-                val uri: String
+                val uri: String,
+                val state: State = State.Idle
             ): ChatBoxAttachment()
             data class File(
                 val uri: String,
                 val name: String,
-                val size: Int
+                val size: Int,
+                val state: State = State.Idle
             ): ChatBoxAttachment()
             data class Link(
                 val target: Id,
                 val wrapper: GlobalSearchItemView
             ): ChatBoxAttachment()
+
+            sealed class State {
+                data object Idle : State()
+                data object Uploading : State()
+                data object Uploaded : State()
+                data object Failed : State()
+            }
         }
 
         data class Reaction(

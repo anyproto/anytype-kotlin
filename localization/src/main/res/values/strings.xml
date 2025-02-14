@@ -1439,7 +1439,7 @@
         <item quantity="other">%1$d requests</item>
     </plurals>
 
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_you_as_member">You</string>
 
     <string name="multiplayer_spaces">Spaces</string>
 

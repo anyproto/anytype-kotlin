@@ -112,7 +112,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                 ) {
                     HomeScreenToolbar(
                         spaceIconView = view?.icon ?: SpaceIconView.Loading,
-                        onSpaceIconClicked = vm::onSpaceSettingsClicked,
+                        onSpaceIconClicked = vm::onSpaceWidgetClicked,
                         membersCount = view?.membersCount ?: 0,
                         name = view?.space?.name.orEmpty(),
                         onBackButtonClicked = {
@@ -176,16 +176,16 @@ class HomeScreenFragment : BaseComposeFragment(),
                 onClick = { vm.onCreateNewObjectLongClicked() }
             ),
             onSpaceWidgetClicked = throttledClick(
-                onClick = vm::onSpaceSettingsClicked
+                onClick = vm::onSpaceWidgetClicked
             ),
             onBundledWidgetClicked = vm::onBundledWidgetClicked,
             onMove = vm::onMove,
             onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-            onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
+            onSpaceWidgetShareIconClicked = vm::onSpaceWidgetShareIconClicked,
             onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
             onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
             onCreateDataViewObject = vm::onCreateDataViewObject,
-            onShareButtonClicked = vm::onSpaceShareIconClicked,
+            onNavBarShareButtonClicked = vm::onNavBarShareIconClicked,
             navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,
             onHomeButtonClicked = vm::onHomeButtonClicked,
         )

@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -74,11 +75,13 @@ class ChatViewModel @Inject constructor(
     val commands = MutableSharedFlow<ViewModelCommand>()
     val uXCommands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
-    val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
+    val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default())
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
+
+    private var account: Id = ""
 
     init {
         viewModelScope.launch {
@@ -98,9 +101,16 @@ class ChatViewModel @Inject constructor(
                 }
         }
         viewModelScope.launch {
-            val account = requireNotNull(getAccount.async(Unit).getOrNull())
+            getAccount
+                .async(Unit)
+                .onSuccess { acc ->
+                    account = acc.id
+                }
+                .onFailure {
+                    Timber.e("Failed to find account for space-level chat")
+                }
             proceedWithObservingChatMessages(
-                account = account.id,
+                account = account,
                 chat = vmParams.ctx
             )
         }
@@ -193,13 +203,16 @@ class ChatViewModel @Inject constructor(
                         creator = member?.id,
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,
-                        reactions = msg.reactions.map { (emoji, ids) ->
-                            ChatView.Message.Reaction(
-                                emoji = emoji,
-                                count = ids.size,
-                                isSelected = ids.contains(account)
-                            )
-                        },
+                        reactions = msg.reactions
+                            .map { (emoji, ids) ->
+                                ChatView.Message.Reaction(
+                                    emoji = emoji,
+                                    count = ids.size,
+                                    isSelected = ids.contains(account)
+                                )
+                            }
+                            .take(ChatConfig.MAX_REACTION_COUNT)
+                        ,
                         attachments = msg.attachments.map { attachment ->
                             when (attachment.type) {
                                 Chat.Message.Attachment.Type.Image -> {
@@ -263,31 +276,64 @@ class ChatViewModel @Inject constructor(
         selection: IntRange,
         text: String
     ) {
+        val query = resolveMentionQuery(
+            text = text,
+            selectionStart = selection.start
+        )
         if (isMentionTriggered(text, selection.start)) {
-            mentionPanelState.value = MentionPanelState.Visible(
-                results = members.get().let { store ->
-                    when(store) {
-                        is Store.Data -> {
-                            store.members.map { member ->
-                                MentionPanelState.Member(
-                                    member.id,
-                                    name = member.name.orEmpty(),
-                                    icon = SpaceMemberIconView.icon(
-                                        obj = member,
-                                        urlBuilder = urlBuilder
-                                    )
-                                )
-                            }
-                        }
-                        Store.Empty -> {
-                            emptyList()
+            val results = getMentionedMembers(query)
+            if (query != null && results.isNotEmpty()) {
+                mentionPanelState.value = MentionPanelState.Visible(
+                    results = results,
+                    query = query
+                )
+            } else {
+                Timber.w("Query is empty or results are empty when mention is triggered")
+            }
+        } else if (shouldHideMention(text, selection.start)) {
+            mentionPanelState.value = MentionPanelState.Hidden
+        } else {
+            val results = getMentionedMembers(query)
+            if (results.isNotEmpty() && query != null) {
+                mentionPanelState.value = MentionPanelState.Visible(
+                    results = results,
+                    query = query
+                )
+            } else {
+                mentionPanelState.value = MentionPanelState.Hidden
+            }
+        }
+    }
+
+    private fun getMentionedMembers(query: MentionPanelState.Query?): List<MentionPanelState.Member> {
+        val results = members.get().let { store ->
+            when (store) {
+                is Store.Data -> {
+                    store.members.map { member ->
+                        MentionPanelState.Member(
+                            member.id,
+                            name = member.name.orEmpty(),
+                            icon = SpaceMemberIconView.icon(
+                                obj = member,
+                                urlBuilder = urlBuilder
+                            ),
+                            isUser = member.identity == account
+                        )
+                    }.filter { m ->
+                        if (query != null) {
+                            m.name.contains(query.query, true)
+                        } else {
+                            true
                         }
                     }
                 }
-            )
-        } else {
-            mentionPanelState.value = MentionPanelState.Hidden
+
+                Store.Empty -> {
+                    emptyList()
+                }
+            }
         }
+        return results
     }
 
     fun onMessageSent(msg: String, markup: List<Block.Content.Text.Mark>) {
@@ -295,8 +341,10 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
         viewModelScope.launch {
+            chatBoxMode.value = chatBoxMode.value.updateIsSendingBlocked(isBlocked = true)
             val attachments = buildList {
-                chatBoxAttachments.value.forEach { attachment ->
+                val currAttachments = chatBoxAttachments.value
+                currAttachments.forEachIndexed { idx, attachment ->
                     when(attachment) {
                         is ChatView.Message.ChatBoxAttachment.Link -> {
                             add(
@@ -307,6 +355,14 @@ class ChatViewModel @Inject constructor(
                             )
                         }
                         is ChatView.Message.ChatBoxAttachment.Media -> {
+                            chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                set(
+                                    index = idx,
+                                    element = attachment.copy(
+                                        state = ChatView.Message.ChatBoxAttachment.State.Uploading
+                                    )
+                                )
+                            }
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
@@ -320,6 +376,23 @@ class ChatViewModel @Inject constructor(
                                         type = Chat.Message.Attachment.Type.Image
                                     )
                                 )
+                                chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                    set(
+                                        index = idx,
+                                        element = attachment.copy(
+                                            state = ChatView.Message.ChatBoxAttachment.State.Uploaded
+                                        )
+                                    )
+                                }
+                            }.onFailure {
+                                chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                    set(
+                                        index = idx,
+                                        element = attachment.copy(
+                                            state = ChatView.Message.ChatBoxAttachment.State.Uploading
+                                        )
+                                    )
+                                }
                             }
                         }
                         is ChatView.Message.ChatBoxAttachment.File -> {
@@ -327,6 +400,14 @@ class ChatViewModel @Inject constructor(
                                 copyFileToCacheDirectory.copy(attachment.uri)
                             }
                             if (path != null) {
+                                chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                    set(
+                                        index = idx,
+                                        element = attachment.copy(
+                                            state = ChatView.Message.ChatBoxAttachment.State.Uploading
+                                        )
+                                    )
+                                }
                                 uploadFile.async(
                                     UploadFile.Params(
                                         space = vmParams.space,
@@ -341,8 +422,24 @@ class ChatViewModel @Inject constructor(
                                             type = Chat.Message.Attachment.Type.File
                                         )
                                     )
+                                    chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                        set(
+                                            index = idx,
+                                            element = attachment.copy(
+                                                state = ChatView.Message.ChatBoxAttachment.State.Uploaded
+                                            )
+                                        )
+                                    }
                                 }.onFailure {
                                     Timber.e(it, "Error while uploading file as attachment")
+                                    chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                        set(
+                                            index = idx,
+                                            element = attachment.copy(
+                                                state = ChatView.Message.ChatBoxAttachment.State.Failed
+                                            )
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -356,7 +453,7 @@ class ChatViewModel @Inject constructor(
                         params = Command.ChatCommand.AddMessage(
                             chat = vmParams.ctx,
                             message = Chat.Message.new(
-                                text = msg,
+                                text = msg.trim(),
                                 attachments = attachments,
                                 marks = markup
                             )
@@ -369,6 +466,7 @@ class ChatViewModel @Inject constructor(
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
+                    chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.EditMessage -> {
                     val editedMessage = data.value.find {
@@ -379,7 +477,7 @@ class ChatViewModel @Inject constructor(
                             chat = vmParams.ctx,
                             message = Chat.Message.updated(
                                 id = mode.msg,
-                                text = msg,
+                                text = msg.trim(),
                                 attachments = editedMessage?.attachments.orEmpty()
                             )
                         )
@@ -390,7 +488,7 @@ class ChatViewModel @Inject constructor(
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }.onSuccess {
-                        chatBoxMode.value = ChatBoxMode.Default
+                        chatBoxMode.value = ChatBoxMode.Default()
                     }
                 }
                 is ChatBoxMode.Reply -> {
@@ -398,7 +496,7 @@ class ChatViewModel @Inject constructor(
                         params = Command.ChatCommand.AddMessage(
                             chat = vmParams.ctx,
                             message = Chat.Message.new(
-                                text = msg,
+                                text = msg.trim(),
                                 replyToMessageId = mode.msg,
                                 attachments = attachments,
                                 marks = markup
@@ -412,7 +510,7 @@ class ChatViewModel @Inject constructor(
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
-                    chatBoxMode.value = ChatBoxMode.Default
+                    chatBoxMode.value = ChatBoxMode.Default()
                 }
             }
         }
@@ -442,7 +540,7 @@ class ChatViewModel @Inject constructor(
 
     fun onClearReplyClicked() {
         viewModelScope.launch {
-            chatBoxMode.value = ChatBoxMode.Default
+            chatBoxMode.value = ChatBoxMode.Default()
         }
     }
 
@@ -490,7 +588,8 @@ class ChatViewModel @Inject constructor(
                         ""
                     }
                 },
-                author = msg.author
+                author = msg.author,
+                isSendingMessageBlocked = false
             )
         }
     }
@@ -554,7 +653,7 @@ class ChatViewModel @Inject constructor(
 
     fun onExitEditMessageMode() {
         viewModelScope.launch {
-            chatBoxMode.value = ChatBoxMode.Default
+            chatBoxMode.value = ChatBoxMode.Default()
         }
     }
 
@@ -632,18 +731,31 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
-        // Ensure selectionStart is valid and not out of bounds
-        if (selectionStart <= 0 || selectionStart > text.length) {
-            return false
-        }
-
-        // Check the character before the cursor position
+    fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
+        if (selectionStart <= 0 || selectionStart > text.length) return false
         val previousChar = text[selectionStart - 1]
-
-        // Trigger mention if the previous character is '@'
         return previousChar == '@'
+                && (selectionStart == 1 || !text[selectionStart - 2].isLetterOrDigit())
     }
+
+    fun shouldHideMention(text: String, selectionStart: Int): Boolean {
+        if (selectionStart > text.length) return false
+        // Check if the current character is a space
+        val currentChar = if (selectionStart > 0) text[selectionStart - 1] else null
+        // Hide mention when a space is typed, or '@' character has been deleted (even if it was the first character)
+        val atCharExists = text.lastIndexOf('@', selectionStart - 1) != -1
+        return currentChar == ' ' || !atCharExists
+    }
+
+    fun resolveMentionQuery(text: String, selectionStart: Int): MentionPanelState.Query? {
+        val atIndex = text.lastIndexOf('@', selectionStart - 1)
+        if (atIndex == -1 || (atIndex > 0 && text[atIndex - 1].isLetterOrDigit())) return null
+        val endIndex = text.indexOf(' ', atIndex).takeIf { it != -1 } ?: text.length
+        val query = text.substring(atIndex + 1, endIndex)
+        // Allow empty queries if there's no space after '@'
+        return MentionPanelState.Query(query, atIndex until endIndex)
+    }
+
 
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()
@@ -661,23 +773,47 @@ class ChatViewModel @Inject constructor(
     }
 
     sealed class ChatBoxMode {
-        data object Default : ChatBoxMode()
-        data class EditMessage(val msg: Id) : ChatBoxMode()
+
+        abstract val isSendingMessageBlocked: Boolean
+
+        data class Default(
+            override val isSendingMessageBlocked: Boolean = false
+        ) : ChatBoxMode()
+        data class EditMessage(
+            val msg: Id,
+            override val isSendingMessageBlocked: Boolean = false
+        ) : ChatBoxMode()
         data class Reply(
             val msg: Id,
             val text: String,
-            val author: String
+            val author: String,
+            override val isSendingMessageBlocked: Boolean = false
         ): ChatBoxMode()
+    }
+
+    fun ChatBoxMode.updateIsSendingBlocked(isBlocked: Boolean): ChatBoxMode {
+        return when (this) {
+            is ChatBoxMode.Default -> copy(isSendingMessageBlocked = isBlocked)
+            is ChatBoxMode.EditMessage -> copy(isSendingMessageBlocked = isBlocked)
+            is ChatBoxMode.Reply -> copy(isSendingMessageBlocked = isBlocked)
+        }
     }
 
     sealed class MentionPanelState {
         data object Hidden : MentionPanelState()
-        data class Visible(val results: List<Member>) : MentionPanelState()
+        data class Visible(
+            val results: List<Member>,
+            val query: Query
+        ) : MentionPanelState()
         data class Member(
             val id: Id,
             val name: String,
             val icon: SpaceMemberIconView,
             val isUser: Boolean = false
+        )
+        data class Query(
+            val query: String,
+            val range: IntRange
         )
     }
 

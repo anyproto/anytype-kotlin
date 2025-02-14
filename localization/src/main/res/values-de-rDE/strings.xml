@@ -173,7 +173,7 @@
     <string name="hint_toggle">Block wechseln</string>
     <string name="hint_paste_link">Link einfügen</string>
     <string name="empty_tap_to_create_new_block">Leer. Tippen, um einen neuen Block zu erstellen</string>
-    <string name="untitled">Untitled</string>
+    <string name="untitled">Unbenannt</string>
     <string name="untitled_set">Unbenanntes Set</string>
     <string name="untitled_collection">Unbenannte Sammlung</string>
     <string name="archived">Archiviert</string>

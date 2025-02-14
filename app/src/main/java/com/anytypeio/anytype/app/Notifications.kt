@@ -83,13 +83,14 @@ class AnytypeNotificationService @Inject constructor(
                 )
             }
             is NotificationPayload.ParticipantRemove -> {
+                val placeholder = context.resources.getString(R.string.untitled)
                 val body = context.resources.getString(
                     R.string.multiplayer_notification_member_removed_from_space,
-                    payload.spaceName
+                    payload.spaceName.ifEmpty { placeholder }
                 )
                 val title = context.resources.getString(
                     R.string.multiplayer_notification_member_removed_from_space_title,
-                    payload.spaceName
+                    payload.spaceName.ifEmpty { placeholder }
                 )
                 showBasicNotification(
                     tag = notification.id,

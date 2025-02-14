@@ -316,7 +316,7 @@ class ObjectTypeViewModel(
                             }
 
                             uiTitleState.value = UiTitleState(
-                                title = fieldParser.getObjectName(objectWrapper = objType),
+                                title = objType.name.orEmpty(),
                                 isEditable = objectPermissions.canEditDetails
                             )
                             uiIconState.value = UiIconState(

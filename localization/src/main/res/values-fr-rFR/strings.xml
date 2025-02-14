@@ -1601,9 +1601,9 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_types_human">Humain</string>
     <string name="chats_alert_delete_this_message_description">Il ne pourra pas être restauré après confirmation</string>
     <string name="chats_alert_delete_this_message">Supprimer ce message ?</string>
-    <string name="migration_migration_is_in_progress">Migration is in progress</string>
-    <string name="migration_this_shouldn_t_take_long">This shouldn’t take long. Thanks for your patience.</string>
+    <string name="migration_migration_is_in_progress">Migration en cours</string>
+    <string name="migration_this_shouldn_t_take_long">Cela ne devrait pas prendre longtemps. Merci pour votre patience.</string>
     <string name="migration_error_try_again">Essayez de nouveau</string>
-    <string name="migration_migration_failed">Migration failed</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
+    <string name="migration_migration_failed">Échec de la migration</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Veuillez libérer de l\'espace et exécuter le processus à nouveau.</string>
 </resources>

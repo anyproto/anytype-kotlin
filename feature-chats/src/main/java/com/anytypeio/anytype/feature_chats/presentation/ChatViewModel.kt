@@ -348,13 +348,15 @@ class ChatViewModel @Inject constructor(
             val parsedUrls = buildList {
                 urlRegex.findAll(msg).forEach { match ->
                     val range = match.range
+                    // Adjust the range to include the last character (inclusive end range)
+                    val adjustedRange = range.first..range.last + 1
                     val url = match.value
 
                     // Check if a LINK markup already exists in the same range
-                    if (markup.none { it.range == range && it.type == Block.Content.Text.Mark.Type.LINK }) {
+                    if (markup.none { it.range == adjustedRange && it.type == Block.Content.Text.Mark.Type.LINK }) {
                         add(
                             Block.Content.Text.Mark(
-                                range = range,
+                                range = adjustedRange,
                                 type = Block.Content.Text.Mark.Type.LINK,
                                 param = url
                             )

@@ -251,12 +251,17 @@ class FieldParserImpl @Inject constructor(
         val (conflictedSystemFields, conflictedFieldsWithoutSystem) = allConflictedFields
             .partition { Relations.systemRelationKeys.contains(it.key) }
 
+        val fileFields = objectType.recommendedFileRelations
+            .getValidRelations()
+            .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
+
         return ParsedFields(
             featured = featuredFields,
             sidebar = mainSidebarFields,
             hidden = hiddenFields,
             conflictedWithoutSystem = conflictedFieldsWithoutSystem,
-            conflictedSystem = conflictedSystemFields
+            conflictedSystem = conflictedSystemFields,
+            file = fileFields
         )
     }
 

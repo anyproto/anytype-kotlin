@@ -164,6 +164,7 @@ fun FieldsMainScreen(
                             is Section.Header -> FieldsItemsContentType.SECTION_HEADER
                             is Section.Hidden -> FieldsItemsContentType.SECTION_HIDDEN
                             is Section.Local -> FieldsItemsContentType.SECTION_LOCAL
+                            is Section.File -> FieldsItemsContentType.SECTION_FILE
                             is Section.LibraryFields -> TODO()
                             is Section.SpaceFields -> TODO()
                         }
@@ -248,6 +249,15 @@ fun FieldsMainScreen(
 
                             is Section.LibraryFields -> TODO()
                             is Section.SpaceFields -> TODO()
+                            is Section.File -> {
+                                Section(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(52.dp),
+                                    item = item,
+                                    fieldEvent = fieldEvent
+                                )
+                            }
                         }
                     }
                 )
@@ -328,6 +338,9 @@ private fun Section(
 
         is Section.LibraryFields -> TODO()
         is Section.SpaceFields -> TODO()
+        is Section.File -> stringResource(R.string.object_type_fields_section_file) to colorResource(
+            id = R.color.text_secondary
+        )
     }
     Box(modifier = modifier) {
         Text(
@@ -764,4 +777,5 @@ object FieldsItemsContentType {
     const val SECTION_SIDEBAR = "content_type_section_sidebar"
     const val SECTION_HIDDEN = "content_type_section_hidden"
     const val SECTION_LOCAL = "content_type_section_local"
+    const val SECTION_FILE = "content_type_section_file"
 }

@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
@@ -130,7 +131,8 @@ class ObjectTypeViewModel(
     private val stringResourceProvider: StringResourceProvider,
     private val createTemplate: CreateTemplate,
     private val duplicateObjects: DuplicateObjects,
-    private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields
+    private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
+    private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -346,7 +348,7 @@ class ObjectTypeViewModel(
                             )
                             uiFieldsListState.value = UiFieldsListState(items = items)
                             uiFieldsButtonState.value = UiFieldsButtonState.Visible(
-                                count = items.size
+                                count = items.filter { it is UiFieldsListItem.Item }.count()
                             )
                         } else {
                             _objTypeState.value = null
@@ -763,18 +765,38 @@ class ObjectTypeViewModel(
                 }
             }
 
-            is TypeEvent.OnTemplateMenuDeleteClick -> {
-                proceedWithTemplateDelete(
-                    template = event.item.id
-                )
-            }
+            is TypeEvent.OnTemplateMenuClick -> proceedWithTemplateMenuClick(event)
+        }
+    }
 
-            is TypeEvent.OnTemplateMenuDuplicateClick -> {
-                proceedWithTemplateDuplicate(
-                    template = event.item.id
-                )
+    private fun proceedWithTemplateMenuClick(event: TypeEvent.OnTemplateMenuClick) {
+        when (event) {
+            is TypeEvent.OnTemplateMenuClick.Delete -> {
+                if (event.item is TemplateView.Template) {
+                    proceedWithTemplateDelete(
+                        template = event.item.id
+                    )
+                }
+            }
+            is TypeEvent.OnTemplateMenuClick.Duplicate -> {
+                if (event.item is TemplateView.Template) {
+                    proceedWithTemplateDuplicate(
+                        template = event.item.id
+                    )
+                }
+            }
+            is TypeEvent.OnTemplateMenuClick.Edit -> {
+                onTemplateItemClick(event.item)
+            }
+            is TypeEvent.OnTemplateMenuClick.SetAsDefault -> {
+                if (event.item is TemplateView.Template) {
+                    proceedWithSetDefaultTemplate(
+                        template = event.item.id
+                    )
+                }
             }
         }
+
     }
 
     private fun onTemplateItemClick(item: TemplateView) {
@@ -986,9 +1008,41 @@ class ObjectTypeViewModel(
 
     private fun proceedWithFieldItemMenuClick(event: FieldEvent.FieldItemMenu) {
         when (event) {
-            is FieldEvent.FieldItemMenu.OnDeleteFromTypeClick -> TODO()
+            is FieldEvent.FieldItemMenu.OnDeleteFromTypeClick -> {
+                val deleteId = event.item.id
+                val headerItems = mutableListOf<Id>()
+                val sideBarItems = mutableListOf<Id>()
+                val hiddenItems = mutableListOf<Id>()
+                var currentSection: UiFieldsListItem.Section? = null
+                uiFieldsListState.value.items.forEach { item ->
+                    when (item) {
+                        is UiFieldsListItem.Item -> {
+                            when (currentSection) {
+                                is UiFieldsListItem.Section.Header -> {
+                                    if (item.id != deleteId) headerItems.add(item.id)
+                                }
+                                is UiFieldsListItem.Section.SideBar -> {
+                                    if (item.id != deleteId) sideBarItems.add(item.id)
+                                }
+                                is UiFieldsListItem.Section.Hidden -> {
+                                    if (item.id != deleteId) hiddenItems.add(item.id)
+                                }
+                                else -> {}
+                            }
+                        }
+                        is UiFieldsListItem.Section -> currentSection = item
+                    }
+                }
+                proceedWithUpdatingTypeFields(
+                    headerFields = headerItems,
+                    sidebarFields = sideBarItems,
+                    hiddenFields = hiddenItems
+                )
+            }
             is FieldEvent.FieldItemMenu.OnAddLocalToTypeClick -> {
-                //todo need to implement
+                val currentRecommendedFields = _objTypeState.value?.recommendedRelations.orEmpty()
+                val newRecommendedFields = currentRecommendedFields + event.item.id
+                proceedWithSetRecommendedFields(newRecommendedFields)
             }
 
             is FieldEvent.FieldItemMenu.OnRemoveLocalClick -> TODO()
@@ -1079,11 +1133,10 @@ class ObjectTypeViewModel(
         viewModelScope.launch {
             createObject.async(params).fold(
                 onSuccess = { result ->
-                    //todo need to check this logic
-//                    proceedWithNavigation(
-//                        objectId = result.objectId,
-//                        objectLayout = result.obj.layout
-//                    )
+                    proceedWithNavigation(
+                        objectId = result.objectId,
+                        objectLayout = result.obj.layout
+                    )
                 },
                 onFailure = {
                     Timber.e(it, "Error while creating object")
@@ -1187,6 +1240,40 @@ class ObjectTypeViewModel(
                 },
                 onFailure = {
                     Timber.e(it, "Error while duplicating template $template")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithSetDefaultTemplate(template: Id) {
+        val params = SetObjectDetails.Params(
+            ctx = vmParams.objectId,
+            details = mapOf(Relations.DEFAULT_TEMPLATE_ID to template)
+        )
+        viewModelScope.launch{
+            setObjectDetails.async(params).fold(
+                onSuccess = {
+                    Timber.d("Template $template set as default")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while setting template $template as default")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithSetRecommendedFields(fields: List<Id>) {
+        val params = SetObjectTypeRecommendedFields.Params(
+            objectTypeId = vmParams.objectId,
+            fields = fields
+        )
+        viewModelScope.launch {
+            objectTypeSetRecommendedFields.async(params).fold(
+                onSuccess = {
+                    Timber.d("Recommended fields set")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while setting recommended fields")
                 }
             )
         }

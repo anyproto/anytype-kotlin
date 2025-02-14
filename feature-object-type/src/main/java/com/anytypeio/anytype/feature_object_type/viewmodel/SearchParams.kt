@@ -140,6 +140,7 @@ val defaultTypeKeys = listOf(
     Relations.RECOMMENDED_FEATURED_RELATIONS,
     Relations.RECOMMENDED_HIDDEN_RELATIONS,
     Relations.RECOMMENDED_FILE_RELATIONS,
+    Relations.DEFAULT_TEMPLATE_ID,
     Relations.IS_ARCHIVED,
     Relations.IS_DELETED,
     Relations.IS_HIDDEN,

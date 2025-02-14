@@ -3,6 +3,8 @@ package com.anytypeio.anytype.feature_object_type.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Command.ObjectTypeSetRecommendedFields
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -17,6 +19,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
@@ -46,7 +49,8 @@ class ObjectTypeVMFactory @Inject constructor(
     private val stringResourceProvider: StringResourceProvider,
     private val createTemplate: CreateTemplate,
     private val duplicateObjects: DuplicateObjects,
-    private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields
+    private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
+    private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -72,6 +76,7 @@ class ObjectTypeVMFactory @Inject constructor(
             stringResourceProvider = stringResourceProvider,
             createTemplate = createTemplate,
             duplicateObjects = duplicateObjects,
-            getObjectTypeConflictingFields = getObjectTypeConflictingFields
+            getObjectTypeConflictingFields = getObjectTypeConflictingFields,
+            objectTypeSetRecommendedFields = objectTypeSetRecommendedFields
         ) as T
 }

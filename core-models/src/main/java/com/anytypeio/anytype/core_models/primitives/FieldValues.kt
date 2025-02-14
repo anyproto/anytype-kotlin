@@ -27,5 +27,6 @@ data class ParsedFields(
     val featured: List<ObjectWrapper.Relation> = emptyList(),
     val sidebar: List<ObjectWrapper.Relation> = emptyList(),
     val hidden: List<ObjectWrapper.Relation> = emptyList(),
-    val conflicted: List<ObjectWrapper.Relation> = emptyList()
+    val conflictedWithoutSystem: List<ObjectWrapper.Relation> = emptyList(),
+    val conflictedSystem: List<ObjectWrapper.Relation> = emptyList()
 )

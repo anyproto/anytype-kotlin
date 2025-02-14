@@ -42,8 +42,9 @@ fun IconAndTitleWidget(
 ) {
     Row(modifier = modifier) {
         ListWidgetObjectIcon(
-            modifier = Modifier.size(32.dp)
-                .noRippleThrottledClickable{
+            modifier = Modifier
+                .size(32.dp)
+                .noRippleThrottledClickable {
                     if (uiIconState.isEditable) {
                         onTypeEvent.invoke(TypeEvent.OnObjectTypeIconClick)
                     }
@@ -75,7 +76,14 @@ fun NameField(
 
     BasicTextField(
         value = innerValue,
-        onValueChange = { innerValue = it },
+        onValueChange = {
+            innerValue = it
+            onTypeEvent.invoke(
+                TypeEvent.OnObjectTypeTitleUpdate(
+                    title = innerValue
+                )
+            )
+        },
         textStyle = HeadlineTitle.copy(color = colorResource(id = R.color.text_primary)),
         singleLine = false,
         enabled = uiTitleState.isEditable,
@@ -120,6 +128,9 @@ fun IconAndTitleWidgetPreview() {
             .wrapContentHeight(),
         onTypeEvent = {},
         uiIconState = UiIconState(icon = ObjectIcon.Task(isChecked = false), isEditable = true),
-        uiTitleState = UiTitleState(title = "I understand that contributing to this repository will require me to agree with the", isEditable = true)
+        uiTitleState = UiTitleState(
+            title = "I understand that contributing to this repository will require me to agree with the",
+            isEditable = true
+        )
     )
 }

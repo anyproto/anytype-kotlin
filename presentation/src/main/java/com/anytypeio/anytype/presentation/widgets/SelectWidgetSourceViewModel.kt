@@ -208,12 +208,7 @@ class SelectWidgetSourceViewModel(
                             isInEditMode = curr.isInEditMode
                         )
                     }
-                    if (view.layout == ObjectType.Layout.DATE
-                        || view.layout == ObjectType.Layout.PARTICIPANT
-                        || view.layout == ObjectType.Layout.IMAGE
-                        || view.layout == ObjectType.Layout.VIDEO
-                        || view.layout == ObjectType.Layout.FILE
-                    ) {
+                    if (view.layout != null && WidgetConfig.isLinkOnlyLayout(view.layout.code)) {
                         isDismissed.value = true
                     }
                 }

@@ -965,9 +965,22 @@ class ObjectTypeViewModel(
 
             FieldEvent.OnLimitTypesClick -> TODO()
             is FieldEvent.OnSaveButtonClicked -> TODO()
-            is FieldEvent.FieldOrderChanged -> {
-                val newItems = event.items
-                uiFieldsListState.value = UiFieldsListState(items = newItems)
+
+            is FieldEvent.FieldItemMenu -> proceedWithFieldItemMenuClick(event)
+            FieldEvent.FieldLocalInfo.OnDismiss -> {
+                uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Hidden
+            }
+
+            FieldEvent.Section.OnLocalInfoClick -> {
+                uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Visible
+            }
+
+            FieldEvent.Section.OnAddIconClick -> {
+                //todo need to implement
+            }
+
+            FieldEvent.DragEvent.OnDragEnd -> {
+                val newItems = uiFieldsListState.value.items
                 val headerItems = mutableListOf<Id>()
                 val sideBarItems = mutableListOf<Id>()
                 val hiddenItems = mutableListOf<Id>()
@@ -995,18 +1008,12 @@ class ObjectTypeViewModel(
                     fileFields = filesItems
                 )
             }
-
-            is FieldEvent.FieldItemMenu -> proceedWithFieldItemMenuClick(event)
-            FieldEvent.FieldLocalInfo.OnDismiss -> {
-                uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Hidden
-            }
-
-            FieldEvent.Section.OnLocalInfoClick -> {
-                uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Visible
-            }
-
-            FieldEvent.Section.OnAddIconClick -> {
-                //todo need to implement
+            is FieldEvent.DragEvent.OnMove -> {
+                val oldItems = uiFieldsListState.value.items
+                val newItems = oldItems.toMutableList().apply {
+                    add(event.toIndex, removeAt(event.fromIndex))
+                }
+                uiFieldsListState.value = UiFieldsListState(items = newItems)
             }
         }
     }

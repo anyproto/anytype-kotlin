@@ -29,10 +29,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -86,16 +84,12 @@ fun FieldsMainScreen(
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
-    var items by remember { mutableStateOf<List<UiFieldsListItem>>(uiFieldsListState.items) }
-
-    items = uiFieldsListState.items
-
     val lazyListState = rememberLazyListState()
     val dragDropState = rememberDragDropState(
         lazyListState = lazyListState,
-        onDragEnd = { fieldEvent(FieldOrderChanged(items)) },
+        onDragEnd = { fieldEvent(DragEvent.OnDragEnd) },
         onMove = { fromIndex, toIndex ->
-            items = items.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+            fieldEvent(DragEvent.OnMove(fromIndex = fromIndex, toIndex = toIndex))
         }
     )
 
@@ -105,37 +99,11 @@ fun FieldsMainScreen(
         containerColor = colorResource(id = R.color.background_primary),
         contentColor = colorResource(id = R.color.background_primary),
         topBar = {
-            val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-                Modifier
-                    .windowInsetsPadding(WindowInsets.statusBars)
-                    .fillMaxWidth()
-            } else {
-                Modifier.fillMaxWidth()
-            }
-            Column(modifier = modifier) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .wrapContentSize()
-                            .align(Alignment.Center),
-                        text = stringResource(R.string.object_type_fields_title),
-                        style = Title1,
-                        color = colorResource(R.color.text_primary)
-                    )
-                }
-                InfoBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(36.dp)
-                        .background(color = colorResource(R.color.shape_tertiary)),
-                    uiTitleState = uiTitleState,
-                    uiIconState = uiIconState
-                )
-            }
+            TopBar(
+                modifier = Modifier.fillMaxWidth(),
+                uiTitleState = uiTitleState,
+                uiIconState = uiIconState
+            )
         },
         content = { paddingValues ->
             val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
@@ -153,10 +121,10 @@ fun FieldsMainScreen(
                 state = lazyListState
             ) {
                 items(
-                    count = items.size,
-                    key = { items[it].id },
+                    count = uiFieldsListState.items.size,
+                    key = { uiFieldsListState.items[it].id },
                     contentType = { index ->
-                        when (items[index]) {
+                        when (uiFieldsListState.items[index]) {
                             is UiFieldsListItem.Item.Default -> FieldsItemsContentType.FIELD_ITEM_DEFAULT
                             is UiFieldsListItem.Item.Draggable -> FieldsItemsContentType.FIELD_ITEM_DRAGGABLE
                             is UiFieldsListItem.Item.Local -> FieldsItemsContentType.FIELD_ITEM_LOCAL
@@ -170,7 +138,7 @@ fun FieldsMainScreen(
                         }
                     },
                     itemContent = { index ->
-                        val item = items[index]
+                        val item = uiFieldsListState.items[index]
                         when (item) {
                             is UiFieldsListItem.Item.Draggable -> {
                                 FieldItemDraggable(
@@ -278,6 +246,43 @@ fun FieldsMainScreen(
             modifier = Modifier.fillMaxWidth(),
             state = uiFieldLocalInfoState,
             fieldEvent = fieldEvent
+        )
+    }
+}
+
+@Composable
+private fun TopBar(
+    modifier: Modifier,
+    uiTitleState: UiTitleState,
+    uiIconState: UiIconState,
+) {
+    val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+        modifier.windowInsetsPadding(WindowInsets.statusBars)
+    } else {
+        modifier
+    }
+    Column(modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Text(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .align(Alignment.Center),
+                text = stringResource(R.string.object_type_fields_title),
+                style = Title1,
+                color = colorResource(R.color.text_primary)
+            )
+        }
+        InfoBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(36.dp)
+                .background(color = colorResource(R.color.shape_tertiary)),
+            uiTitleState = uiTitleState,
+            uiIconState = uiIconState
         )
     }
 }

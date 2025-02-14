@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import javax.inject.Inject
 
 /**
@@ -36,7 +37,8 @@ class SplashViewModelFactory @Inject constructor(
     private val globalSubscriptionManager: GlobalSubscriptionManager,
     private val getLastOpenedSpace: GetLastOpenedSpace,
     private val createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val migration: MigrationHelperDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -54,6 +56,7 @@ class SplashViewModelFactory @Inject constructor(
             globalSubscriptionManager = globalSubscriptionManager,
             getLastOpenedSpace = getLastOpenedSpace,
             createObjectByTypeAndTemplate = createObjectByTypeAndTemplate,
-            spaceViews = spaceViews
+            spaceViews = spaceViews,
+            migration = migration
         ) as T
 }

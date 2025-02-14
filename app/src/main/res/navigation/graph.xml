@@ -631,12 +631,6 @@
         android:label="TemplateSelectScreen"
         tools:layout="@layout/fragment_template_select" />
 
-    <fragment
-        android:id="@+id/migrationNeededScreen"
-        android:name="com.anytypeio.anytype.ui.update.MigrationErrorFragment"
-        android:label="Migration-needed screen">
-    </fragment>
-
     <dialog
         android:id="@+id/shareSpaceScreen"
         android:name="com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment"/>

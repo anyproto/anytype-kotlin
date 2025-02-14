@@ -208,9 +208,7 @@ class SelectWidgetSourceViewModel(
                             isInEditMode = curr.isInEditMode
                         )
                     }
-                    if (view.layout == ObjectType.Layout.DATE ||
-                        view.layout == ObjectType.Layout.PARTICIPANT
-                    ) {
+                    if (view.layout != null && WidgetConfig.isLinkOnlyLayout(view.layout.code)) {
                         isDismissed.value = true
                     }
                 }

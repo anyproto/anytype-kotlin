@@ -343,7 +343,6 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
         viewModelScope.launch {
-
             val urlRegex = Regex(DEFAULT_URL_REGEX)
             val parsedUrls = buildList {
                 urlRegex.findAll(msg).forEach { match ->
@@ -503,16 +502,13 @@ class ChatViewModel @Inject constructor(
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.EditMessage -> {
-                    val editedMessage = data.value.find {
-                        it.id == mode.msg
-                    }
                     editChatMessage.async(
                         params = Command.ChatCommand.EditMessage(
                             chat = vmParams.ctx,
                             message = Chat.Message.updated(
                                 id = mode.msg,
                                 text = msg.trim(),
-                                attachments = editedMessage?.attachments.orEmpty(),
+                                attachments = attachments,
                                 marks = normalizedMarkup
                             )
                         )

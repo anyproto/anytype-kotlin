@@ -1235,7 +1235,7 @@
     <plurals name="multiplayer_number_of_join_requests">
         <item quantity="other">%1$d 个请求</item>
     </plurals>
-    <string name="multiplayer_you_as_member">您</string>
+    <string name="multiplayer_you_as_member">You</string>
     <string name="multiplayer_spaces">空间</string>
     <string name="multiplayer_space_status_joining">正在加入</string>
     <string name="multiplayer_space_status_active">正在进行</string>

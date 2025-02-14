@@ -28,5 +28,6 @@ data class ParsedFields(
     val sidebar: List<ObjectWrapper.Relation> = emptyList(),
     val hidden: List<ObjectWrapper.Relation> = emptyList(),
     val conflictedWithoutSystem: List<ObjectWrapper.Relation> = emptyList(),
-    val conflictedSystem: List<ObjectWrapper.Relation> = emptyList()
+    val conflictedSystem: List<ObjectWrapper.Relation> = emptyList(),
+    val file: List<ObjectWrapper.Relation> = emptyList(),
 )

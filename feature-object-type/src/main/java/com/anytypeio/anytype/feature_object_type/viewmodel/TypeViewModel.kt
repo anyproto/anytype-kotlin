@@ -969,6 +969,7 @@ class ObjectTypeViewModel(
                 val headerItems = mutableListOf<Id>()
                 val sideBarItems = mutableListOf<Id>()
                 val hiddenItems = mutableListOf<Id>()
+                val filesItems = mutableListOf<Id>()
                 var currentSection: UiFieldsListItem.Section? = null
                 newItems.forEach { item ->
                     when (item) {
@@ -977,6 +978,7 @@ class ObjectTypeViewModel(
                                 is UiFieldsListItem.Section.Header -> headerItems.add(item.id)
                                 is UiFieldsListItem.Section.SideBar -> sideBarItems.add(item.id)
                                 is UiFieldsListItem.Section.Hidden -> hiddenItems.add(item.id)
+                                is UiFieldsListItem.Section.File -> filesItems.add(item.id)
                                 else -> {}
                             }
                         }
@@ -987,7 +989,8 @@ class ObjectTypeViewModel(
                 proceedWithUpdatingTypeFields(
                     headerFields = headerItems,
                     sidebarFields = sideBarItems,
-                    hiddenFields = hiddenItems
+                    hiddenFields = hiddenItems,
+                    fileFields = filesItems
                 )
             }
 
@@ -1013,6 +1016,7 @@ class ObjectTypeViewModel(
                 val headerItems = mutableListOf<Id>()
                 val sideBarItems = mutableListOf<Id>()
                 val hiddenItems = mutableListOf<Id>()
+                val filesItems = mutableListOf<Id>()
                 var currentSection: UiFieldsListItem.Section? = null
                 uiFieldsListState.value.items.forEach { item ->
                     when (item) {
@@ -1027,6 +1031,9 @@ class ObjectTypeViewModel(
                                 is UiFieldsListItem.Section.Hidden -> {
                                     if (item.id != deleteId) hiddenItems.add(item.id)
                                 }
+                                is UiFieldsListItem.Section.File -> {
+                                    if (item.id != deleteId) filesItems.add(item.id)
+                                }
                                 else -> {}
                             }
                         }
@@ -1036,7 +1043,8 @@ class ObjectTypeViewModel(
                 proceedWithUpdatingTypeFields(
                     headerFields = headerItems,
                     sidebarFields = sideBarItems,
-                    hiddenFields = hiddenItems
+                    hiddenFields = hiddenItems,
+                    fileFields = filesItems
                 )
             }
             is FieldEvent.FieldItemMenu.OnAddLocalToTypeClick -> {
@@ -1077,7 +1085,8 @@ class ObjectTypeViewModel(
     private fun proceedWithUpdatingTypeFields(
         headerFields: List<Id>,
         sidebarFields: List<Id>,
-        hiddenFields: List<Id>
+        hiddenFields: List<Id>,
+        fileFields: List<Id>
     ) {
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
@@ -1085,7 +1094,8 @@ class ObjectTypeViewModel(
                 details = mapOf(
                     Relations.RECOMMENDED_FEATURED_RELATIONS to headerFields,
                     Relations.RECOMMENDED_RELATIONS to sidebarFields,
-                    Relations.RECOMMENDED_HIDDEN_RELATIONS to hiddenFields
+                    Relations.RECOMMENDED_HIDDEN_RELATIONS to hiddenFields,
+                    Relations.RECOMMENDED_FILE_RELATIONS to fileFields
                 )
             )
             setObjectDetails.async(params).fold(

@@ -53,7 +53,6 @@ fun ObjectsHeader(
     onTypeEvent: (TypeEvent) -> Unit
 ) {
 
-    Timber.d("ObjectsHeader, MenuState: $uiObjectsMenuState")
     var isMenuExpanded by remember { mutableStateOf(false) }
     var isSortingExpanded by remember { mutableStateOf(false) }
 

@@ -115,8 +115,20 @@ suspend fun buildUiFieldsList(
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
+
+    //this items goes to the Hidden section as draggable items
     val conflictedSystemItems = parsedFields.conflictedSystem.mapNotNull {
-        mapToUiFieldsLocalListItem(
+        mapToUiFieldsDraggableListItem(
+            field = it,
+            stringResourceProvider = stringResourceProvider,
+            fieldParser = fieldParser,
+            urlBuilder = urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
+    }
+
+    val fileRecommendedFields = parsedFields.file.mapNotNull {
+        mapToUiFieldsDraggableListItem(
             field = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
@@ -131,6 +143,11 @@ suspend fun buildUiFieldsList(
 
         add(Section.SideBar(canAdd = false))
         addAll(sidebarItems)
+
+        if (fileRecommendedFields.isNotEmpty()) {
+            add(Section.File(canAdd = false))
+            addAll(fileRecommendedFields)
+        }
 
         add(Section.Hidden(canAdd = false))
         addAll(hiddenItems)

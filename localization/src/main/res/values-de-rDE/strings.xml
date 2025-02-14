@@ -1241,7 +1241,7 @@
         <item quantity="one">%1$d Anfrage</item>
         <item quantity="other">%1$d Anfragen</item>
     </plurals>
-    <string name="multiplayer_you_as_member">You</string>
+    <string name="multiplayer_you_as_member">Du</string>
     <string name="multiplayer_spaces">Spaces</string>
     <string name="multiplayer_space_status_joining">Beitreten</string>
     <string name="multiplayer_space_status_active">Aktiv</string>
@@ -1604,9 +1604,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_types_human">Mensch</string>
     <string name="chats_alert_delete_this_message_description">Sie kann nach der Bestätigung nicht wiederhergestellt werden</string>
     <string name="chats_alert_delete_this_message">Diese Nachricht löschen?</string>
-    <string name="migration_migration_is_in_progress">Migration is in progress</string>
-    <string name="migration_this_shouldn_t_take_long">This shouldn’t take long. Thanks for your patience.</string>
+    <string name="migration_migration_is_in_progress">Migration läuft</string>
+    <string name="migration_this_shouldn_t_take_long">Das sollte nicht lange dauern. Danke für deine Geduld.</string>
     <string name="migration_error_try_again">Erneut versuchen</string>
-    <string name="migration_migration_failed">Migration failed</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
+    <string name="migration_migration_failed">Migration fehlgeschlagen</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Bitte gib Speicherplatz frei und führe den Vorgang erneut aus.</string>
 </resources>

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -622,7 +623,18 @@ class ChatViewModel @Inject constructor(
                 is ChatView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper
                     if (wrapper != null) {
-                        navigation.emit(wrapper.navigation())
+                        if (wrapper.layout == ObjectType.Layout.BOOKMARK) {
+                            val bookmark = ObjectWrapper.Bookmark(wrapper.map)
+                            val url = bookmark.source
+                            if (!url.isNullOrEmpty()) {
+                                commands.emit(ViewModelCommand.Browse(url))
+                            } else {
+                                // If url not found, open bookmark object instead of browsing.
+                                navigation.emit(wrapper.navigation())
+                            }
+                        } else {
+                            navigation.emit(wrapper.navigation())
+                        }
                     } else {
                         Timber.w("Wrapper is not found in attachment")
                     }
@@ -761,6 +773,7 @@ class ChatViewModel @Inject constructor(
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
         data class MediaPreview(val url: String) : ViewModelCommand()
+        data class Browse(val url: String) : ViewModelCommand()
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()
         data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()

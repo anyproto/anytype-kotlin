@@ -16,7 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceMemberIcon
@@ -24,6 +26,8 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel.ViewState
@@ -67,7 +71,8 @@ fun ChatReactionScreen(
                         val member = viewState.members[idx]
                         ChatMemberItem(
                             name = member.name,
-                            icon = member.icon
+                            icon = member.icon,
+                            isUser = member.isUser
                         )
                         if (idx != viewState.members.lastIndex) {
                             Divider()
@@ -100,7 +105,8 @@ fun ChatReactionScreen(
 fun ChatMemberItem(
     modifier: Modifier = Modifier,
     name: String,
-    icon: SpaceMemberIconView
+    icon: SpaceMemberIconView,
+    isUser: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -121,12 +127,25 @@ fun ChatMemberItem(
                 .align(Alignment.CenterStart)
                 .padding(start = 60.dp)
         ) {
-            Text(
-                text = name.ifEmpty {
-                    stringResource(R.string.untitled)
-                },
-                color = colorResource(R.color.text_primary)
-            )
+            Row {
+                Text(
+                    text = name.ifEmpty { stringResource(R.string.untitled) },
+                    color = colorResource(R.color.text_primary),
+                    style = PreviewTitle2Regular,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+                if (isUser) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    val youAsMemberText = stringResource(id = R.string.multiplayer_you_as_member)
+                    Text(
+                        text = "($youAsMemberText)",
+                        style = PreviewTitle2Regular,
+                        color = colorResource(id = R.color.text_secondary),
+                    )
+                }
+            }
             Text(
                 text = stringResource(R.string.object_types_human),
                 style = Relations3,
@@ -204,6 +223,30 @@ private fun MemberPreview() {
         icon = SpaceMemberIconView.Placeholder(
             name = "Walter"
         )
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun MemberUserPreview() {
+    ChatMemberItem(
+        name = "Walter Benjamin Walter Walter Walter Walter",
+        icon = SpaceMemberIconView.Placeholder(
+            name = "Walter"
+        ),
+        isUser = true
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun MemberOverflowPreview() {
+    ChatMemberItem(
+        name = "Walter Benjamin Walter Walter Walter Walter",
+        icon = SpaceMemberIconView.Placeholder(
+            name = "Walter"
+        ),
+        isUser = true
     )
 }
 

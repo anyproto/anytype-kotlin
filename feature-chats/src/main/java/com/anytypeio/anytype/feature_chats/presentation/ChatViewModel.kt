@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -80,6 +81,8 @@ class ChatViewModel @Inject constructor(
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
 
+    private var account: Id = ""
+
     init {
         viewModelScope.launch {
             spaceViews
@@ -98,9 +101,16 @@ class ChatViewModel @Inject constructor(
                 }
         }
         viewModelScope.launch {
-            val account = requireNotNull(getAccount.async(Unit).getOrNull())
+            getAccount
+                .async(Unit)
+                .onSuccess { acc ->
+                    account = acc.id
+                }
+                .onFailure {
+                    Timber.e("Failed to find account for space-level chat")
+                }
             proceedWithObservingChatMessages(
-                account = account.id,
+                account = account,
                 chat = vmParams.ctx
             )
         }
@@ -193,13 +203,16 @@ class ChatViewModel @Inject constructor(
                         creator = member?.id,
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,
-                        reactions = msg.reactions.map { (emoji, ids) ->
-                            ChatView.Message.Reaction(
-                                emoji = emoji,
-                                count = ids.size,
-                                isSelected = ids.contains(account)
-                            )
-                        },
+                        reactions = msg.reactions
+                            .map { (emoji, ids) ->
+                                ChatView.Message.Reaction(
+                                    emoji = emoji,
+                                    count = ids.size,
+                                    isSelected = ids.contains(account)
+                                )
+                            }
+                            .take(ChatConfig.MAX_REACTION_COUNT)
+                        ,
                         attachments = msg.attachments.map { attachment ->
                             when (attachment.type) {
                                 Chat.Message.Attachment.Type.Image -> {
@@ -303,7 +316,8 @@ class ChatViewModel @Inject constructor(
                             icon = SpaceMemberIconView.icon(
                                 obj = member,
                                 urlBuilder = urlBuilder
-                            )
+                            ),
+                            isUser = member.identity == account
                         )
                     }.filter { m ->
                         if (query != null) {

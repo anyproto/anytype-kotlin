@@ -331,8 +331,13 @@ class ObjectTypeViewModel(
                             if (objectPermissions.canDelete) {
                                 uiEditButtonState.value = UiEditButton.Visible
                             }
-                            val layout = objType.recommendedLayout ?: ObjectType.Layout.BASIC
-                            uiLayoutButtonState.value = UiLayoutButtonState.Visible(layout = layout)
+                            val layout = objType.recommendedLayout
+                            if (layout != null) {
+                                val permissions = _objectTypePermissionsState.value
+                                if (permissions?.canChangeRecommendedLayoutForThisType == true) {
+                                    uiLayoutButtonState.value = UiLayoutButtonState.Visible(layout = layout)
+                                }
+                            }
                             updateDefaultTemplates(
                                 defaultTemplate = objType.defaultTemplateId
                             )
@@ -662,18 +667,15 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnLayoutButtonClick -> {
-                val permissions = _objectTypePermissionsState.value
-                if (permissions?.canChangeRecommendedLayoutForThisType == true) {
-                    uiTypeLayoutsState.value = Visible(
-                        layouts = listOf(
-                            ObjectType.Layout.BASIC,
-                            ObjectType.Layout.NOTE,
-                            ObjectType.Layout.PROFILE,
-                            ObjectType.Layout.TODO
-                        ),
-                        selectedLayout = _objTypeState.value?.recommendedLayout
-                    )
-                }
+                uiTypeLayoutsState.value = Visible(
+                    layouts = listOf(
+                        ObjectType.Layout.BASIC,
+                        ObjectType.Layout.NOTE,
+                        ObjectType.Layout.PROFILE,
+                        ObjectType.Layout.TODO
+                    ),
+                    selectedLayout = _objTypeState.value?.recommendedLayout
+                )
             }
 
             is TypeEvent.OnSyncStatusClick -> {

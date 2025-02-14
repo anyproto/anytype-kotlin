@@ -21,9 +21,9 @@ import com.anytypeio.anytype.di.feature.ObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
+import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatReactionDependencies
 import com.anytypeio.anytype.di.feature.chats.SelectChatReactionDependencies
-import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
@@ -58,7 +58,6 @@ import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
 import com.anytypeio.anytype.di.feature.types.CreateObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
 import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
-import com.anytypeio.anytype.di.feature.update.MigrationErrorDependencies
 import com.anytypeio.anytype.di.feature.vault.VaultComponentDependencies
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceDependencies
@@ -105,7 +104,6 @@ interface MainComponent :
     RelationEditDependencies,
     SplashDependencies,
     DeletedAccountDependencies,
-    MigrationErrorDependencies,
     BacklinkOrAddToObjectDependencies,
     FilesStorageDependencies,
     OnboardingDependencies,
@@ -219,11 +217,6 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(DeletedAccountDependencies::class)
     abstract fun provideDeletedAccountDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(MigrationErrorDependencies::class)
-    abstract fun migrationErrorDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

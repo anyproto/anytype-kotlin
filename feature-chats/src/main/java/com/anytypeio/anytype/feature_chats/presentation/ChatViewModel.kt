@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.core_utils.tools.DEFAULT_URL_REGEX
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.onFailure
@@ -342,6 +343,28 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
         viewModelScope.launch {
+
+            val urlRegex = Regex(DEFAULT_URL_REGEX)
+            val parsedUrls = buildList {
+                urlRegex.findAll(msg).forEach { match ->
+                    val range = match.range
+                    val url = match.value
+
+                    // Check if a LINK markup already exists in the same range
+                    if (markup.none { it.range == range && it.type == Block.Content.Text.Mark.Type.LINK }) {
+                        add(
+                            Block.Content.Text.Mark(
+                                range = range,
+                                type = Block.Content.Text.Mark.Type.LINK,
+                                param = url
+                            )
+                        )
+                    }
+                }
+            }
+
+            val normalizedMarkup = (markup + parsedUrls).sortedBy { it.range.first }
+
             chatBoxMode.value = chatBoxMode.value.updateIsSendingBlocked(isBlocked = true)
             val attachments = buildList {
                 val currAttachments = chatBoxAttachments.value
@@ -456,7 +479,7 @@ class ChatViewModel @Inject constructor(
                             message = Chat.Message.new(
                                 text = msg.trim(),
                                 attachments = attachments,
-                                marks = markup
+                                marks = normalizedMarkup
                             )
                         )
                     ).onSuccess { (id, payload) ->
@@ -479,7 +502,8 @@ class ChatViewModel @Inject constructor(
                             message = Chat.Message.updated(
                                 id = mode.msg,
                                 text = msg.trim(),
-                                attachments = editedMessage?.attachments.orEmpty()
+                                attachments = editedMessage?.attachments.orEmpty(),
+                                marks = normalizedMarkup
                             )
                         )
                     ).onSuccess {
@@ -500,7 +524,7 @@ class ChatViewModel @Inject constructor(
                                 text = msg.trim(),
                                 replyToMessageId = mode.msg,
                                 attachments = attachments,
-                                marks = markup
+                                marks = normalizedMarkup
                             )
                         )
                     ).onSuccess { (id, payload) ->

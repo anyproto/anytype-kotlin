@@ -380,6 +380,14 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+                        is ChatView.Message.ChatBoxAttachment.Existing.Image -> {
+                            add(
+                                Chat.Message.Attachment(
+                                    target = attachment.target,
+                                    type = Chat.Message.Attachment.Type.Image
+                                )
+                            )
+                        }
                         is ChatView.Message.ChatBoxAttachment.Media -> {
                             chatBoxAttachments.value = currAttachments.toMutableList().apply {
                                 set(
@@ -546,6 +554,19 @@ class ChatViewModel @Inject constructor(
     fun onRequestEditMessageClicked(msg: ChatView.Message) {
         Timber.d("onRequestEditMessageClicked")
         viewModelScope.launch {
+            chatBoxAttachments.value = msg.attachments.mapNotNull { a ->
+                when(a) {
+                    is ChatView.Message.Attachment.Image -> {
+                        ChatView.Message.ChatBoxAttachment.Existing.Image(
+                            target = a.target
+                        )
+                    }
+                    is ChatView.Message.Attachment.Link -> {
+                        // TODO
+                        null
+                    }
+                }
+            }
             chatBoxMode.value = ChatBoxMode.EditMessage(msg.id)
         }
     }

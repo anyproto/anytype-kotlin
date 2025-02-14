@@ -118,7 +118,7 @@ internal fun ChatBoxAttachments(
                     item {
                         Box(modifier = Modifier.padding()) {
                             Image(
-                                painter = rememberAsyncImagePainter(attachment.target),
+                                painter = rememberAsyncImagePainter(attachment.url),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .padding(

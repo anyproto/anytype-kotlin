@@ -89,7 +89,8 @@ sealed interface ChatView {
 
             sealed class Existing : ChatBoxAttachment() {
                 data class Image(
-                    val target: Id
+                    val target: Id,
+                    val url: Url
                 ) : Existing()
             }
 

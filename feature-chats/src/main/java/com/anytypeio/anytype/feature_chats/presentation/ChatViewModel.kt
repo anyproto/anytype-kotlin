@@ -558,7 +558,8 @@ class ChatViewModel @Inject constructor(
                 when(a) {
                     is ChatView.Message.Attachment.Image -> {
                         ChatView.Message.ChatBoxAttachment.Existing.Image(
-                            target = a.target
+                            target = a.target,
+                            url = a.url
                         )
                     }
                     is ChatView.Message.Attachment.Link -> {

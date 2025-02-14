@@ -67,6 +67,7 @@ sealed class Chat {
                 id: Id,
                 text: String,
                 attachments: List<Attachment> = emptyList(),
+                marks: List<Block.Content.Text.Mark>
             ) : Message = Message(
                 id = id,
                 createdAt = 0L,
@@ -77,7 +78,7 @@ sealed class Chat {
                 replyToMessageId = "",
                 content = Content(
                     text = text,
-                    marks = emptyList(),
+                    marks = marks,
                     style = Block.Content.Text.Style.P
                 ),
                 order = ""

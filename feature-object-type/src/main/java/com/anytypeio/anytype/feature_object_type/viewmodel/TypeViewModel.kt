@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
@@ -130,7 +131,8 @@ class ObjectTypeViewModel(
     private val stringResourceProvider: StringResourceProvider,
     private val createTemplate: CreateTemplate,
     private val duplicateObjects: DuplicateObjects,
-    private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields
+    private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
+    private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -1006,9 +1008,41 @@ class ObjectTypeViewModel(
 
     private fun proceedWithFieldItemMenuClick(event: FieldEvent.FieldItemMenu) {
         when (event) {
-            is FieldEvent.FieldItemMenu.OnDeleteFromTypeClick -> TODO()
+            is FieldEvent.FieldItemMenu.OnDeleteFromTypeClick -> {
+                val deleteId = event.item.id
+                val headerItems = mutableListOf<Id>()
+                val sideBarItems = mutableListOf<Id>()
+                val hiddenItems = mutableListOf<Id>()
+                var currentSection: UiFieldsListItem.Section? = null
+                uiFieldsListState.value.items.forEach { item ->
+                    when (item) {
+                        is UiFieldsListItem.Item -> {
+                            when (currentSection) {
+                                is UiFieldsListItem.Section.Header -> {
+                                    if (item.id != deleteId) headerItems.add(item.id)
+                                }
+                                is UiFieldsListItem.Section.SideBar -> {
+                                    if (item.id != deleteId) sideBarItems.add(item.id)
+                                }
+                                is UiFieldsListItem.Section.Hidden -> {
+                                    if (item.id != deleteId) hiddenItems.add(item.id)
+                                }
+                                else -> {}
+                            }
+                        }
+                        is UiFieldsListItem.Section -> currentSection = item
+                    }
+                }
+                proceedWithUpdatingTypeFields(
+                    headerFields = headerItems,
+                    sidebarFields = sideBarItems,
+                    hiddenFields = hiddenItems
+                )
+            }
             is FieldEvent.FieldItemMenu.OnAddLocalToTypeClick -> {
-                //todo need to implement
+                val currentRecommendedFields = _objTypeState.value?.recommendedRelations.orEmpty()
+                val newRecommendedFields = currentRecommendedFields + event.item.id
+                proceedWithSetRecommendedFields(newRecommendedFields)
             }
 
             is FieldEvent.FieldItemMenu.OnRemoveLocalClick -> TODO()
@@ -1223,6 +1257,23 @@ class ObjectTypeViewModel(
                 },
                 onFailure = {
                     Timber.e(it, "Error while setting template $template as default")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithSetRecommendedFields(fields: List<Id>) {
+        val params = SetObjectTypeRecommendedFields.Params(
+            objectTypeId = vmParams.objectId,
+            fields = fields
+        )
+        viewModelScope.launch {
+            objectTypeSetRecommendedFields.async(params).fold(
+                onSuccess = {
+                    Timber.d("Recommended fields set")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while setting recommended fields")
                 }
             )
         }

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
@@ -137,6 +138,14 @@ object ObjectTypeModule {
         repo = repo,
         dispatchers = dispatchers
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideTypeSetRecommendedFields(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectTypeRecommendedFields = SetObjectTypeRecommendedFields(repo, dispatchers)
 
     @Module
     interface Declarations {

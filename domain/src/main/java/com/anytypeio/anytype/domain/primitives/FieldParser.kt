@@ -54,6 +54,8 @@ interface FieldParser {
     ): ParsedFields
 
     fun isFieldEditable(relation: ObjectWrapper.Relation): Boolean
+
+    fun isFieldCanBeDeletedFromType(field: ObjectWrapper.Relation): Boolean
 }
 
 class FieldParserImpl @Inject constructor(
@@ -268,6 +270,15 @@ class FieldParserImpl @Inject constructor(
         val isDeletedField = relation.isDeleted == true
         val isSystemField = Relations.systemRelationKeys.contains(relation.key)
         return !isReadOnlyField && !isHiddenField && !isArchivedField && !isDeletedField && !isSystemField
+    }
+
+    override fun isFieldCanBeDeletedFromType(field: ObjectWrapper.Relation): Boolean {
+        val isHiddenField = field.isHidden == true
+        val isSystemField = Relations.systemRelationKeys.contains(field.key)
+        return !isHiddenField && !isSystemField
+
+        /*seems that restriction DELETE should works only inside Object and not in Object Type*/
+                //&& !relation.restrictions.contains(ObjectRestriction.DELETE)
     }
     //endregion
 }

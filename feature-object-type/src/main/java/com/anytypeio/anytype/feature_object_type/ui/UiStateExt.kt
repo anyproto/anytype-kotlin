@@ -129,7 +129,7 @@ suspend fun buildUiFieldsList(
         add(Section.Header(canAdd = false))
         addAll(headerItems)
 
-        add(Section.SideBar(canAdd = true))
+        add(Section.SideBar(canAdd = false))
         addAll(sidebarItems)
 
         add(Section.Hidden(canAdd = false))
@@ -188,7 +188,8 @@ private suspend fun mapToUiFieldsDraggableListItem(
         fieldTitle = field.getName(stringResourceProvider),
         format = field.format,
         limitObjectTypes = limitObjectTypes,
-        isEditableField = fieldParser.isFieldEditable(field)
+        isEditableField = fieldParser.isFieldEditable(field),
+        canDelete = fieldParser.isFieldCanBeDeletedFromType(field)
     )
 }
 

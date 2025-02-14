@@ -61,7 +61,7 @@ sealed class UiFieldsListItem {
             override val fieldTitle: String,
             override val format: RelationFormat,
             override val limitObjectTypes: List<UiFieldObjectItem> = emptyList(),
-            override val canDelete: Boolean = false,
+            override val canDelete: Boolean,
             override val isEditableField: Boolean
         ) : Item()
 

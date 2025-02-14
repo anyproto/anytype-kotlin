@@ -538,7 +538,9 @@ private fun LazyItemScope.FieldItemDraggable(
                         },
                         onLongClick = {
                             // show your menu, only if NOT dragging
-                            isMenuExpanded.value = true
+                            if (item.canDelete) {
+                                isMenuExpanded.value = true
+                            }
                         }
                     )
                     .padding(end = 16.dp)
@@ -663,18 +665,18 @@ fun ItemDropDownMenu(
                         onFieldEvent(FieldItemMenu.OnAddLocalToTypeClick(item))
                     },
                 )
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.object_type_fields_menu_remove),
-                            style = BodyCalloutRegular,
-                            color = colorResource(id = R.color.palette_system_red)
-                        )
-                    },
-                    onClick = {
-                        onFieldEvent(FieldItemMenu.OnRemoveLocalClick(item))
-                    },
-                )
+//                DropdownMenuItem(
+//                    text = {
+//                        Text(
+//                            text = stringResource(R.string.object_type_fields_menu_remove),
+//                            style = BodyCalloutRegular,
+//                            color = colorResource(id = R.color.palette_system_red)
+//                        )
+//                    },
+//                    onClick = {
+//                        onFieldEvent(FieldItemMenu.OnRemoveLocalClick(item))
+//                    },
+//                )
             }
         }
     }
@@ -728,7 +730,8 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldKey = "key555",
                     fieldTitle = "Hidden field",
                     format = RelationFormat.LONG_TEXT,
-                    isEditableField = true
+                    isEditableField = true,
+                    canDelete = true
                 ),
                 UiFieldsListItem.Section.Local(),
                 UiFieldsListItem.Item.Local(

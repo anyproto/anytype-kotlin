@@ -1235,7 +1235,7 @@
     <plurals name="multiplayer_number_of_join_requests">
         <item quantity="other">%1$d permintaan</item>
     </plurals>
-    <string name="multiplayer_you_as_member">kamu</string>
+    <string name="multiplayer_you_as_member">You</string>
     <string name="multiplayer_spaces">Ruang</string>
     <string name="multiplayer_space_status_joining">Bergabung</string>
     <string name="multiplayer_space_status_active">Aktif</string>

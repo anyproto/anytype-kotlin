@@ -92,6 +92,13 @@ sealed interface ChatView {
                     val target: Id,
                     val url: Url
                 ) : Existing()
+
+                data class Link(
+                    val target: Id,
+                    val name: String,
+                    val typeName: String,
+                    val icon: ObjectIcon
+                ) : Existing()
             }
 
             data class Link(

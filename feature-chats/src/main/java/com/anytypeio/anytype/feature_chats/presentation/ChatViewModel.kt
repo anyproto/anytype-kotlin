@@ -379,6 +379,14 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+                        is ChatView.Message.ChatBoxAttachment.Existing.Link -> {
+                            add(
+                                Chat.Message.Attachment(
+                                    target = attachment.target,
+                                    type = Chat.Message.Attachment.Type.Link
+                                )
+                            )
+                        }
                         is ChatView.Message.ChatBoxAttachment.Existing.Image -> {
                             add(
                                 Chat.Message.Attachment(
@@ -559,8 +567,21 @@ class ChatViewModel @Inject constructor(
                         )
                     }
                     is ChatView.Message.Attachment.Link -> {
-                        // TODO
-                        null
+                        val wrapper = a.wrapper
+                        if (wrapper != null) {
+                            val type = wrapper.type.firstOrNull()
+                            ChatView.Message.ChatBoxAttachment.Existing.Link(
+                                target = wrapper.id,
+                                name = wrapper.name.orEmpty(),
+                                icon = wrapper.objectIcon(urlBuilder),
+                                typeName = if (type != null)
+                                    storeOfObjectTypes.get(type)?.name.orEmpty()
+                                else
+                                    ""
+                            )
+                        } else {
+                            null
+                        }
                     }
                 }
             }

@@ -25,7 +25,6 @@ class ObjectMenuItemWidget @JvmOverloads constructor(
         if (set == null) return
         val attrs = context.obtainStyledAttributes(set, R.styleable.ObjectMenuItemWidget, 0, 0)
         tvTitle.text = attrs.getString(R.styleable.ObjectMenuItemWidget_title)
-        tvSubtitle.text = attrs.getString(R.styleable.ObjectMenuItemWidget_subtitle)
         ivIcon.setImageResource(attrs.getResourceId(R.styleable.ObjectMenuItemWidget_icon, -1))
         attrs.recycle()
     }

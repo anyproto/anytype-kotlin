@@ -270,6 +270,7 @@
     <string name="search">Search</string>
     <string name="search_hint">Search...</string>
     <string name="relations">Relations</string>
+    <string name="fields">Fields</string>
     <string name="relation">Relation</string>
     <string name="download">Download</string>
     <string name="view">View</string>

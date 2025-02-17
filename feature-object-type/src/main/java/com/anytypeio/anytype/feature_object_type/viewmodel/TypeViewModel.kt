@@ -1009,11 +1009,13 @@ class ObjectTypeViewModel(
                 )
             }
             is FieldEvent.DragEvent.OnMove -> {
-                val oldItems = uiFieldsListState.value.items
-                val newItems = oldItems.toMutableList().apply {
-                    add(event.toIndex, removeAt(event.fromIndex))
-                }
-                uiFieldsListState.value = UiFieldsListState(items = newItems)
+                val currentList = uiFieldsListState.value.items.toMutableList()
+                val fromIndex = currentList.indexOfFirst { it.id == event.fromKey }
+                val toIndex = currentList.indexOfFirst { it.id == event.toKey }
+                if ((fromIndex == -1) || (toIndex == -1)) return
+                val item = currentList.removeAt(fromIndex)
+                currentList.add(toIndex, item)
+                uiFieldsListState.value = UiFieldsListState(items = currentList)
             }
         }
     }

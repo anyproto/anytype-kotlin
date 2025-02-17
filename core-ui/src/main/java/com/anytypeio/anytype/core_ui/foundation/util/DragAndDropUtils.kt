@@ -92,13 +92,6 @@ internal constructor(
             }
     }
 
-    internal fun startDragging(index: Int) {
-        draggingItemIndex = index
-        // Initialize the offset from the current layout info (if visible)
-        val itemInfo = state.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
-        draggingItemInitialOffset = itemInfo?.offset ?: 0
-    }
-
     internal fun onDragInterrupted() {
         if (draggingItemIndex != null) {
             previousIndexOfDraggedItem = draggingItemIndex
@@ -199,25 +192,4 @@ fun LazyItemScope.DraggableItem(
             Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
         }
     Column(modifier = modifier.then(draggingModifier)) { content(dragging) }
-}
-
-fun Modifier.dragHandle(dragDropState: DragDropState, index: Int): Modifier {
-    return pointerInput(dragDropState) {
-        detectDragGesturesAfterLongPress(
-            onDragStart = {
-                // We already know which item is being dragged, so just tell the state
-                dragDropState.startDragging(index)
-            },
-            onDrag = { change, dragAmount ->
-                change.consume()
-                dragDropState.onDrag(dragAmount)
-            },
-            onDragEnd = {
-                dragDropState.onDragInterrupted()
-            },
-            onDragCancel = {
-                dragDropState.onDragInterrupted()
-            }
-        )
-    }
 }

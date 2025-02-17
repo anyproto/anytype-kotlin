@@ -46,12 +46,11 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedback
+import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
+import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.core_ui.foundation.util.DragDropState
-import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
-import com.anytypeio.anytype.core_ui.foundation.util.dragHandle
-import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -70,6 +69,9 @@ import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.ReorderableLazyListState
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -82,16 +84,21 @@ fun FieldsMainScreen(
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
-    val currentFieldEvent by rememberUpdatedState(newValue = fieldEvent)
+    val hapticFeedback = rememberReorderHapticFeedback()
 
     val lazyListState = rememberLazyListState()
-    val dragDropState = rememberDragDropState(
-        lazyListState = lazyListState,
-        onDragEnd = { currentFieldEvent(DragEvent.OnDragEnd) },
-        onMove = { fromIndex, toIndex ->
-            currentFieldEvent(DragEvent.OnMove(fromIndex = fromIndex, toIndex = toIndex))
+
+    val reorderableLazyColumnState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        fieldEvent(DragEvent.OnMove(from.key as String, to.key as String))
+        hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
+    }
+
+    LaunchedEffect(reorderableLazyColumnState.isAnyItemDragging) {
+        if (!reorderableLazyColumnState.isAnyItemDragging) {
+            fieldEvent(DragEvent.OnDragEnd)
+            hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
         }
-    )
+    }
 
     Scaffold(
         modifier = Modifier
@@ -116,33 +123,24 @@ fun FieldsMainScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             }
-            val itemsList = uiFieldsListState.items
             LazyColumn(
                 modifier = contentModifier,
                 state = lazyListState
             ) {
                 items(
-                    count = itemsList.size,
-                    key = { index -> itemsList[index].id },
-                    contentType = { index -> getContentType(itemsList[index]) },
+                    count = uiFieldsListState.items.size,
+                    key = { index -> uiFieldsListState.items[index].id },
+                    contentType = { index -> getContentType(uiFieldsListState.items[index]) },
                     itemContent = { index ->
-                        val item = itemsList[index]
+                        val item = uiFieldsListState.items[index]
                         when (item) {
                             is UiFieldsListItem.Item.Draggable -> {
                                 FieldItemDraggable(
                                     modifier = commonItemModifier(),
                                     item = item,
-                                    dragDropState = dragDropState,
-                                    index = index,
-                                    fieldEvent = currentFieldEvent,
-                                )
-                            }
-
-                            is UiFieldsListItem.Item.Default -> {
-                                FieldItem(
-                                    modifier = commonItemModifier(),
-                                    item = item,
-                                    fieldEvent = currentFieldEvent
+                                    reorderingState = reorderableLazyColumnState,
+                                    fieldEvent = fieldEvent,
+                                    hapticFeedback = hapticFeedback
                                 )
                             }
 
@@ -150,18 +148,28 @@ fun FieldsMainScreen(
                                 FieldItemLocal(
                                     modifier = commonItemModifier(),
                                     item = item,
-                                    fieldEvent = currentFieldEvent
+                                    fieldEvent = fieldEvent
                                 )
                             }
 
                             is Section.SideBar,
+                            is Section.Hidden -> {
+                                SectionItem(
+                                    item = item,
+                                    reorderingState = reorderableLazyColumnState,
+                                    fieldEvent = fieldEvent,
+                                    isReorderable = true
+                                )
+                            }
+
                             is Section.Header,
-                            is Section.Hidden,
                             is Section.Local,
                             is Section.File -> {
                                 SectionItem(
                                     item = item,
-                                    fieldEvent = currentFieldEvent
+                                    reorderingState = reorderableLazyColumnState,
+                                    fieldEvent = fieldEvent,
+                                    isReorderable = false
                                 )
                             }
 
@@ -194,7 +202,6 @@ fun FieldsMainScreen(
 /** Returns a content type string based on the item type. **/
 private fun getContentType(item: UiFieldsListItem): String {
     return when (item) {
-        is UiFieldsListItem.Item.Default -> FieldsItemsContentType.FIELD_ITEM_DEFAULT
         is UiFieldsListItem.Item.Draggable -> FieldsItemsContentType.FIELD_ITEM_DRAGGABLE
         is UiFieldsListItem.Item.Local -> FieldsItemsContentType.FIELD_ITEM_LOCAL
         is Section.SideBar -> FieldsItemsContentType.SECTION_SIDEBAR
@@ -284,8 +291,10 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
 }
 
 @Composable
-private fun SectionItem(
+private fun LazyItemScope.SectionItem(
     item: UiFieldsListItem.Section,
+    reorderingState: ReorderableLazyListState,
+    isReorderable: Boolean = true,
     fieldEvent: (FieldEvent) -> Unit
 ) {
     val (title, textColor) = when (item) {
@@ -312,113 +321,65 @@ private fun SectionItem(
             id = R.color.text_secondary
         )
     }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
+    ReorderableItem(
+        state = reorderingState,
+        key = item.id,
+        enabled = isReorderable
     ) {
-        Text(
-            modifier = Modifier
-                .padding(bottom = 7.dp, start = 20.dp)
-                .align(Alignment.BottomStart),
-            text = title,
-            style = BodyCalloutMedium,
-            color = textColor,
-        )
-        if (item.canAdd) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .width(54.dp)
-                    .height(40.dp)
-                    .noRippleThrottledClickable {
-                        fieldEvent(FieldEvent.Section.OnAddIconClick)
-                    }
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(bottom = 6.dp, end = 20.dp)
-                        .wrapContentSize()
-                        .align(Alignment.BottomEnd),
-                    painter = painterResource(R.drawable.ic_default_plus),
-                    contentDescription = "$title plus button"
-                )
-            }
-        }
-        if (item is Section.Local) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .height(37.dp)
-                    .width(44.dp)
-                    .noRippleThrottledClickable {
-                        fieldEvent(FieldEvent.Section.OnLocalInfoClick)
-                    }
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(bottom = 9.dp, end = 20.dp)
-                        .wrapContentSize()
-                        .align(Alignment.BottomEnd),
-                    painter = painterResource(R.drawable.ic_section_local_fields),
-                    contentDescription = "Section local fields info"
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun FieldItem(
-    modifier: Modifier,
-    item: UiFieldsListItem.Item.Default,
-    fieldEvent: (FieldEvent) -> Unit
-) {
-
-    val isMenuExpanded = remember { mutableStateOf(false) }
-
-    Row(
-        modifier = modifier
-            .combinedClickable(
-                onClick = { fieldEvent(OnFieldItemClick(item = item)) },
-                onLongClick = { isMenuExpanded.value = true }
-            ),
-        verticalAlignment = CenterVertically
-    ) {
-        val formatIcon = item.format.simpleIcon()
-        if (formatIcon != null) {
-            Image(
-                modifier = Modifier
-                    .padding(end = 10.dp)
-                    .size(24.dp),
-                painter = painterResource(id = formatIcon),
-                contentDescription = "Relation format icon",
-            )
-        }
-
-        Text(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1.0f)
-                .padding(end = 16.dp),
-            text = item.fieldTitle,
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        ItemDropDownMenu(
-            item = item,
-            showMenu = isMenuExpanded.value,
-            onDismissRequest = {
-                isMenuExpanded.value = false
-            },
-            onFieldEvent = {
-                isMenuExpanded.value = false
-                fieldEvent(it)
+                .height(52.dp)
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(bottom = 7.dp, start = 20.dp)
+                    .align(Alignment.BottomStart),
+                text = title,
+                style = BodyCalloutMedium,
+                color = textColor,
+            )
+            if (item.canAdd) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .width(54.dp)
+                        .height(40.dp)
+                        .noRippleThrottledClickable {
+                            fieldEvent(FieldEvent.Section.OnAddIconClick)
+                        }
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .padding(bottom = 6.dp, end = 20.dp)
+                            .wrapContentSize()
+                            .align(Alignment.BottomEnd),
+                        painter = painterResource(R.drawable.ic_default_plus),
+                        contentDescription = "$title plus button"
+                    )
+                }
             }
-        )
+            if (item is Section.Local) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .height(37.dp)
+                        .width(44.dp)
+                        .noRippleThrottledClickable {
+                            fieldEvent(FieldEvent.Section.OnLocalInfoClick)
+                        }
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .padding(bottom = 9.dp, end = 20.dp)
+                            .wrapContentSize()
+                            .align(Alignment.BottomEnd),
+                        painter = painterResource(R.drawable.ic_section_local_fields),
+                        contentDescription = "Section local fields info"
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -489,16 +450,16 @@ private fun FieldItemLocal(
 @Composable
 private fun LazyItemScope.FieldItemDraggable(
     modifier: Modifier,
+    reorderingState: ReorderableLazyListState,
+    hapticFeedback: ReorderHapticFeedback,
     item: UiFieldsListItem.Item.Draggable,
-    dragDropState: DragDropState,
-    index: Int,
     fieldEvent: (FieldEvent) -> Unit
 ) {
     val isMenuExpanded = remember { mutableStateOf(false) }
 
-    DraggableItem(
-        dragDropState = dragDropState,
-        index = index
+    ReorderableItem(
+        state = reorderingState,
+        key = item.id,
     ) { isDragging ->
         Row(
             modifier = modifier,
@@ -547,7 +508,14 @@ private fun LazyItemScope.FieldItemDraggable(
             Image(
                 modifier = Modifier
                     .size(24.dp)
-                    .dragHandle(dragDropState, index),
+                    .draggableHandle(
+                        onDragStarted = {
+                            hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
+                        },
+                        onDragStopped = {
+                            hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.END)
+                        }
+                    ),
                 painter = painterResource(R.drawable.ic_dnd),
                 contentDescription = "Icon drag"
             )
@@ -609,21 +577,6 @@ fun ItemDropDownMenu(
         containerColor = colorResource(id = R.color.background_secondary),
     ) {
         when (item) {
-            is UiFieldsListItem.Item.Default -> {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.object_type_fields_menu_delete),
-                            style = BodyCalloutRegular,
-                            color = colorResource(id = R.color.palette_system_red)
-                        )
-                    },
-                    onClick = {
-                        onFieldEvent(FieldItemMenu.OnDeleteFromTypeClick(item))
-                    },
-                )
-            }
-
             is UiFieldsListItem.Item.Draggable -> {
                 DropdownMenuItem(
                     text = {
@@ -697,19 +650,21 @@ fun PreviewTypeFieldsMainScreen() {
                 UiFieldsListItem.Section.SideBar(
                     canAdd = true
                 ),
-                UiFieldsListItem.Item.Default(
+                UiFieldsListItem.Item.Draggable(
                     id = "id3",
                     fieldKey = "key3",
                     fieldTitle = "Links",
                     format = RelationFormat.URL,
-                    isEditableField = true
+                    isEditableField = true,
+                    canDelete = true
                 ),
-                UiFieldsListItem.Item.Default(
+                UiFieldsListItem.Item.Draggable(
                     id = "id4",
                     fieldKey = "key4",
                     fieldTitle = "Very long field title, just to test how it looks",
                     format = RelationFormat.DATE,
-                    isEditableField = true
+                    isEditableField = true,
+                    canDelete = true
                 ),
                 UiFieldsListItem.Section.Hidden(),
                 UiFieldsListItem.Item.Draggable(

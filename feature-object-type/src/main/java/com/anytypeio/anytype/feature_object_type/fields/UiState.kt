@@ -45,16 +45,6 @@ sealed class UiFieldsListItem {
         abstract val canDelete: Boolean
         abstract val isEditableField: Boolean
 
-        data class Default(
-            override val id: Id,
-            override val fieldKey: Key,
-            override val fieldTitle: String,
-            override val format: RelationFormat,
-            override val limitObjectTypes: List<UiFieldObjectItem> = emptyList(),
-            override val canDelete: Boolean = false,
-            override val isEditableField: Boolean
-        ) : Item()
-
         data class Draggable(
             override val id: Id,
             override val fieldKey: Key,

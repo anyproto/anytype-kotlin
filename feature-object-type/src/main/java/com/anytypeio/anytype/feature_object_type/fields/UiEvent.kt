@@ -34,7 +34,7 @@ sealed class FieldEvent {
     }
 
     sealed class DragEvent : FieldEvent() {
-        data class OnMove(val fromIndex: Int, val toIndex: Int) : DragEvent()
+        data class OnMove(val fromKey: String, val toKey: String) : DragEvent()
         data object OnDragEnd : DragEvent()
     }
 }

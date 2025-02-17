@@ -84,7 +84,6 @@
         android:ellipsize="end"
         android:hint="@string/description"
         android:inputType="textMultiLine"
-        android:maxLines="3"
         android:textColorHint="@color/text_tertiary"
         tools:text="Description" />
 

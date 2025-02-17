@@ -18,8 +18,6 @@ sealed class FieldEvent {
     data object OnChangeTypeClick : FieldEvent()
     data object OnLimitTypesClick : FieldEvent()
 
-    data class FieldOrderChanged(val items: List<UiFieldsListItem>) : FieldEvent()
-
     sealed class FieldItemMenu : FieldEvent() {
         data class OnDeleteFromTypeClick(val item: UiFieldsListItem) : FieldItemMenu()
         data class OnRemoveLocalClick(val item: UiFieldsListItem) : FieldItemMenu()
@@ -33,5 +31,10 @@ sealed class FieldEvent {
     sealed class Section : FieldEvent() {
         data object OnAddIconClick : Section()
         data object OnLocalInfoClick : Section()
+    }
+
+    sealed class DragEvent : FieldEvent() {
+        data class OnMove(val fromKey: String, val toKey: String) : DragEvent()
+        data object OnDragEnd : DragEvent()
     }
 }

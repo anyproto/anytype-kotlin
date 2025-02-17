@@ -316,7 +316,7 @@ class ObjectTypeViewModel(
                             }
 
                             uiTitleState.value = UiTitleState(
-                                title = fieldParser.getObjectName(objectWrapper = objType),
+                                title = objType.name.orEmpty(),
                                 isEditable = objectPermissions.canEditDetails
                             )
                             uiIconState.value = UiIconState(
@@ -331,8 +331,13 @@ class ObjectTypeViewModel(
                             if (objectPermissions.canDelete) {
                                 uiEditButtonState.value = UiEditButton.Visible
                             }
-                            val layout = objType.recommendedLayout ?: ObjectType.Layout.BASIC
-                            uiLayoutButtonState.value = UiLayoutButtonState.Visible(layout = layout)
+                            val layout = objType.recommendedLayout
+                            if (layout != null) {
+                                val permissions = _objectTypePermissionsState.value
+                                if (permissions?.canChangeRecommendedLayoutForThisType == true) {
+                                    uiLayoutButtonState.value = UiLayoutButtonState.Visible(layout = layout)
+                                }
+                            }
                             updateDefaultTemplates(
                                 defaultTemplate = objType.defaultTemplateId
                             )
@@ -662,18 +667,15 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnLayoutButtonClick -> {
-                val permissions = _objectTypePermissionsState.value
-                if (permissions?.canChangeRecommendedLayoutForThisType == true) {
-                    uiTypeLayoutsState.value = Visible(
-                        layouts = listOf(
-                            ObjectType.Layout.BASIC,
-                            ObjectType.Layout.NOTE,
-                            ObjectType.Layout.PROFILE,
-                            ObjectType.Layout.TODO
-                        ),
-                        selectedLayout = _objTypeState.value?.recommendedLayout
-                    )
-                }
+                uiTypeLayoutsState.value = Visible(
+                    layouts = listOf(
+                        ObjectType.Layout.BASIC,
+                        ObjectType.Layout.NOTE,
+                        ObjectType.Layout.PROFILE,
+                        ObjectType.Layout.TODO
+                    ),
+                    selectedLayout = _objTypeState.value?.recommendedLayout
+                )
             }
 
             is TypeEvent.OnSyncStatusClick -> {
@@ -963,9 +965,22 @@ class ObjectTypeViewModel(
 
             FieldEvent.OnLimitTypesClick -> TODO()
             is FieldEvent.OnSaveButtonClicked -> TODO()
-            is FieldEvent.FieldOrderChanged -> {
-                val newItems = event.items
-                uiFieldsListState.value = UiFieldsListState(items = newItems)
+
+            is FieldEvent.FieldItemMenu -> proceedWithFieldItemMenuClick(event)
+            FieldEvent.FieldLocalInfo.OnDismiss -> {
+                uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Hidden
+            }
+
+            FieldEvent.Section.OnLocalInfoClick -> {
+                uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Visible
+            }
+
+            FieldEvent.Section.OnAddIconClick -> {
+                //todo need to implement
+            }
+
+            FieldEvent.DragEvent.OnDragEnd -> {
+                val newItems = uiFieldsListState.value.items
                 val headerItems = mutableListOf<Id>()
                 val sideBarItems = mutableListOf<Id>()
                 val hiddenItems = mutableListOf<Id>()
@@ -993,18 +1008,14 @@ class ObjectTypeViewModel(
                     fileFields = filesItems
                 )
             }
-
-            is FieldEvent.FieldItemMenu -> proceedWithFieldItemMenuClick(event)
-            FieldEvent.FieldLocalInfo.OnDismiss -> {
-                uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Hidden
-            }
-
-            FieldEvent.Section.OnLocalInfoClick -> {
-                uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Visible
-            }
-
-            FieldEvent.Section.OnAddIconClick -> {
-                //todo need to implement
+            is FieldEvent.DragEvent.OnMove -> {
+                val currentList = uiFieldsListState.value.items.toMutableList()
+                val fromIndex = currentList.indexOfFirst { it.id == event.fromKey }
+                val toIndex = currentList.indexOfFirst { it.id == event.toKey }
+                if ((fromIndex == -1) || (toIndex == -1)) return
+                val item = currentList.removeAt(fromIndex)
+                currentList.add(toIndex, item)
+                uiFieldsListState.value = UiFieldsListState(items = currentList)
             }
         }
     }

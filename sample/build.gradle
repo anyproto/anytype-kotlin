@@ -65,7 +65,7 @@ dependencies {
     implementation libs.composeAccompanistPagerIndicators
     implementation libs.preference
     implementation libs.activityCompose
-    implementation libs.composeReorderable
+    implementation libs.composeReorderableLegacy
     debugImplementation libs.composeTooling
 
     //implementation 'com.github.gregcockroft:AndroidMath:ALPHA'

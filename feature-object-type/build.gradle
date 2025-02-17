@@ -41,6 +41,7 @@ dependencies {
     implementation libs.composeMaterial3
     implementation libs.composeMaterial
     implementation libs.navigationCompose
+    implementation libs.composeReorderable
 
     debugImplementation libs.composeTooling
 

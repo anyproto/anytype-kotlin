@@ -235,7 +235,7 @@ fun FieldTypeSection(
     onTypeClick: () -> Unit
 ) {
     val icon = format.simpleIcon()
-    Section(
+    SectionItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp),
@@ -286,7 +286,7 @@ fun LimitTypesSection(
     onLimitTypesClick: () -> Unit
 ) {
     val size = objTypes.size
-    Section(
+    SectionItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp),
@@ -346,7 +346,7 @@ fun LimitTypesSection(
 }
 
 @Composable
-fun Section(modifier: Modifier, text: String) {
+fun SectionItem(modifier: Modifier, text: String) {
     Box(modifier = modifier) {
         Text(
             modifier = Modifier

@@ -28,9 +28,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -84,12 +82,14 @@ fun FieldsMainScreen(
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
+    val currentFieldEvent by rememberUpdatedState(newValue = fieldEvent)
+
     val lazyListState = rememberLazyListState()
     val dragDropState = rememberDragDropState(
         lazyListState = lazyListState,
-        onDragEnd = { fieldEvent(DragEvent.OnDragEnd) },
+        onDragEnd = { currentFieldEvent(DragEvent.OnDragEnd) },
         onMove = { fromIndex, toIndex ->
-            fieldEvent(DragEvent.OnMove(fromIndex = fromIndex, toIndex = toIndex))
+            currentFieldEvent(DragEvent.OnMove(fromIndex = fromIndex, toIndex = toIndex))
         }
     )
 
@@ -116,116 +116,57 @@ fun FieldsMainScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             }
+            val itemsList = uiFieldsListState.items
             LazyColumn(
                 modifier = contentModifier,
                 state = lazyListState
             ) {
                 items(
-                    count = uiFieldsListState.items.size,
-                    key = { uiFieldsListState.items[it].id },
-                    contentType = { index ->
-                        when (uiFieldsListState.items[index]) {
-                            is UiFieldsListItem.Item.Default -> FieldsItemsContentType.FIELD_ITEM_DEFAULT
-                            is UiFieldsListItem.Item.Draggable -> FieldsItemsContentType.FIELD_ITEM_DRAGGABLE
-                            is UiFieldsListItem.Item.Local -> FieldsItemsContentType.FIELD_ITEM_LOCAL
-                            is Section.SideBar -> FieldsItemsContentType.SECTION_SIDEBAR
-                            is Section.Header -> FieldsItemsContentType.SECTION_HEADER
-                            is Section.Hidden -> FieldsItemsContentType.SECTION_HIDDEN
-                            is Section.Local -> FieldsItemsContentType.SECTION_LOCAL
-                            is Section.File -> FieldsItemsContentType.SECTION_FILE
-                            is Section.LibraryFields -> TODO()
-                            is Section.SpaceFields -> TODO()
-                        }
-                    },
+                    count = itemsList.size,
+                    key = { index -> itemsList[index].id },
+                    contentType = { index -> getContentType(itemsList[index]) },
                     itemContent = { index ->
-                        val item = uiFieldsListState.items[index]
+                        val item = itemsList[index]
                         when (item) {
                             is UiFieldsListItem.Item.Draggable -> {
                                 FieldItemDraggable(
-                                    modifier = Modifier
-                                        .height(52.dp)
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 20.dp)
-                                        .bottomBorder()
-                                        .animateItem(),
+                                    modifier = commonItemModifier(),
                                     item = item,
                                     dragDropState = dragDropState,
                                     index = index,
-                                    fieldEvent = fieldEvent,
+                                    fieldEvent = currentFieldEvent,
                                 )
                             }
 
                             is UiFieldsListItem.Item.Default -> {
                                 FieldItem(
-                                    modifier = Modifier
-                                        .height(52.dp)
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 20.dp)
-                                        .bottomBorder()
-                                        .animateItem(),
+                                    modifier = commonItemModifier(),
                                     item = item,
-                                    fieldEvent = fieldEvent
+                                    fieldEvent = currentFieldEvent
                                 )
                             }
 
                             is UiFieldsListItem.Item.Local -> {
                                 FieldItemLocal(
-                                    modifier = Modifier
-                                        .height(52.dp)
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 20.dp)
-                                        .bottomBorder()
-                                        .animateItem(),
+                                    modifier = commonItemModifier(),
                                     item = item,
-                                    fieldEvent = fieldEvent
+                                    fieldEvent = currentFieldEvent
                                 )
                             }
 
-                            is Section.SideBar -> Section(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp),
-                                item = item,
-                                fieldEvent = fieldEvent
-                            )
-
-                            is Section.Header -> Section(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp),
-                                item = item,
-                                fieldEvent = fieldEvent
-                            )
-
-                            is Section.Hidden -> Section(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp),
-                                item = item,
-                                fieldEvent = fieldEvent
-                            )
-
-                            is Section.Local -> {
-                                Section(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(52.dp),
+                            is Section.SideBar,
+                            is Section.Header,
+                            is Section.Hidden,
+                            is Section.Local,
+                            is Section.File -> {
+                                SectionItem(
                                     item = item,
-                                    fieldEvent = fieldEvent
+                                    fieldEvent = currentFieldEvent
                                 )
                             }
 
                             is Section.LibraryFields -> TODO()
                             is Section.SpaceFields -> TODO()
-                            is Section.File -> {
-                                Section(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(52.dp),
-                                    item = item,
-                                    fieldEvent = fieldEvent
-                                )
-                            }
                         }
                     }
                 )
@@ -249,6 +190,31 @@ fun FieldsMainScreen(
         )
     }
 }
+
+/** Returns a content type string based on the item type. **/
+private fun getContentType(item: UiFieldsListItem): String {
+    return when (item) {
+        is UiFieldsListItem.Item.Default -> FieldsItemsContentType.FIELD_ITEM_DEFAULT
+        is UiFieldsListItem.Item.Draggable -> FieldsItemsContentType.FIELD_ITEM_DRAGGABLE
+        is UiFieldsListItem.Item.Local -> FieldsItemsContentType.FIELD_ITEM_LOCAL
+        is Section.SideBar -> FieldsItemsContentType.SECTION_SIDEBAR
+        is Section.Header -> FieldsItemsContentType.SECTION_HEADER
+        is Section.Hidden -> FieldsItemsContentType.SECTION_HIDDEN
+        is Section.Local -> FieldsItemsContentType.SECTION_LOCAL
+        is Section.File -> FieldsItemsContentType.SECTION_FILE
+        is Section.LibraryFields -> "content_type_section_library_fields"
+        is Section.SpaceFields -> "content_type_section_space_fields"
+    }
+}
+
+/** A common modifier for list items. **/
+@Composable
+private fun LazyItemScope.commonItemModifier() = Modifier
+    .height(52.dp)
+    .fillMaxWidth()
+    .padding(horizontal = 20.dp)
+    .bottomBorder()
+    .animateItem()
 
 @Composable
 private fun TopBar(
@@ -318,8 +284,7 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
 }
 
 @Composable
-private fun Section(
-    modifier: Modifier,
+private fun SectionItem(
     item: UiFieldsListItem.Section,
     fieldEvent: (FieldEvent) -> Unit
 ) {
@@ -347,7 +312,11 @@ private fun Section(
             id = R.color.text_secondary
         )
     }
-    Box(modifier = modifier) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    ) {
         Text(
             modifier = Modifier
                 .padding(bottom = 7.dp, start = 20.dp)

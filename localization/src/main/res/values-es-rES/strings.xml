@@ -1605,7 +1605,7 @@ En concreto,
     <string name="chats_alert_delete_this_message_description">Después de confirmar esto, no podrás restaurarlo.</string>
     <string name="chats_alert_delete_this_message">¿Eliminar este mensaje?</string>
     <string name="migration_migration_is_in_progress">La migración está en curso</string>
-    <string name="migration_this_shouldn_t_take_long">No llevará mucho tiempo. Gracias por tu paciencia.</string>
+    <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
     <string name="migration_error_try_again">Inténtalo de nuevo</string>
     <string name="migration_migration_failed">La migración ha fallado</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Libera algo de espacio y vuelve a ejecutar el proceso.</string>

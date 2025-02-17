@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Pas willekeurige effen kleur toe</string>
     <string name="space_settings_apply_upload_image">Upload afbeelding</string>
     <string name="profile_settings_apply_upload_image">Upload afbeelding</string>
-    <string name="remove_image">Remove image</string>
+    <string name="remove_image">Verwijder afbeelding</string>
     <string name="delete_space">Verwijder ruimte</string>
     <string name="you_can_store">Je kunt maximaal %1$s van je bestanden gratis opslaan op onze versleutelde back-up node. Als de limiet is bereikt, zullen bestanden alleen lokaal worden opgeslagen.</string>
     <string name="in_order_to_save">Om ruimte op je lokale apparaat te besparen, kun je al je bestanden naar onze versleutelde back-upnode verplaatsen. De bestanden worden opnieuw geladen wanneer je ze opent.</string>
@@ -173,7 +173,7 @@
     <string name="hint_toggle">Open/sluit blok</string>
     <string name="hint_paste_link">Plak koppeling</string>
     <string name="empty_tap_to_create_new_block">Leeg. Tik om een nieuw blok aan te maken</string>
-    <string name="untitled">Untitled</string>
+    <string name="untitled">Naamloos</string>
     <string name="untitled_set">Naamloze set</string>
     <string name="untitled_collection">Naamloze collectie</string>
     <string name="archived">Gearchiveerd</string>
@@ -371,7 +371,7 @@
     <string name="scroll_to_select_position">Scroll om een nieuwe positie te selecteren</string>
     <string name="block_action_add_below">Hieronder toevoegen</string>
     <string name="content_desc_back_button">Back button</string>
-    <string name="content_desc_share_button">Share button</string>
+    <string name="content_desc_share_button">Deelknop</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1215,8 +1215,8 @@
     <string name="multiplayer_notification_member_request_approved">Verzoek goedgekeurd</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Je verzoek om deel te nemen aan de ruimte %1$s is goedgekeurd met alleen-lezen toegangsrechten. De ruimte zal binnenkort beschikbaar zijn op je apparaat.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Je verzoek om deel te nemen aan de ruimte %1$s is goedgekeurd met bewerktoegangsrechten. De ruimte zal binnenkort beschikbaar zijn op je apparaat.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">De ruimte \"%1$s\" is niet langer toegankelijk.</string>
+    <string name="multiplayer_notification_member_removed_from_space">Je bent verwijderd uit de ruimte \"%1$s\" of de ruimte is verwijderd door de eigenaar.</string>
     <string name="multiplayer_notification_member_permissions_changed">Machtigingen gewijzigd</string>
     <string name="multiplayer_notification_member_permission_change_read">Je toegangsrechten zijn gewijzigd naar alleen-lezen in de ruimte %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Je toegangsrechten zijn gewijzigd naar bewerken in de ruimte %1$s.</string>
@@ -1232,7 +1232,7 @@
     <string name="multiplayer_collaborate_step_1">1. Tik op de ruimtewidget om de instellingen te openen</string>
     <string name="multiplayer_collaborate_step_2">2. Open het gedeelte Delen</string>
     <string name="multiplayer_collaborate_step_3">3. Genereer een uitnodigingslink en deel deze</string>
-    <string name="profile_view_edit_button">Edit Profile</string>
+    <string name="profile_view_edit_button">Bewerk profiel</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d lid</item>
         <item quantity="other">%1$d leden</item>
@@ -1241,7 +1241,7 @@
         <item quantity="one">%1$d verzoek</item>
         <item quantity="other">%1$d verzoeken</item>
     </plurals>
-    <string name="multiplayer_you_as_member">You</string>
+    <string name="multiplayer_you_as_member">Jij</string>
     <string name="multiplayer_spaces">Ruimtes</string>
     <string name="multiplayer_space_status_joining">Deelnemen</string>
     <string name="multiplayer_space_status_active">Actief</string>
@@ -1604,9 +1604,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_types_human">Mens</string>
     <string name="chats_alert_delete_this_message_description">Het kan niet worden hersteld na bevestiging</string>
     <string name="chats_alert_delete_this_message">Verwijder dit bericht?</string>
-    <string name="migration_migration_is_in_progress">Migration is in progress</string>
-    <string name="migration_this_shouldn_t_take_long">This shouldn’t take long. Thanks for your patience.</string>
+    <string name="migration_migration_is_in_progress">Bezig met migreren...</string>
+    <string name="migration_this_shouldn_t_take_long">Dit zou niet lang moeten duren. Bedankt voor jouw geduld.</string>
     <string name="migration_error_try_again">Probeer opnieuw</string>
-    <string name="migration_migration_failed">Migration failed</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
+    <string name="migration_migration_failed">Migratie mislukt</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Maak alsjeblieft ruimte vrij en voer het proces opnieuw uit.</string>
 </resources>

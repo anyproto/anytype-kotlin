@@ -465,7 +465,12 @@ fun TwoItemsLongLongPreview() {
             )
         }
         item {
-            FieldEmpty(item = Item(format = RelationFormat.LONG_TEXT))
+            FieldEmpty(
+                item = Item(
+                    title = "Empty",
+                    format = RelationFormat.LONG_TEXT
+                )
+            )
         }
     }
 }

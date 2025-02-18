@@ -1605,7 +1605,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chats_alert_delete_this_message_description">Onaylandıktan sonra geri getirilemez</string>
     <string name="chats_alert_delete_this_message">Bu mesaj silinsin mi?</string>
     <string name="migration_migration_is_in_progress">Geçiş işlemi devam ediyor</string>
-    <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
+    <string name="migration_this_shouldn_t_take_long">Bu işlem biraz zaman alabilir. Lütfen işlem tamamlanana kadar uygulamayı kapatmayın.</string>
     <string name="migration_error_try_again">Tekrar deneyin</string>
     <string name="migration_migration_failed">Geçiş başarısız oldu</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Lütfen biraz yer açın ve işlemi tekrarlayın.</string>

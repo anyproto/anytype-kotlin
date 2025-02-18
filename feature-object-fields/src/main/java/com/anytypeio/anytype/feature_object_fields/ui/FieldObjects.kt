@@ -43,7 +43,7 @@ data class Item1(val title: String, val icon: String? = null) // Здесь icon
  *    If the text of the second item is long, it is truncated so that the suffix is always visible.
  */
 @Composable
-fun FieldObjectRow(fieldObject: FieldObject) {
+fun FieldTypeObject(fieldObject: FieldObject) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val halfScreenWidth = screenWidth / 2 - 32.dp
@@ -57,71 +57,101 @@ fun FieldObjectRow(fieldObject: FieldObject) {
         )
         .padding(vertical = 16.dp)
         .padding(horizontal = 16.dp)
-
-    Column(
-        modifier = defaultModifier
-    ) {
-        Text(
-            modifier = Modifier.wrapContentWidth(),
-            text = fieldObject.title,
-            style = Relations1,
-            color = colorResource(id = R.color.text_secondary)
-        )
-        Spacer(modifier = Modifier.height(10.dp))
+    if (fieldObject.items.size == 1) {
+        // If there is only one item, display the title and the item in one row.
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(22.dp)
+            modifier = defaultModifier,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // The first item (if present)
-            if (fieldObject.items.isNotEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .widthIn(max = halfScreenWidth)
-                ) {
-                    ItemView(
-                        modifier = Modifier.height(22.dp),
-                        item = fieldObject.items.first()
-                    )
-                }
+            Box(
+                modifier = Modifier.widthIn(max = halfScreenWidth)
+            ) {
+                Text(
+                    text = fieldObject.title,
+                    style = Relations1,
+                    color = colorResource(id = R.color.text_secondary),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
-            // The second item (if present)
-            if (fieldObject.items.size > 1) {
-                Spacer(modifier = Modifier.width(8.dp))
-                Box(modifier = Modifier.widthIn(max = halfScreenWidth)) {
-                    if (fieldObject.items.size == 2) {
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier.widthIn(max = halfScreenWidth)
+            ) {
+                ItemView(
+                    modifier = Modifier.height(22.dp),
+                    item = fieldObject.items.first()
+                )
+            }
+        }
+    } else {
+        Column(
+            modifier = defaultModifier
+        ) {
+            Text(
+                modifier = Modifier.wrapContentWidth(),
+                text = fieldObject.title,
+                style = Relations1,
+                color = colorResource(id = R.color.text_secondary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(22.dp)
+            ) {
+                // The first item (if present)
+                if (fieldObject.items.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .widthIn(max = halfScreenWidth)
+                    ) {
                         ItemView(
                             modifier = Modifier.height(22.dp),
-                            item = fieldObject.items[1]
+                            item = fieldObject.items.first()
                         )
-                    } else {
-                        // If there are more than two items, display the second item with a "+n" suffix.
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth().height(22.dp)
-                        ) {
-                            fieldObject.items[1].icon?.let { iconUrl ->
-                                Image(
-                                    painter = painterResource(R.drawable.ic_search_18),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                            }
-                            // The main text with an integrated suffix that occupies the remaining space.
-                            TextWithSuffix(
-                                text = fieldObject.items[1].title,
-                                suffix = "+${fieldObject.items.size - 2}",
-                                textStyle = BodyCallout.copy(
-                                    color = colorResource(id = R.color.text_primary)
-                                ),
-                                countStyle = Relations2.copy(
-                                    color = colorResource(id = R.color.text_secondary)
-                                ),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .align(Alignment.CenterVertically)
+                    }
+                }
+                // The second item (if present)
+                if (fieldObject.items.size > 1) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(modifier = Modifier.widthIn(max = halfScreenWidth)) {
+                        if (fieldObject.items.size == 2) {
+                            ItemView(
+                                modifier = Modifier.height(22.dp),
+                                item = fieldObject.items[1]
                             )
+                        } else {
+                            // If there are more than two items, display the second item with a "+n" suffix.
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth().height(22.dp)
+                            ) {
+                                fieldObject.items[1].icon?.let { iconUrl ->
+                                    Image(
+                                        painter = painterResource(R.drawable.ic_search_18),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                }
+                                // The main text with an integrated suffix that occupies the remaining space.
+                                TextWithSuffix(
+                                    text = fieldObject.items[1].title,
+                                    suffix = "+${fieldObject.items.size - 2}",
+                                    textStyle = BodyCallout.copy(
+                                        color = colorResource(id = R.color.text_primary)
+                                    ),
+                                    countStyle = Relations2.copy(
+                                        color = colorResource(id = R.color.text_secondary)
+                                    ),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .align(Alignment.CenterVertically)
+                                )
+                            }
                         }
                     }
                 }
@@ -216,18 +246,77 @@ fun TextWithSuffix(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true, device = Devices.PIXEL_4_XL)
+@Preview(showBackground = true, showSystemUi = true, device = Devices.PIXEL_4_XL, fontScale = 1.8f)
 @Composable
 fun TwoItemsLongLongPreview() {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight()
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        //short
+        item {
+            FieldTypeObject(
+                fieldObject = FieldObject(
+                    title = "Short",
+                    items = listOf(
+                        Item1(title = "First title", icon = "https://via.placeholder.com/18")
+                    )
+                )
+            )
+        }
+        //long
+        item {
+            FieldTypeObject(
+                fieldObject = FieldObject(
+                    title = "Long",
+                    items = listOf(
+                        Item1(
+                            title = "First title, very very long one that will be truncated",
+                            icon = "https://via.placeholder.com/18"
+                        )
+                    )
+                )
+            )
+        }
+        //long field title
+        item {
+            FieldTypeObject(
+                fieldObject = FieldObject(
+                    title = "Field title, very very long one that will be truncated",
+                    items = listOf(
+                        Item1(
+                            title = "First title, very very long one that will be truncated",
+                            icon = "https://via.placeholder.com/18"
+                        )
+                    )
+                )
+            )
+        }
+        //long field title - +1
+        item {
+            FieldTypeObject(
+                fieldObject = FieldObject(
+                    title = "Field title, very very very very very very long one that will be truncated",
+                    items = listOf(
+                        Item1(title = "First title", icon = "https://via.placeholder.com/18"),
+                        Item1(
+                            title = "Second title",
+                            icon = "https://via.placeholder.com/18"
+                        ),
+                        Item1(
+                            title = "Third title",
+                            icon = "https://via.placeholder.com/18"
+                        ),
+                    )
+                )
+            )
+        }
         //short - short
         item {
-            FieldObjectRow(
+            FieldTypeObject(
                 fieldObject = FieldObject(
                     title = "Short - short",
                     items = listOf(
@@ -242,7 +331,7 @@ fun TwoItemsLongLongPreview() {
         }
         //short - long
         item {
-            FieldObjectRow(
+            FieldTypeObject(
                 fieldObject = FieldObject(
                     title = "Short - long",
                     items = listOf(
@@ -257,7 +346,7 @@ fun TwoItemsLongLongPreview() {
         }
         //long - short
         item {
-            FieldObjectRow(
+            FieldTypeObject(
                 fieldObject = FieldObject(
                     title = "Long - short",
                     items = listOf(
@@ -275,7 +364,7 @@ fun TwoItemsLongLongPreview() {
         }
         //long - long
         item {
-            FieldObjectRow(
+            FieldTypeObject(
                 fieldObject = FieldObject(
                     title = "Long - long",
                     items = listOf(
@@ -293,7 +382,7 @@ fun TwoItemsLongLongPreview() {
         }
         //short - short +n
         item {
-            FieldObjectRow(
+            FieldTypeObject(
                 fieldObject = FieldObject(
                     title = "Short - short +n",
                     items = listOf(
@@ -312,7 +401,7 @@ fun TwoItemsLongLongPreview() {
         }
         //short - long +n
         item {
-            FieldObjectRow(
+            FieldTypeObject(
                 fieldObject = FieldObject(
                     title = "Short - long +n",
                     items = listOf(
@@ -331,7 +420,7 @@ fun TwoItemsLongLongPreview() {
         }
         //long - short +n
         item {
-            FieldObjectRow(
+            FieldTypeObject(
                 fieldObject = FieldObject(
                     title = "Long - short +n",
                     items = listOf(
@@ -353,7 +442,7 @@ fun TwoItemsLongLongPreview() {
         }
         //long - long +n
         item {
-            FieldObjectRow(
+            FieldTypeObject(
                 fieldObject = FieldObject(
                     title = "Long - long +n",
                     items = listOf(

@@ -1,9 +1,15 @@
 package com.anytypeio.anytype.feature_object_fields.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -22,9 +29,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.views.Relations1
+import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.feature_object_fields.R
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
 
 
 /**
@@ -34,6 +46,50 @@ import com.anytypeio.anytype.feature_object_fields.R
  * @param backgroundColor The background color of the tag.
  */
 data class Tag(val text: String, val backgroundColor: Color)
+
+
+@Composable
+fun FieldTypeMultiSelect(title: String, tags: List<RelationsListItem.Item.Tag>) {
+    val defaultModifier = Modifier
+        .fillMaxWidth()
+        .border(
+            width = 1.dp,
+            color = colorResource(id = R.color.shape_secondary),
+            shape = RoundedCornerShape(12.dp)
+        )
+        .padding(vertical = 16.dp)
+        .padding(horizontal = 16.dp)
+
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val halfScreenWidth = screenWidth / 2 - 32.dp
+
+    Row(
+        modifier = defaultModifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .widthIn(max = halfScreenWidth)
+                .wrapContentHeight()
+                .padding(vertical = 2.dp)
+        ) {
+            Text(
+                text = title,
+                style = Relations1,
+                color = colorResource(id = R.color.text_secondary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        Spacer(modifier = Modifier.width(10.dp))
+        TagRow(
+            tags = tags,
+            modifier = Modifier.fillMaxWidth(),
+            textStyle = Relations1
+        )
+    }
+}
 
 /**
  * A composable that displays a single tag “chip” with text and a background.
@@ -49,7 +105,7 @@ data class Tag(val text: String, val backgroundColor: Color)
 @Composable
 fun TagChip(
     text: String,
-    backgroundColor: Color,
+    tagColor: ThemeColor,
     textStyle: TextStyle,
     isSingle: Boolean = false,
     isOverflow: Boolean = false,
@@ -59,12 +115,13 @@ fun TagChip(
     Box(
         modifier = modifier
             .wrapContentWidth()
-            .background(backgroundColor, shape = RoundedCornerShape(6.dp))
+            .background(light(tagColor), shape = RoundedCornerShape(6.dp))
             .padding(horizontal = 6.dp)
     ) {
         Text(
             text = text,
             style = textStyle,
+            color = dark(tagColor),
             maxLines = 1,
             overflow = if (isSingle) TextOverflow.Ellipsis else TextOverflow.Clip
         )
@@ -92,7 +149,7 @@ fun TagChip(
  */
 @Composable
 fun TagRow(
-    tags: List<Tag>,
+    tags: List<RelationsListItem.Item.Tag>,
     modifier: Modifier = Modifier,
     textStyle: TextStyle,
     spacing: Dp = 4.dp,
@@ -119,8 +176,8 @@ fun TagRow(
             val tagPlaceable = subcompose("tag0") {
                 TagChip(
                     modifier = Modifier.padding(horizontal = 4.dp),
-                    text = tags[0].text,
-                    backgroundColor = tags[0].backgroundColor,
+                    text = tags[0].name,
+                    tagColor = tags[0].color,
                     textStyle = textStyle,
                     isSingle = true
                 )
@@ -144,8 +201,8 @@ fun TagRow(
             // Measure the tag chip with an "unbounded" width to get its full intrinsic width.
             val tagPlaceable = subcompose("tag$index") {
                 TagChip(
-                    text = tag.text,
-                    backgroundColor = tag.backgroundColor,
+                    text = tags[index].name,
+                    tagColor = tags[index].color,
                     textStyle = textStyle,
                     isSingle = false
                 )
@@ -161,7 +218,7 @@ fun TagRow(
                 subcompose("overflow_$index") {
                     TagChip(
                         text = "+$remainingCount",
-                        backgroundColor = overflowChipColor,
+                        tagColor = tags[index].color,
                         textStyle = textStyle,
                         isOverflow = true
                     )
@@ -192,12 +249,21 @@ fun TagRow(
         val remainingCount = tags.size - shownTagCount
         val overflowPlaceable = if (remainingCount > 0) {
             subcompose("overflow_final") {
-                TagChip(
-                    text = "+$remainingCount",
-                    backgroundColor = overflowChipColor,
-                    textStyle = textStyle,
-                    isOverflow = true
-                )
+                Box(
+                    modifier = Modifier.background(
+                        color = colorResource(R.color.shape_tertiary),
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                ) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 4.dp),
+                        text = "+$remainingCount",
+                        style = Relations2.copy(
+                            color = colorResource(id = R.color.text_secondary)
+                        ),
+                        maxLines = 1,
+                    )
+                }
             }.first().measure(constraints.copy(maxWidth = Constraints.Infinity))
         } else {
             null
@@ -218,7 +284,8 @@ fun TagRow(
                 placeable.placeRelative(xPosition, 0)
                 xPosition += placeable.width + spacingPx
             }
-            overflowPlaceable?.placeRelative(xPosition, 0)
+            val offsetYPx = with(density) { 0.5.dp.roundToPx() }
+            overflowPlaceable?.placeRelative(xPosition, offsetYPx)
         }
     }
 }
@@ -228,29 +295,45 @@ fun TagRow(
 fun TagsPreview() {
     LazyColumn {
         item {
-            TagRow(
+            FieldTypeMultiSelect(
                 tags = listOf(
-                    Tag(
-                        text = "Tag 1",
-                        backgroundColor = colorResource(R.color.palette_system_sky)
+                    RelationsListItem.Item.Tag(
+                        name = "Urgent",
+                        color = ThemeColor.RED,
+                        number = 1,
+                        isSelected = true,
+                        optionId = "1"
                     ),
-                    Tag(
-                        text = "Tag 2",
-                        backgroundColor = colorResource(R.color.palette_system_yellow)
+                    RelationsListItem.Item.Tag(
+                        name = "Personal",
+                        color = ThemeColor.ORANGE,
+                        number = 1,
+                        isSelected = true,
+                        optionId = "2"
                     ),
-                    Tag(text = "Tag 3", backgroundColor = Color.Red),
-                    Tag(text = "Tag 4", backgroundColor = Color.Yellow),
-                    Tag(text = "Tag 5", backgroundColor = Color.Blue),
-                    Tag(text = "Tag 6", backgroundColor = Color.Green),
-                    Tag(text = "Tag 7", backgroundColor = Color.Magenta),
-                    Tag(text = "Tag 8", backgroundColor = Color.Cyan),
-                    Tag(text = "Tag 9", backgroundColor = Color.Gray),
-                    Tag(text = "Tag 10", backgroundColor = Color.Black),
-                    Tag(text = "Tag 11", backgroundColor = Color.White),
+                    RelationsListItem.Item.Tag(
+                        name = "Done",
+                        color = ThemeColor.LIME,
+                        number = 1,
+                        isSelected = true,
+                        optionId = "3"
+                    ),
+                    RelationsListItem.Item.Tag(
+                        name = "In Progress",
+                        color = ThemeColor.BLUE,
+                        number = 1,
+                        isSelected = true,
+                        optionId = "4"
+                    ),
+                    RelationsListItem.Item.Tag(
+                        name = "Waiting",
+                        color = ThemeColor.YELLOW,
+                        number = 1,
+                        isSelected = true,
+                        optionId = "5"
+                    ),
                 ),
-                textStyle = Relations1.copy(
-                    color = colorResource(R.color.text_primary),
-                )
+                title = "Tag"
             )
         }
     }

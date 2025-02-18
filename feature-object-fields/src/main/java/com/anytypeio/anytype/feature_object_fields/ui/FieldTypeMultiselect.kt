@@ -284,7 +284,7 @@ fun TagRow(
                 placeable.placeRelative(xPosition, 0)
                 xPosition += placeable.width + spacingPx
             }
-            val offsetYPx = with(density) { 0.5.dp.roundToPx() }
+            val offsetYPx = with(density) { 1.dp.roundToPx() }
             overflowPlaceable?.placeRelative(xPosition, offsetYPx)
         }
     }
@@ -331,6 +331,13 @@ fun TagsPreview() {
                         number = 1,
                         isSelected = true,
                         optionId = "5"
+                    ),
+                    RelationsListItem.Item.Tag(
+                        name = "Blocked",
+                        color = ThemeColor.PURPLE,
+                        number = 1,
+                        isSelected = true,
+                        optionId = "6"
                     ),
                 ),
                 title = "Tag"

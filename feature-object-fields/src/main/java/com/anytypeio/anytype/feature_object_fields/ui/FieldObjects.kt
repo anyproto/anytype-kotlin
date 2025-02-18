@@ -17,11 +17,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -64,7 +63,10 @@ fun FieldTypeObject(fieldObject: FieldObject) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier = Modifier.widthIn(max = halfScreenWidth)
+                modifier = Modifier
+                    .widthIn(max = halfScreenWidth)
+                    .wrapContentHeight()
+                    .padding(vertical = 2.dp)
             ) {
                 Text(
                     text = fieldObject.title,
@@ -79,7 +81,7 @@ fun FieldTypeObject(fieldObject: FieldObject) {
                 modifier = Modifier.widthIn(max = halfScreenWidth)
             ) {
                 ItemView(
-                    modifier = Modifier.height(22.dp),
+                    modifier = Modifier.wrapContentHeight(),
                     item = fieldObject.items.first()
                 )
             }
@@ -100,7 +102,6 @@ fun FieldTypeObject(fieldObject: FieldObject) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(22.dp)
             ) {
                 // The first item (if present)
                 if (fieldObject.items.isNotEmpty()) {
@@ -109,7 +110,7 @@ fun FieldTypeObject(fieldObject: FieldObject) {
                             .widthIn(max = halfScreenWidth)
                     ) {
                         ItemView(
-                            modifier = Modifier.height(22.dp),
+                            modifier = Modifier.wrapContentHeight(),
                             item = fieldObject.items.first()
                         )
                     }
@@ -120,14 +121,14 @@ fun FieldTypeObject(fieldObject: FieldObject) {
                     Box(modifier = Modifier.widthIn(max = halfScreenWidth)) {
                         if (fieldObject.items.size == 2) {
                             ItemView(
-                                modifier = Modifier.height(22.dp),
+                                modifier = Modifier.wrapContentHeight(),
                                 item = fieldObject.items[1]
                             )
                         } else {
                             // If there are more than two items, display the second item with a "+n" suffix.
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth().height(22.dp)
+                                modifier = Modifier.fillMaxWidth()
                             ) {
                                 fieldObject.items[1].icon?.let { iconUrl ->
                                     Image(
@@ -150,6 +151,7 @@ fun FieldTypeObject(fieldObject: FieldObject) {
                                     modifier = Modifier
                                         .weight(1f)
                                         .align(Alignment.CenterVertically)
+                                        .padding(vertical = 2.dp)
                                 )
                             }
                         }
@@ -164,7 +166,7 @@ fun FieldTypeObject(fieldObject: FieldObject) {
 @Composable
 fun ItemView(modifier: Modifier, item: Item1) {
     Row(
-        modifier = modifier,
+        modifier = modifier.padding(vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         item.icon?.let { iconUrl ->
@@ -246,7 +248,7 @@ fun TextWithSuffix(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true, device = Devices.PIXEL_4_XL, fontScale = 1.8f)
+@DefaultPreviews
 @Composable
 fun TwoItemsLongLongPreview() {
     LazyColumn(

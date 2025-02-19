@@ -18,8 +18,12 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.Relations1
 
 @Composable
-fun FieldTypeText(title: String, text: String) {
-    val defaultModifier = Modifier
+fun FieldTypeText(
+    modifier: Modifier = Modifier,
+    title: String,
+    text: String
+) {
+    val defaultModifier = modifier
         .fillMaxWidth()
         .border(
             width = 1.dp,
@@ -33,7 +37,9 @@ fun FieldTypeText(title: String, text: String) {
         modifier = defaultModifier
     ) {
         Text(
-            modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 16.dp),
             text = title,
             style = Relations1,
             color = colorResource(id = R.color.text_secondary),

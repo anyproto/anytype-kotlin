@@ -28,27 +28,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations2
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
-
-
-/**
- * Data class representing a Tag.
- *
- * @param text The tag's text.
- * @param backgroundColor The background color of the tag.
- */
-data class Tag(val text: String, val backgroundColor: Color)
-
+import com.anytypeio.anytype.presentation.sets.model.TagView
 
 @Composable
-fun FieldTypeMultiSelect(title: String, tags: List<RelationsListItem.Item.Tag>) {
-    val defaultModifier = Modifier
+fun FieldTypeMultiSelect(
+    modifier: Modifier = Modifier,
+    title: String,
+    tags: List<TagView>
+) {
+    val defaultModifier = modifier
         .fillMaxWidth()
         .border(
             width = 1.dp,
@@ -103,7 +96,7 @@ fun FieldTypeMultiSelect(title: String, tags: List<RelationsListItem.Item.Tag>) 
 @Composable
 fun TagChip(
     text: String,
-    tagColor: ThemeColor,
+    tagColor: String,
     textStyle: TextStyle,
     isSingle: Boolean = false,
     isOverflow: Boolean = false,
@@ -147,7 +140,7 @@ fun TagChip(
  */
 @Composable
 fun TagRow(
-    tags: List<RelationsListItem.Item.Tag>,
+    tags: List<TagView>,
     modifier: Modifier = Modifier,
     textStyle: TextStyle,
     spacing: Dp = 4.dp,
@@ -174,7 +167,7 @@ fun TagRow(
             val tagPlaceable = subcompose("tag0") {
                 TagChip(
                     modifier = Modifier.padding(horizontal = 4.dp),
-                    text = tags[0].name,
+                    text = tags[0].tag,
                     tagColor = tags[0].color,
                     textStyle = textStyle,
                     isSingle = true
@@ -199,7 +192,7 @@ fun TagRow(
             // Measure the tag chip with an "unbounded" width to get its full intrinsic width.
             val tagPlaceable = subcompose("tag$index") {
                 TagChip(
-                    text = tags[index].name,
+                    text = tags[index].tag,
                     tagColor = tags[index].color,
                     textStyle = textStyle,
                     isSingle = false
@@ -273,8 +266,9 @@ fun TagRow(
         } else {
             consumedWidth
         }
-        val maxHeight = (measuredPlaceables.map { it.height } + listOf(overflowPlaceable?.height ?: 0))
-            .maxOrNull() ?: 0
+        val maxHeight =
+            (measuredPlaceables.map { it.height } + listOf(overflowPlaceable?.height ?: 0))
+                .maxOrNull() ?: 0
 
         layout(totalWidth, maxHeight) {
             var xPosition = 0

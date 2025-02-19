@@ -18,19 +18,18 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.DayOfWeekCustom
-import com.anytypeio.anytype.core_models.RelativeDate
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.extensions.getPrettyName
-import com.anytypeio.anytype.core_ui.views.BodyCallout
+import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.views.Relations1
+import com.anytypeio.anytype.presentation.sets.model.StatusView
 
 @Composable
-fun FieldTypeDate(
+fun FieldTypeSelect(
     modifier: Modifier = Modifier,
     title: String,
-    relativeDate: RelativeDate
+    status: StatusView
 ) {
     val defaultModifier = modifier
         .fillMaxWidth()
@@ -65,30 +64,25 @@ fun FieldTypeDate(
             )
         }
         Spacer(modifier = Modifier.width(10.dp))
-        Box(
-            modifier = Modifier.widthIn(max = halfScreenWidth)
-        ) {
-            Text(
-                text = relativeDate.getPrettyName(),
-                style = BodyCallout.copy(
-                    color = colorResource(id = R.color.text_primary)
-                ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        Text(
+            text = status.status,
+            style = Relations1,
+            color = dark(status.color),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
-
 @DefaultPreviews
 @Composable
-fun FieldTypeDatePreview() {
-    FieldTypeDate(
-        title = "Creation date",
-        relativeDate = RelativeDate.Tomorrow(
-            initialTimeInMillis = System.currentTimeMillis(),
-            dayOfWeek = DayOfWeekCustom.THURSDAY
-        ),
+fun FieldTypeSelectPreview() {
+    FieldTypeSelect(
+        title = "Status",
+        status = StatusView(
+            id = "1",
+            status = "In Progress",
+            color = ThemeColor.TEAL.code
+        )
     )
 }

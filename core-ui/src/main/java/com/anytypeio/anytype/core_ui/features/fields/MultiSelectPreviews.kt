@@ -6,6 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
+import com.anytypeio.anytype.presentation.sets.model.TagView
 
 // --------------------
 // Test Case 1: Multiple Tags (Your First Test Case)
@@ -17,47 +18,40 @@ fun TagsPreview() {
         item {
             FieldTypeMultiSelect(
                 tags = listOf(
-                    RelationsListItem.Item.Tag(
-                        name = "Urgent",
-                        color = ThemeColor.RED,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "1"
+                    TagView(
+                        id = "1",
+                        tag = "Urgent",
+                        color = ThemeColor.RED.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "Personal",
-                        color = ThemeColor.ORANGE,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "2"
+                    TagView(
+                        id = "2",
+                        tag = "Personal",
+                        color = ThemeColor.ORANGE.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "Done",
-                        color = ThemeColor.LIME,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "3"
+                    TagView(
+                        id = "3",
+                        tag = "Done",
+                        color = ThemeColor.LIME.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "In Progress",
-                        color = ThemeColor.BLUE,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "4"
+                    TagView(
+                        id = "4",
+                        tag = "In Progress",
+                        color = ThemeColor.BLUE.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "Waiting",
-                        color = ThemeColor.YELLOW,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "5"
+                    TagView(
+                        id = "5",
+                        tag = "Waiting",
+                        color = ThemeColor.YELLOW.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "Blocked",
-                        color = ThemeColor.PURPLE,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "6"
+                    TagView(
+                        id = "6",
+                        tag = "Blocked",
+                        color = ThemeColor.PURPLE.code,
+                    ),
+                    TagView(
+                        id = "7",
+                        tag = "Spam",
+                        color = ThemeColor.PINK.code,
                     )
                 ),
                 title = "Tag"
@@ -76,13 +70,11 @@ fun SingleLongTagPreview() {
         item {
             FieldTypeMultiSelect(
                 tags = listOf(
-                    RelationsListItem.Item.Tag(
-                        name = "This is an extremely long tag that should be truncated if it doesn't fit in the available space",
-                        color = ThemeColor.BLUE,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "1"
-                    )
+                    TagView(
+                        id = "1",
+                        tag = "This is an extremely long tag that should be truncated if it doesn't fit in the available space",
+                        color = ThemeColor.RED.code,
+                    ),
                 ),
                 title = "Tag"
             )
@@ -100,13 +92,11 @@ fun SingleShortTagPreview() {
         item {
             FieldTypeMultiSelect(
                 tags = listOf(
-                    RelationsListItem.Item.Tag(
-                        name = "Short",
-                        color = ThemeColor.TEAL,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "1"
-                    )
+                    TagView(
+                        id = "1",
+                        tag = "Urgent",
+                        color = ThemeColor.RED.code,
+                    ),
                 ),
                 title = "Tag"
             )
@@ -124,19 +114,15 @@ fun TwoTagsFirstShortSecondLongPreview() {
         item {
             FieldTypeMultiSelect(
                 tags = listOf(
-                    RelationsListItem.Item.Tag(
-                        name = "Urgent",
-                        color = ThemeColor.RED,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "1"
+                    TagView(
+                        id = "1",
+                        tag = "Urgent",
+                        color = ThemeColor.RED.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "This is a very long tag that might not fit entirely",
-                        color = ThemeColor.ORANGE,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "2"
+                    TagView(
+                        id = "2",
+                        tag = "This is a very long tag that might not fit entirely",
+                        color = ThemeColor.ORANGE.code,
                     )
                 ),
                 title = "Tag"
@@ -155,19 +141,15 @@ fun TwoShortTagsPreview() {
         item {
             FieldTypeMultiSelect(
                 tags = listOf(
-                    RelationsListItem.Item.Tag(
-                        name = "Urgent",
-                        color = ThemeColor.RED,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "1"
+                    TagView(
+                        id = "1",
+                        tag = "Urgent",
+                        color = ThemeColor.RED.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "Personal",
-                        color = ThemeColor.ORANGE,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "2"
+                    TagView(
+                        id = "2",
+                        tag = "Personal",
+                        color = ThemeColor.ORANGE.code,
                     )
                 ),
                 title = "Tag"
@@ -186,27 +168,21 @@ fun ThreeShortTagsPreview() {
         item {
             FieldTypeMultiSelect(
                 tags = listOf(
-                    RelationsListItem.Item.Tag(
-                        name = "Urgent",
-                        color = ThemeColor.RED,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "1"
+                    TagView(
+                        id = "1",
+                        tag = "Urgent",
+                        color = ThemeColor.RED.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "Personal",
-                        color = ThemeColor.ORANGE,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "2"
+                    TagView(
+                        id = "2",
+                        tag = "Personal",
+                        color = ThemeColor.ORANGE.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "Done",
-                        color = ThemeColor.LIME,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "3"
-                    )
+                    TagView(
+                        id = "3",
+                        tag = "Done",
+                        color = ThemeColor.LIME.code,
+                    ),
                 ),
                 title = "Tag"
             )
@@ -224,33 +200,25 @@ fun FourTagsWithOverflowPreview() {
         item {
             FieldTypeMultiSelect(
                 tags = listOf(
-                    RelationsListItem.Item.Tag(
-                        name = "Urgent",
-                        color = ThemeColor.RED,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "1"
+                    TagView(
+                        id = "1",
+                        tag = "Urgent",
+                        color = ThemeColor.RED.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "Personal",
-                        color = ThemeColor.ORANGE,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "2"
+                    TagView(
+                        id = "2",
+                        tag = "Personal",
+                        color = ThemeColor.ORANGE.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "Done",
-                        color = ThemeColor.LIME,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "3"
+                    TagView(
+                        id = "3",
+                        tag = "Done",
+                        color = ThemeColor.LIME.code,
                     ),
-                    RelationsListItem.Item.Tag(
-                        name = "In Progress",
-                        color = ThemeColor.BLUE,
-                        number = 1,
-                        isSelected = true,
-                        optionId = "4"
+                    TagView(
+                        id = "4",
+                        tag = "In Progress",
+                        color = ThemeColor.BLUE.code,
                     )
                 ),
                 title = "Tag"

@@ -20,43 +20,38 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.Relations1
 
-data class Item(
-    val title: String,
-    val format: RelationFormat
-)
-
 @Composable
-fun FieldEmpty(item: Item) {
-    val defaultModifier = Modifier
+fun FieldEmpty(modifier: Modifier = Modifier, title: String, fieldFormat: RelationFormat) {
+    val defaultModifier = modifier
         .fillMaxWidth()
         .border(
             width = 1.dp,
             color = colorResource(id = R.color.shape_secondary),
             shape = RoundedCornerShape(12.dp)
         )
-    when (item.format) {
+    when (fieldFormat) {
         Relation.Format.LONG_TEXT,
         Relation.Format.SHORT_TEXT,
         Relation.Format.URL -> {
-            val emptyState = getEnterValueText(item.format)
+            val emptyState = getEnterValueText(fieldFormat)
             FieldVerticalEmpty(
                 modifier = defaultModifier,
-                title = item.title,
+                title = title,
                 emptyState = emptyState
             )
         }
 
         else -> {
-            val emptyState = getEnterValueText(item.format)
+            val emptyState = getEnterValueText(fieldFormat)
             FieldHorizontalEmpty(
                 modifier = defaultModifier,
-                title = item.title,
+                title = title,
                 emptyState = emptyState
             )
         }
@@ -153,18 +148,14 @@ fun PreviewField() {
         }
         item {
             FieldEmpty(
-                item = Item(
-                    title = "Description",
-                    format = Relation.Format.LONG_TEXT
-                )
+                title = "Description",
+                fieldFormat = Relation.Format.LONG_TEXT
             )
         }
         item {
             FieldEmpty(
-                item = Item(
-                    title = "Some Number, very long long long long long fields name",
-                    format = Relation.Format.NUMBER
-                )
+                title = "Some Number, very long long long long long fields name",
+                fieldFormat = Relation.Format.NUMBER
             )
         }
         item {

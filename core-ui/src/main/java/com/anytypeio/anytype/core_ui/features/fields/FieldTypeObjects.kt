@@ -40,12 +40,15 @@ data class Item1(val title: String, val icon: String? = null) // Здесь icon
  *    If the text of the second item is long, it is truncated so that the suffix is always visible.
  */
 @Composable
-fun FieldTypeObject(fieldObject: ObjectRelationView.Object) {
+fun FieldTypeObject(
+    modifier: Modifier = Modifier,
+    fieldObject: ObjectRelationView.Object
+) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val halfScreenWidth = screenWidth / 2 - 32.dp
 
-    val defaultModifier = Modifier
+    val defaultModifier = modifier
         .fillMaxWidth()
         .border(
             width = 1.dp,

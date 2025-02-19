@@ -1,11 +1,13 @@
 package com.anytypeio.anytype.core_ui.features.fields
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -16,21 +18,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.DayOfWeekCustom
-import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.extensions.getPrettyName
-import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Relations1
 
 @Composable
-fun FieldTypeDate(
+fun FieldTypeCheckbox(
     modifier: Modifier = Modifier,
     title: String,
-    relativeDate: RelativeDate
+    isCheck: Boolean,
 ) {
     val defaultModifier = modifier
         .fillMaxWidth()
@@ -68,14 +67,19 @@ fun FieldTypeDate(
         Box(
             modifier = Modifier.widthIn(max = halfScreenWidth)
         ) {
-            Text(
-                text = relativeDate.getPrettyName(),
-                style = BodyCallout.copy(
-                    color = colorResource(id = R.color.text_primary)
-                ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            if (isCheck) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_checkbox_checked),
+                    contentDescription = "Checkbox",
+                    modifier = Modifier.size(24.dp)
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_checkbox_default),
+                    contentDescription = "Checkbox",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }
@@ -83,12 +87,9 @@ fun FieldTypeDate(
 
 @DefaultPreviews
 @Composable
-fun FieldTypeDatePreview() {
-    FieldTypeDate(
+fun FieldTypeCheckboxPreview() {
+    FieldTypeCheckbox(
         title = "Creation date",
-        relativeDate = RelativeDate.Tomorrow(
-            initialTimeInMillis = System.currentTimeMillis(),
-            dayOfWeek = DayOfWeekCustom.THURSDAY
-        ),
+        isCheck = false
     )
 }

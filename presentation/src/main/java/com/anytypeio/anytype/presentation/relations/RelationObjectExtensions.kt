@@ -14,7 +14,7 @@ import com.anytypeio.anytype.presentation.extension.getOptionObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.buildFileViews
-import com.anytypeio.anytype.presentation.sets.buildRelationValueObjectViews
+import com.anytypeio.anytype.presentation.objects.buildRelationValueObjectViews
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
 

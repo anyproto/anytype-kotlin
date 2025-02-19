@@ -298,7 +298,7 @@ fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
     filter { !it.isHidden }
 
 fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView = when (isDeleted) {
-    true -> ObjectView.Deleted(id)
+    true -> ObjectView.Deleted(id = id, name = fieldParser.getObjectName(this))
     else -> toObjectViewDefault(urlBuilder, fieldParser)
 }
 

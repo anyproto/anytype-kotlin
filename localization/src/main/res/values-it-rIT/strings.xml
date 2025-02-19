@@ -1610,4 +1610,26 @@ Please provide specific details of your needs here.</string>
     <string name="migration_error_try_again">Riprova</string>
     <string name="migration_migration_failed">Migrazione fallita</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Si prega di liberare un po\' di spazio ed eseguire nuovamente il processo.</string>
+    <string name="fields_screen_title">Fields</string>
+    <string name="field_text_title">Testo</string>
+    <string name="field_text_empty">Enter</string>
+    <string name="field_number_title">Numero</string>
+    <string name="field_number_empty">Enter</string>
+    <string name="field_date_title">Data</string>
+    <string name="field_date_empty">Valore</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Aggiungi</string>
+    <string name="field_email_title">E-mail</string>
+    <string name="field_email_empty">Enter</string>
+    <string name="field_phone_title">Numero di telefono</string>
+    <string name="field_phone_empty">Enter</string>
+    <string name="field_select_title">Seleziona</string>
+    <string name="field_select_empty">Seleziona</string>
+    <string name="field_multiselect_title">Selezione multipla</string>
+    <string name="field_multiselect_empty">Seleziona</string>
+    <string name="field_object_title">Oggetto</string>
+    <string name="field_object_empty">Aggiungi</string>
+    <string name="field_file_and_media_title">File &amp; Media</string>
+    <string name="field_file_and_media_empty">Aggiungi</string>
+    <string name="field_checkbox_title">Seleziona</string>
 </resources>

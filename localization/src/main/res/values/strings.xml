@@ -1882,4 +1882,26 @@ Please provide specific details of your needs here.</string>
     <string name="migration_migration_failed">Migration failed</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
 
+    <string name="field_text_title">Text</string>
+    <string name="field_text_empty">Enter</string>
+    <string name="field_number_title">Number</string>
+    <string name="field_number_empty">Enter</string>
+    <string name="field_date_title">Date</string>
+    <string name="field_date_empty">Value</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Add</string>
+    <string name="field_email_title">E-mail</string>
+    <string name="field_email_empty">Enter</string>
+    <string name="field_phone_title">Phone number</string>
+    <string name="field_phone_empty">Enter</string>
+    <string name="field_select_title">Select</string>
+    <string name="field_select_empty">Select</string>
+    <string name="field_multiselect_title">Multiselect</string>
+    <string name="field_multiselect_empty">Select</string>
+    <string name="field_object_title">Object</string>
+    <string name="field_object_empty">Add</string>
+    <string name="field_file_and_media_title">File &amp; Media</string>
+    <string name="field_file_and_media_empty">Add</string>
+    <string name="field_checkbox_title">Select</string>
+
 </resources>

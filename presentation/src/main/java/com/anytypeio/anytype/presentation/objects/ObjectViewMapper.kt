@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.ext.isValidObject
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -44,8 +45,8 @@ suspend fun Struct.buildObjectViews(
         .asIdList()
         .mapNotNull { id ->
             val wrapper = store.get(id)
-            if (wrapper == null) {
-                Timber.w("Object was missing in object store: $id")
+            if (wrapper == null || !wrapper.isValid) {
+                Timber.w("Object was missing in object store: $id or was invalid")
                 null
             } else if (wrapper.isDeleted == true) {
                 ObjectView.Deleted(id = id, name = fieldParser.getObjectName(wrapper))
@@ -84,18 +85,9 @@ suspend fun ObjectWrapper.Relation.toObjects(
 ): List<ObjectView> {
     return value.asIdList().mapNotNull { id ->
         val raw = store.get(id)?.map
-        if (raw.isNullOrEmpty()) return@mapNotNull null
-        val wrapper = ObjectWrapper.Basic(raw)
-        if (isDeleted == true) {
-            ObjectView.Deleted(id = id, name = fieldParser.getObjectName(wrapper))
-        } else {
-            ObjectView.Default(
-                id = id,
-                name = fieldParser.getObjectName(wrapper),
-                icon = wrapper.objectIcon(urlBuilder),
-                types = type,
-                isRelation = wrapper.layout == ObjectType.Layout.RELATION
-            )
+        if (raw.isNullOrEmpty() || !raw.isValidObject()) null
+        else {
+            ObjectWrapper.Basic(raw).toObjectView(urlBuilder, fieldParser)
         }
     }
 }
@@ -111,17 +103,28 @@ private fun Any?.asIdList(): List<Id> = when (this) {
     else -> emptyList()
 }
 
-fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView = when (isDeleted) {
-    true -> ObjectView.Deleted(id = id, name = fieldParser.getObjectName(this))
-    else -> toObjectViewDefault(urlBuilder, fieldParser)
-}
+/**
+ * Converts a Basic wrapper into an ObjectView.
+ * isValid check performed already in the caller function.
+ */
+fun ObjectWrapper.Basic.toObjectView(
+    urlBuilder: UrlBuilder,
+    fieldParser: FieldParser
+): ObjectView = if (isDeleted == true)
+    ObjectView.Deleted(id = id, name = fieldParser.getObjectName(this))
+else toObjectViewDefault(urlBuilder, fieldParser)
 
-fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView.Default {
-    return ObjectView.Default(
-        id = id,
-        name = fieldParser.getObjectName(this),
-        icon = this.objectIcon(builder = urlBuilder),
-        types = type,
-        isRelation = layout == ObjectType.Layout.RELATION
-    )
-}
+/**
+ * Converts a non-deleted Basic wrapper into a Default ObjectView.
+ * isValid check performed already in the caller function.
+ */
+fun ObjectWrapper.Basic.toObjectViewDefault(
+    urlBuilder: UrlBuilder,
+    fieldParser: FieldParser
+): ObjectView.Default = ObjectView.Default(
+    id = id,
+    name = fieldParser.getObjectName(this),
+    icon = objectIcon(urlBuilder),
+    types = type,
+    isRelation = layout == ObjectType.Layout.RELATION
+)

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.RelativeDate
@@ -132,6 +133,9 @@ class FieldParserImpl @Inject constructor(
 
     //region ObjectWrapper.Basic fields
     override fun getObjectName(objectWrapper: ObjectWrapper.Basic): String {
+        if (objectWrapper.isDeleted == true) {
+            return stringResourceProvider.getDeletedObjectTitle()
+        }
         val result = when (objectWrapper.layout) {
             ObjectType.Layout.DATE -> {
                 val relativeDate = dateProvider.calculateRelativeDates(

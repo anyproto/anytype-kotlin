@@ -5,11 +5,13 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.core_utils.tools.DEFAULT_URL_REGEX
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.onFailure
@@ -341,6 +343,29 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
         viewModelScope.launch {
+            val urlRegex = Regex(DEFAULT_URL_REGEX)
+            val parsedUrls = buildList {
+                urlRegex.findAll(msg).forEach { match ->
+                    val range = match.range
+                    // Adjust the range to include the last character (inclusive end range)
+                    val adjustedRange = range.first..range.last + 1
+                    val url = match.value
+
+                    // Check if a LINK markup already exists in the same range
+                    if (markup.none { it.range == adjustedRange && it.type == Block.Content.Text.Mark.Type.LINK }) {
+                        add(
+                            Block.Content.Text.Mark(
+                                range = adjustedRange,
+                                type = Block.Content.Text.Mark.Type.LINK,
+                                param = url
+                            )
+                        )
+                    }
+                }
+            }
+
+            val normalizedMarkup = (markup + parsedUrls).sortedBy { it.range.first }
+
             chatBoxMode.value = chatBoxMode.value.updateIsSendingBlocked(isBlocked = true)
             val attachments = buildList {
                 val currAttachments = chatBoxAttachments.value
@@ -351,6 +376,22 @@ class ChatViewModel @Inject constructor(
                                 Chat.Message.Attachment(
                                     target = attachment.target,
                                     type = Chat.Message.Attachment.Type.Link
+                                )
+                            )
+                        }
+                        is ChatView.Message.ChatBoxAttachment.Existing.Link -> {
+                            add(
+                                Chat.Message.Attachment(
+                                    target = attachment.target,
+                                    type = Chat.Message.Attachment.Type.Link
+                                )
+                            )
+                        }
+                        is ChatView.Message.ChatBoxAttachment.Existing.Image -> {
+                            add(
+                                Chat.Message.Attachment(
+                                    target = attachment.target,
+                                    type = Chat.Message.Attachment.Type.Image
                                 )
                             )
                         }
@@ -455,7 +496,7 @@ class ChatViewModel @Inject constructor(
                             message = Chat.Message.new(
                                 text = msg.trim(),
                                 attachments = attachments,
-                                marks = markup
+                                marks = normalizedMarkup
                             )
                         )
                     ).onSuccess { (id, payload) ->
@@ -469,16 +510,14 @@ class ChatViewModel @Inject constructor(
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.EditMessage -> {
-                    val editedMessage = data.value.find {
-                        it.id == mode.msg
-                    }
                     editChatMessage.async(
                         params = Command.ChatCommand.EditMessage(
                             chat = vmParams.ctx,
                             message = Chat.Message.updated(
                                 id = mode.msg,
                                 text = msg.trim(),
-                                attachments = editedMessage?.attachments.orEmpty()
+                                attachments = attachments,
+                                marks = normalizedMarkup
                             )
                         )
                     ).onSuccess {
@@ -499,7 +538,7 @@ class ChatViewModel @Inject constructor(
                                 text = msg.trim(),
                                 replyToMessageId = mode.msg,
                                 attachments = attachments,
-                                marks = markup
+                                marks = normalizedMarkup
                             )
                         )
                     ).onSuccess { (id, payload) ->
@@ -519,6 +558,33 @@ class ChatViewModel @Inject constructor(
     fun onRequestEditMessageClicked(msg: ChatView.Message) {
         Timber.d("onRequestEditMessageClicked")
         viewModelScope.launch {
+            chatBoxAttachments.value = msg.attachments.mapNotNull { a ->
+                when(a) {
+                    is ChatView.Message.Attachment.Image -> {
+                        ChatView.Message.ChatBoxAttachment.Existing.Image(
+                            target = a.target,
+                            url = a.url
+                        )
+                    }
+                    is ChatView.Message.Attachment.Link -> {
+                        val wrapper = a.wrapper
+                        if (wrapper != null) {
+                            val type = wrapper.type.firstOrNull()
+                            ChatView.Message.ChatBoxAttachment.Existing.Link(
+                                target = wrapper.id,
+                                name = wrapper.name.orEmpty(),
+                                icon = wrapper.objectIcon(urlBuilder),
+                                typeName = if (type != null)
+                                    storeOfObjectTypes.get(type)?.name.orEmpty()
+                                else
+                                    ""
+                            )
+                        } else {
+                            null
+                        }
+                    }
+                }
+            }
             chatBoxMode.value = ChatBoxMode.EditMessage(msg.id)
         }
     }
@@ -622,7 +688,18 @@ class ChatViewModel @Inject constructor(
                 is ChatView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper
                     if (wrapper != null) {
-                        navigation.emit(wrapper.navigation())
+                        if (wrapper.layout == ObjectType.Layout.BOOKMARK) {
+                            val bookmark = ObjectWrapper.Bookmark(wrapper.map)
+                            val url = bookmark.source
+                            if (!url.isNullOrEmpty()) {
+                                commands.emit(ViewModelCommand.Browse(url))
+                            } else {
+                                // If url not found, open bookmark object instead of browsing.
+                                navigation.emit(wrapper.navigation())
+                            }
+                        } else {
+                            navigation.emit(wrapper.navigation())
+                        }
                     } else {
                         Timber.w("Wrapper is not found in attachment")
                     }
@@ -761,6 +838,7 @@ class ChatViewModel @Inject constructor(
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
         data class MediaPreview(val url: String) : ViewModelCommand()
+        data class Browse(val url: String) : ViewModelCommand()
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()
         data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()

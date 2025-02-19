@@ -11,16 +11,22 @@ data class StatusView(val id: String, val status: String, val color: String)
 sealed class ObjectView {
 
     abstract val id: Id
+    abstract val icon: ObjectIcon
+    abstract val name: String
 
     data class Default(
         override val id: String,
-        val name: String,
-        val icon: ObjectIcon,
+        override val name: String,
+        override val icon: ObjectIcon,
         val types: List<String> = emptyList(),
         val isRelation: Boolean = false
     ) : ObjectView()
 
-    data class Deleted(override val id: String) : ObjectView()
+    data class Deleted(
+        override val id: String,
+        override val name: String,
+        override val icon: ObjectIcon = ObjectIcon.Deleted,
+    ) : ObjectView()
 }
 
 data class FileView(

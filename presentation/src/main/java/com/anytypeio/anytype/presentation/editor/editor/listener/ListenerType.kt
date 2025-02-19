@@ -23,6 +23,7 @@ sealed interface ListenerType {
     }
 
     sealed class Picture: ListenerType {
+        data class TitleView(val item: BlockView.Title.Basic) : Picture()
         data class View(val target: String) : Picture()
         data class Placeholder(val target: String) : Picture()
         data class Upload(val target: String) : Picture()

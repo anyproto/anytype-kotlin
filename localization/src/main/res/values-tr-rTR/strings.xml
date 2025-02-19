@@ -1609,4 +1609,26 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="migration_error_try_again">Tekrar deneyin</string>
     <string name="migration_migration_failed">Geçiş başarısız oldu</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Lütfen biraz yer açın ve işlemi tekrarlayın.</string>
+    <string name="fields_screen_title">Fields</string>
+    <string name="field_text_title">Metin</string>
+    <string name="field_text_empty">Giriş</string>
+    <string name="field_number_title">Sayı</string>
+    <string name="field_number_empty">Giriş</string>
+    <string name="field_date_title">Tarih</string>
+    <string name="field_date_empty">Değer</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Ekle</string>
+    <string name="field_email_title">E-Posta</string>
+    <string name="field_email_empty">Giriş</string>
+    <string name="field_phone_title">Telefon numarası</string>
+    <string name="field_phone_empty">Giriş</string>
+    <string name="field_select_title">Seç</string>
+    <string name="field_select_empty">Seç</string>
+    <string name="field_multiselect_title">Çoklu seçim</string>
+    <string name="field_multiselect_empty">Seç</string>
+    <string name="field_object_title">Nesne</string>
+    <string name="field_object_empty">Ekle</string>
+    <string name="field_file_and_media_title">Dosya &amp; Medya</string>
+    <string name="field_file_and_media_empty">Ekle</string>
+    <string name="field_checkbox_title">Seç</string>
 </resources>

@@ -1609,4 +1609,26 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="migration_error_try_again">Probeer opnieuw</string>
     <string name="migration_migration_failed">Migratie mislukt</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Maak alsjeblieft ruimte vrij en voer het proces opnieuw uit.</string>
+    <string name="fields_screen_title">Velden</string>
+    <string name="field_text_title">Tekst</string>
+    <string name="field_text_empty">Voer in</string>
+    <string name="field_number_title">Nummer</string>
+    <string name="field_number_empty">Voer in</string>
+    <string name="field_date_title">Datum</string>
+    <string name="field_date_empty">Waarde</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Voeg toe</string>
+    <string name="field_email_title">E-mailadres</string>
+    <string name="field_email_empty">Voer in</string>
+    <string name="field_phone_title">Telefoonnummer</string>
+    <string name="field_phone_empty">Voer in</string>
+    <string name="field_select_title">Selecteer</string>
+    <string name="field_select_empty">Selecteer</string>
+    <string name="field_multiselect_title">Meervoudige selectie</string>
+    <string name="field_multiselect_empty">Selecteer</string>
+    <string name="field_object_title">Object</string>
+    <string name="field_object_empty">Voeg toe</string>
+    <string name="field_file_and_media_title">Bestand &amp; Media</string>
+    <string name="field_file_and_media_empty">Voeg toe</string>
+    <string name="field_checkbox_title">Selecteer</string>
 </resources>

@@ -146,7 +146,7 @@ class ObjectMenuViewModel(
                 add(ObjectAction.SET_AS_DEFAULT)
             }
 
-            if (!objectRestrictions.contains(ObjectRestriction.DUPLICATE) && !isTemplate) {
+            if (!objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
                 add(ObjectAction.DUPLICATE)
             }
 

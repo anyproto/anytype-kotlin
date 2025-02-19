@@ -24,7 +24,6 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -32,18 +31,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
+import com.anytypeio.anytype.core_ui.lists.objects.ObjectsScreen
+import com.anytypeio.anytype.core_ui.lists.objects.UiContentState
+import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListState
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_date.R
 import com.anytypeio.anytype.feature_date.ui.models.DateEvent
 import com.anytypeio.anytype.feature_date.viewmodel.UiCalendarIconState
 import com.anytypeio.anytype.feature_date.viewmodel.UiCalendarState
-import com.anytypeio.anytype.feature_date.viewmodel.UiContentState
 import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsSheetState
 import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsState
 import com.anytypeio.anytype.feature_date.viewmodel.UiHeaderState
 import com.anytypeio.anytype.feature_date.viewmodel.UiNavigationWidget
-import com.anytypeio.anytype.feature_date.viewmodel.UiObjectsListState
 import com.anytypeio.anytype.feature_date.viewmodel.UiSnackbarState
 import com.anytypeio.anytype.feature_date.viewmodel.UiSyncStatusBadgeState
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
@@ -67,8 +67,6 @@ fun DateMainScreen(
     canPaginate: Boolean,
     onDateEvent: (DateEvent) -> Unit
 ) {
-
-    val scope = rememberCoroutineScope()
 
     val snackBarHostState = remember { SnackbarHostState() }
 
@@ -160,7 +158,15 @@ fun DateMainScreen(
                     state = uiObjectsListState,
                     uiState = uiContentState,
                     canPaginate = canPaginate,
-                    onDateEvent = onDateEvent,
+                    onLoadMore = {
+                        DateEvent.ObjectsList.OnLoadMore
+                    },
+                    onMoveToBin = { item ->
+                        DateEvent.ObjectsList.OnObjectMoveToBin(item)
+                    },
+                    onObjectClicked = { item ->
+                        DateEvent.ObjectsList.OnObjectClicked(item)
+                    }
                 )
                 BottomNavigationMenu(
                     modifier = Modifier

@@ -2287,3 +2287,20 @@ fun CoroutineScope.sendAnalyticsObjectListSort(
 }
 //endregion
 
+//region Object Type
+//setScreenShow or CreateObject objectType: "_otset"
+//sendAnalyticsAllContentChangeType
+//objectSetTitle
+//relationAdd
+//changeRecommendedLayout
+
+fun CoroutineScope.sendAnalyticsScreenObjectType(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.screenObjectType
+    )
+}
+//endregion
+

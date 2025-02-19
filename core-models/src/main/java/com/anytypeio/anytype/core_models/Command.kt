@@ -653,4 +653,18 @@ sealed class Command {
         val dataViewId: Id,
         val viewerId: Id
     )
+    data class ObjectTypeConflictingFields(
+        val spaceId: String,
+        val objectTypeId: String
+    ) : Command()
+
+    data class ObjectTypeSetRecommendedHeaderFields(
+        val objectTypeId: String,
+        val fields: List<Id>
+    ) : Command()
+
+    data class ObjectTypeSetRecommendedFields(
+        val objectTypeId: String,
+        val fields: List<Id>
+    ) : Command()
 }

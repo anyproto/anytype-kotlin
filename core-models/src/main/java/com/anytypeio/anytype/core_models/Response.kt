@@ -38,10 +38,9 @@ sealed class Response {
 
     sealed class Set : Response() {
         data class Create(
-            @Deprecated("legacy param")
-            val blockId: Id?,
-            val targetId: Id,
-            val payload: Payload
+            val objectId: Id,
+            val payload: Payload,
+            val details: Struct
         )
     }
 

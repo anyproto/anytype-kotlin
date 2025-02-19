@@ -234,6 +234,14 @@ object EventsDictionary {
     const val clickDateCalendarView = "ClickDateCalendarView"
     const val objectListSort = "ObjectListSort"
 
+    //ObjectType
+    const val screenObjectType = "ScreenType"
+    const val editType = "EditType"
+    const val changeRecommendedLayout = "ChangeRecommendedLayout"
+    const val changeTypeSort = "ChangeTypeSort"
+    const val screenTemplate = "ScreenTemplate"
+
+
     const val searchBacklink = "SearchBacklink"
 
     object SharingSpacesTypes {

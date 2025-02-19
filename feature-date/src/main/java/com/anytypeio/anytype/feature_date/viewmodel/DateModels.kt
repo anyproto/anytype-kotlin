@@ -2,7 +2,6 @@ package com.anytypeio.anytype.feature_date.viewmodel
 
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.TimeInMillis
@@ -11,7 +10,6 @@ import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem.Loading
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 data class DateObjectVmParams(
     val objectId: Id,
@@ -100,53 +98,10 @@ sealed class UiFieldsItem {
     }
 }
 
-data class UiObjectsListState(
-    val items: List<UiObjectsListItem>
-) {
-    companion object {
-
-        val Empty = UiObjectsListState(items = emptyList())
-        val LoadingState = UiObjectsListState(
-            items = listOf(
-                UiObjectsListItem.Loading("Loading-Item-1"),
-                UiObjectsListItem.Loading("Loading-Item-2"),
-                UiObjectsListItem.Loading("Loading-Item-3"),
-                UiObjectsListItem.Loading("Loading-Item-4"),
-            )
-        )
-    }
-}
-
-sealed class UiObjectsListItem {
-
-    abstract val id: String
-
-    data class Loading(override val id: String) : UiObjectsListItem()
-
-    data class Item(
-        override val id: String,
-        val name: String,
-        val space: SpaceId,
-        val type: String? = null,
-        val typeName: String? = null,
-        val createdBy: String? = null,
-        val layout: ObjectType.Layout? = null,
-        val icon: ObjectIcon = ObjectIcon.None,
-        val isPossibleToDelete: Boolean = false
-    ) : UiObjectsListItem()
-}
-
 sealed class UiNavigationWidget {
     data object Hidden : UiNavigationWidget()
     data object Editor : UiNavigationWidget()
     data object Viewer : UiNavigationWidget()
-}
-
-sealed class UiContentState {
-    data class Idle(val scrollToTop: Boolean = false) : UiContentState()
-    data object InitLoading : UiContentState()
-    data object Paging : UiContentState()
-    data object Empty : UiContentState()
 }
 
 sealed class UiFieldsSheetState {

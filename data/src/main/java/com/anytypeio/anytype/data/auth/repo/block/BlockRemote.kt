@@ -2,6 +2,7 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Command.ObjectTypeConflictingFields
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
@@ -106,7 +107,8 @@ interface BlockRemote {
 
     suspend fun createSet(
         space: Id,
-        objectType: String?
+        objectType: String?,
+        details: Struct?
     ): Response.Set.Create
 
     suspend fun setDataViewViewerPosition(
@@ -468,4 +470,9 @@ interface BlockRemote {
     suspend fun debugAccountSelectTrace(dir: String): String
 
     suspend fun setDeviceNetworkState(type: DeviceNetworkType)
+
+    suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id>
+
+    suspend fun objectTypeSetRecommendedHeaderFields(command: Command.ObjectTypeSetRecommendedHeaderFields)
+    suspend fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields)
 }

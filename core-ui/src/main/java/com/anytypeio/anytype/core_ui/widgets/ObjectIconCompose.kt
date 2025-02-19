@@ -32,7 +32,8 @@ fun ListWidgetObjectIcon(
     icon: ObjectIcon,
     modifier: Modifier,
     iconSize: Dp = 48.dp,
-    onTaskIconClicked: (Boolean) -> Unit = {}
+    onTaskIconClicked: (Boolean) -> Unit = {},
+    backgroundColor: Int = R.color.shape_tertiary
 ) {
     when (icon) {
         is ObjectIcon.Profile.Avatar -> {
@@ -77,7 +78,8 @@ fun ListWidgetObjectIcon(
             EmptyIconView(
                 modifier = modifier,
                 emptyType = icon,
-                backgroundSize = iconSize
+                backgroundSize = iconSize,
+                backgroundColor = backgroundColor
             )
         }
         ObjectIcon.None -> {}

@@ -24,6 +24,7 @@ fun StubObject(
     targetObjectType: Id? = null,
     identity: Id? = null,
     fileExt: String? = null,
+    extraFields: Map<String, Any> = emptyMap()
 ): ObjectWrapper.Basic = ObjectWrapper.Basic(
     map = mapOf(
         Relations.ID to id,
@@ -43,7 +44,7 @@ fun StubObject(
         Relations.UNIQUE_KEY to uniqueKey,
         Relations.IDENTITY to identity,
         Relations.FILE_EXT to fileExt
-    )
+    ) + extraFields
 )
 
 fun StubSpaceMember(
@@ -104,7 +105,11 @@ fun StubObjectType(
     isReadOnly: Boolean? = null,
     isHidden: Boolean? = null,
     sourceObject: Id? = null,
-    recommendedLayout: Double? = null
+    recommendedLayout: Double? = null,
+    recommendedRelations: List<String> = emptyList(),
+    recommendedHiddenRelations: List<String> = emptyList(),
+    recommendedFeaturedRelations: List<String> = emptyList(),
+    space: Id? = null
 ): ObjectWrapper.Type = ObjectWrapper.Type(
     map = mapOf(
         Relations.ID to id,
@@ -121,5 +126,9 @@ fun StubObjectType(
         Relations.SOURCE_OBJECT to sourceObject,
         Relations.RECOMMENDED_LAYOUT to recommendedLayout,
         Relations.UNIQUE_KEY to uniqueKey,
+        Relations.RECOMMENDED_RELATIONS to recommendedRelations,
+        Relations.RECOMMENDED_HIDDEN_RELATIONS to recommendedHiddenRelations,
+        Relations.RECOMMENDED_FEATURED_RELATIONS to recommendedFeaturedRelations,
+        Relations.SPACE_ID to space
     )
 )

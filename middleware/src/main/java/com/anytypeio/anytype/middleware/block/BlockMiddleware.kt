@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.block
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Command.ObjectTypeConflictingFields
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
@@ -263,10 +264,12 @@ class BlockMiddleware(
 
     override suspend fun createSet(
         space: Id,
-        objectType: String?
+        objectType: String?,
+        details: Struct?
     ): Response.Set.Create = middleware.objectCreateSet(
         space = space,
-        objectType = objectType
+        objectType = objectType,
+        details = details
     )
 
     override suspend fun setDataViewViewerPosition(
@@ -1074,5 +1077,17 @@ class BlockMiddleware(
 
     override suspend fun setDeviceNetworkState(type: DeviceNetworkType) {
         middleware.setDeviceNetworkState(type)
+    }
+
+    override suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {
+        return middleware.objectTypeListConflictingRelations(command)
+    }
+
+    override suspend fun objectTypeSetRecommendedHeaderFields(command: Command.ObjectTypeSetRecommendedHeaderFields) {
+        middleware.objectTypeSetRecommendedHeaderFields(command)
+    }
+
+    override suspend fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields) {
+        middleware.objectTypeSetRecommendedFields(command)
     }
 }

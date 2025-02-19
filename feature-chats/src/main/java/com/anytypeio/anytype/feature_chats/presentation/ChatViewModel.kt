@@ -343,7 +343,6 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
         viewModelScope.launch {
-
             val urlRegex = Regex(DEFAULT_URL_REGEX)
             val parsedUrls = buildList {
                 urlRegex.findAll(msg).forEach { match ->
@@ -377,6 +376,22 @@ class ChatViewModel @Inject constructor(
                                 Chat.Message.Attachment(
                                     target = attachment.target,
                                     type = Chat.Message.Attachment.Type.Link
+                                )
+                            )
+                        }
+                        is ChatView.Message.ChatBoxAttachment.Existing.Link -> {
+                            add(
+                                Chat.Message.Attachment(
+                                    target = attachment.target,
+                                    type = Chat.Message.Attachment.Type.Link
+                                )
+                            )
+                        }
+                        is ChatView.Message.ChatBoxAttachment.Existing.Image -> {
+                            add(
+                                Chat.Message.Attachment(
+                                    target = attachment.target,
+                                    type = Chat.Message.Attachment.Type.Image
                                 )
                             )
                         }
@@ -495,16 +510,13 @@ class ChatViewModel @Inject constructor(
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.EditMessage -> {
-                    val editedMessage = data.value.find {
-                        it.id == mode.msg
-                    }
                     editChatMessage.async(
                         params = Command.ChatCommand.EditMessage(
                             chat = vmParams.ctx,
                             message = Chat.Message.updated(
                                 id = mode.msg,
                                 text = msg.trim(),
-                                attachments = editedMessage?.attachments.orEmpty(),
+                                attachments = attachments,
                                 marks = normalizedMarkup
                             )
                         )
@@ -546,6 +558,33 @@ class ChatViewModel @Inject constructor(
     fun onRequestEditMessageClicked(msg: ChatView.Message) {
         Timber.d("onRequestEditMessageClicked")
         viewModelScope.launch {
+            chatBoxAttachments.value = msg.attachments.mapNotNull { a ->
+                when(a) {
+                    is ChatView.Message.Attachment.Image -> {
+                        ChatView.Message.ChatBoxAttachment.Existing.Image(
+                            target = a.target,
+                            url = a.url
+                        )
+                    }
+                    is ChatView.Message.Attachment.Link -> {
+                        val wrapper = a.wrapper
+                        if (wrapper != null) {
+                            val type = wrapper.type.firstOrNull()
+                            ChatView.Message.ChatBoxAttachment.Existing.Link(
+                                target = wrapper.id,
+                                name = wrapper.name.orEmpty(),
+                                icon = wrapper.objectIcon(urlBuilder),
+                                typeName = if (type != null)
+                                    storeOfObjectTypes.get(type)?.name.orEmpty()
+                                else
+                                    ""
+                            )
+                        } else {
+                            null
+                        }
+                    }
+                }
+            }
             chatBoxMode.value = ChatBoxMode.EditMessage(msg.id)
         }
     }

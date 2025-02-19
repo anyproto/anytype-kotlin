@@ -51,7 +51,7 @@ fun FieldListScreen(
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
-                    text = "Fields",
+                    text = stringResource(id = R.string.fields_screen_title),
                     style = Title1,
                     color = colorResource(id = R.color.text_primary),
                 )
@@ -217,15 +217,15 @@ fun FieldListScreen(
                     }
 
                     Model.Section.Featured -> {
-
+                        //TODO: Implement
                     }
 
                     Model.Section.Other -> {
-
+                        //TODO: Implement
                     }
 
                     is Model.Section.TypeFrom -> {
-
+                        //TODO: Implement
                     }
                 }
             }

@@ -162,7 +162,7 @@ fun FieldTypeFile(
 
 // Helper function to display a single item: icon (if available) + text.
 @Composable
-fun ItemView(modifier: Modifier, objView: FileView) {
+internal fun ItemView(modifier: Modifier, objView: FileView) {
     Row(
         modifier = modifier.padding(vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -194,7 +194,7 @@ fun ItemView(modifier: Modifier, objView: FileView) {
  * to leave space for the suffix.
  */
 @Composable
-fun FileNameWithSuffix(
+internal fun FileNameWithSuffix(
     text: String,
     suffix: String,
     textStyle: TextStyle,

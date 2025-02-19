@@ -1882,6 +1882,7 @@ Please provide specific details of your needs here.</string>
     <string name="migration_migration_failed">Migration failed</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
 
+    <string name="fields_screen_title">Fields</string>
     <string name="field_text_title">Text</string>
     <string name="field_text_empty">Enter</string>
     <string name="field_number_title">Number</string>

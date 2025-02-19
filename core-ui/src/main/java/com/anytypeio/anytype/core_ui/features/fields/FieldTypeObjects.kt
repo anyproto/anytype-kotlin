@@ -24,10 +24,6 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 
-// Модель данных
-data class FieldObject(val title: String, val items: List<Item1>)
-data class Item1(val title: String, val icon: String? = null) // Здесь icon – URL в виде String
-
 /**
  * The main composable for FieldObject.
  *
@@ -167,7 +163,7 @@ fun FieldTypeObject(
 
 // Helper function to display a single item: icon (if available) + text.
 @Composable
-fun ItemView(modifier: Modifier, objView: ObjectView) {
+internal fun ItemView(modifier: Modifier, objView: ObjectView) {
     Row(
         modifier = modifier.padding(vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically,

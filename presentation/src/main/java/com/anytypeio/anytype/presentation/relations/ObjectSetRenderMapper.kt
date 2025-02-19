@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ext.DateParser
@@ -36,7 +35,6 @@ import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
-import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toCheckboxView
 import com.anytypeio.anytype.presentation.mapper.toDateView
 import com.anytypeio.anytype.presentation.mapper.toGridRecordRows
@@ -47,13 +45,13 @@ import com.anytypeio.anytype.presentation.mapper.toTextView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
+import com.anytypeio.anytype.presentation.objects.toObjects
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
 import com.anytypeio.anytype.presentation.sets.buildListViews
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.sets.model.FilterValue
 import com.anytypeio.anytype.presentation.sets.model.FilterView
-import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
@@ -469,34 +467,6 @@ suspend fun ObjectWrapper.Relation.toStatus(
         }
     } else {
         null
-    }
-}
-
-suspend fun ObjectWrapper.Relation.toObjects(
-    value: Any?,
-    store: ObjectStore,
-    urlBuilder: UrlBuilder,
-    fieldParser: FieldParser
-) : List<ObjectView> {
-    val ids = value.values<Id>()
-    return buildList {
-        ids.forEach { id ->
-            val raw = store.get(id)?.map
-            if (!raw.isNullOrEmpty()) {
-                val wrapper = ObjectWrapper.Basic(raw)
-                val obj = when (isDeleted) {
-                    true -> ObjectView.Deleted(id)
-                    else -> ObjectView.Default(
-                        id = id,
-                        name = fieldParser.getObjectName(wrapper),
-                        icon = wrapper.objectIcon(urlBuilder),
-                        types = type,
-                        isRelation = wrapper.layout == ObjectType.Layout.RELATION
-                    )
-                }
-                add(obj)
-            }
-        }
     }
 }
 

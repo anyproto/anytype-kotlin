@@ -1609,4 +1609,26 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="migration_error_try_again">Erneut versuchen</string>
     <string name="migration_migration_failed">Migration fehlgeschlagen</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Bitte gib Speicherplatz frei und führe den Vorgang erneut aus.</string>
+    <string name="fields_screen_title">Fields</string>
+    <string name="field_text_title">Text</string>
+    <string name="field_text_empty">Eingeben</string>
+    <string name="field_number_title">Nummer</string>
+    <string name="field_number_empty">Eingeben</string>
+    <string name="field_date_title">Datum</string>
+    <string name="field_date_empty">Wert</string>
+    <string name="field_url_title">Link</string>
+    <string name="field_url_empty">Hinzufügen</string>
+    <string name="field_email_title">E-Mail</string>
+    <string name="field_email_empty">Eingeben</string>
+    <string name="field_phone_title">Telefonnummer</string>
+    <string name="field_phone_empty">Eingeben</string>
+    <string name="field_select_title">Auswählen</string>
+    <string name="field_select_empty">Auswählen</string>
+    <string name="field_multiselect_title">Mehrfachauswahl</string>
+    <string name="field_multiselect_empty">Auswählen</string>
+    <string name="field_object_title">Objekt</string>
+    <string name="field_object_empty">Hinzufügen</string>
+    <string name="field_file_and_media_title">Datei &amp; Medien</string>
+    <string name="field_file_and_media_empty">Hinzufügen</string>
+    <string name="field_checkbox_title">Auswählen</string>
 </resources>

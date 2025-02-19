@@ -1635,4 +1635,26 @@ Please provide specific details of your needs here.</string>
     <string name="migration_error_try_again">Try again</string>
     <string name="migration_migration_failed">Migration failed</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
+    <string name="fields_screen_title">Fields</string>
+    <string name="field_text_title">Текст</string>
+    <string name="field_text_empty">Enter</string>
+    <string name="field_number_title">Число</string>
+    <string name="field_number_empty">Enter</string>
+    <string name="field_date_title">Дата</string>
+    <string name="field_date_empty">Значення</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Додати</string>
+    <string name="field_email_title">E-mail</string>
+    <string name="field_email_empty">Enter</string>
+    <string name="field_phone_title">Номер телефону</string>
+    <string name="field_phone_empty">Enter</string>
+    <string name="field_select_title">Select</string>
+    <string name="field_select_empty">Select</string>
+    <string name="field_multiselect_title">Multiselect</string>
+    <string name="field_multiselect_empty">Select</string>
+    <string name="field_object_title">Об\'єкт</string>
+    <string name="field_object_empty">Додати</string>
+    <string name="field_file_and_media_title">File &amp; Media</string>
+    <string name="field_file_and_media_empty">Додати</string>
+    <string name="field_checkbox_title">Select</string>
 </resources>

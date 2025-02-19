@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_utils.ui
 
+import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.IdRes
@@ -53,6 +54,9 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
+        if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
+            expand()
+        }
         proceed(throttleFlow.throttleFirst(LONG_THROTTLE_DURATION)) { it() }
     }
 

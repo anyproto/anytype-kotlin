@@ -13,12 +13,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -44,14 +48,16 @@ fun LocalStorageScreen(
     onDeleteAccountClicked: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+        .nestedScroll(rememberNestedScrollInteropConnection()),
         shape = RoundedCornerShape(16.dp),
         backgroundColor = colorResource(id = R.color.background_secondary)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 20.dp, end = 20.dp),
+                .padding(start = 20.dp, end = 20.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Box(
                 modifier = Modifier

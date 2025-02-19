@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -73,16 +74,33 @@ sealed interface ChatView {
         }
 
         sealed class ChatBoxAttachment {
+
             data class Media(
                 val uri: String,
                 val state: State = State.Idle
             ): ChatBoxAttachment()
+
             data class File(
                 val uri: String,
                 val name: String,
                 val size: Int,
                 val state: State = State.Idle
             ): ChatBoxAttachment()
+
+            sealed class Existing : ChatBoxAttachment() {
+                data class Image(
+                    val target: Id,
+                    val url: Url
+                ) : Existing()
+
+                data class Link(
+                    val target: Id,
+                    val name: String,
+                    val typeName: String,
+                    val icon: ObjectIcon
+                ) : Existing()
+            }
+
             data class Link(
                 val target: Id,
                 val wrapper: GlobalSearchItemView

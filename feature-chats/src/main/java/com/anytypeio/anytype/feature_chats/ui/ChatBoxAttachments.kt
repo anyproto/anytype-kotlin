@@ -44,6 +44,38 @@ internal fun ChatBoxAttachments(
     ) {
         attachments.forEach { attachment ->
             when (attachment) {
+                is ChatView.Message.ChatBoxAttachment.Existing.Link -> {
+                    item {
+                        Box {
+                            AttachedObject(
+                                modifier = Modifier
+                                    .padding(
+                                        top = 12.dp,
+                                        end = 4.dp
+                                    )
+                                    .width(216.dp),
+                                title = attachment.name,
+                                type = attachment.typeName,
+                                icon = attachment.icon,
+                                onAttachmentClicked = {
+                                    // TODO
+                                }
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
+                                contentDescription = "Close icon",
+                                modifier = Modifier
+                                    .align(
+                                        Alignment.TopEnd
+                                    )
+                                    .padding(top = 6.dp)
+                                    .noRippleClickable {
+                                        onClearAttachmentClicked(attachment)
+                                    }
+                            )
+                        }
+                    }
+                }
                 is ChatView.Message.ChatBoxAttachment.Link -> {
                     item {
                         Box {
@@ -76,7 +108,6 @@ internal fun ChatBoxAttachments(
                         }
                     }
                 }
-
                 is ChatView.Message.ChatBoxAttachment.Media -> {
                     item {
                         Box(modifier = Modifier.padding()) {
@@ -114,7 +145,35 @@ internal fun ChatBoxAttachments(
                         }
                     }
                 }
-
+                is ChatView.Message.ChatBoxAttachment.Existing.Image -> {
+                    item {
+                        Box(modifier = Modifier.padding()) {
+                            Image(
+                                painter = rememberAsyncImagePainter(attachment.url),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(
+                                        top = 12.dp,
+                                        end = 4.dp
+                                    )
+                                    .size(72.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                ,
+                                contentScale = ContentScale.Crop
+                            )
+                            Image(
+                                painter = painterResource(R.drawable.ic_clear_chatbox_attachment),
+                                contentDescription = "Clear attachment icon",
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(top = 6.dp)
+                                    .noRippleClickable {
+                                        onClearAttachmentClicked(attachment)
+                                    }
+                            )
+                        }
+                    }
+                }
                 is ChatView.Message.ChatBoxAttachment.File -> {
                     item {
                         Box {

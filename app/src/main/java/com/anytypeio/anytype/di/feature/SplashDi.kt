@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
 import dagger.Binds
@@ -178,6 +179,12 @@ object SplashModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(factory: SplashViewModelFactory): ViewModelProvider.Factory
+
+        @Binds
+        @PerScreen
+        fun bindMigrationHelperDelegate(
+            impl: MigrationHelperDelegate.Impl
+        ): MigrationHelperDelegate
     }
 
 }

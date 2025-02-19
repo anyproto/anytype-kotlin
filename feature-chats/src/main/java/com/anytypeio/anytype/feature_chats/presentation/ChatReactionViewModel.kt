@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.getOrDefault
+import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.chats.GetChatMessagesByIds
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -15,10 +17,12 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class ChatReactionViewModel @Inject constructor(
     private val vmParams: Params,
     private val getChatMessagesByIds: GetChatMessagesByIds,
+    private val getAccount: GetAccount,
     private val members: ActiveSpaceMemberSubscriptionContainer,
     private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
@@ -27,6 +31,13 @@ class ChatReactionViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            val account = getAccount
+                .async(Unit)
+                .onFailure {
+                    Timber.e(it, "Failed to get account for chat reaction screen")
+                }
+                .getOrNull()
+
             val result = getChatMessagesByIds
                 .async(
                     Command.ChatCommand.GetMessagesByIds(
@@ -53,7 +64,7 @@ class ChatReactionViewModel @Inject constructor(
                                                 urlBuilder = urlBuilder
                                             ),
                                             name = member.name.orEmpty(),
-                                            isUser = false
+                                            isUser = account?.id == member.identity
                                         )
                                     } else {
                                         null
@@ -86,6 +97,7 @@ class ChatReactionViewModel @Inject constructor(
     class Factory @Inject constructor(
         private val vmParams: Params,
         private val getChatMessagesByIds: GetChatMessagesByIds,
+        private val getAccount: GetAccount,
         private val members: ActiveSpaceMemberSubscriptionContainer,
         private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
@@ -93,6 +105,7 @@ class ChatReactionViewModel @Inject constructor(
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatReactionViewModel(
             vmParams = vmParams,
             getChatMessagesByIds = getChatMessagesByIds,
+            getAccount = getAccount,
             members = members,
             urlBuilder = urlBuilder
         ) as T

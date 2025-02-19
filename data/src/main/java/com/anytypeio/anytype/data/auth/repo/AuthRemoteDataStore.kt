@@ -3,6 +3,7 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
@@ -22,6 +23,22 @@ class AuthRemoteDataStore(
     override suspend fun deleteAccount(): AccountStatus = authRemote.deleteAccount()
 
     override suspend fun restoreAccount(): AccountStatus = authRemote.restoreAccount()
+
+    override suspend fun migrateAccount(
+        account: Id,
+        path: String
+    ) {
+        authRemote.migrateAccount(
+            account = account,
+            path = path
+        )
+    }
+
+    override suspend fun cancelAccountMigration(account: Id) {
+        authRemote.cancelAccountMigration(
+            account = account
+        )
+    }
 
     override suspend fun recoverAccount() {
         authRemote.recoverAccount()

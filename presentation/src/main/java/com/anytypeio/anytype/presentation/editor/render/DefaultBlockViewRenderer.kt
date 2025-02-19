@@ -1516,7 +1516,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     text = fieldParser.getObjectName(currentObject),
                     image = currentObject.iconImage?.let { image ->
                         if (image.isNotBlank())
-                            urlBuilder.thumbnail(image)
+                            urlBuilder.large(image)
                         else
                             null
                     },

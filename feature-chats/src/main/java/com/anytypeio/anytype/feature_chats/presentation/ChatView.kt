@@ -4,6 +4,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
@@ -27,6 +29,10 @@ sealed interface ChatView {
         val avatar: Avatar = Avatar.Initials(),
         val reply: Reply? = null
     ) : ChatView {
+
+        val isMaxReactionCountReached: Boolean =
+            reactions.size >= ChatConfig.MAX_REACTION_COUNT ||
+            reactions.count { it.isSelected } >= ChatConfig.MAX_USER_REACTION_COUNT
 
         data class Content(val msg: String, val parts: List<Part>) {
             data class Part(
@@ -68,18 +74,44 @@ sealed interface ChatView {
         }
 
         sealed class ChatBoxAttachment {
+
             data class Media(
-                val uri: String
+                val uri: String,
+                val state: State = State.Idle
             ): ChatBoxAttachment()
+
             data class File(
                 val uri: String,
                 val name: String,
-                val size: Int
+                val size: Int,
+                val state: State = State.Idle
             ): ChatBoxAttachment()
+
+            sealed class Existing : ChatBoxAttachment() {
+                data class Image(
+                    val target: Id,
+                    val url: Url
+                ) : Existing()
+
+                data class Link(
+                    val target: Id,
+                    val name: String,
+                    val typeName: String,
+                    val icon: ObjectIcon
+                ) : Existing()
+            }
+
             data class Link(
                 val target: Id,
                 val wrapper: GlobalSearchItemView
             ): ChatBoxAttachment()
+
+            sealed class State {
+                data object Idle : State()
+                data object Uploading : State()
+                data object Uploaded : State()
+                data object Failed : State()
+            }
         }
 
         data class Reaction(

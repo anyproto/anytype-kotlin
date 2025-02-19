@@ -15,7 +15,9 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
-import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
+import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
+import com.anytypeio.anytype.core_models.exceptions.MigrationFailedException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -28,24 +30,22 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
-import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
-import com.anytypeio.anytype.domain.spaces.GetSpaceView
+import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -68,13 +68,16 @@ class SplashViewModel(
     private val getLastOpenedSpace: GetLastOpenedSpace,
     private val createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate,
     private val spaceViews: SpaceViewSubscriptionContainer,
-) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
+    private val migration: MigrationHelperDelegate
+) : ViewModel(),
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
+    MigrationHelperDelegate by migration
+{
 
-    val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
-
+    val state = MutableStateFlow<State>(State.Init)
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    val loadingState = MutableStateFlow(false)
+    private var migrationRetryCount: Int = 0
 
     init {
         Timber.i("SplashViewModel, init")
@@ -82,9 +85,38 @@ class SplashViewModel(
     }
 
     fun onErrorClicked() {
-        if (BuildConfig.DEBUG && state.value is ViewState.Error) {
-            state.value = ViewState.Loading
+        if (state.value is State.Error) {
             proceedWithLaunchingAccount()
+        }
+    }
+
+    fun onRetryMigrationClicked() {
+        viewModelScope.launch {
+            migrationRetryCount = migrationRetryCount + 1
+            proceedWithAccountMigration()
+        }
+    }
+
+    private suspend fun proceedWithAccountMigration() {
+        if (migrationRetryCount <= 1) {
+            proceedWithMigration().collect { migrationState ->
+                when (migrationState) {
+                    is MigrationHelperDelegate.State.Failed -> {
+                        state.value = State.Migration.Failed(migrationState)
+                    }
+                    is MigrationHelperDelegate.State.Init -> {
+                        // Do nothing.
+                    }
+                    is MigrationHelperDelegate.State.InProgress -> {
+                        state.value = State.Migration.InProgress
+                    }
+                    is MigrationHelperDelegate.State.Migrated -> {
+                        proceedWithLaunchingAccount()
+                    }
+                }
+            }
+        } else {
+            Timber.e("Failed to migration account after retry")
         }
     }
 
@@ -120,7 +152,7 @@ class SplashViewModel(
                 failure = { e ->
                     Timber.e(e, "Error while retrying launching wallet")
                     val msg = "Error while launching account: ${e.message}"
-                    state.value = ViewState.Error(msg)
+                    state.value = State.Error(msg)
                 },
                 success = {
                     proceedWithLaunchingAccount()
@@ -132,10 +164,10 @@ class SplashViewModel(
     private fun proceedWithLaunchingAccount() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            loadingState.value = true
+            state.value = State.Loading
             launchAccount(BaseUseCase.None).proceed(
                 success = { analyticsId ->
-                    loadingState.value = false
+                    state.value = State.Loading
                     crashReporter.setUser(analyticsId)
                     updateUserProps(analyticsId)
                     val props = Props.empty()
@@ -144,18 +176,17 @@ class SplashViewModel(
                     commands.emit(Command.CheckAppStartIntent)
                 },
                 failure = { e ->
-                    loadingState.value = false
                     Timber.e(e, "Error while launching account")
                     when (e) {
-                        is MigrationNeededException -> {
-                            commands.emit(Command.NavigateToMigration)
+                        is AccountMigrationNeededException -> {
+                            proceedWithAccountMigration()
                         }
                         is NeedToUpdateApplicationException -> {
-                            state.value = ViewState.Error(ERROR_NEED_UPDATE)
+                            state.value = State.Error(ERROR_NEED_UPDATE)
                         }
                         else -> {
                             val msg = "$ERROR_MESSAGE : ${e.message ?: "Unknown error"}"
-                            state.value = ViewState.Error(msg)
+                            state.value = State.Error(msg)
                         }
                     }
                 }
@@ -386,7 +417,6 @@ class SplashViewModel(
         ) : Command()
         data class NavigateToVault(val deeplink: String? = null) : Command()
         data object NavigateToAuthStart : Command()
-        data object NavigateToMigration: Command()
         data object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id, val space: Id, val chat: Id?) : Command()
         data class NavigateToObjectSet(val id: Id, val space: Id, val chat: Id?) : Command()
@@ -398,5 +428,16 @@ class SplashViewModel(
         const val ERROR_MESSAGE = "An error occurred while starting account"
         const val ERROR_NEED_UPDATE = "Unable to retrieve account. Please update Anytype to the latest version."
         const val ERROR_CREATE_OBJECT = "Error while creating object: object type not found"
+    }
+
+    sealed class State {
+        data object Init : State()
+        data object Loading : State()
+        data object Success: State()
+        data class Error(val msg: String): State()
+        sealed class Migration : State() {
+            data object InProgress: Migration()
+            data class Failed(val state: MigrationHelperDelegate.State.Failed) : Migration()
+        }
     }
 }

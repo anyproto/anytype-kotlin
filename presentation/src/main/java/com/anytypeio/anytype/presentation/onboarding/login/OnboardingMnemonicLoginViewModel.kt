@@ -7,13 +7,15 @@ import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
+import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
-import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
 import com.anytypeio.anytype.domain.auth.interactor.Logout
+import com.anytypeio.anytype.domain.auth.interactor.MigrateAccount
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
@@ -27,9 +29,10 @@ import com.anytypeio.anytype.domain.debugging.DebugGoroutines
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
+import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingLoginEvent
-import com.anytypeio.anytype.presentation.splash.SplashViewModel
+import com.anytypeio.anytype.presentation.splash.SplashViewModel.State
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -55,8 +58,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val uriFileProvider: UriFileProvider,
     private val logout: Logout,
     private val globalSubscriptionManager: GlobalSubscriptionManager,
-    private val debugAccountSelectTrace: DebugAccountSelectTrace
-) : ViewModel() {
+    private val debugAccountSelectTrace: DebugAccountSelectTrace,
+    private val migrationDelegate: MigrationHelperDelegate
+) : ViewModel(), MigrationHelperDelegate by migrationDelegate {
 
     private val jobs = mutableListOf<Job>()
     private var goroutinesJob : Job? = null
@@ -67,6 +71,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     val command = MutableSharedFlow<Command>(replay = 0)
 
     private var debugClickCount = 0
+    private var migrationRetryCount: Int = 0
     private val _fiveClicks = MutableStateFlow(false)
 
     init {
@@ -177,7 +182,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                             else -> SideEffect.Error.Unknown("Error while login: ${exception.message}")
                         }
                         sideEffects.emit(error).also {
-                            Timber.e(exception, "Error while selecting account")
+                            Timber.e(exception, "Error while recovering wallet")
                         }
                     }
                 }
@@ -266,8 +271,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     Timber.e(e, "Error while selecting account with id: $id")
                     state.value = SetupState.Failed
                     when (e) {
-                        is MigrationNeededException -> {
-                            navigateToMigrationErrorScreen()
+                        is AccountMigrationNeededException -> {
+                            proceedWithAccountMigration(id)
                         }
                         is AccountIsDeletedException -> {
                             sideEffects.emit(value = SideEffect.Error.AccountDeletedError)
@@ -306,9 +311,27 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToMigrationErrorScreen() {
-        viewModelScope.launch {
-            command.emit(Command.NavigateToMigrationErrorScreen)
+    private suspend fun proceedWithAccountMigration(id: String) {
+        proceedWithMigration().collect { migrationState ->
+            when (migrationState) {
+                is MigrationHelperDelegate.State.Failed -> {
+                    state.value = SetupState.Migration.Failed(
+                        state = migrationState,
+                        account = id
+                    )
+                }
+                MigrationHelperDelegate.State.InProgress -> {
+                    state.value = SetupState.Migration.InProgress(
+                        account = id
+                    )
+                }
+                MigrationHelperDelegate.State.Migrated -> {
+                    proceedWithSelectingAccount(id)
+                }
+                MigrationHelperDelegate.State.Init -> {
+                    // Do nothing.
+                }
+            }
         }
     }
 
@@ -372,6 +395,15 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         }
     }
 
+    fun onRetryMigrationClicked(account: Id) {
+        if (state.value !is SetupState.InProgress) {
+            migrationRetryCount = migrationRetryCount + 1
+            viewModelScope.launch {
+                proceedWithAccountMigration(account)
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         goroutinesJob?.cancel()
@@ -394,11 +426,18 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         data object InProgress: SetupState()
         data object Failed: SetupState()
         data object Abort: SetupState()
+        sealed class Migration : SetupState() {
+            abstract val account: Id
+            data class InProgress(override val account: Id): Migration()
+            data class Failed(
+                val state: MigrationHelperDelegate.State.Failed,
+                override val account: Id
+            ) : Migration()
+        }
     }
 
     sealed class Command {
         data object Exit : Command()
-        data object NavigateToMigrationErrorScreen : Command()
         data object NavigateToVaultScreen: Command()
         data class ShowToast(val message: String) : Command()
         data class ShareDebugGoroutines(val path: String, val uriFileProvider: UriFileProvider) : Command()
@@ -420,7 +459,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         private val uriFileProvider: UriFileProvider,
         private val logout: Logout,
         private val globalSubscriptionManager: GlobalSubscriptionManager,
-        private val debugAccountSelectTrace: DebugAccountSelectTrace
+        private val debugAccountSelectTrace: DebugAccountSelectTrace,
+        private val migrationHelperDelegate: MigrationHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -440,7 +480,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 uriFileProvider = uriFileProvider,
                 logout = logout,
                 globalSubscriptionManager = globalSubscriptionManager,
-                debugAccountSelectTrace = debugAccountSelectTrace
+                debugAccountSelectTrace = debugAccountSelectTrace,
+                migrationDelegate = migrationHelperDelegate
             ) as T
         }
     }

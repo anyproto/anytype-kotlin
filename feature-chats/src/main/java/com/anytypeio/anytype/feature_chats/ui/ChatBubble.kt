@@ -51,7 +51,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
@@ -80,6 +79,7 @@ fun Bubble(
     attachments: List<ChatView.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
     isEdited: Boolean = false,
+    isMaxReactionCountReached: Boolean = false,
     reactions: List<ChatView.Message.Reaction> = emptyList(),
     onReacted: (String) -> Unit,
     onDeleteMessage: () -> Unit,
@@ -303,7 +303,9 @@ fun Bubble(
             ReactionList(
                 reactions = reactions,
                 onReacted = onReacted,
-                onViewReaction = onViewChatReaction
+                onViewReaction = onViewChatReaction,
+                onAddNewReaction = onAddReactionClicked,
+                isMaxReactionCountReached = isMaxReactionCountReached
             )
         }
         MaterialTheme(

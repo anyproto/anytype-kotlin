@@ -352,6 +352,7 @@ fun ChatScreen(
                             ChatMemberItem(
                                 name = member.name,
                                 icon = member.icon,
+                                isUser = member.isUser,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .noRippleClickable {
@@ -518,6 +519,7 @@ fun Messages(
                         timestamp = msg.timestamp,
                         attachments = msg.attachments,
                         isUserAuthor = msg.isUserAuthor,
+                        isMaxReactionCountReached = msg.isMaxReactionCountReached,
                         isEdited = msg.isEdited,
                         onReacted = { emoji ->
                             onReacted(msg.id, emoji)

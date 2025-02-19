@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -86,7 +87,8 @@ fun ViewerEditWidget(
         ModalBottomSheet(
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.ime)
-                .padding(start = 8.dp, end = 8.dp, bottom = 30.dp)
+                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                .systemBarsPadding()
                 .fillMaxWidth()
                 .wrapContentHeight(),
             scrimColor = colorResource(id = R.color.modal_screen_outside_background),

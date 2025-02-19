@@ -33,6 +33,10 @@ import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel.ScreenState
 import com.anytypeio.anytype.ui_settings.R
 import com.anytypeio.anytype.ui_settings.fstorage.MockFileStorage.mockData
@@ -44,14 +48,16 @@ fun LocalStorageScreen(
     onDeleteAccountClicked: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection()),
         shape = RoundedCornerShape(16.dp),
         backgroundColor = colorResource(id = R.color.background_secondary)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 20.dp, end = 20.dp),
+                .padding(start = 20.dp, end = 20.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Box(
                 modifier = Modifier

@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
-import com.anytypeio.anytype.presentation.sets.toObjectView
 import timber.log.Timber
 
 /**
@@ -110,4 +109,19 @@ private fun Any?.asIdList(): List<Id> = when (this) {
     is Collection<*> -> this.filterIsInstance<Id>()
     is Map<*, *> -> this.values.filterIsInstance<Id>()
     else -> emptyList()
+}
+
+fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView = when (isDeleted) {
+    true -> ObjectView.Deleted(id = id, name = fieldParser.getObjectName(this))
+    else -> toObjectViewDefault(urlBuilder, fieldParser)
+}
+
+fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView.Default {
+    return ObjectView.Default(
+        id = id,
+        name = fieldParser.getObjectName(this),
+        icon = this.objectIcon(builder = urlBuilder),
+        types = type,
+        isRelation = layout == ObjectType.Layout.RELATION
+    )
 }

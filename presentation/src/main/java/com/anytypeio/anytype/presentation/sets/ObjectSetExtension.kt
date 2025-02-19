@@ -44,8 +44,8 @@ import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.objects.toObjectViewDefault
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
@@ -54,7 +54,6 @@ import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.relations.view
-import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -296,21 +295,6 @@ fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>
 
 fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
     filter { !it.isHidden }
-
-fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView = when (isDeleted) {
-    true -> ObjectView.Deleted(id = id, name = fieldParser.getObjectName(this))
-    else -> toObjectViewDefault(urlBuilder, fieldParser)
-}
-
-fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView.Default {
-    return ObjectView.Default(
-        id = id,
-        name = fieldParser.getObjectName(this),
-        icon = this.objectIcon(builder = urlBuilder),
-        types = type,
-        isRelation = layout == ObjectType.Layout.RELATION
-    )
-}
 
 fun List<DVFilter>.updateFilters(updates: List<DVFilterUpdate>): List<DVFilter> {
     val filters = this.toMutableList()

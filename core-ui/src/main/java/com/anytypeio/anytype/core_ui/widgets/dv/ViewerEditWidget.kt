@@ -76,11 +76,6 @@ fun ViewerEditWidget(
     action: (ViewEditAction) -> Unit,
 ) {
 
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    val bottomPadding = if (isLandscape) 8.dp else 30.dp
-
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
@@ -93,7 +88,7 @@ fun ViewerEditWidget(
         ModalBottomSheet(
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.ime)
-                .padding(start = 8.dp, end = 8.dp, bottom = bottomPadding)
+                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                 .systemBarsPadding()
                 .fillMaxWidth()
                 .wrapContentHeight(),

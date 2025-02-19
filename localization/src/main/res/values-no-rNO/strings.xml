@@ -1609,4 +1609,26 @@ Please provide specific details of your needs here.</string>
     <string name="migration_error_try_again">Prøv igjen</string>
     <string name="migration_migration_failed">Migration failed</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
+    <string name="fields_screen_title">Fields</string>
+    <string name="field_text_title">Tekst</string>
+    <string name="field_text_empty">Enter</string>
+    <string name="field_number_title">Tall</string>
+    <string name="field_number_empty">Enter</string>
+    <string name="field_date_title">Dato</string>
+    <string name="field_date_empty">Verdi</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Legg til</string>
+    <string name="field_email_title">E-post</string>
+    <string name="field_email_empty">Enter</string>
+    <string name="field_phone_title">Telefonnummer</string>
+    <string name="field_phone_empty">Enter</string>
+    <string name="field_select_title">Velg</string>
+    <string name="field_select_empty">Velg</string>
+    <string name="field_multiselect_title">Multiselect</string>
+    <string name="field_multiselect_empty">Velg</string>
+    <string name="field_object_title">Objekt</string>
+    <string name="field_object_empty">Legg til</string>
+    <string name="field_file_and_media_title">File &amp; Media</string>
+    <string name="field_file_and_media_empty">Legg til</string>
+    <string name="field_checkbox_title">Velg</string>
 </resources>

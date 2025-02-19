@@ -111,7 +111,6 @@ class FieldParserImpl @Inject constructor(
     //endregion
 
     //region ObjectWrapper.Basic fields
-    //objectWrapper should be isValid == true!
     override fun getObjectName(objectWrapper: ObjectWrapper.Basic): String {
         if (objectWrapper.isDeleted == true) {
             return stringResourceProvider.getDeletedObjectTitle()

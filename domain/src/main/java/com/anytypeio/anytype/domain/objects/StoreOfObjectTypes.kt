@@ -6,6 +6,10 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.unset
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes.TrackedEvent
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -20,12 +24,21 @@ interface StoreOfObjectTypes {
     suspend fun set(target: Id, data: Struct)
     suspend fun remove(target: Id)
     suspend fun clear()
+
+    fun trackChanges() : Flow<TrackedEvent>
+
+    sealed class TrackedEvent {
+        object Init : TrackedEvent()
+        object Change: TrackedEvent()
+    }
 }
 
 class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
 
     private val mutex = Mutex()
     private val store = mutableMapOf<Id, ObjectWrapper.Type>()
+
+    private val updates = MutableSharedFlow<TrackedEvent>()
 
     override val size: Int get() = store.size
 
@@ -50,6 +63,7 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
                 store[o.id] = current.amend(o.map)
             }
         }
+        updates.emit(TrackedEvent.Change)
     }
 
     override suspend fun amend(target: Id, diff: Map<Id, Any?>): Unit = mutex.withLock {
@@ -59,6 +73,7 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
         } else {
             store[target] = ObjectWrapper.Type(diff)
         }
+        updates.emit(TrackedEvent.Change)
     }
 
     override suspend fun set(
@@ -66,6 +81,7 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
         data: Map<String, Any?>
     ): Unit = mutex.withLock {
         store[target] = ObjectWrapper.Type(data)
+        updates.emit(TrackedEvent.Change)
     }
 
     override suspend fun unset(
@@ -76,6 +92,7 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
         if (current != null) {
             store[target] = current.unset(keys)
         }
+        updates.emit(TrackedEvent.Change)
     }
 
     override suspend fun remove(target: Id) : Unit = mutex.withLock {
@@ -83,9 +100,14 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
         if (current != null) {
             store.remove(target)
         }
+        updates.emit(TrackedEvent.Change)
     }
 
     override suspend fun clear(): Unit = mutex.withLock {
         store.clear()
+    }
+
+    override fun trackChanges(): Flow<TrackedEvent> = updates.onStart {
+        emit(TrackedEvent.Init)
     }
 }

@@ -1606,7 +1606,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="migration_error_try_again">Essayez de nouveau</string>
     <string name="migration_migration_failed">Échec de la migration</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Veuillez libérer de l\'espace et exécuter le processus à nouveau.</string>
-    <string name="fields_screen_title">Fields</string>
+    <string name="fields_screen_title">Champs</string>
     <string name="field_text_title">Texte</string>
     <string name="field_text_empty">Enter</string>
     <string name="field_number_title">Nombre</string>

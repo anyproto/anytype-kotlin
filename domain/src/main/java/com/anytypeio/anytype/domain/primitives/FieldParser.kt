@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.primitives
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -43,8 +44,8 @@ interface FieldParser {
     ): Pair<Id?, String?>
 
     suspend fun getObjectParsedFields(
-        obj: ObjectWrapper.Basic,
         objectType: ObjectWrapper.Type,
+        objFieldKeys: Set<Key>,
         storeOfRelations: StoreOfRelations
     ): ParsedFields
 
@@ -201,14 +202,60 @@ class FieldParserImpl @Inject constructor(
 
     //region Parsed fields
     override suspend fun getObjectParsedFields(
-        obj: ObjectWrapper.Basic,
         objectType: ObjectWrapper.Type,
+        objFieldKeys: Set<Key>,
         storeOfRelations: StoreOfRelations
     ): ParsedFields {
 
-        //todo: implement this method
+        // Get valid relations for a given list of IDs.
+        suspend fun List<Id>.getValidRelations(): List<ObjectWrapper.Relation> =
+            mapNotNull { id ->
+                storeOfRelations.getById(id)?.takeIf { it.isFieldValid() }
+            }
 
-        return ParsedFields()
+        // Featured fields: from recommendedFeaturedRelations but not hidden.
+        val featuredFields = objectType.recommendedFeaturedRelations
+            .getValidRelations()
+            .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
+
+        // Sidebar fields: from recommendedRelations but not hidden.
+        val mainSidebarFields = objectType.recommendedRelations
+            .getValidRelations()
+            .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
+
+        // Hidden fields: directly from recommendedHiddenRelations.
+        val hiddenFields = objectType.recommendedHiddenRelations
+            .getValidRelations()
+
+        // Get all Keys already present.
+        val existingKeys = (featuredFields + mainSidebarFields + hiddenFields)
+            .map { it.key }
+            .toSet()
+
+        // Filter out current object field Keys that are already present.
+        val filteredConflictedFieldsKeys = objFieldKeys.filter { it !in existingKeys }
+
+        // Get valid conflicted fields.
+        val allConflictedFields = storeOfRelations
+            .getByKeys(filteredConflictedFieldsKeys)
+            .filter { it.isFieldValid() }
+
+        // Partition conflicted fields into system and non‑system using partition().
+        val (conflictedSystemFields, conflictedFieldsWithoutSystem) = allConflictedFields
+            .partition { Relations.systemRelationKeys.contains(it.key) }
+
+        val fileFields = objectType.recommendedFileRelations
+            .getValidRelations()
+            .filterNot { objectType.recommendedHiddenRelations.contains(it.id) }
+
+        return ParsedFields(
+            featured = featuredFields,
+            sidebar = mainSidebarFields,
+            hidden = hiddenFields,
+            conflictedWithoutSystem = conflictedFieldsWithoutSystem,
+            conflictedSystem = conflictedSystemFields,
+            file = fileFields
+        )
     }
 
     //region Parsed Fields Logic

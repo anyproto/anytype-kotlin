@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -38,50 +39,66 @@ fun SectionLocalFieldsInfo(
     )
 
     if (state is UiLocalsFieldsInfoState.Visible) {
-        ModalBottomSheet(
+        LocalInfoScreen(
             modifier = modifier,
-            dragHandle = { DragHandle() },
-            scrimColor = colorResource(id = R.color.modal_screen_outside_background),
-            containerColor = colorResource(id = R.color.background_primary),
-            shape = RoundedCornerShape(16.dp),
-            sheetState = bottomSheetState,
-            onDismissRequest = {
+            bottomSheetState = bottomSheetState,
+            onDismiss = {
                 fieldEvent(FieldEvent.FieldLocalInfo.OnDismiss)
-            },
-        ) {
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                textAlign = TextAlign.Center,
-                style = HeadlineHeading,
-                color = colorResource(id = R.color.text_primary),
-                text = stringResource(R.string.object_type_fields_local_info_title)
-            )
-            Spacer(modifier = Modifier.height(7.dp))
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                textAlign = TextAlign.Center,
-                style = BodyCalloutRegular,
-                color = colorResource(id = R.color.text_primary),
-                text = stringResource(R.string.object_type_fields_local_info_description)
-            )
-            Spacer(modifier = Modifier.height(30.dp))
-            ButtonSecondary(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                text = stringResource(R.string.object_type_fields_local_info_button),
-                size = ButtonSize.LargeSecondary,
-                onClick = {
-                    fieldEvent(FieldEvent.FieldLocalInfo.OnDismiss)
-                }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-        }
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LocalInfoScreen(
+    modifier: Modifier,
+    bottomSheetState: SheetState,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(
+        modifier = modifier,
+        dragHandle = { DragHandle() },
+        scrimColor = colorResource(id = R.color.modal_screen_outside_background),
+        containerColor = colorResource(id = R.color.background_primary),
+        shape = RoundedCornerShape(16.dp),
+        sheetState = bottomSheetState,
+        onDismissRequest = {
+            onDismiss()
+        },
+    ) {
+        Spacer(modifier = Modifier.height(20.dp))
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            textAlign = TextAlign.Center,
+            style = HeadlineHeading,
+            color = colorResource(id = R.color.text_primary),
+            text = stringResource(R.string.object_type_fields_local_info_title)
+        )
+        Spacer(modifier = Modifier.height(7.dp))
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            textAlign = TextAlign.Center,
+            style = BodyCalloutRegular,
+            color = colorResource(id = R.color.text_primary),
+            text = stringResource(R.string.object_type_fields_local_info_description)
+        )
+        Spacer(modifier = Modifier.height(30.dp))
+        ButtonSecondary(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            text = stringResource(R.string.object_type_fields_local_info_button),
+            size = ButtonSize.LargeSecondary,
+            onClick = {
+                onDismiss()
+            }
+        )
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }
 

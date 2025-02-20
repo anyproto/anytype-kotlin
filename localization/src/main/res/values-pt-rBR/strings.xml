@@ -1241,7 +1241,7 @@
         <item quantity="one">%1$d solicitação</item>
         <item quantity="other">%1$d solicitações</item>
     </plurals>
-    <string name="multiplayer_you_as_member">você</string>
+    <string name="multiplayer_you_as_member">You</string>
     <string name="multiplayer_spaces">Espaços</string>
     <string name="multiplayer_space_status_joining">Entrando</string>
     <string name="multiplayer_space_status_active">Ativo</string>
@@ -1601,4 +1601,31 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="object_types_human">Human</string>
     <string name="chats_alert_delete_this_message_description">Não pode ser restaurado após a confirmação</string>
     <string name="chats_alert_delete_this_message">Excluir esta mensagem?</string>
+    <string name="migration_migration_is_in_progress">Migration is in progress</string>
+    <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
+    <string name="migration_error_try_again">Tente novamente</string>
+    <string name="migration_migration_failed">Migration failed</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
+    <string name="fields_screen_title">Fields</string>
+    <string name="field_text_title">Texto</string>
+    <string name="field_text_empty">Enter</string>
+    <string name="field_number_title">Número</string>
+    <string name="field_number_empty">Enter</string>
+    <string name="field_date_title">Data</string>
+    <string name="field_date_empty">Valor</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Adicionar</string>
+    <string name="field_email_title">E-mail</string>
+    <string name="field_email_empty">Enter</string>
+    <string name="field_phone_title">Número de telefone</string>
+    <string name="field_phone_empty">Enter</string>
+    <string name="field_select_title">Selecionar</string>
+    <string name="field_select_empty">Selecionar</string>
+    <string name="field_multiselect_title">Selecionar vários</string>
+    <string name="field_multiselect_empty">Selecionar</string>
+    <string name="field_object_title">Objeto</string>
+    <string name="field_object_empty">Adicionar</string>
+    <string name="field_file_and_media_title">Arquivos e mídias</string>
+    <string name="field_file_and_media_empty">Adicionar</string>
+    <string name="field_checkbox_title">Selecionar</string>
 </resources>

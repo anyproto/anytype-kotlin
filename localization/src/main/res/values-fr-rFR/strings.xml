@@ -1241,7 +1241,7 @@
         <item quantity="one">%1$d requête</item>
         <item quantity="other">%1$d requêtes</item>
     </plurals>
-    <string name="multiplayer_you_as_member">vous</string>
+    <string name="multiplayer_you_as_member">Vous</string>
     <string name="multiplayer_spaces">Espaces</string>
     <string name="multiplayer_space_status_joining">Connexion</string>
     <string name="multiplayer_space_status_active">Actif</string>
@@ -1601,4 +1601,31 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_types_human">Humain</string>
     <string name="chats_alert_delete_this_message_description">Il ne pourra pas être restauré après confirmation</string>
     <string name="chats_alert_delete_this_message">Supprimer ce message ?</string>
+    <string name="migration_migration_is_in_progress">Migration en cours</string>
+    <string name="migration_this_shouldn_t_take_long">Cela peut prendre un certain temps. Veuillez ne pas fermer l\'application avant que le processus soit terminé.</string>
+    <string name="migration_error_try_again">Essayez de nouveau</string>
+    <string name="migration_migration_failed">Échec de la migration</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Veuillez libérer de l\'espace et exécuter le processus à nouveau.</string>
+    <string name="fields_screen_title">Champs</string>
+    <string name="field_text_title">Texte</string>
+    <string name="field_text_empty">Enter</string>
+    <string name="field_number_title">Nombre</string>
+    <string name="field_number_empty">Enter</string>
+    <string name="field_date_title">Date</string>
+    <string name="field_date_empty">Valeur</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Ajouter</string>
+    <string name="field_email_title">E-mail</string>
+    <string name="field_email_empty">Enter</string>
+    <string name="field_phone_title">N° de téléphone</string>
+    <string name="field_phone_empty">Enter</string>
+    <string name="field_select_title">Sélectionner</string>
+    <string name="field_select_empty">Sélectionner</string>
+    <string name="field_multiselect_title">Sélection multiple</string>
+    <string name="field_multiselect_empty">Sélectionner</string>
+    <string name="field_object_title">Objet</string>
+    <string name="field_object_empty">Ajouter</string>
+    <string name="field_file_and_media_title">Fichier &amp; Média</string>
+    <string name="field_file_and_media_empty">Ajouter</string>
+    <string name="field_checkbox_title">Sélectionner</string>
 </resources>

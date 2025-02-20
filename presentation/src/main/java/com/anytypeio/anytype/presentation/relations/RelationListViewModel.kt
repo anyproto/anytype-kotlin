@@ -68,6 +68,7 @@ class RelationListViewModel(
     val isEditMode = MutableStateFlow(false)
 
     private val jobs = mutableListOf<Job>()
+    private var _currentObjectTypeId: Id? = null
 
     val commands = MutableSharedFlow<Command>(replay = 0)
     val views = MutableStateFlow<List<Model>>(emptyList())
@@ -100,6 +101,7 @@ class RelationListViewModel(
     ): List<Model> {
 
         val objType = details.getTypeForObject(ctx)
+        _currentObjectTypeId = objType?.id
 
         if (objType == null) {
             Timber.w("Failed to get object type for object: $ctx from types store")
@@ -248,6 +250,13 @@ class RelationListViewModel(
 
     fun onShowLocalInfo() {
         showLocalInfo.value = true
+    }
+
+    fun onTypeIconClicked() {
+        val objTypeId = _currentObjectTypeId ?: return
+        viewModelScope.launch {
+            commands.emit(Command.NavigateToObjectType(objTypeId))
+        }
     }
 
     fun onRelationClicked(ctx: Id, target: Id?, view: ObjectRelationView) {
@@ -671,6 +680,10 @@ class RelationListViewModel(
 
         data class NavigateToDateObject(
             val objectId: Id
+        ) : Command()
+
+        data class NavigateToObjectType(
+            val objectTypeId: Id
         ) : Command()
     }
 

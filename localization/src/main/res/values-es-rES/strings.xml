@@ -1609,7 +1609,7 @@ En concreto,
     <string name="migration_error_try_again">Inténtalo de nuevo</string>
     <string name="migration_migration_failed">La migración ha fallado</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Libera algo de espacio y vuelve a ejecutar el proceso.</string>
-    <string name="fields_screen_title">Fields</string>
+    <string name="fields_screen_title">Campos</string>
     <string name="field_text_title">Texto</string>
     <string name="field_text_empty">Entrar</string>
     <string name="field_number_title">Número</string>

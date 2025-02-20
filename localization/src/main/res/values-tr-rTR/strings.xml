@@ -1609,7 +1609,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="migration_error_try_again">Tekrar deneyin</string>
     <string name="migration_migration_failed">Geçiş başarısız oldu</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Lütfen biraz yer açın ve işlemi tekrarlayın.</string>
-    <string name="fields_screen_title">Fields</string>
+    <string name="fields_screen_title">Alanlar</string>
     <string name="field_text_title">Metin</string>
     <string name="field_text_empty">Giriş</string>
     <string name="field_number_title">Sayı</string>

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
@@ -56,6 +57,7 @@ object ObjectRelationListModule {
         deleteRelationFromObject: DeleteRelationFromObject,
         analytics: Analytics,
         storeOfRelations: StoreOfRelations,
+        storeOfObjectTypes: StoreOfObjectTypes,
         addRelationToObject: AddRelationToObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         fieldParser: FieldParser,
@@ -72,6 +74,7 @@ object ObjectRelationListModule {
             deleteRelationFromObject = deleteRelationFromObject,
             analytics = analytics,
             storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes,
             addRelationToObject = addRelationToObject,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             fieldParser = fieldParser,

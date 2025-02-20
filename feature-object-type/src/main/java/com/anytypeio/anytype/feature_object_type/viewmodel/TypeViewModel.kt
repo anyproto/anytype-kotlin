@@ -21,7 +21,6 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
-import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -205,13 +204,13 @@ class ObjectTypeViewModel(
         Timber.d("init, vmParams: $vmParams")
         proceedWithObservingSyncStatus()
         proceedWithObservingObjectType()
+        proceedWithGetObjectTypeConflictingFields()
         setupObjectsMenuFlow()
     }
 
     fun onStart() {
         Timber.d("onStart, vmParams: $vmParams")
         startSubscriptions()
-        proceedWithGetObjectTypeConflictingFields()
         viewModelScope.launch {
             sendAnalyticsScreenObjectType(
                 analytics = analytics
@@ -223,16 +222,6 @@ class ObjectTypeViewModel(
         Timber.d("onStop")
         stopSubscriptions()
         uiObjectsListState.value = UiObjectsListState.Empty
-    }
-
-    override fun onCleared() {
-        Timber.d("onCleared")
-        super.onCleared()
-        viewModelScope.launch {
-            storelessSubscriptionContainer.unsubscribe(
-                subscriptions = listOf("ObjectTypeSubscription-${vmParams.objectId}")
-            )
-        }
     }
     //endregion
 
@@ -276,31 +265,24 @@ class ObjectTypeViewModel(
     private fun proceedWithObservingObjectType() {
         viewModelScope.launch {
             combine(
-                storelessSubscriptionContainer.subscribe(
-                    StoreSearchByIdsParams(
-                        targets = listOf(vmParams.objectId),
-                        subscription = "ObjectTypeSubscription-${vmParams.objectId}",
-                        keys = defaultTypeKeys,
-                        space = vmParams.spaceId
-                    )
-                ),
+                storeOfObjectTypes.trackChanges(),
+                storeOfRelations.trackChanges(),
                 userPermissionProvider.observe(space = vmParams.spaceId),
                 _objectTypeConflictingFieldIds,
-                storeOfRelations.trackChanges(),
-            ) { objWrapper, permission, conflictingFields, _ ->
-                Triple(objWrapper, permission, conflictingFields)
+            ) { _, _, permission, conflictingFields ->
+                permission to conflictingFields
             }.catch {
                 Timber.e(it, "Error while observing object")
                 _objTypeState.value = null
                 errorState.value =
                     UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects(it.message ?: ""))
             }
-                .collect { (objWrapper, permission, conflictingFields) ->
+                .collect { (permission, conflictingFields) ->
                     if (permission != null) {
 
-                        if (objWrapper.isNotEmpty()) {
+                        val objType = storeOfObjectTypes.get(vmParams.objectId)
 
-                            val objType = ObjectWrapper.Type(objWrapper[0].map)
+                        if (objType != null) {
 
                             _objTypeState.value = objType
 

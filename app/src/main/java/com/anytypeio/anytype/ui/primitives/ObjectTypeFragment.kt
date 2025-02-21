@@ -284,7 +284,9 @@ class ObjectTypeFragment : BaseComposeFragment() {
     override fun injectDependencies() {
         val params = ObjectTypeVmParams(
             spaceId = SpaceId(space),
-            objectId = objectId
+            objectId = objectId,
+            withSubscriptions = true,
+            showHiddenFields = true
         )
         componentManager().objectTypeComponent.get(params).inject(this)
     }

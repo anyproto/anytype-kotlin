@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
@@ -32,6 +33,7 @@ class ObjectTypeFieldsFragment : BaseBottomSheetComposeFragment()  {
     private val space get() = argString(ARG_SPACE)
     private val typeId get() = argString(ARG_OBJECT_ID)
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -67,7 +69,9 @@ class ObjectTypeFieldsFragment : BaseBottomSheetComposeFragment()  {
     override fun injectDependencies() {
         val params = ObjectTypeVmParams(
             spaceId = SpaceId(space),
-            objectId = typeId
+            objectId = typeId,
+            withSubscriptions = false,
+            showHiddenFields = false
         )
         componentManager().objectTypeComponent.get(params).inject(this)
     }

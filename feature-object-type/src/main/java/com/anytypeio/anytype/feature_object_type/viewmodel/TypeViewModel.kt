@@ -210,7 +210,9 @@ class ObjectTypeViewModel(
 
     fun onStart() {
         Timber.d("onStart, vmParams: $vmParams")
-        startSubscriptions()
+        if (vmParams.withSubscriptions) {
+            startSubscriptions()
+        }
         viewModelScope.launch {
             sendAnalyticsScreenObjectType(
                 analytics = analytics
@@ -220,7 +222,9 @@ class ObjectTypeViewModel(
 
     fun onStop() {
         Timber.d("onStop")
-        stopSubscriptions()
+        if (vmParams.withSubscriptions) {
+            stopSubscriptions()
+        }
         uiObjectsListState.value = UiObjectsListState.Empty
     }
     //endregion
@@ -331,7 +335,8 @@ class ObjectTypeViewModel(
                                 fieldParser = fieldParser,
                                 storeOfObjectTypes = storeOfObjectTypes,
                                 storeOfRelations = storeOfRelations,
-                                objTypeConflictingFields = conflictingFields
+                                objTypeConflictingFields = conflictingFields,
+                                showHiddenFields = vmParams.showHiddenFields
                             )
                             uiFieldsListState.value = UiFieldsListState(items = items)
                             uiFieldsButtonState.value = UiFieldsButtonState.Visible(
@@ -1081,6 +1086,7 @@ class ObjectTypeViewModel(
         hiddenFields: List<Id>,
         fileFields: List<Id>
     ) {
+        Timber.d("proceedWithUpdatingTypeFields")
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
@@ -1111,7 +1117,6 @@ class ObjectTypeViewModel(
                 )
             ).fold(
                 onSuccess = { fields ->
-                    Timber.d("Fields: $fields")
                     _objectTypeConflictingFieldIds.value = fields
                 },
                 onFailure = {

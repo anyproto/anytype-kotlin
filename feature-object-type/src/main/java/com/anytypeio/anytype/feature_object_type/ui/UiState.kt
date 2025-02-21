@@ -13,7 +13,9 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 
 data class ObjectTypeVmParams(
     val objectId: Id,
-    val spaceId: SpaceId
+    val spaceId: SpaceId,
+    val withSubscriptions: Boolean,
+    val showHiddenFields: Boolean
 )
 
 //region OBJECT TYPE HEADER (title + icon)

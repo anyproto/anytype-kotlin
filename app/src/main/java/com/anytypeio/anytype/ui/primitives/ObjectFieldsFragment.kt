@@ -69,36 +69,32 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
         savedInstanceState: Bundle?
     ) =
         content {
-            MaterialTheme(
-                typography = typography
-            ) {
-                FieldListScreen(
-                    state = vm.views.collectAsStateWithLifecycle().value,
-                    onRelationClicked = {
-                        vm.onRelationClicked(
-                            ctx = ctx,
-                            target = target,
-                            view = it.view
-                        )
-                    },
-                    onLocalInfoIconClicked = {
-                        vm.onShowLocalInfo()
-                    },
-                    onTypeIconClicked = {
-                        vm.onTypeIconClicked()
-                    }
-                )
-                val showInfo = vm.showLocalInfo.collectAsStateWithLifecycle().value
-                if (showInfo) {
-                    val bottomSheetState = rememberModalBottomSheetState(
-                        skipPartiallyExpanded = true
+            FieldListScreen(
+                state = vm.views.collectAsStateWithLifecycle().value,
+                onRelationClicked = {
+                    vm.onRelationClicked(
+                        ctx = ctx,
+                        target = target,
+                        view = it.view
                     )
-                    LocalInfoScreen(
-                        modifier = Modifier.fillMaxWidth(),
-                        bottomSheetState = bottomSheetState,
-                        onDismiss = { vm.onDismissLocalInfo() }
-                    )
+                },
+                onLocalInfoIconClicked = {
+                    vm.onShowLocalInfo()
+                },
+                onTypeIconClicked = {
+                    vm.onTypeIconClicked()
                 }
+            )
+            val showInfo = vm.showLocalInfo.collectAsStateWithLifecycle().value
+            if (showInfo) {
+                val bottomSheetState = rememberModalBottomSheetState(
+                    skipPartiallyExpanded = true
+                )
+                LocalInfoScreen(
+                    modifier = Modifier.fillMaxWidth(),
+                    bottomSheetState = bottomSheetState,
+                    onDismiss = { vm.onDismissLocalInfo() }
+                )
             }
         }
 
@@ -143,6 +139,7 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
                 )
                 fr.showChildFragment()
             }
+
             is Command.EditFileObjectRelationValue -> {
                 val relationContext =
                     if (isSetFlow) RelationContext.OBJECT_SET else RelationContext.OBJECT
@@ -159,6 +156,7 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
                     )
                 )
             }
+
             is Command.SetRelationKey -> {
                 withParent<OnFragmentInteractionListener> {
                     onSetRelationKeyClicked(
@@ -168,6 +166,7 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
                 }
                 dismiss()
             }
+
             is Command.EditTagOrStatusRelationValue -> {
                 val relationContext =
                     if (isSetFlow) RelationContext.OBJECT_SET else RelationContext.OBJECT
@@ -185,6 +184,7 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
                     bundle
                 )
             }
+
             is Command.NavigateToDateObject -> {
                 runCatching {
                     navigation().openDateObject(

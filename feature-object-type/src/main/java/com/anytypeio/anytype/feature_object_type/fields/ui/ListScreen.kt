@@ -118,13 +118,13 @@ fun FieldsMainScreen(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
             .background(
-                color = colorResource(id = R.color.background_primary),
+                color = colorResource(id = R.color.widget_background),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
             .fillMaxSize()
         ,
         containerColor = colorResource(id = R.color.transparent_black),
-        contentColor = colorResource(id = R.color.background_primary),
+        contentColor = colorResource(id = R.color.widget_background),
         topBar = {
             TopBar(
                 modifier = Modifier.fillMaxWidth(),
@@ -259,8 +259,8 @@ private fun TopBar(
     }
     Column(modifier = modifier
         .background(
-            color = colorResource(id = R.color.background_primary),
-            shape = RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))) {
+            color = colorResource(id = R.color.widget_background),
+            shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))) {
         Dragger(
             modifier = Modifier
                 .padding(vertical = 6.dp)
@@ -284,7 +284,7 @@ private fun TopBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(36.dp)
-                .background(color = colorResource(R.color.shape_tertiary)),
+                .background(color = colorResource(R.color.shape_transparent_secondary)),
             uiTitleState = uiTitleState,
             uiIconState = uiIconState
         )
@@ -305,8 +305,9 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
         )
         ListWidgetObjectIcon(
             modifier = Modifier
-                .size(18.dp)
-                .padding(start = 4.dp),
+
+                .padding(start = 4.dp)
+                .size(18.dp),
             icon = uiIconState.icon,
             backgroundColor = R.color.transparent_black
         )

@@ -44,6 +44,9 @@
     <color name="control_active">#7B7B7B</color>
     <color name="control_inactive">#494949</color>
 
+    <!-- Background -->
+    <color name="widget_background">#BF252525</color>
+
     <!--  Colors at Figma https://www.figma.com/file/vgXV7x2v20vJajc7clYJ7a/Typography-and-Colors%2FMobile?node-id=1031%3A115  -->
     <color name="palette_dark_default">#F3F2EC</color>
     <color name="palette_dark_yellow">#E0D56C</color>

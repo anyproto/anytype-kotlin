@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.fields
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -44,6 +45,7 @@ fun FieldListScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = colorResource(id = R.color.widget_background))
             .nestedScroll(rememberNestedScrollInteropConnection())
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),

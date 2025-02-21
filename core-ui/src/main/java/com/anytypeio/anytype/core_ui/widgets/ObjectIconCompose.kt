@@ -47,7 +47,7 @@ fun ListWidgetObjectIcon(
             DefaultProfileIconImage(icon, modifier, iconSize)
         }
         is ObjectIcon.Basic.Emoji -> {
-            EmojiIconView(icon = icon, backgroundSize = iconSize, modifier = modifier)
+            EmojiIconView(icon = icon, backgroundSize = iconSize, modifier = modifier, backgroundColor = backgroundColor)
         }
         is ObjectIcon.Basic.Image -> {
             DefaultObjectImageIcon(icon.hash, modifier, iconSize, fallback = icon.emptyState)

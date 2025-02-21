@@ -1609,7 +1609,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="migration_error_try_again">Erneut versuchen</string>
     <string name="migration_migration_failed">Migration fehlgeschlagen</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Bitte gib Speicherplatz frei und führe den Vorgang erneut aus.</string>
-    <string name="fields_screen_title">Fields</string>
+    <string name="fields_screen_title">Felder</string>
     <string name="field_text_title">Text</string>
     <string name="field_text_empty">Eingeben</string>
     <string name="field_number_title">Nummer</string>

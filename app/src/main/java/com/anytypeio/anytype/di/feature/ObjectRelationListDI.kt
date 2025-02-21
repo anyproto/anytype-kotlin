@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelF
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import dagger.BindsInstance
 import dagger.Module
@@ -38,6 +39,7 @@ interface ObjectRelationListComponent {
     }
 
     fun inject(fragment: ObjectRelationListFragment)
+    fun inject(fragment: ObjectFieldsFragment)
 }
 
 @Module

@@ -37,6 +37,7 @@ import com.anytypeio.anytype.ui.history.VersionHistoryFragment
 import com.anytypeio.anytype.ui.linking.BacklinkAction
 import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
+import com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
@@ -227,11 +228,11 @@ abstract class ObjectMenuBaseFragment :
         findNavController().navigate(
             R.id.objectRelationListScreen,
             bundleOf(
-                ObjectRelationListFragment.ARG_CTX to ctx,
-                ObjectRelationListFragment.ARG_SPACE to space,
-                ObjectRelationListFragment.ARG_TARGET to null,
-                ObjectRelationListFragment.ARG_LOCKED to isLocked,
-                ObjectRelationListFragment.ARG_SET_FLOW to false
+                ObjectFieldsFragment.ARG_CTX to ctx,
+                ObjectFieldsFragment.ARG_SPACE to space,
+                ObjectFieldsFragment.ARG_TARGET to null,
+                ObjectFieldsFragment.ARG_LOCKED to isLocked,
+                ObjectFieldsFragment.ARG_SET_FLOW to false
             )
         )
     }
@@ -240,11 +241,11 @@ abstract class ObjectMenuBaseFragment :
         findNavController().navigate(
             R.id.objectRelationListScreen,
             bundleOf(
-                ObjectRelationListFragment.ARG_CTX to ctx,
-                ObjectRelationListFragment.ARG_SPACE to space,
-                ObjectRelationListFragment.ARG_TARGET to null,
-                ObjectRelationListFragment.ARG_LOCKED to isLocked,
-                ObjectRelationListFragment.ARG_SET_FLOW to true
+                ObjectFieldsFragment.ARG_CTX to ctx,
+                ObjectFieldsFragment.ARG_SPACE to space,
+                ObjectFieldsFragment.ARG_TARGET to null,
+                ObjectFieldsFragment.ARG_LOCKED to isLocked,
+                ObjectFieldsFragment.ARG_SET_FLOW to true
             )
         )
     }

@@ -71,7 +71,7 @@ class ObjectTypeFieldsFragment : BaseBottomSheetComposeFragment()  {
             spaceId = SpaceId(space),
             objectId = typeId,
             withSubscriptions = false,
-            showHiddenFields = false
+            showHiddenFields = true
         )
         componentManager().objectTypeComponent.get(params).inject(this)
     }

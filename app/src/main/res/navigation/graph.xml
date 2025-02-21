@@ -81,6 +81,11 @@
             android:id="@+id/actionExitToSpaceWidgets"
             app:popUpTo="@+id/homeScreen"
             app:popUpToInclusive="false" />
+
+        <dialog android:id="@+id/objectTypeFieldsScreen"
+            android:name="com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment"
+            android:label="ObjectTypeFieldsScreen" />
+
     </navigation>
 
     <include app:graph="@navigation/nav_editor_modal" />

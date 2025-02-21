@@ -36,7 +36,9 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -102,6 +104,7 @@ fun FieldsMainScreen(
 
     Scaffold(
         modifier = Modifier
+            .nestedScroll(rememberNestedScrollInteropConnection())
             .fillMaxSize(),
         containerColor = colorResource(id = R.color.background_primary),
         contentColor = colorResource(id = R.color.background_primary),

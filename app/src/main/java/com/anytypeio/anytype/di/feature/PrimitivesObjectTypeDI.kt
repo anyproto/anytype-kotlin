@@ -34,6 +34,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
+import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -59,6 +60,7 @@ interface ObjectTypeComponent {
     }
 
     fun inject(fragment: ObjectTypeFragment)
+    fun inject(fragment: ObjectTypeFieldsFragment)
 }
 
 @Module

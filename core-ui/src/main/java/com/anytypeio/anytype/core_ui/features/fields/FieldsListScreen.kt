@@ -327,7 +327,7 @@ private fun Section(item: Model.Section) {
 @Composable
 fun FieldListScreenPreview() {
     FieldListScreen(
-        state = emptyList(),
+        state = listOf(Model.Section.Local),
         onRelationClicked = {},
         onLocalInfoIconClicked = {},
         onTypeIconClicked = {}

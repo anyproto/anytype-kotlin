@@ -45,7 +45,7 @@ interface AppNavigation {
         space: Id
     )
 
-    fun openObjectTypeFields(
+    fun openCurrentObjectTypeFields(
         objectId: Id,
         space: Id
     )

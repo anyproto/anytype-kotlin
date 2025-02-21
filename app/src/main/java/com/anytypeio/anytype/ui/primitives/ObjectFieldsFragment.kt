@@ -7,10 +7,8 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
@@ -41,8 +39,6 @@ import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Comman
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
-import com.anytypeio.anytype.ui.onboarding.screens.Title
-import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
@@ -202,7 +198,7 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
 
             is Command.NavigateToObjectType -> {
                 runCatching {
-                    navigation().openObjectTypeFields(
+                    navigation().openCurrentObjectTypeFields(
                         objectId = command.objectTypeId,
                         space = space
                     )

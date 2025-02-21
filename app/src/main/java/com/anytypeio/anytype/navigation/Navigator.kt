@@ -373,7 +373,7 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun openObjectTypeFields(
+    override fun openCurrentObjectTypeFields(
         objectId: Id,
         space: Id
     ) {

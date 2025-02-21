@@ -29,6 +29,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -52,6 +54,7 @@ import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
@@ -71,6 +74,7 @@ import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -95,8 +99,15 @@ fun FieldsMainScreen(
         hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
     }
 
+    var isDragging by remember { mutableStateOf(false) }
+
     LaunchedEffect(reorderableLazyColumnState.isAnyItemDragging) {
-        if (!reorderableLazyColumnState.isAnyItemDragging) {
+        if (reorderableLazyColumnState.isAnyItemDragging) {
+            isDragging = true
+            // Optional: Add a small delay to avoid triggering on very short drags
+            delay(50)
+        } else if (isDragging) {
+            isDragging = false
             fieldEvent(DragEvent.OnDragEnd)
             hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
         }
@@ -105,8 +116,13 @@ fun FieldsMainScreen(
     Scaffold(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
-            .fillMaxSize(),
-        containerColor = colorResource(id = R.color.background_primary),
+            .background(
+                color = colorResource(id = R.color.background_primary),
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            )
+            .fillMaxSize()
+        ,
+        containerColor = colorResource(id = R.color.transparent_black),
         contentColor = colorResource(id = R.color.background_primary),
         topBar = {
             TopBar(
@@ -237,7 +253,15 @@ private fun TopBar(
     } else {
         modifier
     }
-    Column(modifier = modifier) {
+    Column(modifier = modifier
+        .background(
+            color = colorResource(id = R.color.background_primary),
+            shape = RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))) {
+        Dragger(
+            modifier = Modifier
+                .padding(vertical = 6.dp)
+                .align(Alignment.CenterHorizontally)
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()

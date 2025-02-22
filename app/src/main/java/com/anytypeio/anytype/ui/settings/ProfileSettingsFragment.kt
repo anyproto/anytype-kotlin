@@ -123,7 +123,9 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                         ),
                         clearProfileImage = { vm.onClearProfileImage() },
                         onDebugClicked = {
-                            //
+                            runCatching {
+                                findNavController().navigate(R.id.debugScreen)
+                            }
                         }
                     )
                 }

@@ -450,6 +450,12 @@
         android:name="com.anytypeio.anytype.ui.settings.DebugSettingsFragment"
         android:label="DebugSettingsFragment"
         tools:layout="@layout/fragment_debug_settings" />
+
+    <dialog
+        android:id="@+id/debugScreen"
+        android:name="com.anytypeio.anytype.ui.settings.DebugFragment"
+        android:label="DebugScreen" />
+
     <dialog
         android:id="@+id/globalSearchScreen"
         android:name="com.anytypeio.anytype.ui.search.GlobalSearchFragment"

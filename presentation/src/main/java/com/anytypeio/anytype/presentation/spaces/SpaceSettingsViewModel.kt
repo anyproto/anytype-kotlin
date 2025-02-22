@@ -77,6 +77,7 @@ class SpaceSettingsViewModel(
     private val spaceConfig = spaceManager.getConfig()
 
     init {
+        Timber.d("SpaceSettingsViewModel, Init, vmParams: $params")
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.screenSettingSpacesSpaceIndex

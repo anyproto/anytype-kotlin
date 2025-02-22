@@ -84,7 +84,8 @@ fun ProfileSettingsScreen(
     onMembershipClicked: () -> Unit,
     membershipStatus: MembershipStatus?,
     showMembership: ShowMembership?,
-    clearProfileImage: () -> Unit
+    clearProfileImage: () -> Unit,
+    onDebugClicked: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -161,6 +162,16 @@ fun ProfileSettingsScreen(
                 image = R.drawable.ic_about,
                 text = stringResource(R.string.about),
                 onClick = onAboutClicked
+            )
+        }
+        item {
+            Divider(paddingStart = 60.dp)
+        }
+        item {
+            Option(
+                image = R.drawable.ic_debug,
+                text = stringResource(R.string.debug),
+                onClick = onDebugClicked
             )
         }
         item {
@@ -519,7 +530,8 @@ private fun ProfileSettingPreview() {
         onMembershipClicked = {},
         membershipStatus = null,
         showMembership = ShowMembership(true),
-        clearProfileImage = {}
+        clearProfileImage = {},
+        onDebugClicked = {}
     )
 }
 

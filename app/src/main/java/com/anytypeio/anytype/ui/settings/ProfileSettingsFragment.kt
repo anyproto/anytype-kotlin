@@ -121,7 +121,10 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                                 }
                             }
                         ),
-                        clearProfileImage = { vm.onClearProfileImage() }
+                        clearProfileImage = { vm.onClearProfileImage() },
+                        onDebugClicked = {
+                            //
+                        }
                     )
                 }
             }

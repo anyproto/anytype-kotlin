@@ -157,8 +157,8 @@ fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", vers
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "8.7.1" }
-library = { id = "com.android.library", version = "8.7.1" }
+application = { id = "com.android.application", version = "8.8.1" }
+library = { id = "com.android.library", version = "8.8.1" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }

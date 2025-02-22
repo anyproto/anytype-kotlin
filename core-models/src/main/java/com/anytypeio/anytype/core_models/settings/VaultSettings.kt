@@ -5,18 +5,17 @@ import com.anytypeio.anytype.core_models.FALLBACK_DATE_PATTERN
 import com.anytypeio.anytype.core_models.Id
 
 data class VaultSettings(
-    @Deprecated("Property to be deleted soon")
-    val showIntroduceVault: Boolean,
     val orderOfSpaces: List<Id> = emptyList(),
     val isRelativeDates: Boolean,
-    val dateFormat: String
+    val dateFormat: String,
+    val isDebugMenuEnabled: Boolean = false
 ) {
     companion object {
         fun default() : VaultSettings = VaultSettings(
-            showIntroduceVault = false,
             orderOfSpaces = emptyList(),
             isRelativeDates = DEFAULT_RELATIVE_DATES,
-            dateFormat = FALLBACK_DATE_PATTERN
+            dateFormat = FALLBACK_DATE_PATTERN,
+            isDebugMenuEnabled = false
         )
     }
 }

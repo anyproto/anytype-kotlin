@@ -128,6 +128,19 @@ class ObjectMenuViewModel(
                 add(ObjectAction.DOWNLOAD_FILE)
             }
         } else {
+
+            if (isArchived) {
+                add(ObjectAction.RESTORE)
+            } else {
+                if (objectRestrictions.none { it == ObjectRestriction.DELETE }) {
+                    add(ObjectAction.MOVE_TO_BIN)
+                }
+            }
+
+            if (!isTemplate && !systemLayouts.contains(layout) && !fileLayouts.contains(layout)) {
+                add(ObjectAction.CREATE_WIDGET)
+            }
+
             if (!isTemplate) {
                 if (isFavorite) {
                     add(ObjectAction.REMOVE_FROM_FAVOURITE)
@@ -136,27 +149,15 @@ class ObjectMenuViewModel(
                 }
             }
 
-            if (isArchived) {
-                add(ObjectAction.RESTORE)
-            } else {
-                if (objectRestrictions.none { it == ObjectRestriction.DELETE }) {
-                    add(ObjectAction.DELETE)
-                }
-            }
-
-            if (!isTemplate && !systemLayouts.contains(layout) && !fileLayouts.contains(layout)) {
-                add(ObjectAction.CREATE_WIDGET)
-            }
-
-            if (isTemplate) {
-                add(ObjectAction.SET_AS_DEFAULT)
-            }
-
             if (!objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
                 add(ObjectAction.DUPLICATE)
             }
 
             add(ObjectAction.UNDO_REDO)
+
+            if (isTemplate) {
+                add(ObjectAction.SET_AS_DEFAULT)
+            }
 
             val objTypeId = wrapper?.getProperType()
             if (objTypeId != null) {
@@ -187,7 +188,7 @@ class ObjectMenuViewModel(
 
             if (layout in fileLayouts) {
                 clear()
-                add(ObjectAction.DELETE)
+                add(ObjectAction.MOVE_TO_BIN)
                 add(ObjectAction.DOWNLOAD_FILE)
                 if (isFavorite) {
                     add(ObjectAction.REMOVE_FROM_FAVOURITE)
@@ -315,7 +316,7 @@ class ObjectMenuViewModel(
 
     override fun onActionClicked(ctx: Id, space: Id, action: ObjectAction) {
         when (action) {
-            ObjectAction.DELETE -> {
+            ObjectAction.MOVE_TO_BIN -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
             }
             ObjectAction.DUPLICATE -> {
@@ -378,7 +379,7 @@ class ObjectMenuViewModel(
                 if (wrapper != null) proceedWithCreatingWidget(obj = wrapper)
             }
             ObjectAction.MOVE_TO,
-            ObjectAction.MOVE_TO_BIN,
+            ObjectAction.DELETE,
             ObjectAction.DELETE_FILES -> {
                 throw IllegalStateException("$action is unsupported")
             }

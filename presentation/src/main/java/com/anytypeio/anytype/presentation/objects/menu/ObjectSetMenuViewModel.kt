@@ -236,14 +236,14 @@ class ObjectSetMenuViewModel(
             if (isArchived) {
                 add(ObjectAction.RESTORE)
             } else {
-                add(ObjectAction.DELETE)
+                add(ObjectAction.MOVE_TO_BIN)
             }
+            add(ObjectAction.CREATE_WIDGET)
             if (isFavorite) {
                 add(ObjectAction.REMOVE_FROM_FAVOURITE)
             } else {
                 add(ObjectAction.ADD_TO_FAVOURITE)
             }
-            add(ObjectAction.CREATE_WIDGET)
             val dataViewState = objectState.value.dataViewState()
             if (dataViewState != null && !dataViewState.objectRestrictions.contains(
                     ObjectRestriction.DUPLICATE
@@ -259,7 +259,7 @@ class ObjectSetMenuViewModel(
     override fun onActionClicked(ctx: Id, space: Id, action: ObjectAction) {
         val state = objectState.value.dataViewState() ?: return
         when (action) {
-            ObjectAction.DELETE -> {
+            ObjectAction.MOVE_TO_BIN -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
             }
             ObjectAction.RESTORE -> {
@@ -299,7 +299,7 @@ class ObjectSetMenuViewModel(
             ObjectAction.UNDO_REDO,
             ObjectAction.LOCK,
             ObjectAction.UNLOCK,
-            ObjectAction.MOVE_TO_BIN,
+            ObjectAction.DELETE,
             ObjectAction.USE_AS_TEMPLATE,
             ObjectAction.SET_AS_DEFAULT,
             ObjectAction.DELETE_FILES -> throw IllegalStateException("$action is unsupported")

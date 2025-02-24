@@ -9,7 +9,7 @@
         android:layout_marginTop="14dp"
         android:layout_marginBottom="14dp"
         android:layout_marginStart="20dp"
-        tools:src="@drawable/ic_object_menu_icon" />
+        android:src="@drawable/ic_obj_settings_description_24" />
 
     <LinearLayout
         android:id="@+id/textContainer"
@@ -26,16 +26,19 @@
             style="@style/TextView.ContentStyle.PreviewTitles.1.Regular"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@string/description"
             tools:text="Icon" />
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/ivArrow"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+    <TextView
+        android:id="@+id/descriptionAction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginEnd="12dp"
-        android:src="@drawable/ic_arrow_forward_24" />
+        style="@style/TextView.ContentStyle.PreviewTitles.1.Regular"
+        android:textColor="@color/text_secondary"
+        android:layout_marginEnd="20dp"
+        />
 
 </merge>

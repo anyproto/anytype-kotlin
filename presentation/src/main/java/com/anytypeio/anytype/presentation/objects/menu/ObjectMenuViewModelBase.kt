@@ -24,6 +24,8 @@ import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -54,7 +56,7 @@ abstract class ObjectMenuViewModelBase(
     private val addBackLinkToObject: AddBackLinkToObject,
     protected val delegator: Delegator<Action>,
     protected val urlBuilder: UrlBuilder,
-    protected val dispatcher: Dispatcher<Payload>,
+    private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val menuOptionsProvider: ObjectMenuOptionsProvider,
     private val duplicateObject: DuplicateObject,
@@ -82,17 +84,17 @@ abstract class ObjectMenuViewModelBase(
         ObjectMenuOptionsProvider.Options(
             hasIcon = false,
             hasCover = false,
-            hasLayout = false,
             hasRelations = false,
             hasDiagnosticsVisibility = false,
-            hasHistory = false
+            hasHistory = false,
+            hasDescriptionShow = false
         )
     )
     val options: Flow<ObjectMenuOptionsProvider.Options> = _options
 
     abstract fun onIconClicked(ctx: Id, space: Id)
     abstract fun onCoverClicked(ctx: Id, space: Id)
-    abstract fun onLayoutClicked(ctx: Id, space: Id)
+    abstract fun onDescriptionClicked(ctx: Id, space: Id)
     abstract fun onRelationsClicked()
 
     fun onHistoryClicked(ctx: Id, space: Id) {
@@ -123,6 +125,7 @@ abstract class ObjectMenuViewModelBase(
             isLocked = isLocked,
             isReadOnly = isReadOnly
         )
+        val isDescriptionVisible = !isLocked && !isReadOnly
         jobs += viewModelScope.launch {
             menuOptionsProvider
                 .provide(ctx = ctx, isLocked = isLocked, isReadOnly = isReadOnly)
@@ -481,7 +484,6 @@ abstract class ObjectMenuViewModelBase(
         data object OpenSetIcons : Command()
         data object OpenObjectCover : Command()
         data object OpenSetCover : Command()
-        data object OpenObjectLayout : Command()
         data object OpenSetLayout : Command()
         data object OpenObjectRelations : Command()
         data object OpenSetRelations : Command()

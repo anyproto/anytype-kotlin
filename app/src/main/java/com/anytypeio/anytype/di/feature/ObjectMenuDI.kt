@@ -23,6 +23,8 @@ import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -122,7 +124,9 @@ object ObjectMenuModule {
         setObjectIsArchived: SetObjectListIsArchived,
         fieldParser: FieldParser,
         spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-        getSpaceInviteLink: GetSpaceInviteLink
+        getSpaceInviteLink: GetSpaceInviteLink,
+        addToFeaturedRelations: AddToFeaturedRelations,
+        removeFromFeaturedRelations: RemoveFromFeaturedRelations
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -147,7 +151,9 @@ object ObjectMenuModule {
         setObjectListIsFavorite = setObjectListIsFavorite,
         fieldParser = fieldParser,
         getSpaceInviteLink = getSpaceInviteLink,
-        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
+        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+        addToFeaturedRelations = addToFeaturedRelations,
+        removeFromFeaturedRelations = removeFromFeaturedRelations
     )
 
     @JvmStatic
@@ -214,6 +220,18 @@ object ObjectMenuModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetObjectListIsArchived = SetObjectListIsArchived(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun addToFeaturedRelations(repo: BlockRepository): AddToFeaturedRelations =
+        AddToFeaturedRelations(repo)
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun removeFromFeaturedRelations(repo: BlockRepository): RemoveFromFeaturedRelations =
+        RemoveFromFeaturedRelations(repo)
 }
 
 @Module
@@ -242,7 +260,9 @@ object ObjectSetMenuModule {
         setObjectIsArchived: SetObjectListIsArchived,
         fieldParser: FieldParser,
         getSpaceInviteLink: GetSpaceInviteLink,
-        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
+        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+        addToFeaturedRelations: AddToFeaturedRelations,
+        removeFromFeaturedRelations: RemoveFromFeaturedRelations
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectListIsArchived = setObjectIsArchived,
         addBackLinkToObject = addBackLinkToObject,
@@ -263,7 +283,9 @@ object ObjectSetMenuModule {
         setObjectListIsFavorite = setObjectListIsFavorite,
         fieldParser = fieldParser,
         getSpaceInviteLink = getSpaceInviteLink,
-        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
+        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+        addToFeaturedRelations = addToFeaturedRelations,
+        removeFromFeaturedRelations = removeFromFeaturedRelations
     )
 
     @JvmStatic
@@ -333,4 +355,16 @@ object ObjectSetMenuModule {
             )
         }
     }
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun addToFeaturedRelations(repo: BlockRepository): AddToFeaturedRelations =
+        AddToFeaturedRelations(repo)
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun removeFromFeaturedRelations(repo: BlockRepository): RemoveFromFeaturedRelations =
+        RemoveFromFeaturedRelations(repo)
 }

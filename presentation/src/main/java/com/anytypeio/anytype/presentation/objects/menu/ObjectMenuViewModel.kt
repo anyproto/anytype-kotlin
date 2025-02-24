@@ -38,6 +38,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.extension.getObject
@@ -78,7 +79,8 @@ class ObjectMenuViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val addToFeaturedRelations: AddToFeaturedRelations,
-    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations
+    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -261,6 +263,10 @@ class ObjectMenuViewModel(
 
     override fun onDescriptionClicked(ctx: Id, space: Id) {
         viewModelScope.launch {
+            if (userPermissionProvider.get(space = SpaceId(space))?.isOwnerOrEditor() != true) {
+                _toasts.emit(NOT_ALLOWED)
+                return@launch
+            }
             val isDescriptionAlreadyInFeatured =
                 storage.details.current().getObject(ctx)?.featuredRelations?.contains(
                     Relations.DESCRIPTION
@@ -543,7 +549,8 @@ class ObjectMenuViewModel(
         private val getSpaceInviteLink: GetSpaceInviteLink,
         private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         private val addToFeaturedRelations: AddToFeaturedRelations,
-        private val removeFromFeaturedRelations: RemoveFromFeaturedRelations
+        private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -572,7 +579,8 @@ class ObjectMenuViewModel(
                 getSpaceInviteLink = getSpaceInviteLink,
                 spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
                 addToFeaturedRelations = addToFeaturedRelations,
-                removeFromFeaturedRelations = removeFromFeaturedRelations
+                removeFromFeaturedRelations = removeFromFeaturedRelations,
+                userPermissionProvider = userPermissionProvider
             ) as T
         }
     }

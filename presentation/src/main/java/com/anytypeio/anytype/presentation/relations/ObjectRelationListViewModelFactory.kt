@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -34,7 +35,8 @@ class ObjectRelationListViewModelFactory(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val addRelationToObject: AddRelationToObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -54,7 +56,8 @@ class ObjectRelationListViewModelFactory(
             storeOfObjectTypes = storeOfObjectTypes,
             addRelationToObject = addRelationToObject,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            userPermissionProvider = userPermissionProvider
         ) as T
     }
 }

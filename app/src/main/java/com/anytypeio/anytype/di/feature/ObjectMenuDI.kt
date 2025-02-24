@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -126,7 +127,8 @@ object ObjectMenuModule {
         spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         getSpaceInviteLink: GetSpaceInviteLink,
         addToFeaturedRelations: AddToFeaturedRelations,
-        removeFromFeaturedRelations: RemoveFromFeaturedRelations
+        removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+        userPermissionProvider: UserPermissionProvider
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -153,7 +155,8 @@ object ObjectMenuModule {
         getSpaceInviteLink = getSpaceInviteLink,
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         addToFeaturedRelations = addToFeaturedRelations,
-        removeFromFeaturedRelations = removeFromFeaturedRelations
+        removeFromFeaturedRelations = removeFromFeaturedRelations,
+        userPermissionProvider = userPermissionProvider
     )
 
     @JvmStatic
@@ -262,7 +265,8 @@ object ObjectSetMenuModule {
         getSpaceInviteLink: GetSpaceInviteLink,
         spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         addToFeaturedRelations: AddToFeaturedRelations,
-        removeFromFeaturedRelations: RemoveFromFeaturedRelations
+        removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+        userPermissionProvider: UserPermissionProvider
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectListIsArchived = setObjectIsArchived,
         addBackLinkToObject = addBackLinkToObject,
@@ -285,7 +289,8 @@ object ObjectSetMenuModule {
         getSpaceInviteLink = getSpaceInviteLink,
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         addToFeaturedRelations = addToFeaturedRelations,
-        removeFromFeaturedRelations = removeFromFeaturedRelations
+        removeFromFeaturedRelations = removeFromFeaturedRelations,
+        userPermissionProvider = userPermissionProvider
     )
 
     @JvmStatic

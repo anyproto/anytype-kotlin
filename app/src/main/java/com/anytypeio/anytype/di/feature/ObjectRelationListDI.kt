@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -63,6 +64,7 @@ object ObjectRelationListModule {
         addRelationToObject: AddRelationToObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         fieldParser: FieldParser,
+        userPermissionProvider: UserPermissionProvider
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
             vmParams = vmParams,
@@ -80,6 +82,7 @@ object ObjectRelationListModule {
             addRelationToObject = addRelationToObject,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             fieldParser = fieldParser,
+            userPermissionProvider = userPermissionProvider
         )
     }
 

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
@@ -60,7 +61,8 @@ class ObjectSetMenuViewModel(
     spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     getSpaceInviteLink: GetSpaceInviteLink,
     private val addToFeaturedRelations: AddToFeaturedRelations,
-    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations
+    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -110,7 +112,8 @@ class ObjectSetMenuViewModel(
         private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         private val getSpaceInviteLink: GetSpaceInviteLink,
         private val addToFeaturedRelations: AddToFeaturedRelations,
-        private val removeFromFeaturedRelations: RemoveFromFeaturedRelations
+        private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -135,7 +138,8 @@ class ObjectSetMenuViewModel(
                 spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
                 getSpaceInviteLink = getSpaceInviteLink,
                 addToFeaturedRelations = addToFeaturedRelations,
-                removeFromFeaturedRelations = removeFromFeaturedRelations
+                removeFromFeaturedRelations = removeFromFeaturedRelations,
+                userPermissionProvider = userPermissionProvider
             ) as T
         }
     }
@@ -165,6 +169,10 @@ class ObjectSetMenuViewModel(
     override fun onDescriptionClicked(ctx: Id, space: Id) {
         val details = objectState.value.dataViewState()?.details ?: return
         viewModelScope.launch {
+            if (userPermissionProvider.get(space = SpaceId(space))?.isOwnerOrEditor() != true) {
+                _toasts.emit(NOT_ALLOWED)
+                return@launch
+            }
             val isDescriptionAlreadyInFeatured =
                 details.getObject(ctx)?.featuredRelations?.contains(
                     Relations.DESCRIPTION

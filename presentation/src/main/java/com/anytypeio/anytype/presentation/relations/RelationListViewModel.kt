@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -62,7 +63,8 @@ class RelationListViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val addRelationToObject: AddRelationToObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val userPermissionProvider: UserPermissionProvider
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val isEditMode = MutableStateFlow(false)
@@ -73,6 +75,8 @@ class RelationListViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     val views = MutableStateFlow<List<Model>>(emptyList())
     val showLocalInfo = MutableStateFlow(false)
+
+    private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
     init {
         Timber.i("RelationListViewModel, init")
@@ -291,7 +295,8 @@ class RelationListViewModel(
     }
 
     private fun checkRelationIsInObject(view: ObjectRelationView): Boolean {
-        val objectRelations = objectRelationListProvider.getDetails().getStruct(vmParams.objectId)?.keys
+        val objectRelations =
+            objectRelationListProvider.getDetails().getStruct(vmParams.objectId)?.keys
         return objectRelations?.any { it == view.key } == true
     }
 
@@ -451,6 +456,7 @@ class RelationListViewModel(
                         )
                     )
                 }
+
                 RelationFormat.CHECKBOX -> {
                     if (isLocked || relation.isReadonlyValue) {
                         _toasts.emit(NOT_ALLOWED_FOR_RELATION)
@@ -459,6 +465,7 @@ class RelationListViewModel(
                     }
                     proceedWithTogglingRelationCheckboxValue(view, ctx)
                 }
+
                 RelationFormat.DATE -> {
                     if (view.readOnly || isLocked) {
                         handleReadOnlyValue(view, relation, ctx, isLocked)
@@ -466,6 +473,7 @@ class RelationListViewModel(
                         openRelationDateScreen(relation, ctx, isLocked)
                     }
                 }
+
                 RelationFormat.TAG, RelationFormat.STATUS -> {
                     commands.emit(
                         Command.EditTagOrStatusRelationValue(
@@ -477,6 +485,7 @@ class RelationListViewModel(
                         )
                     )
                 }
+
                 RelationFormat.FILE,
                 RelationFormat.OBJECT -> {
                     commands.emit(
@@ -490,12 +499,14 @@ class RelationListViewModel(
                         )
                     )
                 }
+
                 RelationFormat.EMOJI,
                 RelationFormat.RELATIONS,
                 RelationFormat.UNDEFINED -> {
                     _toasts.emit(NOT_SUPPORTED_UPDATE_VALUE)
                     Timber.d("Update value of relation with format:[${relation.format}] is not supported")
                 }
+
                 else -> {}
             }
         }
@@ -543,7 +554,9 @@ class RelationListViewModel(
     }
 
     private fun resolveIsLockedStateOrDetailsRestriction(ctx: Id): Boolean =
-        lockedStateProvider.isLocked(ctx) || lockedStateProvider.isContainsDetailsRestriction()
+        permission.value?.isOwnerOrEditor() != true ||
+                lockedStateProvider.isLocked(ctx) ||
+                lockedStateProvider.isContainsDetailsRestriction()
 
     private fun proceedWithTogglingRelationCheckboxValue(view: ObjectRelationView, ctx: Id) {
         viewModelScope.launch {

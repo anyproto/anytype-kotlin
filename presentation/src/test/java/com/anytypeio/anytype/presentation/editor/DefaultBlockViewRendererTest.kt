@@ -1824,7 +1824,7 @@ class DefaultBlockViewRendererTest {
                 Relations.ID to mentionTarget1,
                 "name" to "XmN34",
                 "snippet" to mentionTextUpdated1,
-                "layout" to 9.0
+                Relations.LAYOUT to 9.0
             )
 
         val randomEmoji2 = DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random()
@@ -1833,7 +1833,7 @@ class DefaultBlockViewRendererTest {
                 Relations.ID to mentionTarget2,
                 "name" to mentionTextUpdated2,
                 "iconEmoji" to randomEmoji2,
-                "layout" to 0.0
+                Relations.LAYOUT to 0.0
             )
 
         val detailsAmend = mapOf(
@@ -2589,7 +2589,7 @@ class DefaultBlockViewRendererTest {
                         "name" to name,
                         "description" to "",
                         "snippet" to snippet,
-                        "layout" to ObjectType.Layout.BASIC.code.toDouble()
+                        Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
                     )
                 )
             )

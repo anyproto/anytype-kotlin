@@ -5,7 +5,9 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
@@ -18,6 +20,7 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelF
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import dagger.BindsInstance
 import dagger.Module
@@ -37,6 +40,7 @@ interface ObjectRelationListComponent {
     }
 
     fun inject(fragment: ObjectRelationListFragment)
+    fun inject(fragment: ObjectFieldsFragment)
 }
 
 @Module
@@ -56,9 +60,11 @@ object ObjectRelationListModule {
         deleteRelationFromObject: DeleteRelationFromObject,
         analytics: Analytics,
         storeOfRelations: StoreOfRelations,
+        storeOfObjectTypes: StoreOfObjectTypes,
         addRelationToObject: AddRelationToObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         fieldParser: FieldParser,
+        userPermissionProvider: UserPermissionProvider
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
             vmParams = vmParams,
@@ -72,9 +78,11 @@ object ObjectRelationListModule {
             deleteRelationFromObject = deleteRelationFromObject,
             analytics = analytics,
             storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes,
             addRelationToObject = addRelationToObject,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             fieldParser = fieldParser,
+            userPermissionProvider = userPermissionProvider
         )
     }
 

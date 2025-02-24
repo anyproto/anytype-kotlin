@@ -1,119 +1,108 @@
-package com.anytypeio.anytype.ui.relations
+package com.anytypeio.anytype.ui.primitives
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.ui.Modifier
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.content
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.features.relations.DocumentRelationAdapter
+import com.anytypeio.anytype.core_ui.features.fields.FieldListScreen
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.argStringOrNull
-import com.anytypeio.anytype.core_utils.ext.gone
-import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
+import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ext.withParent
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
-import com.anytypeio.anytype.databinding.FragmentRelationListBinding
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
+import com.anytypeio.anytype.feature_object_type.fields.ui.LocalInfoScreen
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
+import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
+import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
+import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import kotlin.getValue
 import timber.log.Timber
 
-@Deprecated("Legacy, epic Primitives, use ObjectFieldsFragment instead")
-open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelationListBinding>(),
+class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
     RelationTextValueFragment.TextValueEditReceiver,
     RelationDateValueFragment.DateValueEditReceiver {
 
     private val vm by viewModels<RelationListViewModel> { factory }
 
-    @Inject
-    lateinit var factory: ObjectRelationListViewModelFactory
-
-    private lateinit var searchRelationInput: EditText
-    private lateinit var clearSearchText: View
-
     private val ctx: String get() = argString(ARG_CTX)
     private val space: String get() = argString(ARG_SPACE)
     private val target: String? get() = argStringOrNull(ARG_TARGET)
-    private val isLocked: Boolean get() = arg(ARG_LOCKED)
     private val isSetFlow: Boolean get() = arg(ARG_SET_FLOW)
 
-    private val docRelationAdapter by lazy {
-        DocumentRelationAdapter(
-            items = emptyList(),
-            onRelationClicked = {
-                vm.onRelationClicked(
-                    ctx = ctx,
-                    target = target,
-                    view = it.view
+    @Inject
+    lateinit var factory: ObjectRelationListViewModelFactory
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
+        content {
+            FieldListScreen(
+                state = vm.views.collectAsStateWithLifecycle().value,
+                onRelationClicked = {
+                    vm.onRelationClicked(
+                        ctx = ctx,
+                        target = target,
+                        view = it.view
+                    )
+                },
+                onLocalInfoIconClicked = {
+                    vm.onShowLocalInfo()
+                },
+                onTypeIconClicked = {
+                    vm.onTypeIconClicked()
+                }
+            )
+            val showInfo = vm.showLocalInfo.collectAsStateWithLifecycle().value
+            if (showInfo) {
+                val bottomSheetState = rememberModalBottomSheetState(
+                    skipPartiallyExpanded = true
                 )
-            },
-            onCheckboxClicked = {
-                vm.onCheckboxClicked(
-                    ctx = ctx,
-                    view = it.view
-                )
-            },
-            onDeleteClicked = {
-                vm.onDeleteClicked(
-                    ctx = ctx,
-                    view = it.view
+                LocalInfoScreen(
+                    modifier = Modifier.fillMaxWidth(),
+                    bottomSheetState = bottomSheetState,
+                    onDismiss = { vm.onDismissLocalInfo() }
                 )
             }
-        )
-    }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
-        searchRelationInput.apply {
-            hint = getString(R.string.choose_options)
-        }
-        clearSearchText = binding.searchBar.root.findViewById(R.id.clearSearchText)
-        clearSearchText.setOnClickListener {
-            searchRelationInput.setText("")
-            clearSearchText.invisible()
-        }
-        binding.recycler.apply {
-            adapter = docRelationAdapter
-            layoutManager = LinearLayoutManager(context)
-        }
-        binding.btnPlus.setOnClickListener {
-            if (!isLocked) {
-                RelationAddToObjectFragment.new(
-                    ctx = ctx,
-                    space = space,
-                    isSetOrCollection = isSetFlow
-                ).showChildFragment()
-            } else {
-                toast(getString(R.string.unlock_your_object_to_add_new_relation))
-            }
-        }
-        binding.btnEditOrDone.setOnClickListener { vm.onEditOrDoneClicked(isLocked) }
+        setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
     }
-    
+
     private fun execute(command: Command) {
         when (command) {
             is Command.EditTextRelationValue -> {
@@ -134,6 +123,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                     Timber.e(it, "Error while opening relation text value from relation list")
                 }
             }
+
             is Command.EditDateRelationValue -> {
                 val fr = RelationDateValueFragment.new(
                     ctx = ctx,
@@ -149,8 +139,10 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 )
                 fr.showChildFragment()
             }
+
             is Command.EditFileObjectRelationValue -> {
-                val relationContext = if (isSetFlow) RelationContext.OBJECT_SET else RelationContext.OBJECT
+                val relationContext =
+                    if (isSetFlow) RelationContext.OBJECT_SET else RelationContext.OBJECT
                 findNavController().safeNavigate(
                     R.id.objectRelationListScreen,
                     R.id.objectValueScreen,
@@ -164,6 +156,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                     )
                 )
             }
+
             is Command.SetRelationKey -> {
                 withParent<OnFragmentInteractionListener> {
                     onSetRelationKeyClicked(
@@ -173,8 +166,10 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 }
                 dismiss()
             }
+
             is Command.EditTagOrStatusRelationValue -> {
-                val relationContext = if (isSetFlow) RelationContext.OBJECT_SET else RelationContext.OBJECT
+                val relationContext =
+                    if (isSetFlow) RelationContext.OBJECT_SET else RelationContext.OBJECT
                 val bundle = TagOrStatusValueFragment.args(
                     ctx = command.ctx,
                     space = space,
@@ -183,8 +178,13 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                     isLocked = command.isLocked,
                     context = relationContext
                 )
-                findNavController().safeNavigate(R.id.objectRelationListScreen, R.id.nav_relations, bundle)
+                findNavController().safeNavigate(
+                    R.id.objectRelationListScreen,
+                    R.id.nav_relations,
+                    bundle
+                )
             }
+
             is Command.NavigateToDateObject -> {
                 runCatching {
                     navigation().openDateObject(
@@ -197,7 +197,14 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
             }
 
             is Command.NavigateToObjectType -> {
-                //do nothing
+                runCatching {
+                    navigation().openCurrentObjectTypeFields(
+                        objectId = command.objectTypeId,
+                        space = space
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening object type fields from object fields list")
+                }
             }
         }
     }
@@ -205,17 +212,6 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.commands) { command -> execute(command) }
         jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
-        jobs += lifecycleScope.subscribe(vm.isEditMode) { isEditMode ->
-            if (isEditMode) {
-                binding.btnEditOrDone.setText(R.string.done)
-                binding.btnPlus.invisible()
-            } else {
-                binding.btnPlus.visible()
-                binding.btnEditOrDone.setText(R.string.edit)
-            }
-        }
-        binding.searchBar.root.gone()
-        jobs += lifecycleScope.subscribe(vm.views) { docRelationAdapter.update(it) }
         super.onStart()
         vm.onStartListMode(ctx)
     }
@@ -281,13 +277,6 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         }
     }
 
-    override fun inflateBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentRelationListBinding = FragmentRelationListBinding.inflate(
-        inflater, container, false
-    )
-
     /**
      * This screen should be started from Objects with Editor Layouts
      * or from objects with Set or Collection Layouts
@@ -300,7 +289,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
             target: String?,
             locked: Boolean = false,
             isSetFlow: Boolean = false,
-        ) = ObjectRelationListFragment().apply {
+        ) = ObjectFieldsFragment().apply {
             arguments = bundleOf(
                 ARG_CTX to ctx,
                 ARG_SPACE to space,
@@ -315,5 +304,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         const val ARG_TARGET = "arg.document-relation.target"
         const val ARG_LOCKED = "arg.document-relation.locked"
         const val ARG_SET_FLOW = "arg.document-relation.set-flow"
+
+        const val DEFAULT_PADDING_TOP = 10
     }
 }

@@ -79,6 +79,12 @@
     <color name="dashboard_card_background">#FFFFFF</color>
     <color name="dashboard_background">#99F5F5F5</color>
 
+    <color name="control_active">#A7A7A7</color>
+    <color name="control_inactive">#DCDCDC</color>
+
+    <!-- Background -->
+    <color name="widget_background">#FFFFFF</color>
+
     <!-- Colors at Figma https://www.figma.com/file/vgXV7x2v20vJajc7clYJ7a/Typography-and-Colors%2FMobile?node-id=1031%3A160 -->
 
     <color name="palette_dark_default">#252525</color>

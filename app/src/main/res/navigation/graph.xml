@@ -34,7 +34,7 @@
             android:label="Object-Menu-Screen" />
         <dialog
             android:id="@+id/objectRelationListScreen"
-            android:name="com.anytypeio.anytype.ui.relations.ObjectRelationListFragment"
+            android:name="com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment"
             android:label="Object-Relation-List-Screen" />
         <dialog
             android:id="@+id/objectIconPickerScreen"
@@ -81,6 +81,11 @@
             android:id="@+id/actionExitToSpaceWidgets"
             app:popUpTo="@+id/homeScreen"
             app:popUpToInclusive="false" />
+
+        <dialog android:id="@+id/objectTypeFieldsScreen"
+            android:name="com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment"
+            android:label="ObjectTypeFieldsScreen" />
+
     </navigation>
 
     <include app:graph="@navigation/nav_editor_modal" />
@@ -109,9 +114,10 @@
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim"
                 app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         </fragment>
+
         <dialog
             android:id="@+id/objectRelationListScreen"
-            android:name="com.anytypeio.anytype.ui.relations.ObjectRelationListFragment"
+            android:name="com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment"
             android:label="Object-Relation-List-Screen" />
         <dialog
             android:id="@+id/objectSetMainMenuScreen"

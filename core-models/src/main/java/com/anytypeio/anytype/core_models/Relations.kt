@@ -13,6 +13,7 @@ object Relations {
     const val COVER_ID = "coverId"
     const val DESCRIPTION = "description"
     const val LAYOUT = "resolvedLayout"
+    const val LEGACY_LAYOUT = "layout"
     const val NAME = "name"
     const val ICON_EMOJI = "iconEmoji"
     const val ICON_OPTION = "iconOption"

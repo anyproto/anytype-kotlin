@@ -123,10 +123,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                 ObjectTypeCommand.OpenFieldsScreen -> {
                     navComposeController.navigate(OBJ_TYPE_FIELDS)
                 }
-
-                ObjectTypeCommand.OpenEditFieldScreen -> {
-                    navComposeController.navigate(OBJ_TYPE_FIELD_EDIT)
-                }
             }
         }
     }
@@ -288,7 +284,9 @@ class ObjectTypeFragment : BaseComposeFragment() {
     override fun injectDependencies() {
         val params = ObjectTypeVmParams(
             spaceId = SpaceId(space),
-            objectId = objectId
+            objectId = objectId,
+            withSubscriptions = true,
+            showHiddenFields = true
         )
         componentManager().objectTypeComponent.get(params).inject(this)
     }
@@ -301,10 +299,9 @@ class ObjectTypeFragment : BaseComposeFragment() {
         // Do nothing. TODO add ime padding.
     }
 
-    companion object DateLayoutNavigation {
+    companion object {
         private const val OBJ_TYPE_MAIN = "obj_type_main"
         private const val OBJ_TYPE_FIELDS = "obj_fields"
-        private const val OBJ_TYPE_FIELD_EDIT = "obj_type_field_edit"
         const val ARG_SPACE = "arg.object.type.space"
         const val ARG_OBJECT_ID = "arg.object.type.object_id"
 

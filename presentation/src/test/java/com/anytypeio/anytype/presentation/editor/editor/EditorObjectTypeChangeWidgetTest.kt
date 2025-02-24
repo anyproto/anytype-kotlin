@@ -172,7 +172,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
         val objectDetails =
             mapOf(
                 "type" to ObjectTypeIds.NOTE,
-                "layout" to ObjectType.Layout.NOTE.code.toDouble()
+                Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble()
             )
 
         val detailsList = ObjectViewDetails(details = mapOf(root to objectDetails))

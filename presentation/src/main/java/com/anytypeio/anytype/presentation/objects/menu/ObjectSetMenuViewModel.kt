@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
@@ -14,10 +15,13 @@ import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -41,7 +45,7 @@ class ObjectSetMenuViewModel(
     duplicateObject: DuplicateObject,
     delegator: Delegator<Action>,
     urlBuilder: UrlBuilder,
-    dispatcher: Dispatcher<Payload>,
+    private val dispatcher: Dispatcher<Payload>,
     menuOptionsProvider: ObjectMenuOptionsProvider,
     createWidget: CreateWidget,
     spaceManager: SpaceManager,
@@ -55,7 +59,10 @@ class ObjectSetMenuViewModel(
     setObjectListIsFavorite: SetObjectListIsFavorite,
     fieldParser: FieldParser,
     spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-    getSpaceInviteLink: GetSpaceInviteLink
+    getSpaceInviteLink: GetSpaceInviteLink,
+    private val addToFeaturedRelations: AddToFeaturedRelations,
+    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -103,7 +110,10 @@ class ObjectSetMenuViewModel(
         private val setObjectListIsArchived: SetObjectListIsArchived,
         private val fieldParser: FieldParser,
         private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-        private val getSpaceInviteLink: GetSpaceInviteLink
+        private val getSpaceInviteLink: GetSpaceInviteLink,
+        private val addToFeaturedRelations: AddToFeaturedRelations,
+        private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -126,7 +136,10 @@ class ObjectSetMenuViewModel(
                 setObjectListIsFavorite = setObjectListIsFavorite,
                 fieldParser = fieldParser,
                 spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-                getSpaceInviteLink = getSpaceInviteLink
+                getSpaceInviteLink = getSpaceInviteLink,
+                addToFeaturedRelations = addToFeaturedRelations,
+                removeFromFeaturedRelations = removeFromFeaturedRelations,
+                userPermissionProvider = userPermissionProvider
             ) as T
         }
     }
@@ -153,13 +166,49 @@ class ObjectSetMenuViewModel(
         }
     }
 
-    override fun onLayoutClicked(ctx: Id, space: Id) {
-        val dataViewState = objectState.value.dataViewState() ?: return
+    override fun onDescriptionClicked(ctx: Id, space: Id) {
+        val details = objectState.value.dataViewState()?.details ?: return
         viewModelScope.launch {
-            if (dataViewState.objectRestrictions.contains(ObjectRestriction.LAYOUT_CHANGE)) {
+            if (userPermissionProvider.get(space = SpaceId(space))?.isOwnerOrEditor() != true) {
                 _toasts.emit(NOT_ALLOWED)
+                return@launch
+            }
+            val isDescriptionAlreadyInFeatured =
+                details.getObject(ctx)?.featuredRelations?.contains(
+                    Relations.DESCRIPTION
+                ) == true
+            if (isDescriptionAlreadyInFeatured) {
+                removeFromFeaturedRelations.run(
+                    params = RemoveFromFeaturedRelations.Params(
+                        ctx = ctx,
+                        relations = listOf(Relations.DESCRIPTION)
+                    )
+                ).proceed(
+                    success = { payload ->
+                        dispatcher.send(payload)
+                        Timber.d("Description was removed from featured relations")
+                    },
+                    failure = {
+                        Timber.e(it, "Error while removing description from featured relations")
+                        _toasts.emit(SOMETHING_WENT_WRONG_MSG)
+                    }
+                )
             } else {
-                commands.emit(Command.OpenSetLayout)
+                addToFeaturedRelations.run(
+                    params = AddToFeaturedRelations.Params(
+                        ctx = ctx,
+                        relations = listOf(Relations.DESCRIPTION)
+                    )
+                ).proceed(
+                    success = { payload ->
+                        dispatcher.send(payload)
+                        Timber.d("Description was added to featured relations")
+                    },
+                    failure = {
+                        Timber.e(it, "Error while adding description to featured relations")
+                        _toasts.emit(SOMETHING_WENT_WRONG_MSG)
+                    }
+                )
             }
         }
     }

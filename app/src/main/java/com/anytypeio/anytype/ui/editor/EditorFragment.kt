@@ -167,7 +167,7 @@ import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeUpdateFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeUpdateListener
-import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
+import com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -1074,10 +1074,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         R.id.pageScreen,
                         R.id.objectRelationListScreen,
                         bundleOf(
-                            ObjectRelationListFragment.ARG_CTX to command.ctx,
-                            ObjectRelationListFragment.ARG_SPACE to space,
-                            ObjectRelationListFragment.ARG_TARGET to command.target,
-                            ObjectRelationListFragment.ARG_LOCKED to command.isLocked,
+                            ObjectFieldsFragment.ARG_CTX to command.ctx,
+                            ObjectFieldsFragment.ARG_SPACE to space,
+                            ObjectFieldsFragment.ARG_TARGET to command.target,
+                            ObjectFieldsFragment.ARG_LOCKED to command.isLocked,
                         )
                     )
                 }

@@ -69,7 +69,8 @@ suspend fun buildUiFieldsList(
     urlBuilder: UrlBuilder,
     storeOfObjectTypes: StoreOfObjectTypes,
     storeOfRelations: StoreOfRelations,
-    objTypeConflictingFields: List<Id>
+    objTypeConflictingFields: List<Id>,
+    showHiddenFields: Boolean
 ): List<UiFieldsListItem> {
 
     val parsedFields = fieldParser.getObjectTypeParsedFields(
@@ -149,9 +150,11 @@ suspend fun buildUiFieldsList(
             addAll(fileRecommendedFields)
         }
 
-        add(Section.Hidden(canAdd = false))
-        addAll(hiddenItems)
-        addAll(conflictedSystemItems)
+        if (showHiddenFields) {
+            add(Section.Hidden(canAdd = false))
+            addAll(hiddenItems)
+            addAll(conflictedSystemItems)
+        }
 
         if (conflictedItems.isNotEmpty()) {
             add(Section.Local(canAdd = false))

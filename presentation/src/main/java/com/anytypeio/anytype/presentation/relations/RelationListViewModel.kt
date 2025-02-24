@@ -9,15 +9,19 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.relationsScreenShow
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
@@ -27,10 +31,10 @@ import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.core_models.ObjectViewDetails
-import com.anytypeio.anytype.presentation.extension.getStruct
 import com.anytypeio.anytype.presentation.extension.getObjRelationsViews
+import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getRecommendedRelations
+import com.anytypeio.anytype.presentation.extension.getStruct
 import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
@@ -56,17 +60,23 @@ class RelationListViewModel(
     private val deleteRelationFromObject: DeleteRelationFromObject,
     private val analytics: Analytics,
     private val storeOfRelations: StoreOfRelations,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     private val addRelationToObject: AddRelationToObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val userPermissionProvider: UserPermissionProvider
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val isEditMode = MutableStateFlow(false)
 
     private val jobs = mutableListOf<Job>()
+    private var _currentObjectTypeId: Id? = null
 
     val commands = MutableSharedFlow<Command>(replay = 0)
     val views = MutableStateFlow<List<Model>>(emptyList())
+    val showLocalInfo = MutableStateFlow(false)
+
+    private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
     init {
         Timber.i("RelationListViewModel, init")
@@ -80,11 +90,97 @@ class RelationListViewModel(
         )
         jobs += viewModelScope.launch {
             combine(
+                storeOfObjectTypes.trackChanges(),
                 storeOfRelations.trackChanges(),
                 objectRelationListProvider.details
-            ) { _, details ->
-                constructViews(ctx, details)
+            ) { _, _, details ->
+                parseToViews(ctx, details)
             }.collect { views.value = it }
+        }
+    }
+
+    private suspend fun parseToViews(
+        ctx: Id,
+        details: ObjectViewDetails
+    ): List<Model> {
+
+        val objType = details.getTypeForObject(ctx)
+        _currentObjectTypeId = objType?.id
+
+        if (objType == null) {
+            Timber.w("Failed to get object type for object: $ctx from types store")
+            return emptyList()
+        }
+
+        val parsedFields = fieldParser.getObjectParsedFields(
+            objectType = objType,
+            storeOfRelations = storeOfRelations,
+            objFieldKeys = details.getObject(ctx)?.map?.keys.orEmpty()
+        )
+
+        val headerFields = parsedFields.featured.mapNotNull {
+            if (it.key == Relations.DESCRIPTION) return@mapNotNull null
+            it.view(
+                details = details,
+                values = details.getObject(ctx)?.map.orEmpty(),
+                urlBuilder = urlBuilder,
+                fieldParser = fieldParser,
+                isFeatured = true
+            )
+        }.map {
+            Model.Item(it, isRemovable = false)
+        }
+
+        val sidebarFields = parsedFields.sidebar.mapNotNull {
+            if (it.key == Relations.DESCRIPTION) return@mapNotNull null
+            it.view(
+                details = details,
+                values = details.getObject(ctx)?.map.orEmpty(),
+                urlBuilder = urlBuilder,
+                fieldParser = fieldParser,
+                isFeatured = false
+            )
+        }.map {
+            Model.Item(it, isRemovable = false)
+        }
+
+        val filesFields = parsedFields.file.mapNotNull {
+            if (it.key == Relations.DESCRIPTION) return@mapNotNull null
+            it.view(
+                details = details,
+                values = details.getObject(ctx)?.map.orEmpty(),
+                urlBuilder = urlBuilder,
+                fieldParser = fieldParser,
+            )
+        }.map {
+            Model.Item(it, isRemovable = false)
+        }
+
+        val localFields = parsedFields.conflictedWithoutSystem.mapNotNull {
+            if (it.key == Relations.DESCRIPTION) return@mapNotNull null
+            it.view(
+                details = details,
+                values = details.getObject(ctx)?.map.orEmpty(),
+                urlBuilder = urlBuilder,
+                fieldParser = fieldParser,
+            )
+        }.map {
+            Model.Item(it, isRemovable = false)
+        }
+
+        return buildList {
+            if (headerFields.isNotEmpty()) {
+                add(Model.Section.Header)
+                addAll(headerFields)
+            }
+            if (sidebarFields.isNotEmpty() || filesFields.isNotEmpty()) {
+                add(Model.Section.SideBar)
+                addAll(sidebarFields + filesFields)
+            }
+            if (localFields.isNotEmpty()) {
+                add(Model.Section.Local)
+                addAll(localFields)
+            }
         }
     }
 
@@ -134,15 +230,12 @@ class RelationListViewModel(
         return mutableListOf<Model>().apply {
             val (isFeatured, other) = objectRelations.partition { it.view.featured }
             if (isFeatured.isNotEmpty()) {
-                add(Model.Section.Featured)
                 addAll(isFeatured)
             }
             if (other.isNotEmpty()) {
-                add(Model.Section.Other)
                 addAll(other)
             }
             if (recommendedRelations.isNotEmpty()) {
-                add(Model.Section.TypeFrom(objectTypeWrapper?.name.orEmpty()))
                 addAll(recommendedRelations)
             }
         }
@@ -152,6 +245,21 @@ class RelationListViewModel(
         jobs.apply {
             forEach { it.cancel() }
             clear()
+        }
+    }
+
+    fun onDismissLocalInfo() {
+        showLocalInfo.value = false
+    }
+
+    fun onShowLocalInfo() {
+        showLocalInfo.value = true
+    }
+
+    fun onTypeIconClicked() {
+        val objTypeId = _currentObjectTypeId ?: return
+        viewModelScope.launch {
+            commands.emit(Command.NavigateToObjectType(objTypeId))
         }
     }
 
@@ -187,7 +295,8 @@ class RelationListViewModel(
     }
 
     private fun checkRelationIsInObject(view: ObjectRelationView): Boolean {
-        val objectRelations = objectRelationListProvider.getDetails().getStruct(vmParams.objectId)?.keys
+        val objectRelations =
+            objectRelationListProvider.getDetails().getStruct(vmParams.objectId)?.keys
         return objectRelations?.any { it == view.key } == true
     }
 
@@ -347,6 +456,7 @@ class RelationListViewModel(
                         )
                     )
                 }
+
                 RelationFormat.CHECKBOX -> {
                     if (isLocked || relation.isReadonlyValue) {
                         _toasts.emit(NOT_ALLOWED_FOR_RELATION)
@@ -355,6 +465,7 @@ class RelationListViewModel(
                     }
                     proceedWithTogglingRelationCheckboxValue(view, ctx)
                 }
+
                 RelationFormat.DATE -> {
                     if (view.readOnly || isLocked) {
                         handleReadOnlyValue(view, relation, ctx, isLocked)
@@ -362,6 +473,7 @@ class RelationListViewModel(
                         openRelationDateScreen(relation, ctx, isLocked)
                     }
                 }
+
                 RelationFormat.TAG, RelationFormat.STATUS -> {
                     commands.emit(
                         Command.EditTagOrStatusRelationValue(
@@ -373,6 +485,7 @@ class RelationListViewModel(
                         )
                     )
                 }
+
                 RelationFormat.FILE,
                 RelationFormat.OBJECT -> {
                     commands.emit(
@@ -386,12 +499,14 @@ class RelationListViewModel(
                         )
                     )
                 }
+
                 RelationFormat.EMOJI,
                 RelationFormat.RELATIONS,
                 RelationFormat.UNDEFINED -> {
                     _toasts.emit(NOT_SUPPORTED_UPDATE_VALUE)
                     Timber.d("Update value of relation with format:[${relation.format}] is not supported")
                 }
+
                 else -> {}
             }
         }
@@ -439,7 +554,9 @@ class RelationListViewModel(
     }
 
     private fun resolveIsLockedStateOrDetailsRestriction(ctx: Id): Boolean =
-        lockedStateProvider.isLocked(ctx) || lockedStateProvider.isContainsDetailsRestriction()
+        permission.value?.isOwnerOrEditor() != true ||
+                lockedStateProvider.isLocked(ctx) ||
+                lockedStateProvider.isContainsDetailsRestriction()
 
     private fun proceedWithTogglingRelationCheckboxValue(view: ObjectRelationView, ctx: Id) {
         viewModelScope.launch {
@@ -513,16 +630,16 @@ class RelationListViewModel(
 
     sealed class Model : DefaultObjectDiffIdentifier {
         sealed class Section : Model() {
-            object Featured : Section() {
-                override val identifier: String get() = "Section_Featured"
+            data object Header : Section() {
+                override val identifier: String get() = "Section_Header"
             }
 
-            object Other : Section() {
-                override val identifier: String get() = "Section_Other"
+            data object SideBar : Section() {
+                override val identifier: String get() = "Section_SideBar"
             }
 
-            data class TypeFrom(val typeName: String) : Section() {
-                override val identifier: String get() = "Section_TypeFrom"
+            data object Local : Section() {
+                override val identifier: String get() = "Section_Local"
             }
         }
 
@@ -576,6 +693,10 @@ class RelationListViewModel(
 
         data class NavigateToDateObject(
             val objectId: Id
+        ) : Command()
+
+        data class NavigateToObjectType(
+            val objectTypeId: Id
         ) : Command()
     }
 

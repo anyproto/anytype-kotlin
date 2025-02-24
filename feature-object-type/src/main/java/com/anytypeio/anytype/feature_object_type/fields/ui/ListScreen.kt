@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -36,7 +39,9 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +55,7 @@ import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
@@ -69,6 +75,7 @@ import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -93,8 +100,15 @@ fun FieldsMainScreen(
         hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
     }
 
+    var isDragging by remember { mutableStateOf(false) }
+
     LaunchedEffect(reorderableLazyColumnState.isAnyItemDragging) {
-        if (!reorderableLazyColumnState.isAnyItemDragging) {
+        if (reorderableLazyColumnState.isAnyItemDragging) {
+            isDragging = true
+            // Optional: Add a small delay to avoid triggering on very short drags
+            delay(50)
+        } else if (isDragging) {
+            isDragging = false
             fieldEvent(DragEvent.OnDragEnd)
             hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
         }
@@ -102,9 +116,15 @@ fun FieldsMainScreen(
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize(),
-        containerColor = colorResource(id = R.color.background_primary),
-        contentColor = colorResource(id = R.color.background_primary),
+            .nestedScroll(rememberNestedScrollInteropConnection())
+            .background(
+                color = colorResource(id = R.color.widget_background),
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            )
+            .fillMaxSize()
+        ,
+        containerColor = colorResource(id = R.color.transparent_black),
+        contentColor = colorResource(id = R.color.widget_background),
         topBar = {
             TopBar(
                 modifier = Modifier.fillMaxWidth(),
@@ -178,6 +198,9 @@ fun FieldsMainScreen(
                         }
                     }
                 )
+                item {
+                    Spacer(modifier = Modifier.height(60.dp))
+                }
             }
         }
     )
@@ -234,7 +257,15 @@ private fun TopBar(
     } else {
         modifier
     }
-    Column(modifier = modifier) {
+    Column(modifier = modifier
+        .background(
+            color = colorResource(id = R.color.widget_background),
+            shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))) {
+        Dragger(
+            modifier = Modifier
+                .padding(vertical = 6.dp)
+                .align(Alignment.CenterHorizontally)
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -253,7 +284,7 @@ private fun TopBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(36.dp)
-                .background(color = colorResource(R.color.shape_tertiary)),
+                .background(color = colorResource(R.color.shape_transparent_secondary)),
             uiTitleState = uiTitleState,
             uiIconState = uiIconState
         )
@@ -274,8 +305,9 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
         )
         ListWidgetObjectIcon(
             modifier = Modifier
-                .size(18.dp)
-                .padding(start = 4.dp),
+
+                .padding(start = 4.dp)
+                .size(18.dp),
             icon = uiIconState.icon,
             backgroundColor = R.color.transparent_black
         )

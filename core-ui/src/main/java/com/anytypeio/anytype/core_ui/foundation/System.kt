@@ -20,11 +20,12 @@ import com.anytypeio.anytype.core_ui.views.Title1
 
 @Composable
 fun Section(
+    modifier: Modifier = Modifier,
     title: String,
     color: Color = colorResource(id = R.color.text_secondary),
     textPaddingStart: Dp = 20.dp
 ) {
-    Box(modifier = Modifier
+    Box(modifier = modifier
         .height(52.dp)
         .fillMaxWidth()) {
         Text(

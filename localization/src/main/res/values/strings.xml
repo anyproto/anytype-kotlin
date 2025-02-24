@@ -57,7 +57,8 @@
     <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Space</string>
-    <string name="space_name">Space name</string>
+    <string name="space_name">Name</string>
+    <string name="space_description">Description</string>
     <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
@@ -1904,5 +1905,24 @@ Please provide specific details of your needs here.</string>
     <string name="field_file_and_media_title">File &amp; Media</string>
     <string name="field_file_and_media_empty">Add</string>
     <string name="field_checkbox_title">Select</string>
+
+    <string name="space_settings_section_collaboration">Collaboration</string>
+    <string name="space_settings_section_content_model">Content Model</string>
+    <string name="space_settings_section_preferences">Preferences</string>
+    <string name="space_settings_section_data_management">Data Management</string>
+    <string name="space_settings_section_misc">Misc</string>
+
+    <string name="space_settings_invite">Invite</string>
+    <string name="space_settings_qrcode">QR Code</string>
+
+    <string name="space_settings_members_button_members">Members</string>
+    <string name="space_settings_types_button">Object Types</string>
+    <string name="space_settings_default_type_button">Default Object Type</string>
+    <string name="space_settings_wallpaper_button">Wallpaper</string>
+    <string name="space_settings_storage_button">Remote Storage</string>
+    <string name="space_settings_space_info_button">Space Information</string>
+    <string name="space_settings_delete_space_button">Delete Space</string>
+    <string name="space_settings_icon_title">Edit picture</string>
+    <string name="space_settings_save_button">Save</string>
 
 </resources>

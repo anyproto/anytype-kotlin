@@ -244,6 +244,7 @@ sealed class ObjectWrapper {
 
         val id: Id by default
         val name: String? by default
+        val description: String? = getSingleValue(Relations.DESCRIPTION)
         val iconImage: String? get() = getSingleValue(Relations.ICON_IMAGE)
         val iconOption: Double? by default
 

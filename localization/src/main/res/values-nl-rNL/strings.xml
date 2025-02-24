@@ -1425,7 +1425,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notifications_prompt_description">Schakel meldingen in om op de hoogte te blijven van verzoeken om deel te nemen aan of ruimtes te verlaten.</string>
     <string name="notifications_prompt_primary_button_text">Activeren</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Maak bladwijzer aan vanaf klembord</string>
-    <string name="error_unexpected_layout">Fout: onverwachte lay-out</string>
+    <string name="error_unexpected_layout">Fout: onverwachte opmaak</string>
     <string name="error_non_valid_object">Fout: object-ID ontbreekt</string>
     <string name="membership_price_pending">In behandeling...</string>
     <string name="per_period">per %1$s</string>
@@ -1549,7 +1549,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="all_content_no_results_description">Probeer te zoeken met andere trefwoorden.</string>
     <string name="all_content_error_title">Er is iets misgegaan.</string>
     <string name="onboarding_my_first_space">Mijn eerste ruimte</string>
-    <string name="all_content_error_unexpected_layout">Fout: onverwachte lay-out</string>
+    <string name="all_content_error_unexpected_layout">Fout: onverwachte opmaak</string>
     <string name="all_content_toast_relation_added">Relatie toegevoegd</string>
     <string name="all_content_toast_relation_removed">Relatie verwijderd</string>
     <string name="all_content_toast_type_added">Objecttype toegevoegd</string>

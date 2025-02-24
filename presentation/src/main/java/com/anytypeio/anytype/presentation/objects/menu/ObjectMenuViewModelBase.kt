@@ -24,8 +24,6 @@ import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
-import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -49,6 +47,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -125,10 +124,10 @@ abstract class ObjectMenuViewModelBase(
             isLocked = isLocked,
             isReadOnly = isReadOnly
         )
-        val isDescriptionVisible = !isLocked && !isReadOnly
         jobs += viewModelScope.launch {
             menuOptionsProvider
                 .provide(ctx = ctx, isLocked = isLocked, isReadOnly = isReadOnly)
+                .distinctUntilChanged()
                 .collect(_options)
         }
     }

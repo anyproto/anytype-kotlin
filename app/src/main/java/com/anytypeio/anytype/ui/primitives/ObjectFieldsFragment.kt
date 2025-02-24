@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.ui.Modifier
 import androidx.core.os.bundleOf
@@ -69,32 +69,34 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
         savedInstanceState: Bundle?
     ) =
         content {
-            FieldListScreen(
-                state = vm.views.collectAsStateWithLifecycle().value,
-                onRelationClicked = {
-                    vm.onRelationClicked(
-                        ctx = ctx,
-                        target = target,
-                        view = it.view
+            MaterialTheme {
+                FieldListScreen(
+                    state = vm.views.collectAsStateWithLifecycle().value,
+                    onRelationClicked = {
+                        vm.onRelationClicked(
+                            ctx = ctx,
+                            target = target,
+                            view = it.view
+                        )
+                    },
+                    onLocalInfoIconClicked = {
+                        vm.onShowLocalInfo()
+                    },
+                    onTypeIconClicked = {
+                        vm.onTypeIconClicked()
+                    }
+                )
+                val showInfo = vm.showLocalInfo.collectAsStateWithLifecycle().value
+                if (showInfo) {
+                    val bottomSheetState = rememberModalBottomSheetState(
+                        skipPartiallyExpanded = true
                     )
-                },
-                onLocalInfoIconClicked = {
-                    vm.onShowLocalInfo()
-                },
-                onTypeIconClicked = {
-                    vm.onTypeIconClicked()
+                    LocalInfoScreen(
+                        modifier = Modifier.fillMaxWidth(),
+                        bottomSheetState = bottomSheetState,
+                        onDismiss = { vm.onDismissLocalInfo() }
+                    )
                 }
-            )
-            val showInfo = vm.showLocalInfo.collectAsStateWithLifecycle().value
-            if (showInfo) {
-                val bottomSheetState = rememberModalBottomSheetState(
-                    skipPartiallyExpanded = true
-                )
-                LocalInfoScreen(
-                    modifier = Modifier.fillMaxWidth(),
-                    bottomSheetState = bottomSheetState,
-                    onDismiss = { vm.onDismissLocalInfo() }
-                )
             }
         }
 

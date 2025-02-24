@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,7 +46,10 @@ fun FieldListScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(id = R.color.widget_background))
+            .background(
+                color = colorResource(id = R.color.widget_background),
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            )
             .nestedScroll(rememberNestedScrollInteropConnection())
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),

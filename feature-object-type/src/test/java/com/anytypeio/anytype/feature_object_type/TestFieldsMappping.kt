@@ -184,7 +184,7 @@ class TestFieldsMappping {
         val parsedFields = fieldParser.getObjectTypeParsedFields(
             objectType = testObjectType,
             storeOfRelations = storeOfRelations,
-            conflictingFields = listOf()
+            objectTypeConflictingFieldsIds = listOf()
         )
 
         assertEquals(
@@ -207,7 +207,7 @@ class TestFieldsMappping {
         val parsedFields = fieldParser.getObjectTypeParsedFields(
             objectType = testObjectType,
             storeOfRelations = storeOfRelations,
-            conflictingFields = listOf()
+            objectTypeConflictingFieldsIds = listOf()
         )
 
         assertEquals(
@@ -230,7 +230,7 @@ class TestFieldsMappping {
         val parsedFields = fieldParser.getObjectTypeParsedFields(
             objectType = testObjectType,
             storeOfRelations = storeOfRelations,
-            conflictingFields = listOf()
+            objectTypeConflictingFieldsIds = listOf()
         )
 
         assertEquals(

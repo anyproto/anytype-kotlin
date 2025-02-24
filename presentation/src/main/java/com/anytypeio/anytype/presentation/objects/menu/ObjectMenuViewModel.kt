@@ -272,7 +272,6 @@ class ObjectMenuViewModel(
                     Relations.DESCRIPTION
                 ) == true
             if (isDescriptionAlreadyInFeatured) {
-                //remove from featured relations
                 removeFromFeaturedRelations(
                     params = RemoveFromFeaturedRelations.Params(
                         ctx = ctx,
@@ -289,7 +288,6 @@ class ObjectMenuViewModel(
                     }
                 )
             } else {
-                //add to featured relations
                 addToFeaturedRelations(
                     params = AddToFeaturedRelations.Params(
                         ctx = ctx,

@@ -26,7 +26,7 @@ interface MiddlewareProtobufLogger {
 
         override fun logRequest(any: Any) {
             if (featureToggles.isLogMiddlewareInteraction) {
-                Timber.d("request -> ${any.toLogMessage(false)}")
+                Timber.d("request -> ${any.toLogMessage(isConciseLogging)}")
             }
         }
 
@@ -43,7 +43,7 @@ interface MiddlewareProtobufLogger {
         private fun Duration?.format(): Long? = this?.toLong(DurationUnit.MILLISECONDS)
 
         override fun logEvent(any: Any) {
-            if (false) {
+            if (featureToggles.isLogMiddlewareInteraction) {
                 Timber.d("event -> ${any.toLogMessage(isConciseLogging)}")
             }
         }

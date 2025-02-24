@@ -182,7 +182,7 @@ class ProfileTesting : EditorTestSetup() {
                 root to
                     mapOf(
                         "iconImage" to "anyimage",
-                        "layout" to ObjectType.Layout.PROFILE.code.toDouble(),
+                        Relations.LAYOUT to ObjectType.Layout.PROFILE.code.toDouble(),
                         "coverType" to CoverType.COLOR.code.toDouble(),
                         "coverId" to CoverColor.BLUE.code,
                     )
@@ -195,7 +195,7 @@ class ProfileTesting : EditorTestSetup() {
             mapOf(
                 root to
                     mapOf(
-                        "layout" to ObjectType.Layout.PROFILE.code.toDouble(),
+                        Relations.LAYOUT to ObjectType.Layout.PROFILE.code.toDouble(),
                         "coverType" to CoverType.COLOR.code.toDouble(),
                         "coverId" to CoverColor.BLUE.code,
                     )

@@ -85,7 +85,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to ObjectType.Layout.TODO.code.toDouble()
+                        Relations.LAYOUT to ObjectType.Layout.TODO.code.toDouble()
                     )
                 )
         )
@@ -135,7 +135,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to ObjectType.Layout.TODO.code.toDouble()
+                        Relations.LAYOUT to ObjectType.Layout.TODO.code.toDouble()
                     )
                 )
         )
@@ -180,7 +180,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to ObjectType.Layout.TODO.code.toDouble(),
+                        Relations.LAYOUT to ObjectType.Layout.TODO.code.toDouble(),
                         "coverType" to CoverType.COLOR.code.toDouble(),
                         "coverId" to CoverColor.BLUE.code,
                     )
@@ -226,7 +226,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to ObjectType.Layout.PROFILE.code.toDouble()
+                        Relations.LAYOUT to ObjectType.Layout.PROFILE.code.toDouble()
                     )
                 )
         )
@@ -270,7 +270,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to ObjectType.Layout.PROFILE.code.toDouble(),
+                        Relations.LAYOUT to ObjectType.Layout.PROFILE.code.toDouble(),
                         "coverType" to CoverType.COLOR.code.toDouble(),
                         "coverId" to CoverColor.BLUE.code,
                     )
@@ -316,7 +316,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to ObjectType.Layout.BASIC.code.toDouble()
+                        Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
                     )
                 )
         )
@@ -360,7 +360,7 @@ class LayoutTesting : EditorTestSetup() {
                 root to
                     mapOf(
                         "iconEmoji" to DefaultDocumentEmojiIconProvider.DOCUMENT_SET.random(),
-                        "layout" to ObjectType.Layout.BASIC.code.toDouble(),
+                        Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
                         "coverType" to CoverType.COLOR.code.toDouble(),
                         "coverId" to CoverColor.BLUE.code,
                     )

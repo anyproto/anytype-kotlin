@@ -109,7 +109,7 @@ object Relations {
         "iconEmoji",
         "iconImage",
         "type",
-        "layout",
+        Relations.LAYOUT,
         "layoutAlign",
         "coverId",
         "coverScale",

@@ -12,7 +12,6 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.TimeInMillis
@@ -176,10 +175,20 @@ class RelationListViewModel(
                 add(Model.Section.Header)
                 addAll(headerFields)
             }
-            if (sidebarFields.isNotEmpty() || filesFields.isNotEmpty()) {
-                add(Model.Section.SideBar)
-                addAll(sidebarFields + filesFields)
+
+            //todo file fields are off for now
+            if (false) {
+                if (sidebarFields.isNotEmpty() || filesFields.isNotEmpty()) {
+                    add(Model.Section.SideBar)
+                    addAll(sidebarFields + filesFields)
+                }
+            } else {
+                if (sidebarFields.isNotEmpty()) {
+                    add(Model.Section.SideBar)
+                    addAll(sidebarFields)
+                }
             }
+
             if (localFields.isNotEmpty()) {
                 add(Model.Section.Local)
                 addAll(localFields)

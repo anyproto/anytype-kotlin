@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.fields
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,12 +37,15 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Model
 import timber.log.Timber
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FieldListScreen(
     state: List<Model>,
     onRelationClicked: (Model.Item) -> Unit,
     onTypeIconClicked: () -> Unit,
-    onLocalInfoIconClicked: () -> Unit
+    onLocalInfoIconClicked: () -> Unit,
+    onAddToTypeClicked: (Model.Item) -> Unit,
+    onRemoveFromObjectClicked: (Model.Item) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -102,11 +106,13 @@ fun FieldListScreen(
                         when (field) {
                             is ObjectRelationView.Checkbox -> {
                                 FieldTypeCheckbox(
-                                    modifier = Modifier.noRippleThrottledClickable {
-                                        onRelationClicked(item)
-                                    },
+                                    modifier = Modifier,
                                     title = field.name,
-                                    isCheck = field.isChecked
+                                    isCheck = field.isChecked,
+                                    isLocal = item.isLocal,
+                                    onFieldClick = { onRelationClicked(item) },
+                                    onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                    onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                 )
                             }
 
@@ -114,19 +120,23 @@ fun FieldListScreen(
                                 val relativeDate = field.relativeDate
                                 if (relativeDate != null) {
                                     FieldTypeDate(
-                                        modifier = Modifier.noRippleThrottledClickable {
-                                            onRelationClicked(item)
-                                        },
+                                        modifier = Modifier,
                                         title = field.name,
-                                        relativeDate = relativeDate
+                                        relativeDate = relativeDate,
+                                        isLocal = item.isLocal,
+                                        onFieldClick = { onRelationClicked(item) },
+                                        onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                        onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                     )
                                 } else {
                                     FieldEmpty(
-                                        modifier = Modifier.noRippleThrottledClickable {
-                                            onRelationClicked(item)
-                                        },
+                                        modifier = Modifier,
                                         title = field.name,
-                                        fieldFormat = RelationFormat.DATE
+                                        fieldFormat = RelationFormat.DATE,
+                                        isLocal = item.isLocal,
+                                        onFieldClick = { onRelationClicked(item) },
+                                        onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                        onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                     )
                                 }
                             }
@@ -136,28 +146,34 @@ fun FieldListScreen(
                                 if (field.key == Relations.ORIGIN) {
                                     val code = textValue?.toInt() ?: -1
                                     FieldTypeText(
-                                        modifier = Modifier.noRippleThrottledClickable {
-                                            onRelationClicked(item)
-                                        },
+                                        modifier = Modifier,
                                         title = field.name,
-                                        text = stringResource(code.resRelationOrigin())
+                                        text = stringResource(code.resRelationOrigin()),
+                                        isLocal = item.isLocal,
+                                        onFieldClick = { onRelationClicked(item) },
+                                        onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                        onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                     )
                                 } else {
                                     if (textValue.isNullOrEmpty() == true) {
                                         FieldEmpty(
-                                            modifier = Modifier.noRippleThrottledClickable {
-                                                onRelationClicked(item)
-                                            },
+                                            modifier = Modifier,
                                             title = field.name,
-                                            fieldFormat = RelationFormat.LONG_TEXT
+                                            fieldFormat = RelationFormat.LONG_TEXT,
+                                            isLocal = item.isLocal,
+                                            onFieldClick = { onRelationClicked(item) },
+                                            onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                            onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                         )
                                     } else {
                                         FieldTypeText(
-                                            modifier = Modifier.noRippleThrottledClickable {
-                                                onRelationClicked(item)
-                                            },
+                                            modifier = Modifier,
                                             title = field.name,
-                                            text = textValue
+                                            text = textValue,
+                                            isLocal = item.isLocal,
+                                            onFieldClick = { onRelationClicked(item) },
+                                            onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                            onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                         )
                                     }
                                 }
@@ -166,18 +182,22 @@ fun FieldListScreen(
                             is ObjectRelationView.File -> {
                                 if (field.files.isEmpty()) {
                                     FieldEmpty(
-                                        modifier = Modifier.noRippleThrottledClickable {
-                                            onRelationClicked(item)
-                                        },
+                                        modifier = Modifier,
                                         title = field.name,
-                                        fieldFormat = RelationFormat.FILE
+                                        fieldFormat = RelationFormat.FILE,
+                                        isLocal = item.isLocal,
+                                        onFieldClick = { onRelationClicked(item) },
+                                        onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                        onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                     )
                                 } else {
                                     FieldTypeFile(
-                                        modifier = Modifier.noRippleThrottledClickable {
-                                            onRelationClicked(item)
-                                        },
-                                        fieldObject = field
+                                        modifier = Modifier,
+                                        fieldObject = field,
+                                        isLocal = item.isLocal,
+                                        onFieldClick = { onRelationClicked(item) },
+                                        onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                        onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                     )
                                 }
                             }
@@ -185,18 +205,22 @@ fun FieldListScreen(
                             is ObjectRelationView.Object -> {
                                 if (field.objects.isEmpty()) {
                                     FieldEmpty(
-                                        modifier = Modifier.noRippleThrottledClickable {
-                                            onRelationClicked(item)
-                                        },
+                                        modifier = Modifier,
                                         title = field.name,
-                                        fieldFormat = RelationFormat.OBJECT
+                                        fieldFormat = RelationFormat.OBJECT,
+                                        isLocal = item.isLocal,
+                                        onFieldClick = { onRelationClicked(item) },
+                                        onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                        onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                     )
                                 } else {
                                     FieldTypeObject(
-                                        modifier = Modifier.noRippleThrottledClickable {
-                                            onRelationClicked(item)
-                                        },
-                                        fieldObject = field
+                                        modifier = Modifier,
+                                        fieldObject = field,
+                                        isLocal = item.isLocal,
+                                        onFieldClick = { onRelationClicked(item) },
+                                        onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                        onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                     )
                                 }
                             }
@@ -204,19 +228,23 @@ fun FieldListScreen(
                             is ObjectRelationView.Status -> {
                                 if (field.status.isEmpty()) {
                                     FieldEmpty(
-                                        modifier = Modifier.noRippleThrottledClickable {
-                                            onRelationClicked(item)
-                                        },
+                                        modifier = Modifier,
                                         title = field.name,
-                                        fieldFormat = RelationFormat.STATUS
+                                        fieldFormat = RelationFormat.STATUS,
+                                        isLocal = item.isLocal,
+                                        onFieldClick = { onRelationClicked(item) },
+                                        onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                        onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                     )
                                 } else {
                                     FieldTypeSelect(
-                                        modifier = Modifier.noRippleThrottledClickable {
-                                            onRelationClicked(item)
-                                        },
+                                        modifier = Modifier,
                                         title = field.name,
-                                        status = field.status.first()
+                                        status = field.status.first(),
+                                        isLocal = item.isLocal,
+                                        onFieldClick = { onRelationClicked(item) },
+                                        onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                        onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                     )
                                 }
                             }
@@ -224,19 +252,23 @@ fun FieldListScreen(
                             is ObjectRelationView.Tags -> {
                                 if (field.tags.isEmpty()) {
                                     FieldEmpty(
-                                        modifier = Modifier.noRippleThrottledClickable {
-                                            onRelationClicked(item)
-                                        },
+                                        modifier = Modifier,
                                         title = field.name,
-                                        fieldFormat = RelationFormat.TAG
+                                        fieldFormat = RelationFormat.TAG,
+                                        isLocal = item.isLocal,
+                                        onFieldClick = { onRelationClicked(item) },
+                                        onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                        onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                     )
                                 } else {
                                     FieldTypeMultiSelect(
-                                        modifier = Modifier.noRippleThrottledClickable {
-                                            onRelationClicked(item)
-                                        },
+                                        modifier = Modifier,
                                         title = field.name,
-                                        tags = field.tags
+                                        tags = field.tags,
+                                        isLocal = item.isLocal,
+                                        onFieldClick = { onRelationClicked(item) },
+                                        onAddToCurrentTypeClick = { onAddToTypeClicked(item) },
+                                        onRemoveFromObjectClick = { onRemoveFromObjectClicked(item) }
                                     )
                                 }
                             }
@@ -336,6 +368,8 @@ fun FieldListScreenPreview() {
         state = listOf(Model.Section.Local),
         onRelationClicked = {},
         onLocalInfoIconClicked = {},
-        onTypeIconClicked = {}
+        onTypeIconClicked = {},
+        onAddToTypeClicked = {},
+        onRemoveFromObjectClicked = {}
     )
 }

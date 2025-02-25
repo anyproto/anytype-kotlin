@@ -1,11 +1,15 @@
 package com.anytypeio.anytype.core_ui.features.fields
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.SubcomposeLayout
@@ -35,16 +39,28 @@ import com.anytypeio.anytype.presentation.sets.model.ObjectView
  *    (where n = total number of items minus two) immediately following its text.
  *    If the text of the second item is long, it is truncated so that the suffix is always visible.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FieldTypeObject(
     modifier: Modifier = Modifier,
-    fieldObject: ObjectRelationView.Object
+    fieldObject: ObjectRelationView.Object,
+    isLocal: Boolean,
+    onFieldClick: () -> Unit,
+    onAddToCurrentTypeClick: () -> Unit,
+    onRemoveFromObjectClick: () -> Unit,
 ) {
+    val isMenuExpanded = remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val halfScreenWidth = screenWidth / 2 - 32.dp
 
     val defaultModifier = modifier
+        .combinedClickable(
+            onClick = onFieldClick,
+            onLongClick = {
+                if (isLocal) isMenuExpanded.value = true
+            }
+        )
         .fillMaxWidth()
         .border(
             width = 1.dp,
@@ -83,6 +99,20 @@ fun FieldTypeObject(
                     objView = singleItem
                 )
             }
+            ItemDropDownMenu(
+                showMenu = isMenuExpanded.value,
+                onDismissRequest = {
+                    isMenuExpanded.value = false
+                },
+                onAddToCurrentTypeClick = {
+                    isMenuExpanded.value = false
+                    onAddToCurrentTypeClick()
+                },
+                onRemoveFromObjectClick = {
+                    isMenuExpanded.value = false
+                    onRemoveFromObjectClick()
+                }
+            )
         }
     } else {
         Column(
@@ -156,6 +186,20 @@ fun FieldTypeObject(
                         }
                     }
                 }
+                ItemDropDownMenu(
+                    showMenu = isMenuExpanded.value,
+                    onDismissRequest = {
+                        isMenuExpanded.value = false
+                    },
+                    onAddToCurrentTypeClick = {
+                        isMenuExpanded.value = false
+                        onAddToCurrentTypeClick()
+                    },
+                    onRemoveFromObjectClick = {
+                        isMenuExpanded.value = false
+                        onRemoveFromObjectClick()
+                    }
+                )
             }
         }
     }

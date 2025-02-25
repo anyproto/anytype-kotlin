@@ -54,7 +54,11 @@ fun TagsPreview() {
                         color = ThemeColor.PINK.code,
                     )
                 ),
-                title = "Tag"
+                title = "Tag",
+                isLocal = true,
+                onRemoveFromObjectClick = {},
+                onAddToCurrentTypeClick = {},
+                onFieldClick = {}
             )
         }
     }
@@ -76,7 +80,11 @@ fun SingleLongTagPreview() {
                         color = ThemeColor.RED.code,
                     ),
                 ),
-                title = "Tag"
+                title = "Tag",
+                isLocal = true,
+                onRemoveFromObjectClick = {},
+                onAddToCurrentTypeClick = {},
+                onFieldClick = {}
             )
         }
     }
@@ -98,7 +106,11 @@ fun SingleShortTagPreview() {
                         color = ThemeColor.RED.code,
                     ),
                 ),
-                title = "Tag"
+                title = "Tag",
+                isLocal = true,
+                onRemoveFromObjectClick = {},
+                onAddToCurrentTypeClick = {},
+                onFieldClick = {}
             )
         }
     }
@@ -125,7 +137,11 @@ fun TwoTagsFirstShortSecondLongPreview() {
                         color = ThemeColor.ORANGE.code,
                     )
                 ),
-                title = "Tag"
+                title = "Tag",
+                isLocal = true,
+                onRemoveFromObjectClick = {},
+                onAddToCurrentTypeClick = {},
+                onFieldClick = {}
             )
         }
     }
@@ -152,7 +168,11 @@ fun TwoShortTagsPreview() {
                         color = ThemeColor.ORANGE.code,
                     )
                 ),
-                title = "Tag"
+                title = "Tag",
+                isLocal = true,
+                onRemoveFromObjectClick = {},
+                onAddToCurrentTypeClick = {},
+                onFieldClick = {}
             )
         }
     }
@@ -184,7 +204,11 @@ fun ThreeShortTagsPreview() {
                         color = ThemeColor.LIME.code,
                     ),
                 ),
-                title = "Tag"
+                title = "Tag",
+                isLocal = true,
+                onRemoveFromObjectClick = {},
+                onAddToCurrentTypeClick = {},
+                onFieldClick = {}
             )
         }
     }
@@ -221,7 +245,11 @@ fun FourTagsWithOverflowPreview() {
                         color = ThemeColor.BLUE.code,
                     )
                 ),
-                title = "Tag"
+                title = "Tag",
+                isLocal = true,
+                onRemoveFromObjectClick = {},
+                onAddToCurrentTypeClick = {},
+                onFieldClick = {}
             )
         }
     }

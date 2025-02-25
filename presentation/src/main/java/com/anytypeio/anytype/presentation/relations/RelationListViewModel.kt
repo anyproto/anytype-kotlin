@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.TimeInMillis
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -64,7 +66,8 @@ class RelationListViewModel(
     private val addRelationToObject: AddRelationToObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fieldParser: FieldParser,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val setObjectTypeRecommendedFields: SetObjectTypeRecommendedFields
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val isEditMode = MutableStateFlow(false)
@@ -128,7 +131,7 @@ class RelationListViewModel(
                 isFeatured = true
             )
         }.map {
-            Model.Item(it, isRemovable = false)
+            Model.Item(it, isLocal = false)
         }
 
         val sidebarFields = parsedFields.sidebar.mapNotNull {
@@ -141,7 +144,7 @@ class RelationListViewModel(
                 isFeatured = false
             )
         }.map {
-            Model.Item(it, isRemovable = false)
+            Model.Item(it, isLocal = false)
         }
 
         val filesFields = parsedFields.file.mapNotNull {
@@ -153,7 +156,7 @@ class RelationListViewModel(
                 fieldParser = fieldParser,
             )
         }.map {
-            Model.Item(it, isRemovable = false)
+            Model.Item(it, isLocal = false)
         }
 
         val localFields = parsedFields.conflictedWithoutSystem.mapNotNull {
@@ -165,7 +168,7 @@ class RelationListViewModel(
                 fieldParser = fieldParser,
             )
         }.map {
-            Model.Item(it, isRemovable = false)
+            Model.Item(it, isLocal = true)
         }
 
         return buildList {
@@ -197,7 +200,7 @@ class RelationListViewModel(
         ).map { view ->
             Model.Item(
                 view = view,
-                isRemovable = isPossibleToRemoveRelation(view)
+                isLocal = false
             )
         }
 
@@ -209,7 +212,7 @@ class RelationListViewModel(
         ).map { view ->
             Model.Item(
                 view = view,
-                isRecommended = true
+                isLocal = false
             )
         }
 
@@ -261,6 +264,32 @@ class RelationListViewModel(
         viewModelScope.launch {
             commands.emit(Command.NavigateToObjectType(objTypeId))
         }
+    }
+
+    fun onAddToTypeClicked(item: Model.Item) {
+        val currentObjTypeId = _currentObjectTypeId ?: return
+        viewModelScope.launch {
+            val objType = storeOfObjectTypes.get(currentObjTypeId)
+            if (objType != null) {
+                val params = SetObjectTypeRecommendedFields.Params(
+                    objectTypeId = objType.id,
+                    fields = objType.recommendedRelations + listOf(item.view.id)
+                )
+                setObjectTypeRecommendedFields.async(params).fold(
+                    onFailure = { Timber.e(it, "Error while setting recommended fields") },
+                    onSuccess = {
+                        Timber.d("Successfully set recommended fields")
+                    }
+                )
+            }
+        }
+    }
+
+    fun onRemoveFromObjectClicked(item: Model.Item) {
+        onDeleteClicked(
+            ctx = vmParams.objectId,
+            view = item.view
+        )
     }
 
     fun onRelationClicked(ctx: Id, target: Id?, view: ObjectRelationView) {
@@ -397,18 +426,19 @@ class RelationListViewModel(
     }
 
     fun onEditOrDoneClicked(isLocked: Boolean) {
-        if (isLocked) {
-            sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
-        } else {
-            isEditMode.value = !isEditMode.value
-            views.value = views.value.map { view ->
-                if (view is Model.Item && !view.isRecommended) {
-                    view.copy(isRemovable = isPossibleToRemoveRelation(view.view))
-                } else {
-                    view
-                }
-            }
-        }
+        //todo legacy, remove
+//        if (isLocked) {
+//            sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
+//        } else {
+//            isEditMode.value = !isEditMode.value
+//            views.value = views.value.map { view ->
+//                if (view is Model.Item && !view.isRecommended) {
+//                    view.copy(isRemovable = isPossibleToRemoveRelation(view.view))
+//                } else {
+//                    view
+//                }
+//            }
+//        }
     }
 
     private fun isPossibleToRemoveRelation(view: ObjectRelationView): Boolean {
@@ -645,8 +675,7 @@ class RelationListViewModel(
 
         data class Item(
             val view: ObjectRelationView,
-            val isRemovable: Boolean = false,
-            val isRecommended: Boolean = false
+            val isLocal: Boolean
         ) : Model() {
             override val identifier: String get() = view.identifier
         }

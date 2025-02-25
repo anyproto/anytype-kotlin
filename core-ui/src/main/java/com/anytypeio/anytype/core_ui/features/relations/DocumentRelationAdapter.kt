@@ -190,8 +190,8 @@ class DocumentRelationAdapter(
                     if (payload is GranularChange) {
                         if (payload.isModeChanged) {
                             val item = items[position]
-                            check(item is RelationListViewModel.Model.Item)
-                            holder.setIsRemovable(item.isRemovable)
+//                            check(item is RelationListViewModel.Model.Item)
+//                            holder.setIsRemovable(item.isRemovable)
                         } else {
                             super.onBindViewHolder(holder, position, payloads)
                         }
@@ -259,7 +259,7 @@ class DocumentRelationAdapter(
         if (holder is ListRelationViewHolder) {
             check(item is RelationListViewModel.Model.Item)
             holder.setIsFeatured(item.view.featured)
-            holder.setIsRemovable(item.isRemovable)
+            //holder.setIsRemovable(item.isRemovable)
         }
     }
 
@@ -317,13 +317,14 @@ class DocumentRelationAdapter(
         override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
             val oldItem = old[oldItemPosition]
             val newItem = new[newItemPosition]
-            return if (oldItem is RelationListViewModel.Model.Item && newItem is RelationListViewModel.Model.Item) {
-                if (newItem.isRemovable != oldItem.isRemovable)
-                    GranularChange(isModeChanged = true)
-                else
-                    null
-            } else
-                null
+            return null
+//            return if (oldItem is RelationListViewModel.Model.Item && newItem is RelationListViewModel.Model.Item) {
+//                if (newItem.isRemovable != oldItem.isRemovable)
+//                    GranularChange(isModeChanged = true)
+//                else
+//                    null
+//            } else
+//                null
         }
     }
 

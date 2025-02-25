@@ -1938,5 +1938,7 @@ Please provide specific details of your needs here.</string>
     <string name="field_file_and_media_title">File &amp; Media</string>
     <string name="field_file_and_media_empty">Add</string>
     <string name="field_checkbox_title">Select</string>
+    <string name="field_menu_add_to_type">Add to the current type</string>
+    <string name="field_menu_remove_from_object">Remove from the object</string>
 
 </resources>

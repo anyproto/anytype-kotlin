@@ -3,6 +3,8 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -10,6 +12,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -64,7 +67,8 @@ object ObjectRelationListModule {
         addRelationToObject: AddRelationToObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         fieldParser: FieldParser,
-        userPermissionProvider: UserPermissionProvider
+        userPermissionProvider: UserPermissionProvider,
+        setObjectTypeRecommendedFields: SetObjectTypeRecommendedFields
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
             vmParams = vmParams,
@@ -82,7 +86,8 @@ object ObjectRelationListModule {
             addRelationToObject = addRelationToObject,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             fieldParser = fieldParser,
-            userPermissionProvider = userPermissionProvider
+            userPermissionProvider = userPermissionProvider,
+            setObjectTypeRecommendedFields = setObjectTypeRecommendedFields
         )
     }
 
@@ -103,4 +108,12 @@ object ObjectRelationListModule {
     @PerModal
     fun deleteRelationFromObject(repo: BlockRepository): DeleteRelationFromObject =
         DeleteRelationFromObject(repo)
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideTypeSetRecommendedFields(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectTypeRecommendedFields = SetObjectTypeRecommendedFields(repo, dispatchers)
 }

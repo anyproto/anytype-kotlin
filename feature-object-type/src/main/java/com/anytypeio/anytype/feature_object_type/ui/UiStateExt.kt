@@ -145,10 +145,11 @@ suspend fun buildUiFieldsList(
         add(Section.SideBar(canAdd = false))
         addAll(sidebarItems)
 
-        if (fileRecommendedFields.isNotEmpty()) {
-            add(Section.File(canAdd = false))
-            addAll(fileRecommendedFields)
-        }
+        //todo file fields are off for now
+//        if (fileRecommendedFields.isNotEmpty()) {
+//            add(Section.File(canAdd = false))
+//            addAll(fileRecommendedFields)
+//        }
 
         if (showHiddenFields) {
             add(Section.Hidden(canAdd = false))

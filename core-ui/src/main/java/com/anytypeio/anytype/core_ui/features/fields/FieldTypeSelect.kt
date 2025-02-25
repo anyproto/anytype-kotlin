@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.fields
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +14,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -25,13 +29,26 @@ import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FieldTypeSelect(
     modifier: Modifier = Modifier,
     title: String,
-    status: StatusView
+    status: StatusView,
+    isLocal: Boolean,
+    onFieldClick: () -> Unit,
+    onAddToCurrentTypeClick: () -> Unit,
+    onRemoveFromObjectClick: () -> Unit,
 ) {
+    val isMenuExpanded = remember { mutableStateOf(false) }
+
     val defaultModifier = modifier
+        .combinedClickable(
+            onClick = onFieldClick,
+            onLongClick = {
+                if (isLocal) isMenuExpanded.value = true
+            }
+        )
         .fillMaxWidth()
         .border(
             width = 1.dp,
@@ -71,6 +88,20 @@ fun FieldTypeSelect(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+        ItemDropDownMenu(
+            showMenu = isMenuExpanded.value,
+            onDismissRequest = {
+                isMenuExpanded.value = false
+            },
+            onAddToCurrentTypeClick = {
+                isMenuExpanded.value = false
+                onAddToCurrentTypeClick()
+            },
+            onRemoveFromObjectClick = {
+                isMenuExpanded.value = false
+                onRemoveFromObjectClick()
+            }
+        )
     }
 }
 
@@ -83,6 +114,10 @@ fun FieldTypeSelectPreview() {
             id = "1",
             status = "In Progress",
             color = ThemeColor.TEAL.code
-        )
+        ),
+        isLocal = true,
+        onRemoveFromObjectClick = {},
+        onAddToCurrentTypeClick = {},
+        onFieldClick = {}
     )
 }

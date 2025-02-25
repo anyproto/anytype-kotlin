@@ -246,7 +246,7 @@
     <string name="action_bar_turn_into">Turn into</string>
     <string name="action_bar_turn_into_page">Turn into Page</string>
     <string name="action_bar_delete">Delete</string>
-    <string name="action_bar_to_bin">Move to Bin</string>
+    <string name="action_bar_to_bin">To Bin</string>
     <string name="action_bar_duplicate">Duplicate</string>
     <string name="action_bar_move_to">Move to</string>
     <string name="action_bar_style">Style</string>
@@ -1938,5 +1938,7 @@ Please provide specific details of your needs here.</string>
     <string name="field_file_and_media_title">File &amp; Media</string>
     <string name="field_file_and_media_empty">Add</string>
     <string name="field_checkbox_title">Select</string>
+    <string name="field_menu_add_to_type">Add to the current type</string>
+    <string name="field_menu_remove_from_object">Remove from the object</string>
 
 </resources>

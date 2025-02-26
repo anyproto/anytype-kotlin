@@ -60,6 +60,34 @@ sealed class ObjectsListSort {
     ) : ObjectsListSort()
 }
 
+fun ObjectsListSort.toMenuSortContainer(): MenuSortsItem.Container =
+    MenuSortsItem.Container(sort = this)
+
+fun ObjectsListSort.toSortOptions(): List<MenuSortsItem.Sort> = listOf(
+    MenuSortsItem.Sort(
+        sort = ObjectsListSort.ByDateUpdated(isSelected = this is ObjectsListSort.ByDateUpdated)
+    ),
+    MenuSortsItem.Sort(
+        sort = ObjectsListSort.ByDateCreated(isSelected = this is ObjectsListSort.ByDateCreated)
+    ),
+    MenuSortsItem.Sort(
+        sort = ObjectsListSort.ByName(isSelected = this is ObjectsListSort.ByName)
+    )
+)
+
+fun ObjectsListSort.toSortTypeOptions(): List<MenuSortsItem.SortType> = listOf(
+    MenuSortsItem.SortType(
+        sort = this,
+        sortType = DVSortType.ASC,
+        isSelected = this.sortType == DVSortType.ASC
+    ),
+    MenuSortsItem.SortType(
+        sort = this,
+        sortType = DVSortType.DESC,
+        isSelected = this.sortType == DVSortType.DESC
+    )
+)
+
 fun ObjectsListSort.toDVSort(): DVSort {
     return when (this) {
         is ObjectsListSort.ByDateCreated -> DVSort(

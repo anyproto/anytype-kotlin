@@ -76,6 +76,9 @@ import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 import com.anytypeio.anytype.presentation.objects.toDVSort
+import com.anytypeio.anytype.presentation.objects.toMenuSortContainer
+import com.anytypeio.anytype.presentation.objects.toSortOptions
+import com.anytypeio.anytype.presentation.objects.toSortTypeOptions
 import com.anytypeio.anytype.presentation.objects.toUiObjectsListItem
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase.Companion.DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase.Companion.DEFAULT_INPUT
@@ -234,37 +237,16 @@ class ObjectTypeViewModel(
     //region DATA
     private fun setupObjectsMenuFlow() {
         viewModelScope.launch {
-            _sortState.collect { sort ->
-                val container = MenuSortsItem.Container(sort = sort)
-                val uiSorts = listOf(
-                    MenuSortsItem.Sort(
-                        sort = ObjectsListSort.ByDateUpdated(isSelected = sort is ObjectsListSort.ByDateUpdated)
-                    ),
-                    MenuSortsItem.Sort(
-                        sort = ObjectsListSort.ByDateCreated(isSelected = sort is ObjectsListSort.ByDateCreated)
-                    ),
-                    MenuSortsItem.Sort(
-                        sort = ObjectsListSort.ByName(isSelected = sort is ObjectsListSort.ByName)
-                    )
-                )
-                val uiSortTypes = listOf(
-                    MenuSortsItem.SortType(
-                        sort = sort,
-                        sortType = DVSortType.ASC,
-                        isSelected = sort.sortType == DVSortType.ASC
-                    ),
-                    MenuSortsItem.SortType(
-                        sort = sort,
-                        sortType = DVSortType.DESC,
-                        isSelected = sort.sortType == DVSortType.DESC
-                    )
-                )
-                uiMenuState.value = uiMenuState.value.copy(
-                    container = container,
-                    sorts = uiSorts,
-                    types = uiSortTypes,
+            _sortState.map { sort ->
+                uiMenuState.value.copy(
+                    container = sort.toMenuSortContainer(),
+                    sorts = sort.toSortOptions(),
+                    types = sort.toSortTypeOptions()
                 )
             }
+                .collect { newMenuState ->
+                    uiMenuState.value = newMenuState
+                }
         }
     }
 

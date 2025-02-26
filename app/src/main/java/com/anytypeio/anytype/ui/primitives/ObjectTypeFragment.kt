@@ -34,7 +34,7 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainScreen
-import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
@@ -96,9 +96,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         Timber.e(e, "Error while exiting back from object type screen")
                     }
                 }
-
-                is ObjectTypeCommand.SendToast.Error -> TODO()
-                is ObjectTypeCommand.SendToast.UnexpectedLayout -> TODO()
                 ObjectTypeCommand.OpenEmojiPicker -> {
                     runCatching {
                         findNavController().navigate(R.id.openEmojiPicker)

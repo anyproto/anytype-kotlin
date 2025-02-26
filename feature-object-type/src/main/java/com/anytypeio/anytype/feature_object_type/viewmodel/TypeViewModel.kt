@@ -3,9 +3,7 @@ package com.anytypeio.anytype.feature_object_type.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -36,13 +34,20 @@ import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
+import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
+import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.ui.UiFieldsButtonState
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
@@ -57,22 +62,14 @@ import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesAddIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesHeaderState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
-import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
-import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
-import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
-import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusWidgetState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
-import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 import com.anytypeio.anytype.presentation.objects.toDVSort
@@ -80,8 +77,6 @@ import com.anytypeio.anytype.presentation.objects.toMenuSortContainer
 import com.anytypeio.anytype.presentation.objects.toSortOptions
 import com.anytypeio.anytype.presentation.objects.toSortTypeOptions
 import com.anytypeio.anytype.presentation.objects.toUiObjectsListItem
-import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase.Companion.DEBOUNCE_DURATION
-import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase.Companion.DEFAULT_INPUT
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
@@ -90,22 +85,15 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -266,69 +254,26 @@ class ObjectTypeViewModel(
                     UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects(it.message ?: ""))
             }
                 .collect { (permission, conflictingFields) ->
-                    if (permission != null) {
-
+                    permission?.let {
                         val objType = storeOfObjectTypes.get(vmParams.objectId)
-
                         if (objType != null) {
-
-                            _objTypeState.value = objType
-
                             val objectPermissions = objType.toObjectPermissionsForTypes(
-                                participantCanEdit = permission.isOwnerOrEditor()
+                                participantCanEdit = it.isOwnerOrEditor()
                             )
-                            _objectTypePermissionsState.value = objectPermissions
-
-                            if (!objectPermissions.canCreateTemplatesForThisType) {
-                                uiTemplatesHeaderState.value = UiTemplatesHeaderState.Hidden
-                                uiTemplatesListState.value = UiTemplatesListState.Companion.EMPTY
-                                uiTemplatesAddIconState.value = UiTemplatesAddIconState.Hidden
-                            }
-
-                            uiTitleState.value = UiTitleState(
-                                title = objType.name.orEmpty(),
-                                isEditable = objectPermissions.canEditDetails
-                            )
-                            uiIconState.value = UiIconState(
-                                icon = objType.objectIcon(urlBuilder),
-                                isEditable = objectPermissions.canEditDetails
-                            )
-                            if (objectPermissions.canCreateObjectThisType) {
-                                uiObjectsAddIconState.value = UiObjectsAddIconState.Visible
-                            }
-                            uiObjectsSettingsIconState.value = UiObjectsSettingsIconState.Visible
-                            if (objectPermissions.canDelete) {
-                                uiEditButtonState.value = UiEditButton.Visible
-                            }
-                            val layout = objType.recommendedLayout
-                            if (layout != null) {
-                                val permissions = _objectTypePermissionsState.value
-                                if (permissions?.canChangeRecommendedLayoutForThisType == true) {
-                                    uiLayoutButtonState.value = UiLayoutButtonState.Visible(layout = layout)
-                                }
-                            }
-                            updateDefaultTemplates(
-                                defaultTemplate = objType.defaultTemplateId
-                            )
-
-                            val items = buildUiFieldsList(
+                            mapObjectTypeToUi(
                                 objType = objType,
-                                stringResourceProvider = stringResourceProvider,
-                                urlBuilder = urlBuilder,
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes,
-                                storeOfRelations = storeOfRelations,
-                                objTypeConflictingFields = conflictingFields,
-                                showHiddenFields = vmParams.showHiddenFields
-                            )
-                            uiFieldsListState.value = UiFieldsListState(items = items)
-                            uiFieldsButtonState.value = UiFieldsButtonState.Visible(
-                                count = items.filter { it is UiFieldsListItem.Item }.count()
+                                objectPermissions = objectPermissions,
+                                conflictingFields = conflictingFields
                             )
                         } else {
+                            Timber.w(
+                                "Error while observing object type [${vmParams.objectId}], " +
+                                        "objType is not present in store"
+                            )
                             _objTypeState.value = null
-                            errorState.value =
-                                UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects("Type details are empty"))
+                            errorState.value = UiErrorState.Show(
+                                UiErrorState.Reason.ErrorGettingObjects("Type details are empty")
+                            )
                         }
                     }
                 }
@@ -380,39 +325,16 @@ class ObjectTypeViewModel(
                     emptyFlow()
                 } else {
                     loadObjects(
-                        typeName = objType.name.orEmpty(),
+                        typeName = fieldParser.getObjectName(objectWrapper = objType),
                         permissions = permission
-                    ).map { items ->
-                        items to permission
-                    }
+                    ).map { items -> items to permission }
                 }
             }.catch {
                 Timber.e(it, "Error while observing objects")
                 errorState.value =
                     UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects(it.message ?: ""))
             }.collect { (items, permission) ->
-                if (items.isEmpty()) {
-                    uiObjectsListState.value = UiObjectsListState.Empty
-                    uiContentState.value = UiContentState.Idle()
-                    uiObjectsHeaderState.value = UiObjectsHeaderState(
-                        count = "0"
-                    )
-                    uiObjectsSettingsIconState.value = UiObjectsSettingsIconState.Visible
-                } else {
-                    uiContentState.value = UiContentState.Idle(
-                        scrollToTop = shouldScrollToTopItems.also {
-                            shouldScrollToTopItems = false
-                        }
-                    )
-                    uiObjectsListState.value = UiObjectsListState(items = items)
-                    uiObjectsHeaderState.value = UiObjectsHeaderState(
-                        count = "${items.size}"
-                    )
-                    uiObjectsSettingsIconState.value = UiObjectsSettingsIconState.Visible
-                }
-                if (permission.canCreateObjectThisType) {
-                    uiObjectsAddIconState.value = UiObjectsAddIconState.Visible
-                }
+                mapObjectsSubscriptionToUi(items, permission)
             }
         }
     }
@@ -423,35 +345,13 @@ class ObjectTypeViewModel(
             _objectTypePermissionsState
                 .flatMapLatest { permissions ->
                     if (permissions != null) {
-                        loadSet().map {
-                            it to permissions
-                        }
+                        loadSet().map { items -> items to permissions }
                     } else {
                         emptyFlow()
                     }
                 }.collect { (items, permissions) ->
                     Timber.d("items: $items, permissions: $permissions")
-                    if (!permissions.participantCanEdit) {
-                        if (items.isEmpty()) {
-                            uiMenuState.value = uiMenuState.value.copy(
-                                objSetItem = UiMenuSetItem.Hidden
-                            )
-                        } else {
-                            uiMenuState.value = uiMenuState.value.copy(
-                                objSetItem = UiMenuSetItem.OpenSet(setId = items[0].id)
-                            )
-                        }
-                    } else {
-                        if (items.isEmpty()) {
-                            uiMenuState.value = uiMenuState.value.copy(
-                                objSetItem = UiMenuSetItem.CreateSet
-                            )
-                        } else {
-                            uiMenuState.value = uiMenuState.value.copy(
-                                objSetItem = UiMenuSetItem.OpenSet(setId = items[0].id)
-                            )
-                        }
-                    }
+                    mapSetSubscriptionToUi(items, permissions)
                 }
         }
     }
@@ -462,40 +362,13 @@ class ObjectTypeViewModel(
             _objectTypePermissionsState
                 .flatMapLatest { permissions ->
                     if (permissions != null && permissions.canCreateTemplatesForThisType) {
-                        loadTemplates(typeId = vmParams.objectId).map {
-                            it to permissions
-                        }
+                        loadTemplates(typeId = vmParams.objectId)
+                            .map { templates -> templates to permissions }
                     } else {
                         emptyFlow()
                     }
                 }.collect { (templates, permissions) ->
-                    uiTemplatesHeaderState.value = UiTemplatesHeaderState.Visible(
-                        count = "${templates.size}"
-                    )
-                    val updated = templates.map { template ->
-                        when (template) {
-                            is TemplateView.Blank -> template
-                            is TemplateView.New -> template
-                            is TemplateView.Template -> {
-                                template.copy(isDefault = template.id == _objTypeState.value?.defaultTemplateId)
-                            }
-                        }
-                    }
-                    val result = buildList<TemplateView> {
-                        addAll(updated)
-                        if (permissions.participantCanEdit) {
-                            add(
-                                TemplateView.New(
-                                    targetTypeId = TypeId(vmParams.objectId),
-                                    targetTypeKey = TypeKey(vmParams.objectId)
-                                )
-                            )
-                            uiTemplatesAddIconState.value = UiTemplatesAddIconState.Visible
-                        }
-                    }
-                    uiTemplatesListState.value = UiTemplatesListState(
-                        items = result
-                    )
+                    mapTemplatesSubscriptionToUi(templates, permissions)
                 }
         }
     }
@@ -590,7 +463,6 @@ class ObjectTypeViewModel(
                 )
             }
         }
-
     }
 
     private fun handleError(e: Throwable) {
@@ -600,7 +472,7 @@ class ObjectTypeViewModel(
     }
     //endregion
 
-    //region Ui STATE
+    //region UI STATE
     private fun updateDefaultTemplates(defaultTemplate: Id?) {
         val templates = uiTemplatesListState.value.items
         uiTemplatesListState.value = uiTemplatesListState.value.copy(
@@ -614,6 +486,130 @@ class ObjectTypeViewModel(
                 }
             }
         )
+    }
+
+    private suspend fun mapObjectTypeToUi(
+        objType: ObjectWrapper.Type,
+        objectPermissions: ObjectPermissions,
+        conflictingFields: List<Id>
+    ) {
+        _objTypeState.value = objType
+        _objectTypePermissionsState.value = objectPermissions
+
+        if (!objectPermissions.canCreateTemplatesForThisType) {
+            uiTemplatesHeaderState.value = UiTemplatesHeaderState.Hidden
+            uiTemplatesListState.value = UiTemplatesListState.EMPTY
+            uiTemplatesAddIconState.value = UiTemplatesAddIconState.Hidden
+        }
+        uiTitleState.value = UiTitleState(
+            title = objType.name.orEmpty(),
+            isEditable = objectPermissions.canEditDetails
+        )
+        uiIconState.value = UiIconState(
+            icon = objType.objectIcon(urlBuilder),
+            isEditable = objectPermissions.canEditDetails
+        )
+        if (objectPermissions.canCreateObjectThisType) {
+            uiObjectsAddIconState.value = UiObjectsAddIconState.Visible
+        }
+        uiObjectsSettingsIconState.value = UiObjectsSettingsIconState.Visible
+        if (objectPermissions.canDelete) {
+            uiEditButtonState.value = UiEditButton.Visible
+        }
+        objType.recommendedLayout?.let { layout ->
+            if (_objectTypePermissionsState.value?.canChangeRecommendedLayoutForThisType == true) {
+                uiLayoutButtonState.value = UiLayoutButtonState.Visible(layout = layout)
+            }
+        }
+        updateDefaultTemplates(defaultTemplate = objType.defaultTemplateId)
+        val items = buildUiFieldsList(
+            objType = objType,
+            stringResourceProvider = stringResourceProvider,
+            urlBuilder = urlBuilder,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            storeOfRelations = storeOfRelations,
+            objTypeConflictingFields = conflictingFields,
+            showHiddenFields = vmParams.showHiddenFields
+        )
+        uiFieldsListState.value = UiFieldsListState(items = items)
+        uiFieldsButtonState.value = UiFieldsButtonState.Visible(
+            count = items.count { it is UiFieldsListItem.Item }
+        )
+    }
+
+    private fun mapObjectsSubscriptionToUi(
+        items: List<UiObjectsListItem>,
+        permission: ObjectPermissions
+    ) {
+        if (items.isEmpty()) {
+            uiObjectsListState.value = UiObjectsListState.Empty
+            uiContentState.value = UiContentState.Idle()
+            uiObjectsHeaderState.value = UiObjectsHeaderState(count = "0")
+            uiObjectsSettingsIconState.value = UiObjectsSettingsIconState.Visible
+        } else {
+            uiContentState.value = UiContentState.Idle(
+                scrollToTop = shouldScrollToTopItems.also { shouldScrollToTopItems = false }
+            )
+            uiObjectsListState.value = UiObjectsListState(items = items)
+            uiObjectsHeaderState.value = UiObjectsHeaderState(count = "${items.size}")
+            uiObjectsSettingsIconState.value = UiObjectsSettingsIconState.Visible
+        }
+        if (permission.canCreateObjectThisType) {
+            uiObjectsAddIconState.value = UiObjectsAddIconState.Visible
+        }
+    }
+
+    private fun mapSetSubscriptionToUi(
+        items: List<ObjectWrapper.Basic>,
+        permissions: ObjectPermissions
+    ) {
+        uiMenuState.value = if (!permissions.participantCanEdit) {
+            if (items.isEmpty()) {
+                uiMenuState.value.copy(objSetItem = UiMenuSetItem.Hidden)
+            } else {
+                uiMenuState.value.copy(objSetItem = UiMenuSetItem.OpenSet(setId = items[0].id))
+            }
+        } else {
+            if (items.isEmpty()) {
+                uiMenuState.value.copy(objSetItem = UiMenuSetItem.CreateSet)
+            } else {
+                uiMenuState.value.copy(objSetItem = UiMenuSetItem.OpenSet(setId = items[0].id))
+            }
+        }
+    }
+
+    private fun mapTemplatesSubscriptionToUi(
+        templates: List<TemplateView>,
+        permissions: ObjectPermissions
+    ) {
+        uiTemplatesHeaderState.value = UiTemplatesHeaderState.Visible(count = "${templates.size}")
+
+        // Update each template view regarding default selection.
+        val updatedTemplates = templates.map { template ->
+            when (template) {
+                is TemplateView.Blank -> template
+                is TemplateView.New -> template
+                is TemplateView.Template -> template.copy(
+                    isDefault = template.id == _objTypeState.value?.defaultTemplateId
+                )
+            }
+        }
+
+        // Build final list with an extra "new template" item if allowed.
+        val finalTemplates = buildList<TemplateView> {
+            addAll(updatedTemplates)
+            if (permissions.participantCanEdit) {
+                add(
+                    TemplateView.New(
+                        targetTypeId = TypeId(vmParams.objectId),
+                        targetTypeKey = TypeKey(vmParams.objectId)
+                    )
+                )
+                uiTemplatesAddIconState.value = UiTemplatesAddIconState.Visible
+            }
+        }
+        uiTemplatesListState.value = UiTemplatesListState(items = finalTemplates)
     }
 
     fun hideError() {
@@ -745,6 +741,7 @@ class ObjectTypeViewModel(
                     )
                 }
             }
+
             is TypeEvent.OnTemplateMenuClick.Duplicate -> {
                 if (event.item is TemplateView.Template) {
                     proceedWithTemplateDuplicate(
@@ -752,9 +749,11 @@ class ObjectTypeViewModel(
                     )
                 }
             }
+
             is TypeEvent.OnTemplateMenuClick.Edit -> {
                 onTemplateItemClick(event.item)
             }
+
             is TypeEvent.OnTemplateMenuClick.SetAsDefault -> {
                 if (event.item is TemplateView.Template) {
                     proceedWithSetDefaultTemplate(
@@ -964,6 +963,7 @@ class ObjectTypeViewModel(
                     fileFields = filesItems
                 )
             }
+
             is FieldEvent.DragEvent.OnMove -> {
                 val currentList = uiFieldsListState.value.items.toMutableList()
                 val fromIndex = currentList.indexOfFirst { it.id == event.fromKey }
@@ -992,18 +992,23 @@ class ObjectTypeViewModel(
                                 is UiFieldsListItem.Section.Header -> {
                                     if (item.id != deleteId) headerItems.add(item.id)
                                 }
+
                                 is UiFieldsListItem.Section.SideBar -> {
                                     if (item.id != deleteId) sideBarItems.add(item.id)
                                 }
+
                                 is UiFieldsListItem.Section.Hidden -> {
                                     if (item.id != deleteId) hiddenItems.add(item.id)
                                 }
+
                                 is UiFieldsListItem.Section.File -> {
                                     if (item.id != deleteId) filesItems.add(item.id)
                                 }
+
                                 else -> {}
                             }
                         }
+
                         is UiFieldsListItem.Section -> currentSection = item
                     }
                 }
@@ -1014,6 +1019,7 @@ class ObjectTypeViewModel(
                     fileFields = filesItems
                 )
             }
+
             is FieldEvent.FieldItemMenu.OnAddLocalToTypeClick -> {
                 val currentRecommendedFields = _objTypeState.value?.recommendedRelations.orEmpty()
                 val newRecommendedFields = currentRecommendedFields + event.item.id
@@ -1227,7 +1233,7 @@ class ObjectTypeViewModel(
             ctx = vmParams.objectId,
             details = mapOf(Relations.DEFAULT_TEMPLATE_ID to template)
         )
-        viewModelScope.launch{
+        viewModelScope.launch {
             setObjectDetails.async(params).fold(
                 onSuccess = {
                     Timber.d("Template $template set as default")
@@ -1257,21 +1263,6 @@ class ObjectTypeViewModel(
     }
     //endregion
 
-    //region NEW FIELDS
-    private val userInput = MutableStateFlow(DEFAULT_INPUT)
-    @OptIn(FlowPreview::class)
-    private val searchQuery = userInput.take(1).onCompletion {
-        emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
-    }
-
-    fun onFieldsSearchUpdate(input: String) {
-        userInput.value = input
-    }
-
-    private fun proceedWithGettingNonTypeFields(typeAllFieldsIds: List<Id>) {
-    }
-    //endregion
-
     companion object {
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
         const val OBJECTS_MAX_COUNT = 20
@@ -1281,25 +1272,4 @@ class ObjectTypeViewModel(
         fun setsSubId(objectId: Id) = "TYPE-SET-ID--$objectId"
         fun templatesSubId(objectId: Id) = "TYPE-TEMPLATES-SUB-ID--$objectId"
     }
-}
-
-sealed class ObjectTypeCommand {
-
-    sealed class SendToast : ObjectTypeCommand() {
-        data class Error(val message: String) : SendToast()
-        data class UnexpectedLayout(val layout: String) : SendToast()
-    }
-
-    data object Back : ObjectTypeCommand()
-
-    data class OpenTemplate(
-        val templateId: Id,
-        val typeId: Id,
-        val typeKey: Key,
-        val spaceId: Id
-    ): ObjectTypeCommand()
-
-    data object OpenEmojiPicker : ObjectTypeCommand()
-
-    data object OpenFieldsScreen : ObjectTypeCommand()
 }

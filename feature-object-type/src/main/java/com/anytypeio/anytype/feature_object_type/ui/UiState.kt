@@ -2,6 +2,7 @@ package com.anytypeio.anytype.feature_object_type.ui
 
 import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -18,6 +19,22 @@ data class ObjectTypeVmParams(
     val showHiddenFields: Boolean
 )
 
+sealed class ObjectTypeCommand {
+
+    data object Back : ObjectTypeCommand()
+
+    data class OpenTemplate(
+        val templateId: Id,
+        val typeId: Id,
+        val typeKey: Key,
+        val spaceId: Id
+    ) : ObjectTypeCommand()
+
+    data object OpenEmojiPicker : ObjectTypeCommand()
+
+    data object OpenFieldsScreen : ObjectTypeCommand()
+}
+
 //region OBJECT TYPE HEADER (title + icon)
 data class UiTitleState(val title: String, val isEditable: Boolean) {
     companion object {
@@ -33,12 +50,12 @@ data class UiIconState(val icon: ObjectIcon, val isEditable: Boolean) {
 //endregion
 
 //region LAYOUTS
-sealed class UiLayoutButtonState{
+sealed class UiLayoutButtonState {
     data object Hidden : UiLayoutButtonState()
     data class Visible(val layout: ObjectType.Layout) : UiLayoutButtonState()
 }
 
-sealed class UiLayoutTypeState{
+sealed class UiLayoutTypeState {
     data object Hidden : UiLayoutTypeState()
     data class Visible(
         val layouts: List<ObjectType.Layout>,
@@ -47,7 +64,7 @@ sealed class UiLayoutTypeState{
 }
 //endregion
 
-sealed class UiFieldsButtonState{
+sealed class UiFieldsButtonState {
     data object Hidden : UiFieldsButtonState()
     data class Visible(val count: Int) : UiFieldsButtonState()
 
@@ -55,11 +72,12 @@ sealed class UiFieldsButtonState{
 
 //region MENU
 @Immutable
-sealed class UiMenuSetItem{
-    data object Hidden: UiMenuSetItem()
-    data object CreateSet: UiMenuSetItem()
+sealed class UiMenuSetItem {
+    data object Hidden : UiMenuSetItem()
+    data object CreateSet : UiMenuSetItem()
+
     @Immutable
-    data class OpenSet(val setId: Id): UiMenuSetItem()
+    data class OpenSet(val setId: Id) : UiMenuSetItem()
 }
 
 data class UiMenuState(
@@ -81,6 +99,7 @@ data class UiMenuState(
 @Immutable
 sealed class UiSettingsMenuState {
     data object Hidden : UiSettingsMenuState()
+
     @Immutable
     data class Visible(
         val menuItems: List<UiSettingsMenuItem>
@@ -90,6 +109,7 @@ sealed class UiSettingsMenuState {
 @Immutable
 sealed class UiTemplatesMenuState {
     data object Hidden : UiTemplatesMenuState()
+
     @Immutable
     data class Visible(
         val menuItems: List<UiTemplatesMenuItem>
@@ -113,14 +133,14 @@ enum class UiObjectsMenuItem {
 //endregion
 
 //region TEMPLATES HEADER
-sealed class UiTemplatesHeaderState{
+sealed class UiTemplatesHeaderState {
     data object Hidden : UiTemplatesHeaderState()
-    data class Visible(val count: String): UiTemplatesHeaderState()
+    data class Visible(val count: String) : UiTemplatesHeaderState()
 }
 
-sealed class UiTemplatesAddIconState{
+sealed class UiTemplatesAddIconState {
     data object Hidden : UiTemplatesAddIconState()
-    data object Visible: UiTemplatesAddIconState()
+    data object Visible : UiTemplatesAddIconState()
 }
 //endregion
 
@@ -141,14 +161,14 @@ data class UiObjectsHeaderState(val count: String) {
     }
 }
 
-sealed class UiObjectsAddIconState{
+sealed class UiObjectsAddIconState {
     data object Hidden : UiObjectsAddIconState()
-    data object Visible: UiObjectsAddIconState()
+    data object Visible : UiObjectsAddIconState()
 }
 
-sealed class UiObjectsSettingsIconState{
+sealed class UiObjectsSettingsIconState {
     data object Hidden : UiObjectsSettingsIconState()
-    data object Visible: UiObjectsSettingsIconState()
+    data object Visible : UiObjectsSettingsIconState()
 }
 //endregion
 

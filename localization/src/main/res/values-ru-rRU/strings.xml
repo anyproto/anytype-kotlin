@@ -173,7 +173,7 @@
     <string name="hint_toggle">Переключить блокировку</string>
     <string name="hint_paste_link">Вставить ссылку</string>
     <string name="empty_tap_to_create_new_block">Пусто. Нажмите, чтобы создать новый блок</string>
-    <string name="untitled">Untitled</string>
+    <string name="untitled">Без названия</string>
     <string name="untitled_set">Набор без названия</string>
     <string name="untitled_collection">Коллекция без названия</string>
     <string name="archived">В архиве</string>

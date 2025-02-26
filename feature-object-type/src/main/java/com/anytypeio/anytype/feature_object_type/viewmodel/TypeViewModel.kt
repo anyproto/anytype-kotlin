@@ -278,7 +278,7 @@ class ObjectTypeViewModel(
             ) { _, _, permission, conflictingFields ->
                 permission to conflictingFields
             }.catch {
-                Timber.e(it, "Error while observing object")
+                Timber.e(it, "Error while observing object type")
                 _objTypeState.value = null
                 errorState.value =
                     UiErrorState.Show(UiErrorState.Reason.ErrorGettingObjects(it.message ?: ""))
@@ -351,21 +351,6 @@ class ObjectTypeViewModel(
                     }
                 }
         }
-    }
-
-    private fun updateDefaultTemplates(defaultTemplate: Id?) {
-        val templates = uiTemplatesListState.value.items
-        uiTemplatesListState.value = uiTemplatesListState.value.copy(
-            templates.map { template ->
-                when (template) {
-                    is TemplateView.Blank -> template
-                    is TemplateView.New -> template
-                    is TemplateView.Template -> {
-                        template.copy(isDefault = template.id == defaultTemplate)
-                    }
-                }
-            }
-        )
     }
 
     private fun proceedWithObservingSyncStatus() {
@@ -634,6 +619,21 @@ class ObjectTypeViewModel(
     //endregion
 
     //region Ui STATE
+    private fun updateDefaultTemplates(defaultTemplate: Id?) {
+        val templates = uiTemplatesListState.value.items
+        uiTemplatesListState.value = uiTemplatesListState.value.copy(
+            templates.map { template ->
+                when (template) {
+                    is TemplateView.Blank -> template
+                    is TemplateView.New -> template
+                    is TemplateView.Template -> {
+                        template.copy(isDefault = template.id == defaultTemplate)
+                    }
+                }
+            }
+        )
+    }
+
     fun hideError() {
         errorState.value = UiErrorState.Hidden
     }

@@ -732,7 +732,7 @@ message Event {
                 FaviconHash faviconHash = 6;
                 Type type = 7;
                 TargetObjectId targetObjectId = 8;
-
+                
 
                 message Url {
                     string value = 1;

@@ -62,6 +62,7 @@ import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
+import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusWidgetState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand.OpenEmojiPicker
@@ -81,6 +82,7 @@ import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase.Com
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
+import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import kotlin.collections.map
@@ -309,7 +311,6 @@ class ObjectTypeViewModel(
                                 icon = objType.objectIcon(urlBuilder),
                                 isEditable = objectPermissions.canEditDetails
                             )
-                            //todo некоторые параметры меню зависят от настроек доступа - но не от всех, например создание Сета запрещено для Viewers но разрешено для Owners + Files(хотя и есть ObjectRestriction.Details)
                             if (objectPermissions.canCreateObjectThisType) {
                                 uiObjectsAddIconState.value = UiObjectsAddIconState.Visible
                             }
@@ -374,13 +375,8 @@ class ObjectTypeViewModel(
                 .catch { Timber.e(it, "Error while observing sync status") }
                 .collect { syncAndP2pState ->
                     uiSyncStatusBadgeState.value = UiSyncStatusBadgeState.Visible(syncAndP2pState)
-                    val state = uiSyncStatusWidgetState.value
-//                    uiSyncStatusWidgetState.value = when (state) {
-//                        UiSyncStatusWidgetState.Hidden -> UiSyncStatusWidgetState.Hidden
-//                        is UiSyncStatusWidgetState.Visible -> state.copy(
-//                            status = syncAndP2pState.toSyncStatusWidgetState()
-//                        )
-//                    }
+                    uiSyncStatusWidgetState.value =
+                        uiSyncStatusWidgetState.value.updateStatus(syncAndP2pState)
                 }
         }
     }
@@ -548,7 +544,7 @@ class ObjectTypeViewModel(
             filters = filtersForSearch(objectTypeId = vmParams.objectId),
             sorts = listOf(activeSort.toDVSort()),
             space = vmParams.spaceId,
-            limit = 20,
+            limit = OBJECTS_MAX_COUNT,
             keys = defaultKeys,
             subscription = objectsSubId(vmParams.objectId)
         )
@@ -597,7 +593,7 @@ class ObjectTypeViewModel(
             filters = filtersForTemplatesSearch(objectTypeId = vmParams.objectId),
             sorts = listOf(sortForTemplatesSearch()),
             space = vmParams.spaceId,
-            limit = 200,
+            limit = TEMPLATE_MAX_COUNT,
             keys = defaultKeys,
             subscription = templatesSubId(vmParams.objectId)
         )
@@ -631,9 +627,9 @@ class ObjectTypeViewModel(
     }
 
     private fun handleError(e: Throwable) {
-//        uiContentState.value = UiContentState.(
-//            message = e.message ?: "An error occurred while loading data."
-//        )
+        errorState.value = UiErrorState.Show(
+            reason = UiErrorState.Reason.Other(e.message ?: "")
+        )
     }
     //endregion
 
@@ -850,17 +846,8 @@ class ObjectTypeViewModel(
             }
         }
         shouldScrollToTopItems = true
-        //uiItemsState.value = UiItemsState.Empty
         _sortState.value = newSort
-        //proceedWithSortSaving(uiTabsState.value, newSort)
         restartSubscription.value++
-//        viewModelScope.launch {
-//            sendAnalyticsAllContentChangeSort(
-//                analytics = analytics,
-//                type = sort.toAnalyticsSortType().first,
-//                sort = sort.toAnalyticsSortType().second
-//            )
-//        }
     }
 
     private fun updateTitle(input: String) {
@@ -1300,17 +1287,13 @@ class ObjectTypeViewModel(
     }
 
     private fun proceedWithGettingNonTypeFields(typeAllFieldsIds: List<Id>) {
-
-        viewModelScope.launch{
-            storeOfRelations.getAll()
-        }
-
     }
-
     //endregion
 
     companion object {
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
+        const val OBJECTS_MAX_COUNT = 20
+        const val TEMPLATE_MAX_COUNT = 100
 
         fun objectsSubId(objectId: Id) = "TYPE-OBJECTS-SUB-ID-$objectId"
         fun setsSubId(objectId: Id) = "TYPE-SET-ID--$objectId"

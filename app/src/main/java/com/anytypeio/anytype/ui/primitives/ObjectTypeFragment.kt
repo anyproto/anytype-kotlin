@@ -261,22 +261,33 @@ class ObjectTypeFragment : BaseComposeFragment() {
     @Composable
     private fun ErrorScreen() {
         val errorStateScreen = vm.errorState.collectAsStateWithLifecycle().value
+        if (errorStateScreen is UiErrorState.Show) {
+            when (val r = errorStateScreen.reason) {
+                is UiErrorState.Reason.ErrorGettingObjects -> {
+                    BaseAlertDialog(
+                        dialogText = r.msg,
+                        buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                        onButtonClick = vm::closeObject,
+                        onDismissRequest = vm::closeObject
+                    )
+                }
+                is UiErrorState.Reason.Other -> {
+                    BaseAlertDialog(
+                        dialogText = r.msg,
+                        buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                        onButtonClick = vm::hideError,
+                        onDismissRequest = vm::hideError
+                    )
+                }
+            }
+        }
         when (val state = errorStateScreen) {
             UiErrorState.Hidden -> {
 
             }
 
             is UiErrorState.Show -> {
-                val message = when (val r = state.reason) {
-                    is UiErrorState.Reason.ErrorGettingObjects -> r.msg
-                    is UiErrorState.Reason.Other -> r.msg
-                }
-                BaseAlertDialog(
-                    dialogText = message,
-                    buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
-                    onButtonClick = vm::closeObject,
-                    onDismissRequest = vm::closeObject
-                )
+
             }
         }
     }

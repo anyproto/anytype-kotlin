@@ -34,7 +34,7 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainScreen
-import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeCommand
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
@@ -96,9 +96,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         Timber.e(e, "Error while exiting back from object type screen")
                     }
                 }
-
-                is ObjectTypeCommand.SendToast.Error -> TODO()
-                is ObjectTypeCommand.SendToast.UnexpectedLayout -> TODO()
                 ObjectTypeCommand.OpenEmojiPicker -> {
                     runCatching {
                         findNavController().navigate(R.id.openEmojiPicker)
@@ -261,22 +258,33 @@ class ObjectTypeFragment : BaseComposeFragment() {
     @Composable
     private fun ErrorScreen() {
         val errorStateScreen = vm.errorState.collectAsStateWithLifecycle().value
+        if (errorStateScreen is UiErrorState.Show) {
+            when (val r = errorStateScreen.reason) {
+                is UiErrorState.Reason.ErrorGettingObjects -> {
+                    BaseAlertDialog(
+                        dialogText = "${stringResource(R.string.object_type_open_type_error)}:\n${r.msg}",
+                        buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                        onButtonClick = vm::closeObject,
+                        onDismissRequest = vm::closeObject
+                    )
+                }
+                is UiErrorState.Reason.Other -> {
+                    BaseAlertDialog(
+                        dialogText = r.msg,
+                        buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                        onButtonClick = vm::hideError,
+                        onDismissRequest = vm::hideError
+                    )
+                }
+            }
+        }
         when (val state = errorStateScreen) {
             UiErrorState.Hidden -> {
 
             }
 
             is UiErrorState.Show -> {
-                val message = when (val r = state.reason) {
-                    is UiErrorState.Reason.ErrorGettingObjects -> r.msg
-                    is UiErrorState.Reason.Other -> r.msg
-                }
-                BaseAlertDialog(
-                    dialogText = message,
-                    buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
-                    onButtonClick = vm::closeObject,
-                    onDismissRequest = vm::closeObject
-                )
+
             }
         }
     }

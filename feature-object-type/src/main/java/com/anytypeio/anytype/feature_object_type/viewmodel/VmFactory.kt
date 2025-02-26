@@ -3,8 +3,6 @@ package com.anytypeio.anytype.feature_object_type.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Command.ObjectTypeSetRecommendedFields
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider

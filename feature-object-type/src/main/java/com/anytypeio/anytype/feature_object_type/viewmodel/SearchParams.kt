@@ -124,27 +124,3 @@ private fun buildTemplateFilter(): DVFilter = DVFilter(
     condition = DVFilterCondition.NOT_EQUAL,
     value = ObjectTypeUniqueKeys.TEMPLATE
 )
-
-val defaultTypeKeys = listOf(
-    Relations.ID,
-    Relations.SPACE_ID,
-    Relations.TARGET_SPACE_ID,
-    Relations.UNIQUE_KEY,
-    Relations.NAME,
-    Relations.ICON_IMAGE,
-    Relations.ICON_EMOJI,
-    Relations.TYPE,
-    Relations.LAYOUT,
-    Relations.RECOMMENDED_LAYOUT,
-    Relations.RECOMMENDED_RELATIONS,
-    Relations.RECOMMENDED_FEATURED_RELATIONS,
-    Relations.RECOMMENDED_HIDDEN_RELATIONS,
-    Relations.RECOMMENDED_FILE_RELATIONS,
-    Relations.DEFAULT_TEMPLATE_ID,
-    Relations.IS_ARCHIVED,
-    Relations.IS_DELETED,
-    Relations.IS_HIDDEN,
-    Relations.SNIPPET,
-    Relations.RESTRICTIONS,
-    Relations.DESCRIPTION
-)

@@ -1606,11 +1606,11 @@ Please provide specific details of your needs here.</string>
     <string name="chats_alert_delete_this_message_description">Non può essere ripristinato dopo la conferma</string>
     <string name="chats_alert_delete_this_message">Eliminare questo messaggio?</string>
     <string name="migration_migration_is_in_progress">Migrazione in corso</string>
-    <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
+    <string name="migration_this_shouldn_t_take_long">Questo potrebbe richiedere un po \'di tempo. Si prega di non chiudere l\'app fino a quando il processo è completato.</string>
     <string name="migration_error_try_again">Riprova</string>
     <string name="migration_migration_failed">Migrazione fallita</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Si prega di liberare un po\' di spazio ed eseguire nuovamente il processo.</string>
-    <string name="fields_screen_title">Fields</string>
+    <string name="fields_screen_title">Campi</string>
     <string name="field_text_title">Testo</string>
     <string name="field_text_empty">Enter</string>
     <string name="field_number_title">Numero</string>

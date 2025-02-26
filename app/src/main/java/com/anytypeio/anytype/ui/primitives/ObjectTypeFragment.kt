@@ -265,7 +265,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
             when (val r = errorStateScreen.reason) {
                 is UiErrorState.Reason.ErrorGettingObjects -> {
                     BaseAlertDialog(
-                        dialogText = r.msg,
+                        dialogText = "${stringResource(R.string.object_type_open_type_error)}:\n${r.msg}",
                         buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
                         onButtonClick = vm::closeObject,
                         onDismissRequest = vm::closeObject

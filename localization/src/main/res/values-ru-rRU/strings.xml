@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Применить случайный сплошной цвет</string>
     <string name="space_settings_apply_upload_image">Загрузить изображение</string>
     <string name="profile_settings_apply_upload_image">Загрузить изображение</string>
-    <string name="remove_image">Remove image</string>
+    <string name="remove_image">Удалить изображение</string>
     <string name="delete_space">Удалить пространство</string>
     <string name="you_can_store">Вы можете бесплатно хранить до %1$s ваших файлов на нашем узле резервного копирования. При достижении лимита файлы будут храниться только локально.</string>
     <string name="in_order_to_save">Чтобы сохранить место на вашем локальном устройстве, вы можете выгрузить все ваши файлы в наш зашифрованный узел резервного копирования. Файлы будут загружены обратно, когда вы откроете их.</string>
@@ -373,7 +373,7 @@
     <string name="scroll_to_select_position">Прокрутите для выбора новой позиции</string>
     <string name="block_action_add_below">Добавить ниже</string>
     <string name="content_desc_back_button">Back button</string>
-    <string name="content_desc_share_button">Share button</string>
+    <string name="content_desc_share_button">Кнопка \"Поделиться\"</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1223,8 +1223,8 @@
     <string name="multiplayer_notification_member_request_approved">Запрос одобрен</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами доступа только для чтения. Пространство будет доступно на вашем устройстве в ближайшее время.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами на редактирование. Пространство будет доступно в ближайшее время на устройстве.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">Пространство \"%1$s\" больше недоступно.</string>
+    <string name="multiplayer_notification_member_removed_from_space">Вы были удалены из пространства \"%1$s\", или оно было удалено владельцем.</string>
     <string name="multiplayer_notification_member_permissions_changed">Разрешения изменены</string>
     <string name="multiplayer_notification_member_permission_change_read">Ваши права доступа были изменены на только для чтения в пространстве %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Права доступа были изменены на редактирование в пространстве %1$s.</string>
@@ -1253,7 +1253,7 @@
         <item quantity="many">%1$d запросов</item>
         <item quantity="other">%1$d запросы</item>
     </plurals>
-    <string name="multiplayer_you_as_member">You</string>
+    <string name="multiplayer_you_as_member">Вы</string>
     <string name="multiplayer_spaces">Пространства</string>
     <string name="multiplayer_space_status_joining">Присоединяется</string>
     <string name="multiplayer_space_status_active">Активно</string>
@@ -1633,12 +1633,12 @@
     <string name="object_types_human">Человек</string>
     <string name="chats_alert_delete_this_message_description">Его нельзя восстановить после подтверждения</string>
     <string name="chats_alert_delete_this_message">Удалить это сообщение?</string>
-    <string name="migration_migration_is_in_progress">Migration is in progress</string>
-    <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
+    <string name="migration_migration_is_in_progress">Миграция в процессе</string>
+    <string name="migration_this_shouldn_t_take_long">Это может занять некоторое время. Пожалуйста, не закрывайте приложение, пока процесс не завершится.</string>
     <string name="migration_error_try_again">Попробуйте еще раз</string>
-    <string name="migration_migration_failed">Migration failed</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
-    <string name="fields_screen_title">Fields</string>
+    <string name="migration_migration_failed">Сбой миграции</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Пожалуйста, освободите пространство и запустите процесс снова.</string>
+    <string name="fields_screen_title">Поля</string>
     <string name="field_text_title">Текст</string>
     <string name="field_text_empty">Войти</string>
     <string name="field_number_title">Число</string>

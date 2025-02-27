@@ -148,6 +148,10 @@ class ComponentManager(
             .build()
     }
 
+    val debugComponent = Component {
+
+    }
+
     val splashLoginComponent = Component {
        DaggerSplashComponent
            .factory()

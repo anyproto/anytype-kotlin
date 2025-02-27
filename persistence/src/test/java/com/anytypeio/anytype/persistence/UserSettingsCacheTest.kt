@@ -362,7 +362,6 @@ class UserSettingsCacheTest {
         val vaultSettings = cache.getVaultSettings(account = account)
 
         val expected = VaultSettings(
-            showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
             dateFormat = dateFormat,
             isRelativeDates = DEFAULT_RELATIVE_DATES
         )
@@ -399,7 +398,6 @@ class UserSettingsCacheTest {
         val vaultSettings = cache.getVaultSettings(account = account)
 
         val expected = VaultSettings(
-            showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
             dateFormat = updatedDateFormat,
             isRelativeDates = DEFAULT_RELATIVE_DATES
         )
@@ -435,7 +433,6 @@ class UserSettingsCacheTest {
         val vaultSettings = cache.getVaultSettings(account = account)
 
         val expected = VaultSettings(
-            showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
             dateFormat = dateFormat,
             isRelativeDates = false
         )
@@ -477,7 +474,6 @@ class UserSettingsCacheTest {
         val vaultSettings = cache.getVaultSettings(account = account)
 
         val expected = VaultSettings(
-            showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
             dateFormat = updatedDateFormat,
             isRelativeDates = false
         )

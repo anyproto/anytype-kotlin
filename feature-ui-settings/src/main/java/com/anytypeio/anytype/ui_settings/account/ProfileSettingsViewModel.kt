@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -48,10 +49,14 @@ class ProfileSettingsViewModel(
 
     private val jobs = mutableListOf<Job>()
 
+    private var headerTitleClickCount = 0
+
     val isLoggingOut = MutableStateFlow(false)
     val debugSyncReportUri = MutableStateFlow<Uri?>(null)
     val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
     val showMembershipState = MutableStateFlow<ShowMembership?>(null)
+
+    val isDebugEnabled = MutableStateFlow(false)
 
     val profileData = profileContainer.observe().map { obj ->
         AccountProfile.Data(
@@ -163,6 +168,13 @@ class ProfileSettingsViewModel(
             } else {
                 Timber.e("Missing config while trying to unset profile image")
             }
+        }
+    }
+
+    fun onHeaderClickCount() {
+        headerTitleClickCount = headerTitleClickCount + 1
+        if (headerTitleClickCount == 5 && isDebugEnabled.value == false) {
+            isDebugEnabled.value = true
         }
     }
 

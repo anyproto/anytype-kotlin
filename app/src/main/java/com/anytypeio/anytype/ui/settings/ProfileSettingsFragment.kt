@@ -126,6 +126,10 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             runCatching {
                                 findNavController().navigate(R.id.debugScreen)
                             }
+                        },
+                        isDebugEnabled = vm.isDebugEnabled.collectAsStateWithLifecycle().value,
+                        onHeaderTitleClicked = {
+
                         }
                     )
                 }

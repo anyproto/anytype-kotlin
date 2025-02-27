@@ -26,7 +26,6 @@ import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -171,9 +170,9 @@ class ProfileSettingsViewModel(
         }
     }
 
-    fun onHeaderClickCount() {
+    fun onHeaderTitleClicked() {
         headerTitleClickCount = headerTitleClickCount + 1
-        if (headerTitleClickCount == 5 && isDebugEnabled.value == false) {
+        if (headerTitleClickCount >= ENABLE_DEBUG_MENU_CLICK_COUNT && isDebugEnabled.value == false) {
             isDebugEnabled.value = true
         }
     }
@@ -205,6 +204,10 @@ class ProfileSettingsViewModel(
                 removeObjectIcon = removeObjectIcon
             ) as T
         }
+    }
+
+    companion object {
+        const val ENABLE_DEBUG_MENU_CLICK_COUNT = 5
     }
 }
 

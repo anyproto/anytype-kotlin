@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
@@ -128,9 +127,7 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             }
                         },
                         isDebugEnabled = vm.isDebugEnabled.collectAsStateWithLifecycle().value,
-                        onHeaderTitleClicked = {
-
-                        }
+                        onHeaderTitleClicked = vm::onHeaderTitleClicked
                     )
                 }
             }

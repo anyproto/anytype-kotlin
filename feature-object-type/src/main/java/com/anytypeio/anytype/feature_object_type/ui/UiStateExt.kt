@@ -80,7 +80,7 @@ suspend fun buildUiFieldsList(
     )
 
     // The mapping functions already skip the Relations.DESCRIPTION key.
-    val headerItems = parsedFields.featured.mapNotNull {
+    val headerItems = parsedFields.header.mapNotNull {
         mapToUiFieldsDraggableListItem(
             field = it,
             stringResourceProvider = stringResourceProvider,
@@ -107,7 +107,7 @@ suspend fun buildUiFieldsList(
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
-    val conflictedItems = parsedFields.conflictedWithoutSystem.mapNotNull {
+    val conflictedItems = parsedFields.localWithoutSystem.mapNotNull {
         mapToUiFieldsLocalListItem(
             field = it,
             stringResourceProvider = stringResourceProvider,
@@ -118,7 +118,7 @@ suspend fun buildUiFieldsList(
     }
 
     //this items goes to the Hidden section as draggable items
-    val conflictedSystemItems = parsedFields.conflictedSystem.mapNotNull {
+    val conflictedSystemItems = parsedFields.localSystem.mapNotNull {
         mapToUiFieldsDraggableListItem(
             field = it,
             stringResourceProvider = stringResourceProvider,

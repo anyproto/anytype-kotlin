@@ -189,7 +189,7 @@ class TestFieldsMappping {
 
         assertEquals(
             expected = listOf(field1, field2),
-            actual = parsedFields.featured
+            actual = parsedFields.header
         )
     }
 

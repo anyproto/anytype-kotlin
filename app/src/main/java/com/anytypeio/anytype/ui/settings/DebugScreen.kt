@@ -42,7 +42,7 @@ fun DebugScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         ActionItem(
-            title = "Export all",
+            title = "Export work directory",
             onClick = onExportAllClicked
         )
 

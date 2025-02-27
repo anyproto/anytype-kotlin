@@ -1,19 +1,30 @@
 package com.anytypeio.anytype.ui.settings
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import com.anytypeio.anytype.core_utils.tools.zipDirectory
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.DebugViewModel
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 import javax.inject.Inject
 import kotlin.getValue
 
 class DebugFragment : BaseBottomSheetComposeFragment() {
+
+    private val createFileLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+        uri?.let { saveZipToUri(it) }
+    }
 
     @Inject
     lateinit var factory: DebugViewModel.Factory
@@ -31,7 +42,49 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
                 DebugScreen(
                     onExportAllClicked = vm::onExportWorkingDirectory
                 )
+                LaunchedEffect(Unit) {
+                    vm.commands.collect { cmd ->
+                        when(cmd) {
+                            is DebugViewModel.Command.ExportWorkingDirectory -> {
+                                proceedWithZippingAndSharingWorkDirectory(
+                                    folderName = cmd.folderName,
+                                    exportFileName = cmd.exportFileName
+                                )
+                            }
+                        }
+                    }
+                }
             }
+        }
+    }
+
+    private fun proceedWithZippingAndSharingWorkDirectory(
+        folderName: String,
+        exportFileName: String
+    ) {
+        val folder = File(
+            requireContext().filesDir,
+            folderName
+        )
+        val zipped = File(
+            requireContext().cacheDir,
+            DebugViewModel.EXPORT_WORK_DIRECTORY_TEMP_FOLDER
+        )
+        zipDirectory(
+            folder,
+            zipped
+        )
+        createFileLauncher.launch(exportFileName)
+    }
+
+    private fun saveZipToUri(uri: Uri) {
+        try {
+            requireContext().contentResolver.openOutputStream(uri)?.use { outputStream ->
+                val zipFile = File(requireContext().cacheDir, DebugViewModel.EXPORT_WORK_DIRECTORY_TEMP_FOLDER)
+                FileInputStream(zipFile).use { it.copyTo(outputStream) }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 

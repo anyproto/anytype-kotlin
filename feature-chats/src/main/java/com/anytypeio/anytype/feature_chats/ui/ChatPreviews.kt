@@ -92,6 +92,55 @@ fun ChatPreview() {
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
+fun ChatPreview2() {
+    Messages(
+        messages = listOf(
+            ChatView.Message(
+                id = "1",
+                content = ChatView.Message.Content(
+                    msg = stringResource(id = R.string.default_text_placeholder),
+                    parts = listOf(
+                        ChatView.Message.Content.Part(
+                            part = stringResource(id = R.string.default_text_placeholder)
+                        )
+                    )
+                ),
+                author = "Walter",
+                timestamp = System.currentTimeMillis(),
+                creator = "",
+                reactions = listOf(
+                    ChatView.Message.Reaction(
+                        emoji = "\uD83D\uDE04",
+                        count = 1,
+                        isSelected = true
+                    ),
+                    ChatView.Message.Reaction(
+                        emoji = "❤\uFE0F",
+                        count = 10,
+                        isSelected = false
+                    )
+                ),
+                isUserAuthor = true
+            )
+        ),
+        scrollState = LazyListState(),
+        onReacted = { a, b -> },
+        onDeleteMessage = {},
+        onCopyMessage = {},
+        onAttachmentClicked = {},
+        onEditMessage = {},
+        onMarkupLinkClicked = {},
+        onReplyMessage = {},
+        onAddReactionClicked = {},
+        onViewChatReaction = { a, b -> },
+        onMemberIconClicked = {},
+        onMentionClicked = {}
+    )
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@Composable
 fun ChatScreenPreview() {
     ChatScreen(
         messages = buildList {

@@ -162,9 +162,7 @@ fun Bubble(
                 .clickable {
                     showDropdownMenu = !showDropdownMenu
                 }
-                .padding(
-                    vertical = 8.dp
-                )
+                .padding(vertical = 4.dp)
         ) {
             BubbleAttachments(
                 attachments = attachments,
@@ -174,10 +172,10 @@ fun Bubble(
             if (content.msg.isNotEmpty()) {
                 Text(
                     modifier = Modifier.padding(
-                        top = 0.dp,
+                        top = 4.dp,
                         start = 12.dp,
                         end = 12.dp,
-                        bottom = 0.dp
+                        bottom = 4.dp
                     ),
                     text = buildAnnotatedString {
                         content.parts.forEach { part ->

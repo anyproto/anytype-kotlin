@@ -129,7 +129,9 @@ fun Bubble(
         }
     }
     Column(
-        modifier = Modifier.border(0.5.dp, color = Color.Green)
+        modifier = modifier
+            .width(IntrinsicSize.Max)
+            .border(0.5.dp, color = Color.Green)
     ) {
         // Username section
         if (!isUserAuthor) {
@@ -149,8 +151,8 @@ fun Bubble(
         }
         // TODO name section
         Column(
-            modifier = modifier
-                .width(IntrinsicSize.Max)
+            modifier = Modifier
+                .fillMaxWidth()
                 .background(
                     color = if (isUserAuthor)
                         colorResource(R.color.background_primary)

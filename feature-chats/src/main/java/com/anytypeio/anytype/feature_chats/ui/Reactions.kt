@@ -43,7 +43,8 @@ fun ReactionList(
     isMaxReactionCountReached: Boolean = false,
 ) {
     FlowRow(
-        modifier = Modifier.padding(start = 0.dp, end = 0.dp, bottom = 0.dp, top = 4.dp),
+        modifier = Modifier
+            .padding(start = 0.dp, end = 0.dp, bottom = 0.dp, top = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

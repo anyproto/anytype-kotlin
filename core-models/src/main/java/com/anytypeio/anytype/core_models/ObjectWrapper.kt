@@ -249,7 +249,11 @@ sealed class ObjectWrapper {
 
         val type: List<Id> get() = getValues(Relations.TYPE)
 
-        val isValid get() = map.containsKey(Relations.RELATION_KEY) && map.containsKey(Relations.ID)
+        val isValid get() =
+            map.containsKey(Relations.RELATION_KEY) && map.containsKey(Relations.ID)
+
+        val isValidToUse get() = isValid && isDeleted != true && isArchived != true && isHidden != true
+
     }
 
     data class Option(override val map: Struct) : ObjectWrapper() {

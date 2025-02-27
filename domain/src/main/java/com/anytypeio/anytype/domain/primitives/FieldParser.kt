@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getValidRelations
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import javax.inject.Inject
 import kotlin.collections.contains
@@ -200,11 +201,6 @@ class FieldParserImpl @Inject constructor(
     //endregion
 
     //region Parsed fields
-    // Extension function to get valid relations from a list of IDs.
-    private suspend fun List<Id>.getValidRelations(store: StoreOfRelations): List<ObjectWrapper.Relation> =
-        mapNotNull { id ->
-            store.getById(id)?.takeIf { it.isFieldValid() }
-        }
 
     // Consolidated function to build ParsedFields.
     private suspend fun getParsedFields(
@@ -212,10 +208,19 @@ class FieldParserImpl @Inject constructor(
         localFieldIds: Collection<Id>,
         storeOfRelations: StoreOfRelations
     ): ParsedFields {
-        val headerFields = objType.recommendedFeaturedRelations.getValidRelations(storeOfRelations)
-        val sidebarFields = objType.recommendedRelations.getValidRelations(storeOfRelations)
-        val hiddenFields = objType.recommendedHiddenRelations.getValidRelations(storeOfRelations)
-        val fileFields = objType.recommendedFileRelations.getValidRelations(storeOfRelations)
+
+        val headerFields = storeOfRelations.getValidRelations(
+            ids = objType.recommendedFeaturedRelations
+        )
+        val sidebarFields = storeOfRelations.getValidRelations(
+            ids = objType.recommendedRelations
+        )
+        val hiddenFields = storeOfRelations.getValidRelations(
+            ids = objType.recommendedHiddenRelations
+        )
+        val fileFields = storeOfRelations.getValidRelations(
+            ids = objType.recommendedFileRelations
+        )
 
         // Combine IDs from all recommended relations.
         val existingIds = (headerFields + sidebarFields + hiddenFields + fileFields)
@@ -223,10 +228,11 @@ class FieldParserImpl @Inject constructor(
             .toSet()
 
         // Filter out fields already present in the recommended groups.
-        val allLocalFields = localFieldIds
-            .filter { it !in existingIds }
-            .toList()
-            .getValidRelations(storeOfRelations)
+        val allLocalFields = storeOfRelations.getValidRelations(
+            ids = localFieldIds
+                .filter { it !in existingIds }
+                .toList()
+        )
 
         // Partition local fields into system and non-system fields.
         val (localSystemFields, localFieldsWithoutSystem) = allLocalFields.partition {
@@ -258,9 +264,6 @@ class FieldParserImpl @Inject constructor(
     ): ParsedFields {
         return getParsedFields(objectType, objectTypeConflictingFieldsIds, storeOfRelations)
     }
-
-    private fun ObjectWrapper.Relation.isFieldValid(): Boolean =
-        isValid && isDeleted != true && isArchived != true && isHidden != true
 
     override fun isFieldEditable(relation: ObjectWrapper.Relation): Boolean {
         return !(relation.isReadOnly == true ||

@@ -24,10 +24,10 @@ data class FieldDateValue(
 )
 
 data class ParsedFields(
-    val featured: List<ObjectWrapper.Relation> = emptyList(),
+    val header: List<ObjectWrapper.Relation> = emptyList(),
     val sidebar: List<ObjectWrapper.Relation> = emptyList(),
     val hidden: List<ObjectWrapper.Relation> = emptyList(),
-    val conflictedWithoutSystem: List<ObjectWrapper.Relation> = emptyList(),
-    val conflictedSystem: List<ObjectWrapper.Relation> = emptyList(),
+    val localWithoutSystem: List<ObjectWrapper.Relation> = emptyList(),
+    val localSystem: List<ObjectWrapper.Relation> = emptyList(),
     val file: List<ObjectWrapper.Relation> = emptyList(),
 )

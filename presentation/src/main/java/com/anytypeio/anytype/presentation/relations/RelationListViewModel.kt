@@ -120,7 +120,7 @@ class RelationListViewModel(
             objFieldKeys = details.getObject(ctx)?.map?.keys.orEmpty()
         )
 
-        val headerFields = parsedFields.featured.mapNotNull {
+        val headerFields = parsedFields.header.mapNotNull {
             if (it.key == Relations.DESCRIPTION) return@mapNotNull null
             it.view(
                 details = details,
@@ -158,7 +158,7 @@ class RelationListViewModel(
             Model.Item(it, isLocal = false)
         }
 
-        val localFields = parsedFields.conflictedWithoutSystem.mapNotNull {
+        val localFields = parsedFields.localWithoutSystem.mapNotNull {
             if (it.key == Relations.DESCRIPTION) return@mapNotNull null
             it.view(
                 details = details,

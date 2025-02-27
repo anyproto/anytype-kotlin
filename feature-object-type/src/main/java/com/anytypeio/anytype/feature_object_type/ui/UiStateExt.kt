@@ -25,7 +25,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 
 //region Mapping
 fun ObjectWrapper.Basic.toTemplateView(
-    objectId: Id,
+    objType: ObjectWrapper.Type,
     urlBuilder: UrlBuilder,
     coverImageHashProvider: CoverImageHashProvider,
 ): TemplateView.Template {
@@ -41,12 +41,12 @@ fun ObjectWrapper.Basic.toTemplateView(
         targetTypeId = TypeId(targetObjectType.orEmpty()),
         emoji = if (!iconEmoji.isNullOrBlank()) iconEmoji else null,
         image = iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.thumbnail(it) },
-        layout = layout ?: ObjectType.Layout.BASIC,
+        layout = objType.recommendedLayout ?: ObjectType.Layout.BASIC,
         coverColor = coverContainer?.coverColor,
         coverImage = coverContainer?.coverImage,
         coverGradient = coverContainer?.coverGradient,
         isDefault = false,
-        targetTypeKey = TypeKey(objectId)
+        targetTypeKey = TypeKey(objType.uniqueKey)
     )
 }
 //endregion
@@ -80,7 +80,7 @@ suspend fun buildUiFieldsList(
     )
 
     // The mapping functions already skip the Relations.DESCRIPTION key.
-    val headerItems = parsedFields.featured.mapNotNull {
+    val headerItems = parsedFields.header.mapNotNull {
         mapToUiFieldsDraggableListItem(
             field = it,
             stringResourceProvider = stringResourceProvider,
@@ -107,7 +107,7 @@ suspend fun buildUiFieldsList(
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
-    val conflictedItems = parsedFields.conflictedWithoutSystem.mapNotNull {
+    val conflictedItems = parsedFields.localWithoutSystem.mapNotNull {
         mapToUiFieldsLocalListItem(
             field = it,
             stringResourceProvider = stringResourceProvider,
@@ -118,7 +118,7 @@ suspend fun buildUiFieldsList(
     }
 
     //this items goes to the Hidden section as draggable items
-    val conflictedSystemItems = parsedFields.conflictedSystem.mapNotNull {
+    val conflictedSystemItems = parsedFields.localSystem.mapNotNull {
         mapToUiFieldsDraggableListItem(
             field = it,
             stringResourceProvider = stringResourceProvider,

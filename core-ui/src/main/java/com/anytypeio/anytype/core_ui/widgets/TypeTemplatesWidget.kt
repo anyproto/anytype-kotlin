@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -72,7 +73,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -81,15 +81,12 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.primitives.TypeId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.AvatarTitle
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -97,21 +94,21 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
 import com.anytypeio.anytype.presentation.templates.TemplateView
-import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction.TemplateClick
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction.TypeClick
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -119,7 +116,6 @@ import timber.log.Timber
 @Composable
 fun TypeTemplatesWidget(
     state: TypeTemplatesWidgetUI,
-    showDefaultIcon: Boolean = false,
     onDismiss: () -> Unit,
     moreClick: (TemplateView) -> Unit,
     editClick: () -> Unit,
@@ -419,7 +415,6 @@ private fun TemplatesList(
     state: TypeTemplatesWidgetUI.Data,
     action: (TypeTemplatesWidgetUIAction) -> Unit,
     moreClick: (TemplateView, IntOffset) -> Unit,
-    showDefaultIcon: Boolean = false
 ) {
     LazyRow(
         state = scrollState,
@@ -514,63 +509,20 @@ fun BoxScope.TemplateItemContent(
             }
 
             is TemplateView.Template -> {
-                if (item.isCoverPresent()) {
-                    TemplateItemCoverAndIcon(item)
-                    if (item.layout == ObjectType.Layout.TODO) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        TemplateItemTodoTitle(text = item.name)
-                    } else {
-                        if (!item.isImageOrEmojiPresent()) {
-                            Spacer(modifier = Modifier.height(12.dp))
-                        } else {
-                            Spacer(modifier = Modifier.height(6.dp))
-                        }
-                        TemplateItemTitle(
-                            text = item.name,
-                            textAlign = getProperTextAlign(item.layout)
-                        )
+                when (item.layout) {
+                    ObjectType.Layout.BASIC -> {
+                        TemplateHeaderBasic(item)
                     }
-                } else {
-                    if (item.layout == ObjectType.Layout.TODO) {
+                    ObjectType.Layout.PROFILE -> {
+                        TemplateHeaderProfile(item)
+                    }
+                    ObjectType.Layout.TODO -> {
+                        TemplateHeaderTask(item)
+                    }
+                    else -> {
                         Spacer(modifier = Modifier.height(28.dp))
-                        TemplateItemTodoTitle(text = item.name)
-                    } else {
-                        if (item.isImageOrEmojiPresent()) {
-                            if (item.layout.isProfileOrParticipant()) {
-                                Box(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .height(68.dp)
-                                        .padding(top = 28.dp)
-                                        .align(Alignment.CenterHorizontally)
-                                ) {
-                                    val modifier = Modifier.clip(CircleShape)
-                                    TemplateItemIconOrImage(item = item, modifier = modifier)
-                                }
-                                Spacer(modifier = Modifier.height(6.dp))
-                                TemplateItemTitle(
-                                    text = item.name,
-                                    textAlign = getProperTextAlign(item.layout)
-                                )
-                            } else {
-                                val modifier = Modifier
-                                    .padding(start = 14.dp, top = 26.dp)
-                                TemplateItemIconOrImage(item = item, modifier = modifier)
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TemplateItemTitle(
-                                    text = item.name, textAlign = getProperTextAlign(item.layout)
-                                )
-                            }
-                        } else {
-                            Spacer(modifier = Modifier.height(28.dp))
-                            TemplateItemTitle(
-                                text = item.name,
-                                textAlign = getProperTextAlign(item.layout)
-                            )
-                        }
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
                 TemplateItemRectangles()
             }
 
@@ -609,6 +561,85 @@ fun BoxScope.TemplateItemContent(
 }
 
 @Composable
+private fun ColumnScope.TemplateHeaderBasic(item: TemplateView.Template) {
+    if (item.isCoverPresent()) {
+        TemplateItemCoverAndIcon(item)
+    } else {
+        Spacer(modifier = Modifier.height(28.dp))
+        TemplateItemIconOrImage(item = item)
+    }
+    Spacer(modifier = Modifier.height(12.dp))
+    TemplateItemTitle(
+        text = item.name,
+        textAlign = getProperTextAlign(item.layout)
+    )
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun ColumnScope.TemplateHeaderProfile(item: TemplateView.Template) {
+    if (item.isCoverPresent()) {
+        TemplateItemCoverAndIcon(item)
+    } else {
+        ProfileIcon(
+            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 28.dp),
+            item = item
+        )
+    }
+    Spacer(modifier = Modifier.height(12.dp))
+    TemplateItemTitle(
+        text = item.name,
+        textAlign = getProperTextAlign(item.layout)
+    )
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun ProfileIcon(
+    modifier: Modifier = Modifier,
+    item: TemplateView.Template
+) {
+    Box(
+        modifier = modifier
+            .size(40.dp)
+            .background(
+                color = colorResource(id = R.color.shape_tertiary),
+                shape = CircleShape
+            )
+    ) {
+        if (item.image != null) {
+            GlideImage(
+                model = item.image,
+                contentDescription = "Custom image template's icon",
+                modifier = Modifier
+                    .size(40.dp)
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = item.name.firstOrNull()?.toString() ?: "U",
+                style = AvatarTitle.copy(
+                    fontSize = 24.sp,
+                ),
+                color = colorResource(id = R.color.control_active)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ColumnScope.TemplateHeaderTask(item: TemplateView.Template) {
+    TemplateItemCoverColor(item = item)
+    TemplateItemCoverImage(item = item)
+    TemplateItemCoverGradient(item = item)
+    Spacer(modifier = Modifier.height(12.dp))
+    TemplateItemTodoTitle(text = item.name)
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
 private fun TemplateItemIconOrImage(
     item: TemplateView.Template,
     modifier: Modifier = Modifier
@@ -616,22 +647,16 @@ private fun TemplateItemIconOrImage(
     item.image?.let {
         Box(
             modifier = modifier
-                .wrapContentSize()
-                .border(
-                    width = 2.dp,
-                    color = colorResource(id = R.color.background_primary),
-                    shape = RoundedCornerShape(2.dp)
-                )
-                .clip(RoundedCornerShape(2.dp))
+                .padding(start = 16.dp)
+                .size(40.dp)
                 .background(
-                    color = colorResource(id = R.color.shape_tertiary)
+                    color = colorResource(id = R.color.shape_tertiary),
+                    shape = RoundedCornerShape(5.dp)
                 )
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = it,
-                    error = painterResource(id = R.drawable.ic_home_widget_space)
-                ),
+            GlideImage(
+                model = it,
+                failure = placeholder(painterResource(id = R.drawable.ic_home_widget_space)),
                 contentDescription = "Custom image template's icon",
                 modifier = Modifier
                     .size(40.dp)
@@ -643,17 +668,12 @@ private fun TemplateItemIconOrImage(
     item.emoji?.let {
         Box(
             modifier = modifier
-                .wrapContentSize()
-                .border(
-                    width = 2.dp,
-                    color = colorResource(id = R.color.background_primary),
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .clip(RoundedCornerShape(8.dp))
+                .padding(start = 16.dp)
+                .size(40.dp)
                 .background(
-                    color = colorResource(id = R.color.shape_tertiary)
+                    color = colorResource(id = R.color.text_tertiary),
+                    shape = RoundedCornerShape(5.dp)
                 )
-                .padding(8.dp)
         ) {
             Image(
                 painter = rememberAsyncImagePainter(
@@ -670,6 +690,7 @@ private fun TemplateItemIconOrImage(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun TemplateItemCoverAndIcon(item: TemplateView.Template) {
     Box(
@@ -683,20 +704,11 @@ private fun TemplateItemCoverAndIcon(item: TemplateView.Template) {
         when (item.layout) {
             ObjectType.Layout.TODO -> {}
             ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> {
-                Box(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .height(82.dp)
-                        .padding(top = 50.dp)
-                        .align(Alignment.TopCenter)
-                ) {
-                    val modifier = Modifier
-                        .clip(CircleShape)
-                        .align(Alignment.Center)
-                    TemplateItemIconOrImage(item = item, modifier = modifier)
-                }
+                ProfileIcon(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    item = item
+                )
             }
-
             else -> {
                 val modifier = Modifier
                     .padding(start = 14.dp, top = 44.dp)
@@ -1016,66 +1028,4 @@ fun ObjectTypesList(
 enum class DragStates {
     VISIBLE,
     DISMISSED
-}
-
-
-@Preview
-@Composable
-fun ComposablePreview() {
-    val items = listOf(
-        TemplateView.Blank(
-            id = DEFAULT_TEMPLATE_ID_BLANK,
-            targetTypeId = TypeId("page"),
-            targetTypeKey = TypeKey("ot-page"),
-            typeName = "Page",
-            layout = ObjectType.Layout.BASIC.code
-        ),
-        TemplateView.Template(
-            id = "1",
-            name = "Template 1",
-            targetTypeId = TypeId("page"),
-            targetTypeKey = TypeKey("ot-page"),
-            layout = ObjectType.Layout.BASIC,
-            image = null,
-            emoji = null,
-            coverColor = null,
-            coverGradient = null,
-            coverImage = null,
-            isDefault = true
-        ),
-    )
-    val state = TypeTemplatesWidgetUI.Data(
-        templates = items,
-        showWidget = true,
-        isEditing = true,
-        moreMenuItem = TemplateView.Template(
-            id = "123",
-            name = "Template 1",
-            targetTypeId = TypeId("page"),
-            targetTypeKey = TypeKey("ot-page"),
-        ),
-        objectTypes = listOf(
-            TemplateObjectTypeView.Search,
-            TemplateObjectTypeView.Item(
-                type = ObjectWrapper.Type(
-                    map = mapOf(Relations.ID to "123", Relations.NAME to "Page"),
-                )
-            )
-        ),
-        viewerId = "",
-        isPossibleToChangeType = true,
-        isPossibleToChangeTemplate = false
-    )
-    TypeTemplatesWidget(
-        state = state,
-        onDismiss = {},
-        editClick = {},
-        doneClick = {},
-        moreClick = {},
-        scope = CoroutineScope(
-            Dispatchers.Main
-        ),
-        menuClick = {},
-        action = {}
-    )
 }

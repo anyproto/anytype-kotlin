@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
-import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -23,7 +22,6 @@ import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import javax.inject.Inject
 
 class ObjectTypeVMFactory @Inject constructor(
@@ -38,9 +36,7 @@ class ObjectTypeVMFactory @Inject constructor(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val createObject: CreateObject,
     private val fieldParser: FieldParser,
-    private val templatesContainer: ObjectTypeTemplatesContainer,
     private val coverImageHashProvider: CoverImageHashProvider,
-    private val userSettingsRepository: UserSettingsRepository,
     private val deleteObjects: DeleteObjects,
     private val setObjectDetails: SetObjectDetails,
     private val createObjectSet: CreateObjectSet,
@@ -65,9 +61,7 @@ class ObjectTypeVMFactory @Inject constructor(
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             createObject = createObject,
             fieldParser = fieldParser,
-            templatesContainer = templatesContainer,
             coverImageHashProvider = coverImageHashProvider,
-            userSettingsRepository = userSettingsRepository,
             deleteObjects = deleteObjects,
             setObjectDetails = setObjectDetails,
             createObjectSet = createObjectSet,

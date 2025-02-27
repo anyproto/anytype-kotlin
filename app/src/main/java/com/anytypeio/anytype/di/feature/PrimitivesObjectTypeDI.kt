@@ -176,6 +176,5 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun provideUserSettingsRepository(): UserSettingsRepository
     fun fieldParser(): FieldParser
     fun provideEventChannel(): EventChannel
-    fun templatesContainer(): ObjectTypeTemplatesContainer
     fun provideStringResourceProvider(): StringResourceProvider
 }

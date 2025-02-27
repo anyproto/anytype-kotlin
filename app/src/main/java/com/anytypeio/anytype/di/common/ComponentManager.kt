@@ -49,9 +49,9 @@ import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerChatComponent
-import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.chats.DaggerChatReactionComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatReactionComponent
+import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
@@ -82,6 +82,7 @@ import com.anytypeio.anytype.di.feature.sets.PickConditionModule
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
 import com.anytypeio.anytype.di.feature.settings.DaggerAboutAppComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
+import com.anytypeio.anytype.di.feature.settings.DaggerDebugComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerSpacesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
@@ -102,10 +103,10 @@ import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetSourceComponen
 import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetTypeComponent
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
-import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel
+import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
@@ -149,7 +150,9 @@ class ComponentManager(
     }
 
     val debugComponent = Component {
-
+        DaggerDebugComponent
+            .factory()
+            .create(findComponentDependencies())
     }
 
     val splashLoginComponent = Component {

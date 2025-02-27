@@ -30,7 +30,19 @@ fun ChatPreview() {
                 ),
                 author = "Walter",
                 timestamp = System.currentTimeMillis(),
-                creator = ""
+                creator = "",
+                reactions = listOf(
+                    ChatView.Message.Reaction(
+                        emoji = "\uD83D\uDE04",
+                        count = 1,
+                        isSelected = true
+                    ),
+                    ChatView.Message.Reaction(
+                        emoji = "❤\uFE0F",
+                        count = 10,
+                        isSelected = false
+                    )
+                )
             ),
             ChatView.Message(
                 id = "2",
@@ -44,7 +56,8 @@ fun ChatPreview() {
                 ),
                 author = "Leo",
                 timestamp = System.currentTimeMillis(),
-                creator = ""
+                creator = "",
+                isUserAuthor = true
             ),
             ChatView.Message(
                 id = "3",

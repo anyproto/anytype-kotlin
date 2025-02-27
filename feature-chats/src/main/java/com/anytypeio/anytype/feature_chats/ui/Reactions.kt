@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -40,15 +43,14 @@ fun ReactionList(
     isMaxReactionCountReached: Boolean = false,
 ) {
     FlowRow(
-        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 4.dp),
+        modifier = Modifier.padding(start = 0.dp, end = 0.dp, bottom = 0.dp, top = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         reactions.forEach { reaction ->
-            Box(
+            Row(
                 modifier = Modifier
                     .height(28.dp)
-                    .width(46.dp)
                     .background(
                         color = if (reaction.isSelected)
                             colorResource(id = R.color.palette_very_light_orange)
@@ -81,18 +83,19 @@ fun ReactionList(
                     style = BodyCalloutMedium,
                     modifier = Modifier
                         .align(
-                            alignment = Alignment.CenterStart
+                            alignment = Alignment.CenterVertically
                         )
                         .padding(
                             start = 8.dp
                         )
                 )
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = reaction.count.toString(),
                     style = Caption1Regular,
                     modifier = Modifier
                         .align(
-                            alignment = Alignment.CenterEnd
+                            alignment = Alignment.CenterVertically
                         )
                         .padding(
                             end = 8.dp

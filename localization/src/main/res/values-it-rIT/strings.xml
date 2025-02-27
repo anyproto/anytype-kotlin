@@ -173,7 +173,7 @@
     <string name="hint_toggle">Blocco espandibile</string>
     <string name="hint_paste_link">Incolla link</string>
     <string name="empty_tap_to_create_new_block">Vuoto. Tocca per creare un nuovo blocco</string>
-    <string name="untitled">Untitled</string>
+    <string name="untitled">Senza titolo</string>
     <string name="untitled_set">Insieme senza titolo</string>
     <string name="untitled_collection">Collezione senza titolo</string>
     <string name="archived">Archiviato</string>
@@ -1216,8 +1216,8 @@
     <string name="multiplayer_notification_member_request_approved">Richiesta approvata</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">La tua richiesta di unirti allo spazio %1$s è stata approvata con diritti di accesso in sola lettura. Lo spazio sarà disponibile sul tuo dispositivo a breve.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">La tua richiesta di unirti allo spazio %1$s è stata approvata con diritti di accesso per la modifica. Lo spazio sarà disponibile sul tuo dispositivo a breve.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">Lo spazio \"%1$s\" non è più accessibile.</string>
+    <string name="multiplayer_notification_member_removed_from_space">Sei stato rimosso dallo spazio \"%1$s\", oppure lo spazio è stato eliminato dal proprietario.</string>
     <string name="multiplayer_notification_member_permissions_changed">Autorizzazioni cambiate</string>
     <string name="multiplayer_notification_member_permission_change_read">I tuoi diritti di accesso sono stati impostati in sola lettura nello spazio %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">I tuoi diritti di accesso sono stati impostati per la modifica nello spazio %1$s.</string>
@@ -1242,7 +1242,7 @@
         <item quantity="one">%1$d richiesta</item>
         <item quantity="other">%1$d richieste</item>
     </plurals>
-    <string name="multiplayer_you_as_member">tu</string>
+    <string name="multiplayer_you_as_member">Tu</string>
     <string name="multiplayer_spaces">Spazi</string>
     <string name="multiplayer_space_status_joining">Accesso in corso</string>
     <string name="multiplayer_space_status_active">Attivo</string>
@@ -1605,4 +1605,31 @@ Please provide specific details of your needs here.</string>
     <string name="object_types_human">Umano</string>
     <string name="chats_alert_delete_this_message_description">Non può essere ripristinato dopo la conferma</string>
     <string name="chats_alert_delete_this_message">Eliminare questo messaggio?</string>
+    <string name="migration_migration_is_in_progress">Migrazione in corso</string>
+    <string name="migration_this_shouldn_t_take_long">Questo potrebbe richiedere un po \'di tempo. Si prega di non chiudere l\'app fino a quando il processo è completato.</string>
+    <string name="migration_error_try_again">Riprova</string>
+    <string name="migration_migration_failed">Migrazione fallita</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Si prega di liberare un po\' di spazio ed eseguire nuovamente il processo.</string>
+    <string name="fields_screen_title">Campi</string>
+    <string name="field_text_title">Testo</string>
+    <string name="field_text_empty">Enter</string>
+    <string name="field_number_title">Numero</string>
+    <string name="field_number_empty">Enter</string>
+    <string name="field_date_title">Data</string>
+    <string name="field_date_empty">Valore</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Aggiungi</string>
+    <string name="field_email_title">E-mail</string>
+    <string name="field_email_empty">Enter</string>
+    <string name="field_phone_title">Numero di telefono</string>
+    <string name="field_phone_empty">Enter</string>
+    <string name="field_select_title">Seleziona</string>
+    <string name="field_select_empty">Seleziona</string>
+    <string name="field_multiselect_title">Selezione multipla</string>
+    <string name="field_multiselect_empty">Seleziona</string>
+    <string name="field_object_title">Oggetto</string>
+    <string name="field_object_empty">Aggiungi</string>
+    <string name="field_file_and_media_title">File &amp; Media</string>
+    <string name="field_file_and_media_empty">Aggiungi</string>
+    <string name="field_checkbox_title">Seleziona</string>
 </resources>

@@ -812,6 +812,54 @@ message Rpc {
             }
         }
 
+        message Migrate {
+            message Request {
+                option (no_auth) = true;
+                string id = 1; // Id of a selected account
+                string rootPath = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0; // No error
+                        UNKNOWN_ERROR = 1; // Any other errors
+                        BAD_INPUT = 2; // Id or root path is wrong
+
+                        ACCOUNT_NOT_FOUND = 101;
+                        CANCELED = 102;
+                        NOT_ENOUGH_FREE_SPACE = 103;
+                        // TODO: [storage] Add specific error codes for migration problems
+                    }
+                }
+            }
+        }
+
+        message MigrateCancel {
+            message Request {
+                option (no_auth) = true;
+                string id = 1; // Id of a selected account
+            }
+
+            message Response {
+                Error error = 1;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0; // No error
+                        UNKNOWN_ERROR = 1; // Any other errors
+                        BAD_INPUT = 2; // Id or root path is wrong
+                    }
+                }
+            }
+        }
+
         message Select {
             /**
             * Front end to middleware request-to-launch-a specific account using account id and a root path
@@ -854,6 +902,7 @@ message Rpc {
                         FAILED_TO_FETCH_REMOTE_NODE_HAS_INCOMPATIBLE_PROTO_VERSION = 110;
                         ACCOUNT_IS_DELETED = 111;
                         ACCOUNT_LOAD_IS_CANCELED = 112;
+                        ACCOUNT_STORE_NOT_MIGRATED = 113;
 
                         CONFIG_FILE_NOT_FOUND = 200;
                         CONFIG_FILE_INVALID = 201;
@@ -1637,6 +1686,7 @@ message Rpc {
                 google.protobuf.Struct details = 1;
                 string spaceId = 2;
                 bool withChat = 3;
+                string templateId = 4;
             }
 
             message Response {
@@ -1771,6 +1821,7 @@ message Rpc {
                 google.protobuf.Struct details = 4;
                 bool addPageContent = 5;
                 bool withChat = 6;
+                string templateId = 7;
             }
 
             message Response {
@@ -3283,6 +3334,80 @@ message Rpc {
                             READONLY_OBJECT_TYPE = 3;
                             // ...
                         }
+                    }
+                }
+            }
+        }
+
+        message Recommended {
+            message RelationsSet {
+                message Request {
+                    string typeObjectId = 1;
+                    repeated string relationObjectIds = 2;
+                }
+
+                message Response {
+                    Error error = 1;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                            READONLY_OBJECT_TYPE = 3;
+                            // ...
+                        }
+                    }
+                }
+            }
+
+            message FeaturedRelationsSet {
+                message Request {
+                    string typeObjectId = 1;
+                    repeated string relationObjectIds = 2;
+                }
+
+                message Response {
+                    Error error = 1;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                            READONLY_OBJECT_TYPE = 3;
+                            // ...
+                        }
+                    }
+                }
+            }
+        }
+
+        message ListConflictingRelations {
+            message Request {
+                string spaceId = 1;
+                string typeObjectId = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated string relationIds = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        READONLY_OBJECT_TYPE = 3;
                     }
                 }
             }
@@ -5710,6 +5835,7 @@ message Rpc {
                 string contextId = 1;
                 string blockId = 2;
                 string url = 3;
+                string templateId = 4;
             }
 
             message Response {
@@ -5735,6 +5861,7 @@ message Rpc {
                 string targetId = 2;
                 anytype.model.Block.Position position = 3;
                 string url = 4;
+                string templateId = 5;
             }
 
             message Response {
@@ -6071,31 +6198,6 @@ message Rpc {
                 string targetObjectId = 3;
                 repeated anytype.model.Block.Content.Dataview.View view = 4;
                 ResponseEvent event = 5;
-
-                message Error {
-                    Code code = 1;
-                    string description = 2;
-
-                    enum Code {
-                        NULL = 0;
-                        UNKNOWN_ERROR = 1;
-                        BAD_INPUT = 2;
-                        // ...
-                    }
-                }
-            }
-        }
-
-        message CreateBookmark {
-            message Request {
-                string contextId = 1;
-                string blockId = 2;
-                string url = 3;
-                string spaceId = 4;
-            }
-            message Response {
-                Error error = 1;
-                string id = 2;
 
                 message Error {
                     Code code = 1;

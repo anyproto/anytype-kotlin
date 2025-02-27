@@ -41,6 +41,12 @@ fun dark(
 }
 
 @Composable
+fun dark(code: String): Color {
+    val colorTheme = ThemeColor.entries.find { it.code == code } ?: ThemeColor.DEFAULT
+    return dark(colorTheme)
+}
+
+@Composable
 fun light(
     color: ThemeColor
 ) = when (color) {
@@ -55,6 +61,12 @@ fun light(
     ThemeColor.LIME -> colorResource(id = R.color.palette_light_lime)
     ThemeColor.GREY -> colorResource(id = R.color.palette_light_grey)
     ThemeColor.DEFAULT -> colorResource(id = R.color.palette_light_default)
+}
+
+@Composable
+fun light(code: String): Color {
+    val colorTheme = ThemeColor.entries.find { it.code == code } ?: ThemeColor.DEFAULT
+    return light(colorTheme)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -95,7 +107,7 @@ fun Modifier.bouncingClickable(
         )
 }
 
-fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
+fun <T> SnapshotStateList<T>.swapList(newList: List<T>) {
     clear()
     addAll(newList)
 }

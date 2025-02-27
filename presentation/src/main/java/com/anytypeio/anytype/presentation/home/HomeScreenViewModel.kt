@@ -116,6 +116,7 @@ import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
+import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetId
@@ -673,8 +674,7 @@ class HomeScreenViewModel(
                 .withLatestFrom(spaceManager.observe()) { dispatch, config ->
                     when (dispatch) {
                         is WidgetDispatchEvent.SourcePicked.Default -> {
-                            if (dispatch.sourceLayout == ObjectType.Layout.DATE.code ||
-                                dispatch.sourceLayout == ObjectType.Layout.PARTICIPANT.code) {
+                            if (WidgetConfig.isLinkOnlyLayout(dispatch.sourceLayout)) {
                                 proceedWithCreatingWidget(
                                     ctx = config.widgets,
                                     source = dispatch.source,

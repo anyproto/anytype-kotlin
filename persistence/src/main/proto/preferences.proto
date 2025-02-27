@@ -15,6 +15,7 @@ message VaultPreferences {
 
 message VaultPreference {
   repeated string orderOfSpaces = 1;
+  // deprecated
   bool showIntroduceVault = 2;
   bool isRelativeDates = 3;
   optional string dateFormat = 4;

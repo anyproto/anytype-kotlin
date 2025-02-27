@@ -56,8 +56,7 @@ include ':app',
         ':test:android-utils',
         ':test:utils',
         ':test:core-models-stub',
-        ':libs',
-        ':feature-date'
+        ':libs'
 
 include ':feature-ui-settings'
 include ':crash-reporting'

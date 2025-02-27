@@ -15,12 +15,11 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getFileObject
-import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.objects.buildObjectViews
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.FileView
-import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -286,91 +285,6 @@ private fun ObjectWrapper.File.toView() : FileView {
             extensions = fileExt.orEmpty(),
         )
     )
-}
-
-fun Struct.buildRelationValueObjectViews(
-    relationKey: Id,
-    details: ObjectViewDetails,
-    builder: UrlBuilder,
-    fieldParser: FieldParser
-): List<ObjectView> {
-    val objects = mutableListOf<ObjectView>()
-    val value = this.getOrDefault(relationKey, null)
-    if (value is Id) {
-        val wrapper = details.getObject(value)
-        if (wrapper != null) {
-            objects.add(wrapper.toObjectView(urlBuilder = builder, fieldParser = fieldParser))
-        }
-    } else if (value is List<*>) {
-        value.typeOf<Id>().forEach { id ->
-            val wrapper = details.getObject(id)
-            if (wrapper != null) {
-                objects.add(wrapper.toObjectView(urlBuilder = builder, fieldParser = fieldParser))
-            }
-        }
-    }
-    return objects
-}
-
-suspend fun Struct.buildObjectViews(
-    columnKey: Id,
-    store: ObjectStore,
-    builder: UrlBuilder,
-    withIcon: Boolean = true,
-    fieldParser: FieldParser
-): List<ObjectView> {
-    val objects = mutableListOf<ObjectView>()
-    val value = this.getOrDefault(columnKey, null)
-    if (value is Id) {
-        val wrapper = store.get(value)
-        if (wrapper != null) {
-            if (wrapper.isDeleted == true) {
-                objects.add(ObjectView.Deleted(id = value))
-            } else {
-                val icon = if (withIcon) {
-                    wrapper.objectIcon(builder)
-                } else {
-                    ObjectIcon.None
-                }
-                objects.add(
-                    ObjectView.Default(
-                        id = value,
-                        name = fieldParser.getObjectName(wrapper),
-                        icon = icon,
-                        types = wrapper.type
-                    )
-                )
-            }
-        } else {
-            Timber.w("Object was missing in object store: $value")
-        }
-    } else if (value is List<*>) {
-        value.typeOf<Id>().forEach { id ->
-            val wrapper = store.get(id)
-            if (wrapper != null) {
-                if (wrapper.isDeleted == true) {
-                    objects.add(ObjectView.Deleted(id = id))
-                } else {
-                    val icon = if (withIcon) {
-                        wrapper.objectIcon(builder)
-                    } else {
-                        ObjectIcon.None
-                    }
-                    objects.add(
-                        ObjectView.Default(
-                            id = id,
-                            name = fieldParser.getObjectName(wrapper),
-                            icon = icon,
-                            types = wrapper.type
-                        )
-                    )
-                }
-            } else {
-                Timber.w("Object was missing in object store: $id")
-            }
-        }
-    }
-    return objects
 }
 
 fun Struct.buildTagViews(

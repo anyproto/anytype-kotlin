@@ -17,7 +17,6 @@ import com.anytypeio.anytype.presentation.sets.model.FileView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
-import com.anytypeio.anytype.presentation.sets.toObjectView
 import timber.log.Timber
 
 suspend fun ObjectWrapper.Basic.values(
@@ -319,28 +318,6 @@ suspend fun ObjectWrapper.Basic.files(
             )
         } else {
             Timber.e("Details missing for a file.")
-        }
-    }
-    return result
-}
-
-suspend fun ObjectWrapper.Basic.objects(
-    relation: Id,
-    urlBuilder: UrlBuilder,
-    storeOfObjects: ObjectStore,
-    fieldParser: FieldParser
-) : List<ObjectView> {
-    val result = mutableListOf<ObjectView>()
-
-    val ids : List<Id> = when(val value = map.getOrDefault(relation, null)) {
-        is Id -> listOf(value)
-        is List<*> -> value.typeOf()
-        else -> emptyList()
-    }
-    ids.forEach { id ->
-        val wrapper = storeOfObjects.get(id) ?: return@forEach
-        if (wrapper.isValid) {
-            result.add(wrapper.toObjectView(urlBuilder, fieldParser))
         }
     }
     return result

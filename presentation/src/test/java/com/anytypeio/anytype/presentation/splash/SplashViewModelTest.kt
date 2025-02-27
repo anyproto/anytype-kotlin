@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import java.util.Locale
 import kotlinx.coroutines.runBlocking
@@ -89,6 +90,9 @@ class SplashViewModelTest {
     @Mock
     lateinit var spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
 
+    @Mock
+    lateinit var migrationHelperDelegate: MigrationHelperDelegate
+
     lateinit var vm: SplashViewModel
 
     private val defaultSpaceConfig = StubConfig()
@@ -119,7 +123,8 @@ class SplashViewModelTest {
             globalSubscriptionManager = globalSubscriptionManager,
             getLastOpenedSpace = getLastOpenedSpace,
             createObjectByTypeAndTemplate = createObjectByTypeAndTemplate,
-            spaceViews = spaceViewSubscriptionContainer
+            spaceViews = spaceViewSubscriptionContainer,
+            migration = migrationHelperDelegate
         )
     }
 

@@ -450,6 +450,12 @@
         android:name="com.anytypeio.anytype.ui.settings.DebugSettingsFragment"
         android:label="DebugSettingsFragment"
         tools:layout="@layout/fragment_debug_settings" />
+
+    <dialog
+        android:id="@+id/debugScreen"
+        android:name="com.anytypeio.anytype.ui.settings.DebugFragment"
+        android:label="DebugScreen" />
+
     <dialog
         android:id="@+id/globalSearchScreen"
         android:name="com.anytypeio.anytype.ui.search.GlobalSearchFragment"
@@ -630,12 +636,6 @@
         android:name="com.anytypeio.anytype.ui.templates.TemplateSelectFragment"
         android:label="TemplateSelectScreen"
         tools:layout="@layout/fragment_template_select" />
-
-    <fragment
-        android:id="@+id/migrationNeededScreen"
-        android:name="com.anytypeio.anytype.ui.update.MigrationErrorFragment"
-        android:label="Migration-needed screen">
-    </fragment>
 
     <dialog
         android:id="@+id/shareSpaceScreen"

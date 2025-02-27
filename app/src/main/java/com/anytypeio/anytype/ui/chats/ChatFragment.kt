@@ -251,6 +251,17 @@ class ChatFragment : BaseComposeFragment() {
                                     Timber.e(it, "Error while opening space member card")
                                 }
                             }
+                            is ChatViewModel.ViewModelCommand.Browse -> {
+                                runCatching {
+                                    proceedWithAction(
+                                        SystemAction.OpenUrl(
+                                            command.url
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while opening bookmark from chat")
+                                }
+                            }
                         }
                     }
                 }

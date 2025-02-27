@@ -74,6 +74,7 @@ fun ProfileSettingsScreen(
     onKeychainPhraseClicked: () -> Unit,
     onLogoutClicked: () -> Unit,
     isLogoutInProgress: Boolean,
+    isDebugEnabled: Boolean,
     onNameChange: (String) -> Unit,
     onProfileIconClick: () -> Unit,
     account: AccountProfile,
@@ -84,7 +85,9 @@ fun ProfileSettingsScreen(
     onMembershipClicked: () -> Unit,
     membershipStatus: MembershipStatus?,
     showMembership: ShowMembership?,
-    clearProfileImage: () -> Unit
+    clearProfileImage: () -> Unit,
+    onDebugClicked: () -> Unit,
+    onHeaderTitleClicked: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -97,7 +100,8 @@ fun ProfileSettingsScreen(
                 account = account,
                 onNameSet = onNameChange,
                 onProfileIconClick = onProfileIconClick,
-                clearProfileImage = clearProfileImage
+                clearProfileImage = clearProfileImage,
+                onTitleClicked = onHeaderTitleClicked
             )
         }
         item {
@@ -162,6 +166,18 @@ fun ProfileSettingsScreen(
                 text = stringResource(R.string.about),
                 onClick = onAboutClicked
             )
+        }
+        if (isDebugEnabled) {
+            item {
+                Divider(paddingStart = 60.dp)
+            }
+            item {
+                Option(
+                    image = R.drawable.ic_debug,
+                    text = stringResource(R.string.debug),
+                    onClick = onDebugClicked
+                )
+            }
         }
         item {
             Divider(paddingStart = 60.dp)
@@ -277,7 +293,8 @@ private fun Header(
     account: AccountProfile,
     onProfileIconClick: () -> Unit,
     onNameSet: (String) -> Unit,
-    clearProfileImage: () -> Unit
+    clearProfileImage: () -> Unit,
+    onTitleClicked: () -> Unit
 ) {
     when (account) {
         is AccountProfile.Data -> {
@@ -285,7 +302,7 @@ private fun Header(
                 Dragger()
             }
             Box(modifier = modifier.padding(top = 12.dp, bottom = 28.dp)) {
-                ProfileTitleBlock()
+                ProfileTitleBlock(onTitleClicked)
             }
             Box(modifier = modifier.padding(bottom = 16.dp)) {
                 ProfileImageBlock(
@@ -389,11 +406,16 @@ fun ProfileNameBlock(
 }
 
 @Composable
-fun ProfileTitleBlock() {
+fun ProfileTitleBlock(
+    onClick: () -> Unit
+) {
     Text(
         text = stringResource(R.string.profile),
         style = Title1,
-        color = colorResource(id = R.color.text_primary)
+        color = colorResource(id = R.color.text_primary),
+        modifier = Modifier.noRippleClickable {
+            onClick()
+        }
     )
 }
 
@@ -519,7 +541,10 @@ private fun ProfileSettingPreview() {
         onMembershipClicked = {},
         membershipStatus = null,
         showMembership = ShowMembership(true),
-        clearProfileImage = {}
+        clearProfileImage = {},
+        onDebugClicked = {},
+        isDebugEnabled = true,
+        onHeaderTitleClicked = {}
     )
 }
 

@@ -23,6 +23,8 @@
         android:layout_marginStart="28dp"
         android:layout_marginTop="80dp"
         app:imageSize="80dp"
+        android:clickable="true"
+        android:focusable="true"
         tools:src="@drawable/ic_mime_pdf"
         android:background="@drawable/bg_title_file_icon"
         android:transitionName="@string/logo_transition"

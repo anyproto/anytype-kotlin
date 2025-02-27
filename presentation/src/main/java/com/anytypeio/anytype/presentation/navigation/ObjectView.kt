@@ -25,17 +25,3 @@ data class DefaultObjectView(
     val lastOpenedDate: Long = 0L,
     val isFavorite: Boolean = false
 ) : DefaultSearchItem
-
-data class ObjectView(
-    val id: String,
-    val title: String,
-    val subtitle: String,
-    val icon: ObjectIcon,
-    val layout: ObjectType.Layout? = null
-)
-
-fun ObjectView.isContainsText(text: String): Boolean = title.contains(text, true) ||
-        subtitle.contains(text, true)
-
-fun List<ObjectView>.filterBy(text: String): List<ObjectView> =
-    if (text.isNotEmpty()) this.filter { it.isContainsText(text) } else this

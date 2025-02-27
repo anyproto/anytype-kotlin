@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getOptionObject
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.number.NumberParser
+import com.anytypeio.anytype.presentation.objects.buildRelationValueObjectViews
 import com.anytypeio.anytype.presentation.sets.*
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.Viewer

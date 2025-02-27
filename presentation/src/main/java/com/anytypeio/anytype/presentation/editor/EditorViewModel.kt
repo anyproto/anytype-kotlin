@@ -3853,6 +3853,25 @@ class EditorViewModel(
                     else -> Unit
                 }
             }
+            is ListenerType.Picture.TitleView -> {
+                when (mode) {
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
+                        if (!clicked.item.image.isNullOrEmpty()){
+                            dispatch(
+                                Command.OpenFullScreenImage(
+                                    target = "",
+                                    url = clicked.item.image
+                                )
+                            )
+                        } else {
+                            Timber.e("Can't proceed with opening full screen image")
+                            sendToast("Something went wrong. Couldn't open image")
+                        }
+                    }
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
+                    else -> Unit
+                }
+            }
             is ListenerType.Picture.View -> {
                 when (mode) {
                     EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {

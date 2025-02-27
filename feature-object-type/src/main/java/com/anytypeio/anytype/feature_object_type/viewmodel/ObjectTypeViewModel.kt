@@ -17,7 +17,6 @@ import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListState
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
-import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -81,7 +80,6 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKe
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.updateStatus
-import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -114,9 +112,7 @@ class ObjectTypeViewModel(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val createObject: CreateObject,
     private val fieldParser: FieldParser,
-    private val templatesContainer: ObjectTypeTemplatesContainer,
     private val coverImageHashProvider: CoverImageHashProvider,
-    private val userSettingsRepository: UserSettingsRepository,
     private val deleteObjects: DeleteObjects,
     private val setObjectDetails: SetObjectDetails,
     private val createObjectSet: CreateObjectSet,
@@ -359,17 +355,22 @@ class ObjectTypeViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun startTemplatesSubscription() {
         viewModelScope.launch {
-            _objectTypePermissionsState
-                .flatMapLatest { permissions ->
-                    if (permissions != null && permissions.canCreateTemplatesForThisType) {
-                        loadTemplates(typeId = vmParams.objectId)
-                            .map { templates -> templates to permissions }
-                    } else {
-                        emptyFlow()
-                    }
-                }.collect { (templates, permissions) ->
-                    mapTemplatesSubscriptionToUi(templates, permissions)
+            combine(
+                _objectTypePermissionsState,
+                storeOfObjectTypes.trackChanges()
+            ) { permissions, _ ->
+                permissions
+            }.flatMapLatest { permissions ->
+                val objType = storeOfObjectTypes.get(vmParams.objectId)
+                if (objType != null && permissions != null && permissions.canCreateTemplatesForThisType) {
+                    loadTemplates(objType = objType)
+                        .map { templates -> Triple(objType, templates, permissions) }
+                } else {
+                    emptyFlow()
                 }
+            }.collect { (objType, templates, permissions) ->
+                mapTemplatesSubscriptionToUi(objType, templates, permissions)
+            }
         }
     }
 
@@ -427,7 +428,7 @@ class ObjectTypeViewModel(
             }
     }
 
-    private suspend fun loadTemplates(typeId: Id): Flow<List<TemplateView>> {
+    private fun loadTemplates(objType: ObjectWrapper.Type): Flow<List<TemplateView>> {
 
         val searchParams = StoreSearchParams(
             filters = filtersForTemplatesSearch(objectTypeId = vmParams.objectId),
@@ -441,23 +442,7 @@ class ObjectTypeViewModel(
         return storelessSubscriptionContainer.subscribe(searchParams).map { templates ->
             templates.map {
                 it.toTemplateView(
-                    objectId = vmParams.objectId,
-                    urlBuilder = urlBuilder,
-                    coverImageHashProvider = coverImageHashProvider,
-                )
-            }
-        }
-
-        templatesContainer.subscribeToTemplates(
-            type = typeId,
-            space = vmParams.spaceId,
-            subscription = "${vmParams.objectId}$SUBSCRIPTION_TEMPLATES_ID"
-        ).catch {
-            Timber.e(it, "Error while observing templates")
-        }.collect { templates ->
-            templates.map { objWrapper ->
-                objWrapper.toTemplateView(
-                    objectId = vmParams.objectId,
+                    objType = objType,
                     urlBuilder = urlBuilder,
                     coverImageHashProvider = coverImageHashProvider,
                 )
@@ -580,6 +565,7 @@ class ObjectTypeViewModel(
     }
 
     private fun mapTemplatesSubscriptionToUi(
+        objType: ObjectWrapper.Type,
         templates: List<TemplateView>,
         permissions: ObjectPermissions
     ) {
@@ -591,7 +577,7 @@ class ObjectTypeViewModel(
                 is TemplateView.Blank -> template
                 is TemplateView.New -> template
                 is TemplateView.Template -> template.copy(
-                    isDefault = template.id == _objTypeState.value?.defaultTemplateId
+                    isDefault = template.id == objType.defaultTemplateId
                 )
             }
         }
@@ -602,8 +588,8 @@ class ObjectTypeViewModel(
             if (permissions.participantCanEdit) {
                 add(
                     TemplateView.New(
-                        targetTypeId = TypeId(vmParams.objectId),
-                        targetTypeKey = TypeKey(vmParams.objectId)
+                        targetTypeId = TypeId(objType.id),
+                        targetTypeKey = TypeKey(objType.uniqueKey)
                     )
                 )
                 uiTemplatesAddIconState.value = UiTemplatesAddIconState.Visible

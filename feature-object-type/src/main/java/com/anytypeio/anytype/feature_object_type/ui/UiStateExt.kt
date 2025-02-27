@@ -25,7 +25,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 
 //region Mapping
 fun ObjectWrapper.Basic.toTemplateView(
-    objectId: Id,
+    objType: ObjectWrapper.Type,
     urlBuilder: UrlBuilder,
     coverImageHashProvider: CoverImageHashProvider,
 ): TemplateView.Template {
@@ -41,12 +41,12 @@ fun ObjectWrapper.Basic.toTemplateView(
         targetTypeId = TypeId(targetObjectType.orEmpty()),
         emoji = if (!iconEmoji.isNullOrBlank()) iconEmoji else null,
         image = iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.thumbnail(it) },
-        layout = layout ?: ObjectType.Layout.BASIC,
+        layout = objType.recommendedLayout ?: ObjectType.Layout.BASIC,
         coverColor = coverContainer?.coverColor,
         coverImage = coverContainer?.coverImage,
         coverGradient = coverContainer?.coverGradient,
         isDefault = false,
-        targetTypeKey = TypeKey(objectId)
+        targetTypeKey = TypeKey(objType.uniqueKey)
     )
 }
 //endregion

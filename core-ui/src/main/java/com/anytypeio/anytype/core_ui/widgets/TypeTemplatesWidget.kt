@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -514,61 +515,11 @@ fun BoxScope.TemplateItemContent(
             }
 
             is TemplateView.Template -> {
-                if (item.isCoverPresent()) {
-                    TemplateItemCoverAndIcon(item)
-                    if (item.layout == ObjectType.Layout.TODO) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        TemplateItemTodoTitle(text = item.name)
-                    } else {
-                        if (!item.isImageOrEmojiPresent()) {
-                            Spacer(modifier = Modifier.height(12.dp))
-                        } else {
-                            Spacer(modifier = Modifier.height(6.dp))
-                        }
-                        TemplateItemTitle(
-                            text = item.name,
-                            textAlign = getProperTextAlign(item.layout)
-                        )
-                    }
+                val isNote = item.layout == ObjectType.Layout.NOTE
+                if (!isNote) {
+                    TitleBlock(item)
                 } else {
-                    if (item.layout == ObjectType.Layout.TODO) {
-                        Spacer(modifier = Modifier.height(28.dp))
-                        TemplateItemTodoTitle(text = item.name)
-                    } else {
-                        if (item.isImageOrEmojiPresent()) {
-                            if (item.layout.isProfileOrParticipant()) {
-                                Box(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .height(68.dp)
-                                        .padding(top = 28.dp)
-                                        .align(Alignment.CenterHorizontally)
-                                ) {
-                                    val modifier = Modifier.clip(CircleShape)
-                                    TemplateItemIconOrImage(item = item, modifier = modifier)
-                                }
-                                Spacer(modifier = Modifier.height(6.dp))
-                                TemplateItemTitle(
-                                    text = item.name,
-                                    textAlign = getProperTextAlign(item.layout)
-                                )
-                            } else {
-                                val modifier = Modifier
-                                    .padding(start = 14.dp, top = 26.dp)
-                                TemplateItemIconOrImage(item = item, modifier = modifier)
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TemplateItemTitle(
-                                    text = item.name, textAlign = getProperTextAlign(item.layout)
-                                )
-                            }
-                        } else {
-                            Spacer(modifier = Modifier.height(28.dp))
-                            TemplateItemTitle(
-                                text = item.name,
-                                textAlign = getProperTextAlign(item.layout)
-                            )
-                        }
-                    }
+                    Spacer(modifier = Modifier.height(28.dp))
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 TemplateItemRectangles()
@@ -605,6 +556,66 @@ fun BoxScope.TemplateItemContent(
             color = colorResource(R.color.text_secondary),
             style = Caption2Medium
         )
+    }
+}
+
+@Composable
+private fun ColumnScope.TitleBlock(item: TemplateView.Template) {
+    if (item.isCoverPresent()) {
+        TemplateItemCoverAndIcon(item)
+        if (item.layout == ObjectType.Layout.TODO) {
+            Spacer(modifier = Modifier.height(12.dp))
+            TemplateItemTodoTitle(text = item.name)
+        } else {
+            if (!item.isImageOrEmojiPresent()) {
+                Spacer(modifier = Modifier.height(12.dp))
+            } else {
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+            TemplateItemTitle(
+                text = item.name,
+                textAlign = getProperTextAlign(item.layout)
+            )
+        }
+    } else {
+        if (item.layout == ObjectType.Layout.TODO) {
+            Spacer(modifier = Modifier.height(28.dp))
+            TemplateItemTodoTitle(text = item.name)
+        } else {
+            if (item.isImageOrEmojiPresent()) {
+                if (item.layout.isProfileOrParticipant()) {
+                    Box(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .height(68.dp)
+                            .padding(top = 28.dp)
+                            .align(Alignment.CenterHorizontally)
+                    ) {
+                        val modifier = Modifier.clip(CircleShape)
+                        TemplateItemIconOrImage(item = item, modifier = modifier)
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    TemplateItemTitle(
+                        text = item.name,
+                        textAlign = getProperTextAlign(item.layout)
+                    )
+                } else {
+                    val modifier = Modifier
+                        .padding(start = 14.dp, top = 26.dp)
+                    TemplateItemIconOrImage(item = item, modifier = modifier)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TemplateItemTitle(
+                        text = item.name, textAlign = getProperTextAlign(item.layout)
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.height(28.dp))
+                TemplateItemTitle(
+                    text = item.name,
+                    textAlign = getProperTextAlign(item.layout)
+                )
+            }
+        }
     }
 }
 

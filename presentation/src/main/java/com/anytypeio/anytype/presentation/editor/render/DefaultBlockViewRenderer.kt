@@ -87,19 +87,23 @@ class DefaultBlockViewRenderer @Inject constructor(
                     isPreviousBlockMedia = false
                     when (content.style) {
                         Content.Text.Style.TITLE -> {
-                            mCounter = 0
-                            result.add(
-                                title(
-                                    context = context,
-                                    mode = mode,
-                                    block = block,
-                                    content = content,
-                                    focus = focus,
-                                    root = root,
-                                    details = details,
-                                    restrictions = restrictions
+                            val obj = details.getObject(id = context)
+                            if (obj?.layout == ObjectType.Layout.NOTE) {
+                                Timber.d("Skipping title rendering for object with note layout or nullable object")
+                            } else {
+                                mCounter = 0
+                                result.add(
+                                    title(
+                                        mode = mode,
+                                        block = block,
+                                        content = content,
+                                        focus = focus,
+                                        root = root,
+                                        restrictions = restrictions,
+                                        currentObject = obj
+                                    )
                                 )
-                            )
+                            }
                         }
                         Content.Text.Style.P -> {
                             mCounter = 0
@@ -1402,17 +1406,14 @@ class DefaultBlockViewRenderer @Inject constructor(
     }
 
     private fun title(
-        context: Id,
         mode: EditorMode,
         block: Block,
         content: Content.Text,
         root: Block,
         focus: Focus,
-        details: ObjectViewDetails,
-        restrictions: List<ObjectRestriction>
+        restrictions: List<ObjectRestriction>,
+        currentObject: ObjectWrapper.Basic?
     ): BlockView.Title {
-
-        val currentObject = details.getObject(id = context)
 
         val focusTarget = focus.target
 

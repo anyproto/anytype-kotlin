@@ -37,6 +37,7 @@ import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
@@ -50,6 +51,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.random.Random
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
@@ -5873,5 +5875,64 @@ class DefaultBlockViewRendererTest {
         )
 
         assertEquals(expected = expected, actual = result)
+    }
+
+    @Test
+    fun `don't render title block in case of Layout Note`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val page = Block(
+            id = MockDataFactory.randomUuid(),
+            children = listOf(header.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart
+        )
+
+        val blocks = listOf(page, header, title)
+
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = ObjectViewDetails(
+                    details = mapOf(
+                        page.id to mapOf(
+                            Relations.ID to page.id,
+                            Relations.LAYOUT to Layout.NOTE.code.toDouble()
+                        )
+                    )
+                )
+            )
+        }
+
+        assertEquals(expected = emptyList<BlockView>(), actual = result)
     }
 }

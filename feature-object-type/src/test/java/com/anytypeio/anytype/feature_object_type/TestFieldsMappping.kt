@@ -171,7 +171,7 @@ class TestFieldsMappping {
     }
 
     @Test
-    fun `should filter featured fields by hidden`() = runTest {
+    fun `should not filter featured fields by hidden`() = runTest {
 
         storeOfRelations.apply {
             merge(allSpaceRelations)
@@ -188,13 +188,13 @@ class TestFieldsMappping {
         )
 
         assertEquals(
-            expected = listOf(field1, field2),
+            expected = listOf(field1, field2, field5),
             actual = parsedFields.header
         )
     }
 
     @Test
-    fun `should filter sidebar fields by hidden`() = runTest {
+    fun `should not filter sidebar fields by hidden`() = runTest {
 
         storeOfRelations.apply {
             merge(allSpaceRelations)
@@ -211,7 +211,7 @@ class TestFieldsMappping {
         )
 
         assertEquals(
-            expected = listOf(field3, field4),
+            expected = listOf(field3, field4, field5),
             actual = parsedFields.sidebar
         )
     }

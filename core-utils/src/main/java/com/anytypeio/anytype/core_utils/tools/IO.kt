@@ -17,3 +17,5 @@ fun zipDirectory(sourceDir: File, zipFile: File) {
         }
     }
 }
+
+const val ZIP_MIME_TYPE = "application/zip"

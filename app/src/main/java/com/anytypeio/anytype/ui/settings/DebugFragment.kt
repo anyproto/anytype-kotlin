@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.content
+import com.anytypeio.anytype.core_utils.tools.ZIP_MIME_TYPE
 import com.anytypeio.anytype.core_utils.tools.zipDirectory
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -22,7 +22,7 @@ import kotlin.getValue
 
 class DebugFragment : BaseBottomSheetComposeFragment() {
 
-    private val createFileLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+    private val createFileLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument(ZIP_MIME_TYPE)) { uri ->
         uri?.let { saveZipToUri(it) }
     }
 
@@ -35,23 +35,18 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                DebugScreen(
-                    onExportAllClicked = vm::onExportWorkingDirectory
-                )
-                LaunchedEffect(Unit) {
-                    vm.commands.collect { cmd ->
-                        when(cmd) {
-                            is DebugViewModel.Command.ExportWorkingDirectory -> {
-                                proceedWithZippingAndSharingWorkDirectory(
-                                    folderName = cmd.folderName,
-                                    exportFileName = cmd.exportFileName
-                                )
-                            }
-                        }
+    ): View  = content {
+        DebugScreen(
+            onExportAllClicked = vm::onExportWorkingDirectory
+        )
+        LaunchedEffect(Unit) {
+            vm.commands.collect { cmd ->
+                when(cmd) {
+                    is DebugViewModel.Command.ExportWorkingDirectory -> {
+                        proceedWithZippingAndSharingWorkDirectory(
+                            folderName = cmd.folderName,
+                            exportFileName = cmd.exportFileName
+                        )
                     }
                 }
             }
@@ -71,8 +66,8 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
             DebugViewModel.EXPORT_WORK_DIRECTORY_TEMP_FOLDER
         )
         zipDirectory(
-            folder,
-            zipped
+            sourceDir = folder,
+            zipFile = zipped
         )
         createFileLauncher.launch(exportFileName)
     }

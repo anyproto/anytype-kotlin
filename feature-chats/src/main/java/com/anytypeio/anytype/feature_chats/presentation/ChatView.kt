@@ -58,6 +58,9 @@ sealed interface ChatView {
         )
 
         sealed class Attachment {
+
+            data class Gallery(val images: List<Image>): Attachment()
+
             data class Image(
                 val target: Id,
                 val url: String,

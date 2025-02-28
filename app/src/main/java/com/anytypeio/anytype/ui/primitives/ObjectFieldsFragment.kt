@@ -43,7 +43,6 @@ import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
-import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlin.getValue
 import timber.log.Timber
@@ -88,8 +87,8 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
                     onRemoveFromObjectClicked = vm::onRemoveFromObjectClicked,
                     onAddToTypeClicked = vm::onAddToTypeClicked
                 )
-                val showInfo = vm.showLocalInfo.collectAsStateWithLifecycle().value
-                if (showInfo) {
+                val showLocalFieldExplanationScreen = vm.showLocalInfo.collectAsStateWithLifecycle().value
+                if (showLocalFieldExplanationScreen) {
                     val bottomSheetState = rememberModalBottomSheetState(
                         skipPartiallyExpanded = true
                     )

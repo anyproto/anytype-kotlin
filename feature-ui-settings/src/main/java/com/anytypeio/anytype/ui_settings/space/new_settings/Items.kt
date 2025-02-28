@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,8 +43,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.foundation.Section
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -51,6 +53,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
@@ -403,13 +406,94 @@ fun NewSettingsTextField(
 }
 
 @Composable
-@DefaultPreviews
-fun MembersItemPreview() {
-    Column {
-        MembersItem(
-            item = UiSpaceSettingsItem.Members(
-                count = 5
+fun MultiplayerButtons(
+    modifier: Modifier = Modifier,
+    uiEvent: (UiEvent) -> Unit
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .noRippleThrottledClickable {
+                    uiEvent(UiEvent.OnInviteClicked)
+                }
+                .weight(1f)
+                .border(
+                    shape = RoundedCornerShape(16.dp),
+                    width = 0.5.dp,
+                    color = colorResource(id = R.color.shape_primary)
+                )
+                .padding(vertical = 14.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier.size(32.dp),
+                painter = painterResource(id = R.drawable.ic_add_member_32),
+                contentDescription = "Invite new member icon"
             )
-        )
+            Text(
+                modifier = Modifier.wrapContentSize(),
+                text = stringResource(id = R.string.space_settings_invite),
+                style = Caption1Regular,
+                color = colorResource(id = R.color.text_primary)
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .noRippleThrottledClickable {
+                    uiEvent(UiEvent.OnQrCodeClicked)
+                }
+                .weight(1f)
+                .border(
+                    shape = RoundedCornerShape(16.dp),
+                    width = 0.5.dp,
+                    color = colorResource(id = R.color.shape_primary)
+                )
+                .padding(vertical = 14.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier.size(32.dp),
+                painter = painterResource(id = R.drawable.ic_qr_code_32),
+                contentDescription = "Share QR code icon"
+            )
+            Text(
+                modifier = Modifier.wrapContentSize(),
+                text = stringResource(id = R.string.space_settings_qrcode),
+                style = Caption1Regular,
+                color = colorResource(id = R.color.text_primary)
+            )
+        }
     }
+}
+
+@Composable
+fun SpaceSettingsSection(
+    modifier: Modifier = Modifier,
+    item: UiSpaceSettingsItem.Section
+) {
+    val text = when (item) {
+        UiSpaceSettingsItem.Section.Collaboration ->
+            stringResource(id = R.string.space_settings_section_collaboration)
+
+        UiSpaceSettingsItem.Section.ContentModel ->
+            stringResource(id = R.string.space_settings_section_content_model)
+
+        UiSpaceSettingsItem.Section.DataManagement ->
+            stringResource(id = R.string.space_settings_section_data_management)
+
+        UiSpaceSettingsItem.Section.Misc ->
+            stringResource(id = R.string.space_settings_section_misc)
+
+        UiSpaceSettingsItem.Section.Preferences ->
+            stringResource(id = R.string.space_settings_section_preferences)
+    }
+    Section(
+        modifier = modifier,
+        title = text,
+        textPaddingStart = 0.dp
+    )
 }

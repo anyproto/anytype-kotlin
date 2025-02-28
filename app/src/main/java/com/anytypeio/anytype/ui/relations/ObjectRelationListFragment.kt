@@ -41,6 +41,7 @@ import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import javax.inject.Inject
 import timber.log.Timber
 
+@Deprecated("Legacy, epic Primitives, use ObjectFieldsFragment instead")
 open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelationListBinding>(),
     RelationTextValueFragment.TextValueEditReceiver,
     RelationDateValueFragment.DateValueEditReceiver {
@@ -193,6 +194,10 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 }.onFailure {
                     Timber.e(it, "Error while opening date object from relation list")
                 }
+            }
+
+            is Command.NavigateToObjectType -> {
+                //do nothing
             }
         }
     }

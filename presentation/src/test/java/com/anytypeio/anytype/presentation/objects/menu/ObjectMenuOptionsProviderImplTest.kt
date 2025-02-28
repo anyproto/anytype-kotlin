@@ -32,7 +32,7 @@ class ObjectMenuOptionsProviderImplTest {
         val expected = ObjectMenuOptionsProvider.Options(
             hasIcon = false,
             hasCover = false,
-            hasLayout = true,
+            hasDescriptionShow = true,
             hasRelations = true,
             hasDiagnosticsVisibility = true,
             hasHistory = true
@@ -56,10 +56,10 @@ class ObjectMenuOptionsProviderImplTest {
         val expected = ObjectMenuOptionsProvider.Options(
             hasIcon = false,
             hasCover = true,
-            hasLayout = true,
             hasRelations = true,
             hasDiagnosticsVisibility = true,
-            hasHistory = true
+            hasHistory = true,
+            hasDescriptionShow = true
         )
 
         assertOptions(
@@ -100,26 +100,6 @@ class ObjectMenuOptionsProviderImplTest {
     }
 
     @Test
-    fun `when restricts layout_change - layout options is invisible`() {
-        details.value = ObjectViewDetails(
-            mapOf(
-                objectId to mapOf(
-                    Relations.ID to objectId,
-                    Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
-                )
-            )
-        )
-        restrictions.value = listOf(ObjectRestriction.LAYOUT_CHANGE)
-
-        assertOptions(
-            expected = ObjectMenuOptionsProvider.Options.ALL.copy(
-                hasLayout = false,
-                hasDiagnosticsVisibility = true
-            )
-        )
-    }
-
-    @Test
     fun `when object is Locked - show only relations`() {
         details.value = ObjectViewDetails(
             mapOf(
@@ -135,10 +115,35 @@ class ObjectMenuOptionsProviderImplTest {
             expected = ObjectMenuOptionsProvider.Options(
                 hasIcon = false,
                 hasCover = false,
-                hasLayout = false,
                 hasRelations = true,
                 hasDiagnosticsVisibility = true,
-                hasHistory = false
+                hasHistory = false,
+                hasDescriptionShow = true
+            )
+        )
+    }
+
+    @Test
+    fun `when description is already in featured - show hide description`() {
+        details.value = ObjectViewDetails(
+            mapOf(
+                objectId to mapOf(
+                    Relations.ID to objectId,
+                    Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+                    Relations.FEATURED_RELATIONS to listOf(Relations.DESCRIPTION)
+                )
+            )
+        )
+
+        assertOptions(
+            isLocked = true,
+            expected = ObjectMenuOptionsProvider.Options(
+                hasIcon = false,
+                hasCover = false,
+                hasRelations = true,
+                hasDiagnosticsVisibility = true,
+                hasHistory = false,
+                hasDescriptionShow = false
             )
         )
     }

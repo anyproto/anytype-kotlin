@@ -39,6 +39,26 @@ fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
     return layout.emptyType()
 }
 
+fun ObjectWrapper.Type.objectIcon(builder: UrlBuilder): ObjectIcon {
+
+    if (isDeleted == true) {
+        return ObjectIcon.Deleted
+    }
+
+    val objectIcon = layout?.icon(
+        image = null,
+        emoji = iconEmoji,
+        builder = builder,
+        name = name.orEmpty()
+    )
+
+    if (objectIcon != null) {
+        return objectIcon
+    }
+
+    return layout.emptyType()
+}
+
 fun ObjectType.Layout?.emptyType(): ObjectIcon.Empty {
     if (this == null) {
         return ObjectIcon.Empty.Page

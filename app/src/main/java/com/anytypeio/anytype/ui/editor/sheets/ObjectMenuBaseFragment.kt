@@ -31,13 +31,12 @@ import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
-import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.history.VersionHistoryFragment
 import com.anytypeio.anytype.ui.linking.BacklinkAction
 import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
-import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
+import com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 
@@ -84,7 +83,7 @@ abstract class ObjectMenuBaseFragment :
     override fun onStart() {
         click(binding.objectDiagnostics) { vm.onDiagnosticsClicked(ctx = ctx) }
         click(binding.optionHistory) { vm.onHistoryClicked(ctx = ctx, space = space) }
-        click(binding.optionLayout) { vm.onLayoutClicked(ctx = ctx, space = space) }
+        click(binding.optionDescription) { vm.onDescriptionClicked(ctx = ctx, space = space) }
         click(binding.optionIcon) { vm.onIconClicked(ctx = ctx, space = space) }
         click(binding.optionRelations) { vm.onRelationsClicked() }
         click(binding.optionCover) { vm.onCoverClicked(ctx = ctx, space = space) }
@@ -116,19 +115,22 @@ abstract class ObjectMenuBaseFragment :
     private fun renderOptions(options: ObjectMenuOptionsProvider.Options) {
         val iconVisibility = options.hasIcon.toVisibility()
         val coverVisibility = options.hasCover.toVisibility()
-        val layoutVisibility = options.hasLayout.toVisibility()
         val relationsVisibility = options.hasRelations.toVisibility()
         val historyVisibility = options.hasHistory.toVisibility()
         val objectDiagnosticsVisibility = options.hasDiagnosticsVisibility.toVisibility()
 
+        if (options.hasDescriptionShow) {
+            binding.optionDescription.setAction(setAsHide = false)
+        } else {
+            binding.optionDescription.setAction(setAsHide = true)
+        }
+
         binding.optionIcon.visibility = iconVisibility
         binding.optionCover.visibility = coverVisibility
-        binding.optionLayout.visibility = layoutVisibility
         binding.optionRelations.visibility = relationsVisibility
         binding.optionHistory.visibility = historyVisibility
         binding.iconDivider.visibility = iconVisibility
         binding.coverDivider.visibility = coverVisibility
-        binding.layoutDivider.visibility = layoutVisibility
         binding.relationsDivider.visibility = relationsVisibility
         binding.historyDivider.visibility = historyVisibility
         binding.objectDiagnostics.visibility = objectDiagnosticsVisibility
@@ -139,7 +141,6 @@ abstract class ObjectMenuBaseFragment :
         when (command) {
             ObjectMenuViewModelBase.Command.OpenObjectCover -> openObjectCover()
             ObjectMenuViewModelBase.Command.OpenObjectIcons -> openObjectIcons()
-            ObjectMenuViewModelBase.Command.OpenObjectLayout -> openObjectLayout()
             ObjectMenuViewModelBase.Command.OpenObjectRelations -> openObjectRelations()
             ObjectMenuViewModelBase.Command.OpenSetCover -> openSetCover()
             ObjectMenuViewModelBase.Command.OpenSetIcons -> openSetIcons()
@@ -218,20 +219,15 @@ abstract class ObjectMenuBaseFragment :
         )
     }
 
-    private fun openObjectLayout() {
-        val fr = ObjectLayoutFragment.new(ctx = ctx, space = space)
-        fr.showChildFragment()
-    }
-
     private fun openObjectRelations() {
         findNavController().navigate(
             R.id.objectRelationListScreen,
             bundleOf(
-                ObjectRelationListFragment.ARG_CTX to ctx,
-                ObjectRelationListFragment.ARG_SPACE to space,
-                ObjectRelationListFragment.ARG_TARGET to null,
-                ObjectRelationListFragment.ARG_LOCKED to isLocked,
-                ObjectRelationListFragment.ARG_SET_FLOW to false
+                ObjectFieldsFragment.ARG_CTX to ctx,
+                ObjectFieldsFragment.ARG_SPACE to space,
+                ObjectFieldsFragment.ARG_TARGET to null,
+                ObjectFieldsFragment.ARG_LOCKED to isLocked,
+                ObjectFieldsFragment.ARG_SET_FLOW to false
             )
         )
     }
@@ -240,11 +236,11 @@ abstract class ObjectMenuBaseFragment :
         findNavController().navigate(
             R.id.objectRelationListScreen,
             bundleOf(
-                ObjectRelationListFragment.ARG_CTX to ctx,
-                ObjectRelationListFragment.ARG_SPACE to space,
-                ObjectRelationListFragment.ARG_TARGET to null,
-                ObjectRelationListFragment.ARG_LOCKED to isLocked,
-                ObjectRelationListFragment.ARG_SET_FLOW to true
+                ObjectFieldsFragment.ARG_CTX to ctx,
+                ObjectFieldsFragment.ARG_SPACE to space,
+                ObjectFieldsFragment.ARG_TARGET to null,
+                ObjectFieldsFragment.ARG_LOCKED to isLocked,
+                ObjectFieldsFragment.ARG_SET_FLOW to true
             )
         )
     }

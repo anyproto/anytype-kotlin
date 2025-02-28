@@ -40,6 +40,16 @@ interface AppNavigation {
         space: Id
     )
 
+    fun openObjectType(
+        objectId: Id,
+        space: Id
+    )
+
+    fun openCurrentObjectTypeFields(
+        objectId: Id,
+        space: Id
+    )
+
     fun launchDocument(target: String, space: Id)
     fun launchCollections(subscription: Subscription, space: Id)
     fun launchObjectSet(target: Id, space: Id)

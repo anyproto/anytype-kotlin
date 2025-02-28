@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.domain.primitives
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
-import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.RelativeDate
@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.primitives.Field
 import com.anytypeio.anytype.core_models.primitives.FieldDateValue
+import com.anytypeio.anytype.core_models.primitives.ParsedFields
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_models.primitives.Value
@@ -19,9 +20,12 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getValidRelations
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import javax.inject.Inject
 import kotlin.collections.contains
+import kotlin.collections.plus
 
 interface FieldParser {
     fun toDate(any: Any?): Field.Date?
@@ -31,11 +35,29 @@ interface FieldParser {
         actionSuccess: suspend (ObjectWrapper.Basic) -> Unit,
         actionFailure: suspend (Throwable) -> Unit
     )
+
     fun getObjectName(objectWrapper: ObjectWrapper.Basic): String
+    fun getObjectName(objectWrapper: ObjectWrapper.Type): String
     fun getObjectTypeIdAndName(
         objectWrapper: ObjectWrapper.Basic,
         types: List<ObjectWrapper.Type>
     ): Pair<Id?, String?>
+
+    suspend fun getObjectParsedFields(
+        objectType: ObjectWrapper.Type,
+        objFieldKeys: List<Key>,
+        storeOfRelations: StoreOfRelations
+    ): ParsedFields
+
+    suspend fun getObjectTypeParsedFields(
+        objectType: ObjectWrapper.Type,
+        objectTypeConflictingFieldsIds: List<Id>,
+        storeOfRelations: StoreOfRelations
+    ): ParsedFields
+
+    fun isFieldEditable(relation: ObjectWrapper.Relation): Boolean
+
+    fun isFieldCanBeDeletedFromType(field: ObjectWrapper.Relation): Boolean
 }
 
 class FieldParserImpl @Inject constructor(
@@ -118,13 +140,16 @@ class FieldParserImpl @Inject constructor(
         val result = when (objectWrapper.layout) {
             ObjectType.Layout.DATE -> {
                 val relativeDate = dateProvider.calculateRelativeDates(
-                    dateInSeconds = objectWrapper.getSingleValue<Double>(Relations.TIMESTAMP)?.toLong()
+                    dateInSeconds = objectWrapper.getSingleValue<Double>(Relations.TIMESTAMP)
+                        ?.toLong()
                 )
                 stringResourceProvider.getRelativeDateName(relativeDate)
             }
+
             ObjectType.Layout.NOTE -> {
                 objectWrapper.snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
             }
+
             in SupportedLayouts.fileLayouts -> {
                 val fileName = if (objectWrapper.name.isNullOrBlank()) {
                     stringResourceProvider.getUntitledObjectTitle()
@@ -137,6 +162,7 @@ class FieldParserImpl @Inject constructor(
                     else -> "$fileName.${objectWrapper.fileExt}"
                 }
             }
+
             else -> {
                 objectWrapper.name
             }
@@ -145,6 +171,15 @@ class FieldParserImpl @Inject constructor(
             stringResourceProvider.getUntitledObjectTitle()
         } else {
             result
+        }
+    }
+
+    override fun getObjectName(objectWrapper: ObjectWrapper.Type): String {
+        val name = objectWrapper.name
+        return if (name.isNullOrBlank()) {
+            stringResourceProvider.getUntitledObjectTitle()
+        } else {
+            name
         }
     }
 
@@ -162,6 +197,101 @@ class FieldParserImpl @Inject constructor(
         } else {
             null to null
         }
+    }
+    //endregion
+
+    //region Parsed fields
+
+    // Consolidated function to build ParsedFields.
+    private suspend fun getParsedFields(
+        objType: ObjectWrapper.Type,
+        localFieldIds: Collection<Id>,
+        storeOfRelations: StoreOfRelations
+    ): ParsedFields {
+
+        val headerFields = storeOfRelations.getValidRelations(
+            ids = objType.recommendedFeaturedRelations
+        )
+        val sidebarFields = storeOfRelations.getValidRelations(
+            ids = objType.recommendedRelations
+        )
+        val hiddenFields = storeOfRelations.getValidRelations(
+            ids = objType.recommendedHiddenRelations
+        )
+        val fileFields = storeOfRelations.getValidRelations(
+            ids = objType.recommendedFileRelations
+        )
+
+        // Combine IDs from all recommended relations.
+        val existingIds = (headerFields + sidebarFields + hiddenFields + fileFields)
+            .map { it.id }
+            .toSet()
+
+        // Filter out fields already present in the recommended groups.
+        val allLocalFields = storeOfRelations.getValidRelations(
+            ids = localFieldIds
+                .filter { it !in existingIds }
+                .toList()
+        )
+
+        // Partition local fields into system and non-system fields.
+        val (localSystemFields, localFieldsWithoutSystem) = allLocalFields.partition {
+            Relations.systemRelationKeys.contains(it.key)
+        }
+
+        return ParsedFields(
+            header = headerFields,
+            sidebar = sidebarFields,
+            hidden = hiddenFields,
+            localWithoutSystem = localFieldsWithoutSystem,
+            localSystem = localSystemFields,
+            file = fileFields
+        )
+    }
+
+    override suspend fun getObjectParsedFields(
+        objectType: ObjectWrapper.Type,
+        objFieldKeys: List<Key>,
+        storeOfRelations: StoreOfRelations
+    ): ParsedFields {
+        val localFieldIds = storeOfRelations.getByKeys(
+            keys = objFieldKeys
+        ).mapNotNull {
+            if (it.isValidToUse) {
+                it.id
+            } else {
+                null
+            }
+        }
+        return getParsedFields(
+            objType = objectType,
+            localFieldIds = localFieldIds,
+            storeOfRelations = storeOfRelations
+        )
+    }
+
+    override suspend fun getObjectTypeParsedFields(
+        objectType: ObjectWrapper.Type,
+        objectTypeConflictingFieldsIds: List<Id>,
+        storeOfRelations: StoreOfRelations
+    ): ParsedFields {
+        return getParsedFields(
+            objType = objectType,
+            localFieldIds = objectTypeConflictingFieldsIds,
+            storeOfRelations = storeOfRelations
+        )
+    }
+
+    override fun isFieldEditable(relation: ObjectWrapper.Relation): Boolean {
+        return !(relation.isReadOnly == true ||
+                relation.isHidden == true ||
+                relation.isArchived == true ||
+                relation.isDeleted == true ||
+                Relations.systemRelationKeys.contains(relation.key))
+    }
+
+    override fun isFieldCanBeDeletedFromType(field: ObjectWrapper.Relation): Boolean {
+        return !(field.isHidden == true || Relations.systemRelationKeys.contains(field.key))
     }
     //endregion
 }

@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.fields
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
@@ -26,8 +30,17 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.Relations1
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FieldEmpty(modifier: Modifier = Modifier, title: String, fieldFormat: RelationFormat) {
+fun FieldEmpty(
+    modifier: Modifier = Modifier,
+    title: String,
+    fieldFormat: RelationFormat,
+    isLocal: Boolean,
+    onFieldClick: () -> Unit,
+    onAddToCurrentTypeClick: () -> Unit,
+    onRemoveFromObjectClick: () -> Unit,
+) {
     val defaultModifier = modifier
         .fillMaxWidth()
         .border(
@@ -43,7 +56,11 @@ fun FieldEmpty(modifier: Modifier = Modifier, title: String, fieldFormat: Relati
             FieldVerticalEmpty(
                 modifier = defaultModifier,
                 title = title,
-                emptyState = emptyState
+                emptyState = emptyState,
+                isLocal = isLocal,
+                onFieldClick = onFieldClick,
+                onAddToCurrentTypeClick = onAddToCurrentTypeClick,
+                onRemoveFromObjectClick = onRemoveFromObjectClick
             )
         }
 
@@ -52,20 +69,37 @@ fun FieldEmpty(modifier: Modifier = Modifier, title: String, fieldFormat: Relati
             FieldHorizontalEmpty(
                 modifier = defaultModifier,
                 title = title,
-                emptyState = emptyState
+                emptyState = emptyState,
+                isLocal = isLocal,
+                onFieldClick = onFieldClick,
+                onAddToCurrentTypeClick = onAddToCurrentTypeClick,
+                onRemoveFromObjectClick = onRemoveFromObjectClick
             )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FieldVerticalEmpty(
     modifier: Modifier = Modifier,
     title: String,
     emptyState: String,
+    isLocal: Boolean,
+    onFieldClick: () -> Unit,
+    onAddToCurrentTypeClick: () -> Unit,
+    onRemoveFromObjectClick: () -> Unit,
 ) {
+    val isMenuExpanded = remember { mutableStateOf(false) }
     Column(
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+        modifier = modifier
+            .combinedClickable(
+                onClick = { onFieldClick()},
+                onLongClick = {
+                    if (isLocal) isMenuExpanded.value = true
+                }
+            )
+            .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -84,21 +118,47 @@ private fun FieldVerticalEmpty(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+        FieldItemDropDownMenu(
+            showMenu = isMenuExpanded.value,
+            onDismissRequest = {
+                isMenuExpanded.value = false
+            },
+            onAddToCurrentTypeClick = {
+                isMenuExpanded.value = false
+                onAddToCurrentTypeClick()
+            },
+            onRemoveFromObjectClick = {
+                isMenuExpanded.value = false
+                onRemoveFromObjectClick()
+            }
+        )
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FieldHorizontalEmpty(
     modifier: Modifier = Modifier,
     title: String,
     emptyState: String,
+    isLocal: Boolean,
+    onFieldClick: () -> Unit,
+    onAddToCurrentTypeClick: () -> Unit,
+    onRemoveFromObjectClick: () -> Unit,
 ) {
+    val isMenuExpanded = remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val halfScreenWidth = screenWidth / 2 - 32.dp
 
     Row(
         modifier = modifier
+            .combinedClickable(
+                onClick = onFieldClick,
+                onLongClick = {
+                    if (isLocal) isMenuExpanded.value = true
+                }
+            )
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         Text(
@@ -115,6 +175,20 @@ private fun FieldHorizontalEmpty(
             text = emptyState,
             style = Relations1,
             color = colorResource(id = R.color.text_tertiary)
+        )
+        FieldItemDropDownMenu(
+            showMenu = isMenuExpanded.value,
+            onDismissRequest = {
+                isMenuExpanded.value = false
+            },
+            onAddToCurrentTypeClick = {
+                isMenuExpanded.value = false
+                onAddToCurrentTypeClick()
+            },
+            onRemoveFromObjectClick = {
+                isMenuExpanded.value = false
+                onRemoveFromObjectClick()
+            }
         )
     }
 }
@@ -149,13 +223,21 @@ fun PreviewField() {
         item {
             FieldEmpty(
                 title = "Description",
-                fieldFormat = Relation.Format.LONG_TEXT
+                fieldFormat = Relation.Format.LONG_TEXT,
+                isLocal = true,
+                onFieldClick = {},
+                onAddToCurrentTypeClick = {},
+                onRemoveFromObjectClick = {}
             )
         }
         item {
             FieldEmpty(
                 title = "Some Number, very long long long long long fields name",
-                fieldFormat = Relation.Format.NUMBER
+                fieldFormat = Relation.Format.NUMBER,
+                isLocal = true,
+                onFieldClick = {},
+                onAddToCurrentTypeClick = {},
+                onRemoveFromObjectClick = {}
             )
         }
         item {

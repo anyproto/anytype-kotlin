@@ -2,6 +2,7 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Command.ObjectTypeConflictingFields
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
@@ -307,12 +308,18 @@ class BlockDataRepository(
 
     override suspend fun createSet(
         space: Id,
-        objectType: String?
+        objectType: String?,
+        details: Struct?
     ): CreateObjectSet.Response {
-        val result = remote.createSet(space = space, objectType = objectType)
+        val result = remote.createSet(
+            space = space,
+            objectType = objectType,
+            details = details
+        )
         return CreateObjectSet.Response(
-            target = result.targetId,
-            payload = result.payload
+            target = result.objectId,
+            payload = result.payload,
+            details = result.details
         )
     }
 
@@ -1100,5 +1107,17 @@ class BlockDataRepository(
 
     override suspend fun setDeviceNetworkState(type: DeviceNetworkType) {
         remote.setDeviceNetworkState(type)
+    }
+
+    override suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {
+        return remote.objectTypeListConflictingRelations(command)
+    }
+
+    override suspend fun objectTypeSetRecommendedHeaderFields(command: Command.ObjectTypeSetRecommendedHeaderFields) {
+        remote.objectTypeSetRecommendedHeaderFields(command)
+    }
+
+    override suspend fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields) {
+        remote.objectTypeSetRecommendedFields(command)
     }
 }

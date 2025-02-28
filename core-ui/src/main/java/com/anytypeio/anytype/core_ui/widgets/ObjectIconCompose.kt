@@ -32,7 +32,8 @@ fun ListWidgetObjectIcon(
     icon: ObjectIcon,
     modifier: Modifier,
     iconSize: Dp = 48.dp,
-    onTaskIconClicked: (Boolean) -> Unit = {}
+    onTaskIconClicked: (Boolean) -> Unit = {},
+    backgroundColor: Int = R.color.shape_tertiary
 ) {
     when (icon) {
         is ObjectIcon.Profile.Avatar -> {
@@ -46,7 +47,7 @@ fun ListWidgetObjectIcon(
             DefaultProfileIconImage(icon, modifier, iconSize)
         }
         is ObjectIcon.Basic.Emoji -> {
-            EmojiIconView(icon = icon, backgroundSize = iconSize, modifier = modifier)
+            EmojiIconView(icon = icon, backgroundSize = iconSize, modifier = modifier, backgroundColor = backgroundColor)
         }
         is ObjectIcon.Basic.Image -> {
             DefaultObjectImageIcon(icon.hash, modifier, iconSize, fallback = icon.emptyState)
@@ -77,7 +78,8 @@ fun ListWidgetObjectIcon(
             EmptyIconView(
                 modifier = modifier,
                 emptyType = icon,
-                backgroundSize = iconSize
+                backgroundSize = iconSize,
+                backgroundColor = backgroundColor
             )
         }
         ObjectIcon.None -> {}

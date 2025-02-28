@@ -47,4 +47,6 @@ sealed class FieldEvent {
         data class OnMove(val fromKey: String, val toKey: String) : DragEvent()
         data object OnDragEnd : DragEvent()
     }
+
+    data class OnAddFieldSearchQueryChanged(val query: String) : FieldEvent()
 }

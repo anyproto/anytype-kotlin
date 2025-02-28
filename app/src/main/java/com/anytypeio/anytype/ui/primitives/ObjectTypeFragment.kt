@@ -182,7 +182,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiFieldEditOrNewState = vm.uiFieldEditOrNewState.collectAsStateWithLifecycle().value,
                     uiFieldLocalInfoState = vm.uiFieldLocalInfoState.collectAsStateWithLifecycle().value,
-                    uiAddFieldScreenState = vm.uiAddNewFieldState.collectAsStateWithLifecycle().value,
+                    uiAddFieldsScreenState = vm.uiAddFieldsState.collectAsStateWithLifecycle().value,
                     fieldEvent = vm::onFieldEvent
                 )
             }

@@ -18,6 +18,10 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -30,26 +34,29 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
+import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldItem
-import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldScreenState
+import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldsScreenState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFieldScreen(
-    state: UiAddFieldScreenState,
+    state: UiAddFieldsScreenState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
 
+    var isSearchEmpty by remember { mutableStateOf(true) }
+
     val lazyListState = rememberLazyListState()
 
-    if (state is UiAddFieldScreenState.Visible) {
+    if (state is UiAddFieldsScreenState.Visible) {
         ModalBottomSheet(
             modifier = Modifier
                 .fillMaxSize()
@@ -69,6 +76,15 @@ fun AddFieldScreen(
                     .fillMaxSize(),
                 state = lazyListState
             ) {
+                item {
+                    DefaultSearchBar(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                    ) {
+                        isSearchEmpty = it.isEmpty()
+                        fieldEvent(FieldEvent.OnAddFieldSearchQueryChanged(it))
+                    }
+                }
                 items(
                     count = state.items.size,
                     key = { index -> state.items[index].id },
@@ -138,7 +154,7 @@ private fun FieldItem(
 @Composable
 fun PreviewAddFieldScreen() {
     AddFieldScreen(
-        state = UiAddFieldScreenState.Visible(
+        state = UiAddFieldsScreenState.Visible(
             items = listOf(
                 UiAddFieldItem(
                     id = "1",

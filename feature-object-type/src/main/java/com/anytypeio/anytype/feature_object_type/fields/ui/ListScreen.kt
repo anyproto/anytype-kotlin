@@ -68,7 +68,7 @@ import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.*
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.FieldItemMenu.*
-import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldScreenState
+import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldsScreenState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
@@ -90,7 +90,7 @@ fun FieldsMainScreen(
     uiIconState: UiIconState,
     uiFieldEditOrNewState: UiFieldEditOrNewState,
     uiFieldLocalInfoState: UiLocalsFieldsInfoState,
-    uiAddFieldScreenState: UiAddFieldScreenState,
+    uiAddFieldsScreenState: UiAddFieldsScreenState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
@@ -242,9 +242,9 @@ fun FieldsMainScreen(
         )
     }
 
-    if (uiAddFieldScreenState is UiAddFieldScreenState.Visible) {
+    if (uiAddFieldsScreenState is UiAddFieldsScreenState.Visible) {
         AddFieldScreen(
-            state = uiAddFieldScreenState,
+            state = uiAddFieldsScreenState,
             fieldEvent = fieldEvent
         )
     }
@@ -759,7 +759,7 @@ fun PreviewTypeFieldsMainScreen() {
         fieldEvent = {},
         uiFieldEditOrNewState = UiFieldEditOrNewState.Hidden,
         uiFieldLocalInfoState = UiLocalsFieldsInfoState.Hidden,
-        uiAddFieldScreenState = UiAddFieldScreenState.Hidden
+        uiAddFieldsScreenState = UiAddFieldsScreenState.Hidden
     )
 }
 

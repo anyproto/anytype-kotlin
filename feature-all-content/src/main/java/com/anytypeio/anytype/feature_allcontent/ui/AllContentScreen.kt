@@ -70,6 +70,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.extensions.swapList
+import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
@@ -267,10 +268,14 @@ fun AllContentMainScreen(
                     onTabClick(tab)
                 }
                 Spacer(modifier = Modifier.size(10.dp))
-                AllContentSearchBar(onQueryChanged = {
-                    isSearchEmpty = it.isEmpty()
-                    onQueryChanged(it)
-                })
+                DefaultSearchBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    onQueryChanged = {
+                        isSearchEmpty = it.isEmpty()
+                        onQueryChanged(it)
+                    })
                 Spacer(modifier = Modifier.size(10.dp))
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             }

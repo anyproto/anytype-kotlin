@@ -219,24 +219,6 @@ private val possibleToChangeLayoutLayouts = listOf(
     ObjectType.Layout.NOTE
 )
 
-private val fileLayouts = listOf(
-    ObjectType.Layout.FILE,
-    ObjectType.Layout.IMAGE,
-    ObjectType.Layout.VIDEO,
-    ObjectType.Layout.AUDIO,
-    ObjectType.Layout.PDF,
-)
-
-private val systemLayouts = listOf(
-    ObjectType.Layout.OBJECT_TYPE,
-    ObjectType.Layout.RELATION,
-    ObjectType.Layout.RELATION_OPTION,
-    ObjectType.Layout.RELATION_OPTION_LIST,
-    ObjectType.Layout.DASHBOARD,
-    ObjectType.Layout.SPACE,
-    ObjectType.Layout.SPACE_VIEW
-)
-
 private val layoutsWithTemplates = listOf(
     ObjectType.Layout.BASIC,
     ObjectType.Layout.NOTE,

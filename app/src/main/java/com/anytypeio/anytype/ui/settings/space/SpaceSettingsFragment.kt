@@ -32,7 +32,7 @@ import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
-import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
+import com.anytypeio.anytype.ui_settings.space.SpaceSettingsScreen
 import java.io.File
 import javax.inject.Inject
 import timber.log.Timber
@@ -62,9 +62,9 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     surface = colorResource(id = R.color.context_menu_background)
                 )
             ) {
-                SpaceSettingsContainer(
-                    onSaveClicked = { _, _ -> },
-                    uiState = vm.uiState.collectAsStateWithLifecycle().value,
+                SpaceSettingsScreen(
+                    onNameSet = vm::onNameSet,
+                    state = vm.spaceViewState.collectAsStateWithLifecycle().value,
                     onDeleteSpaceClicked = throttledClick(
                         onClick = { vm.onDeleteSpaceClicked() }
                     ),

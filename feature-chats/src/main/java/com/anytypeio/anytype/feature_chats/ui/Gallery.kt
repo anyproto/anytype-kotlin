@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_chats.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -23,7 +24,10 @@ import com.bumptech.glide.integration.compose.GlideImage
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun RowLayout(images: List<ChatView.Message.Attachment.Image>) {
+fun RowLayout(
+    images: List<ChatView.Message.Attachment.Image>,
+    onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
+) {
     Row(
         modifier = Modifier
             .width(300.dp)
@@ -37,9 +41,13 @@ fun RowLayout(images: List<ChatView.Message.Attachment.Image>) {
                 contentDescription = "Gallery Image",
                 modifier = Modifier
                     .weight(1f)
-                    .aspectRatio(1f) // Keeps each image square
-                    .clip(RoundedCornerShape(12.dp)), // Rounded corners
-                contentScale = ContentScale.Crop // Crop to fit the image
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable {
+                        onAttachmentClicked(image)
+                    }
+                ,
+                contentScale = ContentScale.Crop
             )
         }
     }

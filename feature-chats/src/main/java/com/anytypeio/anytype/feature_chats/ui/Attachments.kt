@@ -48,7 +48,10 @@ fun BubbleAttachments(
                 val rowConfig = attachment.rowConfig
                 var index = 0
                 rowConfig.forEachIndexed { idx, rowSize ->
-                    RowLayout(attachment.images.slice(index until index + rowSize))
+                    RowLayout(
+                        onAttachmentClicked = onAttachmentClicked,
+                        images = attachment.images.slice(index until index + rowSize)
+                    )
                     if (idx != rowConfig.lastIndex) {
                         Spacer(modifier = Modifier.height(4.dp))
                     }

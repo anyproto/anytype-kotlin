@@ -27,4 +27,8 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
     override fun getUntitledObjectTitle(): String {
         return context.getString(R.string.untitled)
     }
+
+    override fun getSetOfObjectsTitle(): String {
+        return context.getString(R.string.object_set_of_title)
+    }
 }

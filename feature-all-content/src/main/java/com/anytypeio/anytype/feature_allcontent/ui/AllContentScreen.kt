@@ -70,6 +70,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.extensions.swapList
+import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
@@ -90,7 +91,6 @@ import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentBottomMenu
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
-import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
@@ -99,6 +99,7 @@ import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiSnackbarState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
+import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.coroutines.CoroutineScope
@@ -117,7 +118,7 @@ fun AllContentWrapperScreen(
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
-    onSortClick: (AllContentSort) -> Unit,
+    onSortClick: (ObjectsListSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem) -> Unit,
     onRelationClicked: (UiContentItem) -> Unit,
@@ -180,7 +181,7 @@ fun AllContentMainScreen(
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
-    onSortClick: (AllContentSort) -> Unit,
+    onSortClick: (ObjectsListSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem) -> Unit,
     onRelationClicked: (UiContentItem) -> Unit,
@@ -267,10 +268,14 @@ fun AllContentMainScreen(
                     onTabClick(tab)
                 }
                 Spacer(modifier = Modifier.size(10.dp))
-                AllContentSearchBar(onQueryChanged = {
-                    isSearchEmpty = it.isEmpty()
-                    onQueryChanged(it)
-                })
+                DefaultSearchBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    onQueryChanged = {
+                        isSearchEmpty = it.isEmpty()
+                        onQueryChanged(it)
+                    })
                 Spacer(modifier = Modifier.size(10.dp))
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             }

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds.OBJECT_TYPE
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
@@ -30,7 +31,7 @@ object MockRelationFactory {
 
     //LAYOUT
     val relationLayout = StubRelationObject(
-        key = "layout",
+        key = Relations.LAYOUT,
         name = "Layout",
         format = Relation.Format.NUMBER,
         isHidden = true,

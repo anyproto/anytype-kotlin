@@ -17,6 +17,7 @@ import com.anytypeio.anytype.di.feature.MainEntrySubComponent
 import com.anytypeio.anytype.di.feature.MoveToDependencies
 import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
+import com.anytypeio.anytype.di.feature.ObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
@@ -43,6 +44,7 @@ import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
+import com.anytypeio.anytype.di.feature.settings.DebugDependencies
 import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
@@ -137,9 +139,11 @@ interface MainComponent :
     LinkToObjectDependencies,
     MoveToDependencies,
     DateObjectDependencies,
+    ObjectTypeDependencies,
     SelectChatReactionDependencies,
     ChatReactionDependencies,
-    ParticipantComponentDependencies
+    ParticipantComponentDependencies,
+    DebugDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -388,6 +392,11 @@ abstract class ComponentDependenciesModule {
 
     @Binds
     @IntoMap
+    @ComponentDependenciesKey(ObjectTypeDependencies::class)
+    abstract fun provideObjectTypeDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
     @ComponentDependenciesKey(SelectChatReactionDependencies::class)
     abstract fun provideChatReactionPickerDependencies(component: MainComponent): ComponentDependencies
 
@@ -400,4 +409,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(ParticipantComponentDependencies::class)
     abstract fun provideParticipantComponentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(DebugDependencies::class)
+    abstract fun provideDebugDependencies(component: MainComponent): ComponentDependencies
 }

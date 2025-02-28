@@ -47,6 +47,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -54,7 +55,7 @@ abstract class ObjectMenuViewModelBase(
     private val addBackLinkToObject: AddBackLinkToObject,
     protected val delegator: Delegator<Action>,
     protected val urlBuilder: UrlBuilder,
-    protected val dispatcher: Dispatcher<Payload>,
+    private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val menuOptionsProvider: ObjectMenuOptionsProvider,
     private val duplicateObject: DuplicateObject,
@@ -82,17 +83,17 @@ abstract class ObjectMenuViewModelBase(
         ObjectMenuOptionsProvider.Options(
             hasIcon = false,
             hasCover = false,
-            hasLayout = false,
             hasRelations = false,
             hasDiagnosticsVisibility = false,
-            hasHistory = false
+            hasHistory = false,
+            hasDescriptionShow = false
         )
     )
     val options: Flow<ObjectMenuOptionsProvider.Options> = _options
 
     abstract fun onIconClicked(ctx: Id, space: Id)
     abstract fun onCoverClicked(ctx: Id, space: Id)
-    abstract fun onLayoutClicked(ctx: Id, space: Id)
+    abstract fun onDescriptionClicked(ctx: Id, space: Id)
     abstract fun onRelationsClicked()
 
     fun onHistoryClicked(ctx: Id, space: Id) {
@@ -126,6 +127,7 @@ abstract class ObjectMenuViewModelBase(
         jobs += viewModelScope.launch {
             menuOptionsProvider
                 .provide(ctx = ctx, isLocked = isLocked, isReadOnly = isReadOnly)
+                .distinctUntilChanged()
                 .collect(_options)
         }
     }
@@ -481,7 +483,6 @@ abstract class ObjectMenuViewModelBase(
         data object OpenSetIcons : Command()
         data object OpenObjectCover : Command()
         data object OpenSetCover : Command()
-        data object OpenObjectLayout : Command()
         data object OpenSetLayout : Command()
         data object OpenObjectRelations : Command()
         data object OpenSetRelations : Command()

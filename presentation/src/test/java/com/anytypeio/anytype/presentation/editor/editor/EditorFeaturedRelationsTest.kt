@@ -995,7 +995,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         key = backlinksRelation.key,
                         name = backlinksRelation.name.orEmpty(),
                         featured = true,
-                        system = false,
+                        system = true,
                         count = 3
                     ),
                     ObjectRelationView.Links.From(
@@ -1202,7 +1202,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         name = globalNameRelation.name!!,
                         value = globalNameValue,
                         featured = true,
-                        system = false,
+                        system = true,
                         readOnly = false,
                         format = Relation.Format.SHORT_TEXT
                     )
@@ -1296,7 +1296,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         name = identityRelation.name!!,
                         value = identityValue,
                         featured = true,
-                        system = false,
+                        system = true,
                         readOnly = false,
                         format = Relation.Format.SHORT_TEXT
                     )
@@ -1387,7 +1387,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         name = globalNameRelation.name!!,
                         value = globalNameValue,
                         featured = true,
-                        system = false,
+                        system = true,
                         readOnly = false,
                         format = Relation.Format.SHORT_TEXT
                     ),
@@ -1491,7 +1491,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         name = identityRelation.name!!,
                         value = identityValue,
                         featured = true,
-                        system = false,
+                        system = true,
                         readOnly = false,
                         format = Relation.Format.SHORT_TEXT
                     ),

@@ -46,7 +46,7 @@
     <string name="space_settings_apply_random_gradient">Pas willekeurige effen kleur toe</string>
     <string name="space_settings_apply_upload_image">Upload afbeelding</string>
     <string name="profile_settings_apply_upload_image">Upload afbeelding</string>
-    <string name="remove_image">Remove image</string>
+    <string name="remove_image">Verwijder afbeelding</string>
     <string name="delete_space">Verwijder ruimte</string>
     <string name="you_can_store">Je kunt maximaal %1$s van je bestanden gratis opslaan op onze versleutelde back-up node. Als de limiet is bereikt, zullen bestanden alleen lokaal worden opgeslagen.</string>
     <string name="in_order_to_save">Om ruimte op je lokale apparaat te besparen, kun je al je bestanden naar onze versleutelde back-upnode verplaatsen. De bestanden worden opnieuw geladen wanneer je ze opent.</string>
@@ -173,7 +173,7 @@
     <string name="hint_toggle">Open/sluit blok</string>
     <string name="hint_paste_link">Plak koppeling</string>
     <string name="empty_tap_to_create_new_block">Leeg. Tik om een nieuw blok aan te maken</string>
-    <string name="untitled">Untitled</string>
+    <string name="untitled">Naamloos</string>
     <string name="untitled_set">Naamloze set</string>
     <string name="untitled_collection">Naamloze collectie</string>
     <string name="archived">Gearchiveerd</string>
@@ -371,7 +371,7 @@
     <string name="scroll_to_select_position">Scroll om een nieuwe positie te selecteren</string>
     <string name="block_action_add_below">Hieronder toevoegen</string>
     <string name="content_desc_back_button">Back button</string>
-    <string name="content_desc_share_button">Share button</string>
+    <string name="content_desc_share_button">Deelknop</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
@@ -1215,8 +1215,8 @@
     <string name="multiplayer_notification_member_request_approved">Verzoek goedgekeurd</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Je verzoek om deel te nemen aan de ruimte %1$s is goedgekeurd met alleen-lezen toegangsrechten. De ruimte zal binnenkort beschikbaar zijn op je apparaat.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Je verzoek om deel te nemen aan de ruimte %1$s is goedgekeurd met bewerktoegangsrechten. De ruimte zal binnenkort beschikbaar zijn op je apparaat.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">De ruimte \"%1$s\" is niet langer toegankelijk.</string>
+    <string name="multiplayer_notification_member_removed_from_space">Je bent verwijderd uit de ruimte \"%1$s\" of de ruimte is verwijderd door de eigenaar.</string>
     <string name="multiplayer_notification_member_permissions_changed">Machtigingen gewijzigd</string>
     <string name="multiplayer_notification_member_permission_change_read">Je toegangsrechten zijn gewijzigd naar alleen-lezen in de ruimte %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Je toegangsrechten zijn gewijzigd naar bewerken in de ruimte %1$s.</string>
@@ -1232,7 +1232,7 @@
     <string name="multiplayer_collaborate_step_1">1. Tik op de ruimtewidget om de instellingen te openen</string>
     <string name="multiplayer_collaborate_step_2">2. Open het gedeelte Delen</string>
     <string name="multiplayer_collaborate_step_3">3. Genereer een uitnodigingslink en deel deze</string>
-    <string name="profile_view_edit_button">Edit Profile</string>
+    <string name="profile_view_edit_button">Bewerk profiel</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d lid</item>
         <item quantity="other">%1$d leden</item>
@@ -1241,7 +1241,7 @@
         <item quantity="one">%1$d verzoek</item>
         <item quantity="other">%1$d verzoeken</item>
     </plurals>
-    <string name="multiplayer_you_as_member">jij</string>
+    <string name="multiplayer_you_as_member">Jij</string>
     <string name="multiplayer_spaces">Ruimtes</string>
     <string name="multiplayer_space_status_joining">Deelnemen</string>
     <string name="multiplayer_space_status_active">Actief</string>
@@ -1425,7 +1425,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notifications_prompt_description">Schakel meldingen in om op de hoogte te blijven van verzoeken om deel te nemen aan of ruimtes te verlaten.</string>
     <string name="notifications_prompt_primary_button_text">Activeren</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Maak bladwijzer aan vanaf klembord</string>
-    <string name="error_unexpected_layout">Fout: onverwachte lay-out</string>
+    <string name="error_unexpected_layout">Fout: onverwachte opmaak</string>
     <string name="error_non_valid_object">Fout: object-ID ontbreekt</string>
     <string name="membership_price_pending">In behandeling...</string>
     <string name="per_period">per %1$s</string>
@@ -1549,7 +1549,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="all_content_no_results_description">Probeer te zoeken met andere trefwoorden.</string>
     <string name="all_content_error_title">Er is iets misgegaan.</string>
     <string name="onboarding_my_first_space">Mijn eerste ruimte</string>
-    <string name="all_content_error_unexpected_layout">Fout: onverwachte lay-out</string>
+    <string name="all_content_error_unexpected_layout">Fout: onverwachte opmaak</string>
     <string name="all_content_toast_relation_added">Relatie toegevoegd</string>
     <string name="all_content_toast_relation_removed">Relatie verwijderd</string>
     <string name="all_content_toast_type_added">Objecttype toegevoegd</string>
@@ -1604,4 +1604,31 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_types_human">Mens</string>
     <string name="chats_alert_delete_this_message_description">Het kan niet worden hersteld na bevestiging</string>
     <string name="chats_alert_delete_this_message">Verwijder dit bericht?</string>
+    <string name="migration_migration_is_in_progress">Bezig met migreren...</string>
+    <string name="migration_this_shouldn_t_take_long">Dit kan enige tijd duren. Sluit de app alsjeblieft niet voordat het proces is voltooid.</string>
+    <string name="migration_error_try_again">Probeer opnieuw</string>
+    <string name="migration_migration_failed">Migratie mislukt</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Maak alsjeblieft ruimte vrij en voer het proces opnieuw uit.</string>
+    <string name="fields_screen_title">Velden</string>
+    <string name="field_text_title">Tekst</string>
+    <string name="field_text_empty">Voer in</string>
+    <string name="field_number_title">Nummer</string>
+    <string name="field_number_empty">Voer in</string>
+    <string name="field_date_title">Datum</string>
+    <string name="field_date_empty">Waarde</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Voeg toe</string>
+    <string name="field_email_title">E-mailadres</string>
+    <string name="field_email_empty">Voer in</string>
+    <string name="field_phone_title">Telefoonnummer</string>
+    <string name="field_phone_empty">Voer in</string>
+    <string name="field_select_title">Selecteer</string>
+    <string name="field_select_empty">Selecteer</string>
+    <string name="field_multiselect_title">Meervoudige selectie</string>
+    <string name="field_multiselect_empty">Selecteer</string>
+    <string name="field_object_title">Object</string>
+    <string name="field_object_empty">Voeg toe</string>
+    <string name="field_file_and_media_title">Bestand &amp; Media</string>
+    <string name="field_file_and_media_empty">Voeg toe</string>
+    <string name="field_checkbox_title">Selecteer</string>
 </resources>

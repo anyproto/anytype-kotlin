@@ -176,6 +176,7 @@ dependencies {
     implementation project(':gallery-experience')
     implementation project(':feature-all-content')
     implementation project(':feature-date')
+    implementation project(':feature-object-type')
 
     //Compile time dependencies
     ksp libs.daggerCompiler
@@ -223,7 +224,7 @@ dependencies {
     implementation libs.composeAccompanistNavigation
     implementation libs.preference
     implementation libs.activityCompose
-    implementation libs.composeReorderable
+    implementation libs.composeReorderableLegacy
 
     implementation libs.room
     implementation libs.appUpdater

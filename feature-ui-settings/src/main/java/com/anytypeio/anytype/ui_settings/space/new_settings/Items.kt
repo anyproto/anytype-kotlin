@@ -270,7 +270,7 @@ fun NewSpaceNameBlock(
     }
 
     Column(modifier = modifier) {
-        androidx.compose.material.Text(
+        Text(
             text = stringResource(id = R.string.space_name),
             style = BodyCalloutRegular.copy(color = colorResource(id = R.color.text_primary)),
             color = colorResource(id = R.color.text_secondary)
@@ -316,8 +316,8 @@ fun NewSpaceDescriptionBlock(
     }
 
     Column(modifier = modifier) {
-        androidx.compose.material.Text(
-            text = stringResource(id = R.string.space_description),
+        Text(
+            text = stringResource(id = R.string.space_settings_space_description_hint),
             style = BodyCalloutRegular,
             color = colorResource(id = R.color.text_secondary)
         )

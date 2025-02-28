@@ -24,7 +24,6 @@ import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.editor.bookmark.CreateBookmarkViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
@@ -33,8 +32,7 @@ import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
-import com.anytypeio.anytype.ui_settings.space.SpaceSettingsContainer
-import com.anytypeio.anytype.ui_settings.space.SpaceSettingsScreen
+import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
 import java.io.File
 import javax.inject.Inject
 import timber.log.Timber

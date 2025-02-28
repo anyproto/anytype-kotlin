@@ -313,7 +313,9 @@ fun Bubble(
                             }
 
                             withStyle(
-                                style = SpanStyle(color = Color.Transparent)
+                                style = SpanStyle(
+                                    color = Color.Transparent
+                                )
                             ) {
                                 append(
                                     timestamp.formatTimeInMillis(

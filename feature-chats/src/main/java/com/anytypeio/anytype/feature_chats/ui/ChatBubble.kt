@@ -64,6 +64,7 @@ import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.fontIBM
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
@@ -330,8 +331,8 @@ fun Bubble(
                         text = timestamp.formatTimeInMillis(
                             TIME_H24
                         ),
-                        style = Caption1Regular,
-                        color = colorResource(id = R.color.text_secondary),
+                        style = Caption2Regular,
+                        color = colorResource(id = R.color.transparent_active),
                         maxLines = 1
                     )
                 }

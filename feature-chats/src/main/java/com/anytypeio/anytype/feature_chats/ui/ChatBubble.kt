@@ -137,11 +137,13 @@ fun Bubble(
         if (reply != null) {
             Text(
                 text = reply.author,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    top = 8.dp,
-                    end = 12.dp
-                ).alpha(0.5f),
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        top = 8.dp,
+                        end = 12.dp
+                    )
+                    .alpha(0.5f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = colorResource(id = R.color.text_primary),
@@ -234,93 +236,106 @@ fun Bubble(
                 onAttachmentClicked = onAttachmentClicked
             )
             if (content.msg.isNotEmpty()) {
-                Text(
+                Box(
                     modifier = Modifier.padding(
                         top = 4.dp,
                         start = 12.dp,
-                        end = 12.dp
-                    ),
-                    text = buildAnnotatedString {
-                        content.parts.forEach { part ->
-                            if (part.link != null && part.link.param != null) {
-                                withLink(
-                                    LinkAnnotation.Clickable(
-                                        tag = DEFAULT_MENTION_LINK_TAG,
-                                        styles = TextLinkStyles(
-                                            style = SpanStyle(
-                                                fontWeight = if (part.isBold) FontWeight.Bold else null,
-                                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                                textDecoration = TextDecoration.Underline
+                        end = 12.dp,
+                        bottom = 4.dp
+                    )
+                ) {
+                    Text(
+                        modifier = Modifier,
+                        text = buildAnnotatedString {
+                            content.parts.forEach { part ->
+                                if (part.link != null && part.link.param != null) {
+                                    withLink(
+                                        LinkAnnotation.Clickable(
+                                            tag = DEFAULT_MENTION_LINK_TAG,
+                                            styles = TextLinkStyles(
+                                                style = SpanStyle(
+                                                    fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                                    fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                                    textDecoration = TextDecoration.Underline
+                                                )
                                             )
+                                        ) {
+                                            onMarkupLinkClicked(part.link.param.orEmpty())
+                                        }
+                                    ) {
+                                        append(part.part)
+                                    }
+                                } else if (part.mention != null && part.mention.param != null) {
+                                    withLink(
+                                        LinkAnnotation.Clickable(
+                                            tag = DEFAULT_MENTION_SPAN_TAG,
+                                            styles = TextLinkStyles(
+                                                style = SpanStyle(
+                                                    fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                                    fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                                    textDecoration = TextDecoration.Underline
+                                                )
+                                            )
+                                        ) {
+                                            onMentionClicked(part.mention.param.orEmpty())
+                                        }
+                                    ) {
+                                        append(part.part)
+                                    }
+                                } else if (part.emoji != null && part.emoji.param != null) {
+                                    append(part.emoji.param)
+                                } else {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                            fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                            textDecoration = if (part.underline)
+                                                TextDecoration.Underline
+                                            else if (part.isStrike)
+                                                TextDecoration.LineThrough
+                                            else null,
+                                            fontFamily = if (part.isCode) fontIBM else null,
                                         )
                                     ) {
-                                        onMarkupLinkClicked(part.link.param.orEmpty())
+                                        append(part.part)
                                     }
-                                ) {
-                                    append(part.part)
-                                }
-                            } else if (part.mention != null && part.mention.param != null) {
-                                withLink(
-                                    LinkAnnotation.Clickable(
-                                        tag = DEFAULT_MENTION_SPAN_TAG,
-                                        styles = TextLinkStyles(
-                                            style = SpanStyle(
-                                                fontWeight = if (part.isBold) FontWeight.Bold else null,
-                                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                                textDecoration = TextDecoration.Underline
-                                            )
-                                        )
-                                    ) {
-                                        onMentionClicked(part.mention.param.orEmpty())
-                                    }
-                                ) {
-                                    append(part.part)
-                                }
-                            } else if (part.emoji != null && part.emoji.param != null) {
-                                append(part.emoji.param)
-                            } else {
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontWeight = if (part.isBold) FontWeight.Bold else null,
-                                        fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                        textDecoration = if (part.underline)
-                                            TextDecoration.Underline
-                                        else if (part.isStrike)
-                                            TextDecoration.LineThrough
-                                        else null,
-                                        fontFamily = if (part.isCode) fontIBM else null,
-                                    )
-                                ) {
-                                    append(part.part)
                                 }
                             }
-                        }
-                        if (isEdited) {
+                            if (isEdited) {
+                                withStyle(
+                                    style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
+                                ) {
+                                    append(
+                                        " (${stringResource(R.string.chats_message_edited)})"
+                                    )
+                                }
+                            }
+
                             withStyle(
-                                style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
+                                style = SpanStyle(color = Color.Transparent)
                             ) {
                                 append(
-                                    " (${stringResource(R.string.chats_message_edited)})"
+                                    timestamp.formatTimeInMillis(
+                                        TIME_H24
+                                    )
                                 )
                             }
-                        }
-                    },
-                    style = BodyRegular,
-                    color = colorResource(id = R.color.text_primary),
-                )
+                        },
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary),
+                    )
+                    Text(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd),
+                        text = timestamp.formatTimeInMillis(
+                            TIME_H24
+                        ),
+                        style = Caption1Regular,
+                        color = colorResource(id = R.color.text_secondary),
+                        maxLines = 1
+                    )
+                }
             }
-            Text(
-                modifier = Modifier
-                    .padding(end = 12.dp, bottom = 4.dp)
-                    .align(Alignment.End)
-                ,
-                text = timestamp.formatTimeInMillis(
-                    TIME_H24
-                ),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_secondary),
-                maxLines = 1
-            )
             MaterialTheme(
                 shapes = MaterialTheme.shapes.copy(
                     medium = RoundedCornerShape(

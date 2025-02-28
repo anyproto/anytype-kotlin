@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -30,10 +31,13 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeHeaderRecommendedFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
+import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldItem
+import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldsScreenState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
@@ -62,9 +66,11 @@ import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesHeaderState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
+import com.anytypeio.anytype.feature_object_type.ui.mapToUiAddFieldListItem
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.cover.UnsplashViewModel.Companion.DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -83,15 +89,24 @@ import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -120,7 +135,8 @@ class ObjectTypeViewModel(
     private val createTemplate: CreateTemplate,
     private val duplicateObjects: DuplicateObjects,
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
-    private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields
+    private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
+    private val objectTypeSetHeaderRecommendedFields: SetObjectTypeHeaderRecommendedFields
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -177,6 +193,9 @@ class ObjectTypeViewModel(
     val uiFieldsListState = MutableStateFlow<UiFieldsListState>(UiFieldsListState.EMPTY)
     val uiFieldEditOrNewState =
         MutableStateFlow<UiFieldEditOrNewState>(UiFieldEditOrNewState.Hidden)
+
+    //add new field
+    val uiAddFieldsState = MutableStateFlow<UiAddFieldsScreenState>(UiAddFieldsScreenState.Hidden)
 
     //error
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
@@ -916,8 +935,12 @@ class ObjectTypeViewModel(
                 uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Visible
             }
 
-            FieldEvent.Section.OnAddIconClick -> {
-                //todo need to implement
+            FieldEvent.Section.OnAddToHeaderIconClick -> {
+                proceedWithAddFieldToHeaderScreen()
+            }
+
+            FieldEvent.Section.OnAddToSidebarIconClick -> {
+                proceedWithAddFieldToSidebarScreen()
             }
 
             FieldEvent.DragEvent.OnDragEnd -> {
@@ -958,6 +981,24 @@ class ObjectTypeViewModel(
                 val item = currentList.removeAt(fromIndex)
                 currentList.add(toIndex, item)
                 uiFieldsListState.value = UiFieldsListState(items = currentList)
+            }
+
+            FieldEvent.OnAddFieldScreenDismiss -> {
+                hideAddNewFieldScreen()
+            }
+
+            is FieldEvent.OnAddToHeaderFieldClick -> {
+                onAddToHeaderFieldClicked(item = event.item)
+                hideAddNewFieldScreen()
+            }
+
+            is FieldEvent.OnAddToSidebarFieldClick -> {
+                onAddToSidebarFieldClicked(item = event.item)
+                hideAddNewFieldScreen()
+            }
+
+            is FieldEvent.OnAddFieldSearchQueryChanged -> {
+                onQueryChanged(query = event.query)
             }
         }
     }
@@ -1247,10 +1288,127 @@ class ObjectTypeViewModel(
             )
         }
     }
+
+    private fun proceedWithSetHeaderRecommendedFields(fields: List<Id>) {
+        val params = SetObjectTypeHeaderRecommendedFields.Params(
+            objectTypeId = vmParams.objectId,
+            fields = fields
+        )
+        viewModelScope.launch {
+            objectTypeSetHeaderRecommendedFields.async(params).fold(
+                onSuccess = {
+                    Timber.d("Header recommended fields set")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while setting header recommended fields")
+                }
+            )
+        }
+    }
+    //endregion
+
+    //region ADD NEW FIELD
+    private val input = MutableStateFlow("")
+
+    @OptIn(FlowPreview::class)
+    private val query = input.take(1).onCompletion {
+        emitAll(
+            input.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged()
+        )
+    }
+
+    private var addFieldSearchJob: Job? = null
+
+    /**
+     * Loads the available fields from type, applies filtering based on a search query,
+     * and then updates the UI state.
+     */
+    private fun showAddFieldScreen(addToHeader: Boolean) {
+        // Collect field keys that are already present in the type fields list.
+        val typeFieldsKeys =
+            uiFieldsListState.value.items.mapNotNull { (it as? UiFieldsListItem.Item)?.fieldKey }
+
+        addFieldSearchJob = viewModelScope.launch {
+            // Combine the search query flow with the list of all fields.
+            combine(
+                query,
+                storeOfRelations.trackChanges()
+            ) { queryText, _ ->
+                // Filter out fields by query and that already exist and are not valid.
+                filterFields(
+                    allFields = storeOfRelations.getAll(),
+                    typeKeys = typeFieldsKeys,
+                    queryText = queryText
+                )
+            }.collect { filteredFields ->
+                val items = filteredFields.mapNotNull { field ->
+                    field.mapToUiAddFieldListItem(stringResourceProvider)
+                }.sortedBy { it.fieldTitle }
+
+                uiAddFieldsState.value = UiAddFieldsScreenState.Visible(
+                    items = items,
+                    addToHeader = addToHeader
+                )
+            }
+        }
+    }
+
+    private fun filterFields(
+        allFields: List<ObjectWrapper.Relation>,
+        typeKeys: List<Key>,
+        queryText: String
+    ): List<ObjectWrapper.Relation> = allFields.filter { field ->
+        field.key !in typeKeys &&
+                field.isValidToUse &&
+                (queryText.isBlank() || field.name?.contains(queryText, ignoreCase = true) == true)
+    }
+
+    private fun onQueryChanged(query: String) {
+        input.value = query
+    }
+
+    fun hideAddNewFieldScreen() {
+        input.value = ""
+        addFieldSearchJob?.cancel()
+        addFieldSearchJob = null
+        uiAddFieldsState.value = UiAddFieldsScreenState.Hidden
+    }
+
+    fun proceedWithAddFieldToHeaderScreen() {
+        showAddFieldScreen(addToHeader = true)
+    }
+
+    fun proceedWithAddFieldToSidebarScreen() {
+        showAddFieldScreen(addToHeader = false)
+    }
+
+    private fun updateFieldRecommendations(
+        currentFields: List<String>?,
+        item: UiAddFieldItem,
+        updateAction: (List<String>) -> Unit
+    ) {
+        val newFields = currentFields.orEmpty() + item.id
+        updateAction(newFields)
+    }
+
+    private fun onAddToSidebarFieldClicked(item: UiAddFieldItem) {
+        updateFieldRecommendations(
+            currentFields = _objTypeState.value?.recommendedRelations,
+            item = item,
+            updateAction = ::proceedWithSetRecommendedFields
+        )
+    }
+
+    private fun onAddToHeaderFieldClicked(item: UiAddFieldItem) {
+        updateFieldRecommendations(
+            currentFields = _objTypeState.value?.recommendedFeaturedRelations,
+            item = item,
+            updateAction = ::proceedWithSetHeaderRecommendedFields
+        )
+    }
     //endregion
 
     companion object {
-        private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
         const val OBJECTS_MAX_COUNT = 20
         const val TEMPLATE_MAX_COUNT = 100
 

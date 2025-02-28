@@ -41,6 +41,7 @@ import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
+import com.anytypeio.anytype.ui.relations.RelationAddToObjectFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
 import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_PICK_EMOJI
@@ -120,6 +121,14 @@ class ObjectTypeFragment : BaseComposeFragment() {
                 ObjectTypeCommand.OpenFieldsScreen -> {
                     navComposeController.navigate(OBJ_TYPE_FIELDS)
                 }
+
+                is ObjectTypeCommand.OpenAddFieldScreen -> {
+                    RelationAddToObjectFragment.new(
+                        ctx = command.typeId,
+                        space = command.space,
+                        isSetOrCollection = command.isSet
+                    ).showChildFragment()
+                }
             }
         }
     }
@@ -173,6 +182,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiFieldEditOrNewState = vm.uiFieldEditOrNewState.collectAsStateWithLifecycle().value,
                     uiFieldLocalInfoState = vm.uiFieldLocalInfoState.collectAsStateWithLifecycle().value,
+                    uiAddFieldsScreenState = vm.uiAddFieldsState.collectAsStateWithLifecycle().value,
                     fieldEvent = vm::onFieldEvent
                 )
             }

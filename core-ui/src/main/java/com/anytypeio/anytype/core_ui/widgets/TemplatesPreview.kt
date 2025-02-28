@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -18,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 
 @DefaultPreviews
 @Composable
-fun ComposablePreview() {
+fun TypeTemplatesWidgetPreview() {
     val items = listOf(
         TemplateView.Blank(
             id = DEFAULT_TEMPLATE_ID_BLANK,

@@ -51,7 +51,6 @@ fun ColumnScope.BubbleAttachments(
                         images = attachment.images.slice(index until index + rowSize)
                     )
                     if (idx != rowConfig.lastIndex) {
-                        // Given that the parent
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                     index += rowSize

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
@@ -409,7 +410,7 @@ private fun ChatBubbleReply(
     Spacer(modifier = Modifier.height(2.dp))
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .wrapContentWidth()
             .height(IntrinsicSize.Min)
             .clickable {
                 onScrollToReplyClicked(reply)
@@ -428,7 +429,6 @@ private fun ChatBubbleReply(
         Spacer(modifier = Modifier.width(4.dp))
         Box(
             modifier = Modifier
-                .fillMaxWidth()
                 .background(
                     color = colorResource(R.color.shape_transparent_secondary),
                     shape = RoundedCornerShape(16.dp)

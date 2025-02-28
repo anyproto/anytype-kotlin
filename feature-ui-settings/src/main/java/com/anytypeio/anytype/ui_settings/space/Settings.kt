@@ -1,42 +1,24 @@
 package com.anytypeio.anytype.ui_settings.space
 
 import android.net.Uri
-import android.os.Build
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -50,69 +32,32 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
-import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Option
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
+import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_utils.const.DateConst
+import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
+import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
-import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
-import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.ui_settings.R
-import com.anytypeio.anytype.ui_settings.main.SpaceDescriptionBlock
-import com.anytypeio.anytype.ui_settings.main.SpaceIcon
-import com.anytypeio.anytype.ui_settings.main.SpaceNameBlock
-
-@Composable
-fun SpaceSettingsContainer(
-    uiState: UiSpaceSettingsState,
-    onSaveClicked: (String, String) -> Unit,
-    onDeleteSpaceClicked: () -> Unit,
-    onFileStorageClick: () -> Unit,
-    onPersonalizationClicked: () -> Unit,
-    onSpaceIdClicked: (Id) -> Unit,
-    onNetworkIdClicked: (Id) -> Unit,
-    onCreatedByClicked: (Id) -> Unit,
-    onDebugClicked: () -> Unit,
-    onRemoveIconClicked: () -> Unit,
-    onSharePrivateSpaceClicked: () -> Unit,
-    onManageSharedSpaceClicked: () -> Unit,
-    onAddMoreSpacesClicked: () -> Unit,
-    onSpaceImagePicked: (Uri) -> Unit
-) {
-    if (uiState is UiSpaceSettingsState.SpaceSettings) {
-        SpaceSettingsScreen(
-            uiState = uiState,
-            onSaveClicked = onSaveClicked,
-            onDeleteSpaceClicked = onDeleteSpaceClicked,
-            onFileStorageClick = onFileStorageClick,
-            onPersonalizationClicked = onPersonalizationClicked,
-            onSpaceIdClicked = onSpaceIdClicked,
-            onNetworkIdClicked = onNetworkIdClicked,
-            onCreatedByClicked = onCreatedByClicked,
-            onDebugClicked = onDebugClicked,
-            onRemoveIconClicked = onRemoveIconClicked,
-            onSharePrivateSpaceClicked = onSharePrivateSpaceClicked,
-            onManageSharedSpaceClicked = onManageSharedSpaceClicked,
-            onAddMoreSpacesClicked = onAddMoreSpacesClicked,
-            onSpaceImagePicked = onSpaceImagePicked
-        )
-    }
-}
+import com.anytypeio.anytype.ui_settings.main.SpaceHeader
 
 @Composable
 fun SpaceSettingsScreen(
-    uiState: UiSpaceSettingsState.SpaceSettings,
-    onSaveClicked: (String, String) -> Unit,
+    state: ViewState<SpaceSettingsViewModel.SpaceData>,
+    onNameSet: (String) -> Unit,
     onDeleteSpaceClicked: () -> Unit,
     onFileStorageClick: () -> Unit,
     onPersonalizationClicked: () -> Unit,
@@ -126,424 +71,179 @@ fun SpaceSettingsScreen(
     onAddMoreSpacesClicked: () -> Unit,
     onSpaceImagePicked: (Uri) -> Unit
 ) {
+    LazyColumn(
+        modifier = Modifier
+            .nestedScroll(rememberNestedScrollInteropConnection())
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        item {
+            SpaceHeader(
+                modifier = Modifier,
+                name = when (state) {
+                    is ViewState.Success -> state.data.name.ifEmpty {
+                        stringResource(id = R.string.untitled)
+                    }
+                    else -> null
+                },
+                icon = when (state) {
+                    is ViewState.Success -> state.data.icon
+                    else -> null
+                },
+                onNameSet = onNameSet,
+                onRemoveIconClicked = onRemoveIconClicked,
+                isEditEnabled = when(state) {
+                    is ViewState.Error -> false
+                    ViewState.Init -> false
+                    ViewState.Loading -> false
+                    is ViewState.Success -> state.data.permissions.isOwnerOrEditor()
+                },
+                onSpaceImagePicked = onSpaceImagePicked
+            )
+        }
+        item { Divider() }
+        item {
+            if (state is ViewState.Success) {
+                Section(title = stringResource(id = R.string.multiplayer_space_type))
+            } else {
+                Section(title = EMPTY_STRING_VALUE)
+            }
+        }
+        item {
+            if (state is ViewState.Success) {
+                when(state.data.spaceType) {
+                    DEFAULT_SPACE_TYPE -> {
+                        TypeOfSpace(state.data.spaceType)
+                    }
+                    PRIVATE_SPACE_TYPE -> {
+                        PrivateSpaceSharing(
+                            onSharePrivateSpaceClicked = onSharePrivateSpaceClicked,
+                            shareLimitStateState = state.data.shareLimitReached,
+                            onAddMoreSpacesClicked = onAddMoreSpacesClicked
+                        )
+                    }
+                    SHARED_SPACE_TYPE -> {
+                        SharedSpaceSharing(
+                            onManageSharedSpaceClicked = onManageSharedSpaceClicked,
+                            isUserOwner = state.data.permissions == SpaceMemberPermissions.OWNER,
+                            requests = state.data.requests
+                        )
+                    }
+                }
+            }
+        }
+        item {
+            Divider()
+        }
+        item {
+            Section(title = stringResource(id = R.string.settings))
+        }
+        when (state) {
+            is ViewState.Success -> {
+                if (state.data.permissions.isOwner()) {
+                    item {
+                        Option(
+                            image = R.drawable.ic_file_storage,
+                            text = stringResource(R.string.remote_storage),
+                            onClick = throttledClick(onFileStorageClick)
+                        )
+                    }
+                    item {
+                        Divider(paddingStart = 60.dp)
+                    }
+                }
+                item {
+                    Option(
+                        image = R.drawable.ic_personalization,
+                        text = stringResource(R.string.personalization),
+                        onClick = throttledClick(onPersonalizationClicked)
+                    )
+                }
+                item {
+                    Divider(paddingStart = 60.dp)
+                }
+            }
 
-    // Get the initial values from your uiState items.
-    val initialName = uiState.items.filterIsInstance<UiSpaceSettingsItem.Name>()
-        .firstOrNull()?.name ?: ""
-    val initialDescription = uiState.items.filterIsInstance<UiSpaceSettingsItem.Description>()
-        .firstOrNull()?.description ?: ""
-
-    // Keep state of the current (edited) values.
-    var nameInput by remember { mutableStateOf(initialName) }
-    var descriptionInput by remember { mutableStateOf(initialDescription) }
-
-    // Compare against the initial values to know if something has changed.
-    val isDirty = nameInput != initialName || descriptionInput != initialDescription
-
-    Scaffold(
-        modifier = Modifier.fillMaxWidth(),
-        containerColor = colorResource(id = R.color.background_primary),
-        topBar = {
-            Box(
-                modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                    Modifier
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .fillMaxWidth()
-                        .height(48.dp)
-                else
-                    Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_home_top_toolbar_back),
-                    contentDescription = "Back button",
-                    contentScale = ContentScale.Inside,
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .size(48.dp)
-                        .align(Alignment.CenterStart)
-                        .noRippleClickable {
-
-                        }
+            else -> {
+                // Do nothing.
+            }
+        }
+        item {
+            Option(image = R.drawable.ic_debug,
+                text = stringResource(R.string.debug),
+                onClick = throttledClick(onDebugClicked)
+            )
+        }
+        item {
+            Divider(
+                paddingStart = 60.dp
+            )
+        }
+        item {
+            Section(title = stringResource(id = R.string.space_info))
+        }
+        if (state is ViewState.Success) {
+            item {
+                SettingsItem(
+                    title = stringResource(id = R.string.space_id),
+                    value = state.data.spaceId.orEmpty().ifEmpty {
+                        stringResource(id = R.string.unknown)
+                    },
+                    onClick = { onSpaceIdClicked(it) }
                 )
-                Box(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .fillMaxHeight()
-                        .align(Alignment.CenterEnd)
-                        .clickable(enabled = isDirty) {
-                            // Call onSaveClicked with the updated values.
-                            onSaveClicked(nameInput, descriptionInput)
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
+            }
+            item {
+                SettingsItem(
+                    title = stringResource(id = R.string.network_id),
+                    value = state.data.network.orEmpty().ifEmpty {
+                        stringResource(id = R.string.unknown)
+                    },
+                    onClick = { onNetworkIdClicked(it) }
+                )
+            }
+            item {
+                SettingsItem(
+                    title = stringResource(id = R.string.created_by),
+                    value = state.data.createdBy.orEmpty().ifEmpty {
+                        stringResource(id = R.string.unknown)
+                    },
+                    onClick = { onCreatedByClicked(it) }
+                )
+            }
+            item {
+                SettingsItem(
+                    title = stringResource(id = R.string.creation_date),
+                    value = state.data.createdDateInMillis?.formatTimeInMillis(
+                        DateConst.DEFAULT_DATE_FORMAT
+                    ) ?: stringResource(id = R.string.unknown),
+                    onClick = {},
+                    showIcon = false
+                )
+            }
+        }
+        if (state is ViewState.Success && state.data.isDeletable) {
+            item {
+                val label = when(state.data.permissions) {
+                    SpaceMemberPermissions.OWNER -> stringResource(R.string.delete_space)
+                    else -> stringResource(R.string.multiplayer_leave_space)
+                }
+                Box(modifier = Modifier.height(78.dp)) {
+                    ButtonWarning(
+                        onClick = { onDeleteSpaceClicked() },
+                        text = label,
                         modifier = Modifier
-                            .wrapContentSize()
-                            .padding(horizontal = 16.dp),
-                        text = stringResource(R.string.space_settings_save_button),
-                        style = PreviewTitle1Medium,
-                        color = if (isDirty) {
-                            colorResource(id = R.color.text_primary)
-                        } else {
-                            colorResource(id = R.color.text_tertiary)
-                        }
+                            .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter),
+                        size = ButtonSize.Large
                     )
                 }
             }
-        },
-        content = { paddingValues ->
-            val contentModifier =
-                if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                    Modifier
-                        .windowInsetsPadding(WindowInsets.navigationBars)
-                        .fillMaxSize()
-                        .padding(top = paddingValues.calculateTopPadding())
-                else
-                    Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-            val lazyListState = rememberLazyListState()
-
-            LazyColumn(
-                modifier = contentModifier
-                    .padding(horizontal = 16.dp),
-                state = lazyListState,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                uiState.items.forEach { item ->
-                    when (item) {
-                        is UiSpaceSettingsItem.Icon -> {
-                            item {
-                                SpaceIcon(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem(),
-                                    icon = item.icon,
-                                    onRemoveIconClicked = onRemoveIconClicked,
-                                    onSpaceImagePicked = onSpaceImagePicked,
-                                    isEditEnabled = uiState.isEditEnabled
-                                )
-                            }
-                        }
-
-                        is UiSpaceSettingsItem.Name -> {
-                            item {
-                                SpaceNameBlock(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .border(
-                                            shape = RoundedCornerShape(16.dp),
-                                            width = 0.5.dp,
-                                            color = colorResource(id = R.color.shape_primary)
-                                        )
-                                        .padding(vertical = 12.dp, horizontal = 16.dp)
-                                        .animateItem(),
-                                    name = nameInput,
-                                    onNameSet = { newName ->
-                                        nameInput = newName
-                                    },
-                                    isEditEnabled = uiState.isEditEnabled
-                                )
-                            }
-                        }
-
-                        is UiSpaceSettingsItem.Description -> {
-                            item {
-                                SpaceDescriptionBlock(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .border(
-                                            shape = RoundedCornerShape(16.dp),
-                                            width = 0.5.dp,
-                                            color = colorResource(id = R.color.shape_primary)
-                                        )
-                                        .padding(vertical = 12.dp, horizontal = 16.dp)
-                                        .animateItem(),
-                                    isEditEnabled = uiState.isEditEnabled,
-                                    description = descriptionInput,
-                                    onDescriptionSet = { newDescription ->
-                                        descriptionInput = newDescription
-                                    }
-                                )
-                            }
-                        }
-
-                        UiSpaceSettingsItem.Multiplayer -> {
-                            item {
-                                MultiplayerButtons(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    onInviteClicked = {},
-                                    onQRCodeClicked = {}
-                                )
-                            }
-                        }
-
-                        is UiSpaceSettingsItem.Chat -> TODO()
-                        is UiSpaceSettingsItem.DefaultObjectType -> {
-                            item {
-                                DefaultTypeItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem(),
-                                    name = item.name,
-                                    icon = item.icon
-                                )
-                            }
-                        }
-
-                        UiSpaceSettingsItem.DeleteSpace -> {
-                            item {
-                                DeleteSpaceItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                )
-                            }
-                        }
-
-                        is UiSpaceSettingsItem.Members -> {
-                            item {
-                                MembersItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem(),
-                                    item = item
-                                )
-                            }
-                        }
-
-                        UiSpaceSettingsItem.ObjectTypes -> {
-                            item {
-                                ObjectTypesItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                )
-                            }
-                        }
-
-                        is UiSpaceSettingsItem.RemoteStorage -> TODO()
-                        is UiSpaceSettingsItem.Section -> {
-                            item {
-                                SpaceSettingsSection(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem(),
-                                    item = item
-                                )
-                            }
-                        }
-
-                        UiSpaceSettingsItem.SpaceInfo -> {
-                            item {
-                                SpaceInfoItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                )
-                            }
-                        }
-
-                        is UiSpaceSettingsItem.Wallpapers -> {
-                            item {
-                                WallpaperItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem(),
-                                    item = item
-                                )
-                            }
-                        }
-
-                        is UiSpaceSettingsItem.Spacer -> {
-                            item {
-                                Spacer(modifier = Modifier.height(item.height.dp))
-                            }
-                        }
-                    }
-
-                }
-
-
-//        item {
-//            SpaceIcon(
-//                modifier = Modifier,
-//                icon = state.icon,
-//                onRemoveIconClicked = onRemoveIconClicked,
-//                onSpaceImagePicked = onSpaceImagePicked,
-//                isEditEnabled = state.isEditEnabled
-//            )
-//        }
-//        item {
-//            SpaceNameBlock(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .border(
-//                        shape = RoundedCornerShape(16.dp),
-//                        width = 0.5.dp,
-//                        color = colorResource(id = R.color.shape_primary)
-//                    )
-//                    .padding(vertical = 12.dp, horizontal = 16.dp),
-//                name = state.name,
-//                onNameSet = onNameSet,
-//                isEditEnabled = state.isEditEnabled
-//            )
-//        }
-//        item {
-//            Spacer(modifier = Modifier.height(12.dp))
-//            SpaceDescriptionBlock(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .border(
-//                        shape = RoundedCornerShape(16.dp),
-//                        width = 0.5.dp,
-//                        color = colorResource(id = R.color.shape_primary)
-//                    )
-//                    .padding(vertical = 12.dp, horizontal = 16.dp),
-//                isEditEnabled = state.isEditEnabled,
-//                description = state.description,
-//                onDescriptionSet = {},
-//            )
-//        }
-//        item {
-//            Divider()
-//        }
-//        item {
-//            Section(title = stringResource(id = R.string.multiplayer_space_type))
-//        }
-//        item {
-//            when (state.spaceType) {
-//                DEFAULT_SPACE_TYPE -> {
-//                    TypeOfSpace(state.spaceType)
-//                }
-//
-//                PRIVATE_SPACE_TYPE -> {
-//                    PrivateSpaceSharing(
-//                        onSharePrivateSpaceClicked = onSharePrivateSpaceClicked,
-//                        shareLimitStateState = state.shareLimitReached,
-//                        onAddMoreSpacesClicked = onAddMoreSpacesClicked
-//                    )
-//                }
-//
-//                SHARED_SPACE_TYPE -> {
-//                    SharedSpaceSharing(
-//                        onManageSharedSpaceClicked = onManageSharedSpaceClicked,
-//                        isUserOwner = state.isUserOwner,
-//                        requests = state.requests
-//                    )
-//                }
-//            }
-//        }
-//        item {
-//            Divider()
-//        }
-//        item {
-//            Section(title = stringResource(id = R.string.settings))
-//        }
-//        if (state.isUserOwner) {
-//            item {
-//                Option(
-//                    image = R.drawable.ic_file_storage,
-//                    text = stringResource(R.string.remote_storage),
-//                    onClick = throttledClick(onFileStorageClick)
-//                )
-//            }
-//            item {
-//                Divider(paddingStart = 60.dp)
-//            }
-//        }
-//        item {
-//            Option(
-//                image = R.drawable.ic_personalization,
-//                text = stringResource(R.string.personalization),
-//                onClick = throttledClick(onPersonalizationClicked)
-//            )
-//        }
-//        item {
-//            Divider(paddingStart = 60.dp)
-//        }
-//        item {
-//            Option(
-//                image = R.drawable.ic_debug,
-//                text = stringResource(R.string.debug),
-//                onClick = throttledClick(onDebugClicked)
-//            )
-//        }
-//        item {
-//            Divider(
-//                paddingStart = 60.dp
-//            )
-//        }
-//        item {
-//            Section(title = stringResource(id = R.string.space_info))
-//        }
-//        item {
-//            SettingsItem(
-//                title = stringResource(id = R.string.space_id),
-//                value = state.spaceId.orEmpty().ifEmpty {
-//                    stringResource(id = R.string.unknown)
-//                },
-//                onClick = { onSpaceIdClicked(it) }
-//            )
-//        }
-//        item {
-//            SettingsItem(
-//                title = stringResource(id = R.string.network_id),
-//                value = state.network.orEmpty().ifEmpty {
-//                    stringResource(id = R.string.unknown)
-//                },
-//                onClick = { onNetworkIdClicked(it) }
-//            )
-//        }
-//        item {
-//            SettingsItem(
-//                title = stringResource(id = R.string.created_by),
-//                value = state.createdBy.orEmpty().ifEmpty {
-//                    stringResource(id = R.string.unknown)
-//                },
-//                onClick = { onCreatedByClicked(it) }
-//            )
-//        }
-//        item {
-//            SettingsItem(
-//                title = stringResource(id = R.string.creation_date),
-//                value = state.createdDateInMillis?.formatTimeInMillis(
-//                    DateConst.DEFAULT_DATE_FORMAT
-//                ) ?: stringResource(id = R.string.unknown),
-//                onClick = {},
-//                showIcon = false
-//            )
-//        }
-//        if (state.isDeletable) {
-//            item {
-//                val label = if (state.isUserOwner) {
-//                    stringResource(R.string.delete_space)
-//                } else {
-//                    stringResource(R.string.multiplayer_leave_space)
-//                }
-//                Box(modifier = Modifier.height(78.dp)) {
-//                    ButtonWarning(
-//                        onClick = { onDeleteSpaceClicked() },
-//                        text = label,
-//                        modifier = Modifier
-//                            .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
-//                            .fillMaxWidth()
-//                            .align(Alignment.BottomCenter),
-//                        size = ButtonSize.Large
-//                    )
-//                }
-//            }
-//        }
-//        item {
-//            Spacer(modifier = Modifier.height(16.dp))
-//        }
-            }
         }
-    )
-
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
 }
 
 @Composable
@@ -595,136 +295,43 @@ private fun SettingsItem(
             }
         }
     }
+
 }
 
 @Composable
-private fun MultiplayerButtons(
-    modifier: Modifier = Modifier,
-    onInviteClicked: () -> Unit = {},
-    onQRCodeClicked: () -> Unit = {}
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .border(
-                    shape = RoundedCornerShape(16.dp),
-                    width = 0.5.dp,
-                    color = colorResource(id = R.color.shape_primary)
-                )
-                .padding(vertical = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                modifier = Modifier.size(32.dp),
-                painter = painterResource(id = R.drawable.ic_add_member_32),
-                contentDescription = "Invite new member icon"
-            )
-            Text(
-                modifier = Modifier.wrapContentSize(),
-                text = stringResource(id = R.string.space_settings_invite),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_primary)
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .border(
-                    shape = RoundedCornerShape(16.dp),
-                    width = 0.5.dp,
-                    color = colorResource(id = R.color.shape_primary)
-                )
-                .padding(vertical = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                modifier = Modifier.size(32.dp),
-                painter = painterResource(id = R.drawable.ic_qr_code_32),
-                contentDescription = "Share QR code icon"
-            )
-            Text(
-                modifier = Modifier.wrapContentSize(),
-                text = stringResource(id = R.string.space_settings_qrcode),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_primary)
-            )
-        }
-    }
-}
-
-@Composable
-@DefaultPreviews
+@Preview(showBackground = true)
 fun SpaceSettingsScreenPreview() {
     SpaceSettingsScreen(
-//        state = SpaceSettingsViewModel.SpaceData.Success(
-//            spaceId = "IDdflkdsl;kfldsklfkdslakfl;sdkalfkldskfl;dskal;fklflsdkl;fkdsl;akfl;dskal;fks",
-//            createdDateInMillis = null,
-//            createdBy = "1235",
-//            network = "332311313131flsdklfksdlkfksdlkfksdlkflasd324213432432",
-//            name = "Dream team",
-//            description = "This is a dream team space",
-//            icon = SpaceIconView.Placeholder(),
-//            isDeletable = true,
-//            spaceType = DEFAULT_SPACE_TYPE,
-//            isUserOwner = true,
-//            isEditEnabled = true,
-//            shareLimitReached = SpaceSettingsViewModel.ShareLimitsState(
-//                shareLimitReached = false,
-//                sharedSpacesLimit = 0
-//            )
-//        ),
-        uiState = UiSpaceSettingsState.SpaceSettings(
-            items = listOf(
-                UiSpaceSettingsItem.Spacer(height = 8),
-                UiSpaceSettingsItem.Icon(SpaceIconView.Placeholder()),
-                UiSpaceSettingsItem.Spacer(height = 16),
-                UiSpaceSettingsItem.Name("Dream team"),
-                UiSpaceSettingsItem.Spacer(height = 12),
-                UiSpaceSettingsItem.Description("This is a dream team space"),
-                UiSpaceSettingsItem.Spacer(height = 12),
-                UiSpaceSettingsItem.Multiplayer,
-                UiSpaceSettingsItem.Spacer(height = 8),
-                UiSpaceSettingsItem.Section.Collaboration,
-                UiSpaceSettingsItem.Members(5),
-                UiSpaceSettingsItem.Section.ContentModel,
-                UiSpaceSettingsItem.ObjectTypes,
-                UiSpaceSettingsItem.Section.Preferences,
-                UiSpaceSettingsItem.DefaultObjectType(
-                    name = "Taskwithveryverlylongname",
-                    icon = ObjectIcon.Empty.ObjectType
-                ),
-                UiSpaceSettingsItem.Spacer(height = 8),
-                UiSpaceSettingsItem.Wallpapers(color = ThemeColor.TEAL),
-                UiSpaceSettingsItem.Spacer(height = 8),
-                UiSpaceSettingsItem.Section.DataManagement,
-                UiSpaceSettingsItem.Spacer(height = 8),
-                UiSpaceSettingsItem.Section.Misc,
-                UiSpaceSettingsItem.SpaceInfo,
-                UiSpaceSettingsItem.Spacer(height = 8),
-                UiSpaceSettingsItem.DeleteSpace,
-                UiSpaceSettingsItem.Spacer(height = 32),
-
-                ),
-            isEditEnabled = true
+        state = ViewState.Success(
+            data = SpaceSettingsViewModel.SpaceData(
+                spaceId = "IDdflkdsl;kfldsklfkdslakfl;sdkalfkldskfl;dskal;fklflsdkl;fkdsl;akfl;dskal;fks",
+                createdDateInMillis = null,
+                createdBy = "1235",
+                network = "332311313131flsdklfksdlkfksdlkfksdlkflasd324213432432",
+                name = "Dream team",
+                icon = SpaceIconView.Placeholder(),
+                isDeletable = true,
+                spaceType = DEFAULT_SPACE_TYPE,
+                permissions = SpaceMemberPermissions.OWNER,
+                shareLimitReached = SpaceSettingsViewModel.ShareLimitsState(
+                    shareLimitReached = false,
+                    sharedSpacesLimit = 0
+                )
+            )
         ),
+        onNameSet = {},
         onDeleteSpaceClicked = {},
         onFileStorageClick = {},
         onPersonalizationClicked = {},
         onSpaceIdClicked = {},
-        onNetworkIdClicked = {},
+        onNetworkIdClicked = {} ,
         onCreatedByClicked = {},
         onDebugClicked = {},
         onRemoveIconClicked = {},
         onManageSharedSpaceClicked = {},
         onSharePrivateSpaceClicked = {},
         onAddMoreSpacesClicked = {},
-        onSpaceImagePicked = {},
-        onSaveClicked = { _, _ ->}
+        onSpaceImagePicked = {}
     )
 }
 
@@ -854,30 +461,6 @@ fun SharedSpaceSharing(
             )
         }
     }
-}
-
-@Composable
-private fun SpaceSettingsSection(
-    modifier: Modifier = Modifier,
-    item: UiSpaceSettingsItem.Section
-) {
-    val text = when (item) {
-        UiSpaceSettingsItem.Section.Collaboration ->
-            stringResource(id = R.string.space_settings_section_collaboration)
-        UiSpaceSettingsItem.Section.ContentModel ->
-            stringResource(id = R.string.space_settings_section_content_model)
-        UiSpaceSettingsItem.Section.DataManagement ->
-            stringResource(id = R.string.space_settings_section_data_management)
-        UiSpaceSettingsItem.Section.Misc ->
-            stringResource(id = R.string.space_settings_section_misc)
-        UiSpaceSettingsItem.Section.Preferences ->
-            stringResource(id = R.string.space_settings_section_preferences)
-    }
-    Section(
-        modifier = modifier,
-        title = text,
-        textPaddingStart = 0.dp
-    )
 }
 
 @Composable

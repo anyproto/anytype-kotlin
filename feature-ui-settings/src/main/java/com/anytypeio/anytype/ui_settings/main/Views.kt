@@ -22,14 +22,12 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_ui.views.BodyBold
-import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
-import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
@@ -37,6 +35,16 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
+
+@Composable
+fun Section(modifier: Modifier = Modifier, title: String) {
+    Text(
+        modifier = modifier,
+        text = title,
+        color = colorResource(id = R.color.text_secondary),
+        style = Caption1Regular
+    )
+}
 
 @OptIn(FlowPreview::class)
 @Composable
@@ -57,19 +65,18 @@ fun SpaceNameBlock(
             .distinctUntilChanged()
             .filter { it.isNotEmpty() }
             .collect { query ->
-                onNameSet(query)
+               onNameSet(query)
             }
     }
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(start = 20.dp)) {
         Text(
             text = stringResource(id = R.string.space_name),
-            style = BodyCalloutRegular.copy(color = colorResource(id = R.color.text_primary)),
+            style = Caption1Regular,
             color = colorResource(id = R.color.text_secondary)
         )
         SettingsTextField(
             value = nameValue.value,
-            textStyle = BodyBold.copy(color = colorResource(id = R.color.text_primary)),
             onValueChange = {
                 nameValue.value = it
             },
@@ -78,53 +85,6 @@ fun SpaceNameBlock(
                     focusManager.clearFocus()
                 }
             ),
-            placeholderText = stringResource(id = R.string.space_name),
-            isEditEnabled = isEditEnabled
-        )
-    }
-}
-
-@OptIn(FlowPreview::class)
-@Composable
-fun SpaceDescriptionBlock(
-    modifier: Modifier = Modifier,
-    description: String,
-    onDescriptionSet: (String) -> Unit,
-    isEditEnabled: Boolean
-) {
-
-    val descriptionValue = remember { mutableStateOf(description) }
-    val focusManager = LocalFocusManager.current
-
-    LaunchedEffect(descriptionValue.value) {
-        snapshotFlow { descriptionValue.value }
-            .debounce(SPACE_NAME_CHANGE_DELAY)
-            .dropWhile { input -> input == description }
-            .distinctUntilChanged()
-            .filter { it.isNotEmpty() }
-            .collect { query ->
-                onDescriptionSet(query)
-            }
-    }
-
-    Column(modifier = modifier) {
-        Text(
-            text = stringResource(id = R.string.space_description),
-            style = BodyCalloutRegular,
-            color = colorResource(id = R.color.text_secondary)
-        )
-        SettingsTextField(
-            textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
-            value = descriptionValue.value,
-            onValueChange = {
-                descriptionValue.value = it
-            },
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                }
-            ),
-            placeholderText = stringResource(id = R.string.space_description),
             isEditEnabled = isEditEnabled
         )
     }
@@ -146,19 +106,17 @@ fun SettingsTextField(
     onValueChange: (String) -> Unit,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    textStyle: TextStyle = BodyBold,
-    placeholderText: String,
     isEditEnabled: Boolean
 ) {
     BasicTextField(
         value = value,
         modifier = Modifier
-            .padding(top = 4.dp)
+            .padding(top = 4.dp, end = 20.dp)
             .fillMaxWidth(),
         onValueChange = onValueChange,
         enabled = isEditEnabled,
         readOnly = !isEditEnabled,
-        textStyle = textStyle,
+        textStyle = HeadlineHeading.copy(color = colorResource(id = R.color.text_primary)),
         cursorBrush = SolidColor(colorResource(id = R.color.orange)),
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions(
@@ -167,6 +125,8 @@ fun SettingsTextField(
         ),
         keyboardActions = keyboardActions,
         interactionSource = remember { MutableInteractionSource() },
+        singleLine = true,
+        maxLines = 1,
         decorationBox = @Composable { innerTextField ->
             TextFieldDefaults.OutlinedTextFieldDecorationBox(
                 value = value,
@@ -179,11 +139,7 @@ fun SettingsTextField(
                 enabled = true,
                 isError = false,
                 placeholder = {
-                    Text(
-                        style = textStyle,
-                        text = placeholderText,
-                        color = colorResource(id = R.color.text_tertiary)
-                    )
+                    Text(text = stringResource(id = R.string.space_name))
                 },
                 interactionSource = remember { MutableInteractionSource() },
                 colors = TextFieldDefaults.outlinedTextFieldColors(

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
@@ -29,7 +31,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -60,6 +64,7 @@ import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.fontIBM
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
@@ -129,176 +134,306 @@ fun Bubble(
     Column(
         modifier = modifier
             .width(IntrinsicSize.Max)
-            .background(
-                color = if (isUserAuthor)
-                    colorResource(R.color.background_primary)
-                else
-                    colorResource(R.color.shape_transparent_secondary),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .clip(RoundedCornerShape(20.dp))
-            .clickable {
-                showDropdownMenu = !showDropdownMenu
-            }
     ) {
         if (reply != null) {
-            Box(
+            Text(
+                text = reply.author,
                 modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxWidth()
-                    .height(52.dp)
-                    .background(
-                        color = colorResource(R.color.shape_transparent_secondary),
-                        shape = RoundedCornerShape(16.dp)
+                    .padding(
+                        start = 16.dp,
+                        top = 8.dp,
+                        end = 12.dp
                     )
-                    .clip(RoundedCornerShape(16.dp))
+                    .alpha(0.5f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = colorResource(id = R.color.text_primary),
+                style = Caption1Medium
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)
                     .clickable {
                         onScrollToReplyClicked(reply)
                     }
+                    .alpha(0.5f)
             ) {
                 Box(
                     modifier = Modifier
-                        .width(4.dp)
                         .fillMaxHeight()
+                        .width(4.dp)
                         .background(
-                            color = colorResource(R.color.shape_transparent_primary)
+                            color = colorResource(R.color.shape_transparent_primary),
+                            shape = RoundedCornerShape(4.dp)
                         )
                 )
-                Text(
-                    text = reply.author,
-                    modifier = Modifier.padding(
-                        start = 12.dp,
-                        top = 8.dp,
-                        end = 12.dp
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = colorResource(id = R.color.text_primary),
-                    style = Caption1Medium
-                )
-                Text(
-                    modifier = Modifier.padding(
-                        start = 12.dp,
-                        top = 26.dp,
-                        end = 12.dp
-                    ),
-                    text = reply.text,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = colorResource(id = R.color.text_primary),
-                    style = Caption1Regular
-                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = colorResource(R.color.shape_transparent_secondary),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable {
+                            onScrollToReplyClicked(reply)
+                        }
+                        .alpha(0.5f)
+                ) {
+                    Text(
+                        modifier = Modifier.padding(
+                            horizontal = 12.dp,
+                            vertical = 8.dp
+                        ),
+                        text = reply.text,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                        color = colorResource(id = R.color.text_primary),
+                        style = Caption1Regular
+                    )
+                }
             }
+            Spacer(modifier = Modifier.height(4.dp))
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    top = if (reply == null) 12.dp else 0.dp
-                ),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+        // Username section
+        if (!isUserAuthor) {
             Text(
                 text = name,
-                style = PreviewTitle2Medium,
+                style = Caption1Medium,
                 color = colorResource(id = R.color.text_primary),
-                maxLines = 1
+                maxLines = 1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 12.dp,
+                        end = 12.dp
+                    )
             )
-            Spacer(Modifier.width(12.dp))
-            Text(
-                modifier = Modifier.padding(top = 1.dp),
-                text = timestamp.formatTimeInMillis(
-                    TIME_H24
-                ),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_secondary),
-                maxLines = 1
-            )
+            Spacer(modifier = Modifier.height(4.dp))
         }
-        if (content.msg.isNotEmpty()) {
-            Text(
-                modifier = Modifier.padding(
-                    top = 0.dp,
-                    start = 12.dp,
-                    end = 12.dp,
-                    bottom = if (reactions.isEmpty() && attachments.isEmpty()) 12.dp else 0.dp
-                ),
-                text = buildAnnotatedString {
-                    content.parts.forEach { part ->
-                        if (part.link != null && part.link.param != null) {
-                            withLink(
-                                LinkAnnotation.Clickable(
-                                    tag = DEFAULT_MENTION_LINK_TAG,
-                                    styles = TextLinkStyles(
+        // Text with attachments
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = if (isUserAuthor)
+                        colorResource(R.color.background_primary)
+                    else
+                        colorResource(R.color.shape_transparent_secondary),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .clip(RoundedCornerShape(16.dp))
+                .clickable {
+                    showDropdownMenu = !showDropdownMenu
+                }
+                .padding(vertical = 4.dp)
+        ) {
+            BubbleAttachments(
+                attachments = attachments,
+                isUserAuthor = isUserAuthor,
+                onAttachmentClicked = onAttachmentClicked
+            )
+            if (content.msg.isNotEmpty()) {
+                Box(
+                    modifier = Modifier.padding(
+                        top = 4.dp,
+                        start = 12.dp,
+                        end = 12.dp,
+                        bottom = 4.dp
+                    )
+                ) {
+                    Text(
+                        modifier = Modifier,
+                        text = buildAnnotatedString {
+                            content.parts.forEach { part ->
+                                if (part.link != null && part.link.param != null) {
+                                    withLink(
+                                        LinkAnnotation.Clickable(
+                                            tag = DEFAULT_MENTION_LINK_TAG,
+                                            styles = TextLinkStyles(
+                                                style = SpanStyle(
+                                                    fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                                    fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                                    textDecoration = TextDecoration.Underline
+                                                )
+                                            )
+                                        ) {
+                                            onMarkupLinkClicked(part.link.param.orEmpty())
+                                        }
+                                    ) {
+                                        append(part.part)
+                                    }
+                                } else if (part.mention != null && part.mention.param != null) {
+                                    withLink(
+                                        LinkAnnotation.Clickable(
+                                            tag = DEFAULT_MENTION_SPAN_TAG,
+                                            styles = TextLinkStyles(
+                                                style = SpanStyle(
+                                                    fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                                    fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                                    textDecoration = TextDecoration.Underline
+                                                )
+                                            )
+                                        ) {
+                                            onMentionClicked(part.mention.param.orEmpty())
+                                        }
+                                    ) {
+                                        append(part.part)
+                                    }
+                                } else if (part.emoji != null && part.emoji.param != null) {
+                                    append(part.emoji.param)
+                                } else {
+                                    withStyle(
                                         style = SpanStyle(
                                             fontWeight = if (part.isBold) FontWeight.Bold else null,
                                             fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                            textDecoration = TextDecoration.Underline
+                                            textDecoration = if (part.underline)
+                                                TextDecoration.Underline
+                                            else if (part.isStrike)
+                                                TextDecoration.LineThrough
+                                            else null,
+                                            fontFamily = if (part.isCode) fontIBM else null,
                                         )
-                                    )
-                                ) {
-                                    onMarkupLinkClicked(part.link.param.orEmpty())
+                                    ) {
+                                        append(part.part)
+                                    }
                                 }
-                            ) {
-                                append(part.part)
                             }
-                        } else if (part.mention != null && part.mention.param != null) {
-                            withLink(
-                                LinkAnnotation.Clickable(
-                                    tag = DEFAULT_MENTION_SPAN_TAG,
-                                    styles = TextLinkStyles(
-                                        style = SpanStyle(
-                                            fontWeight = if (part.isBold) FontWeight.Bold else null,
-                                            fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                            textDecoration = TextDecoration.Underline
-                                        )
-                                    )
+                            if (isEdited) {
+                                withStyle(
+                                    style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
                                 ) {
-                                    onMentionClicked(part.mention.param.orEmpty())
+                                    append(
+                                        " (${stringResource(R.string.chats_message_edited)})"
+                                    )
                                 }
-                            ) {
-                                append(part.part)
                             }
-                        } else if (part.emoji != null && part.emoji.param != null) {
-                            append(part.emoji.param)
-                        } else {
+
                             withStyle(
                                 style = SpanStyle(
-                                    fontWeight = if (part.isBold) FontWeight.Bold else null,
-                                    fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                    textDecoration = if (part.underline)
-                                        TextDecoration.Underline
-                                    else if (part.isStrike)
-                                        TextDecoration.LineThrough
-                                    else null,
-                                    fontFamily = if (part.isCode) fontIBM else null,
+                                    color = Color.Transparent
                                 )
                             ) {
-                                append(part.part)
+                                append(
+                                    timestamp.formatTimeInMillis(
+                                        TIME_H24
+                                    )
+                                )
                             }
-                        }
+                        },
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary),
+                    )
+                    Text(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd),
+                        text = timestamp.formatTimeInMillis(
+                            TIME_H24
+                        ),
+                        style = Caption2Regular,
+                        color = colorResource(id = R.color.transparent_active),
+                        maxLines = 1
+                    )
+                }
+            }
+            MaterialTheme(
+                shapes = MaterialTheme.shapes.copy(
+                    medium = RoundedCornerShape(
+                        16.dp
+                    )
+                ),
+                colors = MaterialTheme.colors.copy(
+                    surface = colorResource(id = R.color.background_secondary)
+                )
+            ) {
+                DropdownMenu(
+                    offset = DpOffset(0.dp, 8.dp),
+                    expanded = showDropdownMenu,
+                    onDismissRequest = {
+                        showDropdownMenu = false
                     }
-                    if (isEdited) {
-                        withStyle(
-                            style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
-                        ) {
-                            append(
-                                " (${stringResource(R.string.chats_message_edited)})"
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chats_add_reaction),
+                                color = colorResource(id = R.color.text_primary),
+                                modifier = Modifier.padding(end = 64.dp)
                             )
+                        },
+                        onClick = {
+                            onAddReactionClicked()
+                            showDropdownMenu = false
                         }
+                    )
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chats_reply),
+                                color = colorResource(id = R.color.text_primary),
+                                modifier = Modifier.padding(end = 64.dp)
+                            )
+                        },
+                        onClick = {
+                            onReply()
+                            showDropdownMenu = false
+                        }
+                    )
+                    if (content.msg.isNotEmpty()) {
+                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.copy),
+                                    color = colorResource(id = R.color.text_primary),
+                                    modifier = Modifier.padding(end = 64.dp)
+                                )
+                            },
+                            onClick = {
+                                onCopyMessage()
+                                showDropdownMenu = false
+                            }
+                        )
                     }
-                },
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary),
-            )
+                    if (isUserAuthor) {
+                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.edit),
+                                    color = colorResource(id = R.color.text_primary),
+                                    modifier = Modifier.padding(end = 64.dp)
+                                )
+                            },
+                            onClick = {
+                                onEditMessage()
+                                showDropdownMenu = false
+                            }
+                        )
+                    }
+                    if (isUserAuthor) {
+                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(id = R.string.delete),
+                                    color = colorResource(id = R.color.palette_system_red),
+                                    modifier = Modifier.padding(end = 64.dp)
+                                )
+                            },
+                            onClick = {
+                                showDeleteMessageWarning = true
+                                showDropdownMenu = false
+                            }
+                        )
+                    }
+                }
+            }
         }
-        BubbleAttachments(
-            attachments = attachments,
-            isUserAuthor = isUserAuthor,
-            onAttachmentClicked = onAttachmentClicked
-        )
         if (reactions.isNotEmpty()) {
             ReactionList(
                 reactions = reactions,
@@ -307,100 +442,6 @@ fun Bubble(
                 onAddNewReaction = onAddReactionClicked,
                 isMaxReactionCountReached = isMaxReactionCountReached
             )
-        }
-        MaterialTheme(
-            shapes = MaterialTheme.shapes.copy(
-                medium = RoundedCornerShape(
-                    16.dp
-                )
-            ),
-            colors = MaterialTheme.colors.copy(
-                surface = colorResource(id = R.color.background_secondary)
-            )
-        ) {
-            DropdownMenu(
-                offset = DpOffset(0.dp, 8.dp),
-                expanded = showDropdownMenu,
-                onDismissRequest = {
-                    showDropdownMenu = false
-                }
-            ) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.chats_add_reaction),
-                            color = colorResource(id = R.color.text_primary),
-                            modifier = Modifier.padding(end = 64.dp)
-                        )
-                    },
-                    onClick = {
-                        onAddReactionClicked()
-                        showDropdownMenu = false
-                    }
-                )
-                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.chats_reply),
-                            color = colorResource(id = R.color.text_primary),
-                            modifier = Modifier.padding(end = 64.dp)
-                        )
-                    },
-                    onClick = {
-                        onReply()
-                        showDropdownMenu = false
-                    }
-                )
-                if (content.msg.isNotEmpty()) {
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.copy),
-                                color = colorResource(id = R.color.text_primary),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            onCopyMessage()
-                            showDropdownMenu = false
-                        }
-                    )
-                }
-                if (isUserAuthor) {
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.edit),
-                                color = colorResource(id = R.color.text_primary),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            onEditMessage()
-                            showDropdownMenu = false
-                        }
-                    )
-                }
-                if (isUserAuthor) {
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(id = R.string.delete),
-                                color = colorResource(id = R.color.palette_system_red),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            showDeleteMessageWarning = true
-                            showDropdownMenu = false
-                        }
-                    )
-                }
-            }
         }
     }
 }

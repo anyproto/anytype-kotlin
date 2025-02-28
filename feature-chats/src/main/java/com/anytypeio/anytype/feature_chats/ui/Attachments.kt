@@ -47,7 +47,7 @@ fun BubbleAttachments(
                             start = 4.dp,
                             end = 4.dp,
                             bottom = 4.dp,
-                            top = if (idx == 0) 4.dp else 0.dp
+                            top = 0.dp
                         )
                         .size(300.dp)
                         .background(
@@ -83,7 +83,7 @@ fun BubbleAttachments(
                             start = 4.dp,
                             end = 4.dp,
                             bottom = 4.dp,
-                            top = if (idx == 0) 4.dp else 0.dp
+                            top = 0.dp
                         )
                         .fillMaxWidth()
                     ,
@@ -110,11 +110,11 @@ fun AttachedObject(
     Box(
         modifier = modifier
             .height(72.dp)
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
                 color = colorResource(id = R.color.shape_transparent_secondary),
-                shape = RoundedCornerShape(18.dp)
+                shape = RoundedCornerShape(12.dp)
             )
             .background(
                 color = colorResource(id = R.color.background_secondary)

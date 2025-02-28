@@ -209,7 +209,7 @@
     <string name="action_bar_turn_into">Endre til</string>
     <string name="action_bar_turn_into_page">Gjør om til side</string>
     <string name="action_bar_delete">Slett</string>
-    <string name="action_bar_to_bin">Flytt til papirkurv</string>
+    <string name="action_bar_to_bin">Til papirkurv</string>
     <string name="action_bar_duplicate">Dupliser</string>
     <string name="action_bar_move_to">Flytt til</string>
     <string name="action_bar_style">Stil</string>
@@ -232,6 +232,7 @@
     <string name="search">Søk</string>
     <string name="search_hint">Søk...</string>
     <string name="relations">Relasjoner</string>
+    <string name="fields">Fields</string>
     <string name="relation">Relasjon</string>
     <string name="download">Last ned</string>
     <string name="view">Visning</string>
@@ -344,6 +345,7 @@
     <string name="favourite">Favoritt</string>
     <string name="template">Mal</string>
     <string name="templates">Maler</string>
+    <string name="layout_type">Layout type</string>
     <string name="lock">Lås</string>
     <string name="unlock">Lås opp</string>
     <string name="restore">Gjenopprett</string>
@@ -545,6 +547,7 @@
     <string name="set_as_default">Angi som standard</string>
     <string name="default_object">Standardobjekt</string>
     <string name="default_template">Standardmal</string>
+    <string name="default_template_icon">Default</string>
     <string name="title_templates_not_allowed">Denne typen støtter ikke maler</string>
     <string name="num_applied">%1$d brukt</string>
     <string name="view_list">Liste</string>
@@ -711,6 +714,8 @@
     <string name="set">Sett</string>
     <string name="collection">Samling</string>
     <string name="layout">Oppsett</string>
+    <string name="button_fields">Fields</string>
+    <string name="button_layout">Oppsett</string>
     <string name="restore_from_archive">Gjenopprette fra arkivet</string>
     <string name="icon">Ikon</string>
     <string name="icon_description">Emoji eller bilde for objekt</string>
@@ -1580,6 +1585,33 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_upload">Last opp</string>
     <string name="chats_reply">Reply</string>
     <string name="chats_add_reaction">Add Reaction</string>
+    <string name="object_type_empty_items_title">It’s empty here.</string>
+    <string name="object_type_empty_items_subtitle">Create your first objects to get started.</string>
+    <string name="object_type_menu_delete">Delete completely</string>
+    <string name="object_type_objects_menu_open_set">Open Set</string>
+    <string name="object_type_objects_menu_create_set">Create Set</string>
+    <string name="object_type_templates_menu_set_default">Bruk som standard</string>
+    <string name="object_type_templates_menu_edit">Rediger</string>
+    <string name="object_type_templates_menu_duplicate">Dupliser</string>
+    <string name="object_type_templates_menu_delete">Slett</string>
+    <string name="object_type_fields_section_header">Header</string>
+    <string name="object_type_fields_section_fields_menu">Sidebar</string>
+    <string name="object_type_fields_section_hidden">Hidden</string>
+    <string name="object_type_fields_section_file">Fil</string>
+    <string name="object_type_fields_section_local_fields">Local fields</string>
+    <string name="object_type_fields_title">Fields</string>
+    <string name="object_type_fields_info_text">You editing type</string>
+    <string name="object_type_fields_edit_field">Edit field</string>
+    <string name="object_type_fields_new_field">New field</string>
+    <string name="object_type_fields_preview_field">Preview field</string>
+    <string name="object_type_fields_btn_save">Save</string>
+    <string name="object_type_fields_menu_delete">Slett</string>
+    <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
+    <string name="object_type_fields_menu_remove">Fjern</string>
+    <string name="object_type_fields_local_info_title">Local fields</string>
+    <string name="object_type_fields_local_info_description">Some fields are not included in the object type. Please add them if you want to see them in all objects of this type, or remove them.</string>
+    <string name="object_type_fields_local_info_button">Got it</string>
+    <string name="object_type_open_type_error">Error opening current object type</string>
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>
     <string name="day_of_week_wednesday">Wednesday</string>
@@ -1602,8 +1634,10 @@ Please provide specific details of your needs here.</string>
     <string name="chat_message_reactions_no_reactions_yet">No reactions yet</string>
     <string name="chat_message_reactions_no_reactions_message">Probably someone has just removed the reaction or technical issue happened</string>
     <string name="object_types_human">Human</string>
+    <string name="object_type_settings_item_remove">Delete completely</string>
     <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
     <string name="chats_alert_delete_this_message">Delete this message?</string>
+    <string name="object_set_of_title">Set of</string>
     <string name="migration_migration_is_in_progress">Migration is in progress</string>
     <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
     <string name="migration_error_try_again">Prøv igjen</string>
@@ -1631,4 +1665,6 @@ Please provide specific details of your needs here.</string>
     <string name="field_file_and_media_title">File &amp; Media</string>
     <string name="field_file_and_media_empty">Legg til</string>
     <string name="field_checkbox_title">Velg</string>
+    <string name="field_menu_add_to_type">Add to the current type</string>
+    <string name="field_menu_remove_from_object">Remove from the object</string>
 </resources>

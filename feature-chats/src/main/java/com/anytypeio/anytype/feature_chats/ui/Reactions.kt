@@ -44,9 +44,9 @@ fun ReactionList(
 ) {
     FlowRow(
         modifier = Modifier
-            .padding(start = 0.dp, end = 0.dp, bottom = 0.dp, top = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(top = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         reactions.forEach { reaction ->
             Row(
@@ -108,9 +108,11 @@ fun ReactionList(
         if (!isMaxReactionCountReached) {
             Box(
                 modifier = Modifier
-                    .padding(end = 8.dp)
                     .size(28.dp)
                     .clip(CircleShape)
+                    .background(
+                        color = colorResource(R.color.shape_transparent_secondary)
+                    )
                     .clickable {
                         onAddNewReaction()
                     }

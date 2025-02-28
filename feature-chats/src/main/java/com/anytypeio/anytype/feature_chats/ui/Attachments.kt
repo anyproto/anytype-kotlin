@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,43 +35,52 @@ import com.bumptech.glide.integration.compose.GlideImage
 
 @Composable
 @OptIn(ExperimentalGlideComposeApi::class)
-fun BubbleAttachments(
+fun ColumnScope.BubbleAttachments(
     attachments: List<ChatView.Message.Attachment>,
     onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
     isUserAuthor: Boolean
 ) {
     attachments.forEachIndexed { idx, attachment ->
         when (attachment) {
+            is ChatView.Message.Attachment.Gallery -> {
+                val rowConfig = attachment.rowConfig
+                var index = 0
+                rowConfig.forEachIndexed { idx, rowSize ->
+                    BubbleGalleryRowLayout(
+                        onAttachmentClicked = onAttachmentClicked,
+                        images = attachment.images.slice(index until index + rowSize)
+                    )
+                    if (idx != rowConfig.lastIndex) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                    index += rowSize
+                }
+            }
             is ChatView.Message.Attachment.Image -> {
                 Box(
                     modifier = Modifier
-                        .padding(
-                            start = 4.dp,
-                            end = 4.dp,
-                            bottom = 4.dp,
-                            top = 0.dp
-                        )
-                        .size(300.dp)
+                        .padding(horizontal = 4.dp)
+                        .size(292.dp)
                         .background(
                             color = colorResource(R.color.shape_tertiary),
-                            shape = RoundedCornerShape(16.dp)
+                            shape = RoundedCornerShape(12.dp)
                         )
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier
                             .align(alignment = Alignment.Center)
-                            .size(64.dp),
+                            .size(48.dp),
                         color = colorResource(R.color.glyph_active),
                         trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
-                        strokeWidth = 8.dp
+                        strokeWidth = 4.dp
                     )
                     GlideImage(
                         model = attachment.url,
                         contentDescription = "Attachment image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(300.dp)
-                            .clip(shape = RoundedCornerShape(16.dp))
+                            .size(292.dp)
+                            .clip(shape = RoundedCornerShape(12.dp))
                             .clickable {
                                 onAttachmentClicked(attachment)
                             }

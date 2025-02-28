@@ -1,9 +1,7 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -15,7 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
@@ -65,7 +63,6 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.fontIBM
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
@@ -136,69 +133,12 @@ fun Bubble(
             .width(IntrinsicSize.Max)
     ) {
         if (reply != null) {
-            Text(
-                text = reply.author,
-                modifier = Modifier
-                    .padding(
-                        start = 16.dp,
-                        top = 8.dp,
-                        end = 12.dp
-                    )
-                    .alpha(0.5f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = colorResource(id = R.color.text_primary),
-                style = Caption1Medium
+            ChatBubbleReply(
+                reply = reply,
+                onScrollToReplyClicked = onScrollToReplyClicked
             )
-            Spacer(modifier = Modifier.height(2.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .clickable {
-                        onScrollToReplyClicked(reply)
-                    }
-                    .alpha(0.5f)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(4.dp)
-                        .background(
-                            color = colorResource(R.color.shape_transparent_primary),
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = colorResource(R.color.shape_transparent_secondary),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .clip(RoundedCornerShape(16.dp))
-                        .clickable {
-                            onScrollToReplyClicked(reply)
-                        }
-                        .alpha(0.5f)
-                ) {
-                    Text(
-                        modifier = Modifier.padding(
-                            horizontal = 12.dp,
-                            vertical = 8.dp
-                        ),
-                        text = reply.text,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis,
-                        color = colorResource(id = R.color.text_primary),
-                        style = Caption1Regular
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(4.dp))
         }
-        // Username section
+        // Bubble username section
         if (!isUserAuthor) {
             Text(
                 text = name,
@@ -214,12 +154,12 @@ fun Bubble(
             )
             Spacer(modifier = Modifier.height(4.dp))
         }
-        // Text with attachments
+        // Rendering text with attachments
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = if (isUserAuthor)
+                    color = if (!isUserAuthor)
                         colorResource(R.color.background_primary)
                     else
                         colorResource(R.color.shape_transparent_secondary),
@@ -245,6 +185,7 @@ fun Bubble(
                         bottom = 4.dp
                     )
                 ) {
+                    // Rendering text body message
                     Text(
                         modifier = Modifier,
                         text = buildAnnotatedString {
@@ -327,6 +268,7 @@ fun Bubble(
                         style = BodyRegular,
                         color = colorResource(id = R.color.text_primary),
                     )
+                    // Rendering message timestamp
                     Text(
                         modifier = Modifier
                             .align(Alignment.BottomEnd),
@@ -444,6 +386,73 @@ fun Bubble(
             )
         }
     }
+}
+
+@Composable
+private fun ChatBubbleReply(
+    reply: ChatView.Message.Reply,
+    onScrollToReplyClicked: (ChatView.Message.Reply) -> Unit
+) {
+    Text(
+        text = reply.author,
+        modifier = Modifier
+            .padding(
+                start = 16.dp,
+                top = 8.dp,
+                end = 12.dp
+            )
+            .alpha(0.5f),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        color = colorResource(id = R.color.text_primary),
+        style = Caption1Medium
+    )
+    Spacer(modifier = Modifier.height(2.dp))
+    Row(
+        modifier = Modifier
+            .wrapContentWidth()
+            .height(IntrinsicSize.Min)
+            .clickable {
+                onScrollToReplyClicked(reply)
+            }
+            .alpha(0.5f)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(4.dp)
+                .background(
+                    color = colorResource(R.color.shape_transparent_primary),
+                    shape = RoundedCornerShape(4.dp)
+                )
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Box(
+            modifier = Modifier
+                .background(
+                    color = colorResource(R.color.shape_transparent_secondary),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .clip(RoundedCornerShape(16.dp))
+                .clickable {
+                    onScrollToReplyClicked(reply)
+                }
+                .alpha(0.5f)
+        ) {
+            Text(
+                modifier = Modifier.padding(
+                    horizontal = 12.dp,
+                    vertical = 8.dp
+                ),
+                text = reply.text,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                color = colorResource(id = R.color.text_primary),
+                style = Caption1Regular
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(4.dp))
 }
 
 @Composable

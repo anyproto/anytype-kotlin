@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.text.splitByMarks
@@ -248,6 +249,21 @@ class ChatViewModel @Inject constructor(
                                         )
                                     }
                                 }
+                            }
+                        }.let { results ->
+                            if (results.size >= 2) {
+                                val images = results.filterIsInstance<ChatView.Message.Attachment.Image>()
+                                if (images.size == results.size) {
+                                    listOf(
+                                        ChatView.Message.Attachment.Gallery(
+                                            images = images
+                                        )
+                                    )
+                                } else {
+                                    results
+                                }
+                            } else {
+                                results
                             }
                         },
                         avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
@@ -558,29 +574,43 @@ class ChatViewModel @Inject constructor(
     fun onRequestEditMessageClicked(msg: ChatView.Message) {
         Timber.d("onRequestEditMessageClicked")
         viewModelScope.launch {
-            chatBoxAttachments.value = msg.attachments.mapNotNull { a ->
-                when(a) {
-                    is ChatView.Message.Attachment.Image -> {
-                        ChatView.Message.ChatBoxAttachment.Existing.Image(
-                            target = a.target,
-                            url = a.url
-                        )
-                    }
-                    is ChatView.Message.Attachment.Link -> {
-                        val wrapper = a.wrapper
-                        if (wrapper != null) {
-                            val type = wrapper.type.firstOrNull()
-                            ChatView.Message.ChatBoxAttachment.Existing.Link(
-                                target = wrapper.id,
-                                name = wrapper.name.orEmpty(),
-                                icon = wrapper.objectIcon(urlBuilder),
-                                typeName = if (type != null)
-                                    storeOfObjectTypes.get(type)?.name.orEmpty()
-                                else
-                                    ""
+            chatBoxAttachments.value = buildList {
+                msg.attachments.forEach { a ->
+                    when(a) {
+                        is ChatView.Message.Attachment.Image -> {
+                            add(
+                                ChatView.Message.ChatBoxAttachment.Existing.Image(
+                                    target = a.target,
+                                    url = a.url
+                                )
                             )
-                        } else {
-                            null
+                        }
+                        is ChatView.Message.Attachment.Gallery -> {
+                            a.images.forEach { image ->
+                                add(
+                                    ChatView.Message.ChatBoxAttachment.Existing.Image(
+                                        target = image.target,
+                                        url = image.url
+                                    )
+                                )
+                            }
+                        }
+                        is ChatView.Message.Attachment.Link -> {
+                            val wrapper = a.wrapper
+                            if (wrapper != null) {
+                                val type = wrapper.type.firstOrNull()
+                                add(
+                                    ChatView.Message.ChatBoxAttachment.Existing.Link(
+                                        target = wrapper.id,
+                                        name = wrapper.name.orEmpty(),
+                                        icon = wrapper.objectIcon(urlBuilder),
+                                        typeName = if (type != null)
+                                            storeOfObjectTypes.get(type)?.name.orEmpty()
+                                        else
+                                            ""
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -646,6 +676,18 @@ class ChatViewModel @Inject constructor(
                                     attachment.name
                                 }
                             }
+                            is ChatView.Message.Attachment.Gallery -> {
+                                val first = attachment.images.firstOrNull()
+                                if (first != null) {
+                                    if (first.ext.isNotEmpty()) {
+                                        "${first.name}.${first.ext}"
+                                    } else {
+                                        first.name
+                                    }
+                                } else {
+                                    EMPTY_STRING_VALUE
+                                }
+                            }
                             is ChatView.Message.Attachment.Link -> {
                                 attachment.wrapper?.name.orEmpty()
                             }
@@ -684,6 +726,9 @@ class ChatViewModel @Inject constructor(
                             url = urlBuilder.original(attachment.target)
                         )
                     )
+                }
+                is ChatView.Message.Attachment.Gallery -> {
+                    // TODO
                 }
                 is ChatView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper

@@ -312,8 +312,8 @@ fun Bubble(
                                 showDropdownMenu = false
                             }
                         )
+                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     }
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {
                             Text(

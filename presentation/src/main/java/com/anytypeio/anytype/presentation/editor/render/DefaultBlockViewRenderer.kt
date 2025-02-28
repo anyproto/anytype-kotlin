@@ -89,6 +89,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         Content.Text.Style.TITLE -> {
                             val obj = details.getObject(id = context)
                             if (obj?.layout == ObjectType.Layout.NOTE) {
+                                // Workaround for skipping title block in objects with note layout
                                 Timber.d("Skipping title rendering for object with note layout or nullable object")
                             } else {
                                 mCounter = 0

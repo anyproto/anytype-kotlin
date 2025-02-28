@@ -32,7 +32,7 @@
     </fragment>
     <dialog
         android:id="@+id/objectRelationListScreen"
-        android:name="com.anytypeio.anytype.ui.relations.ObjectRelationListFragment"
+        android:name="com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment"
         android:label="Object-Relation-List-Screen" />
     <dialog
         android:id="@+id/objectIconPickerScreen"

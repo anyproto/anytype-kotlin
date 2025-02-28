@@ -304,7 +304,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        // Do nothing. TODO add ime padding.
+        // Skipping this, since window insets will be applied by compose code.
     }
 
     companion object {

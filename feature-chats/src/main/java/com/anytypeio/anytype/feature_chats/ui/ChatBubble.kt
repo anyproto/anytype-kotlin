@@ -159,7 +159,7 @@ fun Bubble(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = if (isUserAuthor)
+                    color = if (!isUserAuthor)
                         colorResource(R.color.background_primary)
                     else
                         colorResource(R.color.shape_transparent_secondary),

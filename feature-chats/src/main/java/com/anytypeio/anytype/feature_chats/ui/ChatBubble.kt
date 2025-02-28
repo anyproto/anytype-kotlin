@@ -298,19 +298,21 @@ fun Bubble(
                         showDropdownMenu = false
                     }
                 ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chats_add_reaction),
-                                color = colorResource(id = R.color.text_primary),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            onAddReactionClicked()
-                            showDropdownMenu = false
-                        }
-                    )
+                    if (!isMaxReactionCountReached) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chats_add_reaction),
+                                    color = colorResource(id = R.color.text_primary),
+                                    modifier = Modifier.padding(end = 64.dp)
+                                )
+                            },
+                            onClick = {
+                                onAddReactionClicked()
+                                showDropdownMenu = false
+                            }
+                        )
+                    }
                     Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         text = {

@@ -1241,7 +1241,7 @@
         <item quantity="one">%1$d istek</item>
         <item quantity="other">%1$d istek</item>
     </plurals>
-    <string name="multiplayer_you_as_member">sen</string>
+    <string name="multiplayer_you_as_member">Siz</string>
     <string name="multiplayer_spaces">Alanlar</string>
     <string name="multiplayer_space_status_joining">Katılınıyor</string>
     <string name="multiplayer_space_status_active">Etkin</string>
@@ -1604,4 +1604,31 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_types_human">İnsan</string>
     <string name="chats_alert_delete_this_message_description">Onaylandıktan sonra geri getirilemez</string>
     <string name="chats_alert_delete_this_message">Bu mesaj silinsin mi?</string>
+    <string name="migration_migration_is_in_progress">Geçiş işlemi devam ediyor</string>
+    <string name="migration_this_shouldn_t_take_long">Bu işlem biraz zaman alabilir. Lütfen işlem tamamlanana kadar uygulamayı kapatmayın.</string>
+    <string name="migration_error_try_again">Tekrar deneyin</string>
+    <string name="migration_migration_failed">Geçiş başarısız oldu</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Lütfen biraz yer açın ve işlemi tekrarlayın.</string>
+    <string name="fields_screen_title">Alanlar</string>
+    <string name="field_text_title">Metin</string>
+    <string name="field_text_empty">Giriş</string>
+    <string name="field_number_title">Sayı</string>
+    <string name="field_number_empty">Giriş</string>
+    <string name="field_date_title">Tarih</string>
+    <string name="field_date_empty">Değer</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Ekle</string>
+    <string name="field_email_title">E-Posta</string>
+    <string name="field_email_empty">Giriş</string>
+    <string name="field_phone_title">Telefon numarası</string>
+    <string name="field_phone_empty">Giriş</string>
+    <string name="field_select_title">Seç</string>
+    <string name="field_select_empty">Seç</string>
+    <string name="field_multiselect_title">Çoklu seçim</string>
+    <string name="field_multiselect_empty">Seç</string>
+    <string name="field_object_title">Nesne</string>
+    <string name="field_object_empty">Ekle</string>
+    <string name="field_file_and_media_title">Dosya &amp; Medya</string>
+    <string name="field_file_and_media_empty">Ekle</string>
+    <string name="field_checkbox_title">Seç</string>
 </resources>

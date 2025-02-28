@@ -1235,7 +1235,7 @@
     <plurals name="multiplayer_number_of_join_requests">
         <item quantity="other">%1$d 个请求</item>
     </plurals>
-    <string name="multiplayer_you_as_member">您</string>
+    <string name="multiplayer_you_as_member">You</string>
     <string name="multiplayer_spaces">空间</string>
     <string name="multiplayer_space_status_joining">正在加入</string>
     <string name="multiplayer_space_status_active">正在进行</string>
@@ -1587,4 +1587,31 @@
     <string name="object_types_human">Human</string>
     <string name="chats_alert_delete_this_message_description">确认后无法恢复</string>
     <string name="chats_alert_delete_this_message">删除此消息？</string>
+    <string name="migration_migration_is_in_progress">Migration is in progress</string>
+    <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
+    <string name="migration_error_try_again">请再试一次</string>
+    <string name="migration_migration_failed">Migration failed</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
+    <string name="fields_screen_title">Fields</string>
+    <string name="field_text_title">正文</string>
+    <string name="field_text_empty">输入</string>
+    <string name="field_number_title">数目</string>
+    <string name="field_number_empty">输入</string>
+    <string name="field_date_title">日期</string>
+    <string name="field_date_empty">值</string>
+    <string name="field_url_title">URL网址</string>
+    <string name="field_url_empty">添加</string>
+    <string name="field_email_title">电子邮件</string>
+    <string name="field_email_empty">输入</string>
+    <string name="field_phone_title">电话号码</string>
+    <string name="field_phone_empty">输入</string>
+    <string name="field_select_title">选择</string>
+    <string name="field_select_empty">选择</string>
+    <string name="field_multiselect_title">Multiselect</string>
+    <string name="field_multiselect_empty">选择</string>
+    <string name="field_object_title">对象</string>
+    <string name="field_object_empty">添加</string>
+    <string name="field_file_and_media_title">文件与媒体</string>
+    <string name="field_file_and_media_empty">添加</string>
+    <string name="field_checkbox_title">选择</string>
 </resources>

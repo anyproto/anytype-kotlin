@@ -1235,7 +1235,7 @@
     <plurals name="multiplayer_number_of_join_requests">
         <item quantity="other">%1$d permintaan</item>
     </plurals>
-    <string name="multiplayer_you_as_member">kamu</string>
+    <string name="multiplayer_you_as_member">Kamu</string>
     <string name="multiplayer_spaces">Ruang</string>
     <string name="multiplayer_space_status_joining">Bergabung</string>
     <string name="multiplayer_space_status_active">Aktif</string>
@@ -1591,4 +1591,31 @@ Please provide specific details of your needs here.</string>
     <string name="object_types_human">Manusia</string>
     <string name="chats_alert_delete_this_message_description">Pesan tak dapat dikembalikan lagi</string>
     <string name="chats_alert_delete_this_message">Hapus pesan ini?</string>
+    <string name="migration_migration_is_in_progress">Migrasi sedang berlangsung</string>
+    <string name="migration_this_shouldn_t_take_long">Ini mungkin perlu beberapa waktu. Mohon tidak menutup aplikasi hingga proses selesai.</string>
+    <string name="migration_error_try_again">Coba lagi</string>
+    <string name="migration_migration_failed">Migrasi gagal</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Bersihkan ruang penyimpanan lalu coba lagi.</string>
+    <string name="fields_screen_title">Fields</string>
+    <string name="field_text_title">Teks</string>
+    <string name="field_text_empty">Masukkan</string>
+    <string name="field_number_title">Angka</string>
+    <string name="field_number_empty">Masukkan</string>
+    <string name="field_date_title">Tanggal</string>
+    <string name="field_date_empty">Nilai</string>
+    <string name="field_url_title">URL</string>
+    <string name="field_url_empty">Tambah</string>
+    <string name="field_email_title">Surel</string>
+    <string name="field_email_empty">Masukkan</string>
+    <string name="field_phone_title">Nomor telepon</string>
+    <string name="field_phone_empty">Masukkan</string>
+    <string name="field_select_title">Pilih</string>
+    <string name="field_select_empty">Pilih</string>
+    <string name="field_multiselect_title">Pilih banyak</string>
+    <string name="field_multiselect_empty">Pilih</string>
+    <string name="field_object_title">Objek</string>
+    <string name="field_object_empty">Tambah</string>
+    <string name="field_file_and_media_title">Berkas &amp; Media</string>
+    <string name="field_file_and_media_empty">Tambah</string>
+    <string name="field_checkbox_title">Pilih</string>
 </resources>

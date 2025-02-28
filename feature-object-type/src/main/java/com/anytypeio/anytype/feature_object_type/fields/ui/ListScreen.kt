@@ -67,6 +67,8 @@ import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.*
+import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.FieldItemMenu.*
+import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldScreenState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
@@ -88,6 +90,7 @@ fun FieldsMainScreen(
     uiIconState: UiIconState,
     uiFieldEditOrNewState: UiFieldEditOrNewState,
     uiFieldLocalInfoState: UiLocalsFieldsInfoState,
+    uiAddFieldScreenState: UiAddFieldScreenState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
@@ -121,8 +124,7 @@ fun FieldsMainScreen(
                 color = colorResource(id = R.color.widget_background),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
-            .fillMaxSize()
-        ,
+            .fillMaxSize(),
         containerColor = colorResource(id = R.color.transparent_black),
         contentColor = colorResource(id = R.color.widget_background),
         topBar = {
@@ -172,7 +174,17 @@ fun FieldsMainScreen(
                                 )
                             }
 
-                            is Section.SideBar,
+                            is Section.SideBar -> {
+                                SectionItem(
+                                    item = item,
+                                    reorderingState = reorderableLazyColumnState,
+                                    fieldEvent = fieldEvent,
+                                    isReorderable = true,
+                                    onAddIconClick = {
+                                        fieldEvent(FieldEvent.Section.OnAddToSidebarIconClick)
+                                    }
+                                )
+                            }
                             is Section.Hidden -> {
                                 SectionItem(
                                     item = item,
@@ -181,8 +193,17 @@ fun FieldsMainScreen(
                                     isReorderable = true
                                 )
                             }
-
-                            is Section.Header,
+                            is Section.Header -> {
+                                SectionItem(
+                                    item = item,
+                                    reorderingState = reorderableLazyColumnState,
+                                    fieldEvent = fieldEvent,
+                                    isReorderable = false,
+                                    onAddIconClick = {
+                                        fieldEvent(FieldEvent.Section.OnAddToHeaderIconClick)
+                                    }
+                                )
+                            }
                             is Section.Local,
                             is Section.File -> {
                                 SectionItem(
@@ -220,6 +241,13 @@ fun FieldsMainScreen(
             fieldEvent = fieldEvent
         )
     }
+
+    if (uiAddFieldScreenState is UiAddFieldScreenState.Visible) {
+        AddFieldScreen(
+            state = uiAddFieldScreenState,
+            fieldEvent = fieldEvent
+        )
+    }
 }
 
 /** Returns a content type string based on the item type. **/
@@ -239,7 +267,7 @@ private fun getContentType(item: UiFieldsListItem): String {
 
 /** A common modifier for list items. **/
 @Composable
-private fun LazyItemScope.commonItemModifier() = Modifier
+fun LazyItemScope.commonItemModifier() = Modifier
     .height(52.dp)
     .fillMaxWidth()
     .padding(horizontal = 20.dp)
@@ -257,10 +285,13 @@ private fun TopBar(
     } else {
         modifier
     }
-    Column(modifier = modifier
-        .background(
-            color = colorResource(id = R.color.widget_background),
-            shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))) {
+    Column(
+        modifier = modifier
+            .background(
+                color = colorResource(id = R.color.widget_background),
+                shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp)
+            )
+    ) {
         Dragger(
             modifier = Modifier
                 .padding(vertical = 6.dp)
@@ -327,6 +358,7 @@ private fun LazyItemScope.SectionItem(
     item: UiFieldsListItem.Section,
     reorderingState: ReorderableLazyListState,
     isReorderable: Boolean = true,
+    onAddIconClick: () -> Unit = {},
     fieldEvent: (FieldEvent) -> Unit
 ) {
     val (title, textColor) = when (item) {
@@ -378,7 +410,7 @@ private fun LazyItemScope.SectionItem(
                         .width(54.dp)
                         .height(40.dp)
                         .noRippleThrottledClickable {
-                            fieldEvent(FieldEvent.Section.OnAddIconClick)
+                            onAddIconClick()
                         }
                 ) {
                     Image(
@@ -619,7 +651,7 @@ fun ItemDropDownMenu(
                         )
                     },
                     onClick = {
-                        onFieldEvent(FieldItemMenu.OnDeleteFromTypeClick(item))
+                        onFieldEvent(OnDeleteFromTypeClick(item))
                     },
                 )
             }
@@ -634,7 +666,7 @@ fun ItemDropDownMenu(
                         )
                     },
                     onClick = {
-                        onFieldEvent(FieldItemMenu.OnAddLocalToTypeClick(item))
+                        onFieldEvent(OnAddLocalToTypeClick(item))
                     },
                 )
 //                DropdownMenuItem(
@@ -726,7 +758,8 @@ fun PreviewTypeFieldsMainScreen() {
         ),
         fieldEvent = {},
         uiFieldEditOrNewState = UiFieldEditOrNewState.Hidden,
-        uiFieldLocalInfoState = UiLocalsFieldsInfoState.Hidden
+        uiFieldLocalInfoState = UiLocalsFieldsInfoState.Hidden,
+        uiAddFieldScreenState = UiAddFieldScreenState.Hidden
     )
 }
 

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Item
@@ -139,10 +140,10 @@ suspend fun buildUiFieldsList(
     }
 
     return buildList {
-        add(Section.Header(canAdd = false))
+        add(Section.Header(canAdd = true))
         addAll(headerItems)
 
-        add(Section.SideBar(canAdd = false))
+        add(Section.SideBar(canAdd = true))
         addAll(sidebarItems)
 
         //todo file fields are off for now
@@ -235,6 +236,19 @@ private suspend fun mapToUiFieldsLocalListItem(
         format = field.format,
         limitObjectTypes = limitObjectTypes,
         isEditableField = fieldParser.isFieldEditable(field)
+    )
+}
+
+fun ObjectWrapper.Relation.mapToUiAddFieldListItem(
+    stringResourceProvider: StringResourceProvider
+): UiAddFieldItem? {
+    val field = this
+    if (field.key == Relations.DESCRIPTION) return null
+    return UiAddFieldItem(
+        id = field.id,
+        fieldKey = field.key,
+        fieldTitle = field.getName(stringResourceProvider),
+        format = field.format
     )
 }
 

@@ -45,7 +45,7 @@ interface FieldParser {
 
     suspend fun getObjectParsedFields(
         objectType: ObjectWrapper.Type,
-        objFieldKeys: Set<Key>,
+        objFieldKeys: List<Key>,
         storeOfRelations: StoreOfRelations
     ): ParsedFields
 
@@ -251,10 +251,23 @@ class FieldParserImpl @Inject constructor(
 
     override suspend fun getObjectParsedFields(
         objectType: ObjectWrapper.Type,
-        objFieldKeys: Set<Key>,
+        objFieldKeys: List<Key>,
         storeOfRelations: StoreOfRelations
     ): ParsedFields {
-        return getParsedFields(objectType, objFieldKeys, storeOfRelations)
+        val localFieldIds = storeOfRelations.getByKeys(
+            keys = objFieldKeys
+        ).mapNotNull {
+            if (it.isValidToUse) {
+                it.id
+            } else {
+                null
+            }
+        }
+        return getParsedFields(
+            objType = objectType,
+            localFieldIds = localFieldIds,
+            storeOfRelations = storeOfRelations
+        )
     }
 
     override suspend fun getObjectTypeParsedFields(
@@ -262,7 +275,11 @@ class FieldParserImpl @Inject constructor(
         objectTypeConflictingFieldsIds: List<Id>,
         storeOfRelations: StoreOfRelations
     ): ParsedFields {
-        return getParsedFields(objectType, objectTypeConflictingFieldsIds, storeOfRelations)
+        return getParsedFields(
+            objType = objectType,
+            localFieldIds = objectTypeConflictingFieldsIds,
+            storeOfRelations = storeOfRelations
+        )
     }
 
     override fun isFieldEditable(relation: ObjectWrapper.Relation): Boolean {

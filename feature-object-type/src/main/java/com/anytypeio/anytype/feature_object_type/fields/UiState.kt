@@ -189,8 +189,15 @@ sealed class UiLocalsFieldsInfoState {
 //region Add Fields screen
 sealed class UiAddFieldScreenState {
     data object Hidden : UiAddFieldScreenState()
-    data class Visible(val item: UiFieldsListItem) : UiAddFieldScreenState()
+    data class Visible(val items: List<UiAddFieldItem>, val addToHeader: Boolean) : UiAddFieldScreenState()
 }
+
+data class UiAddFieldItem(
+    val id: Id,
+    val fieldKey: Key,
+    val fieldTitle: String,
+    val format: RelationFormat
+)
 //endregion
 
 

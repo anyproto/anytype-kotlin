@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeHeaderRecommendedFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -32,7 +33,6 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
@@ -105,7 +105,7 @@ object ObjectTypeModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun coverHashProvider() : CoverImageHashProvider = DefaultCoverImageHashProvider()
+    fun coverHashProvider(): CoverImageHashProvider = DefaultCoverImageHashProvider()
 
     @JvmStatic
     @PerScreen
@@ -148,6 +148,15 @@ object ObjectTypeModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetObjectTypeRecommendedFields = SetObjectTypeRecommendedFields(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideTypeSetHeaderRecommendedFields(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectTypeHeaderRecommendedFields =
+        SetObjectTypeHeaderRecommendedFields(repo, dispatchers)
 
     @Module
     interface Declarations {

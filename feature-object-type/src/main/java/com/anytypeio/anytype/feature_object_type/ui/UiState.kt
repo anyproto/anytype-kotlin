@@ -33,6 +33,8 @@ sealed class ObjectTypeCommand {
     data object OpenEmojiPicker : ObjectTypeCommand()
 
     data object OpenFieldsScreen : ObjectTypeCommand()
+
+    data class OpenAddFieldScreen(val typeId: Id, val space: Id, val isSet: Boolean = false) : ObjectTypeCommand()
 }
 
 //region OBJECT TYPE HEADER (title + icon)

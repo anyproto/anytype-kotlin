@@ -117,7 +117,7 @@ class RelationListViewModel(
         val parsedFields = fieldParser.getObjectParsedFields(
             objectType = objType,
             storeOfRelations = storeOfRelations,
-            objFieldKeys = details.getObject(ctx)?.map?.keys.orEmpty()
+            objFieldKeys = details.getObject(ctx)?.map?.keys?.toList().orEmpty()
         )
 
         val headerFields = parsedFields.header.mapNotNull {

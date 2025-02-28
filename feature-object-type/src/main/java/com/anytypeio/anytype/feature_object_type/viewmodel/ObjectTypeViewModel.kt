@@ -30,10 +30,13 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeHeaderRecommendedFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
+import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldItem
+import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldScreenState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
@@ -62,6 +65,7 @@ import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesHeaderState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
+import com.anytypeio.anytype.feature_object_type.ui.mapToUiAddFieldListItem
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -120,7 +124,8 @@ class ObjectTypeViewModel(
     private val createTemplate: CreateTemplate,
     private val duplicateObjects: DuplicateObjects,
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
-    private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields
+    private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
+    private val objectTypeSetHeaderRecommendedFields: SetObjectTypeHeaderRecommendedFields
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -177,6 +182,9 @@ class ObjectTypeViewModel(
     val uiFieldsListState = MutableStateFlow<UiFieldsListState>(UiFieldsListState.EMPTY)
     val uiFieldEditOrNewState =
         MutableStateFlow<UiFieldEditOrNewState>(UiFieldEditOrNewState.Hidden)
+
+    //add new field
+    val uiAddNewFieldState = MutableStateFlow<UiAddFieldScreenState>(UiAddFieldScreenState.Hidden)
 
     //error
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
@@ -916,8 +924,11 @@ class ObjectTypeViewModel(
                 uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Visible
             }
 
-            FieldEvent.Section.OnAddIconClick -> {
-                //todo need to implement
+            FieldEvent.Section.OnAddToHeaderIconClick -> {
+                proceedWithAddFieldToHeaderScreen()
+            }
+            FieldEvent.Section.OnAddToSidebarIconClick -> {
+                proceedWithAddFieldToSidebarScreen()
             }
 
             FieldEvent.DragEvent.OnDragEnd -> {
@@ -958,6 +969,19 @@ class ObjectTypeViewModel(
                 val item = currentList.removeAt(fromIndex)
                 currentList.add(toIndex, item)
                 uiFieldsListState.value = UiFieldsListState(items = currentList)
+            }
+
+            FieldEvent.OnAddFieldScreenDismiss -> {
+                hideAddNewFieldScreen()
+            }
+
+            is FieldEvent.OnAddToHeaderFieldClick -> {
+                onAddToHeaderFieldClicked(item = event.item)
+                hideAddNewFieldScreen()
+            }
+            is FieldEvent.OnAddToSidebarFieldClick -> {
+                onAddToSidebarFieldClicked(item = event.item)
+                hideAddNewFieldScreen()
             }
         }
     }
@@ -1247,10 +1271,85 @@ class ObjectTypeViewModel(
             )
         }
     }
+
+    private fun proceedWithSetHeaderRecommendedFields(fields: List<Id>) {
+        val params = SetObjectTypeHeaderRecommendedFields.Params(
+            objectTypeId = vmParams.objectId,
+            fields = fields
+        )
+        viewModelScope.launch {
+            objectTypeSetHeaderRecommendedFields.async(params).fold(
+                onSuccess = {
+                    Timber.d("Header recommended fields set")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while setting header recommended fields")
+                }
+            )
+        }
+    }
     //endregion
 
+    //region ADD NEW FIELD
+    fun hideAddNewFieldScreen() {
+        uiAddNewFieldState.value = UiAddFieldScreenState.Hidden
+    }
+
+    private fun proceedWithAddField(addToHeader: Boolean) {
+        // Extract field keys from the current list
+        val typeFieldKeys = uiFieldsListState.value.items.mapNotNull { (it as? UiFieldsListItem.Item)?.fieldKey }
+
+        viewModelScope.launch {
+            // Filter out all fields from the space store that already exist
+            val storeUnsortedFields = storeOfRelations.getAll().filter { it.key !in typeFieldKeys }
+            // Map and sort the valid fields for display
+            val items = storeUnsortedFields.mapNotNull { field ->
+                if (!field.isValidToUse) null
+                else field.mapToUiAddFieldListItem(stringResourceProvider)
+            }.sortedBy { it.fieldTitle }
+
+            uiAddNewFieldState.value = UiAddFieldScreenState.Visible(
+                items = items,
+                addToHeader = addToHeader
+            )
+        }
+    }
+
+    fun proceedWithAddFieldToHeaderScreen() {
+        proceedWithAddField(addToHeader = true)
+    }
+
+    fun proceedWithAddFieldToSidebarScreen() {
+        proceedWithAddField(addToHeader = false)
+    }
+
+    private fun updateFieldRecommendations(
+        currentFields: List<String>?,
+        item: UiAddFieldItem,
+        updateAction: (List<String>) -> Unit
+    ) {
+        val newFields = currentFields.orEmpty() + item.id
+        updateAction(newFields)
+    }
+
+    private fun onAddToSidebarFieldClicked(item: UiAddFieldItem) {
+        updateFieldRecommendations(
+            currentFields = _objTypeState.value?.recommendedRelations,
+            item = item,
+            updateAction = ::proceedWithSetRecommendedFields
+        )
+    }
+
+    private fun onAddToHeaderFieldClicked(item: UiAddFieldItem) {
+        updateFieldRecommendations(
+            currentFields = _objTypeState.value?.recommendedFeaturedRelations,
+            item = item,
+            updateAction = ::proceedWithSetHeaderRecommendedFields
+        )
+    }
+//endregion
+
     companion object {
-        private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
         const val OBJECTS_MAX_COUNT = 20
         const val TEMPLATE_MAX_COUNT = 100
 

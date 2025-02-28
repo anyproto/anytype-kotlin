@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,26 +45,24 @@ fun BubbleAttachments(
     attachments.forEachIndexed { idx, attachment ->
         when (attachment) {
             is ChatView.Message.Attachment.Gallery -> {
-                val rowConfig = getRowConfiguration(attachment.images.size)
+                val rowConfig = attachment.rowConfig
                 var index = 0
-                rowConfig.forEach { rowSize ->
+                rowConfig.forEachIndexed { idx, rowSize ->
                     RowLayout(attachment.images.slice(index until index + rowSize))
+                    if (idx != rowConfig.lastIndex) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
                     index += rowSize
                 }
             }
             is ChatView.Message.Attachment.Image -> {
                 Box(
                     modifier = Modifier
-                        .padding(
-                            start = 4.dp,
-                            end = 4.dp,
-                            bottom = 4.dp,
-                            top = 0.dp
-                        )
-                        .size(300.dp)
+                        .padding(horizontal = 4.dp)
+                        .size(292.dp)
                         .background(
                             color = colorResource(R.color.shape_tertiary),
-                            shape = RoundedCornerShape(16.dp)
+                            shape = RoundedCornerShape(12.dp)
                         )
                 ) {
                     CircularProgressIndicator(
@@ -79,8 +78,8 @@ fun BubbleAttachments(
                         contentDescription = "Attachment image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(300.dp)
-                            .clip(shape = RoundedCornerShape(16.dp))
+                            .size(292.dp)
+                            .clip(shape = RoundedCornerShape(12.dp))
                             .clickable {
                                 onAttachmentClicked(attachment)
                             }

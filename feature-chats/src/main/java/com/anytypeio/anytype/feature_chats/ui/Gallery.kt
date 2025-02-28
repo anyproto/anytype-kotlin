@@ -21,37 +21,15 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 
-@Composable
-fun DynamicImageGallery(gallery: ChatView.Message.Attachment.Gallery) {
-    val rowConfig = getRowConfiguration(gallery.images.size)
-    var index = 0
-    rowConfig.forEach { rowSize ->
-        RowLayout(gallery.images.slice(index until index + rowSize))
-        index += rowSize
-    }
-}
-
-fun getRowConfiguration(imageCount: Int): List<Int> {
-    return when (imageCount) {
-        2 -> listOf(2)
-        3 -> listOf(3)
-        4 -> listOf(2, 2)
-        5 -> listOf(2, 3)
-        6 -> listOf(3, 3)
-        7 -> listOf(2, 2, 3)
-        8 -> listOf(2, 3, 3)
-        9 -> listOf(3, 3, 3)
-        10 -> listOf(2, 3, 3, 2)
-        else -> listOf()
-    }
-}
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun RowLayout(images: List<ChatView.Message.Attachment.Image>) {
     Row(
-        modifier = Modifier.width(292.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier
+            .width(300.dp)
+            .padding(horizontal = 4.dp)
+        ,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         images.forEach { image ->
             GlideImage(
@@ -60,7 +38,7 @@ fun RowLayout(images: List<ChatView.Message.Attachment.Image>) {
                 modifier = Modifier
                     .weight(1f)
                     .aspectRatio(1f) // Keeps each image square
-                    .clip(RoundedCornerShape(8.dp)), // Rounded corners
+                    .clip(RoundedCornerShape(12.dp)), // Rounded corners
                 contentScale = ContentScale.Crop // Crop to fit the image
             )
         }

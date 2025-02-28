@@ -59,7 +59,25 @@ sealed interface ChatView {
 
         sealed class Attachment {
 
-            data class Gallery(val images: List<Image>): Attachment()
+            data class Gallery(val images: List<Image>): Attachment() {
+
+                val rowConfig = getRowConfiguration(images.size)
+
+                private fun getRowConfiguration(imageCount: Int): List<Int> {
+                    return when (imageCount) {
+                        2 -> listOf(2)
+                        3 -> listOf(1, 2)
+                        4 -> listOf(2, 2)
+                        5 -> listOf(2, 3)
+                        6 -> listOf(3, 3)
+                        7 -> listOf(2, 2, 3)
+                        8 -> listOf(2, 3, 3)
+                        9 -> listOf(3, 3, 3)
+                        10 -> listOf(2, 2, 3, 3)
+                        else -> listOf()
+                    }
+                }
+            }
 
             data class Image(
                 val target: Id,

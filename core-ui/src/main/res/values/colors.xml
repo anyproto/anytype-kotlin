@@ -79,9 +79,6 @@
     <color name="dashboard_card_background">#FFFFFF</color>
     <color name="dashboard_background">#99F5F5F5</color>
 
-    <color name="control_active">#A7A7A7</color>
-    <color name="control_inactive">#DCDCDC</color>
-
     <!-- Background -->
     <color name="widget_background">#FFFFFF</color>
 

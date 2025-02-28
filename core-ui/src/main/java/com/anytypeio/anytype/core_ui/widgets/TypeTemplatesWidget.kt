@@ -623,7 +623,7 @@ private fun ProfileIcon(
                 style = AvatarTitle.copy(
                     fontSize = 24.sp,
                 ),
-                color = colorResource(id = R.color.control_active)
+                color = colorResource(id = R.color.glyph_active)
             )
         }
     }

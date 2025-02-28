@@ -95,7 +95,7 @@ fun FieldTypeMultiSelect(
             modifier = Modifier.fillMaxWidth(),
             textStyle = Relations1
         )
-        ItemDropDownMenu(
+        FieldItemDropDownMenu(
             showMenu = isMenuExpanded.value,
             onDismissRequest = {
                 isMenuExpanded.value = false

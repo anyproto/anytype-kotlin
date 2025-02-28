@@ -41,9 +41,6 @@
     <color name="dashboard_card_background">#99000000</color>
     <color name="dashboard_background">#99252525</color>
 
-    <color name="control_active">#7B7B7B</color>
-    <color name="control_inactive">#494949</color>
-
     <!-- Background -->
     <color name="widget_background">#BF252525</color>
 

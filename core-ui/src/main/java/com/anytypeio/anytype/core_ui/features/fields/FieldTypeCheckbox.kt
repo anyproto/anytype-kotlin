@@ -97,7 +97,7 @@ fun FieldTypeCheckbox(
                 )
             }
         }
-        ItemDropDownMenu(
+        FieldItemDropDownMenu(
             showMenu = isMenuExpanded.value,
             onDismissRequest = {
                 isMenuExpanded.value = false

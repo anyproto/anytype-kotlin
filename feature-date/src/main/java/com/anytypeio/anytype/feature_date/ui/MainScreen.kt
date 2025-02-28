@@ -31,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
-import com.anytypeio.anytype.core_ui.lists.objects.ObjectsScreen
+import com.anytypeio.anytype.core_ui.lists.objects.PaginatedObjectList
 import com.anytypeio.anytype.core_ui.lists.objects.UiContentState
 import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListState
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
@@ -154,7 +154,7 @@ fun DateMainScreen(
                 if (uiContentState is UiContentState.Empty) {
                     EmptyScreen()
                 }
-                ObjectsScreen(
+                PaginatedObjectList(
                     state = uiObjectsListState,
                     uiState = uiContentState,
                     canPaginate = canPaginate,

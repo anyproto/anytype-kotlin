@@ -99,7 +99,7 @@ fun FieldTypeObject(
                     objView = singleItem
                 )
             }
-            ItemDropDownMenu(
+            FieldItemDropDownMenu(
                 showMenu = isMenuExpanded.value,
                 onDismissRequest = {
                     isMenuExpanded.value = false
@@ -186,7 +186,7 @@ fun FieldTypeObject(
                         }
                     }
                 }
-                ItemDropDownMenu(
+                FieldItemDropDownMenu(
                     showMenu = isMenuExpanded.value,
                     onDismissRequest = {
                         isMenuExpanded.value = false

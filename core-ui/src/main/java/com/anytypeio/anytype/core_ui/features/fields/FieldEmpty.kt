@@ -118,7 +118,7 @@ private fun FieldVerticalEmpty(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        ItemDropDownMenu(
+        FieldItemDropDownMenu(
             showMenu = isMenuExpanded.value,
             onDismissRequest = {
                 isMenuExpanded.value = false
@@ -176,7 +176,7 @@ private fun FieldHorizontalEmpty(
             style = Relations1,
             color = colorResource(id = R.color.text_tertiary)
         )
-        ItemDropDownMenu(
+        FieldItemDropDownMenu(
             showMenu = isMenuExpanded.value,
             onDismissRequest = {
                 isMenuExpanded.value = false

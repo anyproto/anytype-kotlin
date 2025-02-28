@@ -72,7 +72,7 @@ fun FieldTypeText(
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
-        ItemDropDownMenu(
+        FieldItemDropDownMenu(
             showMenu = isMenuExpanded.value,
             onDismissRequest = {
                 isMenuExpanded.value = false

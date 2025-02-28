@@ -15,7 +15,7 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.R
 
 @Composable
-fun ItemDropDownMenu(
+fun FieldItemDropDownMenu(
     showMenu: Boolean,
     onDismissRequest: () -> Unit,
     onAddToCurrentTypeClick: () -> Unit,

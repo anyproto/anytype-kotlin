@@ -36,7 +36,7 @@ import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 import kotlinx.coroutines.launch
 
 @Composable
-fun ObjectsScreen(
+fun PaginatedObjectList(
     state: UiObjectsListState,
     uiState: UiContentState,
     canPaginate: Boolean,
@@ -154,7 +154,7 @@ fun ObjectsListScreenPreview() {
     val contentListState = UiObjectsListState(
         items = StubVerticalItems
     )
-    ObjectsScreen(
+    PaginatedObjectList(
         state = contentListState,
         uiState = UiContentState.Idle(scrollToTop = false),
         canPaginate = true,

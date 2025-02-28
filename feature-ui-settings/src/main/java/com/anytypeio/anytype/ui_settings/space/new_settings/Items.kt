@@ -286,7 +286,7 @@ fun NewSpaceNameBlock(
                     focusManager.clearFocus()
                 }
             ),
-            placeholderText = stringResource(id = R.string.space_name),
+            placeholderText = stringResource(id = R.string.space_settings_space_name_hint),
             isEditEnabled = isEditEnabled
         )
     }
@@ -332,7 +332,7 @@ fun NewSpaceDescriptionBlock(
                     focusManager.clearFocus()
                 }
             ),
-            placeholderText = stringResource(id = R.string.space_description),
+            placeholderText = stringResource(id = R.string.space_settings_space_description_hint),
             isEditEnabled = isEditEnabled
         )
     }

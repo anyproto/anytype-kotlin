@@ -57,8 +57,7 @@
     <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Space</string>
-    <string name="space_name">Name</string>
-    <string name="space_description">Description</string>
+    <string name="space_name">Space name</string>
     <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
@@ -1944,15 +1943,15 @@ Please provide specific details of your needs here.</string>
     <string name="field_menu_add_to_type">Add to the current type</string>
     <string name="field_menu_remove_from_object">Remove from the object</string>
 
+    <string name="space_settings_space_name_hint">Name</string>
+    <string name="space_settings_space_description_hint">Description</string>
     <string name="space_settings_section_collaboration">Collaboration</string>
     <string name="space_settings_section_content_model">Content Model</string>
     <string name="space_settings_section_preferences">Preferences</string>
     <string name="space_settings_section_data_management">Data Management</string>
     <string name="space_settings_section_misc">Misc</string>
-
     <string name="space_settings_invite">Invite</string>
     <string name="space_settings_qrcode">QR Code</string>
-
     <string name="space_settings_members_button_members">Members</string>
     <string name="space_settings_types_button">Object Types</string>
     <string name="space_settings_default_type_button">Default Object Type</string>

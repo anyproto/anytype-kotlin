@@ -209,7 +209,7 @@
     <string name="action_bar_turn_into">Ubah menjadi</string>
     <string name="action_bar_turn_into_page">Jadikan Halaman</string>
     <string name="action_bar_delete">Hapus</string>
-    <string name="action_bar_to_bin">Buang ke Bak Sampah</string>
+    <string name="action_bar_to_bin">Ke Bak Sampah</string>
     <string name="action_bar_duplicate">Gandakan</string>
     <string name="action_bar_move_to">Pindahkan ke</string>
     <string name="action_bar_style">Gaya</string>
@@ -232,6 +232,7 @@
     <string name="search">Telusuri</string>
     <string name="search_hint">Telusuri ...</string>
     <string name="relations">Relasi</string>
+    <string name="fields">Fields</string>
     <string name="relation">Relasi</string>
     <string name="download">Unduh</string>
     <string name="view">Tampilan</string>
@@ -343,6 +344,7 @@
     <string name="favourite">Favorit</string>
     <string name="template">Templat</string>
     <string name="templates">Templat</string>
+    <string name="layout_type">Layout type</string>
     <string name="lock">Kunci</string>
     <string name="unlock">Buka kunci</string>
     <string name="restore">Pulihkan</string>
@@ -544,6 +546,7 @@
     <string name="set_as_default">Buat sebagai bawaan</string>
     <string name="default_object">Default object</string>
     <string name="default_template">Default template</string>
+    <string name="default_template_icon">Bawaan</string>
     <string name="title_templates_not_allowed">Tipe ini tidak mendukung templat</string>
     <string name="num_applied">%1$d applied</string>
     <string name="view_list">Daftar</string>
@@ -710,6 +713,8 @@
     <string name="set">Set</string>
     <string name="collection">Koleksi</string>
     <string name="layout">Tata letak</string>
+    <string name="button_fields">Fields</string>
+    <string name="button_layout">Tata letak</string>
     <string name="restore_from_archive">Restore from archive</string>
     <string name="icon">Ikon</string>
     <string name="icon_description">Emoji atau gambar untuk objek</string>
@@ -1567,6 +1572,33 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_upload">Unggah</string>
     <string name="chats_reply">Balas</string>
     <string name="chats_add_reaction">Tambahkan Reaksi</string>
+    <string name="object_type_empty_items_title">Di sini kosong.</string>
+    <string name="object_type_empty_items_subtitle">Buat objek pertamamu untuk memulai.</string>
+    <string name="object_type_menu_delete">Delete completely</string>
+    <string name="object_type_objects_menu_open_set">Buka Set</string>
+    <string name="object_type_objects_menu_create_set">Buat Set</string>
+    <string name="object_type_templates_menu_set_default">Atur sebagai bawaan</string>
+    <string name="object_type_templates_menu_edit">Sunting</string>
+    <string name="object_type_templates_menu_duplicate">Gandakan</string>
+    <string name="object_type_templates_menu_delete">Hapus</string>
+    <string name="object_type_fields_section_header">Header</string>
+    <string name="object_type_fields_section_fields_menu">Sidebar</string>
+    <string name="object_type_fields_section_hidden">Hidden</string>
+    <string name="object_type_fields_section_file">Berkas</string>
+    <string name="object_type_fields_section_local_fields">Local fields</string>
+    <string name="object_type_fields_title">Fields</string>
+    <string name="object_type_fields_info_text">You editing type</string>
+    <string name="object_type_fields_edit_field">Edit field</string>
+    <string name="object_type_fields_new_field">New field</string>
+    <string name="object_type_fields_preview_field">Preview field</string>
+    <string name="object_type_fields_btn_save">Simpan</string>
+    <string name="object_type_fields_menu_delete">Hapus</string>
+    <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
+    <string name="object_type_fields_menu_remove">Hapus</string>
+    <string name="object_type_fields_local_info_title">Local fields</string>
+    <string name="object_type_fields_local_info_description">Some fields are not included in the object type. Please add them if you want to see them in all objects of this type, or remove them.</string>
+    <string name="object_type_fields_local_info_button">Got it</string>
+    <string name="object_type_open_type_error">Error opening current object type</string>
     <string name="day_of_week_monday">Senin</string>
     <string name="day_of_week_tuesday">Selasa</string>
     <string name="day_of_week_wednesday">Rabu</string>
@@ -1589,8 +1621,10 @@ Please provide specific details of your needs here.</string>
     <string name="chat_message_reactions_no_reactions_yet">Belum ada reaksi</string>
     <string name="chat_message_reactions_no_reactions_message">Mungkin seseorang menghapus reaksinya atau ada masalah teknis</string>
     <string name="object_types_human">Manusia</string>
+    <string name="object_type_settings_item_remove">Delete completely</string>
     <string name="chats_alert_delete_this_message_description">Pesan tak dapat dikembalikan lagi</string>
     <string name="chats_alert_delete_this_message">Hapus pesan ini?</string>
+    <string name="object_set_of_title">Set of</string>
     <string name="migration_migration_is_in_progress">Migrasi sedang berlangsung</string>
     <string name="migration_this_shouldn_t_take_long">Ini mungkin perlu beberapa waktu. Mohon tidak menutup aplikasi hingga proses selesai.</string>
     <string name="migration_error_try_again">Coba lagi</string>
@@ -1618,4 +1652,6 @@ Please provide specific details of your needs here.</string>
     <string name="field_file_and_media_title">Berkas &amp; Media</string>
     <string name="field_file_and_media_empty">Tambah</string>
     <string name="field_checkbox_title">Pilih</string>
+    <string name="field_menu_add_to_type">Add to the current type</string>
+    <string name="field_menu_remove_from_object">Remove from the object</string>
 </resources>

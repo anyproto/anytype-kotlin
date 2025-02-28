@@ -70,10 +70,10 @@ fun ColumnScope.BubbleAttachments(
                     CircularProgressIndicator(
                         modifier = Modifier
                             .align(alignment = Alignment.Center)
-                            .size(64.dp),
+                            .size(48.dp),
                         color = colorResource(R.color.glyph_active),
                         trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
-                        strokeWidth = 8.dp
+                        strokeWidth = 4.dp
                     )
                     GlideImage(
                         model = attachment.url,

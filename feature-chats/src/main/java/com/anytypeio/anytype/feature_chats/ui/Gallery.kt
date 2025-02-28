@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.feature_chats.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -12,27 +10,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 
 @Composable
-fun DynamicImageGallery(imageCount: Int) {
-    val colors = listOf(
-        Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Cyan,
-        Color.Magenta, Color.Gray, Color.LightGray, Color.DarkGray, Color.Black
-    )
-
+fun DynamicImageGallery(imageUrls: List<String>) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp) // 4dp padding between rows
     ) {
-        val images = (0 until imageCount.coerceIn(2, 10)).toList() // Limit to 2-10 images
-        val rowConfig = getRowConfiguration(imageCount)
+        val rowConfig = getRowConfiguration(imageUrls.size)
 
         var index = 0
         rowConfig.forEach { rowSize ->
-            RowLayout(images.slice(index until index + rowSize), colors)
+            RowLayout(imageUrls.slice(index until index + rowSize))
             index += rowSize
         }
     }
@@ -53,76 +47,23 @@ fun getRowConfiguration(imageCount: Int): List<Int> {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun RowLayout(images: List<Int>, colors: List<Color>) {
+fun RowLayout(imageUrls: List<String>) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        images.forEach { index ->
-            Box(
+        imageUrls.forEach { url ->
+            GlideImage(
+                model = url,
+                contentDescription = "Gallery Image",
                 modifier = Modifier
                     .weight(1f)
-                    .aspectRatio(1f) // Keeps each item square
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(colors[index % colors.size])
+                    .aspectRatio(1f) // Keeps each image square
+                    .clip(RoundedCornerShape(8.dp)), // Rounded corners
+                contentScale = ContentScale.Crop // Crop to fit the image
             )
         }
     }
-}
-
-@DefaultPreviews
-@Composable
-fun GalleryPreview1() {
-    DynamicImageGallery(2)
-}
-
-@DefaultPreviews
-@Composable
-fun GalleryPreview2() {
-    DynamicImageGallery(3)
-}
-
-@DefaultPreviews
-@Composable
-fun GalleryPreview3() {
-    DynamicImageGallery(5)
-}
-
-@DefaultPreviews
-@Composable
-fun GalleryPreview4() {
-    DynamicImageGallery(6)
-}
-
-@DefaultPreviews
-@Composable
-fun GalleryPreview5() {
-    DynamicImageGallery(7)
-}
-
-@DefaultPreviews
-@Composable
-fun GalleryPreview6() {
-    DynamicImageGallery(8)
-}
-
-
-@DefaultPreviews
-@Composable
-fun GalleryPreview7() {
-    DynamicImageGallery(9)
-}
-
-
-@DefaultPreviews
-@Composable
-fun GalleryPreview8() {
-    DynamicImageGallery(10)
-}
-
-@DefaultPreviews
-@Composable
-fun GalleryPreview9() {
-    DynamicImageGallery(4)
 }

@@ -1654,4 +1654,22 @@ Please provide specific details of your needs here.</string>
     <string name="field_checkbox_title">Pilih</string>
     <string name="field_menu_add_to_type">Add to the current type</string>
     <string name="field_menu_remove_from_object">Remove from the object</string>
+    <string name="space_settings_space_name_hint">Nama</string>
+    <string name="space_settings_space_description_hint">Deskripsi</string>
+    <string name="space_settings_section_collaboration">Kolaborasi</string>
+    <string name="space_settings_section_content_model">Content Model</string>
+    <string name="space_settings_section_preferences">Preferensi</string>
+    <string name="space_settings_section_data_management">Manajemen Data</string>
+    <string name="space_settings_section_misc">Lain-Lain</string>
+    <string name="space_settings_invite">Undang</string>
+    <string name="space_settings_qrcode">Kode QR</string>
+    <string name="space_settings_members_button_members">Anggota</string>
+    <string name="space_settings_types_button">Object Types</string>
+    <string name="space_settings_default_type_button">Default Object Type</string>
+    <string name="space_settings_wallpaper_button">Latar belakang</string>
+    <string name="space_settings_storage_button">Remote Storage</string>
+    <string name="space_settings_space_info_button">Space Information</string>
+    <string name="space_settings_delete_space_button">Delete Space</string>
+    <string name="space_settings_icon_title">Sunting gambar</string>
+    <string name="space_settings_save_button">Simpan</string>
 </resources>

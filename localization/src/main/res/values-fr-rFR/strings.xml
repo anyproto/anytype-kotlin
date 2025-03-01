@@ -1664,4 +1664,22 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="field_checkbox_title">Sélectionner</string>
     <string name="field_menu_add_to_type">Ajouter au type actuel</string>
     <string name="field_menu_remove_from_object">Retirer de l’objet</string>
+    <string name="space_settings_space_name_hint">Nom</string>
+    <string name="space_settings_space_description_hint">Description</string>
+    <string name="space_settings_section_collaboration">Collaboration</string>
+    <string name="space_settings_section_content_model">Modèle de contenu</string>
+    <string name="space_settings_section_preferences">Préférences</string>
+    <string name="space_settings_section_data_management">Gestion de données</string>
+    <string name="space_settings_section_misc">Divers</string>
+    <string name="space_settings_invite">Inviter</string>
+    <string name="space_settings_qrcode">Code QR</string>
+    <string name="space_settings_members_button_members">Membres</string>
+    <string name="space_settings_types_button">Types d\'objets</string>
+    <string name="space_settings_default_type_button">Default Object Type</string>
+    <string name="space_settings_wallpaper_button">Fond d\'écran</string>
+    <string name="space_settings_storage_button">Remote Storage</string>
+    <string name="space_settings_space_info_button">Space Information</string>
+    <string name="space_settings_delete_space_button">Delete Space</string>
+    <string name="space_settings_icon_title">Modifier l\'image</string>
+    <string name="space_settings_save_button">Sauvegarder</string>
 </resources>

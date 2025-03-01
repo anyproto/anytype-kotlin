@@ -1696,4 +1696,22 @@
     <string name="field_checkbox_title">Выбрать</string>
     <string name="field_menu_add_to_type">Add to the current type</string>
     <string name="field_menu_remove_from_object">Remove from the object</string>
+    <string name="space_settings_space_name_hint">Название</string>
+    <string name="space_settings_space_description_hint">Описание</string>
+    <string name="space_settings_section_collaboration">Совместная работа</string>
+    <string name="space_settings_section_content_model">Content Model</string>
+    <string name="space_settings_section_preferences">Настройки</string>
+    <string name="space_settings_section_data_management">Управление данными</string>
+    <string name="space_settings_section_misc">Прочее</string>
+    <string name="space_settings_invite">Пригласить</string>
+    <string name="space_settings_qrcode">QR-код</string>
+    <string name="space_settings_members_button_members">Участники</string>
+    <string name="space_settings_types_button">Object Types</string>
+    <string name="space_settings_default_type_button">Default Object Type</string>
+    <string name="space_settings_wallpaper_button">Обои</string>
+    <string name="space_settings_storage_button">Remote Storage</string>
+    <string name="space_settings_space_info_button">Space Information</string>
+    <string name="space_settings_delete_space_button">Delete Space</string>
+    <string name="space_settings_icon_title">Редактировать фотографию</string>
+    <string name="space_settings_save_button">Сохранить</string>
 </resources>

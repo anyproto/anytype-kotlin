@@ -1667,4 +1667,22 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="field_checkbox_title">Seç</string>
     <string name="field_menu_add_to_type">Geçerli türe ekle</string>
     <string name="field_menu_remove_from_object">Nesneden sil</string>
+    <string name="space_settings_space_name_hint">İsim</string>
+    <string name="space_settings_space_description_hint">Açıklama</string>
+    <string name="space_settings_section_collaboration">İş Birliği</string>
+    <string name="space_settings_section_content_model">İçerik Modeli</string>
+    <string name="space_settings_section_preferences">Tercihler</string>
+    <string name="space_settings_section_data_management">Veri Yönetimi</string>
+    <string name="space_settings_section_misc">Diğer</string>
+    <string name="space_settings_invite">Davet et</string>
+    <string name="space_settings_qrcode">Karekod</string>
+    <string name="space_settings_members_button_members">Üyeler</string>
+    <string name="space_settings_types_button">Nesne Türleri</string>
+    <string name="space_settings_default_type_button">Default Object Type</string>
+    <string name="space_settings_wallpaper_button">Duvar kağıdı</string>
+    <string name="space_settings_storage_button">Remote Storage</string>
+    <string name="space_settings_space_info_button">Space Information</string>
+    <string name="space_settings_delete_space_button">Delete Space</string>
+    <string name="space_settings_icon_title">Resmi düzenle</string>
+    <string name="space_settings_save_button">Kaydet</string>
 </resources>

@@ -1675,11 +1675,11 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="space_settings_qrcode">Code QR</string>
     <string name="space_settings_members_button_members">Membres</string>
     <string name="space_settings_types_button">Types d\'objets</string>
-    <string name="space_settings_default_type_button">Default Object Type</string>
+    <string name="space_settings_default_type_button">Type d\'objet par défaut</string>
     <string name="space_settings_wallpaper_button">Fond d\'écran</string>
-    <string name="space_settings_storage_button">Remote Storage</string>
-    <string name="space_settings_space_info_button">Space Information</string>
-    <string name="space_settings_delete_space_button">Delete Space</string>
+    <string name="space_settings_storage_button">Stockage à distance</string>
+    <string name="space_settings_space_info_button">Informations sur l\'espace</string>
+    <string name="space_settings_delete_space_button">Supprimer l\'espace</string>
     <string name="space_settings_icon_title">Modifier l\'image</string>
     <string name="space_settings_save_button">Sauvegarder</string>
 </resources>

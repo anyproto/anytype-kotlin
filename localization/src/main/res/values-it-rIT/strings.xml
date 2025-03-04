@@ -1597,7 +1597,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_templates_menu_delete">Elimina</string>
     <string name="object_type_fields_section_header">Intestazione</string>
     <string name="object_type_fields_section_fields_menu">Sidebar</string>
-    <string name="object_type_fields_section_hidden">Hidden</string>
+    <string name="object_type_fields_section_hidden">Nascosto</string>
     <string name="object_type_fields_section_file">File</string>
     <string name="object_type_fields_section_local_fields">Campi locali</string>
     <string name="object_type_fields_title">Campi</string>

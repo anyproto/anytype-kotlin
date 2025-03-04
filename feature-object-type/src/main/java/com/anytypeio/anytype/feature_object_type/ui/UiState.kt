@@ -34,7 +34,7 @@ sealed class ObjectTypeCommand {
 
     data object OpenFieldsScreen : ObjectTypeCommand()
 
-    data class OpenAddFieldScreen(val typeId: Id, val space: Id, val isSet: Boolean = false) : ObjectTypeCommand()
+    data class OpenAddPropertyScreen(val typeId: Id, val space: Id) : ObjectTypeCommand()
 }
 
 //region OBJECT TYPE HEADER (title + icon)

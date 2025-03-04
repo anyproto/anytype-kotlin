@@ -41,7 +41,6 @@ import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
-import com.anytypeio.anytype.ui.relations.RelationAddToObjectFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
 import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_PICK_EMOJI
@@ -56,7 +55,6 @@ import timber.log.Timber
 class ObjectTypeFragment : BaseComposeFragment() {
     @Inject
     lateinit var factory: ObjectTypeVMFactory
-
     private val vm by viewModels<ObjectTypeViewModel> { factory }
     private lateinit var navComposeController: NavHostController
 
@@ -122,12 +120,18 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     navComposeController.navigate(OBJ_TYPE_FIELDS)
                 }
 
-                is ObjectTypeCommand.OpenAddFieldScreen -> {
-                    RelationAddToObjectFragment.new(
-                        ctx = command.typeId,
-                        space = command.space,
-                        isSetOrCollection = command.isSet
-                    ).showChildFragment()
+                is ObjectTypeCommand.OpenAddPropertyScreen -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.addPropertyScreen,
+                            AddPropertyFragment.args(
+                                objectId = command.typeId,
+                                space = command.space
+                            )
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening add property screen")
+                    }
                 }
             }
         }
@@ -182,7 +186,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiFieldEditOrNewState = vm.uiFieldEditOrNewState.collectAsStateWithLifecycle().value,
                     uiFieldLocalInfoState = vm.uiFieldLocalInfoState.collectAsStateWithLifecycle().value,
-                    uiAddFieldsScreenState = vm.uiAddFieldsState.collectAsStateWithLifecycle().value,
                     fieldEvent = vm::onFieldEvent
                 )
             }

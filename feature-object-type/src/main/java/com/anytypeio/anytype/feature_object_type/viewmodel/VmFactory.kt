@@ -16,7 +16,6 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
-import com.anytypeio.anytype.domain.primitives.SetObjectTypeHeaderRecommendedFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
@@ -46,7 +45,7 @@ class ObjectTypeVMFactory @Inject constructor(
     private val duplicateObjects: DuplicateObjects,
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
     private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
-    private val objectTypeSetHeaderRecommendedFields: SetObjectTypeHeaderRecommendedFields
+    private val objectTypeStore: ObjectTypeStore
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -72,6 +71,6 @@ class ObjectTypeVMFactory @Inject constructor(
             duplicateObjects = duplicateObjects,
             getObjectTypeConflictingFields = getObjectTypeConflictingFields,
             objectTypeSetRecommendedFields = objectTypeSetRecommendedFields,
-            objectTypeSetHeaderRecommendedFields = objectTypeSetHeaderRecommendedFields
+            objectTypeStore = objectTypeStore
         ) as T
 }

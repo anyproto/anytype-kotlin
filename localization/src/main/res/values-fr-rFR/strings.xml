@@ -43,7 +43,7 @@
     <string name="space">Espace</string>
     <string name="space_name">Nom de l\'espace</string>
     <string name="default_space">Espace d\'entrée</string>
-    <string name="space_settings_apply_random_gradient">Appliquer une couleur solide aléatoire</string>
+    <string name="space_settings_apply_random_gradient">Appliquer une couleur unie aléatoire</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="profile_settings_apply_upload_image">Upload image</string>
     <string name="remove_image">Supprimer l’image</string>
@@ -160,7 +160,7 @@
     <string name="hint_profile_title">Nom Surnom</string>
     <string name="hint_header_one">Titre</string>
     <string name="hint_quote">Citation</string>
-    <string name="hint_header_two">Titre</string>
+    <string name="hint_header_two">En tête</string>
     <string name="hint_header_three">Sous-titre</string>
     <string name="hint_checkbox">Case à cocher</string>
     <string name="hint_upload_video">Importer une vidéo</string>
@@ -168,8 +168,8 @@
     <string name="hint_upload_file">Importer un fichier</string>
     <string name="hint_upload_audio">Envoyer un fichier audio</string>
     <string name="hint_add_a_web_bookmark">Ajouter un signet</string>
-    <string name="hint_bullet">Élément de liste à puces</string>
-    <string name="hint_numbered_list">Élément de liste numérotée</string>
+    <string name="hint_bullet">Item de liste à puces</string>
+    <string name="hint_numbered_list">Item de liste numérotée</string>
     <string name="hint_toggle">Bloc dépliable</string>
     <string name="hint_paste_link">Coller le lien</string>
     <string name="empty_tap_to_create_new_block">Vide. Appuyer pour créer un nouveau bloc</string>
@@ -337,7 +337,7 @@
     <string name="callout">Encadré</string>
     <string name="highlight">Surligner</string>
     <string name="title">Titre</string>
-    <string name="heading">Titre</string>
+    <string name="heading">En tête</string>
     <string name="subheading">Sous-titre</string>
     <string name="create_from_scratch">Créer à partir de zéro</string>
     <string name="create_relation_with_name">Créer une relation %1$s\"</string>
@@ -843,7 +843,7 @@
     <string name="space_type_shared_space">Espace partagé</string>
     <string name="space_type_unknown">Type inconnu</string>
     <string name="create_space_start_with">Start with</string>
-    <string name="create_object_section_lists">Groupes</string>
+    <string name="create_object_section_lists">Listes</string>
     <string name="create_object_section_objects">Objets</string>
     <string name="edit">Éditer</string>
     <string name="unselect_all">Tout désélectionner</string>
@@ -869,13 +869,13 @@
     <string name="slash_widget_main_color">Couleur </string>
     <string name="slash_widget_main_background">Arrière-plan</string>
     <string name="slash_widget_style_text">Texte</string>
-    <string name="slash_widget_style_text_subtitle">Commencez à écrire du texte</string>
+    <string name="slash_widget_style_text_subtitle">Commencez simplement à écrire en texte brut </string>
     <string name="slash_widget_style_title">Titre</string>
-    <string name="slash_widget_style_title_subtitle">Titre de grande section</string>
-    <string name="slash_widget_style_heading">Titre</string>
-    <string name="slash_widget_style_heading_subtitle">Commencez à écrire du texte</string>
+    <string name="slash_widget_style_title_subtitle">Grand titre de section</string>
+    <string name="slash_widget_style_heading">En tête</string>
+    <string name="slash_widget_style_heading_subtitle">Commencez simplement à écrire en texte brut </string>
     <string name="slash_widget_style_subheading">Sous-titre</string>
-    <string name="slash_widget_style_subheading_subtitle">Commencez à écrire du texte</string>
+    <string name="slash_widget_style_subheading_subtitle">Commencez simplement à écrire en texte brut </string>
     <string name="slash_widget_style_highlighted">Surligné</string>
     <string name="slash_widget_style_highlighted_subtitle">Small section heading</string>
     <string name="slash_widget_style_callout">Encadré</string>
@@ -883,7 +883,7 @@
     <string name="slash_widget_style_checkbox">Case à cocher</string>
     <string name="slash_widget_style_checkbox_subtitle">Create and track task with to-do lsit</string>
     <string name="slash_widget_style_bulleted">À puces</string>
-    <string name="slash_widget_style_bulleted_subtitle">Commencez à écrire du texte</string>
+    <string name="slash_widget_style_bulleted_subtitle">Commencez simplement à écrire en texte brut </string>
     <string name="slash_widget_style_numbered">Liste numérotée</string>
     <string name="slash_widget_style_numbered_subtitle">List with numbering</string>
     <string name="slash_widget_style_toggle">Bascule</string>
@@ -1520,7 +1520,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="all_content_title_only_unlinked_description">Objets non liés qui n\'ont pas de lien direct ou de lien en retour avec d\'autres objets dans le graphique.</string>
     <string name="all_content_view_bin">Voir la corbeille</string>
     <string name="all_content_title_tab_pages">Pages</string>
-    <string name="all_content_title_tab_lists">Groupes</string>
+    <string name="all_content_title_tab_lists">Listes</string>
     <string name="all_content_title_tab_media">Média</string>
     <string name="all_content_title_tab_bookmarks">Signets</string>
     <string name="all_content_title_tab_files">Fichiers</string>
@@ -1606,7 +1606,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_fields_menu_add_to_type">Ajouter au type actuel</string>
     <string name="object_type_fields_menu_remove">Supprimer</string>
     <string name="object_type_fields_local_info_title">Champs locaux</string>
-    <string name="object_type_fields_local_info_description">Certains champs ne sont pas inclus dans le type d\'objet. Veuillez les ajouter si vous souhaitez les voir apparaître dans tous les objets de ce type, ou bien les supprimer.</string>
+    <string name="object_type_fields_local_info_description">Certains champs ne sont pas inclus dans le type d\'objet. Veuillez les ajouter si vous souhaitez les voir dans tous les objets de ce type, ou bien supprime-les. </string>
     <string name="object_type_fields_local_info_button">Compris</string>
     <string name="object_type_open_type_error">Erreur d\'ouverture du type d\'objet actuel</string>
     <string name="day_of_week_monday">Lundi</string>

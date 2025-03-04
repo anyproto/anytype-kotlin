@@ -68,7 +68,6 @@ import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.*
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.FieldItemMenu.*
-import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldsScreenState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
@@ -90,7 +89,6 @@ fun FieldsMainScreen(
     uiIconState: UiIconState,
     uiFieldEditOrNewState: UiFieldEditOrNewState,
     uiFieldLocalInfoState: UiLocalsFieldsInfoState,
-    uiAddFieldsScreenState: UiAddFieldsScreenState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
@@ -198,10 +196,7 @@ fun FieldsMainScreen(
                                     item = item,
                                     reorderingState = reorderableLazyColumnState,
                                     fieldEvent = fieldEvent,
-                                    isReorderable = false,
-                                    onAddIconClick = {
-                                        fieldEvent(FieldEvent.Section.OnAddToHeaderIconClick)
-                                    }
+                                    isReorderable = false
                                 )
                             }
                             is Section.Local,
@@ -238,13 +233,6 @@ fun FieldsMainScreen(
         SectionLocalFieldsInfo(
             modifier = Modifier.fillMaxWidth(),
             state = uiFieldLocalInfoState,
-            fieldEvent = fieldEvent
-        )
-    }
-
-    if (uiAddFieldsScreenState is UiAddFieldsScreenState.Visible) {
-        AddFieldScreen(
-            state = uiAddFieldsScreenState,
             fieldEvent = fieldEvent
         )
     }
@@ -758,8 +746,7 @@ fun PreviewTypeFieldsMainScreen() {
         ),
         fieldEvent = {},
         uiFieldEditOrNewState = UiFieldEditOrNewState.Hidden,
-        uiFieldLocalInfoState = UiLocalsFieldsInfoState.Hidden,
-        uiAddFieldsScreenState = UiAddFieldsScreenState.Hidden
+        uiFieldLocalInfoState = UiLocalsFieldsInfoState.Hidden
     )
 }
 

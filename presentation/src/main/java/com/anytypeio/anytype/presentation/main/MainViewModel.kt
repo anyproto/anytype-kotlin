@@ -336,6 +336,7 @@ class MainViewModel(
                     space = deeplink.space,
                     switchSpaceIfObjectFound = true
                 )
+                Timber.d("Deep link to object result: $result")
                 when (result) {
                     is DeepLinkToObjectDelegate.Result.Error -> {
                         val link = deeplink.invite
@@ -349,7 +350,7 @@ class MainViewModel(
                                 )
                             )
                         } else {
-                            toasts.emit("Error: $result")
+                            commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
                         }
                     }
                     is DeepLinkToObjectDelegate.Result.Success -> {

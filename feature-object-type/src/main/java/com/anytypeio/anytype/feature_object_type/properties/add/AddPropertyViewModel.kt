@@ -2,13 +2,18 @@ package com.anytypeio.anytype.feature_object_type.properties.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.editor.cover.UnsplashViewModel.Companion.DEBOUNCE_DURATION
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -18,6 +23,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class AddPropertyViewModel(
     private val addPropertyVmParams: AddPropertyVmParams,
@@ -28,6 +34,9 @@ class AddPropertyViewModel(
 
     private val _uiState = MutableStateFlow(UiAddPropertyScreenState.EMPTY)
     val uiState = _uiState.asStateFlow()
+
+    private val _commands = MutableSharedFlow<AddPropertyCommand>()
+    val commands = _commands.asSharedFlow()
 
     private val input = MutableStateFlow("")
 
@@ -142,7 +151,11 @@ class AddPropertyViewModel(
     fun onEvent(event: AddPropertyEvent) {
         when (event) {
             is AddPropertyEvent.OnCreate -> TODO()
-            is AddPropertyEvent.OnExistingClicked -> TODO()
+            is AddPropertyEvent.OnExistingClicked -> {
+                viewModelScope.launch{
+                    _commands.emit(AddPropertyCommand.SetProperty(event.item.id))
+                }
+            }
             is AddPropertyEvent.OnSearchQueryChanged -> {
                 onQueryChanged(event.query)
             }
@@ -151,5 +164,28 @@ class AddPropertyViewModel(
         }
     }
     //endregion
+
+    //region USE Case
+    private fun proceedWithSetRecommendedFields(fields: List<Id>) {
+        val params = SetObjectTypeRecommendedFields.Params(
+            objectTypeId = addPropertyVmParams.objectTypeId,
+            fields = fields
+        )
+        viewModelScope.launch {
+            objectTypeSetRecommendedFields.async(params).fold(
+                onSuccess = {
+                    Timber.d("Recommended fields set")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while setting recommended fields")
+                }
+            )
+        }
+    }
+    //endregion
+
+    sealed class AddPropertyCommand {
+        data class SetProperty(val id: Id) : AddPropertyCommand()
+    }
 }
 

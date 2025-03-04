@@ -96,7 +96,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     }
 
     override fun createObjectDeepLink(obj: Id, space: SpaceId): Url {
-        return "$DEEP_LINK_TO_OBJECT_BASE_URL/$obj?$SPACE_ID_PARAM=$space"
+        return "$DEEP_LINK_TO_OBJECT_BASE_URL/$obj?$SPACE_ID_PARAM=${space.id}"
     }
 
     override fun createObjectDeepLinkWithInvite(

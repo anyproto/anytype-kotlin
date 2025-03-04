@@ -53,6 +53,7 @@ import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProviderImpl
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeStore
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.persistence.repo.DefaultDebugSettingsCache
 import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
@@ -340,6 +341,11 @@ object DataModule {
         context: Context,
         logger: Logger
     ): UriFileProvider = DefaultUriFileProvider(context, logger)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideStore(): ObjectTypeStore = ObjectTypeStore()
 
     @JvmStatic
     @Provides

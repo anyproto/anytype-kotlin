@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
@@ -40,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -69,13 +70,13 @@ fun AddFieldScreen(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection()),
-        containerColor = colorResource(id = R.color.widget_background),
+        containerColor = Color.Transparent,
         topBar = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = colorResource(id = R.color.widget_background),
+                        color = colorResource(id = R.color.background_primary),
                         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -111,7 +112,8 @@ fun AddFieldScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             LazyColumn(
-                modifier = modifier,
+                modifier = modifier
+                    .background(color = colorResource(id = R.color.background_primary),),
                 state = lazyListState
             ) {
                 items(
@@ -154,6 +156,9 @@ fun AddFieldScreen(
                         }
                     }
                 )
+                item {
+                    Spacer(modifier = Modifier.height(100.dp))
+                }
             }
         }
     )

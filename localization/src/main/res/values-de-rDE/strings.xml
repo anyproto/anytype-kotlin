@@ -1587,7 +1587,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chats_add_reaction">Reaktion hinzufügen</string>
     <string name="object_type_empty_items_title">Hier ist es leer.</string>
     <string name="object_type_empty_items_subtitle">Erstelle deine ersten Objekte, um loszulegen.</string>
-    <string name="object_type_menu_delete">Delete completely</string>
+    <string name="object_type_menu_delete">Vollständig löschen</string>
     <string name="object_type_objects_menu_open_set">Set öffnen</string>
     <string name="object_type_objects_menu_create_set">Set erstellen</string>
     <string name="object_type_templates_menu_set_default">Als Standard festlegen</string>
@@ -1595,7 +1595,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_templates_menu_duplicate">Duplizieren</string>
     <string name="object_type_templates_menu_delete">Löschen</string>
     <string name="object_type_fields_section_header">Überschrift</string>
-    <string name="object_type_fields_section_fields_menu">Sidebar</string>
+    <string name="object_type_fields_section_fields_menu">Seitenleiste</string>
     <string name="object_type_fields_section_hidden">Ausgeblendet</string>
     <string name="object_type_fields_section_file">Datei</string>
     <string name="object_type_fields_section_local_fields">Lokale Felder</string>
@@ -1603,15 +1603,15 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_fields_info_text">You editing type</string>
     <string name="object_type_fields_edit_field">Feld bearbeiten</string>
     <string name="object_type_fields_new_field">Neues Feld</string>
-    <string name="object_type_fields_preview_field">Preview field</string>
+    <string name="object_type_fields_preview_field">Vorschaufeld</string>
     <string name="object_type_fields_btn_save">Speichern</string>
     <string name="object_type_fields_menu_delete">Löschen</string>
     <string name="object_type_fields_menu_add_to_type">Zum aktuellen Typ hinzufügen</string>
     <string name="object_type_fields_menu_remove">Entfernen</string>
     <string name="object_type_fields_local_info_title">Lokale Felder</string>
     <string name="object_type_fields_local_info_description">Manche Felder sind in diesem Objekttyp nicht enthalten. Bitte füge sie hinzu, wenn du sie in allen Objekten dieses Typs sehen willst, oder entferne sie.</string>
-    <string name="object_type_fields_local_info_button">Got it</string>
-    <string name="object_type_open_type_error">Error opening current object type</string>
+    <string name="object_type_fields_local_info_button">Verstanden</string>
+    <string name="object_type_open_type_error">Fehler beim Öffnen des aktuellen Objekttyps</string>
     <string name="day_of_week_monday">Montag</string>
     <string name="day_of_week_tuesday">Dienstag</string>
     <string name="day_of_week_wednesday">Mittwoch</string>
@@ -1634,7 +1634,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_message_reactions_no_reactions_yet">Noch keine Reaktionen</string>
     <string name="chat_message_reactions_no_reactions_message">Wahrscheinlich hat jemand gerade die Reaktion entfernt oder es ist ein technisches Problem aufgetreten</string>
     <string name="object_types_human">Mensch</string>
-    <string name="object_type_settings_item_remove">Delete completely</string>
+    <string name="object_type_settings_item_remove">Vollständig löschen</string>
     <string name="chats_alert_delete_this_message_description">Sie kann nach der Bestätigung nicht wiederhergestellt werden</string>
     <string name="chats_alert_delete_this_message">Diese Nachricht löschen?</string>
     <string name="object_set_of_title">Set of</string>
@@ -1678,7 +1678,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_qrcode">QR-Code</string>
     <string name="space_settings_members_button_members">Mitglieder</string>
     <string name="space_settings_types_button">Objekttypen</string>
-    <string name="space_settings_default_type_button">Default Object Type</string>
+    <string name="space_settings_default_type_button">Standard-Objekttyp</string>
     <string name="space_settings_wallpaper_button">Hintergrundbild</string>
     <string name="space_settings_storage_button">Remote Storage</string>
     <string name="space_settings_space_info_button">Space Information</string>

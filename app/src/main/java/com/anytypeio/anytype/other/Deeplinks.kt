@@ -11,6 +11,8 @@ const val DEEP_LINK_PATTERN = "anytype://"
 
 const val DEEP_LINK_INVITE_DOMAIN = "invite.any.coop"
 
+const val DEEP_LINK_TO_OBJECT_BASE_URL = "https://object.any.coop"
+
 /**
  * Regex pattern for matching
  */
@@ -28,6 +30,7 @@ const val TYPE_PARAM = "type"
 const val OBJECT_ID_PARAM = "objectId"
 const val SPACE_ID_PARAM = "spaceId"
 const val CONTENT_ID_PARAM = "cid"
+const val INVITE_ID_PARAM = "inviteID"
 const val ENCRYPTION_KEY_PARAM = "key"
 const val SOURCE_PARAM = "source"
 const val TYPE_VALUE_EXPERIENCE = "experience"
@@ -93,7 +96,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     }
 
     override fun createObjectDeepLink(obj: Id, space: SpaceId): Url {
-        return "${DEEP_LINK_PATTERN}${OBJECT_PATH}?${OBJECT_ID_PARAM}=$obj&${SPACE_ID_PARAM}=${space.id}"
+        return "$DEEP_LINK_TO_OBJECT_BASE_URL/$obj?$SPACE_ID_PARAM=$space"
     }
 
     override fun createObjectDeepLinkWithInvite(
@@ -102,7 +105,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         invite: Id,
         encryptionKey: String
     ): Url {
-        return "${DEEP_LINK_PATTERN}${OBJECT_PATH}?${OBJECT_ID_PARAM}=$obj&${SPACE_ID_PARAM}=${space.id}&${DefaultSpaceInviteResolver.CONTENT_ID_KEY}=$invite&${DefaultSpaceInviteResolver.FILE_KEY_KEY}=$encryptionKey"
+        return "${DEEP_LINK_TO_OBJECT_BASE_URL}/$obj?${SPACE_ID_PARAM}=${space.id}&${INVITE_ID_PARAM}=$invite#$encryptionKey"
     }
 
     override fun isDeepLink(link: String): Boolean {
@@ -138,6 +141,7 @@ object DefaultSpaceInviteResolver : SpaceInviteResolver {
     override fun createInviteLink(contentId: String, encryptionKey: String) : String {
         return "https://$DEEP_LINK_INVITE_DOMAIN/$contentId#$encryptionKey"
     }
+
 
     private const val CONTENT_INDEX = 1
     private const val KEY_INDEX = 2

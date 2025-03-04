@@ -3,7 +3,10 @@ package com.anytypeio.anytype.di.feature
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_object_type.properties.add.TypePropertiesProvider
 import com.anytypeio.anytype.feature_object_type.properties.add.TypePropertiesProviderImpl
@@ -40,6 +43,14 @@ interface AddPropertiesComponent {
 
 @Module
 object AddPropertiesModule {
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideTypeSetRecommendedFields(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectTypeRecommendedFields = SetObjectTypeRecommendedFields(repo, dispatchers)
 
     @Provides
     @PerModal

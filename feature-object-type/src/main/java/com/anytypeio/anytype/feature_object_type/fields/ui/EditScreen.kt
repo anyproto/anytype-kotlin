@@ -174,7 +174,7 @@ private fun EditFieldContent(
 }
 
 @Composable
-fun NameTextField(
+private fun NameTextField(
     modifier: Modifier,
     value: String,
     isEditable: Boolean,
@@ -229,7 +229,7 @@ fun NameTextField(
 }
 
 @Composable
-fun FieldTypeSection(
+private fun FieldTypeSection(
     format: RelationFormat,
     isEditable: Boolean,
     onTypeClick: () -> Unit
@@ -280,7 +280,7 @@ fun FieldTypeSection(
 }
 
 @Composable
-fun LimitTypesSection(
+private fun LimitTypesSection(
     objTypes: List<UiFieldObjectItem>,
     isEditable: Boolean,
     onLimitTypesClick: () -> Unit
@@ -346,7 +346,7 @@ fun LimitTypesSection(
 }
 
 @Composable
-fun SectionItem(modifier: Modifier, text: String) {
+private fun SectionItem(modifier: Modifier, text: String) {
     Box(modifier = modifier) {
         Text(
             modifier = Modifier

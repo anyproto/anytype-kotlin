@@ -52,7 +52,7 @@ import javax.inject.Inject
 import kotlin.getValue
 import timber.log.Timber
 
-class ObjectTypeFragment : BaseComposeFragment() {
+class ObjectTypeFragment : BaseComposeFragment(), OnAddPropertyListener {
     @Inject
     lateinit var factory: ObjectTypeVMFactory
     private val vm by viewModels<ObjectTypeViewModel> { factory }
@@ -300,6 +300,10 @@ class ObjectTypeFragment : BaseComposeFragment() {
 
             }
         }
+    }
+
+    override fun onAddProperty(newPropertyId: Id) {
+        Timber.d("New property added: $newPropertyId")
     }
 
     override fun injectDependencies() {

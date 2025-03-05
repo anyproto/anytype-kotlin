@@ -569,7 +569,6 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             is ObjectState.DataView.Collection -> copy(blocks = updatedBlocks)
             is ObjectState.DataView.Set -> copy(blocks = updatedBlocks)
             is ObjectState.DataView.TypeSet -> copy(blocks = updatedBlocks)
-            else -> this
         }
     }
 

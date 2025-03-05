@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_object_type.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -62,8 +63,10 @@ import com.anytypeio.anytype.feature_object_type.ui.UiObjectsHeaderState
 import com.anytypeio.anytype.feature_object_type.ui.UiObjectsSettingsIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesAddIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesHeaderState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesListState
+import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
 import com.anytypeio.anytype.feature_object_type.ui.mapToUiAddFieldListItem
@@ -116,7 +119,7 @@ import timber.log.Timber
  * Models: @see [ObjectViewState]
  */
 class ObjectTypeViewModel(
-    private val vmParams: ObjectTypeVmParams,
+    val vmParams: ObjectTypeVmParams,
     private val analytics: Analytics,
     private val urlBuilder: UrlBuilder,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
@@ -151,9 +154,10 @@ class ObjectTypeViewModel(
     val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Companion.EMPTY)
     val uiIconState = MutableStateFlow<UiIconState>(UiIconState.Companion.EMPTY)
 
-    //layout and fields buttons
+    //layout, fields and templates buttons
     val uiFieldsButtonState = MutableStateFlow<UiFieldsButtonState>(UiFieldsButtonState.Hidden)
     val uiLayoutButtonState = MutableStateFlow<UiLayoutButtonState>(UiLayoutButtonState.Hidden)
+    val uiTemplatesButtonState = MutableStateFlow<UiTemplatesButtonState>(UiTemplatesButtonState.Hidden)
 
     //type layouts
     val uiTypeLayoutsState = MutableStateFlow<UiLayoutTypeState>(Hidden)
@@ -167,6 +171,10 @@ class ObjectTypeViewModel(
     //templates list
     val uiTemplatesListState =
         MutableStateFlow<UiTemplatesListState>(UiTemplatesListState.Companion.EMPTY)
+
+    //templates modal list state
+    val uiTemplatesModalListState =
+        MutableStateFlow<UiTemplatesModalListState>(UiTemplatesModalListState.Hidden.EMPTY)
 
     //objects header
     val uiObjectsHeaderState =
@@ -218,9 +226,7 @@ class ObjectTypeViewModel(
 
     fun onStart() {
         Timber.d("onStart, vmParams: $vmParams")
-        if (vmParams.withSubscriptions) {
-            startSubscriptions()
-        }
+        startSubscriptions()
         viewModelScope.launch {
             sendAnalyticsScreenObjectType(
                 analytics = analytics
@@ -230,9 +236,7 @@ class ObjectTypeViewModel(
 
     fun onStop() {
         Timber.d("onStop")
-        if (vmParams.withSubscriptions) {
-            stopSubscriptions()
-        }
+        stopSubscriptions()
         uiObjectsListState.value = UiObjectsListState.Empty
     }
     //endregion
@@ -309,8 +313,10 @@ class ObjectTypeViewModel(
     }
 
     private fun startSubscriptions() {
-        startObjectsSubscription()
-        startSetSubscription()
+        //Эту подписку можно удалить
+        //startObjectsSubscription()
+        //Эту подписку можно удалить
+        //startSetSubscription()
         startTemplatesSubscription()
     }
 
@@ -318,8 +324,8 @@ class ObjectTypeViewModel(
         viewModelScope.launch {
             storelessSubscriptionContainer.unsubscribe(
                 listOf(
-                    objectsSubId(vmParams.objectId),
-                    setsSubId(vmParams.objectId),
+//                    objectsSubId(vmParams.objectId),
+//                    setsSubId(vmParams.objectId),
                     templatesSubId(vmParams.objectId),
                 )
             )
@@ -588,9 +594,8 @@ class ObjectTypeViewModel(
         templates: List<TemplateView>,
         permissions: ObjectPermissions
     ) {
-        uiTemplatesHeaderState.value = UiTemplatesHeaderState.Visible(count = "${templates.size}")
+        uiTemplatesButtonState.value = UiTemplatesButtonState.Visible(count = templates.size)
 
-        // Update each template view regarding default selection.
         val updatedTemplates = templates.map { template ->
             when (template) {
                 is TemplateView.Blank -> template
@@ -600,21 +605,17 @@ class ObjectTypeViewModel(
                 )
             }
         }
+        val currentValue = uiTemplatesModalListState.value
+        uiTemplatesModalListState.value = when (currentValue) {
+            is UiTemplatesModalListState.Hidden -> currentValue.copy(
+                items = updatedTemplates,
+            )
 
-        // Build final list with an extra "new template" item if allowed.
-        val finalTemplates = buildList<TemplateView> {
-            addAll(updatedTemplates)
-            if (permissions.participantCanEdit) {
-                add(
-                    TemplateView.New(
-                        targetTypeId = TypeId(objType.id),
-                        targetTypeKey = TypeKey(objType.uniqueKey)
-                    )
-                )
-                uiTemplatesAddIconState.value = UiTemplatesAddIconState.Visible
-            }
+            is UiTemplatesModalListState.Visible -> currentValue.copy(
+                items = updatedTemplates,
+                showAddIcon = permissions.participantCanEdit
+            )
         }
-        uiTemplatesListState.value = UiTemplatesListState(items = finalTemplates)
     }
 
     fun hideError() {
@@ -734,6 +735,22 @@ class ObjectTypeViewModel(
             }
 
             is TypeEvent.OnTemplateMenuClick -> proceedWithTemplateMenuClick(event)
+
+            TypeEvent.OnTemplatesModalListDismiss -> {
+                uiTemplatesModalListState.value = UiTemplatesModalListState.Hidden(
+                    items = uiTemplatesModalListState.value.items
+                )
+            }
+
+            TypeEvent.OnTemplatesButtonClick -> {
+                viewModelScope.launch {
+                    val currentState = uiTemplatesModalListState.value
+                    uiTemplatesModalListState.value = UiTemplatesModalListState.Visible(
+                        items = currentState.items,
+                        showAddIcon = _objectTypePermissionsState.value?.canCreateTemplatesForThisType == true
+                    )
+                }
+            }
         }
     }
 

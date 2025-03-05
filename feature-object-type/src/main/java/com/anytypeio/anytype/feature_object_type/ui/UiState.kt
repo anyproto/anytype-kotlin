@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 data class ObjectTypeVmParams(
     val objectId: Id,
     val spaceId: SpaceId,
+    val showWithSet: Boolean,
     val withSubscriptions: Boolean,
     val showHiddenFields: Boolean
 )
@@ -34,7 +35,8 @@ sealed class ObjectTypeCommand {
 
     data object OpenFieldsScreen : ObjectTypeCommand()
 
-    data class OpenAddFieldScreen(val typeId: Id, val space: Id, val isSet: Boolean = false) : ObjectTypeCommand()
+    data class OpenAddFieldScreen(val typeId: Id, val space: Id, val isSet: Boolean = false) :
+        ObjectTypeCommand()
 }
 
 //region OBJECT TYPE HEADER (title + icon)
@@ -70,6 +72,11 @@ sealed class UiFieldsButtonState {
     data object Hidden : UiFieldsButtonState()
     data class Visible(val count: Int) : UiFieldsButtonState()
 
+}
+
+sealed class UiTemplatesButtonState {
+    data object Hidden : UiTemplatesButtonState()
+    data class Visible(val count: Int) : UiTemplatesButtonState()
 }
 
 //region MENU
@@ -153,6 +160,24 @@ data class UiTemplatesListState(
     companion object {
         val EMPTY = UiTemplatesListState(items = emptyList())
     }
+}
+
+sealed class UiTemplatesModalListState {
+    abstract val items: List<TemplateView>
+
+    data class Hidden(
+        override val items: List<TemplateView>,
+    ) : UiTemplatesModalListState() {
+        companion object {
+            val EMPTY = Hidden(items = emptyList())
+        }
+    }
+
+    data class Visible(
+        override val items: List<TemplateView>,
+        val showAddIcon: Boolean
+    ) :
+        UiTemplatesModalListState()
 }
 //endregion
 

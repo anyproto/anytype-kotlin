@@ -10,8 +10,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
-import com.anytypeio.anytype.core_models.primitives.TypeId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -54,8 +52,6 @@ import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState.*
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesAddIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
-import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesHeaderState
-import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
@@ -142,12 +138,6 @@ class ObjectTypeViewModel(
 
     //type layouts
     val uiTypeLayoutsState = MutableStateFlow<UiLayoutTypeState>(Hidden)
-
-    //templates header
-    val uiTemplatesHeaderState =
-        MutableStateFlow<UiTemplatesHeaderState>(UiTemplatesHeaderState.Hidden)
-    val uiTemplatesAddIconState =
-        MutableStateFlow<UiTemplatesAddIconState>(UiTemplatesAddIconState.Hidden)
 
     //templates modal list state
     val uiTemplatesModalListState =
@@ -334,10 +324,6 @@ class ObjectTypeViewModel(
         _objTypeState.value = objType
         _objectTypePermissionsState.value = objectPermissions
 
-        if (!objectPermissions.canCreateTemplatesForThisType) {
-            uiTemplatesHeaderState.value = UiTemplatesHeaderState.Hidden
-            uiTemplatesAddIconState.value = UiTemplatesAddIconState.Hidden
-        }
         uiTitleState.value = UiTitleState(
             title = objType.name.orEmpty(),
             isEditable = objectPermissions.canEditDetails

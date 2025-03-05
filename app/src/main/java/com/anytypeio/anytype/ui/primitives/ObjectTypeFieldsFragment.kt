@@ -71,7 +71,6 @@ class ObjectTypeFieldsFragment : BaseBottomSheetComposeFragment()  {
         val params = ObjectTypeVmParams(
             spaceId = SpaceId(space),
             objectId = typeId,
-            withSubscriptions = false,
             showHiddenFields = true
         )
         componentManager().objectTypeComponent.get(params).inject(this)

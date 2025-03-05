@@ -111,7 +111,6 @@ fun ObjectsHeader(
                                 title = stringResource(R.string.object_type_objects_menu_create_set),
                                 isSelected = false,
                                 modifier = Modifier
-                                    .clickable { onTypeEvent(TypeEvent.OnCreateSetClick) }
                             )
                             Divider(
                                 height = 8.dp,
@@ -126,7 +125,6 @@ fun ObjectsHeader(
                                 title = stringResource(R.string.object_type_objects_menu_open_set),
                                 isSelected = false,
                                 modifier = Modifier
-                                    .clickable { onTypeEvent(TypeEvent.OnOpenSetClick(setId = item.setId)) }
                             )
                             Divider(
                                 height = 8.dp,
@@ -144,7 +142,6 @@ fun ObjectsHeader(
                         types = uiObjectsMenuState.types,
                         sortingExpanded = isSortingExpanded,
                         onSortClick = {
-                            onTypeEvent(TypeEvent.OnSortClick(it))
                         },
                         onChangeSortExpandedState = { isSortingExpanded = it }
                     )
@@ -157,7 +154,6 @@ fun ObjectsHeader(
                         .height(48.dp)
                         .width(32.dp)
                         .noRippleThrottledClickable {
-                            onTypeEvent(TypeEvent.OnCreateObjectIconClick)
                         },
                     contentAlignment = Alignment.CenterEnd
                 ) {

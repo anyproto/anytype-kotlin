@@ -138,6 +138,7 @@ class ObjectTypeViewModel(
     //layout, fields and templates buttons
     val uiFieldsButtonState = MutableStateFlow<UiFieldsButtonState>(UiFieldsButtonState.Hidden)
     val uiLayoutButtonState = MutableStateFlow<UiLayoutButtonState>(UiLayoutButtonState.Hidden)
+    val uiTemplatesButtonState = MutableStateFlow<UiTemplatesButtonState>(UiTemplatesButtonState.Hidden)
 
     //type layouts
     val uiTypeLayoutsState = MutableStateFlow<UiLayoutTypeState>(Hidden)
@@ -147,6 +148,10 @@ class ObjectTypeViewModel(
         MutableStateFlow<UiTemplatesHeaderState>(UiTemplatesHeaderState.Hidden)
     val uiTemplatesAddIconState =
         MutableStateFlow<UiTemplatesAddIconState>(UiTemplatesAddIconState.Hidden)
+
+    //templates modal list state
+    val uiTemplatesModalListState =
+        MutableStateFlow<UiTemplatesModalListState>(UiTemplatesModalListState.Hidden.EMPTY)
 
     //alerts
     val uiAlertState = MutableStateFlow<UiDeleteAlertState>(UiDeleteAlertState.Hidden)
@@ -373,28 +378,23 @@ class ObjectTypeViewModel(
     ) {
         uiTemplatesButtonState.value = UiTemplatesButtonState.Visible(count = templates.size)
 
-        val updatedTemplates = templates.map { template ->
-            when (template) {
-                is TemplateView.Blank -> template
-                is TemplateView.New -> template
-                is TemplateView.Template -> template.copy(
+        val updatedTemplates = templates.mapNotNull { template ->
+            if (template is TemplateView.Template) {
+                template.copy(
                     isDefault = template.id == objType.defaultTemplateId
                 )
+            } else {
+                null
             }
         }
 
-        // Build final list with an extra "new template" item if allowed.
-        val finalTemplates = buildList<TemplateView> {
-            addAll(updatedTemplates)
-            if (permissions.participantCanEdit) {
-                add(
-                    TemplateView.New(
-                        targetTypeId = TypeId(objType.id),
-                        targetTypeKey = TypeKey(objType.uniqueKey)
-                    )
-                )
-                uiTemplatesAddIconState.value = UiTemplatesAddIconState.Visible
-            }
+        val currentValue = uiTemplatesModalListState.value
+        uiTemplatesModalListState.value = when (currentValue) {
+            is UiTemplatesModalListState.Hidden -> currentValue.copy(updatedTemplates)
+            is UiTemplatesModalListState.Visible -> currentValue.copy(
+                updatedTemplates,
+                showAddIcon = permissions.canCreateTemplatesForThisType
+            )
         }
     }
 

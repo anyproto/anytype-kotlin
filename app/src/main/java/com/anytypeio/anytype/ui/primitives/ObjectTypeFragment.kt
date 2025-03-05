@@ -28,13 +28,12 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeMainScreen
-import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
-import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
-import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
-import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainScreen
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
+import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
+import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
@@ -150,22 +149,8 @@ class ObjectTypeFragment : BaseComposeFragment() {
         navComposeController = rememberNavController(bottomSheetNavigator)
         NavHost(
             navController = navComposeController,
-            startDestination = if (vm.vmParams.showWithSet) OBJ_TYPE_WITH_SET else OBJ_TYPE_MAIN
+            startDestination = OBJ_TYPE_WITH_SET
         ) {
-            composable(route = OBJ_TYPE_MAIN) {
-                ObjectTypeMainScreen(
-                    uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
-                    uiSyncStatusState = vm.uiSyncStatusWidgetState.collectAsStateWithLifecycle().value,
-                    uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
-                    uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
-                    uiFieldsButtonState = vm.uiFieldsButtonState.collectAsStateWithLifecycle().value,
-                    uiLayoutButtonState = vm.uiLayoutButtonState.collectAsStateWithLifecycle().value,
-                    uiDeleteAlertState = vm.uiAlertState.collectAsStateWithLifecycle().value,
-                    uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
-                    uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
-                    onTypeEvent = vm::onTypeEvent
-                )
-            }
             composable(route = OBJ_TYPE_WITH_SET) {
                 WithSetScreen(
                     uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
@@ -312,7 +297,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
         val params = ObjectTypeVmParams(
             spaceId = SpaceId(space),
             objectId = objectId,
-            showWithSet = true,
             showHiddenFields = true
         )
         componentManager().objectTypeComponent.get(params).inject(this)
@@ -327,7 +311,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
     }
 
     companion object {
-        private const val OBJ_TYPE_MAIN = "obj_type_main"
         private const val OBJ_TYPE_FIELDS = "obj_fields"
         private const val OBJ_TYPE_WITH_SET = "obj_with_set"
         const val ARG_SPACE = "arg.object.type.space"

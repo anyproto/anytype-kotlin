@@ -23,8 +23,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.compose.AndroidFragment
-import com.anytypeio.anytype.core_ui.lists.objects.UiContentState
-import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListState
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.BottomSyncStatus
@@ -36,15 +34,8 @@ import com.anytypeio.anytype.feature_object_type.ui.UiFieldsButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
-import com.anytypeio.anytype.feature_object_type.ui.UiMenuState
-import com.anytypeio.anytype.feature_object_type.ui.UiObjectsAddIconState
-import com.anytypeio.anytype.feature_object_type.ui.UiObjectsHeaderState
-import com.anytypeio.anytype.feature_object_type.ui.UiObjectsSettingsIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
-import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesAddIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
-import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesHeaderState
-import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.alerts.DeleteAlertScreen
@@ -202,6 +193,4 @@ private fun MainContentSet(
                 View.GONE
         }
     }
-
-
 }

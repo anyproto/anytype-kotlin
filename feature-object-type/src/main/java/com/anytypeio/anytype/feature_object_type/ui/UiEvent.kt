@@ -42,7 +42,4 @@ sealed class TypeEvent {
     data object OnLayoutButtonClick : TypeEvent()
     data object OnFieldsButtonClick : TypeEvent()
     data object OnTemplatesButtonClick : TypeEvent()
-
-    data object OnObjectsSettingsIconClick : TypeEvent()
-
 }

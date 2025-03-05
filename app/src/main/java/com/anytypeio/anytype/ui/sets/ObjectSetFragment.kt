@@ -705,6 +705,57 @@ open class ObjectSetFragment :
                 dataViewInfo.hide()
                 setViewer(viewer = null)
             }
+            is DataViewViewState.TypeSet.Default -> {
+                topToolbarThreeDotsButton.gone()
+                topToolbarStatusContainer.gone()
+                topBackButton.gone()
+                initView.gone()
+                header.gone()
+                dataViewHeader.visible()
+                viewerTitle.isEnabled = true
+                setupNewButtonsForTypeSet(state.isCreateObjectAllowed)
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
+                customizeViewButton.isEnabled = true
+                setCurrentViewerName(state.viewer?.title)
+                setViewer(viewer = state.viewer)
+                dataViewInfo.hide()
+            }
+            is DataViewViewState.TypeSet.NoItems -> {
+                topToolbarThreeDotsButton.gone()
+                topToolbarStatusContainer.gone()
+                topBackButton.gone()
+                initView.gone()
+                header.gone()
+                dataViewHeader.visible()
+                viewerTitle.isEnabled = true
+                setupNewButtonsForTypeSet(state.isCreateObjectAllowed)
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
+                customizeViewButton.isEnabled = true
+                setCurrentViewerName(state.title)
+                dataViewInfo.show(
+                    type = DataViewInfo.TYPE.SET_NO_ITEMS,
+                    isReadOnlyAccess = !state.isCreateObjectAllowed
+                )
+                setViewer(viewer = null)
+            }
+
+            is DataViewViewState.TypeSet.Error -> {
+                topToolbarThreeDotsButton.gone()
+                topToolbarStatusContainer.gone()
+                topBackButton.gone()
+                initView.gone()
+                header.gone()
+                dataViewHeader.visible()
+                setViewer(viewer = null)
+            }
         }
     }
 
@@ -720,6 +771,16 @@ open class ObjectSetFragment :
         if (isCreateObjectAllowed) {
             addNewButton.gone()
             addNewIconButton.visible()
+        } else {
+            addNewButton.gone()
+            addNewIconButton.gone()
+        }
+    }
+
+    private fun setupNewButtonsForTypeSet(isCreateObjectAllowed: Boolean) {
+        if (isCreateObjectAllowed) {
+            addNewButton.visible()
+            addNewIconButton.gone()
         } else {
             addNewButton.gone()
             addNewIconButton.gone()

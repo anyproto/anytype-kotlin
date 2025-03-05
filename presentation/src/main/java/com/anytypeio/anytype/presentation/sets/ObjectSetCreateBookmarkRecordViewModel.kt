@@ -92,6 +92,19 @@ class ObjectSetCreateBookmarkRecordViewModel(
                         ) { isCompleted.value = true }
                     }
                 }
+
+                is ObjectState.DataView.TypeSet -> {
+                    val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+                    val prefilled = viewer.prefillNewObjectDetails(
+                        dateProvider = dateProvider,
+                        storeOfRelations = storeOfRelations,
+                        dataViewRelationLinks = state.dataViewContent.relationLinks
+                    )
+                    createBookmark(
+                        input = input,
+                        details = prefilled
+                    ) { isCompleted.value = true }
+                }
             }
         } else {
             sendToast("Url is invalid.")

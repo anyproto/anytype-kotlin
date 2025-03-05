@@ -62,6 +62,14 @@ class DataViewObjectRelationProvider(
                         }
                     }
                 }
+                is ObjectState.DataView.TypeSet -> {
+                    val objectKeys = state.dataViewContent.relationLinks.map { it.key }
+                    flow {
+                        objectKeys.mapNotNull {
+                            storeOfRelations.getByKey(it)
+                        }
+                    }
+                }
                 else -> emptyFlow()
             }
         }

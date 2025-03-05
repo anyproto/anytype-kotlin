@@ -46,6 +46,7 @@ class DataViewObjectValueProvider(
     ) : Struct = when (state) {
         is ObjectState.DataView.Collection -> state.details.getStruct(target).orEmpty()
         is ObjectState.DataView.Set -> state.details.getStruct(target).orEmpty()
+        is ObjectState.DataView.TypeSet -> state.details.getStruct(target).orEmpty()
         else -> emptyMap()
     }
 }
@@ -81,6 +82,7 @@ class SetOrCollectionObjectValueProvider(
     ) : Struct = when (state) {
         is ObjectState.DataView.Collection -> state.details.getStruct(target).orEmpty()
         is ObjectState.DataView.Set -> state.details.getStruct(target).orEmpty()
+        is ObjectState.DataView.TypeSet -> state.details.getStruct(target).orEmpty()
         else -> emptyMap()
     }
 }

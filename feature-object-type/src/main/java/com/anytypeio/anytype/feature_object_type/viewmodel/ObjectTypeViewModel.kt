@@ -10,8 +10,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
-import com.anytypeio.anytype.core_models.primitives.TypeId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -53,7 +51,8 @@ import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState.*
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesAddIconState
-import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesHeaderState
+import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
+import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
 import com.anytypeio.anytype.feature_object_type.ui.mapToUiAddFieldListItem
@@ -97,7 +96,7 @@ import timber.log.Timber
  * Models: @see [ObjectViewState]
  */
 class ObjectTypeViewModel(
-    private val vmParams: ObjectTypeVmParams,
+    val vmParams: ObjectTypeVmParams,
     private val analytics: Analytics,
     private val urlBuilder: UrlBuilder,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
@@ -132,18 +131,17 @@ class ObjectTypeViewModel(
     val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Companion.EMPTY)
     val uiIconState = MutableStateFlow<UiIconState>(UiIconState.Companion.EMPTY)
 
-    //layout and fields buttons
+    //layout, fields and templates buttons
     val uiFieldsButtonState = MutableStateFlow<UiFieldsButtonState>(UiFieldsButtonState.Hidden)
     val uiLayoutButtonState = MutableStateFlow<UiLayoutButtonState>(UiLayoutButtonState.Hidden)
+    val uiTemplatesButtonState = MutableStateFlow<UiTemplatesButtonState>(UiTemplatesButtonState.Hidden)
 
     //type layouts
     val uiTypeLayoutsState = MutableStateFlow<UiLayoutTypeState>(Hidden)
 
-    //templates header
-    val uiTemplatesHeaderState =
-        MutableStateFlow<UiTemplatesHeaderState>(UiTemplatesHeaderState.Hidden)
-    val uiTemplatesAddIconState =
-        MutableStateFlow<UiTemplatesAddIconState>(UiTemplatesAddIconState.Hidden)
+    //templates modal list state
+    val uiTemplatesModalListState =
+        MutableStateFlow<UiTemplatesModalListState>(UiTemplatesModalListState.Hidden.EMPTY)
 
     //alerts
     val uiAlertState = MutableStateFlow<UiDeleteAlertState>(UiDeleteAlertState.Hidden)
@@ -326,10 +324,6 @@ class ObjectTypeViewModel(
         _objTypeState.value = objType
         _objectTypePermissionsState.value = objectPermissions
 
-        if (!objectPermissions.canCreateTemplatesForThisType) {
-            uiTemplatesHeaderState.value = UiTemplatesHeaderState.Hidden
-            uiTemplatesAddIconState.value = UiTemplatesAddIconState.Hidden
-        }
         uiTitleState.value = UiTitleState(
             title = objType.name.orEmpty(),
             isEditable = objectPermissions.canEditDetails
@@ -368,31 +362,25 @@ class ObjectTypeViewModel(
         templates: List<TemplateView>,
         permissions: ObjectPermissions
     ) {
-        uiTemplatesHeaderState.value = UiTemplatesHeaderState.Visible(count = "${templates.size}")
+        uiTemplatesButtonState.value = UiTemplatesButtonState.Visible(count = templates.size)
 
-        // Update each template view regarding default selection.
-        val updatedTemplates = templates.map { template ->
-            when (template) {
-                is TemplateView.Blank -> template
-                is TemplateView.New -> template
-                is TemplateView.Template -> template.copy(
+        val updatedTemplates = templates.mapNotNull { template ->
+            if (template is TemplateView.Template) {
+                template.copy(
                     isDefault = template.id == objType.defaultTemplateId
                 )
+            } else {
+                null
             }
         }
 
-        // Build final list with an extra "new template" item if allowed.
-        val finalTemplates = buildList<TemplateView> {
-            addAll(updatedTemplates)
-            if (permissions.participantCanEdit) {
-                add(
-                    TemplateView.New(
-                        targetTypeId = TypeId(objType.id),
-                        targetTypeKey = TypeKey(objType.uniqueKey)
-                    )
-                )
-                uiTemplatesAddIconState.value = UiTemplatesAddIconState.Visible
-            }
+        val currentValue = uiTemplatesModalListState.value
+        uiTemplatesModalListState.value = when (currentValue) {
+            is UiTemplatesModalListState.Hidden -> currentValue.copy(updatedTemplates)
+            is UiTemplatesModalListState.Visible -> currentValue.copy(
+                updatedTemplates,
+                showAddIcon = permissions.canCreateTemplatesForThisType
+            )
         }
     }
 
@@ -478,6 +466,22 @@ class ObjectTypeViewModel(
             }
 
             is TypeEvent.OnTemplateMenuClick -> proceedWithTemplateMenuClick(event)
+
+            TypeEvent.OnTemplatesModalListDismiss -> {
+                uiTemplatesModalListState.value = UiTemplatesModalListState.Hidden(
+                    items = uiTemplatesModalListState.value.items
+                )
+            }
+
+            TypeEvent.OnTemplatesButtonClick -> {
+                viewModelScope.launch {
+                    val currentState = uiTemplatesModalListState.value
+                    uiTemplatesModalListState.value = UiTemplatesModalListState.Visible(
+                        items = currentState.items,
+                        showAddIcon = _objectTypePermissionsState.value?.canCreateTemplatesForThisType == true
+                    )
+                }
+            }
         }
     }
 

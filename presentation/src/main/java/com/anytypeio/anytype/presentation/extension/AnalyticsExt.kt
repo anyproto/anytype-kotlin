@@ -1028,6 +1028,10 @@ fun CoroutineScope.logEvent(
         is ObjectState.DataView.Set -> {
             Pair("ot-set", state.viewerByIdOrFirst(currentViewId)?.type?.formattedName)
         }
+
+        is ObjectState.DataView.TypeSet -> {
+            Pair("ot-set", state.viewerByIdOrFirst(currentViewId)?.type?.formattedName)
+        }
     }
     val scope = this
     when (event) {
@@ -1044,6 +1048,18 @@ fun CoroutineScope.logEvent(
                     )
                 )
                 is ObjectState.DataView.Set -> scope.sendEvent(
+                    analytics = analytics,
+                    eventName = setScreenShow,
+                    startTime = startTime,
+                    middleTime = middleTime,
+                    props = buildProps(
+                        embedType = embedTypeDefault,
+                        type = viewerType,
+                        spaceParams = spaceParams
+                    )
+                )
+
+                is ObjectState.DataView.TypeSet -> scope.sendEvent(
                     analytics = analytics,
                     eventName = setScreenShow,
                     startTime = startTime,
@@ -1244,7 +1260,7 @@ fun CoroutineScope.logEvent(
         ObjectStateAnalyticsEvent.OBJECT_CREATE -> {
             val route = when (state) {
                 is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
-                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+                is ObjectState.DataView.Set, is ObjectState.DataView.TypeSet -> EventsDictionary.Routes.objCreateSet
             }
             scope.sendEvent(
                 analytics = analytics,
@@ -1262,7 +1278,7 @@ fun CoroutineScope.logEvent(
         ObjectStateAnalyticsEvent.SELECT_TEMPLATE -> {
             val route = when (state) {
                 is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
-                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+                is ObjectState.DataView.Set, is ObjectState.DataView.TypeSet -> EventsDictionary.Routes.objCreateSet
             }
             scope.sendEvent(
                 analytics = analytics,
@@ -1278,7 +1294,7 @@ fun CoroutineScope.logEvent(
         ObjectStateAnalyticsEvent.SHOW_TEMPLATES -> {
             val route = when (state) {
                 is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
-                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+                is ObjectState.DataView.Set, is ObjectState.DataView.TypeSet -> EventsDictionary.Routes.objCreateSet
             }
             scope.sendEvent(
                 analytics = analytics,
@@ -1294,7 +1310,7 @@ fun CoroutineScope.logEvent(
         ObjectStateAnalyticsEvent.CREATE_TEMPLATE -> {
             val route = when (state) {
                 is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
-                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+                is ObjectState.DataView.Set, is ObjectState.DataView.TypeSet -> EventsDictionary.Routes.objCreateSet
             }
             scope.sendEvent(
                 analytics = analytics,
@@ -1312,7 +1328,7 @@ fun CoroutineScope.logEvent(
         ObjectStateAnalyticsEvent.EDIT_TEMPLATE -> {
             val route = when (state) {
                 is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
-                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+                is ObjectState.DataView.Set, is ObjectState.DataView.TypeSet -> EventsDictionary.Routes.objCreateSet
             }
             scope.sendEvent(
                 analytics = analytics,
@@ -1330,7 +1346,7 @@ fun CoroutineScope.logEvent(
         ObjectStateAnalyticsEvent.DUPLICATE_TEMPLATE -> {
             val route = when (state) {
                 is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
-                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+                is ObjectState.DataView.Set, is ObjectState.DataView.TypeSet -> EventsDictionary.Routes.objCreateSet
             }
             scope.sendEvent(
                 analytics = analytics,
@@ -1348,7 +1364,7 @@ fun CoroutineScope.logEvent(
         ObjectStateAnalyticsEvent.DELETE_TEMPLATE -> {
             val route = when (state) {
                 is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
-                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+                is ObjectState.DataView.Set, is ObjectState.DataView.TypeSet -> EventsDictionary.Routes.objCreateSet
             }
             scope.sendEvent(
                 analytics = analytics,
@@ -1366,7 +1382,7 @@ fun CoroutineScope.logEvent(
         ObjectStateAnalyticsEvent.SET_AS_DEFAULT_TYPE -> {
             val route = when (state) {
                 is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
-                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+                is ObjectState.DataView.Set, is ObjectState.DataView.TypeSet -> EventsDictionary.Routes.objCreateSet
             }
             if (state.isChangingDefaultTypeAvailable()) {
                 scope.sendEvent(
@@ -1386,7 +1402,7 @@ fun CoroutineScope.logEvent(
         ObjectStateAnalyticsEvent.CHANGE_DEFAULT_TEMPLATE -> {
             val route = when (state) {
                 is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
-                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+                is ObjectState.DataView.Set, is ObjectState.DataView.TypeSet -> EventsDictionary.Routes.objCreateSet
             }
             scope.sendEvent(
                 analytics = analytics,

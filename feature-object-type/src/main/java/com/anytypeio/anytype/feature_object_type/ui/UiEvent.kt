@@ -21,6 +21,7 @@ sealed class TypeEvent {
     //endregion
 
     //region Templates
+    data object OnTemplatesModalListDismiss : TypeEvent()
     data object OnTemplatesAddIconClick : TypeEvent()
     data class OnTemplateItemClick(val item: TemplateView) : TypeEvent()
     sealed class OnTemplateMenuClick : TypeEvent() {
@@ -29,6 +30,7 @@ sealed class TypeEvent {
         data class Duplicate(val item: TemplateView) : OnTemplateMenuClick()
         data class Delete(val item: TemplateView) : OnTemplateMenuClick()
     }
+
     //endregion
 
     //region Layout type
@@ -39,4 +41,5 @@ sealed class TypeEvent {
 
     data object OnLayoutButtonClick : TypeEvent()
     data object OnFieldsButtonClick : TypeEvent()
+    data object OnTemplatesButtonClick : TypeEvent()
 }

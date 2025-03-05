@@ -109,7 +109,7 @@ fun TypeLayoutsScreen(
                         modifier = Modifier,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        TemplateItemContent(
+                        LayoutItemContent(
                             modifier = Modifier
                                 .width(120.dp)
                                 .height(224.dp)
@@ -147,7 +147,7 @@ fun TypeLayoutsScreen(
 }
 
 @Composable
-private fun TemplateItemContent(
+private fun LayoutItemContent(
     modifier: Modifier,
     item: ObjectType.Layout
 ) {

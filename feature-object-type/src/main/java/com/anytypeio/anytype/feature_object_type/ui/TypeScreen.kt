@@ -168,7 +168,7 @@ private fun MainContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopBarContent(
+fun TopBarContent(
     uiSyncStatusBadgeState: UiSyncStatusBadgeState,
     uiEditButtonState: UiEditButton,
     uiTitleState: UiTitleState,
@@ -199,7 +199,7 @@ private fun TopBarContent(
 }
 
 @Composable
-private fun BottomSyncStatus(
+fun BottomSyncStatus(
     uiSyncStatusState: SyncStatusWidgetState,
     onDismiss: () -> Unit
 ) {

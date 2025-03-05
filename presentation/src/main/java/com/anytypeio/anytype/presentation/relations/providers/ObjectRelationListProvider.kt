@@ -41,6 +41,10 @@ interface ObjectRelationListProvider {
                 state.details
             }
 
+            is ObjectState.DataView.TypeSet -> {
+                state.details
+            }
+
             else -> ObjectViewDetails.EMPTY
         }
     }

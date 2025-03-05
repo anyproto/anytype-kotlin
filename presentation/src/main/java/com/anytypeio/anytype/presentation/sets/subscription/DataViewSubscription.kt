@@ -40,6 +40,15 @@ interface DataViewSubscription {
         dataViewRelationLinks: List<RelationLink>
     ): Flow<DataViewState>
 
+    suspend fun startObjectTypeSetSubscription(
+        context: Id,
+        space: Id,
+        state: ObjectState.DataView.TypeSet,
+        currentViewerId: Id?,
+        offset: Long,
+        dataViewRelationLinks: List<RelationLink>
+    ): Flow<DataViewState>
+
     suspend fun unsubscribe(ids: List<Id>)
 }
 
@@ -114,6 +123,59 @@ class DefaultDataViewSubscription(
         if (query.isEmpty()) {
             Timber.w(
                 "Data view set subscription: query has no valid types or relations, " +
+                        "proceed without subscription"
+            )
+            return emptyFlow()
+        }
+
+        val filters = buildList {
+            addAll(activeViewer.filters.updateFormatForSubscription(relationLinks = dataViewRelationLinks))
+            addAll(defaultDataViewFilters())
+        }
+        val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
+        val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
+
+        val params = DataViewSubscriptionContainer.Params(
+            space = SpaceId(space),
+            subscription = getDataViewSubscriptionId(context),
+            sorts = activeViewer.sorts.updateWithRelationFormat(relationLinks = dataViewRelationLinks),
+            filters = filters,
+            sources = query,
+            keys = keys,
+            limit = ObjectSetConfig.DEFAULT_LIMIT,
+            offset = offset
+        )
+        return dataViewSubscriptionContainer.observe(params)
+    }
+
+    override suspend fun startObjectTypeSetSubscription(
+        context: Id,
+        space: Id,
+        state: ObjectState.DataView.TypeSet,
+        currentViewerId: Id?,
+        offset: Long,
+        dataViewRelationLinks: List<RelationLink>
+    ): Flow<DataViewState> {
+        if (context.isEmpty()) {
+            Timber.w("Data view TypeSet subscription: context is empty")
+            return emptyFlow()
+        }
+        val activeViewer = state.viewerByIdOrFirst(currentViewerId)
+        if (activeViewer == null) {
+            Timber.w("Data view TypeSet subscription: active viewer is null")
+            return emptyFlow()
+        }
+
+        val setOfValue = state.getSetOfValue(ctx = context)
+        if (setOfValue.isEmpty()) {
+            Timber.w("Data view TypeSet subscription: setOf value is empty, proceed without subscription")
+            return emptyFlow()
+        }
+
+        val query = state.filterOutDeletedAndMissingObjects(setOfValue)
+        if (query.isEmpty()) {
+            Timber.w(
+                "Data view TypeSet subscription: query has no valid types or relations, " +
                         "proceed without subscription"
             )
             return emptyFlow()

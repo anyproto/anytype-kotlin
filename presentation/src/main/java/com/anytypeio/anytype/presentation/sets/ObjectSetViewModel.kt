@@ -479,6 +479,22 @@ class ObjectSetViewModel(
                         }
                     }
 
+                    is ObjectState.DataView.TypeSet -> {
+                        Timber.d("subscribeToObjectState, NEW TYPE SET STATE")
+                        if (query.state.isInitialized) {
+                            dataViewSubscription.startObjectTypeSetSubscription(
+                                space = vmParams.space.id,
+                                context = vmParams.ctx,
+                                state = query.state,
+                                currentViewerId = query.currentViewerId,
+                                offset = query.offset,
+                                dataViewRelationLinks = query.state.dataViewContent.relationLinks
+                            )
+                        } else {
+                            emptyFlow()
+                        }
+                    }
+
                     else -> {
                         Timber.d("subscribeToObjectState, NEW STATE, ${query.state}")
                         emptyFlow()
@@ -584,6 +600,12 @@ class ObjectSetViewModel(
             )
             ObjectState.Init -> DataViewViewState.Init
             ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
+            is ObjectState.DataView.TypeSet -> processTypeSetState(
+                dataViewState = dataViewState,
+                objectState = objectState,
+                currentViewId = currentViewId,
+                permission = permission
+            )
         }
     }
 
@@ -716,6 +738,75 @@ class ObjectSetViewModel(
                             vmParams.ctx, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.Set.Default(
+                            viewer = render,
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType) && (permission?.isOwnerOrEditor() == true),
+                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun processTypeSetState(
+        dataViewState: DataViewState,
+        objectState: ObjectState.DataView.TypeSet,
+        currentViewId: String?,
+        permission: SpaceMemberPermissions?
+    ): DataViewViewState {
+        if (!objectState.isInitialized) return DataViewViewState.Init
+
+        val setOfValue = objectState.getSetOfValue(ctx = vmParams.ctx)
+        val query = objectState.filterOutDeletedAndMissingObjects(query = setOfValue)
+        val viewer = objectState.viewerByIdOrFirst(currentViewId)
+
+        return when (dataViewState) {
+            DataViewState.Init -> {
+                _dvViews.value = emptyList()
+                when {
+                    setOfValue.isEmpty() || query.isEmpty() || viewer == null ->
+                        DataViewViewState.TypeSet.Error(msg = "Error while rendering viewer")
+                    else -> DataViewViewState.Init
+                }
+            }
+            is DataViewState.Loaded -> {
+                _dvViews.value = objectState.dataViewState()?.toViewersView(
+                    ctx = vmParams.ctx,
+                    session = session,
+                    storeOfRelations = storeOfRelations
+                ) ?: emptyList()
+                val relations = objectState.dataViewContent.relationLinks.mapNotNull {
+                    storeOfRelations.getByKey(it.key)
+                }
+                val render = viewer?.render(
+                    coverImageHashProvider = coverImageHashProvider,
+                    builder = urlBuilder,
+                    objects = dataViewState.objects,
+                    dataViewRelations = relations,
+                    store = objectStore,
+                    storeOfRelations = storeOfRelations,
+                    fieldParser = fieldParser
+                )
+
+                when {
+                    render == null || query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.TypeSet.Error(
+                        msg = "Error while rendering viewer",
+                    )
+                    render.isEmpty() -> {
+                        val (defType, _) = objectState.getActiveViewTypeAndTemplate(
+                            vmParams.ctx, viewer, storeOfObjectTypes
+                        )
+                        DataViewViewState.TypeSet.NoItems(
+                            title = render.title,
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType) && (permission?.isOwnerOrEditor() == true),
+                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true
+                        )
+                    }
+                    else -> {
+                        val (defType, _) = objectState.getActiveViewTypeAndTemplate(
+                            vmParams.ctx, viewer, storeOfObjectTypes
+                        )
+                        DataViewViewState.TypeSet.Default(
                             viewer = render,
                             isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType) && (permission?.isOwnerOrEditor() == true),
                             isEditingViewAllowed = permission?.isOwnerOrEditor() == true

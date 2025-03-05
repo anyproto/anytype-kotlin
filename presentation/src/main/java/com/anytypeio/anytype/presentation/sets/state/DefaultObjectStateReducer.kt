@@ -133,6 +133,12 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 details = ObjectViewDetails(event.details),
                 dataViewRestrictions = event.dataViewRestrictions
             )
+            ObjectType.Layout.OBJECT_TYPE.code -> ObjectState.DataView.TypeSet(
+                root = event.root,
+                blocks = event.blocks,
+                details = ObjectViewDetails(event.details),
+                dataViewRestrictions = event.dataViewRestrictions
+            )
             else -> {
                 Timber.e("Wrong layout type: $layout")
                 ObjectState.ErrorLayout
@@ -481,6 +487,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         return when (state) {
             is ObjectState.DataView.Collection -> state.copy(blocks = state.blocks + event.blocks)
             is ObjectState.DataView.Set -> state.copy(blocks = state.blocks + event.blocks)
+            is ObjectState.DataView.TypeSet -> state.copy(blocks = state.blocks + event.blocks)
             ObjectState.Init -> state
             ObjectState.ErrorLayout -> state
         }
@@ -502,6 +509,8 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         return when (this) {
             is ObjectState.DataView.Collection -> copy(blocks = updatedBlocks)
             is ObjectState.DataView.Set -> copy(blocks = updatedBlocks)
+            is ObjectState.DataView.TypeSet -> copy(blocks = updatedBlocks)
+            else -> this
         }
     }
 

@@ -97,6 +97,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         Timber.e(e, "Error while exiting back from object type screen")
                     }
                 }
+
                 ObjectTypeCommand.OpenEmojiPicker -> {
                     runCatching {
                         findNavController().navigate(R.id.openEmojiPicker)
@@ -150,7 +151,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
         navComposeController = rememberNavController(bottomSheetNavigator)
         NavHost(
             navController = navComposeController,
-            startDestination = OBJ_TYPE_MAIN
+            startDestination = if (vm.vmParams.showWithSet) OBJ_TYPE_WITH_SET else OBJ_TYPE_MAIN
         ) {
             composable(route = OBJ_TYPE_MAIN) {
                 ObjectTypeMainScreen(
@@ -172,6 +173,24 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiDeleteAlertState = vm.uiAlertState.collectAsStateWithLifecycle().value,
                     uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
                     uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
+                    onTypeEvent = vm::onTypeEvent
+                )
+            }
+            composable(route = OBJ_TYPE_WITH_SET) {
+                WithSetScreen(
+                    uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
+                    uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
+                    uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
+                    uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
+                    uiFieldsButtonState = vm.uiFieldsButtonState.collectAsStateWithLifecycle().value,
+                    uiLayoutButtonState = vm.uiLayoutButtonState.collectAsStateWithLifecycle().value,
+                    uiTemplatesButtonState = vm.uiTemplatesButtonState.collectAsStateWithLifecycle().value,
+                    uiTemplatesModalListState = vm.uiTemplatesModalListState.collectAsStateWithLifecycle().value,
+                    uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
+                    uiSyncStatusState = vm.uiSyncStatusWidgetState.collectAsStateWithLifecycle().value,
+                    uiDeleteAlertState = vm.uiAlertState.collectAsStateWithLifecycle().value,
+                    objectId = objectId,
+                    space = space,
                     onTypeEvent = vm::onTypeEvent
                 )
             }
@@ -278,6 +297,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         onDismissRequest = vm::closeObject
                     )
                 }
+
                 is UiErrorState.Reason.Other -> {
                     BaseAlertDialog(
                         dialogText = r.msg,
@@ -303,7 +323,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
         val params = ObjectTypeVmParams(
             spaceId = SpaceId(space),
             objectId = objectId,
-            withSubscriptions = true,
+            showWithSet = true,
             showHiddenFields = true
         )
         componentManager().objectTypeComponent.get(params).inject(this)
@@ -320,6 +340,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
     companion object {
         private const val OBJ_TYPE_MAIN = "obj_type_main"
         private const val OBJ_TYPE_FIELDS = "obj_fields"
+        private const val OBJ_TYPE_WITH_SET = "obj_with_set"
         const val ARG_SPACE = "arg.object.type.space"
         const val ARG_OBJECT_ID = "arg.object.type.object_id"
 

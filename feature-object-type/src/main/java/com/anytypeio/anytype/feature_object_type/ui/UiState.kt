@@ -16,7 +16,6 @@ data class ObjectTypeVmParams(
     val objectId: Id,
     val spaceId: SpaceId,
     val showWithSet: Boolean,
-    val withSubscriptions: Boolean,
     val showHiddenFields: Boolean
 )
 

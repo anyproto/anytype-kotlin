@@ -163,6 +163,10 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 target = event.target,
                 blockContentUpdate = updateBlockContent
             )
+            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
+                target = event.target,
+                blockContentUpdate = updateBlockContent
+            )
             else -> state
         }
     }
@@ -187,6 +191,10 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 blockContentUpdate = updateBlockContent
             )
             is ObjectState.DataView.Set -> state.updateBlockContent(
+                target = event.target,
+                blockContentUpdate = updateBlockContent
+            )
+            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
                 target = event.target,
                 blockContentUpdate = updateBlockContent
             )
@@ -217,6 +225,10 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 target = event.dv,
                 blockContentUpdate = updateBlockContent
             )
+            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
+                target = event.dv,
+                blockContentUpdate = updateBlockContent
+            )
             else -> state
         }
     }
@@ -239,6 +251,10 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 blockContentUpdate = updateBlockContent
             )
             is ObjectState.DataView.Set -> state.updateBlockContent(
+                target = event.dv,
+                blockContentUpdate = updateBlockContent
+            )
+            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
                 target = event.dv,
                 blockContentUpdate = updateBlockContent
             )
@@ -267,6 +283,10 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 target = event.dv,
                 blockContentUpdate = updateBlockContent
             )
+            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
+                target = event.dv,
+                blockContentUpdate = updateBlockContent
+            )
             else -> state
         }
     }
@@ -287,6 +307,10 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 blockContentUpdate = updateBlockContent
             )
             is ObjectState.DataView.Set -> state.updateBlockContent(
+                target = event.dv,
+                blockContentUpdate = updateBlockContent
+            )
+            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
                 target = event.dv,
                 blockContentUpdate = updateBlockContent
             )
@@ -366,6 +390,10 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 target = event.block,
                 blockContentUpdate = updateBlockContent
             )
+            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
+                target = event.block,
+                blockContentUpdate = updateBlockContent
+            )
             else -> state
         }
     }
@@ -388,6 +416,15 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 )
             }
             is ObjectState.DataView.Set -> {
+                state.copy(
+                    details = ObjectViewDetails(
+                        details = state.details.details.toMutableMap().apply {
+                            put(event.target, event.details)
+                        }
+                    )
+                )
+            }
+            is ObjectState.DataView.TypeSet -> {
                 state.copy(
                     details = ObjectViewDetails(
                         details = state.details.details.toMutableMap().apply {
@@ -424,6 +461,14 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                     )
                 )
             )
+            is ObjectState.DataView.TypeSet -> state.copy(
+                details = state.details.copy(
+                    details = state.details.details.amend(
+                        target = event.target,
+                        slice = event.details
+                    )
+                )
+            )
             else -> state
         }
     }
@@ -452,6 +497,14 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                     )
                 )
             )
+            is ObjectState.DataView.TypeSet -> state.copy(
+                details = state.details.copy(
+                    details = state.details.details.unset(
+                        target = event.target,
+                        keys = event.keys
+                    )
+                )
+            )
             else -> state
         }
     }
@@ -471,6 +524,12 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 )
             )
             is ObjectState.DataView.Set -> state.copy(
+                blocks = state.blocks.replace(
+                    replacement = { target -> target.copy(children = event.children) },
+                    target = { block -> block.id == event.id }
+                )
+            )
+            is ObjectState.DataView.TypeSet -> state.copy(
                 blocks = state.blocks.replace(
                     replacement = { target -> target.copy(children = event.children) },
                     target = { block -> block.id == event.id }

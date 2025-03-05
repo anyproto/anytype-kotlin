@@ -87,6 +87,7 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMI
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.sets.ObjectSetCommand.Modal.*
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -1106,7 +1107,7 @@ class ObjectSetViewModel(
     }
 
     // TODO Multispaces refactor this method
-    private suspend fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set, templateChosenBy: Id?) {
+    private suspend fun proceedWithCreatingSetObject(currentState: ObjectState.DataView, templateChosenBy: Id?) {
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
         } else {
@@ -1777,6 +1778,10 @@ class ObjectSetViewModel(
                                 } else {
                                     dispatch(ObjectSetCommand.ShowOnlyAccessError)
                                 }
+                            }
+
+                            is ObjectState.DataView.TypeSet -> {
+                                //do nothing
                             }
                         }
                     }
@@ -2773,6 +2778,13 @@ class ObjectSetViewModel(
                     )
                 }
                 is ObjectState.DataView.Set -> {
+                    proceedWithCreatingSetObject(
+                        currentState = state,
+                        templateChosenBy = templateId
+                    )
+                }
+
+                is ObjectState.DataView.TypeSet -> {
                     proceedWithCreatingSetObject(
                         currentState = state,
                         templateChosenBy = templateId

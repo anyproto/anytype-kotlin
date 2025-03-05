@@ -708,11 +708,12 @@ open class ObjectSetFragment :
             is DataViewViewState.TypeSet.Default -> {
                 topToolbarThreeDotsButton.gone()
                 topToolbarStatusContainer.gone()
+                topBackButton.gone()
                 initView.gone()
                 header.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isCreateObjectAllowed)
+                setupNewButtonsForTypeSet(state.isCreateObjectAllowed)
                 if (state.isEditingViewAllowed) {
                     customizeViewButton.visible()
                 } else {
@@ -726,11 +727,12 @@ open class ObjectSetFragment :
             is DataViewViewState.TypeSet.NoItems -> {
                 topToolbarThreeDotsButton.gone()
                 topToolbarStatusContainer.gone()
+                topBackButton.gone()
                 initView.gone()
                 header.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isCreateObjectAllowed)
+                setupNewButtonsForTypeSet(state.isCreateObjectAllowed)
                 if (state.isEditingViewAllowed) {
                     customizeViewButton.visible()
                 } else {
@@ -748,6 +750,7 @@ open class ObjectSetFragment :
             is DataViewViewState.TypeSet.Error -> {
                 topToolbarThreeDotsButton.gone()
                 topToolbarStatusContainer.gone()
+                topBackButton.gone()
                 initView.gone()
                 header.gone()
                 dataViewHeader.visible()
@@ -768,6 +771,16 @@ open class ObjectSetFragment :
         if (isCreateObjectAllowed) {
             addNewButton.gone()
             addNewIconButton.visible()
+        } else {
+            addNewButton.gone()
+            addNewIconButton.gone()
+        }
+    }
+
+    private fun setupNewButtonsForTypeSet(isCreateObjectAllowed: Boolean) {
+        if (isCreateObjectAllowed) {
+            addNewButton.visible()
+            addNewIconButton.gone()
         } else {
             addNewButton.gone()
             addNewIconButton.gone()

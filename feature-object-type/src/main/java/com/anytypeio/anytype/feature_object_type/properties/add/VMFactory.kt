@@ -16,8 +16,8 @@ class AddPropertyVmFactory @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         AddPropertyViewModel(
-            addPropertyVmParams = addPropertyVmParams,
-            typePropertiesProvider = typePropertiesProvider,
+            vmParams = addPropertyVmParams,
+            provider = typePropertiesProvider,
             storeOfRelations = storeOfRelations,
             stringResourceProvider = stringResourceProvider
         ) as T

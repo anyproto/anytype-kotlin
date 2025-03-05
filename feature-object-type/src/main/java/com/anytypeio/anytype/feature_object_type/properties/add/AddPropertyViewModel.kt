@@ -26,8 +26,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class AddPropertyViewModel(
-    private val addPropertyVmParams: AddPropertyVmParams,
-    private val typePropertiesProvider: TypePropertiesProvider,
+    private val vmParams: AddPropertyVmParams,
+    private val provider: TypePropertiesProvider,
     private val storeOfRelations: StoreOfRelations,
     private val stringResourceProvider: StringResourceProvider
 ) : ViewModel() {
@@ -62,7 +62,7 @@ class AddPropertyViewModel(
     private fun setupAddNewPropertiesState() {
         viewModelScope.launch {
             combine(
-                typePropertiesProvider.observeKeys(),
+                provider.observeKeys(),
                 query,
                 storeOfRelations.trackChanges()
             ) { typeKeys, queryText, _ ->
@@ -168,19 +168,19 @@ class AddPropertyViewModel(
     //region USE Case
     private fun proceedWithSetRecommendedFields(fields: List<Id>) {
         val params = SetObjectTypeRecommendedFields.Params(
-            objectTypeId = addPropertyVmParams.objectTypeId,
+            objectTypeId = vmParams.objectTypeId,
             fields = fields
         )
-        viewModelScope.launch {
-            objectTypeSetRecommendedFields.async(params).fold(
-                onSuccess = {
-                    Timber.d("Recommended fields set")
-                },
-                onFailure = {
-                    Timber.e(it, "Error while setting recommended fields")
-                }
-            )
-        }
+//        viewModelScope.launch {
+//            objectTypeSetRecommendedFields.async(params).fold(
+//                onSuccess = {
+//                    Timber.d("Recommended fields set")
+//                },
+//                onFailure = {
+//                    Timber.e(it, "Error while setting recommended fields")
+//                }
+//            )
+//        }
     }
     //endregion
 

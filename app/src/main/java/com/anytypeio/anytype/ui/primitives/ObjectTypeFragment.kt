@@ -149,9 +149,9 @@ class ObjectTypeFragment : BaseComposeFragment() {
         navComposeController = rememberNavController(bottomSheetNavigator)
         NavHost(
             navController = navComposeController,
-            startDestination = OBJ_TYPE_WITH_SET
+            startDestination = OBJ_TYPE_MAIN
         ) {
-            composable(route = OBJ_TYPE_WITH_SET) {
+            composable(route = OBJ_TYPE_MAIN) {
                 WithSetScreen(
                     uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
                     uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
@@ -311,8 +311,8 @@ class ObjectTypeFragment : BaseComposeFragment() {
     }
 
     companion object {
+        private const val OBJ_TYPE_MAIN = "obj_type_main"
         private const val OBJ_TYPE_FIELDS = "obj_fields"
-        private const val OBJ_TYPE_WITH_SET = "obj_with_set"
         const val ARG_SPACE = "arg.object.type.space"
         const val ARG_OBJECT_ID = "arg.object.type.object_id"
 

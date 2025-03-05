@@ -400,7 +400,7 @@ open class ObjectSetFragment :
             }
         }
 
-        //observeSelectingTemplate()
+        observeSelectingTemplate()
 
         binding.viewersWidget.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)

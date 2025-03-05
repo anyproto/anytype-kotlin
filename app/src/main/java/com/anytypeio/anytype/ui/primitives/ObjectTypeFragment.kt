@@ -164,15 +164,6 @@ class ObjectTypeFragment : BaseComposeFragment(), OnAddPropertyListener {
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiFieldsButtonState = vm.uiFieldsButtonState.collectAsStateWithLifecycle().value,
                     uiLayoutButtonState = vm.uiLayoutButtonState.collectAsStateWithLifecycle().value,
-                    uiTemplatesHeaderState = vm.uiTemplatesHeaderState.collectAsStateWithLifecycle().value,
-                    uiTemplatesAddIconState = vm.uiTemplatesAddIconState.collectAsStateWithLifecycle().value,
-                    uiTemplatesListState = vm.uiTemplatesListState.collectAsStateWithLifecycle().value,
-                    uiObjectsHeaderState = vm.uiObjectsHeaderState.collectAsStateWithLifecycle().value,
-                    uiObjectsAddIconState = vm.uiObjectsAddIconState.collectAsStateWithLifecycle().value,
-                    uiObjectsSettingsIconState = vm.uiObjectsSettingsIconState.collectAsStateWithLifecycle().value,
-                    uiObjectsMenuState = vm.uiMenuState.collectAsStateWithLifecycle().value,
-                    uiObjectsListState = vm.uiObjectsListState.collectAsStateWithLifecycle().value,
-                    uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                     uiDeleteAlertState = vm.uiAlertState.collectAsStateWithLifecycle().value,
                     uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
                     uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
@@ -310,7 +301,6 @@ class ObjectTypeFragment : BaseComposeFragment(), OnAddPropertyListener {
         val params = ObjectTypeVmParams(
             spaceId = SpaceId(space),
             objectId = objectId,
-            withSubscriptions = true,
             showHiddenFields = true
         )
         componentManager().objectTypeComponent.get(params).inject(this)

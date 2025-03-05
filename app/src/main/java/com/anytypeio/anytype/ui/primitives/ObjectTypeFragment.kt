@@ -97,7 +97,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         Timber.e(e, "Error while exiting back from object type screen")
                     }
                 }
-
                 ObjectTypeCommand.OpenEmojiPicker -> {
                     runCatching {
                         findNavController().navigate(R.id.openEmojiPicker)
@@ -161,15 +160,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiFieldsButtonState = vm.uiFieldsButtonState.collectAsStateWithLifecycle().value,
                     uiLayoutButtonState = vm.uiLayoutButtonState.collectAsStateWithLifecycle().value,
-                    uiTemplatesHeaderState = vm.uiTemplatesHeaderState.collectAsStateWithLifecycle().value,
-                    uiTemplatesAddIconState = vm.uiTemplatesAddIconState.collectAsStateWithLifecycle().value,
-                    uiTemplatesListState = vm.uiTemplatesListState.collectAsStateWithLifecycle().value,
-                    uiObjectsHeaderState = vm.uiObjectsHeaderState.collectAsStateWithLifecycle().value,
-                    uiObjectsAddIconState = vm.uiObjectsAddIconState.collectAsStateWithLifecycle().value,
-                    uiObjectsSettingsIconState = vm.uiObjectsSettingsIconState.collectAsStateWithLifecycle().value,
-                    uiObjectsMenuState = vm.uiMenuState.collectAsStateWithLifecycle().value,
-                    uiObjectsListState = vm.uiObjectsListState.collectAsStateWithLifecycle().value,
-                    uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                     uiDeleteAlertState = vm.uiAlertState.collectAsStateWithLifecycle().value,
                     uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
                     uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
@@ -297,7 +287,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         onDismissRequest = vm::closeObject
                     )
                 }
-
                 is UiErrorState.Reason.Other -> {
                     BaseAlertDialog(
                         dialogText = r.msg,

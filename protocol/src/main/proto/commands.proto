@@ -543,6 +543,7 @@ message Rpc {
             message Request {
                 option (no_auth) = true;
                 string rootPath = 1; // Path to a wallet directory
+                string fulltextPrimaryLanguage = 2; // optional, default fts language
             }
 
             /**
@@ -577,6 +578,7 @@ message Rpc {
 
                 string rootPath = 1; // Path to a wallet directory
                 string mnemonic = 2; // Mnemonic of a wallet to recover
+                string fulltextPrimaryLanguage = 3; // optional, default fts language
             }
 
             /**
@@ -817,6 +819,7 @@ message Rpc {
                 option (no_auth) = true;
                 string id = 1; // Id of a selected account
                 string rootPath = 2;
+                string fulltextPrimaryLanguage = 3; // optional, default fts language
             }
 
             message Response {
@@ -874,6 +877,7 @@ message Rpc {
                 string networkCustomConfigFilePath = 5; // config path for the custom network mode
                 bool preferYamuxTransport = 6; // optional, default is false, recommended in case of problems with QUIC transport
                 string jsonApiListenAddr = 7; // optional, if empty json api will not be started; 127.0.0.1:31009 should be the default one
+                string fulltextPrimaryLanguage = 8; // optional, default fts language
             }
 
             /**
@@ -1042,6 +1046,7 @@ message Rpc {
                 string path = 1;
                 string rootPath = 2;
                 int64 icon = 3;
+                string fulltextPrimaryLanguage = 4; // optional, default fts language
             }
 
             message Response {

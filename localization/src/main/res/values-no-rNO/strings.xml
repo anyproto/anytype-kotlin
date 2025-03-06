@@ -357,7 +357,7 @@
     <string name="select_date">Velg dato</string>
     <string name="no_value">Ingen verdi</string>
     <string name="source">Kilde</string>
-    <string name="query">Spørring</string>
+    <string name="query">Query</string>
     <string name="select_query">Velg spørring</string>
     <string name="objects">Objekter</string>
     <string name="your_objects">Dine objekter</string>

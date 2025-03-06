@@ -357,7 +357,7 @@
     <string name="select_date">Seleccionar fecha</string>
     <string name="no_value">Sin valor</string>
     <string name="source">Origen</string>
-    <string name="query">Consulta</string>
+    <string name="query">Query</string>
     <string name="select_query">Seleccionar consulta</string>
     <string name="objects">Objetos</string>
     <string name="your_objects">tus objetos</string>

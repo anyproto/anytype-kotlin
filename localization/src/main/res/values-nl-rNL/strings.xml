@@ -716,6 +716,7 @@
     <string name="layout">Opmaak</string>
     <string name="button_fields">Velden</string>
     <string name="button_layout">Opmaak</string>
+    <string name="button_templates">Sjablonen</string>
     <string name="restore_from_archive">Herstel vanuit archief</string>
     <string name="icon">Icoon</string>
     <string name="icon_description">Emoji of afbeelding voor object</string>
@@ -1600,7 +1601,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_type_fields_section_file">Bestand</string>
     <string name="object_type_fields_section_local_fields">Lokale velden</string>
     <string name="object_type_fields_title">Velden</string>
-    <string name="object_type_fields_info_text">Je bent type aan het bewerken</string>
+    <string name="object_type_fields_info_text">Je bewerkt het type</string>
     <string name="object_type_fields_edit_field">Veld bewerken</string>
     <string name="object_type_fields_new_field">Nieuw veld</string>
     <string name="object_type_fields_preview_field">Veld voorbeeld bekijken</string>
@@ -1611,6 +1612,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_type_fields_local_info_title">Lokale velden</string>
     <string name="object_type_fields_local_info_description">Sommige velden zijn niet inbegrepen in het objecttype. Voeg ze alsjeblieft toe als je ze in alle objecten van dit type wilt zien, of verwijder ze.</string>
     <string name="object_type_fields_local_info_button">Ik snap het</string>
+    <string name="object_type_templates_empty">This type doesn’t have\nany templates</string>
     <string name="object_type_open_type_error">Fout bij het openen van het huidige objecttype</string>
     <string name="day_of_week_monday">Maandag</string>
     <string name="day_of_week_tuesday">Dinsdag</string>
@@ -1634,7 +1636,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chat_message_reactions_no_reactions_yet">Nog geen reacties</string>
     <string name="chat_message_reactions_no_reactions_message">Waarschijnlijk heeft iemand zojuist de reactie verwijderd of was er een technisch probleem</string>
     <string name="object_types_human">Mens</string>
-    <string name="object_type_settings_item_remove">Verwijder volledig</string>
+    <string name="object_type_settings_item_remove">Delete type</string>
     <string name="chats_alert_delete_this_message_description">Het kan niet worden hersteld na bevestiging</string>
     <string name="chats_alert_delete_this_message">Verwijder dit bericht?</string>
     <string name="object_set_of_title">Set van</string>

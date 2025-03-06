@@ -1499,34 +1499,44 @@ open class ObjectSetFragment :
     }
 
     private fun observeSelectingTemplate() {
-        val navController = findNavController()
-        val navBackStackEntry = navController.getBackStackEntry(R.id.objectSetScreen)
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME
-                && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)) {
-                val resultTemplateId = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID)
-                val resultTypeId = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_ID)
-                val resultTypeKey = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_KEY)
-                if (!resultTemplateId.isNullOrBlank() && !resultTypeId.isNullOrBlank() && !resultTypeKey.isNullOrBlank()) {
-                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
-                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_ID)
-                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_KEY)
-                    vm.proceedWithSelectedTemplate(
-                        template = resultTemplateId,
-                        typeId = resultTypeId,
-                        typeKey = resultTypeKey
-                    )
+        try {
+            val navController = findNavController()
+            val navBackStackEntry = navController.getBackStackEntry(R.id.objectSetScreen)
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME
+                    && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)
+                ) {
+                    val resultTemplateId =
+                        navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID)
+                    val resultTypeId =
+                        navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_ID)
+                    val resultTypeKey =
+                        navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_KEY)
+                    if (!resultTemplateId.isNullOrBlank() && !resultTypeId.isNullOrBlank() && !resultTypeKey.isNullOrBlank()) {
+                        navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
+                        navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_ID)
+                        navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_KEY)
+                        vm.proceedWithSelectedTemplate(
+                            template = resultTemplateId,
+                            typeId = resultTypeId,
+                            typeKey = resultTypeKey
+                        )
+                    }
                 }
             }
+
+            navBackStackEntry.lifecycle.addObserver(observer)
+
+            viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    navBackStackEntry.lifecycle.removeObserver(observer)
+                }
+            })
+        } catch (
+            e: Exception
+        ) {
+            Timber.w(e)
         }
-
-        navBackStackEntry.lifecycle.addObserver(observer)
-
-        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                navBackStackEntry.lifecycle.removeObserver(observer)
-            }
-        })
     }
 
     override fun injectDependencies() {

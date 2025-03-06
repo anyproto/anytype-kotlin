@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 
 sealed class FieldEvent {
 
-    data object OnFieldEditScreenDismiss : FieldEvent()
+    data object OnEditPropertyScreenDismiss : FieldEvent()
 
     data class OnFieldItemClick(val item: UiFieldsListItem) : FieldEvent()
 

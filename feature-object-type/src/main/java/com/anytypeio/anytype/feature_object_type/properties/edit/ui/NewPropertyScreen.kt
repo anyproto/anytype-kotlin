@@ -1,7 +1,5 @@
-package com.anytypeio.anytype.feature_object_type.properties.edit
+package com.anytypeio.anytype.feature_object_type.properties.edit.ui
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,28 +16,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
-import com.anytypeio.anytype.feature_object_type.fields.UiEditPropertyState
-import com.anytypeio.anytype.feature_object_type.fields.UiPropertyItemState
+import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
 
 @Composable
-fun PropertyEditScreen(
+fun PropertyNewScreen(
     modifier: Modifier,
-    uiState: UiEditPropertyState.Visible.Edit,
-    fieldEvent: (FieldEvent) -> Unit
+    uiState: UiEditPropertyState.Visible.New,
+    onCreateNewButtonClicked: () -> Unit,
+    onFormatClick: () -> Unit,
+    onLimitTypesClick: () -> Unit
 ) {
 
-    val item = uiState.item
-    var innerValue by remember(item.name) { mutableStateOf(item.name) }
+    var innerValue by remember(uiState.name) { mutableStateOf(uiState.name) }
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -52,7 +48,7 @@ fun PropertyEditScreen(
         ) {
             PropertyIcon(
                 modifier = propertyIconModifier(),
-                item = item
+                formatIconRes = uiState.formatIcon
             )
             PropertyName(
                 modifier = Modifier
@@ -63,43 +59,29 @@ fun PropertyEditScreen(
                 isEditable = true,
                 focusRequester = focusRequester,
                 keyboardController = keyboardController,
-                emptyName = stringResource(R.string.untitled),
+                emptyName = stringResource(R.string.new_property_hint),
                 onValueChange = { innerValue = it }
             )
             Spacer(modifier = Modifier.size(4.dp))
-            Box(
-                modifier = Modifier
-                    .padding(end = 21.dp)
-                    .size(40.dp)
-                    .noRippleThrottledClickable {
-
-                    }
-            ) {
-                Image(
-                    modifier = Modifier
-                        //.padding(end = 20.dp)
-                        .wrapContentSize()
-                        .align(Alignment.Center),
-                    painter = painterResource(id = R.drawable.ic_widget_three_dots),
-                    contentDescription = "Property menu icon",
-                    contentScale = androidx.compose.ui.layout.ContentScale.None,
-                )
-            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         PropertyFormatSection(
-            formatName = item.formatName,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .padding(horizontal = 20.dp)
+                .noRippleThrottledClickable { onFormatClick() },
+            formatName = uiState.formatName,
             isEditable = true,
-            onTypeClick = { fieldEvent(FieldEvent.OnChangeTypeClick) }
         )
         Divider()
 
-        if (item is UiPropertyItemState.Object) {
+        if (uiState.format == RelationFormat.OBJECT) {
             PropertyLimitTypesEditSection(
-                limit = item.limitObjectTypesCount,
-                onLimitTypesClick = { fieldEvent(FieldEvent.OnLimitTypesClick) }
+                limit = uiState.limitObjectTypes.size,
+                onLimitTypesClick = { onLimitTypesClick() }
             )
             Divider()
         }
@@ -112,7 +94,7 @@ fun PropertyEditScreen(
                 .padding(horizontal = 22.dp),
             text = stringResource(R.string.object_type_fields_btn_save),
             onClick = {
-
+                onCreateNewButtonClicked()
             },
             size = ButtonSize.Large
         )
@@ -121,19 +103,17 @@ fun PropertyEditScreen(
 
 @DefaultPreviews
 @Composable
-fun EditPropertyPreview() {
-    PropertyEditScreen(
+fun MyPreviewNew() {
+    PropertyNewScreen(
         modifier = Modifier.fillMaxWidth(),
-        uiState = UiEditPropertyState.Visible.Edit(
-            item = UiPropertyItemState.Object(
-                id = "dummyId1",
-                key = "dummyKey1",
-                name = "My property",
-                formatName = "Text",
-                formatIcon = R.drawable.ic_relation_format_date_small,
-                limitObjectTypesCount = 3
-            )
+        uiState = UiEditPropertyState.Visible.New(
+            name = "",
+            formatName = "Text",
+            format = RelationFormat.OBJECT,
+            formatIcon = R.drawable.ic_relation_format_date_small,
         ),
-        fieldEvent = {}
+        onCreateNewButtonClicked = {},
+        onFormatClick = {},
+        onLimitTypesClick = {}
     )
 }

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.properties.edit
+package com.anytypeio.anytype.feature_object_type.properties.edit.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -39,16 +39,18 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
-import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
-import com.anytypeio.anytype.feature_object_type.fields.UiEditPropertyState
-import com.anytypeio.anytype.feature_object_type.fields.UiPropertyItemState
+import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PropertyScreen(
     modifier: Modifier,
     uiState: UiEditPropertyState.Visible,
-    fieldEvent: (FieldEvent) -> Unit
+    onSaveButtonClicked: () -> Unit,
+    onFormatClick: () -> Unit,
+    onLimitTypesClick: () -> Unit,
+    onCreateNewButtonClicked: () -> Unit,
+    onDismissRequest: () -> Unit
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
@@ -58,25 +60,30 @@ fun PropertyScreen(
         containerColor = colorResource(id = R.color.background_primary),
         shape = RoundedCornerShape(16.dp),
         sheetState = bottomSheetState,
-        onDismissRequest = { fieldEvent(FieldEvent.OnEditPropertyScreenDismiss) },
+        onDismissRequest = onDismissRequest,
     ) {
         when (uiState) {
             is UiEditPropertyState.Visible.Edit -> PropertyEditScreen(
                 modifier = Modifier.fillMaxWidth(),
                 uiState = uiState,
-                fieldEvent = fieldEvent
+                onSaveButtonClicked = onSaveButtonClicked,
+                onFormatClick = onFormatClick,
+                onLimitTypesClick = onLimitTypesClick
             )
 
             is UiEditPropertyState.Visible.View -> PropertyViewScreen(
                 modifier = Modifier.fillMaxWidth(),
                 uiState = uiState,
-                fieldEvent = fieldEvent
+                onFormatClick = onFormatClick,
+                onLimitTypesClick = onLimitTypesClick
             )
 
             is UiEditPropertyState.Visible.New -> PropertyNewScreen(
                 modifier = Modifier.fillMaxWidth(),
                 uiState = uiState,
-                fieldEvent = fieldEvent
+                onCreateNewButtonClicked = onCreateNewButtonClicked,
+                onFormatClick = onFormatClick,
+                onLimitTypesClick = onLimitTypesClick
             )
         }
     }
@@ -96,9 +103,8 @@ fun propertyIconModifier() = Modifier
 @Composable
 fun RowScope.PropertyIcon(
     modifier: Modifier,
-    item: UiPropertyItemState
+    formatIconRes: Int?
 ) {
-    val formatIconRes = item.formatIcon
     if (formatIconRes != null) {
         Image(
             painter = painterResource(id = formatIconRes),
@@ -159,17 +165,11 @@ fun PropertyName(
 
 @Composable
 fun PropertyFormatSection(
+    modifier: Modifier,
     formatName: String,
     isEditable: Boolean,
-    onTypeClick: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .padding(horizontal = 20.dp)
-            .noRippleThrottledClickable { if (isEditable) onTypeClick() }
-    ) {
+    Box(modifier = modifier) {
         Text(
             modifier = Modifier.align(Alignment.CenterStart),
             text = stringResource(id = R.string.format),

@@ -359,7 +359,7 @@
     <string name="select_date">Выбрать дату</string>
     <string name="no_value">Нет значения</string>
     <string name="source">Источник</string>
-    <string name="query">Запрос</string>
+    <string name="query">Query</string>
     <string name="select_query">Выберите запрос</string>
     <string name="objects">Объекты</string>
     <string name="your_objects">Ваши объекты</string>

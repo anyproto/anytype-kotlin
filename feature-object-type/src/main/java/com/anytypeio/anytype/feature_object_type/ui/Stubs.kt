@@ -9,7 +9,7 @@ fun createDummyFieldDraggableItem(isEditableField: Boolean = true): UiFieldsList
     return UiFieldsListItem.Item.Draggable(
         id = "dummyId",
         fieldKey = "dummyKey",
-        fieldTitle = "Field Title",
+        fieldTitle = "New property",
         format = RelationFormat.OBJECT,
         limitObjectTypes = listOf(
             UiFieldObjectItem(
@@ -17,21 +17,19 @@ fun createDummyFieldDraggableItem(isEditableField: Boolean = true): UiFieldsList
                 key = "dummyKey1",
                 title = "Dummy Object Type 1",
                 icon = ObjectIcon.Empty.ObjectType,
-                ),
+            ),
             UiFieldObjectItem(
                 id = "dummyObjectId1",
                 key = "dummyKey1",
                 title = "Dummy Object Type 1",
                 icon = ObjectIcon.Empty.ObjectType,
-
-                ),
+            ),
             UiFieldObjectItem(
                 id = "dummyObjectId1",
                 key = "dummyKey1",
                 title = "Dummy Object Type 1",
                 icon = ObjectIcon.Empty.ObjectType,
-
-                ),
+            ),
         ),
         isEditableField = isEditableField,
         canDelete = true

@@ -1,15 +1,17 @@
 package com.anytypeio.anytype.feature_object_type.fields.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -48,15 +50,14 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
-import com.anytypeio.anytype.core_ui.views.Title2
-import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem
+import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.ui.createDummyFieldDraggableItem
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,63 +97,120 @@ private fun EditFieldContent(
     var innerValue by remember(field.fieldTitle) { mutableStateOf(field.fieldTitle) }
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-    val isEditable = field.isEditableField
-
-    val title = when (uiState) {
-        is UiFieldEditOrNewState.Visible.Edit -> stringResource(R.string.object_type_fields_edit_field)
-        is UiFieldEditOrNewState.Visible.New -> stringResource(R.string.object_type_fields_new_field)
-        is UiFieldEditOrNewState.Visible.ViewOnly -> stringResource(R.string.object_type_fields_preview_field)
-    }
 
     Column(modifier = modifier) {
-        // Header title
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp),
-            contentAlignment = Alignment.Center
+
+        Spacer(modifier = Modifier.height(20.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top
         ) {
-            Text(
-                text = title,
-                style = Title2,
-                color = colorResource(id = R.color.text_primary)
+            PropertyIcon(
+                modifier = Modifier,
+                item = field
             )
+            when (uiState) {
+                is UiFieldEditOrNewState.Visible.Edit -> {
+                    NameTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 13.dp, top = 7.dp)
+                            .weight(1.0f),
+                        value = innerValue,
+                        isEditable = true,
+                        focusRequester = focusRequester,
+                        keyboardController = keyboardController,
+                        isNewState = false,
+                        onValueChange = { innerValue = it }
+                    )
+                    Spacer(modifier = Modifier.size(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 21.dp)
+                            .size(40.dp)
+                            .noRippleThrottledClickable {
+
+                            }
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                //.padding(end = 20.dp)
+                                .wrapContentSize()
+                                .align(Alignment.Center),
+                            painter = painterResource(id = R.drawable.ic_widget_three_dots),
+                            contentDescription = "Property menu icon",
+                            contentScale = androidx.compose.ui.layout.ContentScale.None,
+                        )
+                    }
+                }
+
+                is UiFieldEditOrNewState.Visible.New -> {
+                    NameTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 13.dp, top = 7.dp)
+                            .weight(1.0f),
+                        value = innerValue,
+                        isEditable = true,
+                        focusRequester = focusRequester,
+                        keyboardController = keyboardController,
+                        isNewState = true,
+                        onValueChange = { innerValue = it }
+                    )
+                    Spacer(modifier = Modifier.size(20.dp))
+                }
+
+                is UiFieldEditOrNewState.Visible.ViewOnly -> {
+                    NameTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 13.dp, top = 7.dp)
+                            .weight(1.0f),
+                        value = innerValue,
+                        isEditable = false,
+                        focusRequester = focusRequester,
+                        keyboardController = keyboardController,
+                        isNewState = false,
+                        onValueChange = { innerValue = it }
+                    )
+                    Spacer(modifier = Modifier.size(20.dp))
+                }
+            }
         }
 
-        // Name text field
-        NameTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = innerValue,
-            isEditable = isEditable,
-            focusRequester = focusRequester,
-            keyboardController = keyboardController,
-            onValueChange = { innerValue = it }
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-        Divider()
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Field type section
         FieldTypeSection(
             format = field.format,
-            isEditable = isEditable,
+            isEditable = uiState is UiFieldEditOrNewState.Visible.Edit || uiState is UiFieldEditOrNewState.Visible.New,
             onTypeClick = { fieldEvent(FieldEvent.OnChangeTypeClick) }
         )
         Divider()
 
         // Limit object types (only for OBJECT format)
         if (field.format == RelationFormat.OBJECT) {
-            LimitTypesSection(
-                objTypes = field.limitObjectTypes,
-                isEditable = isEditable,
-                onLimitTypesClick = { fieldEvent(FieldEvent.OnLimitTypesClick) }
-            )
+            when (uiState) {
+                is UiFieldEditOrNewState.Visible.Edit, is UiFieldEditOrNewState.Visible.New -> {
+                    LimitTypesSectionEditState(
+                        objTypes = field.limitObjectTypes,
+                        onLimitTypesClick = { fieldEvent(FieldEvent.OnLimitTypesClick) }
+                    )
+                }
+
+                is UiFieldEditOrNewState.Visible.ViewOnly -> {
+                    LimitTypesSectionPreviewState(
+                        objTypes = field.limitObjectTypes,
+                        onLimitTypesClick = { fieldEvent(FieldEvent.OnLimitTypesClick) }
+                    )
+                }
+            }
             Divider()
         }
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        if (isEditable) {
+        if (uiState is UiFieldEditOrNewState.Visible.Edit || uiState is UiFieldEditOrNewState.Visible.New) {
             ButtonPrimary(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,37 +232,59 @@ private fun EditFieldContent(
 }
 
 @Composable
+private fun RowScope.PropertyIcon(
+    modifier: Modifier,
+    item: UiFieldsListItem.Item
+) {
+    val format = item.format
+    format.simpleIcon()?.let {
+        Image(
+            painter = painterResource(id = it),
+            contentDescription = "Property icon",
+            contentScale = androidx.compose.ui.layout.ContentScale.None,
+            modifier = modifier
+                .padding(start = 20.dp)
+                .size(40.dp)
+                .border(
+                    width = 1.dp,
+                    color = colorResource(id = R.color.shape_primary),
+                    shape = RoundedCornerShape(5.dp)
+                )
+        )
+    }
+}
+
+@Composable
 private fun NameTextField(
     modifier: Modifier,
     value: String,
     isEditable: Boolean,
     focusRequester: FocusRequester,
     keyboardController: SoftwareKeyboardController?,
+    isNewState: Boolean,
     onValueChange: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
+    val hint = if (isNewState) {
+        stringResource(id = R.string.new_property_hint)
+    } else {
+        stringResource(id = R.string.untitled)
+    }
+
     Column(modifier = modifier) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            text = stringResource(id = R.string.name),
-            style = Caption1Regular,
-            color = colorResource(id = R.color.text_secondary)
-        )
 
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
             textStyle = HeadlineHeading.copy(color = colorResource(id = R.color.text_primary)),
-            singleLine = true,
+            singleLine = false,
             enabled = isEditable,
+            maxLines = 10,
+
             cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(start = 20.dp, top = 6.dp, end = 20.dp)
                 .focusRequester(focusRequester)
                 .onFocusChanged { /* You can handle focus changes here if needed */ },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -216,7 +296,7 @@ private fun NameTextField(
             decorationBox = { innerTextField ->
                 if (value.isEmpty()) {
                     Text(
-                        text = stringResource(id = R.string.untitled),
+                        text = hint,
                         style = HeadlineHeading,
                         color = colorResource(id = R.color.text_tertiary),
                         modifier = Modifier.fillMaxWidth()
@@ -234,14 +314,6 @@ private fun FieldTypeSection(
     isEditable: Boolean,
     onTypeClick: () -> Unit
 ) {
-    val icon = format.simpleIcon()
-    SectionItem(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp),
-        text = stringResource(id = R.string.type)
-    )
-    Divider()
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -249,29 +321,80 @@ private fun FieldTypeSection(
             .padding(horizontal = 20.dp)
             .noRippleThrottledClickable { if (isEditable) onTypeClick() }
     ) {
-        if (icon != null) {
-            Image(
-                modifier = Modifier
-                    .size(24.dp)
-                    .align(Alignment.CenterStart),
-                painter = painterResource(id = icon),
-                contentDescription = "Relation format icon"
-            )
-        }
         Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 34.dp)
-                .align(Alignment.CenterStart),
-            text = stringResource(format.getPrettyName()),
+            modifier = Modifier.align(Alignment.CenterStart),
+            text = stringResource(id = R.string.format),
             style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            color = colorResource(id = R.color.text_primary)
         )
         if (isEditable) {
-            Image(
+            Row(
                 modifier = Modifier.align(Alignment.CenterEnd),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = stringResource(format.getPrettyName()),
+                    style = BodyRegular,
+                    color = colorResource(id = R.color.text_secondary)
+                )
+                Image(
+                    modifier = Modifier,
+                    painter = painterResource(id = R.drawable.ic_arrow_forward_24),
+                    contentDescription = "Change field format icon"
+                )
+            }
+        } else {
+            Text(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                text = stringResource(format.getPrettyName()),
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_secondary)
+            )
+        }
+    }
+}
+
+@Composable
+private fun LimitTypesSectionEditState(
+    objTypes: List<UiFieldObjectItem>,
+    onLimitTypesClick: () -> Unit
+) {
+    val size = objTypes.size
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .padding(horizontal = 20.dp)
+            .noRippleThrottledClickable { onLimitTypesClick() }
+    ) {
+        Row(
+            modifier = Modifier.align(Alignment.CenterEnd),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier
+                    .weight(1.0f)
+                    .padding(end = 16.dp),
+                text = stringResource(id = R.string.limit_object_types),
+                style = BodyRegular,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = colorResource(id = R.color.text_primary)
+            )
+            val text = if (size == 0) {
+                stringResource(id = R.string.add)
+            } else {
+                "$size"
+            }
+            Text(
+                modifier = Modifier,
+                text = text,
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_secondary)
+            )
+            Image(
+                modifier = Modifier,
                 painter = painterResource(id = R.drawable.ic_arrow_forward_24),
                 contentDescription = "Change field format icon"
             )
@@ -280,91 +403,52 @@ private fun FieldTypeSection(
 }
 
 @Composable
-private fun LimitTypesSection(
+private fun LimitTypesSectionPreviewState(
     objTypes: List<UiFieldObjectItem>,
-    isEditable: Boolean,
     onLimitTypesClick: () -> Unit
 ) {
     val size = objTypes.size
-    SectionItem(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp),
-        text = stringResource(id = R.string.limit_object_types)
-    )
-    Divider()
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
             .padding(horizontal = 20.dp)
-            .noRippleThrottledClickable { if (isEditable) onLimitTypesClick() }
+            .noRippleThrottledClickable { onLimitTypesClick() }
     ) {
-        if (objTypes.isNotEmpty()) {
-            Row(modifier = Modifier.align(Alignment.CenterStart)) {
-                ListWidgetObjectIcon(
-                    modifier = Modifier.size(20.dp),
-                    icon = objTypes.first().icon,
-                    backgroundColor = R.color.transparent_black
-                )
-                Text(
-                    modifier = Modifier.padding(start = 6.dp),
-                    text = objTypes.first().title.take(20),
-                    style = BodyRegular,
-                    color = colorResource(id = R.color.text_primary),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (size > 1) {
-                    Text(
-                        text = "   +${size - 1}",
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                }
-            }
-        } else {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterStart),
-                text = stringResource(R.string.none),
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-        if (isEditable) {
-            Image(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                painter = painterResource(id = R.drawable.ic_arrow_forward_24),
-                contentDescription = "Change field object types icon"
-            )
-        }
-    }
-}
-
-@Composable
-private fun SectionItem(modifier: Modifier, text: String) {
-    Box(modifier = modifier) {
         Text(
             modifier = Modifier
-                .padding(start = 20.dp, bottom = 8.dp)
-                .align(Alignment.BottomStart),
-            text = text,
-            style = Caption1Regular,
-            color = colorResource(id = R.color.text_secondary)
+                .align(Alignment.CenterStart)
+                .fillMaxWidth(),
+            text = stringResource(id = R.string.limit_object_types),
+            style = BodyRegular,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = colorResource(id = R.color.text_primary)
         )
+        if (size > 0) {
+            Text(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                text = "$size",
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_secondary)
+            )
+        } else {
+            Text(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                text = stringResource(id = R.string.none),
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_secondary)
+            )
+        }
     }
 }
 
 @DefaultPreviews
 @Composable
-private fun MyPreview() {
-    EditFieldScreen(
+private fun MyPreviewEdit() {
+    EditFieldContent(
         modifier = Modifier.fillMaxWidth(),
-        uiFieldEditOrNewState = UiFieldEditOrNewState.Visible.Edit(
+        uiState = UiFieldEditOrNewState.Visible.Edit(
             item = createDummyFieldDraggableItem()
         ),
         fieldEvent = {}
@@ -373,13 +457,23 @@ private fun MyPreview() {
 
 @DefaultPreviews
 @Composable
-private fun MyPreviewOnlyPreview() {
-    EditFieldScreen(
+private fun MyPreviewNew() {
+    EditFieldContent(
         modifier = Modifier.fillMaxWidth(),
-        uiFieldEditOrNewState = UiFieldEditOrNewState.Visible.ViewOnly(
-            item = createDummyFieldDraggableItem(
-                isEditableField = false
-            )
+        uiState = UiFieldEditOrNewState.Visible.New(
+            item = createDummyFieldDraggableItem()
+        ),
+        fieldEvent = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun MyPreviewViewOnly() {
+    EditFieldContent(
+        modifier = Modifier.fillMaxWidth(),
+        uiState = UiFieldEditOrNewState.Visible.ViewOnly(
+            item = createDummyFieldDraggableItem()
         ),
         fieldEvent = {}
     )

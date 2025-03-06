@@ -336,7 +336,7 @@
     <string name="relation_format_email">Email</string>
     <string name="relation_format_phone">Phone number</string>
     <string name="relation_format_emoji">Emoji</string>
-    <string name="relation_format_object">Object property</string>
+    <string name="relation_format_object">Object relation</string>
     <string name="relation_format_relation">Relation</string>
     <string name="viewer_sorting_prefix">Then</string>
     <string name="enter_value">Enter value</string>
@@ -917,6 +917,7 @@
 
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Type</string>
+    <string name="format">Format</string>
     <string name="space_info">Space info</string>
     <string name="creation_date">Creation date</string>
     <string name="created_by">Created by</string>
@@ -1968,5 +1969,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_add_property_screen_section_types">Properties types"</string>
     <string name="object_type_add_property_screen_section_existing">Existing properties"</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new"</string>
+
+    <string name="new_property_hint">New property</string>
 
 </resources>

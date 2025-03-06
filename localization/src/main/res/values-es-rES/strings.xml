@@ -716,6 +716,7 @@
     <string name="layout">Diseño</string>
     <string name="button_fields">Campos</string>
     <string name="button_layout">Diseño</string>
+    <string name="button_templates">Plantillas</string>
     <string name="restore_from_archive">Restablecer desde archivo</string>
     <string name="icon">Icono</string>
     <string name="icon_description">Emoji o imagen del objeto</string>
@@ -1600,7 +1601,7 @@ En concreto,
     <string name="object_type_fields_section_file">Archivo</string>
     <string name="object_type_fields_section_local_fields">Local fields</string>
     <string name="object_type_fields_title">Campos</string>
-    <string name="object_type_fields_info_text">You editing type</string>
+    <string name="object_type_fields_info_text">Estás editando el tipo</string>
     <string name="object_type_fields_edit_field">Editar campo</string>
     <string name="object_type_fields_new_field">New field</string>
     <string name="object_type_fields_preview_field">Preview field</string>
@@ -1611,6 +1612,7 @@ En concreto,
     <string name="object_type_fields_local_info_title">Local fields</string>
     <string name="object_type_fields_local_info_description">Some fields are not included in the object type. Please add them if you want to see them in all objects of this type, or remove them.</string>
     <string name="object_type_fields_local_info_button">Got it</string>
+    <string name="object_type_templates_empty">This type doesn’t have\nany templates</string>
     <string name="object_type_open_type_error">Error opening current object type</string>
     <string name="day_of_week_monday">Lunes</string>
     <string name="day_of_week_tuesday">Martes</string>
@@ -1634,7 +1636,7 @@ En concreto,
     <string name="chat_message_reactions_no_reactions_yet">Aún no hay reacciones</string>
     <string name="chat_message_reactions_no_reactions_message">Puede que se haya eliminado la reacción o se haya producido un error técnico</string>
     <string name="object_types_human">Humano</string>
-    <string name="object_type_settings_item_remove">Delete completely</string>
+    <string name="object_type_settings_item_remove">Delete type</string>
     <string name="chats_alert_delete_this_message_description">Después de confirmar esto, no podrás restaurarlo.</string>
     <string name="chats_alert_delete_this_message">¿Eliminar este mensaje?</string>
     <string name="object_set_of_title">Set of</string>

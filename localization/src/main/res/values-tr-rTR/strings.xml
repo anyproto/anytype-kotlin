@@ -357,7 +357,7 @@
     <string name="select_date">Tarih seç</string>
     <string name="no_value">Değer yok</string>
     <string name="source">Kaynak</string>
-    <string name="query">Sorgu</string>
+    <string name="query">Query</string>
     <string name="select_query">Sorgu seç</string>
     <string name="objects">Nesneler</string>
     <string name="your_objects">Nesneleriniz</string>

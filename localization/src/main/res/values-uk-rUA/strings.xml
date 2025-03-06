@@ -359,7 +359,7 @@
     <string name="select_date">Оберіть дату</string>
     <string name="no_value">No value</string>
     <string name="source">Source</string>
-    <string name="query">Запит</string>
+    <string name="query">Query</string>
     <string name="select_query">Виберіть запит</string>
     <string name="objects">Об\'єкти</string>
     <string name="your_objects">Your objects</string>

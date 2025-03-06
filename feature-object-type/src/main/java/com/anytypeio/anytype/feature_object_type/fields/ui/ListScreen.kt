@@ -68,11 +68,13 @@ import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.*
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.FieldItemMenu.*
+import com.anytypeio.anytype.feature_object_type.fields.UiEditPropertyState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
+import com.anytypeio.anytype.feature_object_type.properties.edit.PropertyScreen
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -87,8 +89,8 @@ fun FieldsMainScreen(
     uiFieldsListState: UiFieldsListState,
     uiTitleState: UiTitleState,
     uiIconState: UiIconState,
-    uiFieldEditOrNewState: UiFieldEditOrNewState,
     uiFieldLocalInfoState: UiLocalsFieldsInfoState,
+    uiEditPropertyState: UiEditPropertyState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
@@ -221,10 +223,10 @@ fun FieldsMainScreen(
         }
     )
 
-    if (uiFieldEditOrNewState is UiFieldEditOrNewState.Visible) {
-        EditFieldScreen(
+    if (uiEditPropertyState is UiEditPropertyState.Visible) {
+        PropertyScreen(
             modifier = Modifier.fillMaxWidth(),
-            uiFieldEditOrNewState = uiFieldEditOrNewState,
+            uiState = uiEditPropertyState,
             fieldEvent = fieldEvent
         )
     }
@@ -745,7 +747,7 @@ fun PreviewTypeFieldsMainScreen() {
             )
         ),
         fieldEvent = {},
-        uiFieldEditOrNewState = UiFieldEditOrNewState.Hidden,
+        uiEditPropertyState = UiEditPropertyState.Hidden,
         uiFieldLocalInfoState = UiLocalsFieldsInfoState.Hidden
     )
 }

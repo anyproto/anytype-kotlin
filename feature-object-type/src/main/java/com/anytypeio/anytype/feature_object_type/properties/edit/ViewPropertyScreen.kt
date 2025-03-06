@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -55,7 +56,7 @@ fun PropertyViewScreen(
                 isEditable = false,
                 focusRequester = focusRequester,
                 keyboardController = keyboardController,
-                emptyName = item.emptyName,
+                emptyName = stringResource(R.string.untitled),
                 onValueChange = { innerValue = it }
             )
             Spacer(modifier = Modifier.size(20.dp))
@@ -63,17 +64,15 @@ fun PropertyViewScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Field type section
-        FieldTypeSection(
+        PropertyFormatSection(
             formatName = item.formatName,
             isEditable = false,
             onTypeClick = { fieldEvent(FieldEvent.OnChangeTypeClick) }
         )
         Divider()
 
-        // Limit object types (only for OBJECT format)
         if (item is UiPropertyItemState.Object) {
-            LimitTypesSectionPreviewState(
+            PropertyLimitTypesViewSection(
                 limit = item.limitObjectTypesCount,
                 onLimitTypesClick = { fieldEvent(FieldEvent.OnLimitTypesClick) }
             )
@@ -90,8 +89,8 @@ fun MyPreviewView() {
         uiState = UiEditPropertyState.Visible.View(
             item = UiPropertyItemState.Object(
                 id = "dummyId1",
+                key = "dummyKey1",
                 name = "View property",
-                emptyName = "Empty name",
                 formatName = "Text",
                 formatIcon = R.drawable.ic_relation_format_date_small,
                 limitObjectTypesCount = 1

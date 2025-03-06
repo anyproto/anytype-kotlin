@@ -356,7 +356,7 @@
     <string name="select_date">Pilih tanggal</string>
     <string name="no_value">Tak bernilai</string>
     <string name="source">Sumber</string>
-    <string name="query">Pertanyaan</string>
+    <string name="query">Query</string>
     <string name="select_query">Pilih kueri</string>
     <string name="objects">Objek</string>
     <string name="your_objects">Objekmu</string>

@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.util
 
 import android.content.Context
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
@@ -36,8 +35,7 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
 
     override fun getPropertiesFormatPrettyString(format: RelationFormat): String {
         return when (format) {
-            RelationFormat.LONG_TEXT -> context.getString(R.string.relation_format_long_text)
-            RelationFormat.SHORT_TEXT -> context.getString(R.string.relation_format_short_text)
+            RelationFormat.LONG_TEXT, RelationFormat.SHORT_TEXT -> context.getString(R.string.relation_format_long_text)
             RelationFormat.NUMBER -> context.getString(R.string.relation_format_number)
             RelationFormat.STATUS -> context.getString(R.string.relation_format_status)
             RelationFormat.TAG -> context.getString(R.string.relation_format_tag)

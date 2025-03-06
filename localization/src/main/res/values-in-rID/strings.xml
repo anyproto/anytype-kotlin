@@ -715,6 +715,7 @@
     <string name="layout">Tata letak</string>
     <string name="button_fields">Fields</string>
     <string name="button_layout">Tata letak</string>
+    <string name="button_templates">Templat</string>
     <string name="restore_from_archive">Restore from archive</string>
     <string name="icon">Ikon</string>
     <string name="icon_description">Emoji atau gambar untuk objek</string>
@@ -1587,7 +1588,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_section_file">Berkas</string>
     <string name="object_type_fields_section_local_fields">Local fields</string>
     <string name="object_type_fields_title">Fields</string>
-    <string name="object_type_fields_info_text">You editing type</string>
+    <string name="object_type_fields_info_text">You\'re editing type</string>
     <string name="object_type_fields_edit_field">Edit field</string>
     <string name="object_type_fields_new_field">New field</string>
     <string name="object_type_fields_preview_field">Kolom pratinjau</string>
@@ -1598,6 +1599,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_local_info_title">Local fields</string>
     <string name="object_type_fields_local_info_description">Some fields are not included in the object type. Please add them if you want to see them in all objects of this type, or remove them.</string>
     <string name="object_type_fields_local_info_button">Oke</string>
+    <string name="object_type_templates_empty">This type doesn’t have\nany templates</string>
     <string name="object_type_open_type_error">Galat membuka tipe objek ini</string>
     <string name="day_of_week_monday">Senin</string>
     <string name="day_of_week_tuesday">Selasa</string>
@@ -1621,7 +1623,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_message_reactions_no_reactions_yet">Belum ada reaksi</string>
     <string name="chat_message_reactions_no_reactions_message">Mungkin seseorang menghapus reaksinya atau ada masalah teknis</string>
     <string name="object_types_human">Manusia</string>
-    <string name="object_type_settings_item_remove">Hapus seluruhnya</string>
+    <string name="object_type_settings_item_remove">Delete type</string>
     <string name="chats_alert_delete_this_message_description">Pesan tak dapat dikembalikan lagi</string>
     <string name="chats_alert_delete_this_message">Hapus pesan ini?</string>
     <string name="object_set_of_title">Set dari</string>

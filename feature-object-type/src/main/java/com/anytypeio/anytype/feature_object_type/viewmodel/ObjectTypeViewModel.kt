@@ -4,15 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -28,16 +27,16 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
-import com.anytypeio.anytype.domain.primitives.SetObjectTypeHeaderRecommendedFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
+import com.anytypeio.anytype.feature_object_type.fields.UiEditPropertyState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
+import com.anytypeio.anytype.feature_object_type.fields.toUiPropertyItemState
 import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyItem
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.OpenEmojiPicker
@@ -150,8 +149,9 @@ class ObjectTypeViewModel(
 
     //fields
     val uiFieldsListState = MutableStateFlow<UiFieldsListState>(UiFieldsListState.EMPTY)
-    val uiFieldEditOrNewState =
-        MutableStateFlow<UiFieldEditOrNewState>(UiFieldEditOrNewState.Hidden)
+
+    //properties
+    val uiEditPropertyScreen = MutableStateFlow<UiEditPropertyState>(UiEditPropertyState.Hidden)
 
     //error
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
@@ -616,25 +616,30 @@ class ObjectTypeViewModel(
         Timber.d("onFieldEvent: $event")
         when (event) {
             FieldEvent.OnChangeTypeClick -> TODO()
-            FieldEvent.OnFieldEditScreenDismiss -> {
-                uiFieldEditOrNewState.value = UiFieldEditOrNewState.Hidden
+            FieldEvent.OnEditPropertyScreenDismiss -> {
+                uiEditPropertyScreen.value = UiEditPropertyState.Hidden
             }
 
             is FieldEvent.OnFieldItemClick -> {
                 when (event.item) {
                     is UiFieldsListItem.Item -> {
+                        val item = event.item
+                        val propertyItem = toUiPropertyItemState(
+                            propertyId = item.id,
+                            propertyKey = item.fieldKey,
+                            name = item.fieldTitle,
+                            formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
+                            formatIcon = item.format.simpleIcon(),
+                            format = item.format,
+                            limitObjectTypesCount = item.limitObjectTypes.size
+                        ) ?: return
                         val permissions = _objectTypePermissionsState.value
                         if (permissions?.participantCanEdit == true && event.item.isEditableField) {
-                            uiFieldEditOrNewState.value = Edit(
-                                event.item
-                            )
+                            uiEditPropertyScreen.value = UiEditPropertyState.Visible.Edit(propertyItem)
                         } else {
-                            uiFieldEditOrNewState.value = ViewOnly(
-                                event.item
-                            )
+                            uiEditPropertyScreen.value = UiEditPropertyState.Visible.View(propertyItem)
                         }
                     }
-
                     else -> {}
                 }
             }

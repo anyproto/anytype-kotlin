@@ -356,7 +356,7 @@
     <string name="select_date">選擇日期</string>
     <string name="no_value">無數值</string>
     <string name="source">來源</string>
-    <string name="query">查詢</string>
+    <string name="query">Query</string>
     <string name="select_query">指定查詢</string>
     <string name="objects">物件</string>
     <string name="your_objects">你的物件</string>

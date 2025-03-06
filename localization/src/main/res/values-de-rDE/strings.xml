@@ -357,7 +357,7 @@
     <string name="select_date">Datum auswählen</string>
     <string name="no_value">Kein Wert</string>
     <string name="source">Quelle</string>
-    <string name="query">Abfrage</string>
+    <string name="query">Query</string>
     <string name="select_query">Abfrage auswählen</string>
     <string name="objects">Objekte</string>
     <string name="your_objects">Deine Objekte</string>

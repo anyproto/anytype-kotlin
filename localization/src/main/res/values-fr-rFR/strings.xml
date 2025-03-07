@@ -1609,7 +1609,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_fields_local_info_title">Champs locaux</string>
     <string name="object_type_fields_local_info_description">Certains champs ne sont pas inclus dans le type d\'objet. Veuillez les ajouter si vous souhaitez les voir dans tous les objets de ce type, ou bien supprime-les. </string>
     <string name="object_type_fields_local_info_button">Compris</string>
-    <string name="object_type_templates_empty">This type doesn’t have\nany templates</string>
+    <string name="object_type_templates_empty">Ce type n\'a pas\nde modèle</string>
     <string name="object_type_open_type_error">Erreur d\'ouverture du type d\'objet actuel</string>
     <string name="day_of_week_monday">Lundi</string>
     <string name="day_of_week_tuesday">Mardi</string>
@@ -1633,7 +1633,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chat_message_reactions_no_reactions_yet">Aucune réaction pour l\'instant</string>
     <string name="chat_message_reactions_no_reactions_message">Probablement quelqu\'un vient de supprimer la réaction ou un problème technique est survenu</string>
     <string name="object_types_human">Humain</string>
-    <string name="object_type_settings_item_remove">Delete type</string>
+    <string name="object_type_settings_item_remove">Supprimer le type</string>
     <string name="chats_alert_delete_this_message_description">Il ne pourra pas être restauré après confirmation</string>
     <string name="chats_alert_delete_this_message">Supprimer ce message ?</string>
     <string name="object_set_of_title">Ensemble de</string>

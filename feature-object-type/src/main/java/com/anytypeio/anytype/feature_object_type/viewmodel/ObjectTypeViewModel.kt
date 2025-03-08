@@ -9,8 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
-import com.anytypeio.anytype.core_models.primitives.TypeId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
@@ -50,7 +48,6 @@ import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState.*
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
-import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesAddIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
@@ -103,12 +100,10 @@ class ObjectTypeViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-    private val createObject: CreateObject,
     private val fieldParser: FieldParser,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val deleteObjects: DeleteObjects,
     private val setObjectDetails: SetObjectDetails,
-    private val createObjectSet: CreateObjectSet,
     private val stringResourceProvider: StringResourceProvider,
     private val createTemplate: CreateTemplate,
     private val duplicateObjects: DuplicateObjects,

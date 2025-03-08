@@ -302,11 +302,11 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
             )
         }
 
-        const val ARG_CTX = "arg.document-relation.ctx"
-        const val ARG_SPACE = "arg.document-relation.space"
-        const val ARG_TARGET = "arg.document-relation.target"
-        const val ARG_LOCKED = "arg.document-relation.locked"
-        const val ARG_SET_FLOW = "arg.document-relation.set-flow"
+        const val ARG_CTX = "arg.primitives.properties.ctx"
+        const val ARG_SPACE = "arg.primitives.properties.space"
+        const val ARG_TARGET = "arg.primitives.properties.target"
+        const val ARG_LOCKED = "arg.primitives.properties.locked"
+        const val ARG_SET_FLOW = "arg.primitives.properties.set_flow"
 
         const val DEFAULT_PADDING_TOP = 10
     }

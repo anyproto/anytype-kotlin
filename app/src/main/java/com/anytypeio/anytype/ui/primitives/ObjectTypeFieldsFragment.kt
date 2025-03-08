@@ -44,9 +44,8 @@ class ObjectTypeFieldsFragment : BaseBottomSheetComposeFragment()  {
                 uiFieldsListState = vm.uiFieldsListState.collectAsStateWithLifecycle().value,
                 uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
                 uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
-                uiFieldEditOrNewState = vm.uiFieldEditOrNewState.collectAsStateWithLifecycle().value,
+                uiEditPropertyState = vm.uiEditPropertyScreen.collectAsStateWithLifecycle().value,
                 uiFieldLocalInfoState = vm.uiFieldLocalInfoState.collectAsStateWithLifecycle().value,
-                uiAddFieldsScreenState = vm.uiAddFieldsState.collectAsStateWithLifecycle().value,
                 fieldEvent = vm::onFieldEvent
             )
         }

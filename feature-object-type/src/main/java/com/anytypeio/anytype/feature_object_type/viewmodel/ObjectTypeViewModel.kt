@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
+import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -25,18 +25,16 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
-import com.anytypeio.anytype.domain.primitives.SetObjectTypeHeaderRecommendedFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
-import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldItem
-import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldsScreenState
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
+import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyItem
+import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
@@ -50,12 +48,10 @@ import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState.*
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
-import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesAddIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
-import com.anytypeio.anytype.feature_object_type.ui.mapToUiAddFieldListItem
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -72,7 +68,6 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -105,18 +100,16 @@ class ObjectTypeViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-    private val createObject: CreateObject,
     private val fieldParser: FieldParser,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val deleteObjects: DeleteObjects,
     private val setObjectDetails: SetObjectDetails,
-    private val createObjectSet: CreateObjectSet,
     private val stringResourceProvider: StringResourceProvider,
     private val createTemplate: CreateTemplate,
     private val duplicateObjects: DuplicateObjects,
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
     private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
-    private val objectTypeSetHeaderRecommendedFields: SetObjectTypeHeaderRecommendedFields
+    private val objectTypeStore: ObjectTypeStore
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -150,11 +143,9 @@ class ObjectTypeViewModel(
 
     //fields
     val uiFieldsListState = MutableStateFlow<UiFieldsListState>(UiFieldsListState.EMPTY)
-    val uiFieldEditOrNewState =
-        MutableStateFlow<UiFieldEditOrNewState>(UiFieldEditOrNewState.Hidden)
 
-    //add new field
-    val uiAddFieldsState = MutableStateFlow<UiAddFieldsScreenState>(UiAddFieldsScreenState.Hidden)
+    //properties
+    val uiEditPropertyScreen = MutableStateFlow<UiEditPropertyState>(UiEditPropertyState.Hidden)
 
     //error
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
@@ -322,6 +313,7 @@ class ObjectTypeViewModel(
         conflictingFields: List<Id>
     ) {
         _objTypeState.value = objType
+        objectTypeStore.setRecommendedProperties(objType.recommendedRelations)
         _objectTypePermissionsState.value = objectPermissions
 
         uiTitleState.value = UiTitleState(
@@ -351,6 +343,7 @@ class ObjectTypeViewModel(
             objTypeConflictingFields = conflictingFields,
             showHiddenFields = vmParams.showHiddenFields
         )
+        objectTypeStore.setProperties(items.mapNotNull { (it as? UiFieldsListItem.Item)?.fieldKey })
         uiFieldsListState.value = UiFieldsListState(items = items)
         uiFieldsButtonState.value = UiFieldsButtonState.Visible(
             count = items.count { it is UiFieldsListItem.Item }
@@ -386,6 +379,31 @@ class ObjectTypeViewModel(
 
     fun hideError() {
         errorState.value = UiErrorState.Hidden
+    }
+
+    fun setupUiEditPropertyScreen(item: UiFieldsListItem.Item) {
+        val permissions = _objectTypePermissionsState.value
+        if (permissions?.participantCanEdit == true && item.isEditableField) {
+            uiEditPropertyScreen.value = UiEditPropertyState.Visible.Edit(
+                id = item.id,
+                key = item.fieldKey,
+                name = item.fieldTitle,
+                formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
+                formatIcon = item.format.simpleIcon(),
+                format = item.format,
+                limitObjectTypes = item.limitObjectTypes
+            )
+        } else {
+            uiEditPropertyScreen.value = UiEditPropertyState.Visible.View(
+                id = item.id,
+                key = item.fieldKey,
+                name = item.fieldTitle,
+                formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
+                formatIcon = item.format.simpleIcon(),
+                format = item.format,
+                limitObjectTypes = item.limitObjectTypes
+            )
+        }
     }
     //endregion
 
@@ -624,25 +642,13 @@ class ObjectTypeViewModel(
         Timber.d("onFieldEvent: $event")
         when (event) {
             FieldEvent.OnChangeTypeClick -> TODO()
-            FieldEvent.OnFieldEditScreenDismiss -> {
-                uiFieldEditOrNewState.value = UiFieldEditOrNewState.Hidden
+            FieldEvent.OnEditPropertyScreenDismiss -> {
+                uiEditPropertyScreen.value = UiEditPropertyState.Hidden
             }
 
             is FieldEvent.OnFieldItemClick -> {
                 when (event.item) {
-                    is UiFieldsListItem.Item -> {
-                        val permissions = _objectTypePermissionsState.value
-                        if (permissions?.participantCanEdit == true && event.item.isEditableField) {
-                            uiFieldEditOrNewState.value = Edit(
-                                event.item
-                            )
-                        } else {
-                            uiFieldEditOrNewState.value = ViewOnly(
-                                event.item
-                            )
-                        }
-                    }
-
+                    is UiFieldsListItem.Item -> setupUiEditPropertyScreen(item = event.item)
                     else -> {}
                 }
             }
@@ -657,10 +663,6 @@ class ObjectTypeViewModel(
 
             FieldEvent.Section.OnLocalInfoClick -> {
                 uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Visible
-            }
-
-            FieldEvent.Section.OnAddToHeaderIconClick -> {
-                proceedWithAddFieldToHeaderScreen()
             }
 
             FieldEvent.Section.OnAddToSidebarIconClick -> {
@@ -706,26 +708,20 @@ class ObjectTypeViewModel(
                 currentList.add(toIndex, item)
                 uiFieldsListState.value = UiFieldsListState(items = currentList)
             }
-
-            FieldEvent.OnAddFieldScreenDismiss -> {
-                hideAddNewFieldScreen()
-            }
-
-            is FieldEvent.OnAddToHeaderFieldClick -> {
-                onAddToHeaderFieldClicked(item = event.item)
-                hideAddNewFieldScreen()
-            }
-
-            is FieldEvent.OnAddToSidebarFieldClick -> {
-                onAddToSidebarFieldClicked(item = event.item)
-                hideAddNewFieldScreen()
-            }
-
-            is FieldEvent.OnAddFieldSearchQueryChanged -> {
-                onQueryChanged(query = event.query)
-            }
         }
     }
+
+//    private fun proceedWithAddNewPropertyEvent(event: FieldEvent.AddNewProperty) {
+//        when (event) {
+//            is FieldEvent.AddNewProperty.OnCreate -> TODO()
+//            is FieldEvent.AddNewProperty.OnExistingClicked -> {
+//                onAddToSidebarFieldClicked(item = event.item)
+//                hideAddNewFieldScreen()
+//            }
+//            is FieldEvent.AddNewProperty.OnSearchQueryChanged -> onQueryChanged(query = event.query)
+//            is FieldEvent.AddNewProperty.OnTypeClicked -> TODO()
+//        }
+//    }
 
     private fun proceedWithFieldItemMenuClick(event: FieldEvent.FieldItemMenu) {
         when (event) {
@@ -960,23 +956,6 @@ class ObjectTypeViewModel(
             )
         }
     }
-
-    private fun proceedWithSetHeaderRecommendedFields(fields: List<Id>) {
-        val params = SetObjectTypeHeaderRecommendedFields.Params(
-            objectTypeId = vmParams.objectId,
-            fields = fields
-        )
-        viewModelScope.launch {
-            objectTypeSetHeaderRecommendedFields.async(params).fold(
-                onSuccess = {
-                    Timber.d("Header recommended fields set")
-                },
-                onFailure = {
-                    Timber.e(it, "Error while setting header recommended fields")
-                }
-            )
-        }
-    }
     //endregion
 
     //region ADD NEW FIELD
@@ -989,93 +968,31 @@ class ObjectTypeViewModel(
         )
     }
 
-    private var addFieldSearchJob: Job? = null
-
-    /**
-     * Loads the available fields from type, applies filtering based on a search query,
-     * and then updates the UI state.
-     */
-    private fun showAddFieldScreen(addToHeader: Boolean) {
-        // Collect field keys that are already present in the type fields list.
-        val typeFieldsKeys =
-            uiFieldsListState.value.items.mapNotNull { (it as? UiFieldsListItem.Item)?.fieldKey }
-
-        addFieldSearchJob = viewModelScope.launch {
-            // Combine the search query flow with the list of all fields.
-            combine(
-                query,
-                storeOfRelations.trackChanges()
-            ) { queryText, _ ->
-                // Filter out fields by query and that already exist and are not valid.
-                filterFields(
-                    allFields = storeOfRelations.getAll(),
-                    typeKeys = typeFieldsKeys,
-                    queryText = queryText
-                )
-            }.collect { filteredFields ->
-                val items = filteredFields.mapNotNull { field ->
-                    field.mapToUiAddFieldListItem(stringResourceProvider)
-                }.sortedBy { it.fieldTitle }
-
-                uiAddFieldsState.value = UiAddFieldsScreenState.Visible(
-                    items = items,
-                    addToHeader = addToHeader
-                )
-            }
-        }
-    }
-
-    private fun filterFields(
-        allFields: List<ObjectWrapper.Relation>,
-        typeKeys: List<Key>,
-        queryText: String
-    ): List<ObjectWrapper.Relation> = allFields.filter { field ->
-        field.key !in typeKeys &&
-                field.isValidToUse &&
-                (queryText.isBlank() || field.name?.contains(queryText, ignoreCase = true) == true)
-    }
-
-    private fun onQueryChanged(query: String) {
-        input.value = query
-    }
-
-    fun hideAddNewFieldScreen() {
-        input.value = ""
-        addFieldSearchJob?.cancel()
-        addFieldSearchJob = null
-        uiAddFieldsState.value = UiAddFieldsScreenState.Hidden
-    }
-
-    fun proceedWithAddFieldToHeaderScreen() {
-        showAddFieldScreen(addToHeader = true)
-    }
-
     fun proceedWithAddFieldToSidebarScreen() {
-        showAddFieldScreen(addToHeader = false)
+        viewModelScope.launch {
+            commands.emit(
+                ObjectTypeCommand.OpenAddPropertyScreen(
+                    typeId = vmParams.objectId,
+                    space = vmParams.spaceId.id,
+                )
+            )
+        }
     }
 
     private fun updateFieldRecommendations(
         currentFields: List<String>?,
-        item: UiAddFieldItem,
+        item: UiAddPropertyItem.Default,
         updateAction: (List<String>) -> Unit
     ) {
         val newFields = currentFields.orEmpty() + item.id
         updateAction(newFields)
     }
 
-    private fun onAddToSidebarFieldClicked(item: UiAddFieldItem) {
+    private fun onAddToSidebarFieldClicked(item: UiAddPropertyItem.Default) {
         updateFieldRecommendations(
             currentFields = _objTypeState.value?.recommendedRelations,
             item = item,
             updateAction = ::proceedWithSetRecommendedFields
-        )
-    }
-
-    private fun onAddToHeaderFieldClicked(item: UiAddFieldItem) {
-        updateFieldRecommendations(
-            currentFields = _objTypeState.value?.recommendedFeaturedRelations,
-            item = item,
-            updateAction = ::proceedWithSetHeaderRecommendedFields
         )
     }
     //endregion

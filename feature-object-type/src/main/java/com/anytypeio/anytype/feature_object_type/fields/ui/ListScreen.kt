@@ -68,12 +68,12 @@ import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.*
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.FieldItemMenu.*
-import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldsScreenState
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
+import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_object_type.properties.edit.ui.PropertyScreen
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -88,9 +88,8 @@ fun FieldsMainScreen(
     uiFieldsListState: UiFieldsListState,
     uiTitleState: UiTitleState,
     uiIconState: UiIconState,
-    uiFieldEditOrNewState: UiFieldEditOrNewState,
     uiFieldLocalInfoState: UiLocalsFieldsInfoState,
-    uiAddFieldsScreenState: UiAddFieldsScreenState,
+    uiEditPropertyState: UiEditPropertyState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
@@ -198,10 +197,7 @@ fun FieldsMainScreen(
                                     item = item,
                                     reorderingState = reorderableLazyColumnState,
                                     fieldEvent = fieldEvent,
-                                    isReorderable = false,
-                                    onAddIconClick = {
-                                        fieldEvent(FieldEvent.Section.OnAddToHeaderIconClick)
-                                    }
+                                    isReorderable = false
                                 )
                             }
                             is Section.Local,
@@ -226,11 +222,16 @@ fun FieldsMainScreen(
         }
     )
 
-    if (uiFieldEditOrNewState is UiFieldEditOrNewState.Visible) {
-        EditFieldScreen(
+    if (uiEditPropertyState is UiEditPropertyState.Visible) {
+        PropertyScreen(
             modifier = Modifier.fillMaxWidth(),
-            uiFieldEditOrNewState = uiFieldEditOrNewState,
-            fieldEvent = fieldEvent
+            uiState = uiEditPropertyState,
+            onDismissRequest = { fieldEvent(OnEditPropertyScreenDismiss) },
+            onFormatClick = {},
+            onLimitTypesClick = {},
+            onSaveButtonClicked = {},
+            onCreateNewButtonClicked = {},
+            onPropertyNameUpdate = {  }
         )
     }
 
@@ -238,13 +239,6 @@ fun FieldsMainScreen(
         SectionLocalFieldsInfo(
             modifier = Modifier.fillMaxWidth(),
             state = uiFieldLocalInfoState,
-            fieldEvent = fieldEvent
-        )
-    }
-
-    if (uiAddFieldsScreenState is UiAddFieldsScreenState.Visible) {
-        AddFieldScreen(
-            state = uiAddFieldsScreenState,
             fieldEvent = fieldEvent
         )
     }
@@ -757,9 +751,8 @@ fun PreviewTypeFieldsMainScreen() {
             )
         ),
         fieldEvent = {},
-        uiFieldEditOrNewState = UiFieldEditOrNewState.Hidden,
-        uiFieldLocalInfoState = UiLocalsFieldsInfoState.Hidden,
-        uiAddFieldsScreenState = UiAddFieldsScreenState.Hidden
+        uiEditPropertyState = UiEditPropertyState.Hidden,
+        uiFieldLocalInfoState = UiLocalsFieldsInfoState.Hidden
     )
 }
 

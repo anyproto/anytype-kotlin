@@ -34,6 +34,7 @@ data class UiFieldsListState(val items: List<UiFieldsListItem>) {
     }
 }
 
+//todo rename to UiPropertiesListItem
 sealed class UiFieldsListItem {
     abstract val id: Id
 
@@ -184,20 +185,6 @@ sealed class UiLocalsFieldsInfoState {
     data object Hidden : UiLocalsFieldsInfoState()
     data object Visible : UiLocalsFieldsInfoState()
 }
-//endregion
-
-//region Add Fields screen
-sealed class UiAddFieldsScreenState {
-    data object Hidden : UiAddFieldsScreenState()
-    data class Visible(val items: List<UiAddFieldItem>, val addToHeader: Boolean) : UiAddFieldsScreenState()
-}
-
-data class UiAddFieldItem(
-    val id: Id,
-    val fieldKey: Key,
-    val fieldTitle: String,
-    val format: RelationFormat
-)
 //endregion
 
 

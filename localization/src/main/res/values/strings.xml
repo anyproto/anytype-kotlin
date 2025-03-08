@@ -790,6 +790,7 @@
     <string name="layout">Layout</string>
     <string name="button_fields">Fields</string>
     <string name="button_layout">Layout</string>
+    <string name="button_templates">Templates</string>
     <string name="restore_from_archive">Restore from archive</string>
     <string name="icon">Icon</string>
     <string name="icon_description">Emoji or image for object</string>
@@ -1870,7 +1871,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_section_file">File</string>
     <string name="object_type_fields_section_local_fields">Local fields</string>
     <string name="object_type_fields_title">Fields</string>
-    <string name="object_type_fields_info_text">You editing type</string>
+    <string name="object_type_fields_info_text">You\'re editing type</string>
     <string name="object_type_fields_edit_field">Edit field</string>
     <string name="object_type_fields_new_field">New field</string>
     <string name="object_type_fields_preview_field">Preview field</string>
@@ -1881,6 +1882,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_local_info_title">Local fields</string>
     <string name="object_type_fields_local_info_description">Some fields are not included in the object type. Please add them if you want to see them in all objects of this type, or remove them.</string>
     <string name="object_type_fields_local_info_button">Got it</string>
+    <string name="object_type_templates_empty">This type doesn’t have\nany templates</string>
 
     <string name="object_type_open_type_error">Error opening current object type</string>
 
@@ -1908,7 +1910,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_message_reactions_no_reactions_message">Probably someone has just removed the reaction or technical issue happened</string>
 
     <string name="object_types_human">Human</string>
-    <string name="object_type_settings_item_remove">Delete completely</string>
+    <string name="object_type_settings_item_remove">Delete type</string>
 
     <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
     <string name="chats_alert_delete_this_message">Delete this message?</string>

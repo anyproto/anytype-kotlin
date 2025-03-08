@@ -559,7 +559,7 @@ fun MDVView.toCoreModels(): DVViewer = DVViewer(
     coverFit = coverFit,
     coverRelationKey = coverRelationKey.ifEmpty { null },
     defaultTemplate = defaultTemplateId.ifEmpty { null },
-    defaultObjectType = defaultObjectTypeId.ifEmpty { ObjectTypeIds.PAGE }
+    defaultObjectType = defaultObjectTypeId.ifEmpty { null }
 )
 
 fun MDVRelation.toCoreModels(): DVViewerRelation = DVViewerRelation(

@@ -71,6 +71,11 @@ sealed class UiFieldsButtonState {
 
 }
 
+sealed class UiTemplatesButtonState {
+    data object Hidden : UiTemplatesButtonState()
+    data class Visible(val count: Int) : UiTemplatesButtonState()
+}
+
 //region MENU
 @Immutable
 sealed class UiMenuSetItem {
@@ -152,6 +157,24 @@ data class UiTemplatesListState(
     companion object {
         val EMPTY = UiTemplatesListState(items = emptyList())
     }
+}
+
+sealed class UiTemplatesModalListState {
+    abstract val items: List<TemplateView>
+
+    data class Hidden(
+        override val items: List<TemplateView>,
+    ) : UiTemplatesModalListState() {
+        companion object {
+            val EMPTY = Hidden(items = emptyList())
+        }
+    }
+
+    data class Visible(
+        override val items: List<TemplateView>,
+        val showAddIcon: Boolean
+    ) :
+        UiTemplatesModalListState()
 }
 //endregion
 

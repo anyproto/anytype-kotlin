@@ -28,13 +28,12 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeMainScreen
-import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
-import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
-import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
-import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainScreen
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
+import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
+import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
@@ -157,16 +156,20 @@ class ObjectTypeFragment : BaseComposeFragment() {
             startDestination = OBJ_TYPE_MAIN
         ) {
             composable(route = OBJ_TYPE_MAIN) {
-                ObjectTypeMainScreen(
+                WithSetScreen(
+                    uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
                     uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
-                    uiSyncStatusState = vm.uiSyncStatusWidgetState.collectAsStateWithLifecycle().value,
-                    uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
+                    uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
                     uiFieldsButtonState = vm.uiFieldsButtonState.collectAsStateWithLifecycle().value,
                     uiLayoutButtonState = vm.uiLayoutButtonState.collectAsStateWithLifecycle().value,
-                    uiDeleteAlertState = vm.uiAlertState.collectAsStateWithLifecycle().value,
-                    uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
+                    uiTemplatesButtonState = vm.uiTemplatesButtonState.collectAsStateWithLifecycle().value,
+                    uiTemplatesModalListState = vm.uiTemplatesModalListState.collectAsStateWithLifecycle().value,
                     uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
+                    uiSyncStatusState = vm.uiSyncStatusWidgetState.collectAsStateWithLifecycle().value,
+                    uiDeleteAlertState = vm.uiAlertState.collectAsStateWithLifecycle().value,
+                    objectId = objectId,
+                    space = space,
                     onTypeEvent = vm::onTypeEvent
                 )
             }

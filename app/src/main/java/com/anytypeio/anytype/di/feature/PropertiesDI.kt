@@ -5,8 +5,10 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
+import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_object_type.properties.add.TypePropertiesProvider
 import com.anytypeio.anytype.feature_object_type.properties.add.TypePropertiesProviderImpl
@@ -52,11 +54,34 @@ object AddPropertiesModule {
         dispatchers: AppCoroutineDispatchers
     ): SetObjectTypeRecommendedFields = SetObjectTypeRecommendedFields(repo, dispatchers)
 
+    @JvmStatic
     @Provides
     @PerModal
     fun provideTypeKeysProvider(
         objectTypeStore: ObjectTypeStore
     ): TypePropertiesProvider = TypePropertiesProviderImpl(objectTypeStore)
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun createRelation(
+        repo: BlockRepository,
+        storeOfRelations: StoreOfRelations,
+    ) = CreateRelation(
+        repo = repo,
+        storeOfRelations = storeOfRelations
+    )
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideSetObjectDetails(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectDetails = SetObjectDetails(
+        repo,
+        dispatchers
+    )
 
     @Module
     interface Declarations {
@@ -72,5 +97,7 @@ interface AddPropertiesDependencies : ComponentDependencies {
     fun objectTypeStore(): ObjectTypeStore
     fun provideStringResourceProvider(): StringResourceProvider
     fun provideStoreOfRelations(): StoreOfRelations
+    fun provideBlockRepository(): BlockRepository
+    fun provideAppCoroutineDispatchers(): AppCoroutineDispatchers
 }
 //endregion

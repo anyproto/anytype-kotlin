@@ -52,7 +52,7 @@ import javax.inject.Inject
 import kotlin.getValue
 import timber.log.Timber
 
-class ObjectTypeFragment : BaseComposeFragment(), OnAddPropertyListener {
+class ObjectTypeFragment : BaseComposeFragment() {
     @Inject
     lateinit var factory: ObjectTypeVMFactory
     private val vm by viewModels<ObjectTypeViewModel> { factory }
@@ -282,19 +282,6 @@ class ObjectTypeFragment : BaseComposeFragment(), OnAddPropertyListener {
                 }
             }
         }
-        when (val state = errorStateScreen) {
-            UiErrorState.Hidden -> {
-
-            }
-
-            is UiErrorState.Show -> {
-
-            }
-        }
-    }
-
-    override fun onAddProperty(newPropertyId: Id) {
-        Timber.d("New property added: $newPropertyId")
     }
 
     override fun injectDependencies() {

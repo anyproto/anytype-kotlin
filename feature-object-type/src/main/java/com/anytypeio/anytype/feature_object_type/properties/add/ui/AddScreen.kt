@@ -52,14 +52,17 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.fields.ui.commonItemModifier
+import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyEvent
 import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyItem
 import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyScreenState
+import com.anytypeio.anytype.feature_object_type.properties.edit.ui.PropertyScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFieldScreen(
     state: UiAddPropertyScreenState,
+    uiStateEditProperty: UiEditPropertyState,
     event: (AddPropertyEvent) -> Unit
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
@@ -162,6 +165,25 @@ fun AddFieldScreen(
             }
         }
     )
+
+
+
+    if (uiStateEditProperty is UiEditPropertyState.Visible) {
+        PropertyScreen(
+            modifier = Modifier.fillMaxWidth(),
+            uiState = uiStateEditProperty,
+            onDismissRequest = { event(AddPropertyEvent.OnEditPropertyScreenDismissed) },
+            onFormatClick = {},
+            onLimitTypesClick = {},
+            onSaveButtonClicked = {},
+            onCreateNewButtonClicked = {
+                event(AddPropertyEvent.OnCreateNewButtonClicked)
+            },
+            onPropertyNameUpdate = { name ->
+                event(AddPropertyEvent.OnPropertyNameUpdate(name))
+            }
+        )
+    }
 }
 
 @Composable
@@ -347,6 +369,7 @@ fun PreviewAddFieldScreen() {
                 )
             )
         ),
-        event = {}
+        event = {},
+        uiStateEditProperty = UiEditPropertyState.Hidden
     )
 }

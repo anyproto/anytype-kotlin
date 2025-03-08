@@ -6,24 +6,29 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_object_type.properties.add.ui.AddFieldScreen
 import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyViewModel
 import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyViewModel.AddPropertyCommand
 import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmFactory
 import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmParams
+import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyErrorState
+import com.anytypeio.anytype.feature_object_type.properties.add.ui.AddFieldScreen
 import javax.inject.Inject
 
 class AddPropertyFragment : BaseBottomSheetComposeFragment() {
@@ -43,8 +48,55 @@ class AddPropertyFragment : BaseBottomSheetComposeFragment() {
         MaterialTheme {
             AddFieldScreen(
                 state = vm.uiState.collectAsStateWithLifecycle().value,
+                uiStateEditProperty = vm.uiPropertyEditState.collectAsStateWithLifecycle().value,
                 event = vm::onEvent
             )
+            ErrorScreen()
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ErrorScreen() {
+        val errorStateScreen = vm.errorState.collectAsStateWithLifecycle().value
+        if (errorStateScreen is UiAddPropertyErrorState.Show) {
+            when (val r = errorStateScreen.reason) {
+                is UiAddPropertyErrorState.Reason.ErrorAddingProperty -> {
+                    BaseAlertDialog(
+                        dialogText = stringResource(id = R.string.add_property_error_add),
+                        buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                        onButtonClick = vm::hideError,
+                        onDismissRequest = vm::hideError
+                    )
+                }
+
+                is UiAddPropertyErrorState.Reason.ErrorCreatingProperty -> {
+                    BaseAlertDialog(
+                        dialogText = stringResource(id = R.string.add_property_error_create_new),
+                        buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                        onButtonClick = vm::hideError,
+                        onDismissRequest = vm::hideError
+                    )
+                }
+
+                is UiAddPropertyErrorState.Reason.ErrorUpdatingProperty -> {
+                    BaseAlertDialog(
+                        dialogText = stringResource(id = R.string.add_property_error_update),
+                        buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                        onButtonClick = vm::hideError,
+                        onDismissRequest = vm::hideError
+                    )
+                }
+
+                is UiAddPropertyErrorState.Reason.Other -> {
+                    BaseAlertDialog(
+                        dialogText = r.msg,
+                        buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                        onButtonClick = vm::hideError,
+                        onDismissRequest = vm::hideError
+                    )
+                }
+            }
         }
     }
 
@@ -60,10 +112,8 @@ class AddPropertyFragment : BaseBottomSheetComposeFragment() {
 
     private fun execute(command: AddPropertyCommand) {
         when (command) {
-            is AddPropertyCommand.SetProperty -> {
-                withParent<OnAddPropertyListener> {
-                    onAddProperty(newPropertyId = command.id)
-                }
+            is AddPropertyCommand.Exit -> {
+                findNavController().popBackStack()
             }
         }
     }
@@ -93,8 +143,4 @@ class AddPropertyFragment : BaseBottomSheetComposeFragment() {
 
         const val DEFAULT_PADDING_TOP = 10
     }
-}
-
-interface OnAddPropertyListener {
-    fun onAddProperty(newPropertyId: Id)
 }

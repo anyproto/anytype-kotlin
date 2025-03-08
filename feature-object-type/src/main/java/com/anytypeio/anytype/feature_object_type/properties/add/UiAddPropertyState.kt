@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyScreenState.Companion.DEFAULT_NEW_PROPERTY_FORMAT
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.ui.getName
 
 data class UiAddPropertyScreenState(
@@ -77,6 +78,18 @@ data class AddPropertyVmParams(
     val objectTypeId: Id,
     val spaceId: SpaceId
 )
+
+sealed class UiAddPropertyErrorState {
+    data object Hidden : UiAddPropertyErrorState()
+    data class Show(val reason: Reason) : UiAddPropertyErrorState()
+
+    sealed class Reason {
+        data class ErrorAddingProperty(val msg: String) : Reason()
+        data class ErrorCreatingProperty(val msg: String) : Reason()
+        data class ErrorUpdatingProperty(val msg: String) : Reason()
+        data class Other(val msg: String) : Reason()
+    }
+}
 
 
 //region MAPPING

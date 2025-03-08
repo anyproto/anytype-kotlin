@@ -31,13 +31,12 @@ import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
-import com.anytypeio.anytype.feature_object_type.fields.UiEditPropertyState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
-import com.anytypeio.anytype.feature_object_type.fields.toUiPropertyItemState
 import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyItem
+import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
@@ -319,6 +318,7 @@ class ObjectTypeViewModel(
         conflictingFields: List<Id>
     ) {
         _objTypeState.value = objType
+        objectTypeStore.setRecommendedProperties(objType.recommendedRelations)
         _objectTypePermissionsState.value = objectPermissions
 
         if (!objectPermissions.canCreateTemplatesForThisType) {
@@ -394,6 +394,31 @@ class ObjectTypeViewModel(
 
     fun hideError() {
         errorState.value = UiErrorState.Hidden
+    }
+
+    fun setupUiEditPropertyScreen(item: UiFieldsListItem.Item) {
+        val permissions = _objectTypePermissionsState.value
+        if (permissions?.participantCanEdit == true && item.isEditableField) {
+            uiEditPropertyScreen.value = UiEditPropertyState.Visible.Edit(
+                id = item.id,
+                key = item.fieldKey,
+                name = item.fieldTitle,
+                formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
+                formatIcon = item.format.simpleIcon(),
+                format = item.format,
+                limitObjectTypes = item.limitObjectTypes
+            )
+        } else {
+            uiEditPropertyScreen.value = UiEditPropertyState.Visible.View(
+                id = item.id,
+                key = item.fieldKey,
+                name = item.fieldTitle,
+                formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
+                formatIcon = item.format.simpleIcon(),
+                format = item.format,
+                limitObjectTypes = item.limitObjectTypes
+            )
+        }
     }
     //endregion
 
@@ -622,24 +647,7 @@ class ObjectTypeViewModel(
 
             is FieldEvent.OnFieldItemClick -> {
                 when (event.item) {
-                    is UiFieldsListItem.Item -> {
-                        val item = event.item
-                        val propertyItem = toUiPropertyItemState(
-                            propertyId = item.id,
-                            propertyKey = item.fieldKey,
-                            name = item.fieldTitle,
-                            formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
-                            formatIcon = item.format.simpleIcon(),
-                            format = item.format,
-                            limitObjectTypesCount = item.limitObjectTypes.size
-                        ) ?: return
-                        val permissions = _objectTypePermissionsState.value
-                        if (permissions?.participantCanEdit == true && event.item.isEditableField) {
-                            uiEditPropertyScreen.value = UiEditPropertyState.Visible.Edit(propertyItem)
-                        } else {
-                            uiEditPropertyScreen.value = UiEditPropertyState.Visible.View(propertyItem)
-                        }
-                    }
+                    is UiFieldsListItem.Item -> setupUiEditPropertyScreen(item = event.item)
                     else -> {}
                 }
             }

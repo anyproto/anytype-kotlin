@@ -38,7 +38,8 @@ fun PropertyEditScreen(
     uiState: UiEditPropertyState.Visible.Edit,
     onSaveButtonClicked: () -> Unit,
     onFormatClick: () -> Unit,
-    onLimitTypesClick: () -> Unit
+    onLimitTypesClick: () -> Unit,
+    onPropertyNameUpdate: (String) -> Unit
 ) {
 
     var innerValue by remember(uiState.name) { mutableStateOf(uiState.name) }
@@ -65,7 +66,10 @@ fun PropertyEditScreen(
                 focusRequester = focusRequester,
                 keyboardController = keyboardController,
                 emptyName = stringResource(R.string.untitled),
-                onValueChange = { innerValue = it }
+                onValueChange = {
+                    innerValue = it
+                    onPropertyNameUpdate(it)
+                }
             )
             Spacer(modifier = Modifier.size(4.dp))
             Box(
@@ -140,6 +144,7 @@ fun EditPropertyPreview() {
         ),
         onSaveButtonClicked = {},
         onFormatClick = {},
-        onLimitTypesClick = {}
+        onLimitTypesClick = {},
+        onPropertyNameUpdate = {}
     )
 }

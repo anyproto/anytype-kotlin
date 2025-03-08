@@ -33,7 +33,8 @@ fun PropertyNewScreen(
     uiState: UiEditPropertyState.Visible.New,
     onCreateNewButtonClicked: () -> Unit,
     onFormatClick: () -> Unit,
-    onLimitTypesClick: () -> Unit
+    onLimitTypesClick: () -> Unit,
+    onPropertyNameUpdate: (String) -> Unit
 ) {
 
     var innerValue by remember(uiState.name) { mutableStateOf(uiState.name) }
@@ -60,7 +61,10 @@ fun PropertyNewScreen(
                 focusRequester = focusRequester,
                 keyboardController = keyboardController,
                 emptyName = stringResource(R.string.new_property_hint),
-                onValueChange = { innerValue = it }
+                onValueChange = {
+                    innerValue = it
+                    onPropertyNameUpdate(it)
+                }
             )
             Spacer(modifier = Modifier.size(4.dp))
         }
@@ -114,6 +118,7 @@ fun MyPreviewNew() {
         ),
         onCreateNewButtonClicked = {},
         onFormatClick = {},
-        onLimitTypesClick = {}
+        onLimitTypesClick = {},
+        onPropertyNameUpdate = {}
     )
 }

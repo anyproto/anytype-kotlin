@@ -50,7 +50,8 @@ fun PropertyScreen(
     onFormatClick: () -> Unit,
     onLimitTypesClick: () -> Unit,
     onCreateNewButtonClicked: () -> Unit,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onPropertyNameUpdate: (String) -> Unit
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
@@ -68,7 +69,8 @@ fun PropertyScreen(
                 uiState = uiState,
                 onSaveButtonClicked = onSaveButtonClicked,
                 onFormatClick = onFormatClick,
-                onLimitTypesClick = onLimitTypesClick
+                onLimitTypesClick = onLimitTypesClick,
+                onPropertyNameUpdate = onPropertyNameUpdate
             )
 
             is UiEditPropertyState.Visible.View -> PropertyViewScreen(
@@ -83,7 +85,8 @@ fun PropertyScreen(
                 uiState = uiState,
                 onCreateNewButtonClicked = onCreateNewButtonClicked,
                 onFormatClick = onFormatClick,
-                onLimitTypesClick = onLimitTypesClick
+                onLimitTypesClick = onLimitTypesClick,
+                onPropertyNameUpdate = onPropertyNameUpdate
             )
         }
     }

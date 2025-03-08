@@ -68,13 +68,12 @@ import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.*
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.FieldItemMenu.*
-import com.anytypeio.anytype.feature_object_type.fields.UiEditPropertyState
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
-import com.anytypeio.anytype.feature_object_type.properties.edit.PropertyScreen
+import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_object_type.properties.edit.ui.PropertyScreen
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -227,7 +226,12 @@ fun FieldsMainScreen(
         PropertyScreen(
             modifier = Modifier.fillMaxWidth(),
             uiState = uiEditPropertyState,
-            fieldEvent = fieldEvent
+            onDismissRequest = { fieldEvent(OnEditPropertyScreenDismiss) },
+            onFormatClick = {},
+            onLimitTypesClick = {},
+            onSaveButtonClicked = {},
+            onCreateNewButtonClicked = {},
+            onPropertyNameUpdate = {  }
         )
     }
 

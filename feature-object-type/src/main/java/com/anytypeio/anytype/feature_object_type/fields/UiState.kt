@@ -34,6 +34,7 @@ data class UiFieldsListState(val items: List<UiFieldsListItem>) {
     }
 }
 
+//todo rename to UiPropertiesListItem
 sealed class UiFieldsListItem {
     abstract val id: Id
 

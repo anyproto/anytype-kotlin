@@ -50,6 +50,7 @@ import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationCommand
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -203,9 +204,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     is Command.Deeplink.DeepLinkToObject.SideEffect.SwitchSpace -> {
                                         runCatching {
                                             if (effect.chat != null) {
-                                                findNavController(R.id.fragment).navigate(R.id.actionOpenChatFromVault)
+                                                findNavController(R.id.fragment).navigate(
+                                                    R.id.actionOpenChatFromVault,
+                                                    ChatFragment.args(
+                                                        space = command.space,
+                                                        ctx = effect.chat.orEmpty()
+                                                    )
+                                                )
                                             } else {
-                                                findNavController(R.id.fragment).navigate(R.id.actionOpenChatFromVault)
+                                                findNavController(R.id.fragment).navigate(R.id.actionOpenSpaceFromVault)
                                             }
                                             proceedWithOpenObjectNavigation(command.navigation)
                                         }.onFailure {

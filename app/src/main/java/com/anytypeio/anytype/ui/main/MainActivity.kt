@@ -203,8 +203,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 when(val effect = command.sideEffect) {
                                     is Command.Deeplink.DeepLinkToObject.SideEffect.SwitchSpace -> {
                                         runCatching {
+                                            val controller = findNavController(R.id.fragment)
+                                            controller.popBackStack(R.id.vaultScreen, false)
                                             if (effect.chat != null) {
-                                                findNavController(R.id.fragment).navigate(
+                                                controller.navigate(
                                                     R.id.actionOpenChatFromVault,
                                                     ChatFragment.args(
                                                         space = command.space,
@@ -212,7 +214,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                                     )
                                                 )
                                             } else {
-                                                findNavController(R.id.fragment).navigate(R.id.actionOpenSpaceFromVault)
+                                                controller.navigate(R.id.actionOpenSpaceFromVault)
                                             }
                                             proceedWithOpenObjectNavigation(command.navigation)
                                         }.onFailure {

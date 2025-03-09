@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.other
 
 import android.os.Build
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,6 +26,29 @@ class DefaultDeepLinkResolverTest {
 
         // Then
         assertEquals(DeepLinkResolver.Action.Import.Experience(type = "experience123", source = "source321"), result)
+    }
+
+    @Test
+    fun `resolve link to object deep link`() {
+        // Given
+
+        val obj = MockDataFactory.randomUuid()
+
+        val space = MockDataFactory.randomUuid()
+
+        val deeplink = "anytype://object?objectId=$obj&spaceId=$space"
+
+        // When
+        val result = deepLinkResolver.resolve(deeplink)
+
+        // Then
+        assertEquals(
+            DeepLinkResolver.Action.DeepLinkToObject(
+                space = SpaceId(space),
+                obj = obj
+            ),
+            result
+        )
     }
 
     @Test

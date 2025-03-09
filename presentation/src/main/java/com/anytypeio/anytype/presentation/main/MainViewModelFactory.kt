@@ -11,10 +11,12 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
@@ -38,7 +40,9 @@ class MainViewModelFactory @Inject constructor(
     private val awaitAccountStartManager: AwaitAccountStartManager,
     private val membershipProvider: MembershipProvider,
     private val globalSubscriptionManager: GlobalSubscriptionManager,
-    private val spaceInviteResolver: SpaceInviteResolver
+    private val spaceInviteResolver: SpaceInviteResolver,
+    private val spaceManager: SpaceManager,
+    private val spaceViews: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -60,6 +64,8 @@ class MainViewModelFactory @Inject constructor(
         awaitAccountStartManager = awaitAccountStartManager,
         membershipProvider = membershipProvider,
         globalSubscriptionManager = globalSubscriptionManager,
-        spaceInviteResolver = spaceInviteResolver
+        spaceInviteResolver = spaceInviteResolver,
+        spaceManager = spaceManager,
+        spaceViews = spaceViews
     ) as T
 }

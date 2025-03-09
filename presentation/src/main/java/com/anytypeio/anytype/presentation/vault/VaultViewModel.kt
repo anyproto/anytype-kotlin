@@ -175,7 +175,7 @@ class VaultViewModel(
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
-        Timber.d("onResume")
+        Timber.d("onResume, deep link: $deeplink")
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.screenVault,

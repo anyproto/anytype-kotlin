@@ -346,6 +346,7 @@ class SplashViewModel(
      * @see [LaunchAccount] use-case
      */
     private suspend fun proceedWithVaultNavigation(deeplink: String? = null) {
+        Timber.d("proceedWithVaultNavigation deep link: $deeplink")
         val space = getLastOpenedSpace.async(Unit).getOrNull()
         if (space != null && spaceManager.getState() != SpaceManager.State.NoSpace) {
             spaceManager

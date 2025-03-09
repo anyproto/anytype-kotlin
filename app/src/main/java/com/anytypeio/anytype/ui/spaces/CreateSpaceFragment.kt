@@ -63,9 +63,6 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                                             deeplink = null
                                         )
                                     )
-//                                    if (command.showMultiplayerTooltip) {
-//                                        findNavController().navigate(R.id.multiplayerFeatureDialog)
-//                                    }
                                 }.onFailure {
                                     Timber.e(it, "Error while exiting to vault or opening created space")
                                 }

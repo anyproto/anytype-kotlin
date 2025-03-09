@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_models.primitives
 
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelativeDate
 
 sealed class Value<T> {
@@ -20,4 +21,13 @@ sealed class Field<T>(open val value: Value<T>) {
 data class FieldDateValue(
     val timestamp: TimestampInSeconds,
     val relativeDate: RelativeDate
+)
+
+data class ParsedFields(
+    val header: List<ObjectWrapper.Relation> = emptyList(),
+    val sidebar: List<ObjectWrapper.Relation> = emptyList(),
+    val hidden: List<ObjectWrapper.Relation> = emptyList(),
+    val localWithoutSystem: List<ObjectWrapper.Relation> = emptyList(),
+    val localSystem: List<ObjectWrapper.Relation> = emptyList(),
+    val file: List<ObjectWrapper.Relation> = emptyList(),
 )

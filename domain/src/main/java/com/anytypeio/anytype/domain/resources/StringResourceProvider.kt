@@ -6,4 +6,5 @@ interface StringResourceProvider {
     fun getRelativeDateName(relativeDate: RelativeDate): String
     fun getDeletedObjectTitle(): String
     fun getUntitledObjectTitle(): String
+    fun getSetOfObjectsTitle(): String
 }

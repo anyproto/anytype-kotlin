@@ -78,16 +78,18 @@ fun Dragger(
 @Composable
 fun Divider(
     modifier: Modifier = Modifier,
+    height: Dp = 0.5.dp,
     paddingStart: Dp = 20.dp,
     paddingEnd: Dp = 20.dp,
-    visible: Boolean = true
+    visible: Boolean = true,
+    color: Color = colorResource(R.color.shape_primary)
 ) {
     Box(
         modifier = modifier
             .alpha(if (visible) 1f else 0f)
             .padding(start = paddingStart, end = paddingEnd)
-            .background(color = colorResource(R.color.shape_primary))
-            .height(0.5.dp)
+            .background(color = color)
+            .height(height)
             .fillMaxWidth()
     )
 }

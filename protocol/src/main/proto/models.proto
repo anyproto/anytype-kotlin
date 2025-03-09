@@ -672,6 +672,7 @@ message Account {
         string timeZone = 104; // time zone from config
         string analyticsId = 105;
         string networkId = 106; // network id to which anytype is connected
+        string ethereumAddress = 107; // we have Any PK AND Ethereum PK derived from one seed phrase
     }
 
     message Auth {

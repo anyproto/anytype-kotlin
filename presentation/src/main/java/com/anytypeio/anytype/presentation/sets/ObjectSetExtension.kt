@@ -397,6 +397,10 @@ fun ObjectState.DataView.Set.getSetOfValue(ctx: Id): List<Id> {
     return details.getObject(ctx)?.setOf.orEmpty()
 }
 
+fun ObjectState.DataView.TypeSet.getSetOfValue(ctx: Id): List<Id> {
+    return details.getObject(ctx)?.setOf.orEmpty()
+}
+
 fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): List<Id> {
     return query.filter(::isValidObject)
 }
@@ -488,6 +492,16 @@ suspend fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSessio
                 )
             }
         }
+
+        is ObjectState.DataView.TypeSet -> {
+            val setOfValue = getSetOfValue(ctx)
+            mapViewers(
+                defaultObjectType = { setOfValue.firstOrNull() },
+                viewers = viewers,
+                session = session,
+                storeOfRelations = storeOfRelations
+            )
+        }
     }
 }
 
@@ -551,6 +565,23 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
                 }
             }
         }
+
+        is ObjectState.DataView.TypeSet -> {
+            val setOfValue = getSetOfValue(ctx)
+            val setOf = setOfValue.firstOrNull()
+            return if (setOf.isNullOrBlank()) {
+                Timber.d("Set by type setOf param is null or empty, not possible to get Type and Template")
+                Pair(null, null)
+            } else {
+                val defaultSetObjectType = details.getTypeObject(setOf)
+                if (activeView.defaultTemplate.isNullOrEmpty()) {
+                    val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
+                    Pair(defaultSetObjectType, defaultTemplateId)
+                } else {
+                    Pair(defaultSetObjectType, activeView.defaultTemplate)
+                }
+            }
+        }
     }
 }
 
@@ -580,6 +611,7 @@ fun ObjectState.DataView.isChangingDefaultTypeAvailable(): Boolean {
             val setOfValue = getSetOfValue(root)
             isSetByRelation(setOfValue = setOfValue)
         }
+        is ObjectState.DataView.TypeSet -> false
     }
 }
 

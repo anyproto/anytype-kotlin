@@ -111,7 +111,7 @@ android {
             buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.debug'])
             //signingConfig signingConfigs.debug
             firebaseAppDistribution {
-                artifactType = "AAB"
+                artifactType = "APK"
                 groups = "anytype-q&a, product-review, nightly"
                 serviceCredentialsFile = "$rootDir/scripts/distribution/anytype-debug-service-account-key.json"
             }
@@ -142,7 +142,7 @@ android {
         // Configures multiple APKs based on ABI.
         abi {
             // Enables building multiple APKs per ABI.
-            enable true
+            enable false
             reset()
             include "armeabi-v7a", "arm64-v8a"
             universalApk true
@@ -176,6 +176,7 @@ dependencies {
     implementation project(':gallery-experience')
     implementation project(':feature-all-content')
     implementation project(':feature-date')
+    implementation project(':feature-object-type')
 
     //Compile time dependencies
     ksp libs.daggerCompiler
@@ -223,7 +224,7 @@ dependencies {
     implementation libs.composeAccompanistNavigation
     implementation libs.preference
     implementation libs.activityCompose
-    implementation libs.composeReorderable
+    implementation libs.composeReorderableLegacy
 
     implementation libs.room
     implementation libs.appUpdater

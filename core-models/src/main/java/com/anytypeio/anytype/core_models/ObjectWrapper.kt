@@ -91,10 +91,10 @@ sealed class ObjectWrapper {
         val restrictions: List<ObjectRestriction>
             get() = when (val value = map[Relations.RESTRICTIONS]) {
                 is Double -> buildList {
-                    ObjectRestriction.values().firstOrNull { it.code == value.toInt() }
+                    ObjectRestriction.entries.firstOrNull { it.code == value.toInt() }
                 }
                 is List<*> -> value.typeOf<Double>().mapNotNull { code ->
-                    ObjectRestriction.values().firstOrNull { it.code == code.toInt() }
+                    ObjectRestriction.entries.firstOrNull { it.code == code.toInt() }
                 }
                 else -> emptyList()
             }
@@ -168,14 +168,37 @@ sealed class ObjectWrapper {
         val iconEmoji: String? by default
         val isDeleted: Boolean? by default
         val recommendedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_RELATIONS)
+        val recommendedFeaturedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_FEATURED_RELATIONS)
+        val recommendedHiddenRelations: List<Id> get() = getValues(Relations.RECOMMENDED_HIDDEN_RELATIONS)
+        val recommendedFileRelations: List<Id> get() = getValues(Relations.RECOMMENDED_FILE_RELATIONS)
         val recommendedLayout: ObjectType.Layout?
             get() = when (val value = map[Relations.RECOMMENDED_LAYOUT]) {
-                is Double -> ObjectType.Layout.values().singleOrNull { layout ->
+                is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
                     layout.code == value.toInt()
                 }
                 else -> ObjectType.Layout.BASIC
             }
+        val layout: ObjectType.Layout?
+            get() = when (val value = map[Relations.LAYOUT]) {
+                is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
+                    layout.code == value.toInt()
+                }
+                else -> null
+            }
         val defaultTemplateId: Id? by default
+
+        val restrictions: List<ObjectRestriction>
+            get() = when (val value = map[Relations.RESTRICTIONS]) {
+                is Double -> buildList {
+                    ObjectRestriction.entries.firstOrNull { it.code == value.toInt() }
+                }
+
+                is List<*> -> value.typeOf<Double>().mapNotNull { code ->
+                    ObjectRestriction.entries.firstOrNull { it.code == code.toInt() }
+                }
+
+                else -> emptyList()
+            }
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {
@@ -188,7 +211,7 @@ sealed class ObjectWrapper {
             get() {
                 val value = map[Relations.RELATION_FORMAT]
                 return if (value is Double) {
-                    RelationFormat.values().firstOrNull { f ->
+                    RelationFormat.entries.firstOrNull { f ->
                         f.code == value.toInt()
                     } ?: RelationFormat.UNDEFINED
                 } else {
@@ -214,10 +237,10 @@ sealed class ObjectWrapper {
         val restrictions: List<ObjectRestriction>
             get() = when (val value = map[Relations.RESTRICTIONS]) {
                 is Double -> buildList {
-                    ObjectRestriction.values().firstOrNull { it.code == value.toInt() }
+                    ObjectRestriction.entries.firstOrNull { it.code == value.toInt() }
                 }
                 is List<*> -> value.typeOf<Double>().mapNotNull { code ->
-                    ObjectRestriction.values().firstOrNull { it.code == code.toInt() }
+                    ObjectRestriction.entries.firstOrNull { it.code == code.toInt() }
                 }
                 else -> emptyList()
             }
@@ -226,7 +249,11 @@ sealed class ObjectWrapper {
 
         val type: List<Id> get() = getValues(Relations.TYPE)
 
-        val isValid get() = map.containsKey(Relations.RELATION_KEY) && map.containsKey(Relations.ID)
+        val isValid get() =
+            map.containsKey(Relations.RELATION_KEY) && map.containsKey(Relations.ID)
+
+        val isValidToUse get() = isValid && isDeleted != true && isArchived != true && isHidden != true
+
     }
 
     data class Option(override val map: Struct) : ObjectWrapper() {
@@ -244,6 +271,7 @@ sealed class ObjectWrapper {
 
         val id: Id by default
         val name: String? by default
+        val description: String? = getSingleValue(Relations.DESCRIPTION)
         val iconImage: String? get() = getSingleValue(Relations.ICON_IMAGE)
         val iconOption: Double? by default
 

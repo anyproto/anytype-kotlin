@@ -55,6 +55,30 @@ sealed class DataViewViewState {
         ) : Set()
     }
 
+    sealed class TypeSet : DataViewViewState() {
+
+        abstract val isCreateObjectAllowed: Boolean
+        abstract val isEditingViewAllowed: Boolean
+
+        data class NoItems(
+            val title: String,
+            override val isCreateObjectAllowed: Boolean = true,
+            override val isEditingViewAllowed: Boolean = false
+        ) : TypeSet()
+
+        data class Default(
+            val viewer: Viewer?,
+            override val isCreateObjectAllowed: Boolean = true,
+            override val isEditingViewAllowed: Boolean = false
+        ) : TypeSet()
+
+        data class Error(
+            val msg: String,
+            override val isCreateObjectAllowed: Boolean = false,
+            override val isEditingViewAllowed: Boolean = false
+        ) : TypeSet()
+    }
+
     object Init: DataViewViewState()
     data class Error(val msg: String) : DataViewViewState()
 }

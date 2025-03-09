@@ -114,8 +114,14 @@ class ObjectTypesSubscriptionManager (
                     Relations.DEFAULT_TEMPLATE_ID,
                     Relations.SPACE_ID,
                     Relations.UNIQUE_KEY,
-                    Relations.RESTRICTIONS
-                ),
+                    Relations.RESTRICTIONS,
+                    Relations.TARGET_SPACE_ID,
+                    Relations.TYPE,
+                    Relations.RECOMMENDED_RELATIONS,
+                    Relations.RECOMMENDED_FEATURED_RELATIONS,
+                    Relations.RECOMMENDED_HIDDEN_RELATIONS,
+                    Relations.RECOMMENDED_FILE_RELATIONS,
+                    ),
                 ignoreWorkspace = true
             )
     }

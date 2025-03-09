@@ -53,6 +53,20 @@ sealed class ObjectState {
             override val dataViewContent get() = dataViewBlock.content as DV
             override val viewers get() = dataViewContent.viewers
         }
+
+        data class TypeSet(
+            override val root: Id,
+            override val blocks: List<Block> = emptyList(),
+            override val details: ObjectViewDetails = ObjectViewDetails.EMPTY,
+            override val objectRestrictions: List<ObjectRestriction> = emptyList(),
+            override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
+        ) : DataView() {
+
+            override val isInitialized get() = blocks.any { it.content is DV }
+            override val dataViewBlock get() = blocks.first { it.content is DV }
+            override val dataViewContent get() = dataViewBlock.content as DV
+            override val viewers get() = dataViewContent.viewers
+        }
     }
 
     object Init : ObjectState() {

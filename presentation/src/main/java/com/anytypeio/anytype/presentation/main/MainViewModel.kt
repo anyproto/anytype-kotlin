@@ -25,10 +25,12 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
@@ -64,7 +66,9 @@ class MainViewModel(
     private val awaitAccountStartManager: AwaitAccountStartManager,
     private val membershipProvider: MembershipProvider,
     private val globalSubscriptionManager: GlobalSubscriptionManager,
-    private val spaceInviteResolver: SpaceInviteResolver
+    private val spaceInviteResolver: SpaceInviteResolver,
+    private val spaceManager: SpaceManager,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -354,9 +358,46 @@ class MainViewModel(
                         }
                     }
                     is DeepLinkToObjectDelegate.Result.Success -> {
-                        commands.emit(
-                            Command.Navigate(result.obj.navigation())
-                        )
+                        // TODO open space and dashboard before navigation
+                        val targetSpace = result.obj.spaceId
+                        if (targetSpace != null) {
+                            val currSpace = spaceManager.getState()
+                            Timber.d("Space manager state before processing deep link: $currSpace")
+                            when(currSpace) {
+                                SpaceManager.State.Init -> {
+                                    // Do nothing.
+                                }
+                                SpaceManager.State.NoSpace -> {
+                                    proceedWithSwitchingSpaceForDeepLinkToObject(
+                                        targetSpace = targetSpace,
+                                        deeplink = deeplink,
+                                        result = result
+                                    )
+                                }
+                                is SpaceManager.State.Space.Active -> {
+                                    if (currSpace.config.space != deeplink.space.id) {
+                                        proceedWithSwitchingSpaceForDeepLinkToObject(
+                                            targetSpace = targetSpace,
+                                            deeplink = deeplink,
+                                            result = result
+                                        )
+                                    } else {
+                                        commands.emit(
+                                            Command.Deeplink.DeepLinkToObject(
+                                                navigation = result.obj.navigation(),
+                                                sideEffect = null,
+                                                space = deeplink.space.id,
+                                                obj = deeplink.obj
+                                            ),
+                                        )
+                                    }
+
+                                }
+                                is SpaceManager.State.Space.Idle -> {
+
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -369,6 +410,33 @@ class MainViewModel(
                 Timber.d("No deep link")
             }
         }
+    }
+
+    private suspend fun proceedWithSwitchingSpaceForDeepLinkToObject(
+        targetSpace: Id,
+        deeplink: DeepLinkResolver.Action.DeepLinkToObject,
+        result: DeepLinkToObjectDelegate.Result.Success
+    ) {
+        spaceManager
+            .set(targetSpace)
+            .onSuccess { config ->
+                val home = config.home
+                val spaceView = spaceViews
+                    .get(deeplink.space)
+                val chat = spaceView?.chatId
+                val sideEffect = Command.Deeplink.DeepLinkToObject.SideEffect.SwitchSpace(
+                    chat = chat,
+                    home = home
+                )
+                commands.emit(
+                    Command.Deeplink.DeepLinkToObject(
+                        navigation = result.obj.navigation(),
+                        sideEffect = sideEffect,
+                        space = deeplink.space.id,
+                        obj = deeplink.obj
+                    ),
+                )
+            }
     }
 
     sealed class Command {
@@ -391,6 +459,19 @@ class MainViewModel(
 
         sealed class Deeplink : Command() {
             data object DeepLinkToObjectNotWorking: Deeplink()
+            data class DeepLinkToObject(
+                val obj: Id,
+                val space: Id,
+                val navigation: OpenObjectNavigation,
+                val sideEffect: SideEffect? = null
+            ) : Deeplink() {
+                sealed class SideEffect {
+                    data class SwitchSpace(
+                        val home: Id,
+                        val chat: Id?
+                    ): SideEffect()
+                }
+            }
             data class Invite(val link: String) : Deeplink()
             data class GalleryInstallation(
                 val deepLinkType: String,

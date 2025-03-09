@@ -65,11 +65,9 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
             DeepLinkResolver.Action.Invite(deeplink)
         }
         deeplink.contains(OBJECT_PATH) -> {
-            Timber.d("Object path detected")
             val uri = Uri.parse(deeplink)
             val obj = uri.getQueryParameter(OBJECT_ID_PARAM)
             val space = uri.getQueryParameter(SPACE_ID_PARAM)
-            Timber.d("Parsed obj: `$obj, space: $space")
             if (!obj.isNullOrEmpty() && !space.isNullOrEmpty()) {
                 val cid = uri.getQueryParameter(CONTENT_ID_PARAM)
                 val key = uri.getQueryParameter(ENCRYPTION_KEY_PARAM)

@@ -287,9 +287,9 @@
     <string name="relation_format_checkbox">Kotak centang</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">Surel</string>
-    <string name="relation_format_phone">Telepon</string>
+    <string name="relation_format_phone">Nomor telepon</string>
     <string name="relation_format_emoji">Emoji</string>
-    <string name="relation_format_object">Objek</string>
+    <string name="relation_format_object">Object relation</string>
     <string name="relation_format_relation">Relasi</string>
     <string name="viewer_sorting_prefix">Kemudian</string>
     <string name="enter_value">Masukkan nilai</string>
@@ -297,7 +297,7 @@
     <string name="add_sort">Add a sort</string>
     <string name="apply">Terapkan</string>
     <string name="add_filter">Add a filter</string>
-    <string name="relation_format_tag">Pilih banyak</string>
+    <string name="relation_format_tag">Multi-Select</string>
     <string name="unknown_number_of_objects">Unknown number of objects</string>
     <string name="sort_ascending">Urutan naik</string>
     <string name="sort_descending">Urutan turun</string>
@@ -317,7 +317,7 @@
     <string name="dv_cell_number_hint">Add number…</string>
     <string name="unknown_object_type">Unknown type</string>
     <string name="relation_format_short_text">Teks pendek</string>
-    <string name="relation_format_long_text">Teks panjang</string>
+    <string name="relation_format_long_text">Teks</string>
     <string name="set_new_relation">Set new relation</string>
     <string name="relation_deleted">Relasi terhapus</string>
     <string name="content_description_document_cover">Document\'s cover</string>
@@ -821,6 +821,7 @@
     <string name="create_space">Buat ruang</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipe</string>
+    <string name="format">Format</string>
     <string name="space_info">Info ruang</string>
     <string name="creation_date">Creation date</string>
     <string name="created_by">Created by</string>
@@ -1674,4 +1675,15 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_delete_space_button">Hapus Ruang</string>
     <string name="space_settings_icon_title">Sunting gambar</string>
     <string name="space_settings_save_button">Simpan</string>
+    <string name="object_type_add_property_screen_title">Add property</string>
+    <string name="object_type_add_property_screen_section">Properties types</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
+    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="new_property_hint">New property</string>
+    <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="add_property_error_create_new">Error while creating new property</string>
+    <string name="add_property_error_update">Error while updating property</string>
+    <string name="add_property_error_add">Error while adding property to type</string>
 </resources>

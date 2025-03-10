@@ -288,11 +288,11 @@
     <string name="relation_format_status">Выбрать</string>
     <string name="relation_format_file">Файлы &amp; Медиа</string>
     <string name="relation_format_checkbox">Флажок</string>
-    <string name="relation_format_url">URL</string>
+    <string name="relation_format_url">Ссылка</string>
     <string name="relation_format_email">E-mail</string>
-    <string name="relation_format_phone">Номер тел.</string>
+    <string name="relation_format_phone">Номер телефона</string>
     <string name="relation_format_emoji">Эмодзи</string>
-    <string name="relation_format_object">Объект</string>
+    <string name="relation_format_object">Object relation</string>
     <string name="relation_format_relation">Свойство</string>
     <string name="viewer_sorting_prefix">Затем</string>
     <string name="enter_value">Введите значение</string>
@@ -300,7 +300,7 @@
     <string name="add_sort">Добавить сортировку</string>
     <string name="apply">Применить</string>
     <string name="add_filter">Добавить фильтр</string>
-    <string name="relation_format_tag">Multiselect</string>
+    <string name="relation_format_tag">Multi-Select</string>
     <string name="unknown_number_of_objects">Неизвестное число объектов</string>
     <string name="sort_ascending">По возрастанию</string>
     <string name="sort_descending">По убыванию</string>
@@ -320,7 +320,7 @@
     <string name="dv_cell_number_hint">Добавить номер</string>
     <string name="unknown_object_type">Неизвестный тип</string>
     <string name="relation_format_short_text">Короткий текст</string>
-    <string name="relation_format_long_text">Длинный текст</string>
+    <string name="relation_format_long_text">Текст</string>
     <string name="set_new_relation">Установить новую связь</string>
     <string name="relation_deleted">Удалённое свойство</string>
     <string name="content_description_document_cover">Document\'s cover</string>
@@ -827,6 +827,7 @@
     <string name="create_space">Создать пространство</string>
     <string name="generic_error">Произошла ошибка. Попробуйте ещё раз.</string>
     <string name="type">Тип</string>
+    <string name="format">Format</string>
     <string name="space_info">Информация о пространстве</string>
     <string name="creation_date">Дата создания</string>
     <string name="created_by">Создано</string>
@@ -1176,9 +1177,9 @@
     <string name="multiplayer_upgrade_button_request">✦ Обновите, чтобы добавить больше участников</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Обновите, чтобы добавить больше пространств</string>
     <string name="multiplayer_members">Участники</string>
-    <string name="multiplayer_leave_request">Оставить запрос</string>
+    <string name="multiplayer_leave_request">Запрос на выход</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>
-    <string name="multiplayer_approve_request">Утверждено</string>
+    <string name="multiplayer_approve_request">Подтвердить</string>
     <string name="multiplayer_view_request">Посмотреть запрос</string>
     <string name="multiplayer_owner">Владелец</string>
     <string name="multiplayer_can_edit">Can edit</string>
@@ -1716,4 +1717,15 @@
     <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Редактировать фотографию</string>
     <string name="space_settings_save_button">Сохранить</string>
+    <string name="object_type_add_property_screen_title">Add property</string>
+    <string name="object_type_add_property_screen_section">Properties types</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
+    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="new_property_hint">New property</string>
+    <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="add_property_error_create_new">Error while creating new property</string>
+    <string name="add_property_error_update">Error while updating property</string>
+    <string name="add_property_error_add">Error while adding property to type</string>
 </resources>

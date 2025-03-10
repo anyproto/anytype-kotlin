@@ -288,9 +288,9 @@
     <string name="relation_format_checkbox">Casilla</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">Correo electrónico</string>
-    <string name="relation_format_phone">Teléfono</string>
+    <string name="relation_format_phone">Número de teléfono</string>
     <string name="relation_format_emoji">Emoji</string>
-    <string name="relation_format_object">Objeto</string>
+    <string name="relation_format_object">Object relation</string>
     <string name="relation_format_relation">Relación</string>
     <string name="viewer_sorting_prefix">Luego</string>
     <string name="enter_value">Introducir valor</string>
@@ -298,7 +298,7 @@
     <string name="add_sort">Añadir un orden</string>
     <string name="apply">Aplicar</string>
     <string name="add_filter">Añadir un filtro</string>
-    <string name="relation_format_tag">Selección múltiple</string>
+    <string name="relation_format_tag">Multi-Select</string>
     <string name="unknown_number_of_objects">Número de objetos desconocido</string>
     <string name="sort_ascending">Ascendente</string>
     <string name="sort_descending">Descendente</string>
@@ -318,7 +318,7 @@
     <string name="dv_cell_number_hint">Añadir número…</string>
     <string name="unknown_object_type">Tipo desconocido</string>
     <string name="relation_format_short_text">Texto corto</string>
-    <string name="relation_format_long_text">Texto largo</string>
+    <string name="relation_format_long_text">Texto</string>
     <string name="set_new_relation">Nueva relación de conjunto</string>
     <string name="relation_deleted">Relación eliminada</string>
     <string name="content_description_document_cover">Portada de documento</string>
@@ -823,6 +823,7 @@
     <string name="create_space">Crear un espacio</string>
     <string name="generic_error">Algo ha salido mal. Inténtalo de nuevo.</string>
     <string name="type">Tipo:</string>
+    <string name="format">Format</string>
     <string name="space_info">Información del espacio</string>
     <string name="creation_date">Fecha de creación</string>
     <string name="created_by">Creado por</string>
@@ -1687,4 +1688,15 @@ En concreto,
     <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Editar imagen</string>
     <string name="space_settings_save_button">Guardar</string>
+    <string name="object_type_add_property_screen_title">Add property</string>
+    <string name="object_type_add_property_screen_section">Properties types</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
+    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="new_property_hint">New property</string>
+    <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="add_property_error_create_new">Error while creating new property</string>
+    <string name="add_property_error_update">Error while updating property</string>
+    <string name="add_property_error_add">Error while adding property to type</string>
 </resources>

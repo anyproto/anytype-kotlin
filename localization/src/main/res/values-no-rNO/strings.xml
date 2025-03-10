@@ -286,11 +286,11 @@
     <string name="relation_format_status">Velg</string>
     <string name="relation_format_file">File &amp; Media</string>
     <string name="relation_format_checkbox">Avkrysningsboks</string>
-    <string name="relation_format_url">Url</string>
+    <string name="relation_format_url">URL</string>
     <string name="relation_format_email">E-post</string>
-    <string name="relation_format_phone">Telefon</string>
+    <string name="relation_format_phone">Telefonnummer</string>
     <string name="relation_format_emoji">Emoji</string>
-    <string name="relation_format_object">Objekt</string>
+    <string name="relation_format_object">Object relation</string>
     <string name="relation_format_relation">Relasjon</string>
     <string name="viewer_sorting_prefix">Deretter</string>
     <string name="enter_value">Skriv inn verdi</string>
@@ -298,7 +298,7 @@
     <string name="add_sort">Legg til sortering</string>
     <string name="apply">Apply</string>
     <string name="add_filter">Legg til et filter</string>
-    <string name="relation_format_tag">Multiselect</string>
+    <string name="relation_format_tag">Multi-Select</string>
     <string name="unknown_number_of_objects">Ukjent antall objekter</string>
     <string name="sort_ascending">Stigende rekkefølge</string>
     <string name="sort_descending">Synkende rekkefølge</string>
@@ -318,7 +318,7 @@
     <string name="dv_cell_number_hint">Legg til nummer…</string>
     <string name="unknown_object_type">Ukjent type</string>
     <string name="relation_format_short_text">Kort tekst</string>
-    <string name="relation_format_long_text">Lang tekst</string>
+    <string name="relation_format_long_text">Tekst</string>
     <string name="set_new_relation">Angi ny relasjon</string>
     <string name="relation_deleted">Slettet relasjon</string>
     <string name="content_description_document_cover">Document\'s cover</string>
@@ -823,6 +823,7 @@
     <string name="create_space">Opprett et rom</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Type</string>
+    <string name="format">Format</string>
     <string name="space_info">Rominformasjon</string>
     <string name="creation_date">Creation date</string>
     <string name="created_by">Created by</string>
@@ -1687,4 +1688,15 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Save</string>
+    <string name="object_type_add_property_screen_title">Add property</string>
+    <string name="object_type_add_property_screen_section">Properties types</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
+    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="new_property_hint">New property</string>
+    <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="add_property_error_create_new">Error while creating new property</string>
+    <string name="add_property_error_update">Error while updating property</string>
+    <string name="add_property_error_add">Error while adding property to type</string>
 </resources>

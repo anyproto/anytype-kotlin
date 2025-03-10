@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.feature_object_type.fields
 
+import com.anytypeio.anytype.core_models.Id
+
 sealed class FieldEvent {
 
     data object OnEditPropertyScreenDismiss : FieldEvent()
@@ -7,7 +9,7 @@ sealed class FieldEvent {
     data class OnFieldItemClick(val item: UiFieldsListItem) : FieldEvent()
 
     sealed class FieldItemMenu : FieldEvent() {
-        data class OnDeleteFromTypeClick(val item: UiFieldsListItem) : FieldItemMenu()
+        data class OnDeleteFromTypeClick(val id: Id) : FieldItemMenu()
         data class OnAddLocalToTypeClick(val item: UiFieldsListItem) : FieldItemMenu()
     }
 

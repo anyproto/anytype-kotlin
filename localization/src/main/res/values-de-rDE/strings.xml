@@ -286,11 +286,11 @@
     <string name="relation_format_status">Auswählen</string>
     <string name="relation_format_file">Datei &amp; Medien</string>
     <string name="relation_format_checkbox">Checkbox</string>
-    <string name="relation_format_url">URL</string>
+    <string name="relation_format_url">Link</string>
     <string name="relation_format_email">E-Mail</string>
-    <string name="relation_format_phone">Telefon</string>
+    <string name="relation_format_phone">Telefonnummer</string>
     <string name="relation_format_emoji">Emoji</string>
-    <string name="relation_format_object">Objekt</string>
+    <string name="relation_format_object">Object relation</string>
     <string name="relation_format_relation">Verhältnis</string>
     <string name="viewer_sorting_prefix">Dann</string>
     <string name="enter_value">Wert eingeben</string>
@@ -298,7 +298,7 @@
     <string name="add_sort">Sortierung hinzufügen</string>
     <string name="apply">Anwenden</string>
     <string name="add_filter">Filter hinzufügen</string>
-    <string name="relation_format_tag">Mehrfachauswahl</string>
+    <string name="relation_format_tag">Multi-Select</string>
     <string name="unknown_number_of_objects">Unbekannte Anzahl von Objekten</string>
     <string name="sort_ascending">Aufsteigend</string>
     <string name="sort_descending">Absteigend</string>
@@ -318,7 +318,7 @@
     <string name="dv_cell_number_hint">Nummer hinzufügen...</string>
     <string name="unknown_object_type">Unbekannter Typ</string>
     <string name="relation_format_short_text">Kurztext</string>
-    <string name="relation_format_long_text">Langtext</string>
+    <string name="relation_format_long_text">Text</string>
     <string name="set_new_relation">Setze neue Beziehung</string>
     <string name="relation_deleted">Gelöschte Relation</string>
     <string name="content_description_document_cover">Document\'s cover</string>
@@ -823,6 +823,7 @@
     <string name="create_space">Space erstellen</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
     <string name="type">Typ</string>
+    <string name="format">Format</string>
     <string name="space_info">Space-Info</string>
     <string name="creation_date">Erstellungsdatum</string>
     <string name="created_by">Erstellt von</string>
@@ -1687,4 +1688,15 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Bild bearbeiten</string>
     <string name="space_settings_save_button">Speichern</string>
+    <string name="object_type_add_property_screen_title">Add property</string>
+    <string name="object_type_add_property_screen_section">Properties types</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
+    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="new_property_hint">New property</string>
+    <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="add_property_error_create_new">Error while creating new property</string>
+    <string name="add_property_error_update">Error while updating property</string>
+    <string name="add_property_error_add">Error while adding property to type</string>
 </resources>

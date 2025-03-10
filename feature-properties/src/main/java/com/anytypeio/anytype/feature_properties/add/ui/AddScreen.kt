@@ -55,16 +55,16 @@ import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.ui.PropertyScreen
-import com.anytypeio.anytype.feature_properties.add.AddPropertyEvent
-import com.anytypeio.anytype.feature_properties.add.UiAddPropertyItem
-import com.anytypeio.anytype.feature_properties.add.UiAddPropertyScreenState
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesEvent
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesItem
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFieldScreen(
-    state: UiAddPropertyScreenState,
+    state: UiEditTypePropertiesState,
     uiStateEditProperty: UiEditPropertyState,
-    event: (AddPropertyEvent) -> Unit
+    event: (UiEditTypePropertiesEvent) -> Unit
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
 
@@ -99,7 +99,7 @@ fun AddFieldScreen(
                 ) { newQuery ->
                     isSearchEmpty = newQuery.isEmpty()
                     event(
-                        AddPropertyEvent.OnSearchQueryChanged(newQuery)
+                        UiEditTypePropertiesEvent.OnSearchQueryChanged(newQuery)
                     )
                 }
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
@@ -126,37 +126,37 @@ fun AddFieldScreen(
                     itemContent = { index ->
                         val item = state.items[index]
                         when (item) {
-                            is UiAddPropertyItem.Format -> {
+                            is UiEditTypePropertiesItem.Format -> {
                                 PropertyTypeItem(
                                     modifier = commonItemModifier()
                                         .noRippleThrottledClickable {
-                                            event(AddPropertyEvent.OnTypeClicked(item))
+                                            event(UiEditTypePropertiesEvent.OnTypeClicked(item))
                                         },
                                     item = item
                                 )
                             }
 
-                            is UiAddPropertyItem.Default -> {
+                            is UiEditTypePropertiesItem.Default -> {
                                 FieldItem(
                                     modifier = commonItemModifier()
                                         .noRippleThrottledClickable {
-                                            event(AddPropertyEvent.OnExistingClicked(item))
+                                            event(UiEditTypePropertiesEvent.OnExistingClicked(item))
                                         },
                                     item = item
                                 )
                             }
 
-                            is UiAddPropertyItem.Create -> {
+                            is UiEditTypePropertiesItem.Create -> {
                                 PropertyCreateItem(
                                     modifier = commonItemModifier()
                                         .noRippleThrottledClickable {
-                                            event(AddPropertyEvent.OnCreate(item))
+                                            event(UiEditTypePropertiesEvent.OnCreate(item))
                                         },
                                     item = item
                                 )
                             }
 
-                            is UiAddPropertyItem.Section -> Section(item = item)
+                            is UiEditTypePropertiesItem.Section -> Section(item = item)
                         }
                     }
                 )
@@ -171,12 +171,12 @@ fun AddFieldScreen(
         PropertyScreen(
             modifier = Modifier.fillMaxWidth(),
             uiState = uiStateEditProperty,
-            onDismissRequest = { event(AddPropertyEvent.OnEditPropertyScreenDismissed) },
+            onDismissRequest = { event(UiEditTypePropertiesEvent.OnEditPropertyScreenDismissed) },
             onCreateNewButtonClicked = {
-                event(AddPropertyEvent.OnCreateNewButtonClicked)
+                event(UiEditTypePropertiesEvent.OnCreateNewButtonClicked)
             },
             onPropertyNameUpdate = { name ->
-                event(AddPropertyEvent.OnPropertyNameUpdate(name))
+                event(UiEditTypePropertiesEvent.OnPropertyNameUpdate(name))
             }
         )
     }
@@ -184,11 +184,11 @@ fun AddFieldScreen(
 
 @Composable
 private fun Section(
-    item: UiAddPropertyItem.Section
+    item: UiEditTypePropertiesItem.Section
 ) {
     val title = when (item) {
-        is UiAddPropertyItem.Section.Existing -> stringResource(R.string.object_type_add_property_screen_section_existing)
-        is UiAddPropertyItem.Section.Types -> stringResource(R.string.object_type_add_property_screen_section_types)
+        is UiEditTypePropertiesItem.Section.Existing -> stringResource(R.string.object_type_add_property_screen_section_existing)
+        is UiEditTypePropertiesItem.Section.Types -> stringResource(R.string.object_type_add_property_screen_section_types)
     }
     Text(
         modifier = Modifier
@@ -203,7 +203,7 @@ private fun Section(
 @Composable
 private fun PropertyTypeItem(
     modifier: Modifier,
-    item: UiAddPropertyItem.Format
+    item: UiEditTypePropertiesItem.Format
 ) {
     Row(
         modifier = modifier,
@@ -236,7 +236,7 @@ private fun PropertyTypeItem(
 @Composable
 private fun PropertyCreateItem(
     modifier: Modifier,
-    item: UiAddPropertyItem.Create
+    item: UiEditTypePropertiesItem.Create
 ) {
     Row(
         modifier = modifier,
@@ -270,7 +270,7 @@ private fun PropertyCreateItem(
 @Composable
 private fun FieldItem(
     modifier: Modifier,
-    item: UiAddPropertyItem.Default
+    item: UiEditTypePropertiesItem.Default
 ) {
     Row(
         modifier = modifier,
@@ -331,42 +331,42 @@ fun LazyItemScope.commonItemModifier() = Modifier
 @Composable
 fun PreviewAddFieldScreen() {
     AddFieldScreen(
-        state = UiAddPropertyScreenState(
+        state = UiEditTypePropertiesState(
             items = listOf(
-                UiAddPropertyItem.Create(
+                UiEditTypePropertiesItem.Create(
                     id = "111",
                     format = RelationFormat.LONG_TEXT,
                     title = "This is very very long title, which is very very long, but not very very long"
                 ),
-                UiAddPropertyItem.Section.Types(),
-                UiAddPropertyItem.Format(
+                UiEditTypePropertiesItem.Section.Types(),
+                UiEditTypePropertiesItem.Format(
                     id = "11",
                     format = RelationFormat.STATUS,
                     prettyName = "Status"
                 ),
-                UiAddPropertyItem.Format(
+                UiEditTypePropertiesItem.Format(
                     id = "12",
                     format = RelationFormat.OBJECT,
                     prettyName = "Object"
                 ),
-                UiAddPropertyItem.Format(
+                UiEditTypePropertiesItem.Format(
                     id = "13",
                     format = RelationFormat.LONG_TEXT,
                     prettyName = "Long Text"
                 ),
-                UiAddPropertyItem.Format(
+                UiEditTypePropertiesItem.Format(
                     id = "14",
                     format = RelationFormat.PHONE,
                     prettyName = "Phone"
                 ),
-                UiAddPropertyItem.Section.Existing(),
-                UiAddPropertyItem.Default(
+                UiEditTypePropertiesItem.Section.Existing(),
+                UiEditTypePropertiesItem.Default(
                     id = "1",
                     propertyKey = "key",
                     title = "Title",
                     format = RelationFormat.LONG_TEXT
                 ),
-                UiAddPropertyItem.Default(
+                UiEditTypePropertiesItem.Default(
                     id = "2",
                     propertyKey = "key",
                     title = "Some Object",

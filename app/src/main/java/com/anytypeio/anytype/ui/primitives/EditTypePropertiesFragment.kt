@@ -23,18 +23,18 @@ import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_properties.AddPropertyVmFactory
+import com.anytypeio.anytype.feature_properties.EditTypePropertiesViewModelFactory
 import com.anytypeio.anytype.feature_properties.EditTypePropertiesViewModel
-import com.anytypeio.anytype.feature_properties.EditTypePropertiesViewModel.AddPropertyCommand
-import com.anytypeio.anytype.feature_properties.add.AddPropertyVmParams
-import com.anytypeio.anytype.feature_properties.add.UiAddPropertyErrorState
+import com.anytypeio.anytype.feature_properties.EditTypePropertiesViewModel.EditTypePropertiesCommand
+import com.anytypeio.anytype.feature_properties.add.EditTypePropertiesVmParams
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesErrorState
 import com.anytypeio.anytype.feature_properties.add.ui.AddFieldScreen
 import javax.inject.Inject
 
-class AddPropertyFragment : BaseBottomSheetComposeFragment() {
+class EditTypePropertiesFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
-    lateinit var viewModelFactory: AddPropertyVmFactory
+    lateinit var viewModelFactory: EditTypePropertiesViewModelFactory
     private val vm by viewModels<EditTypePropertiesViewModel> { viewModelFactory }
     private val space get() = argString(ARG_SPACE)
     private val typeId get() = argString(ARG_OBJECT_ID)
@@ -59,9 +59,9 @@ class AddPropertyFragment : BaseBottomSheetComposeFragment() {
     @Composable
     private fun ErrorScreen() {
         val errorStateScreen = vm.errorState.collectAsStateWithLifecycle().value
-        if (errorStateScreen is UiAddPropertyErrorState.Show) {
+        if (errorStateScreen is UiEditTypePropertiesErrorState.Show) {
             when (val r = errorStateScreen.reason) {
-                is UiAddPropertyErrorState.Reason.ErrorAddingProperty -> {
+                is UiEditTypePropertiesErrorState.Reason.ErrorAddingProperty -> {
                     BaseAlertDialog(
                         dialogText = stringResource(id = R.string.add_property_error_add),
                         buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
@@ -70,7 +70,7 @@ class AddPropertyFragment : BaseBottomSheetComposeFragment() {
                     )
                 }
 
-                is UiAddPropertyErrorState.Reason.ErrorCreatingProperty -> {
+                is UiEditTypePropertiesErrorState.Reason.ErrorCreatingProperty -> {
                     BaseAlertDialog(
                         dialogText = stringResource(id = R.string.add_property_error_create_new),
                         buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
@@ -79,7 +79,7 @@ class AddPropertyFragment : BaseBottomSheetComposeFragment() {
                     )
                 }
 
-                is UiAddPropertyErrorState.Reason.ErrorUpdatingProperty -> {
+                is UiEditTypePropertiesErrorState.Reason.ErrorUpdatingProperty -> {
                     BaseAlertDialog(
                         dialogText = stringResource(id = R.string.add_property_error_update),
                         buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
@@ -88,7 +88,7 @@ class AddPropertyFragment : BaseBottomSheetComposeFragment() {
                     )
                 }
 
-                is UiAddPropertyErrorState.Reason.Other -> {
+                is UiEditTypePropertiesErrorState.Reason.Other -> {
                     BaseAlertDialog(
                         dialogText = r.msg,
                         buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
@@ -110,16 +110,16 @@ class AddPropertyFragment : BaseBottomSheetComposeFragment() {
         jobs += lifecycleScope.subscribe(vm.commands) { command -> execute(command) }
     }
 
-    private fun execute(command: AddPropertyCommand) {
+    private fun execute(command: EditTypePropertiesCommand) {
         when (command) {
-            is AddPropertyCommand.Exit -> {
+            is EditTypePropertiesCommand.Exit -> {
                 findNavController().popBackStack()
             }
         }
     }
 
     override fun injectDependencies() {
-        val params = AddPropertyVmParams(
+        val params = EditTypePropertiesVmParams(
             objectTypeId = typeId,
             spaceId = SpaceId(space)
 
@@ -138,8 +138,8 @@ class AddPropertyFragment : BaseBottomSheetComposeFragment() {
             ARG_SPACE to space
         )
 
-        const val ARG_OBJECT_ID = "arg.primitives.add.property.object.id"
-        const val ARG_SPACE = "arg.primitives.add.property.space"
+        const val ARG_OBJECT_ID = "arg.primitives.edit.type.property.object.id"
+        const val ARG_SPACE = "arg.primitives.edit.type.property.space"
 
         const val DEFAULT_PADDING_TOP = 10
     }

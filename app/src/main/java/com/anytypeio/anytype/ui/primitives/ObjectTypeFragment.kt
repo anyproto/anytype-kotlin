@@ -115,7 +115,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     runCatching {
                         findNavController().navigate(
                             R.id.addPropertyScreen,
-                            AddPropertyFragment.args(
+                            EditTypePropertiesFragment.args(
                                 objectId = command.typeId,
                                 space = command.space
                             )

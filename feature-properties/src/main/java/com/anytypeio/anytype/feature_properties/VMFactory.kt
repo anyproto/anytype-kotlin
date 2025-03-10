@@ -8,11 +8,11 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.feature_properties.add.AddPropertyVmParams
+import com.anytypeio.anytype.feature_properties.add.EditTypePropertiesVmParams
 import javax.inject.Inject
 
-class AddPropertyVmFactory @Inject constructor(
-    private val addPropertyVmParams: AddPropertyVmParams,
+class EditTypePropertiesViewModelFactory @Inject constructor(
+    private val vmParams: EditTypePropertiesVmParams,
     private val storeOfRelations: StoreOfRelations,
     private val stringResourceProvider: StringResourceProvider,
     private val createRelation: CreateRelation,
@@ -24,7 +24,7 @@ class AddPropertyVmFactory @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         EditTypePropertiesViewModel(
-            vmParams = addPropertyVmParams,
+            vmParams = vmParams,
             storeOfRelations = storeOfRelations,
             stringResourceProvider = stringResourceProvider,
             createRelation = createRelation,

@@ -8,11 +8,11 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 
-data class UiAddPropertyScreenState(
-    val items: List<UiAddPropertyItem>
+data class UiEditTypePropertiesState(
+    val items: List<UiEditTypePropertiesItem>
 ) {
     companion object {
-        val EMPTY = UiAddPropertyScreenState(emptyList())
+        val EMPTY = UiEditTypePropertiesState(emptyList())
 
         val DEFAULT_NEW_PROPERTY_FORMAT = RelationFormat.STATUS
 
@@ -33,11 +33,11 @@ data class UiAddPropertyScreenState(
     }
 }
 
-sealed class UiAddPropertyItem {
+sealed class UiEditTypePropertiesItem {
 
     abstract val id: Id
 
-    sealed class Section : UiAddPropertyItem() {
+    sealed class Section : UiEditTypePropertiesItem() {
         data class Types(
             override val id: Id = "section_properties_types_id"
         ) : Section()
@@ -51,13 +51,13 @@ sealed class UiAddPropertyItem {
         override val id: Id = "property_item_format_id_${format.ordinal}",
         val format: RelationFormat,
         val prettyName: String
-    ) : UiAddPropertyItem()
+    ) : UiEditTypePropertiesItem()
 
     data class Create(
         override val id: Id = ID,
-        val format: RelationFormat = UiAddPropertyScreenState.Companion.DEFAULT_NEW_PROPERTY_FORMAT,
+        val format: RelationFormat = UiEditTypePropertiesState.Companion.DEFAULT_NEW_PROPERTY_FORMAT,
         val title: String
-    ) : UiAddPropertyItem() {
+    ) : UiEditTypePropertiesItem() {
         companion object {
             private const val ID = "create_new_property_id"
         }
@@ -68,17 +68,17 @@ sealed class UiAddPropertyItem {
         val format: RelationFormat,
         val propertyKey: Key,
         val title: String,
-    ) : UiAddPropertyItem()
+    ) : UiEditTypePropertiesItem()
 }
 
-data class AddPropertyVmParams(
+data class EditTypePropertiesVmParams(
     val objectTypeId: Id,
     val spaceId: SpaceId
 )
 
-sealed class UiAddPropertyErrorState {
-    data object Hidden : UiAddPropertyErrorState()
-    data class Show(val reason: Reason) : UiAddPropertyErrorState()
+sealed class UiEditTypePropertiesErrorState {
+    data object Hidden : UiEditTypePropertiesErrorState()
+    data class Show(val reason: Reason) : UiEditTypePropertiesErrorState()
 
     sealed class Reason {
         data class ErrorAddingProperty(val msg: String) : Reason()
@@ -92,10 +92,10 @@ sealed class UiAddPropertyErrorState {
 //region MAPPING
 fun ObjectWrapper.Relation.mapToStateItem(
     stringResourceProvider: StringResourceProvider
-): UiAddPropertyItem.Default? {
+): UiEditTypePropertiesItem.Default? {
     val field = this
     if (field.key == Relations.DESCRIPTION) return null
-    return UiAddPropertyItem.Default(
+    return UiEditTypePropertiesItem.Default(
         id = field.id,
         propertyKey = field.key,
         title = field.getName(stringResourceProvider),

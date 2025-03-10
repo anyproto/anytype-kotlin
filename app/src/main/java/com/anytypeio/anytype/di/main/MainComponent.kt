@@ -3,7 +3,7 @@ package com.anytypeio.anytype.di.main
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.common.ComponentDependenciesKey
-import com.anytypeio.anytype.di.feature.AddPropertiesDependencies
+import com.anytypeio.anytype.di.feature.EditTypePropertiesDependencies
 import com.anytypeio.anytype.di.feature.AllContentDependencies
 import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
 import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
@@ -144,7 +144,7 @@ interface MainComponent :
     SelectChatReactionDependencies,
     ChatReactionDependencies,
     ParticipantComponentDependencies,
-    AddPropertiesDependencies,
+    EditTypePropertiesDependencies,
     DebugDependencies
 {
 
@@ -419,6 +419,6 @@ abstract class ComponentDependenciesModule {
 
     @Binds
     @IntoMap
-    @ComponentDependenciesKey(AddPropertiesDependencies::class)
+    @ComponentDependenciesKey(EditTypePropertiesDependencies::class)
     abstract fun provideAddPropertiesDependencies(component: MainComponent): ComponentDependencies
 }

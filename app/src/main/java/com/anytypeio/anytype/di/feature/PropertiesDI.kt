@@ -11,38 +11,38 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.feature_properties.AddPropertyVmFactory
-import com.anytypeio.anytype.feature_properties.add.AddPropertyVmParams
-import com.anytypeio.anytype.ui.primitives.AddPropertyFragment
+import com.anytypeio.anytype.feature_properties.EditTypePropertiesViewModelFactory
+import com.anytypeio.anytype.feature_properties.add.EditTypePropertiesVmParams
+import com.anytypeio.anytype.ui.primitives.EditTypePropertiesFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
 
-//region ADD PROPERTY SCREEN
+//region EDIT OBJECT TYPE PROPERTIES SCREEN
 @PerModal
 @Component(
     modules = [
-        AddPropertiesModule::class,
-        AddPropertiesModule.Declarations::class
+        EditTypePropertiesModule::class,
+        EditTypePropertiesModule.Declarations::class
     ],
-    dependencies = [AddPropertiesDependencies::class]
+    dependencies = [EditTypePropertiesDependencies::class]
 )
-interface AddPropertiesComponent {
+interface EditTypePropertiesComponent {
     @Component.Factory
     interface Factory {
         fun create(
-            @BindsInstance vmParams: AddPropertyVmParams,
-            dependencies: AddPropertiesDependencies
-        ): AddPropertiesComponent
+            @BindsInstance vmParams: EditTypePropertiesVmParams,
+            dependencies: EditTypePropertiesDependencies
+        ): EditTypePropertiesComponent
     }
 
-    fun inject(fragment: AddPropertyFragment)
+    fun inject(fragment: EditTypePropertiesFragment)
 }
 
 @Module
-object AddPropertiesModule {
+object EditTypePropertiesModule {
 
     @JvmStatic
     @Provides
@@ -58,10 +58,7 @@ object AddPropertiesModule {
     fun createRelation(
         repo: BlockRepository,
         storeOfRelations: StoreOfRelations,
-    ) = CreateRelation(
-        repo = repo,
-        storeOfRelations = storeOfRelations
-    )
+    ) = CreateRelation(repo, storeOfRelations)
 
     @JvmStatic
     @Provides
@@ -69,22 +66,19 @@ object AddPropertiesModule {
     fun provideSetObjectDetails(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): SetObjectDetails = SetObjectDetails(
-        repo,
-        dispatchers
-    )
+    ): SetObjectDetails = SetObjectDetails(repo, dispatchers)
 
     @Module
     interface Declarations {
         @PerModal
         @Binds
         fun bindViewModelFactory(
-            factory: AddPropertyVmFactory
+            factory: EditTypePropertiesViewModelFactory
         ): ViewModelProvider.Factory
     }
 }
 
-interface AddPropertiesDependencies : ComponentDependencies {
+interface EditTypePropertiesDependencies : ComponentDependencies {
     fun provideStringResourceProvider(): StringResourceProvider
     fun provideStoreOfRelations(): StoreOfRelations
     fun provideStoreOfObjectTypes(): StoreOfObjectTypes

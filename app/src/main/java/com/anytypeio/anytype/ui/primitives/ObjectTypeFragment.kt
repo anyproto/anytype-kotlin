@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
@@ -25,7 +24,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainScreen
@@ -34,14 +32,7 @@ import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.ui.chats.ChatFragment
-import com.anytypeio.anytype.ui.date.DateObjectFragment
-import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
-import com.anytypeio.anytype.ui.profile.ParticipantFragment
-import com.anytypeio.anytype.ui.relations.RelationAddToObjectFragment
-import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
 import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_PICK_EMOJI
 import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_REMOVE_EMOJI
@@ -55,7 +46,6 @@ import timber.log.Timber
 class ObjectTypeFragment : BaseComposeFragment() {
     @Inject
     lateinit var factory: ObjectTypeVMFactory
-
     private val vm by viewModels<ObjectTypeViewModel> { factory }
     private lateinit var navComposeController: NavHostController
 
@@ -121,12 +111,18 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     navComposeController.navigate(OBJ_TYPE_FIELDS)
                 }
 
-                is ObjectTypeCommand.OpenAddFieldScreen -> {
-                    RelationAddToObjectFragment.new(
-                        ctx = command.typeId,
-                        space = command.space,
-                        isSetOrCollection = command.isSet
-                    ).showChildFragment()
+                is ObjectTypeCommand.OpenEditTypePropertiesScreen -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.editTypePropertiesScreen,
+                            EditTypePropertiesFragment.args(
+                                objectId = command.typeId,
+                                space = command.space
+                            )
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening edit object type properties screen")
+                    }
                 }
             }
         }
@@ -174,86 +170,10 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiFieldsListState = vm.uiFieldsListState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
-                    uiFieldEditOrNewState = vm.uiFieldEditOrNewState.collectAsStateWithLifecycle().value,
+                    uiEditPropertyState = vm.uiEditPropertyScreen.collectAsStateWithLifecycle().value,
                     uiFieldLocalInfoState = vm.uiFieldLocalInfoState.collectAsStateWithLifecycle().value,
-                    uiAddFieldsScreenState = vm.uiAddFieldsState.collectAsStateWithLifecycle().value,
                     fieldEvent = vm::onFieldEvent
                 )
-            }
-        }
-        LaunchedEffect(Unit) {
-            vm.navigation.collect { nav ->
-                when (nav) {
-                    is OpenObjectNavigation.OpenEditor -> {
-                        findNavController().navigate(
-                            R.id.objectNavigation,
-                            EditorFragment.args(
-                                ctx = nav.target,
-                                space = nav.space
-                            )
-                        )
-                    }
-
-                    is OpenObjectNavigation.OpenDataView -> {
-                        findNavController().navigate(
-                            R.id.dataViewNavigation,
-                            ObjectSetFragment.args(
-                                ctx = nav.target,
-                                space = nav.space
-                            )
-                        )
-                    }
-
-                    is OpenObjectNavigation.OpenParticipant -> {
-                        runCatching {
-                            findNavController().navigate(
-                                R.id.participantScreen,
-                                ParticipantFragment.args(
-                                    objectId = nav.target,
-                                    space = nav.space
-                                )
-                            )
-                        }.onFailure {
-                            Timber.w("Error while opening participant screen")
-                        }
-                    }
-
-                    is OpenObjectNavigation.OpenChat -> {
-                        findNavController().navigate(
-                            R.id.chatScreen,
-                            ChatFragment.args(
-                                ctx = nav.target,
-                                space = nav.space
-                            )
-                        )
-                    }
-
-                    OpenObjectNavigation.NonValidObject -> {
-                        toast(getString(R.string.error_non_valid_object))
-                    }
-
-                    is OpenObjectNavigation.OpenDateObject -> {
-                        runCatching {
-                            findNavController().navigate(
-                                R.id.dateObjectScreen,
-                                DateObjectFragment.args(
-                                    objectId = nav.target,
-                                    space = nav.space
-                                )
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Failed to navigate to date object screen")
-                        }
-                    }
-
-                    is OpenObjectNavigation.UnexpectedLayoutError -> {
-                        toast(getString(R.string.error_unexpected_layout))
-                    }
-
-                    else -> {
-                        // Do nothing.
-                    }
-                }
             }
         }
     }
@@ -280,15 +200,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         onDismissRequest = vm::hideError
                     )
                 }
-            }
-        }
-        when (val state = errorStateScreen) {
-            UiErrorState.Hidden -> {
-
-            }
-
-            is UiErrorState.Show -> {
-
             }
         }
     }

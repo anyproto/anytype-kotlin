@@ -191,6 +191,8 @@ object EventsDictionary {
     const val CLICK_ONBOARDING_TOOLTIP_TYPE_CLOSE = "Close"
 
     // Sharing spaces
+
+    const val clickQuote = "ClickQuote"
     const val shareSpace = "ShareSpace"
     const val screenSettingsSpaceShare = "ScreenSettingsSpaceShare"
     const val screenStopShare = "ScreenStopShare"
@@ -231,6 +233,14 @@ object EventsDictionary {
     const val clickDateBack = "ClickDateBack"
     const val clickDateCalendarView = "ClickDateCalendarView"
     const val objectListSort = "ObjectListSort"
+
+    //ObjectType
+    const val screenObjectType = "ScreenType"
+    const val editType = "EditType"
+    const val changeRecommendedLayout = "ChangeRecommendedLayout"
+    const val changeTypeSort = "ChangeTypeSort"
+    const val screenTemplate = "ScreenTemplate"
+
 
     const val searchBacklink = "SearchBacklink"
 

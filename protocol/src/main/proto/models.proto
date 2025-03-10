@@ -672,6 +672,7 @@ message Account {
         string timeZone = 104; // time zone from config
         string analyticsId = 105;
         string networkId = 106; // network id to which anytype is connected
+        string ethereumAddress = 107; // we have Any PK AND Ethereum PK derived from one seed phrase
     }
 
     message Auth {
@@ -769,6 +770,8 @@ message ObjectType {
     string key = 12; // name of objectType (can be localized for bundled types)
     int64 revision = 13; // revision of system objectType. Used to check if we should change type content or not
     bool restrictObjectCreation = 14; // restricts creating objects of this type for users
+    int64 iconColor = 15; // color of object type icon
+    string iconName = 16; // name of object type icon
 
     enum Layout {
         basic = 0;

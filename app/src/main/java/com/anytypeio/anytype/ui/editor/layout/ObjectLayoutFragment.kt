@@ -25,6 +25,7 @@ import com.anytypeio.anytype.presentation.editor.layout.ObjectLayoutViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import javax.inject.Inject
 
+@Deprecated("epic Primitives")
 class ObjectLayoutFragment : BaseBottomSheetFragment<FragmentObjectLayoutBinding>() {
 
     private val ctx: String get() = argString(CONTEXT_ID_KEY)

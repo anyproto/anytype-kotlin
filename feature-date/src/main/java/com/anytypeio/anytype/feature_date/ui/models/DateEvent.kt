@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem
-import com.anytypeio.anytype.feature_date.viewmodel.UiObjectsListItem
+import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 
 sealed class DateEvent {
 

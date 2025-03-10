@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
@@ -28,6 +27,7 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
+import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.MediaPermissionHelper
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
@@ -120,7 +120,14 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                                 }
                             }
                         ),
-                        clearProfileImage = { vm.onClearProfileImage() }
+                        clearProfileImage = { vm.onClearProfileImage() },
+                        onDebugClicked = {
+                            runCatching {
+                                findNavController().navigate(R.id.debugScreen)
+                            }
+                        },
+                        isDebugEnabled = vm.isDebugEnabled.collectAsStateWithLifecycle().value,
+                        onHeaderTitleClicked = vm::onHeaderTitleClicked
                     )
                 }
             }
@@ -140,13 +147,12 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
     }
 
     private fun proceedWithIconClick() {
-        try {
-            pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
-        } catch (e: Exception) {
-            Timber.w(e, "Error while opening photo picker")
-            toast("Error while opening photo picker")
-            permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
-        }
+        launchMediaPicker(
+            pickMedia = pickMedia,
+            permissionHelper = permissionHelper,
+            mediaType = PickVisualMedia.ImageOnly,
+            fallbackMimeType = Mimetype.MIME_IMAGE_ALL
+        )
     }
 
     private fun openGallery() {

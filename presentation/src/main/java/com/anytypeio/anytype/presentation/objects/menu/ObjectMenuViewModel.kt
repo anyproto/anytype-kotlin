@@ -38,6 +38,9 @@ import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -54,8 +57,8 @@ class ObjectMenuViewModel(
     addBackLinkToObject: AddBackLinkToObject,
     delegator: Delegator<Action>,
     urlBuilder: UrlBuilder,
-    dispatcher: Dispatcher<Payload>,
-    menuOptionsProvider: ObjectMenuOptionsProvider,
+    private val dispatcher: Dispatcher<Payload>,
+    private val menuOptionsProvider: ObjectMenuOptionsProvider,
     duplicateObject: DuplicateObject,
     createWidget: CreateWidget,
     payloadDelegator: PayloadDelegator,
@@ -74,7 +77,10 @@ class ObjectMenuViewModel(
     private val setObjectIsArchived: SetObjectListIsArchived,
     private val fieldParser: FieldParser,
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-    private val getSpaceInviteLink: GetSpaceInviteLink
+    private val getSpaceInviteLink: GetSpaceInviteLink,
+    private val addToFeaturedRelations: AddToFeaturedRelations,
+    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -122,6 +128,19 @@ class ObjectMenuViewModel(
                 add(ObjectAction.DOWNLOAD_FILE)
             }
         } else {
+
+            if (isArchived) {
+                add(ObjectAction.RESTORE)
+            } else {
+                if (objectRestrictions.none { it == ObjectRestriction.DELETE }) {
+                    add(ObjectAction.MOVE_TO_BIN)
+                }
+            }
+
+            if (!isTemplate && !systemLayouts.contains(layout) && !fileLayouts.contains(layout)) {
+                add(ObjectAction.CREATE_WIDGET)
+            }
+
             if (!isTemplate) {
                 if (isFavorite) {
                     add(ObjectAction.REMOVE_FROM_FAVOURITE)
@@ -130,27 +149,15 @@ class ObjectMenuViewModel(
                 }
             }
 
-            if (isArchived) {
-                add(ObjectAction.RESTORE)
-            } else {
-                if (objectRestrictions.none { it == ObjectRestriction.DELETE }) {
-                    add(ObjectAction.DELETE)
-                }
-            }
-
-            if (!isTemplate && !systemLayouts.contains(layout) && !fileLayouts.contains(layout)) {
-                add(ObjectAction.CREATE_WIDGET)
-            }
-
-            if (isTemplate) {
-                add(ObjectAction.SET_AS_DEFAULT)
-            }
-
-            if (!objectRestrictions.contains(ObjectRestriction.DUPLICATE) && !isTemplate) {
+            if (!objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
                 add(ObjectAction.DUPLICATE)
             }
 
             add(ObjectAction.UNDO_REDO)
+
+            if (isTemplate) {
+                add(ObjectAction.SET_AS_DEFAULT)
+            }
 
             val objTypeId = wrapper?.getProperType()
             if (objTypeId != null) {
@@ -181,7 +188,7 @@ class ObjectMenuViewModel(
 
             if (layout in fileLayouts) {
                 clear()
-                add(ObjectAction.DELETE)
+                add(ObjectAction.MOVE_TO_BIN)
                 add(ObjectAction.DOWNLOAD_FILE)
                 if (isFavorite) {
                     add(ObjectAction.REMOVE_FROM_FAVOURITE)
@@ -255,20 +262,48 @@ class ObjectMenuViewModel(
         }
     }
 
-    override fun onLayoutClicked(ctx: Id, space: Id) {
+    override fun onDescriptionClicked(ctx: Id, space: Id) {
         viewModelScope.launch {
-            if (objectRestrictions.contains(ObjectRestriction.LAYOUT_CHANGE)) {
+            if (userPermissionProvider.get(space = SpaceId(space))?.isOwnerOrEditor() != true) {
                 _toasts.emit(NOT_ALLOWED)
-            } else {
-                try {
-                    if (!isThisObjectLocked(ctx)) {
-                        commands.emit(Command.OpenObjectLayout)
-                    } else {
-                        _toasts.emit("Your object is locked.")
+                return@launch
+            }
+            val isDescriptionAlreadyInFeatured =
+                storage.details.current().getObject(ctx)?.featuredRelations?.contains(
+                    Relations.DESCRIPTION
+                ) == true
+            if (isDescriptionAlreadyInFeatured) {
+                removeFromFeaturedRelations(
+                    params = RemoveFromFeaturedRelations.Params(
+                        ctx = ctx,
+                        relations = listOf(Relations.DESCRIPTION)
+                    )
+                ).proceed(
+                    success = { payload ->
+                        dispatcher.send(payload)
+                        Timber.d("Description was removed from featured relations")
+                    },
+                    failure = {
+                        Timber.e(it, "Error while removing description from featured relations")
+                        _toasts.emit(SOMETHING_WENT_WRONG_MSG)
                     }
-                } catch (e: Exception) {
-                    _toasts.emit("Something went wrong. Please, try again later.")
-                }
+                )
+            } else {
+                addToFeaturedRelations(
+                    params = AddToFeaturedRelations.Params(
+                        ctx = ctx,
+                        relations = listOf(Relations.DESCRIPTION)
+                    )
+                ).proceed(
+                    success = { payload ->
+                        dispatcher.send(payload)
+                        Timber.d("Description was added to featured relations")
+                    },
+                    failure = {
+                        Timber.e(it, "Error while adding description to featured relations")
+                        _toasts.emit(SOMETHING_WENT_WRONG_MSG)
+                    }
+                )
             }
         }
     }
@@ -281,7 +316,7 @@ class ObjectMenuViewModel(
 
     override fun onActionClicked(ctx: Id, space: Id, action: ObjectAction) {
         when (action) {
-            ObjectAction.DELETE -> {
+            ObjectAction.MOVE_TO_BIN -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
             }
             ObjectAction.DUPLICATE -> {
@@ -344,7 +379,7 @@ class ObjectMenuViewModel(
                 if (wrapper != null) proceedWithCreatingWidget(obj = wrapper)
             }
             ObjectAction.MOVE_TO,
-            ObjectAction.MOVE_TO_BIN,
+            ObjectAction.DELETE,
             ObjectAction.DELETE_FILES -> {
                 throw IllegalStateException("$action is unsupported")
             }
@@ -511,7 +546,10 @@ class ObjectMenuViewModel(
         private val setObjectIsArchived: SetObjectListIsArchived,
         private val fieldParser: FieldParser,
         private val getSpaceInviteLink: GetSpaceInviteLink,
-        private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
+        private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+        private val addToFeaturedRelations: AddToFeaturedRelations,
+        private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -538,7 +576,10 @@ class ObjectMenuViewModel(
                 setObjectListIsFavorite = setObjectListIsFavorite,
                 fieldParser = fieldParser,
                 getSpaceInviteLink = getSpaceInviteLink,
-                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                addToFeaturedRelations = addToFeaturedRelations,
+                removeFromFeaturedRelations = removeFromFeaturedRelations,
+                userPermissionProvider = userPermissionProvider
             ) as T
         }
     }

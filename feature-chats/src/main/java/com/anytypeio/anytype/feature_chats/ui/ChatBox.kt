@@ -11,8 +11,8 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,9 +20,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -38,11 +35,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -51,9 +48,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
+import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
 import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -61,8 +58,6 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import kotlin.collections.forEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -71,7 +66,7 @@ import timber.log.Timber
 fun ChatBox(
     text: TextFieldValue,
     spans: List<ChatBoxSpan>,
-    mode: ChatBoxMode = ChatBoxMode.Default,
+    mode: ChatBoxMode = ChatBoxMode.Default(),
     modifier: Modifier = Modifier,
     chatBoxFocusRequester: FocusRequester,
     onMessageSent: (String, List<ChatBoxSpan>) -> Unit,
@@ -86,6 +81,8 @@ fun ChatBox(
     onExitEditMessageMode: () -> Unit,
     onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit
 ) {
+
+    val length = text.text.length
 
     val uploadMediaLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickMultipleVisualMedia(maxItems = ChatConfig.MAX_ATTACHMENT_COUNT)
@@ -124,114 +121,10 @@ fun ChatBox(
                 onExitClicked = onExitEditMessageMode
             )
         }
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            attachments.forEach { attachment ->
-                when(attachment) {
-                    is ChatView.Message.ChatBoxAttachment.Link -> {
-                        item {
-                            Box {
-                                AttachedObject(
-                                    modifier = Modifier
-                                        .padding(
-                                            top = 12.dp,
-                                            end = 4.dp
-                                        )
-                                        .width(216.dp),
-                                    title = attachment.wrapper.title,
-                                    type = attachment.wrapper.type,
-                                    icon = attachment.wrapper.icon,
-                                    onAttachmentClicked = {
-                                        // TODO
-                                    }
-                                )
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
-                                    contentDescription = "Close icon",
-                                    modifier = Modifier
-                                        .align(
-                                            Alignment.TopEnd
-                                        )
-                                        .padding(top = 6.dp)
-                                        .noRippleClickable {
-                                            onClearAttachmentClicked(attachment)
-                                        }
-                                )
-                            }
-                        }
-                    }
-                    is ChatView.Message.ChatBoxAttachment.Media -> {
-                        item {
-                            Box(modifier = Modifier.padding()) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(attachment.uri),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(
-                                            top = 12.dp,
-                                            end = 4.dp
-                                        )
-                                        .size(72.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-
-                                    ,
-                                    contentScale = ContentScale.Crop
-                                )
-                                Image(
-                                    painter = painterResource(R.drawable.ic_clear_chatbox_attachment),
-                                    contentDescription = "Clear attachment icon",
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(top = 6.dp)
-                                        .noRippleClickable {
-                                            onClearAttachmentClicked(attachment)
-                                        }
-                                )
-                            }
-                        }
-                    }
-                    is ChatView.Message.ChatBoxAttachment.File -> {
-                        item {
-                            Box {
-                                AttachedObject(
-                                    modifier = Modifier
-                                        .padding(
-                                            top = 12.dp,
-                                            end = 4.dp
-                                        )
-                                        .width(216.dp),
-                                    title = attachment.name,
-                                    type = stringResource(R.string.file),
-                                    icon = ObjectIcon.File(
-                                        mime = null,
-                                        fileName = null
-                                    ),
-                                    onAttachmentClicked = {
-                                        // TODO
-                                    }
-                                )
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
-                                    contentDescription = "Close icon",
-                                    modifier = Modifier
-                                        .align(
-                                            Alignment.TopEnd
-                                        )
-                                        .padding(top = 6.dp)
-                                        .noRippleClickable {
-                                            onClearAttachmentClicked(attachment)
-                                        }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        ChatBoxAttachments(
+            attachments = attachments,
+            onClearAttachmentClicked = onClearAttachmentClicked
+        )
         when(mode) {
             is ChatBoxMode.Default -> {
 
@@ -377,15 +270,52 @@ fun ChatBox(
                     }
                 }
             }
-            ChatBoxUserInput(
-                text = text,
-                spans = spans,
-                onValueChange = onValueChange,
+            Box(
                 modifier = Modifier
                     .weight(1f)
                     .align(Alignment.Bottom)
-                    .focusRequester(chatBoxFocusRequester)
-            )
+            ) {
+                ChatBoxUserInput(
+                    text = text,
+                    spans = spans,
+                    onValueChange = onValueChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(chatBoxFocusRequester)
+                )
+                if (length >= ChatConfig.MAX_MESSAGE_CHARACTER_OFFSET_LIMIT) {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .background(
+                                color = colorResource(R.color.background_secondary),
+                                shape = RoundedCornerShape(100.dp)
+                            )
+                            .clip(RoundedCornerShape(100.dp))
+                            .border(
+                                color = colorResource(R.color.shape_tertiary),
+                                width = 1.dp,
+                                shape = RoundedCornerShape(100.dp)
+                            )
+                            .align(Alignment.TopCenter)
+                    ) {
+                        Text(
+                            text = "${text.text.length} / ${ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT}",
+                            modifier = Modifier.padding(
+                                horizontal = 8.dp,
+                                vertical = 3.dp
+                            ).align(
+                                Alignment.Center
+                            ),
+                            style = Caption1Regular,
+                            color = if (length > ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT)
+                                colorResource(R.color.palette_system_red)
+                            else
+                                colorResource(R.color.text_primary)
+                        )
+                    }
+                }
+            }
             AnimatedVisibility(
                 visible = attachments.isNotEmpty() || text.text.isNotEmpty(),
                 exit = fadeOut() + scaleOut(),
@@ -396,11 +326,18 @@ fun ChatBox(
                     modifier = Modifier
                         .padding(horizontal = 4.dp, vertical = 8.dp)
                         .clip(CircleShape)
-                        .clickable {
-                            onMessageSent(text.text, spans)
-                            clearText()
-                            resetScroll()
-                        }
+                        .then(
+                            if (mode.isSendingMessageBlocked || length > ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT) {
+                                Modifier
+                            } else {
+                                Modifier
+                                    .clickable {
+                                        onMessageSent(text.text, spans)
+                                        clearText()
+                                        resetScroll()
+                                    }
+                            }
+                        )
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_send_message),
@@ -408,6 +345,12 @@ fun ChatBox(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .padding(horizontal = 4.dp, vertical = 4.dp)
+                            .alpha(
+                                if (mode.isSendingMessageBlocked || length > ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT)
+                                    0.3f
+                                else
+                                    FULL_ALPHA
+                            )
                     )
                 }
             }

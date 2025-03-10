@@ -8,7 +8,7 @@ enable_dated_version_name:
 	./gradlew -q :app:enableDatedVersionName
 
 distribute_debug:
-	./gradlew bundleDebug appDistributionUploadDebug
+	./gradlew assembleDebug appDistributionUploadDebug
 
 pr_check: compile_android_test_sources test_debug_all
 
@@ -48,3 +48,6 @@ update_mw: download_mw_artefacts normalize_mw_imports clean_protos
 
 # Update mw from custom build (download only library, you have to update your proto files manually)
 update_mw_custom: download_mw_artefacts_custom
+
+prepare_app_manifest_for_release_apk:
+	./scripts/release/apk.sh

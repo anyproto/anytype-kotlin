@@ -16,7 +16,9 @@ import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
+import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
+import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
 import com.anytypeio.anytype.ui.relations.RelationEditFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
@@ -258,18 +260,6 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.actionLogout)
     }
 
-    override fun migrationErrorScreen() {
-        navController?.navigate(R.id.migrationNeededScreen)
-    }
-
-    override fun exitFromMigrationScreen() {
-        navController?.navigate(R.id.onboarding_nav, null, navOptions {
-            popUpTo(R.id.migrationNeededScreen) {
-                inclusive = true
-            }
-        })
-    }
-
     override fun openRemoteFilesManageScreen(subscription: Id, space: Id) {
         navController?.navigate(
             resId = R.id.remoteStorageFragment,
@@ -364,6 +354,32 @@ class Navigator : AppNavigation {
         navController?.navigate(
             resId = R.id.participantScreen,
             args = ParticipantFragment.args(
+                objectId = objectId,
+                space = space
+            )
+        )
+    }
+
+    override fun openObjectType(
+        objectId: Id,
+        space: Id
+    ) {
+        navController?.navigate(
+            resId = R.id.objectTypeScreen,
+            args = ObjectTypeFragment.args(
+                objectId = objectId,
+                space = space
+            )
+        )
+    }
+
+    override fun openCurrentObjectTypeFields(
+        objectId: Id,
+        space: Id
+    ) {
+        navController?.navigate(
+            resId = R.id.objectTypeFieldsScreen,
+            args = ObjectTypeFieldsFragment.args(
                 objectId = objectId,
                 space = space
             )

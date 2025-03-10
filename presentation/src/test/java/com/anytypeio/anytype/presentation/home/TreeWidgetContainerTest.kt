@@ -526,6 +526,12 @@ class TreeWidgetContainerTest {
             links = links.map { it.id },
             isDeleted = true
         )
+        
+        stringResourceProvider.stub {
+            onBlocking {
+                getDeletedObjectTitle()
+            } doReturn "Deleted object"
+        }
 
         val widget = Widget.Tree(
             id = MockDataFactory.randomUuid(),

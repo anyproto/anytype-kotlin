@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import timber.log.Timber
 
+@Deprecated("Use ListRelationViewHolder instead")
 class DocumentRelationAdapter(
     private var items: List<RelationListViewModel.Model>,
     private val onRelationClicked: (RelationListViewModel.Model.Item) -> Unit,
@@ -189,8 +190,8 @@ class DocumentRelationAdapter(
                     if (payload is GranularChange) {
                         if (payload.isModeChanged) {
                             val item = items[position]
-                            check(item is RelationListViewModel.Model.Item)
-                            holder.setIsRemovable(item.isRemovable)
+//                            check(item is RelationListViewModel.Model.Item)
+//                            holder.setIsRemovable(item.isRemovable)
                         } else {
                             super.onBindViewHolder(holder, position, payloads)
                         }
@@ -258,7 +259,7 @@ class DocumentRelationAdapter(
         if (holder is ListRelationViewHolder) {
             check(item is RelationListViewModel.Model.Item)
             holder.setIsFeatured(item.view.featured)
-            holder.setIsRemovable(item.isRemovable)
+            //holder.setIsRemovable(item.isRemovable)
         }
     }
 
@@ -276,9 +277,9 @@ class DocumentRelationAdapter(
                 else -> R.layout.item_relation_list_relation_default
             }
         }
-        RelationListViewModel.Model.Section.Featured -> R.layout.item_relation_list_section
-        RelationListViewModel.Model.Section.Other -> R.layout.item_relation_list_section
-        is RelationListViewModel.Model.Section.TypeFrom -> R.layout.item_relation_list_section
+//        RelationListViewModel.Model.Section.Featured -> R.layout.item_relation_list_section
+//        RelationListViewModel.Model.Section.Other -> R.layout.item_relation_list_section
+//        is RelationListViewModel.Model.Section.TypeFrom -> R.layout.item_relation_list_section
         else -> throw IllegalStateException("Unexpected item type: $item")
     }
 
@@ -292,18 +293,18 @@ class DocumentRelationAdapter(
     class SectionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(section: RelationListViewModel.Model.Section) {
             when (section) {
-                RelationListViewModel.Model.Section.Featured -> {
-                    itemView.findViewById<TextView>(R.id.tvSectionName)
-                        .setText(R.string.featured_relations)
-                }
-                RelationListViewModel.Model.Section.Other -> {
-                    itemView.findViewById<TextView>(R.id.tvSectionName)
-                        .setText(R.string.other_relations)
-                }
-                is RelationListViewModel.Model.Section.TypeFrom -> {
-                    val text = itemView.resources.getString(R.string.from_type, section.typeName)
-                    itemView.findViewById<TextView>(R.id.tvSectionName).text = text
-                }
+//                RelationListViewModel.Model.Section.Featured -> {
+//                    itemView.findViewById<TextView>(R.id.tvSectionName)
+//                        .setText(R.string.featured_relations)
+//                }
+//                RelationListViewModel.Model.Section.Other -> {
+//                    itemView.findViewById<TextView>(R.id.tvSectionName)
+//                        .setText(R.string.other_relations)
+//                }
+//                is RelationListViewModel.Model.Section.TypeFrom -> {
+//                    val text = itemView.resources.getString(R.string.from_type, section.typeName)
+//                    itemView.findViewById<TextView>(R.id.tvSectionName).text = text
+//                }
                 else -> throw IllegalStateException("Unexpected item type: $section")
             }
         }
@@ -316,13 +317,14 @@ class DocumentRelationAdapter(
         override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
             val oldItem = old[oldItemPosition]
             val newItem = new[newItemPosition]
-            return if (oldItem is RelationListViewModel.Model.Item && newItem is RelationListViewModel.Model.Item) {
-                if (newItem.isRemovable != oldItem.isRemovable)
-                    GranularChange(isModeChanged = true)
-                else
-                    null
-            } else
-                null
+            return null
+//            return if (oldItem is RelationListViewModel.Model.Item && newItem is RelationListViewModel.Model.Item) {
+//                if (newItem.isRemovable != oldItem.isRemovable)
+//                    GranularChange(isModeChanged = true)
+//                else
+//                    null
+//            } else
+//                null
         }
     }
 

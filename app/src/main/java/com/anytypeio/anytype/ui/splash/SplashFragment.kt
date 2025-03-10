@@ -18,7 +18,6 @@ import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
-import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.FragmentSplashBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
@@ -31,6 +30,8 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.OnboardingFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import com.anytypeio.anytype.ui.update.MigrationFailedScreen
+import com.anytypeio.anytype.ui.update.MigrationInProgressScreen
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -64,31 +65,37 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 launch {
                     vm.state.collect { state ->
                         when(state) {
-                            is ViewState.Error -> {
-                                binding.error.text = state.error
+                            is SplashViewModel.State.Init -> {
+                                binding.error.gone()
+                                binding.compose.visibility = View.GONE
+                            }
+                            is SplashViewModel.State.Error -> {
+                                binding.error.text = state.msg
                                 binding.error.visible()
                             }
-                            else -> {
-                                binding.error.gone()
-                                binding.error.text = ""
-                            }
-                        }
-                    }
-                }
-
-                launch {
-                    vm.loadingState.collect { isLoading ->
-                        when (isLoading) {
-                            true -> {
-                                binding.loadingContainer.setContent {
+                            is SplashViewModel.State.Loading -> {
+                                binding.compose.setContent {
                                     PulsatingCircleScreen()
                                 }
-                                binding.logo.visibility = View.GONE
-                                binding.loadingContainer.visibility = View.VISIBLE
+                                binding.compose.visible()
                             }
-                            false ->  {
-                                binding.logo.visibility = View.GONE
-                                binding.loadingContainer.visibility = View.GONE
+                            is SplashViewModel.State.Migration -> {
+                                binding.compose.setContent {
+                                    if (state is SplashViewModel.State.Migration.InProgress) {
+                                        MigrationInProgressScreen()
+                                    } else if (state is SplashViewModel.State.Migration.Failed) {
+                                        MigrationFailedScreen(
+                                            state = state.state,
+                                            onRetryClicked = vm::onRetryMigrationClicked
+                                        )
+                                    }
+                                }
+                                binding.compose.visible()
+                            }
+                            is SplashViewModel.State.Success -> {
+                                binding.compose.gone()
+                                binding.error.gone()
+                                binding.error.text = ""
                             }
                         }
                     }
@@ -269,11 +276,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 findNavController().navigate(
                     R.id.action_splashFragment_to_authStart,
                     args = OnboardingFragment.args(deepLink)
-                )
-            }
-            is SplashViewModel.Command.NavigateToMigration -> {
-                findNavController().navigate(
-                    R.id.migrationNeededScreen
                 )
             }
             is SplashViewModel.Command.CheckAppStartIntent -> {

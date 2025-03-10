@@ -705,6 +705,57 @@ open class ObjectSetFragment :
                 dataViewInfo.hide()
                 setViewer(viewer = null)
             }
+            is DataViewViewState.TypeSet.Default -> {
+                topToolbarThreeDotsButton.gone()
+                topToolbarStatusContainer.gone()
+                topBackButton.gone()
+                initView.gone()
+                header.gone()
+                dataViewHeader.visible()
+                viewerTitle.isEnabled = true
+                setupNewButtonsForTypeSet(state.isCreateObjectAllowed)
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
+                customizeViewButton.isEnabled = true
+                setCurrentViewerName(state.viewer?.title)
+                setViewer(viewer = state.viewer)
+                dataViewInfo.hide()
+            }
+            is DataViewViewState.TypeSet.NoItems -> {
+                topToolbarThreeDotsButton.gone()
+                topToolbarStatusContainer.gone()
+                topBackButton.gone()
+                initView.gone()
+                header.gone()
+                dataViewHeader.visible()
+                viewerTitle.isEnabled = true
+                setupNewButtonsForTypeSet(state.isCreateObjectAllowed)
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
+                customizeViewButton.isEnabled = true
+                setCurrentViewerName(state.title)
+                dataViewInfo.show(
+                    type = DataViewInfo.TYPE.SET_NO_ITEMS,
+                    isReadOnlyAccess = !state.isCreateObjectAllowed
+                )
+                setViewer(viewer = null)
+            }
+
+            is DataViewViewState.TypeSet.Error -> {
+                topToolbarThreeDotsButton.gone()
+                topToolbarStatusContainer.gone()
+                topBackButton.gone()
+                initView.gone()
+                header.gone()
+                dataViewHeader.visible()
+                setViewer(viewer = null)
+            }
         }
     }
 
@@ -720,6 +771,16 @@ open class ObjectSetFragment :
         if (isCreateObjectAllowed) {
             addNewButton.gone()
             addNewIconButton.visible()
+        } else {
+            addNewButton.gone()
+            addNewIconButton.gone()
+        }
+    }
+
+    private fun setupNewButtonsForTypeSet(isCreateObjectAllowed: Boolean) {
+        if (isCreateObjectAllowed) {
+            addNewButton.visible()
+            addNewIconButton.gone()
         } else {
             addNewButton.gone()
             addNewIconButton.gone()
@@ -824,28 +885,27 @@ open class ObjectSetFragment :
                 .launchIn(lifecycleScope)
         }
 
-        binding.objectHeader.root.findViewById<View>(R.id.imageIcon).apply {
-            if (header.title.image != null) visible() else gone()
+        binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).apply {
             jobs += this.clicks()
                 .throttleFirst()
                 .onEach { vm.onObjectIconClicked() }
                 .launchIn(lifecycleScope)
+
+            if (header.title.image != null) {
+                this.visible()
+                    Glide
+                        .with(this)
+                        .load(header.title.image)
+                        .centerCrop()
+                        .into(this)
+            } else {
+                this.gone()
+                this.setImageDrawable(null)
+            }
         }
 
         binding.objectHeader.root.findViewById<ImageView>(R.id.emojiIcon)
             .setEmojiOrNull(header.title.emoji)
-
-        if (header.title.image != null) {
-            binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).apply {
-                Glide
-                    .with(this)
-                    .load(header.title.image)
-                    .centerCrop()
-                    .into(this)
-            }
-        } else {
-            binding.objectHeader.root.findViewById<ImageView>(R.id.imageIcon).setImageDrawable(null)
-        }
 
         setCover(
             coverColor = header.title.coverColor,
@@ -1439,34 +1499,44 @@ open class ObjectSetFragment :
     }
 
     private fun observeSelectingTemplate() {
-        val navController = findNavController()
-        val navBackStackEntry = navController.getBackStackEntry(R.id.objectSetScreen)
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME
-                && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)) {
-                val resultTemplateId = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID)
-                val resultTypeId = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_ID)
-                val resultTypeKey = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_KEY)
-                if (!resultTemplateId.isNullOrBlank() && !resultTypeId.isNullOrBlank() && !resultTypeKey.isNullOrBlank()) {
-                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
-                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_ID)
-                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_KEY)
-                    vm.proceedWithSelectedTemplate(
-                        template = resultTemplateId,
-                        typeId = resultTypeId,
-                        typeKey = resultTypeKey
-                    )
+        try {
+            val navController = findNavController()
+            val navBackStackEntry = navController.getBackStackEntry(R.id.objectSetScreen)
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME
+                    && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)
+                ) {
+                    val resultTemplateId =
+                        navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID)
+                    val resultTypeId =
+                        navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_ID)
+                    val resultTypeKey =
+                        navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_KEY)
+                    if (!resultTemplateId.isNullOrBlank() && !resultTypeId.isNullOrBlank() && !resultTypeKey.isNullOrBlank()) {
+                        navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
+                        navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_ID)
+                        navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_KEY)
+                        vm.proceedWithSelectedTemplate(
+                            template = resultTemplateId,
+                            typeId = resultTypeId,
+                            typeKey = resultTypeKey
+                        )
+                    }
                 }
             }
+
+            navBackStackEntry.lifecycle.addObserver(observer)
+
+            viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    navBackStackEntry.lifecycle.removeObserver(observer)
+                }
+            })
+        } catch (
+            e: Exception
+        ) {
+            Timber.w(e)
         }
-
-        navBackStackEntry.lifecycle.addObserver(observer)
-
-        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                navBackStackEntry.lifecycle.removeObserver(observer)
-            }
-        })
     }
 
     override fun injectDependencies() {

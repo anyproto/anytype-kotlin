@@ -11,6 +11,9 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<!--    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />-->
+<!--    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />-->
+
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
@@ -49,6 +52,19 @@
                 <data android:scheme="https"/>
                 <data android:scheme="http"/>
                 <data android:host="invite.any.coop" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="download.anytype.io/" />
+            </intent-filter>
+            <intent-filter android:label="Link to object" android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="object.any.coop" android:pathPattern=".*" />
+                <data android:scheme="http" android:host="object.any.coop" android:pathPattern=".*" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

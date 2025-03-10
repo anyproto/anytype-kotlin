@@ -91,11 +91,11 @@ fun HomeScreen(
     onHomeButtonClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
-    onShareButtonClicked: () -> Unit,
+    onNavBarShareButtonClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
-    onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
+    onSpaceWidgetShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateObjectInsideWidget: (Id) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
@@ -116,7 +116,7 @@ fun HomeScreen(
             onSpaceWidgetClicked = onSpaceWidgetClicked,
             onMove = onMove,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onSpaceShareIconClicked = onSpaceShareIconClicked,
+            onSpaceWidgetShareIconClicked = onSpaceWidgetShareIconClicked,
             onSeeAllObjectsClicked = onSeeAllObjectsClicked,
             onCreateWidget = onCreateWidget,
             onCreateObjectInsideWidget = onCreateObjectInsideWidget,
@@ -162,7 +162,7 @@ fun HomeScreen(
                 searchClick = onSearchClicked,
                 addDocClick = onCreateNewObjectClicked,
                 addDocLongClick = onCreateNewObjectLongClicked,
-                onShareButtonClicked = onShareButtonClicked,
+                onShareButtonClicked = onNavBarShareButtonClicked,
                 onHomeButtonClicked = onHomeButtonClicked
             )
         }
@@ -187,7 +187,7 @@ private fun WidgetList(
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
-    onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
+    onSpaceWidgetShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateWidget: () -> Unit,
     onCreateObjectInsideWidget: (Id) -> Unit,
@@ -229,7 +229,7 @@ private fun WidgetList(
                         name = item.space.name.orEmpty(),
                         icon = item.icon,
                         spaceType = item.type,
-                        onSpaceShareIconClicked = { onSpaceShareIconClicked(item.space) },
+                        onSpaceShareIconClicked = { onSpaceWidgetShareIconClicked(item.space) },
                         isShared = item.isShared,
                         membersCount = item.membersCount
                     )

@@ -48,10 +48,14 @@ class ProfileSettingsViewModel(
 
     private val jobs = mutableListOf<Job>()
 
+    private var headerTitleClickCount = 0
+
     val isLoggingOut = MutableStateFlow(false)
     val debugSyncReportUri = MutableStateFlow<Uri?>(null)
     val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
     val showMembershipState = MutableStateFlow<ShowMembership?>(null)
+
+    val isDebugEnabled = MutableStateFlow(false)
 
     val profileData = profileContainer.observe().map { obj ->
         AccountProfile.Data(
@@ -166,6 +170,13 @@ class ProfileSettingsViewModel(
         }
     }
 
+    fun onHeaderTitleClicked() {
+        headerTitleClickCount = headerTitleClickCount + 1
+        if (headerTitleClickCount >= ENABLE_DEBUG_MENU_CLICK_COUNT && isDebugEnabled.value == false) {
+            isDebugEnabled.value = true
+        }
+    }
+
     class Factory(
         private val analytics: Analytics,
         private val container: StorelessSubscriptionContainer,
@@ -193,6 +204,10 @@ class ProfileSettingsViewModel(
                 removeObjectIcon = removeObjectIcon
             ) as T
         }
+    }
+
+    companion object {
+        const val ENABLE_DEBUG_MENU_CLICK_COUNT = 5
     }
 }
 

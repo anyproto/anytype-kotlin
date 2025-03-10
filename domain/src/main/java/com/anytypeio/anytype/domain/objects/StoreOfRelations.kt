@@ -133,3 +133,9 @@ class DefaultStoreOfRelations : StoreOfRelations {
         return trackChanges().map { store }
     }
 }
+
+suspend fun StoreOfRelations.getValidRelations(ids: List<Id>): List<ObjectWrapper.Relation> {
+    return ids.mapNotNull { id ->
+        getById(id)?.takeIf { it.isValidToUse }
+    }
+}

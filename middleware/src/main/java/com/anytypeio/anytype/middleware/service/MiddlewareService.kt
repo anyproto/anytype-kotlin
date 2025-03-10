@@ -50,6 +50,12 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun accountStop(request: Rpc.Account.Stop.Request): Rpc.Account.Stop.Response
 
+    @Throws(Exception::class)
+    fun accountMigrate(request: Rpc.Account.Migrate.Request): Rpc.Account.Migrate.Response
+
+    @Throws(Exception::class)
+    fun accountMigrateCancel(request: Rpc.Account.MigrateCancel.Request): Rpc.Account.MigrateCancel.Response
+
     //endregion
 
     //region OBJECT commands
@@ -615,4 +621,13 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun debugExportLogs(request: Rpc.Debug.ExportLog.Request): Rpc.Debug.ExportLog.Response
+
+    @Throws(Exception::class)
+    fun objectTypeListConflictingRelations(request: Rpc.ObjectType.ListConflictingRelations.Request) : Rpc.ObjectType.ListConflictingRelations.Response
+
+    @Throws(Exception::class)
+    fun objectTypeHeaderRecommendedFieldsSet(request: Rpc.ObjectType.Recommended.FeaturedRelationsSet.Request) : Rpc.ObjectType.Recommended.FeaturedRelationsSet.Response
+
+    @Throws(Exception::class)
+    fun objectTypeRecommendedFieldsSet(request: Rpc.ObjectType.Recommended.RelationsSet.Request) : Rpc.ObjectType.Recommended.RelationsSet.Response
 }

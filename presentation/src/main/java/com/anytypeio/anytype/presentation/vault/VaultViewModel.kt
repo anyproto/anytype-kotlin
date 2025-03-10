@@ -103,7 +103,7 @@ class VaultViewModel(
                 }
                 .combine(observeVaultSettings.flow()) { spaces, settings ->
                     spaces
-                        .filter { space -> space.isActive || space.isLoading }
+                        .filter { space -> (space.isActive || space.isLoading) }
                         .distinctBy { it.id }
                         .map { space ->
                             VaultSpaceView(
@@ -175,7 +175,7 @@ class VaultViewModel(
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
-        Timber.d("onResume")
+        Timber.d("onResume, deep link: $deeplink")
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.screenVault,
@@ -185,23 +185,6 @@ class VaultViewModel(
                     )
                 )
             )
-        }
-        viewModelScope.launch {
-            getVaultSettings.async(Unit)
-                .onSuccess { settings ->
-                    if (settings.showIntroduceVault) {
-                        commands.emit(Command.ShowIntroduceVault)
-                        setVaultSettings.async(
-                            params = settings.copy(
-                                showIntroduceVault = false
-                            )
-                        ).onFailure {
-                            Timber.e(it, "Error while setting vault settings")
-                        }
-                    }
-                }.onFailure {
-                    Timber.e(it, "Error while getting vault settings")
-                }
         }
         viewModelScope.launch {
             when (deeplink) {
@@ -232,7 +215,7 @@ class VaultViewModel(
                         when(result) {
                             is DeepLinkToObjectDelegate.Result.Error -> {
                                 val link = deeplink.invite
-                                if (link != null && result is DeepLinkToObjectDelegate.Result.Error.PermissionNeeded) {
+                                if (link != null) {
                                     commands.emit(
                                         Command.Deeplink.Invite(
                                             link = spaceInviteResolver.createInviteLink(
@@ -397,7 +380,6 @@ class VaultViewModel(
         data class EnterSpaceLevelChat(val space: Space, val chat: Id): Command()
         data object CreateNewSpace: Command()
         data object OpenProfileSettings: Command()
-        data object ShowIntroduceVault : Command()
 
         sealed class Deeplink : Command() {
             data object DeepLinkToObjectNotWorking: Deeplink()

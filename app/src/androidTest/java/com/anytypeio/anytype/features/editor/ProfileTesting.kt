@@ -14,6 +14,7 @@ import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed
@@ -182,7 +183,7 @@ class ProfileTesting : EditorTestSetup() {
                 root to
                     mapOf(
                         "iconImage" to "anyimage",
-                        "layout" to ObjectType.Layout.PROFILE.code.toDouble(),
+                        Relations.LAYOUT to ObjectType.Layout.PROFILE.code.toDouble(),
                         "coverType" to CoverType.COLOR.code.toDouble(),
                         "coverId" to CoverColor.BLUE.code,
                     )
@@ -195,7 +196,7 @@ class ProfileTesting : EditorTestSetup() {
             mapOf(
                 root to
                     mapOf(
-                        "layout" to ObjectType.Layout.PROFILE.code.toDouble(),
+                        Relations.LAYOUT to ObjectType.Layout.PROFILE.code.toDouble(),
                         "coverType" to CoverType.COLOR.code.toDouble(),
                         "coverId" to CoverColor.BLUE.code,
                     )

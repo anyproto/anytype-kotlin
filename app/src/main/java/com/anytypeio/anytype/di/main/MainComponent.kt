@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.main
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.common.ComponentDependenciesKey
+import com.anytypeio.anytype.di.feature.EditTypePropertiesDependencies
 import com.anytypeio.anytype.di.feature.AllContentDependencies
 import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
 import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
@@ -17,12 +18,13 @@ import com.anytypeio.anytype.di.feature.MainEntrySubComponent
 import com.anytypeio.anytype.di.feature.MoveToDependencies
 import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
+import com.anytypeio.anytype.di.feature.ObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
+import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatReactionDependencies
 import com.anytypeio.anytype.di.feature.chats.SelectChatReactionDependencies
-import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
@@ -43,6 +45,7 @@ import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
+import com.anytypeio.anytype.di.feature.settings.DebugDependencies
 import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
@@ -57,7 +60,6 @@ import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
 import com.anytypeio.anytype.di.feature.types.CreateObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
 import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
-import com.anytypeio.anytype.di.feature.update.MigrationErrorDependencies
 import com.anytypeio.anytype.di.feature.vault.VaultComponentDependencies
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceDependencies
@@ -104,7 +106,6 @@ interface MainComponent :
     RelationEditDependencies,
     SplashDependencies,
     DeletedAccountDependencies,
-    MigrationErrorDependencies,
     BacklinkOrAddToObjectDependencies,
     FilesStorageDependencies,
     OnboardingDependencies,
@@ -139,9 +140,12 @@ interface MainComponent :
     LinkToObjectDependencies,
     MoveToDependencies,
     DateObjectDependencies,
+    ObjectTypeDependencies,
     SelectChatReactionDependencies,
     ChatReactionDependencies,
-    ParticipantComponentDependencies
+    ParticipantComponentDependencies,
+    EditTypePropertiesDependencies,
+    DebugDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -217,11 +221,6 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(DeletedAccountDependencies::class)
     abstract fun provideDeletedAccountDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(MigrationErrorDependencies::class)
-    abstract fun migrationErrorDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap
@@ -395,6 +394,11 @@ abstract class ComponentDependenciesModule {
 
     @Binds
     @IntoMap
+    @ComponentDependenciesKey(ObjectTypeDependencies::class)
+    abstract fun provideObjectTypeDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
     @ComponentDependenciesKey(SelectChatReactionDependencies::class)
     abstract fun provideChatReactionPickerDependencies(component: MainComponent): ComponentDependencies
 
@@ -407,4 +411,14 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(ParticipantComponentDependencies::class)
     abstract fun provideParticipantComponentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(DebugDependencies::class)
+    abstract fun provideDebugDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(EditTypePropertiesDependencies::class)
+    abstract fun provideEditTypePropertiesDependencies(component: MainComponent): ComponentDependencies
 }

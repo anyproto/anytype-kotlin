@@ -104,11 +104,11 @@ class ObjectWrapperExtensionsKtTest {
 
         val obj = ObjectWrapper.Basic(
             mapOf(
-                "id" to "Ef6",
+                Relations.ID to "Ef6",
                 Relations.SPACE_ID to MockDataFactory.randomUuid(),
-                "name" to "LmL7R",
-                "snippet" to "OMr2Y",
-                "layout" to ObjectType.Layout.NOTE.code.toDouble()
+                Relations.NAME to "LmL7R",
+                Relations.SNIPPET to "OMr2Y",
+                Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble()
             )
 
         )
@@ -132,11 +132,11 @@ class ObjectWrapperExtensionsKtTest {
 
         val obj = ObjectWrapper.Basic(
             mapOf(
-                "id" to "Ef6",
+                Relations.ID to "Ef6",
                 Relations.SPACE_ID to MockDataFactory.randomUuid(),
-                "name" to "LmL7R",
-                "snippet" to "OMr2Y",
-                "layout" to ObjectType.Layout.BASIC.code.toDouble()
+                Relations.NAME to "LmL7R",
+                Relations.SNIPPET to "OMr2Y",
+                Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
             )
 
         )
@@ -158,14 +158,14 @@ class ObjectWrapperExtensionsKtTest {
 
         val obj = ObjectWrapper.Basic(
             mapOf(
-                "id" to "Ef6",
+                Relations.ID to "Ef6",
                 Relations.SPACE_ID to MockDataFactory.randomUuid(),
-                "name" to "LmL7R",
-                "snippet" to "Anytype\nis\nnext-generation software that\n" +
+                Relations.NAME to "LmL7R",
+                Relations.SNIPPET to "Anytype\nis\nnext-generation software that\n" +
                         "works like\nyour brain does. It solves everyday\n" +
                         "problems\nwhile respecting your privacy and\n" +
                         "data rights.",
-                "layout" to ObjectType.Layout.NOTE.code.toDouble()
+                Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble()
             )
 
         )
@@ -173,7 +173,7 @@ class ObjectWrapperExtensionsKtTest {
         val result = listOf(obj).toViews(
             urlBuilder = urlBuilder,
             objectTypes = listOf(),
-            fieldParser
+            fieldParser = fieldParser
         )
 
         assertEquals(

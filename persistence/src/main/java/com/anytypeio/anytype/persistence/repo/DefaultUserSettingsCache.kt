@@ -417,9 +417,8 @@ class DefaultUserSettingsCache(
                 )
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
-                    showIntroduceVault = curr.showIntroduceVault,
                     isRelativeDates = curr.isRelativeDates,
-                    dateFormat = curr.dateFormat ?: appDefaultDateFormatProvider.provide()
+                    dateFormat = curr.dateFormat ?: appDefaultDateFormatProvider.provide(),
                 )
             }
             .first()
@@ -435,7 +434,6 @@ class DefaultUserSettingsCache(
                 )
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
-                    showIntroduceVault = curr.showIntroduceVault,
                     isRelativeDates = curr.isRelativeDates,
                     dateFormat = curr.dateFormat ?: appDefaultDateFormatProvider.provide()
                 )
@@ -464,7 +462,6 @@ class DefaultUserSettingsCache(
                 preferences = existingPreferences.preferences + mapOf(
                     account.id to VaultPreference(
                         orderOfSpaces = settings.orderOfSpaces,
-                        showIntroduceVault = settings.showIntroduceVault
                     )
                 )
             )

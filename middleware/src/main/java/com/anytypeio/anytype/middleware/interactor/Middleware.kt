@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Command.ObjectTypeConflictingFields
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
@@ -127,6 +128,25 @@ class Middleware @Inject constructor(
         val status = response.status
         checkNotNull(status) { "Account status was null" }
         return status.core()
+    }
+
+    @Throws(Exception::class)
+    fun accountMigrate(account: Id, path: String) {
+        val request = Rpc.Account.Migrate.Request(
+            id = account,
+            rootPath = path
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.accountMigrate(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun accountMigrateCancel(account: Id) {
+        val request = Rpc.Account.MigrateCancel.Request(id = account)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.accountMigrateCancel(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -1004,7 +1024,8 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectCreateSet(
         space: Id,
-        objectType: String?
+        objectType: String?,
+        details: Struct?
     ): Response.Set.Create {
         val source = if (objectType != null) {
             listOf(objectType)
@@ -1014,7 +1035,8 @@ class Middleware @Inject constructor(
 
         val request = Rpc.Object.CreateSet.Request(
             source = source,
-            spaceId = space
+            spaceId = space,
+            details = details
         )
 
         logRequestIfDebug(request)
@@ -1022,9 +1044,9 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
 
         return Response.Set.Create(
-            targetId = response.objectId,
+            objectId = response.objectId,
             payload = response.event.toPayload(),
-            blockId = null
+            details = response.details.orEmpty()
         )
     }
 
@@ -2873,6 +2895,40 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.debugExportLogs(request) }
         logResponseIfDebug(response, time)
         return response.path
+    }
+
+    @Throws(Exception::class)
+    fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {
+        val request = Rpc.ObjectType.ListConflictingRelations.Request(
+            spaceId = command.spaceId,
+            typeObjectId = command.objectTypeId
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectTypeListConflictingRelations(request) }
+        logResponseIfDebug(response, time)
+        return response.relationIds
+    }
+
+    @Throws(Exception::class)
+    fun objectTypeSetRecommendedHeaderFields(command: Command.ObjectTypeSetRecommendedHeaderFields) {
+        val request = Rpc.ObjectType.Recommended.FeaturedRelationsSet.Request(
+            typeObjectId = command.objectTypeId,
+            relationObjectIds = command.fields
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectTypeHeaderRecommendedFieldsSet(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields) {
+        val request = Rpc.ObjectType.Recommended.RelationsSet.Request(
+            typeObjectId = command.objectTypeId,
+            relationObjectIds = command.fields
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectTypeRecommendedFieldsSet(request) }
+        logResponseIfDebug(response, time)
     }
 
     private fun logRequestIfDebug(request: Any) {

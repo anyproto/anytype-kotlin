@@ -52,6 +52,7 @@ import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationCommand
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -196,81 +197,37 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 }
                             }
                             is Command.Navigate -> {
-                                when(val dest = command.destination) {
-                                    is OpenObjectNavigation.OpenDataView -> {
-                                        runCatching {
-                                            findNavController(R.id.fragment).navigate(
-                                                R.id.dataViewNavigation,
-                                                args = ObjectSetFragment.args(
-                                                    ctx = dest.target,
-                                                    space = dest.space
-                                                ),
-                                                navOptions = NavOptions.Builder()
-                                                    .setPopUpTo(R.id.homeScreen, true)
-                                                    .build()
-                                            )
-                                        }.onFailure {
-                                            Timber.e(it, "Error while data view navigation")
-                                        }
-                                    }
-                                    is OpenObjectNavigation.OpenParticipant -> {
-                                        runCatching {
-                                            findNavController(R.id.fragment).navigate(
-                                                R.id.participantScreen,
-                                                ParticipantFragment.args(
-                                                    objectId = dest.target,
-                                                    space = dest.space
-                                                )
-                                            )
-                                        }.onFailure {
-                                            Timber.w("Error while opening participant screen")
-                                        }
-                                    }
-                                    is OpenObjectNavigation.OpenEditor -> {
-                                        runCatching {
-                                            findNavController(R.id.fragment).navigate(
-                                                R.id.objectNavigation,
-                                                args = EditorFragment.args(
-                                                    ctx = dest.target,
-                                                    space = dest.space
-                                                ),
-                                                navOptions = NavOptions.Builder()
-                                                    .setPopUpTo(R.id.homeScreen, true)
-                                                    .build()
-                                            )
-                                        }.onFailure {
-                                            Timber.e(it, "Error while editor navigation")
-                                        }
-                                    }
-                                    is OpenObjectNavigation.OpenChat -> {
-                                        toast("Cannot open chat from here")
-                                    }
-                                    is OpenObjectNavigation.UnexpectedLayoutError -> {
-                                        toast(getString(R.string.error_unexpected_layout))
-                                    }
-                                    OpenObjectNavigation.NonValidObject -> {
-                                        toast(getString(R.string.error_non_valid_object))
-                                    }
-                                    is OpenObjectNavigation.OpenDateObject -> {
-                                        runCatching {
-                                            findNavController(R.id.fragment).navigate(
-                                                R.id.dateObjectScreen,
-                                                args = DateObjectFragment.args(
-                                                    objectId = dest.target,
-                                                    space = dest.space
-                                                ),
-                                                navOptions = Builder()
-                                                    .setPopUpTo(R.id.homeScreen, true)
-                                                    .build()
-                                            )
-                                        }.onFailure {
-                                            Timber.e(it, "Error while date object navigation")
-                                        }
-                                    }
-                                }
+                                proceedWithOpenObjectNavigation(command.destination)
                             }
                             is Command.Deeplink.DeepLinkToObjectNotWorking -> {
                                 toast(getString(R.string.multiplayer_deeplink_to_your_object_error))
+                            }
+                            is Command.Deeplink.DeepLinkToObject -> {
+                                when(val effect = command.sideEffect) {
+                                    is Command.Deeplink.DeepLinkToObject.SideEffect.SwitchSpace -> {
+                                        runCatching {
+                                            val controller = findNavController(R.id.fragment)
+                                            controller.popBackStack(R.id.vaultScreen, false)
+                                            if (effect.chat != null) {
+                                                controller.navigate(
+                                                    R.id.actionOpenChatFromVault,
+                                                    ChatFragment.args(
+                                                        space = command.space,
+                                                        ctx = effect.chat.orEmpty()
+                                                    )
+                                                )
+                                            } else {
+                                                controller.navigate(R.id.actionOpenSpaceFromVault)
+                                            }
+                                            proceedWithOpenObjectNavigation(command.navigation)
+                                        }.onFailure {
+                                            Timber.e(it, "Error while switching space when handling deep link to object")
+                                        }
+                                    }
+                                    null -> {
+                                        proceedWithOpenObjectNavigation(command.navigation)
+                                    }
+                                }
                             }
                             is Command.Deeplink.GalleryInstallation -> {
                                 runCatching {
@@ -319,6 +276,84 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             }
         } else {
             Timber.d("onSaveInstanceStateNotNull")
+        }
+    }
+
+    private fun proceedWithOpenObjectNavigation(dest: OpenObjectNavigation) {
+        when (dest) {
+            is OpenObjectNavigation.OpenDataView -> {
+                runCatching {
+                    findNavController(R.id.fragment).navigate(
+                        R.id.dataViewNavigation,
+                        args = ObjectSetFragment.args(
+                            ctx = dest.target,
+                            space = dest.space
+                        ),
+                        navOptions = Builder()
+                            .setPopUpTo(R.id.homeScreen, true)
+                            .build()
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while data view navigation")
+                }
+            }
+
+            is OpenObjectNavigation.OpenParticipant -> {
+                runCatching {
+                    findNavController(R.id.fragment).navigate(
+                        R.id.participantScreen,
+                        ParticipantFragment.args(
+                            objectId = dest.target,
+                            space = dest.space
+                        )
+                    )
+                }.onFailure {
+                    Timber.w("Error while opening participant screen")
+                }
+            }
+
+            is OpenObjectNavigation.OpenEditor -> {
+                runCatching {
+                    findNavController(R.id.fragment).navigate(
+                        R.id.objectNavigation,
+                        args = EditorFragment.args(
+                            ctx = dest.target,
+                            space = dest.space
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while editor navigation")
+                }
+            }
+
+            is OpenObjectNavigation.OpenChat -> {
+                toast("Cannot open chat from here")
+            }
+
+            is OpenObjectNavigation.UnexpectedLayoutError -> {
+                toast(getString(R.string.error_unexpected_layout))
+            }
+
+            OpenObjectNavigation.NonValidObject -> {
+                toast(getString(R.string.error_non_valid_object))
+            }
+
+            is OpenObjectNavigation.OpenDateObject -> {
+                runCatching {
+                    findNavController(R.id.fragment).navigate(
+                        R.id.dateObjectScreen,
+                        args = DateObjectFragment.args(
+                            objectId = dest.target,
+                            space = dest.space
+                        ),
+                        navOptions = Builder()
+                            .setPopUpTo(R.id.homeScreen, true)
+                            .build()
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while date object navigation")
+                }
+            }
         }
     }
 

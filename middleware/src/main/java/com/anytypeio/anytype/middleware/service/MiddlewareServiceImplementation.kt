@@ -2,7 +2,9 @@ package com.anytypeio.anytype.middleware.service
 
 import anytype.Rpc
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
+import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
+import com.anytypeio.anytype.core_models.exceptions.MigrationFailedException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
@@ -80,6 +82,9 @@ class MiddlewareServiceImplementation @Inject constructor(
                 Rpc.Account.Select.Response.Error.Code.ACCOUNT_IS_DELETED -> {
                     throw AccountIsDeletedException()
                 }
+                Rpc.Account.Select.Response.Error.Code.ACCOUNT_STORE_NOT_MIGRATED -> {
+                    throw AccountMigrationNeededException()
+                }
                 Rpc.Account.Select.Response.Error.Code.FAILED_TO_FETCH_REMOTE_NODE_HAS_INCOMPATIBLE_PROTO_VERSION -> {
                     throw NeedToUpdateApplicationException()
                 }
@@ -98,6 +103,33 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Account.Stop.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Account.Stop.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun accountMigrate(request: Rpc.Account.Migrate.Request): Rpc.Account.Migrate.Response {
+        val encoded = Service.accountMigrate(Rpc.Account.Migrate.Request.ADAPTER.encode(request))
+        val response = Rpc.Account.Migrate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Account.Migrate.Response.Error.Code.NULL) {
+            when(error.code) {
+                Rpc.Account.Migrate.Response.Error.Code.NOT_ENOUGH_FREE_SPACE -> {
+                    throw MigrationFailedException.NotEnoughSpace()
+                }
+                else -> throw Exception(error.description)
+            }
+        } else {
+            return response
+        }
+    }
+
+    override fun accountMigrateCancel(request: Rpc.Account.MigrateCancel.Request): Rpc.Account.MigrateCancel.Response {
+        val encoded = Service.accountMigrateCancel(Rpc.Account.MigrateCancel.Request.ADAPTER.encode(request))
+        val response = Rpc.Account.MigrateCancel.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Account.MigrateCancel.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response
@@ -2471,6 +2503,45 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Debug.ExportLog.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Debug.ExportLog.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectTypeListConflictingRelations(request: Rpc.ObjectType.ListConflictingRelations.Request): Rpc.ObjectType.ListConflictingRelations.Response {
+        val encoded = Service.objectTypeListConflictingRelations(
+            Rpc.ObjectType.ListConflictingRelations.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.ObjectType.ListConflictingRelations.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.ObjectType.ListConflictingRelations.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectTypeHeaderRecommendedFieldsSet(request: Rpc.ObjectType.Recommended.FeaturedRelationsSet.Request): Rpc.ObjectType.Recommended.FeaturedRelationsSet.Response {
+        val encoded = Service.objectTypeRecommendedFeaturedRelationsSet(
+            Rpc.ObjectType.Recommended.FeaturedRelationsSet.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.ObjectType.Recommended.FeaturedRelationsSet.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.ObjectType.Recommended.FeaturedRelationsSet.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectTypeRecommendedFieldsSet(request: Rpc.ObjectType.Recommended.RelationsSet.Request): Rpc.ObjectType.Recommended.RelationsSet.Response {
+        val encoded = Service.objectTypeRecommendedRelationsSet(
+            Rpc.ObjectType.Recommended.RelationsSet.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.ObjectType.Recommended.RelationsSet.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.ObjectType.Recommended.RelationsSet.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

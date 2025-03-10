@@ -57,7 +57,7 @@ dependencies {
     debugImplementation libs.composeTooling
     implementation libs.coilCompose
     implementation libs.composeConstraintLayout
-    implementation libs.composeReorderable
+    implementation libs.composeReorderableLegacy
 
     testImplementation libs.fragmentTesting
     testImplementation project(':test:android-utils')

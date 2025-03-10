@@ -6,29 +6,31 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import timber.log.Timber
 
 const val DEEP_LINK_PATTERN = "anytype://"
 
 const val DEEP_LINK_INVITE_DOMAIN = "invite.any.coop"
 
+const val DEEP_LINK_TO_OBJECT_BASE_URL = "https://object.any.coop"
+
 /**
  * Regex pattern for matching
  */
 const val DEEP_LINK_INVITE_REG_EXP = "invite.any.coop/([a-zA-Z0-9]+)#([a-zA-Z0-9]+)"
+const val DEEP_LINK_TO_OBJECT_REG_EXP = """object\.any\.coop/([a-zA-Z0-9?=&._-]+)"""
 
 const val DEE_LINK_INVITE_CUSTOM_REG_EXP = "anytype://invite/\\?cid=([a-zA-Z0-9]+)&key=([a-zA-Z0-9]+)"
 
 const val MAIN_PATH = "main"
 const val OBJECT_PATH = "object"
 const val IMPORT_PATH = "import"
-const val INVITE_PATH = "invite"
 const val MEMBERSHIP_PATH = "membership"
 
 const val TYPE_PARAM = "type"
 const val OBJECT_ID_PARAM = "objectId"
 const val SPACE_ID_PARAM = "spaceId"
-const val CONTENT_ID_PARAM = "cid"
-const val ENCRYPTION_KEY_PARAM = "key"
+const val INVITE_ID_PARAM = "inviteID"
 const val SOURCE_PARAM = "source"
 const val TYPE_VALUE_EXPERIENCE = "experience"
 const val TIER_ID_PARAM = "tier"
@@ -38,62 +40,82 @@ const val IMPORT_EXPERIENCE_DEEPLINK = "$DEEP_LINK_PATTERN$MAIN_PATH/$IMPORT_PAT
 object DefaultDeepLinkResolver : DeepLinkResolver {
 
     private val defaultInviteRegex = Regex(DEEP_LINK_INVITE_REG_EXP)
+    private val defaultLinkToObjectRegex = Regex(DEEP_LINK_TO_OBJECT_REG_EXP)
 
-    override fun resolve(
-        deeplink: String
-    ): DeepLinkResolver.Action = when {
-        deeplink.contains(IMPORT_EXPERIENCE_DEEPLINK) -> {
-            try {
-                val type = Uri.parse(deeplink).getQueryParameter(TYPE_PARAM)
-                val source = Uri.parse(deeplink).getQueryParameter(SOURCE_PARAM)
-                DeepLinkResolver.Action.Import.Experience(
-                    type = type.orEmpty(),
-                    source = source.orEmpty()
-                )
-            } catch (e: Exception) {
-                DeepLinkResolver.Action.Unknown
-            }
+    override fun resolve(deeplink: String): DeepLinkResolver.Action {
+        val uri = Uri.parse(deeplink)
+
+        return when {
+            deeplink.contains(IMPORT_EXPERIENCE_DEEPLINK) -> resolveImportExperience(uri)
+            defaultInviteRegex.containsMatchIn(deeplink) -> DeepLinkResolver.Action.Invite(deeplink)
+            defaultLinkToObjectRegex.containsMatchIn(deeplink) -> resolveDeepLinkToObject(uri)
+            deeplink.contains(OBJECT_PATH) -> resolveObjectPath(uri)
+            deeplink.contains(MEMBERSHIP_PATH) -> resolveMembershipPath(uri)
+            else -> DeepLinkResolver.Action.Unknown
+        }.also {
+            Timber.d("Resolving deep link: $deeplink")
         }
-        deeplink.contains(INVITE_PATH) -> {
-            DeepLinkResolver.Action.Invite(deeplink)
+    }
+
+    private fun resolveImportExperience(uri: Uri): DeepLinkResolver.Action {
+        return try {
+            val type = uri.getQueryParameter(TYPE_PARAM).orEmpty()
+            val source = uri.getQueryParameter(SOURCE_PARAM).orEmpty()
+            DeepLinkResolver.Action.Import.Experience(type, source)
+        } catch (e: Exception) {
+            DeepLinkResolver.Action.Unknown
         }
-        defaultInviteRegex.containsMatchIn(deeplink) -> {
-            DeepLinkResolver.Action.Invite(deeplink)
-        }
-        deeplink.contains(OBJECT_PATH) -> {
-            val uri = Uri.parse(deeplink)
-            val obj = uri.getQueryParameter(OBJECT_ID_PARAM)
-            val space = uri.getQueryParameter(SPACE_ID_PARAM)
-            if (!obj.isNullOrEmpty() && !space.isNullOrEmpty()) {
-                val cid = uri.getQueryParameter(CONTENT_ID_PARAM)
-                val key = uri.getQueryParameter(ENCRYPTION_KEY_PARAM)
-                DeepLinkResolver.Action.DeepLinkToObject(
-                    obj = obj,
-                    space = SpaceId(space),
-                    invite = if (!cid.isNullOrEmpty() && !key.isNullOrEmpty()) {
-                        DeepLinkResolver.Action.DeepLinkToObject.Invite(
-                            cid = cid,
-                            key = key
-                        )
-                    } else {
-                        null
-                    }
-                )
-            } else {
-                DeepLinkResolver.Action.Unknown
-            }
-        }
-        deeplink.contains(MEMBERSHIP_PATH) -> {
-            val uri = Uri.parse(deeplink)
-            DeepLinkResolver.Action.DeepLinkToMembership(
-                tierId = uri.getQueryParameter(TIER_ID_PARAM)
+    }
+
+    private fun resolveDeepLinkToObject(uri: Uri): DeepLinkResolver.Action {
+        val obj = uri.pathSegments.getOrNull(0) ?: return DeepLinkResolver.Action.Unknown
+        val space = uri.getQueryParameter(SPACE_ID_PARAM)?.takeIf { it.isNotEmpty() }
+            ?: return DeepLinkResolver.Action.Unknown // Ensure spaceId is required
+
+        return DeepLinkResolver.Action.DeepLinkToObject(
+            obj = obj,
+            space = SpaceId(space),
+            invite = parseInvite(uri)
+        )
+    }
+
+    private fun resolveObjectPath(uri: Uri): DeepLinkResolver.Action {
+        val obj = uri.getQueryParameter(OBJECT_ID_PARAM)?.takeIf { it.isNotEmpty() }
+        val space = uri.getQueryParameter(SPACE_ID_PARAM)?.takeIf { it.isNotEmpty() }
+            ?: return DeepLinkResolver.Action.Unknown // Ensure spaceId is required
+
+        return if (obj != null) {
+            DeepLinkResolver.Action.DeepLinkToObject(
+                obj = obj,
+                space = SpaceId(space),
+                invite = parseInvite(uri)
             )
+        } else {
+            DeepLinkResolver.Action.Unknown
         }
-        else -> DeepLinkResolver.Action.Unknown
+    }
+
+    private fun resolveMembershipPath(uri: Uri): DeepLinkResolver.Action {
+        return DeepLinkResolver.Action.DeepLinkToMembership(
+            tierId = uri.getQueryParameter(TIER_ID_PARAM)
+        )
+    }
+
+    private fun parseInvite(uri: Uri): DeepLinkResolver.Action.DeepLinkToObject.Invite? {
+        val inviteId = uri.getQueryParameter(INVITE_ID_PARAM)?.takeIf { it.isNotEmpty() }
+        val encryption = uri.fragment?.takeIf { it.isNotEmpty() }
+        return if (inviteId != null && encryption != null) {
+            DeepLinkResolver.Action.DeepLinkToObject.Invite(
+                key = encryption,
+                cid = inviteId
+            )
+        } else {
+            null
+        }
     }
 
     override fun createObjectDeepLink(obj: Id, space: SpaceId): Url {
-        return "${DEEP_LINK_PATTERN}${OBJECT_PATH}?${OBJECT_ID_PARAM}=$obj&${SPACE_ID_PARAM}=${space.id}"
+        return "$DEEP_LINK_TO_OBJECT_BASE_URL/$obj?$SPACE_ID_PARAM=${space.id}"
     }
 
     override fun createObjectDeepLinkWithInvite(
@@ -102,7 +124,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         invite: Id,
         encryptionKey: String
     ): Url {
-        return "${DEEP_LINK_PATTERN}${OBJECT_PATH}?${OBJECT_ID_PARAM}=$obj&${SPACE_ID_PARAM}=${space.id}&${DefaultSpaceInviteResolver.CONTENT_ID_KEY}=$invite&${DefaultSpaceInviteResolver.FILE_KEY_KEY}=$encryptionKey"
+        return "${DEEP_LINK_TO_OBJECT_BASE_URL}/$obj?${SPACE_ID_PARAM}=${space.id}&${INVITE_ID_PARAM}=$invite#$encryptionKey"
     }
 
     override fun isDeepLink(link: String): Boolean {
@@ -138,6 +160,7 @@ object DefaultSpaceInviteResolver : SpaceInviteResolver {
     override fun createInviteLink(contentId: String, encryptionKey: String) : String {
         return "https://$DEEP_LINK_INVITE_DOMAIN/$contentId#$encryptionKey"
     }
+
 
     private const val CONTENT_INDEX = 1
     private const val KEY_INDEX = 2

@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentDocCoverGalleryBinding
+import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.other.MediaPermissionHelper
@@ -104,13 +105,12 @@ abstract class SelectCoverGalleryFragment :
 
         binding.btnUpload.clicks()
             .onEach {
-                try {
-                    pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
-                } catch (e: Exception) {
-                    Timber.w(e, "Error while opening photo picker")
-                    toast("Error while opening photo picker")
-                    permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
-                }
+                launchMediaPicker(
+                    pickMedia = pickMedia,
+                    permissionHelper = permissionHelper,
+                    mediaType = PickVisualMedia.ImageOnly,
+                    fallbackMimeType = Mimetype.MIME_IMAGE_ALL
+                )
             }
             .launchIn(lifecycleScope)
 

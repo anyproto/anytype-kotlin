@@ -12,7 +12,8 @@ object Relations {
     const val COVER_TYPE = "coverType"
     const val COVER_ID = "coverId"
     const val DESCRIPTION = "description"
-    const val LAYOUT = "layout"
+    const val LAYOUT = "resolvedLayout"
+    const val LEGACY_LAYOUT = "layout"
     const val NAME = "name"
     const val ICON_EMOJI = "iconEmoji"
     const val ICON_OPTION = "iconOption"
@@ -69,6 +70,9 @@ object Relations {
 
     const val RECOMMENDED_LAYOUT = "recommendedLayout"
     const val RECOMMENDED_RELATIONS = "recommendedRelations"
+    const val RECOMMENDED_FEATURED_RELATIONS = "recommendedFeaturedRelations"
+    const val RECOMMENDED_HIDDEN_RELATIONS = "recommendedHiddenRelations"
+    const val RECOMMENDED_FILE_RELATIONS = "recommendedFileRelations"
     const val DEFAULT_TEMPLATE_ID = "defaultTemplateId"
 
     const val UNIQUE_KEY = "uniqueKey"
@@ -103,59 +107,98 @@ object Relations {
         "name",
         "description",
         "snippet",
+        "iconEmoji",
+        "iconImage",
         "type",
+        "layout",
+        "layoutAlign",
+        "coverId",
+        "coverScale",
+        "coverType",
+        "coverX",
+        "coverY",
+        "createdDate",
+        "creator",
+        "lastModifiedDate",
+        "lastModifiedBy",
+        "lastOpenedDate",
         "featuredRelations",
+        "isFavorite",
         "workspaceId",
-        "done",
+        "spaceId",
         "links",
         "internalFlags",
         "restrictions",
-
+        "addedDate",
         "source",
         "sourceObject",
-
         "setOf",
+        "relationFormat",
+        "relationKey",
+        "relationReadonlyValue",
+        "relationDefaultValue",
+        "relationMaxCount",
+        "relationOptionColor",
+        "relationFormatObjectTypes",
+        "isReadonly",
+        "isDeleted",
+        "isHidden",
+        "spaceShareableStatus",
+        "isAclShared",
+        "isHiddenDiscovery",
+        "done",
+        "isArchived",
+        "templateIsBundled",
         "smartblockTypes",
         "targetObjectType",
-        "recommendedRelations",
         "recommendedLayout",
-        "templateIsBundled",
-
-        "layout",
-        "layoutAlign",
-
-        "creator",
-        "createdDate",
-        "lastOpenedDate",
-        "lastModifiedBy",
-        "lastModifiedDate",
-        "addedDate",
-
-        "iconEmoji",
-        "iconImage",
-
-        "coverId",
-        "coverType",
-        "coverScale",
-        "coverX",
-        "coverY",
-
         "fileExt",
         "fileMimeType",
         "sizeInBytes",
-
-        "isHidden",
-        "isArchived",
-        "isFavorite",
-        "isReadonly",
-
-        "relationKey",
-        "relationFormat",
-        "relationMaxCount",
-        "relationReadonlyValue",
-        "relationDefaultValue",
-        "relationFormatObjectTypes",
-        "relationOptionColor",
-        "sharedSpacesLimit"
+        "oldAnytypeID",
+        "spaceDashboardId",
+        "recommendedRelations",
+        "iconOption",
+        "widthInPixels",
+        "heightInPixels",
+        "sourceFilePath",
+        "fileSyncStatus",
+        "defaultTemplateId",
+        "uniqueKey",
+        "backlinks",
+        "profileOwnerIdentity",
+        "fileBackupStatus",
+        "fileId",
+        "fileIndexingStatus",
+        "origin",
+        "revision",
+        "imageKind",
+        "importType",
+        "spaceAccessType",
+        "spaceInviteFileCid",
+        "spaceInviteFileKey",
+        "readersLimit",
+        "writersLimit",
+        "sharedSpacesLimit",
+        "participantPermissions",
+        "participantStatus",
+        "latestAclHeadId",
+        "identity",
+        "globalName",
+        "syncDate",
+        "syncStatus",
+        "syncError",
+        "lastUsedDate",
+        "mentions",
+        "chatId",
+        "hasChat",
+        "timestamp",
+        "recommendedFeaturedRelations",
+        "recommendedHiddenRelations",
+        "recommendedFileRelations",
+        "layoutWidth",
+        "defaultViewType",
+        "defaultTypeId",
+        "resolvedLayout"
     )
 }

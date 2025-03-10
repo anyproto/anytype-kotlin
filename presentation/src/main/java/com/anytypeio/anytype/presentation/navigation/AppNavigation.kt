@@ -7,8 +7,6 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 
 interface AppNavigation {
 
-    fun exitFromMigrationScreen()
-
     fun openSpaceSettings()
 
     fun openObjectSet(
@@ -42,6 +40,16 @@ interface AppNavigation {
         space: Id
     )
 
+    fun openObjectType(
+        objectId: Id,
+        space: Id
+    )
+
+    fun openCurrentObjectTypeFields(
+        objectId: Id,
+        space: Id
+    )
+
     fun launchDocument(target: String, space: Id)
     fun launchCollections(subscription: Subscription, space: Id)
     fun launchObjectSet(target: Id, space: Id)
@@ -59,8 +67,6 @@ interface AppNavigation {
 
     fun logout()
 
-    fun migrationErrorScreen()
-
     fun openTemplatesModal(typeId: Id)
 
     fun openAllContent(space: Id)
@@ -75,9 +81,6 @@ interface AppNavigation {
         data object ExitToDesktop : Command()
         data object ExitToVault : Command()
         data object ExitToSpaceHome : Command()
-
-        data object ExitFromMigrationScreen : Command()
-
         data class OpenObject(val target: Id, val space: Id) : Command()
         data class OpenChat(val target: Id, val space: Id) : Command()
         data class LaunchDocument(val target: Id, val space: Id) : Command()
@@ -89,7 +92,6 @@ interface AppNavigation {
         ) : Command()
 
         object OpenSettings : Command()
-        object MigrationErrorScreen: Command()
 
         data class OpenShareScreen(
             val space: SpaceId

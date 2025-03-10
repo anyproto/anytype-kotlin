@@ -44,8 +44,8 @@ import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.objects.toObjectViewDefault
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
@@ -54,7 +54,6 @@ import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.relations.view
-import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -297,21 +296,6 @@ fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>
 fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
     filter { !it.isHidden }
 
-fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView = when (isDeleted) {
-    true -> ObjectView.Deleted(id)
-    else -> toObjectViewDefault(urlBuilder, fieldParser)
-}
-
-fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder, fieldParser: FieldParser): ObjectView.Default {
-    return ObjectView.Default(
-        id = id,
-        name = fieldParser.getObjectName(this),
-        icon = this.objectIcon(builder = urlBuilder),
-        types = type,
-        isRelation = layout == ObjectType.Layout.RELATION
-    )
-}
-
 fun List<DVFilter>.updateFilters(updates: List<DVFilterUpdate>): List<DVFilter> {
     val filters = this.toMutableList()
     updates.forEach { update ->
@@ -413,6 +397,10 @@ fun ObjectState.DataView.Set.getSetOfValue(ctx: Id): List<Id> {
     return details.getObject(ctx)?.setOf.orEmpty()
 }
 
+fun ObjectState.DataView.TypeSet.getSetOfValue(ctx: Id): List<Id> {
+    return details.getObject(ctx)?.setOf.orEmpty()
+}
+
 fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): List<Id> {
     return query.filter(::isValidObject)
 }
@@ -504,6 +492,16 @@ suspend fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSessio
                 )
             }
         }
+
+        is ObjectState.DataView.TypeSet -> {
+            val setOfValue = getSetOfValue(ctx)
+            mapViewers(
+                defaultObjectType = { setOfValue.firstOrNull() },
+                viewers = viewers,
+                session = session,
+                storeOfRelations = storeOfRelations
+            )
+        }
     }
 }
 
@@ -567,6 +565,23 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
                 }
             }
         }
+
+        is ObjectState.DataView.TypeSet -> {
+            val setOfValue = getSetOfValue(ctx)
+            val setOf = setOfValue.firstOrNull()
+            return if (setOf.isNullOrBlank()) {
+                Timber.d("Set by type setOf param is null or empty, not possible to get Type and Template")
+                Pair(null, null)
+            } else {
+                val defaultSetObjectType = details.getTypeObject(setOf)
+                if (activeView.defaultTemplate.isNullOrEmpty()) {
+                    val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
+                    Pair(defaultSetObjectType, defaultTemplateId)
+                } else {
+                    Pair(defaultSetObjectType, activeView.defaultTemplate)
+                }
+            }
+        }
     }
 }
 
@@ -596,6 +611,7 @@ fun ObjectState.DataView.isChangingDefaultTypeAvailable(): Boolean {
             val setOfValue = getSetOfValue(root)
             isSetByRelation(setOfValue = setOfValue)
         }
+        is ObjectState.DataView.TypeSet -> false
     }
 }
 

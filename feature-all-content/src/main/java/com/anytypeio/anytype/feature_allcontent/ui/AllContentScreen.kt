@@ -52,10 +52,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -63,13 +59,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.common.bottomBorder
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.extensions.swapList
+import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
@@ -88,9 +85,7 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
-import com.anytypeio.anytype.feature_allcontent.models.AllContentBottomMenu
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
-import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
@@ -99,6 +94,7 @@ import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiSnackbarState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
+import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.coroutines.CoroutineScope
@@ -117,7 +113,7 @@ fun AllContentWrapperScreen(
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
-    onSortClick: (AllContentSort) -> Unit,
+    onSortClick: (ObjectsListSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem) -> Unit,
     onRelationClicked: (UiContentItem) -> Unit,
@@ -180,7 +176,7 @@ fun AllContentMainScreen(
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
-    onSortClick: (AllContentSort) -> Unit,
+    onSortClick: (ObjectsListSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem) -> Unit,
     onRelationClicked: (UiContentItem) -> Unit,
@@ -267,10 +263,14 @@ fun AllContentMainScreen(
                     onTabClick(tab)
                 }
                 Spacer(modifier = Modifier.size(10.dp))
-                AllContentSearchBar(onQueryChanged = {
-                    isSearchEmpty = it.isEmpty()
-                    onQueryChanged(it)
-                })
+                DefaultSearchBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    onQueryChanged = {
+                        isSearchEmpty = it.isEmpty()
+                        onQueryChanged(it)
+                    })
                 Spacer(modifier = Modifier.size(10.dp))
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             }
@@ -818,29 +818,6 @@ fun UiContentItem.Group.title(): String {
 object AllContentNavigation {
     const val ALL_CONTENT_MAIN = "all_content_main"
 }
-
-@Composable
-fun Modifier.bottomBorder(
-    strokeWidth: Dp = 0.5.dp,
-    color: Color = colorResource(R.color.shape_primary)
-) = composed(
-    factory = {
-        val density = LocalDensity.current
-        val strokeWidthPx = density.run { strokeWidth.toPx() }
-
-        Modifier.drawBehind {
-            val width = size.width
-            val height = size.height - strokeWidthPx / 2
-
-            drawLine(
-                color = color,
-                start = Offset(x = 0f, y = height),
-                end = Offset(x = width, y = height),
-                strokeWidth = strokeWidthPx
-            )
-        }
-    }
-)
 
 @Composable
 fun SwipeToDismissListItems(

@@ -207,11 +207,9 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
 
                 is AllContentViewModel.Command.OpenTypeEditing -> {
                     runCatching {
-                        navigation().openTypeEditingScreen(
-                            id = command.item.id,
-                            name = command.item.name,
-                            icon = (command.item.icon as? ObjectIcon.Basic.Emoji)?.unicode ?: "",
-                            readOnly = command.item.readOnly
+                        navigation().openObjectType(
+                            objectId = command.item.id,
+                            space = space
                         )
                     }.onFailure {
                         toast("Failed to open type editing screen")

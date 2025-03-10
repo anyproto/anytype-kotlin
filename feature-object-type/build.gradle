@@ -1,0 +1,63 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    alias(libs.plugins.compose.compiler)
+}
+
+android {
+
+    defaultConfig {
+        buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
+        buildConfigField "boolean", "USE_EDGE_TO_EDGE", "true"
+    }
+
+    buildFeatures {
+        compose true
+    }
+
+    namespace 'com.anytypeio.anytype.feature_object_type'
+}
+
+dependencies {
+
+    implementation project(':domain')
+    implementation project(':core-ui')
+    implementation project(':analytics')
+    implementation project(':core-models')
+    implementation project(':core-utils')
+    implementation project(':localization')
+    implementation project(':presentation')
+    implementation project(':library-emojifier')
+    implementation project(':feature-properties')
+
+    compileOnly libs.javaxInject
+
+    implementation libs.lifecycleViewModel
+    implementation libs.lifecycleRuntime
+
+    implementation libs.appcompat
+    implementation libs.compose
+    implementation libs.fragmentCompose
+    implementation libs.composeFoundation
+    implementation libs.composeToolingPreview
+    implementation libs.composeMaterial3
+    implementation libs.composeMaterial
+    implementation libs.navigationCompose
+    implementation libs.composeReorderable
+
+    debugImplementation libs.composeTooling
+
+    implementation libs.timber
+
+    testImplementation project(':test:android-utils')
+    testImplementation project(':test:utils')
+    testImplementation project(":test:core-models-stub")
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
+    testImplementation libs.robolectric
+    testImplementation libs.androidXTestCore
+    testImplementation libs.mockitoKotlin
+    testImplementation libs.coroutineTesting
+    testImplementation libs.timberJUnit
+    testImplementation libs.turbine
+}

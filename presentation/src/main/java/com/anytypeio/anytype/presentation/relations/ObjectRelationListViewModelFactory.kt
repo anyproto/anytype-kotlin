@@ -5,9 +5,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
@@ -30,9 +33,12 @@ class ObjectRelationListViewModelFactory(
     private val deleteRelationFromObject: DeleteRelationFromObject,
     private val analytics: Analytics,
     private val storeOfRelations: StoreOfRelations,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     private val addRelationToObject: AddRelationToObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val userPermissionProvider: UserPermissionProvider,
+    private val setObjectTypeRecommendedFields: SetObjectTypeRecommendedFields
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -49,9 +55,12 @@ class ObjectRelationListViewModelFactory(
             deleteRelationFromObject = deleteRelationFromObject,
             analytics = analytics,
             storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes,
             addRelationToObject = addRelationToObject,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            userPermissionProvider = userPermissionProvider,
+            setObjectTypeRecommendedFields = setObjectTypeRecommendedFields
         ) as T
     }
 }

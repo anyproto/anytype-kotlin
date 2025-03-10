@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets
 
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SupportedLayouts
@@ -24,6 +25,14 @@ object WidgetConfig {
                 && obj.isArchived != true
                 && obj.isDeleted != true
                 && SupportedLayouts.isSupportedForWidgets(obj.layout)
+    }
+
+    fun isLinkOnlyLayout(code: Int): Boolean {
+        return code == ObjectType.Layout.DATE.code ||
+                code == ObjectType.Layout.PARTICIPANT.code ||
+                code == ObjectType.Layout.IMAGE.code ||
+                code == ObjectType.Layout.VIDEO.code ||
+                code == ObjectType.Layout.FILE.code
     }
 
     fun resolveListWidgetLimit(

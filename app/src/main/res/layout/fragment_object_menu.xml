@@ -1,209 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <View
         android:id="@+id/dragger"
         android:layout_width="48dp"
         android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="6dp"
-        android:background="@drawable/dragger"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="@drawable/dragger" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layout_constraintBottom_toTopOf="@id/rvContainer"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/lvOptions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
         android:id="@+id/optionIcon"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:background="@drawable/default_ripple"
-        app:icon="@drawable/ic_object_menu_icon"
+        app:icon="@drawable/ic_obj_settings_icon_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dragger"
-        app:subtitle="@string/icon_description"
         app:title="@string/icon" />
 
     <View
         android:id="@+id/iconDivider"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:background="@color/shape_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/optionIcon" />
 
-    <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
-        android:id="@+id/optionCover"
-        android:layout_width="0dp"
+            <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
+                android:id="@+id/optionCover"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/default_ripple"
+                app:icon="@drawable/ic_obj_settings_cover_24"
+                app:subtitle="@string/cover_description"
+                app:title="@string/cover" />
+
+            <View
+                android:id="@+id/coverDivider"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@color/shape_primary" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ObjectMenuDescriptionItem
+        android:id="@+id/optionDescription"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/default_ripple"
-        app:icon="@drawable/ic_object_menu_cover"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iconDivider"
-        app:subtitle="@string/cover_description"
-        app:title="@string/cover" />
-
-    <View
-        android:id="@+id/coverDivider"
-        android:layout_width="0dp"
-        android:layout_height="0.5dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/shape_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/optionCover" />
-
-    <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
-        android:id="@+id/optionLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/default_ripple"
-        app:icon="@drawable/ic_object_menu_layout"
+        app:icon="@drawable/ic_obj_settings_description_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/coverDivider"
-        app:subtitle="@string/layout_description"
-        app:title="@string/layout" />
+        app:title="@string/description" />
 
-    <View
-        android:id="@+id/layoutDivider"
-        android:layout_width="0dp"
-        android:layout_height="0.5dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/shape_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/optionLayout" />
+            <View
+                android:id="@+id/descriptionDivider"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@color/shape_primary" />
 
-    <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
-        android:id="@+id/optionRelations"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/default_ripple"
-        app:icon="@drawable/ic_object_menu_relations"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutDivider"
-        app:subtitle="@string/relations_description"
-        app:title="@string/relations" />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
+                android:id="@+id/optionRelations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/default_ripple"
+                app:icon="@drawable/ic_obj_settings_fields_24"
+                app:title="@string/fields" />
 
-    <View
-        android:id="@+id/relationsDivider"
-        android:layout_width="0dp"
-        android:layout_height="0.5dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/shape_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/optionRelations" />
+            <View
+                android:id="@+id/relationsDivider"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@color/shape_primary" />
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
         android:id="@+id/optionHistory"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/default_ripple"
-        app:icon="@drawable/ic_object_menu_history"
+        app:icon="@drawable/ic_obj_settings_history_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/relationsDivider"
-        app:subtitle="@string/history_description"
         app:title="@string/history" />
 
-    <View
-        android:id="@+id/historyDivider"
-        android:layout_width="0dp"
-        android:layout_height="0.5dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/shape_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/optionHistory" />
+            <View
+                android:id="@+id/historyDivider"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@color/shape_primary" />
 
-    <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
-        android:id="@+id/objectDiagnostics"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/default_ripple"
-        app:icon="@drawable/ic_object_menu_diagnostics"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/historyDivider"
-        app:subtitle="@string/object_debug"
-        app:title="@string/object_diagnostics" />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
+                android:id="@+id/objectDiagnostics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/default_ripple"
+                app:icon="@drawable/ic_object_menu_diagnostics"
+                app:title="@string/object_diagnostics" />
 
-    <View
-        android:id="@+id/objectDiagnosticsDivider"
-        android:layout_width="0dp"
-        android:layout_height="0.5dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/shape_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/objectDiagnostics" />
+            <View
+                android:id="@+id/objectDiagnosticsDivider"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@color/shape_primary" />
 
-    <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
-        android:id="@+id/debugGoroutines"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/default_ripple"
-        android:visibility="gone"
-        app:icon="@drawable/ic_object_menu_debug_goroutines"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/objectDiagnosticsDivider"
-        app:subtitle="Command Debug.StackGoroutines"
-        app:title="Debug Goroutines"
+            <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
+                android:id="@+id/debugGoroutines"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/default_ripple"
+                android:visibility="gone"
+                app:icon="@drawable/ic_object_menu_debug_goroutines"
+                app:title="Debug Goroutines"
         tools:visibility="visible" />
 
-    <View
-        android:id="@+id/debugGoroutinesDivider"
-        android:layout_width="0dp"
-        android:layout_height="0.5dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="8dp"
-        android:visibility="gone"
-        android:background="@color/shape_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/debugGoroutines" />
+            <View
+                android:id="@+id/debugGoroutinesDivider"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@color/shape_primary"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
     <FrameLayout
         android:id="@+id/rvContainer"
         android:layout_width="match_parent"
         android:layout_height="108dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/debugGoroutinesDivider">
+        android:layout_marginTop="12dp"
+        android:layout_weight="0">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_gravity="center_vertical"
             android:id="@+id/rvActions"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical" />
 
     </FrameLayout>
 
@@ -211,7 +186,7 @@
         android:id="@+id/anchor"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</LinearLayout>

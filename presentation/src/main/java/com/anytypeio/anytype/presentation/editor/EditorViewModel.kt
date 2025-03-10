@@ -265,6 +265,7 @@ import com.anytypeio.anytype.presentation.extension.getObjRelationsViews
 import com.anytypeio.anytype.presentation.extension.getRecommendedRelations
 import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
+import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -297,6 +298,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -1208,12 +1210,14 @@ class EditorViewModel(
     }
 
     fun onShareButtonClicked() {
+        proceedWithLeftButtonAnalytics()
         dispatch(
             Command.OpenShareScreen(vmParams.space)
         )
     }
 
     fun onHomeButtonClicked() {
+        proceedWithLeftButtonAnalytics()
         Timber.d("onHomeButtonClicked, ")
         if (stateData.value == ViewState.NotExist) {
             exitToSpaceHome()
@@ -1224,6 +1228,12 @@ class EditorViewModel(
 
     fun proceedWithExitingBack() {
         exitBack()
+    }
+
+    private fun proceedWithLeftButtonAnalytics() {
+        viewModelScope.launch {
+            navPanelState.firstOrNull()?.leftButtonClickAnalytics(analytics)
+        }
     }
 
     private fun exitBack() {
@@ -3840,6 +3850,25 @@ class EditorViewModel(
                 when (mode) {
                     EditorMode.Edit -> Unit
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Picture.TitleView -> {
+                when (mode) {
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
+                        if (!clicked.item.image.isNullOrEmpty()){
+                            dispatch(
+                                Command.OpenFullScreenImage(
+                                    target = "",
+                                    url = clicked.item.image
+                                )
+                            )
+                        } else {
+                            Timber.e("Can't proceed with opening full screen image")
+                            sendToast("Something went wrong. Couldn't open image")
+                        }
+                    }
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
                     else -> Unit
                 }
             }

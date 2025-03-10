@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider.Options
 import kotlinx.coroutines.flow.Flow
@@ -28,82 +29,101 @@ class ObjectMenuOptionsProviderImpl(
             details.getObject(ctx)?.layout
         }
 
+    private fun observeFeatureFieldsContainsDescription(ctx: Id): Flow<Boolean> =
+        objectViewDetailsFlow
+            .filter { details ->
+                details.details.containsKey(ctx).also { isValuePresent ->
+                    if (!isValuePresent) Timber.w("Details missing for object: $ctx")
+                }
+            }
+            .map { details ->
+                val featuredRelations = details.getObject(ctx)?.featuredRelations
+                return@map featuredRelations?.any { it == Relations.DESCRIPTION } == true
+            }
+
     override fun provide(ctx: Id, isLocked: Boolean, isReadOnly: Boolean): Flow<Options> {
-        return combine(observeLayout(ctx), restrictions) { layout, restrictions ->
+        return combine(
+            observeLayout(ctx),
+            observeFeatureFieldsContainsDescription(ctx)
+        ) { layout, featuredContainsDescription ->
             createOptions(
                 layout = layout,
-                restrictions = restrictions,
                 isLocked = isLocked,
-                isReadOnly = isReadOnly
+                isReadOnly = isReadOnly,
+                featuredContainsDescription = featuredContainsDescription
             )
         }
     }
 
     private fun createOptions(
         layout: ObjectType.Layout?,
-        restrictions: List<ObjectRestriction>,
         isLocked: Boolean,
-        isReadOnly: Boolean
+        isReadOnly: Boolean,
+        featuredContainsDescription: Boolean
     ): Options {
         val hasIcon = !isLocked && !isReadOnly
         val hasCover = !isLocked && !isReadOnly
-        val hasLayout = !isLocked && !restrictions.contains(ObjectRestriction.LAYOUT_CHANGE) && !isReadOnly
         val options = if (layout != null) {
             when (layout) {
                 ObjectType.Layout.PARTICIPANT -> Options.ALL.copy(
                     hasIcon = false,
                     hasCover = false,
-                    hasLayout = false,
                     hasDiagnosticsVisibility = true,
                     hasHistory = false,
-                    hasRelations = false
+                    hasRelations = false,
+                    hasDescriptionShow = !featuredContainsDescription
                 )
+
                 in SupportedLayouts.systemLayouts -> Options.NONE
                 in SupportedLayouts.fileLayouts -> {
                     Options.ALL.copy(
                         hasIcon = false,
                         hasCover = false,
-                        hasLayout = false,
                         hasDiagnosticsVisibility = true,
-                        hasHistory = false
+                        hasHistory = false,
+                        hasDescriptionShow = !featuredContainsDescription
                     )
                 }
+
                 ObjectType.Layout.SET,
                 ObjectType.Layout.COLLECTION -> {
                     Options.ALL.copy(
                         hasIcon = hasIcon,
                         hasCover = hasCover,
-                        hasLayout = false,
                         hasDiagnosticsVisibility = true,
-                        hasHistory = !isLocked && !isReadOnly
+                        hasHistory = !isLocked && !isReadOnly,
+                        hasDescriptionShow = !featuredContainsDescription
                     )
                 }
+
                 ObjectType.Layout.BASIC,
                 ObjectType.Layout.PROFILE,
                 ObjectType.Layout.BOOKMARK -> Options.ALL.copy(
                     hasIcon = hasIcon,
                     hasCover = hasCover,
-                    hasLayout = hasLayout,
                     hasDiagnosticsVisibility = true,
-                    hasHistory = !isLocked && !isReadOnly
+                    hasHistory = !isLocked && !isReadOnly,
+                    hasDescriptionShow = !featuredContainsDescription
                 )
+
                 ObjectType.Layout.TODO -> Options(
                     hasIcon = false,
                     hasCover = hasCover,
-                    hasLayout = hasLayout,
                     hasRelations = true,
                     hasDiagnosticsVisibility = true,
-                    hasHistory = !isLocked && !isReadOnly
+                    hasHistory = !isLocked && !isReadOnly,
+                    hasDescriptionShow = !featuredContainsDescription
                 )
 
                 ObjectType.Layout.NOTE -> Options(
                     hasIcon = false,
                     hasCover = false,
-                    hasLayout = hasLayout,
                     hasRelations = true,
                     hasDiagnosticsVisibility = true,
-                    hasHistory = !isLocked && !isReadOnly
+                    hasHistory = !isLocked && !isReadOnly,
+                    hasDescriptionShow = !featuredContainsDescription
                 )
+
                 else -> Options.NONE.copy(
                     hasDiagnosticsVisibility = true
                 )

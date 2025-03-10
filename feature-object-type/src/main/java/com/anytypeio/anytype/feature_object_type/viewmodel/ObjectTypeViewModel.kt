@@ -500,8 +500,8 @@ class ObjectTypeViewModel(
 
             is TypeEvent.OnTemplateMenuClick.Duplicate -> {
                 if (event.item is TemplateView.Template) {
-                    proceedWithTemplateDuplicate(
-                        template = event.item.id
+                    proceedWithDuplicateObject(
+                        objectId = event.item.id
                     )
                 }
             }
@@ -702,7 +702,7 @@ class ObjectTypeViewModel(
     private fun proceedWithFieldItemMenuClick(event: FieldEvent.FieldItemMenu) {
         when (event) {
             is FieldEvent.FieldItemMenu.OnDeleteFromTypeClick -> {
-                val deleteId = event.item.id
+                val deleteId = event.id
                 val headerItems = mutableListOf<Id>()
                 val sideBarItems = mutableListOf<Id>()
                 val hiddenItems = mutableListOf<Id>()
@@ -741,6 +741,7 @@ class ObjectTypeViewModel(
                     hiddenFields = hiddenItems,
                     fileFields = filesItems
                 )
+                uiEditPropertyScreen.value = UiEditPropertyState.Hidden
             }
 
             is FieldEvent.FieldItemMenu.OnAddLocalToTypeClick -> {
@@ -859,17 +860,17 @@ class ObjectTypeViewModel(
         }
     }
 
-    private fun proceedWithTemplateDuplicate(template: Id) {
+    private fun proceedWithDuplicateObject(objectId: Id) {
         val params = DuplicateObjects.Params(
-            ids = listOf(template)
+            ids = listOf(objectId)
         )
         viewModelScope.launch {
             duplicateObjects.async(params).fold(
                 onSuccess = {
-                    Timber.d("Template $template duplicated")
+                    Timber.d("Object $objectId duplicated")
                 },
                 onFailure = {
-                    Timber.e(it, "Error while duplicating template $template")
+                    Timber.e(it, "Error while duplicating object $objectId")
                 }
             )
         }

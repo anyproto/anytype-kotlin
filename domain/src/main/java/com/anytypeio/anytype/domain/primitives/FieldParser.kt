@@ -209,18 +209,30 @@ class FieldParserImpl @Inject constructor(
         storeOfRelations: StoreOfRelations
     ): ParsedFields {
 
-        val headerFields = storeOfRelations.getValidRelations(
-            ids = objType.recommendedFeaturedRelations
-        )
-        val sidebarFields = storeOfRelations.getValidRelations(
-            ids = objType.recommendedRelations
-        )
-        val hiddenFields = storeOfRelations.getValidRelations(
-            ids = objType.recommendedHiddenRelations
-        )
-        val fileFields = storeOfRelations.getValidRelations(
-            ids = objType.recommendedFileRelations
-        )
+        // Clean recommended IDs based on priority.
+        // recommendedFeaturedRelations always remain.
+        val featuredIds = objType.recommendedFeaturedRelations.distinct()
+
+        // recommendedRelations: remove any ids that appear in featuredIds.
+        val relationsIds = objType.recommendedRelations
+            .filter { it !in featuredIds }
+            .distinct()
+
+        // recommendedFileRelations: remove ids that are in featuredIds or relationsIds.
+        val fileIds = objType.recommendedFileRelations
+            .filter { it !in featuredIds && it !in relationsIds }
+            .distinct()
+
+        // recommendedHiddenRelations: remove ids that are in featuredIds, relationsIds, or fileIds.
+        val hiddenIds = objType.recommendedHiddenRelations
+            .filter { it !in featuredIds && it !in relationsIds && it !in fileIds }
+            .distinct()
+
+        // Fetch valid relations for each recommended group.
+        val headerFields = storeOfRelations.getValidRelations(ids = featuredIds)
+        val sidebarFields = storeOfRelations.getValidRelations(ids = relationsIds)
+        val fileFields = storeOfRelations.getValidRelations(ids = fileIds)
+        val hiddenFields = storeOfRelations.getValidRelations(ids = hiddenIds)
 
         // Combine IDs from all recommended relations.
         val existingIds = (headerFields + sidebarFields + hiddenFields + fileFields)

@@ -48,6 +48,7 @@ import com.anytypeio.anytype.core_ui.R
 @Composable
 fun DefaultSearchBar(
     modifier: Modifier = Modifier,
+    hint: Int = R.string.search,
     onQueryChanged: (String) -> Unit
 ) {
 
@@ -80,7 +81,7 @@ fun DefaultSearchBar(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .padding(
-                    start = 11.dp
+                    start = 10.dp
                 )
         )
         CompositionLocalProvider(value = LocalTextSelectionColors provides selectionColors) {
@@ -117,9 +118,9 @@ fun DefaultSearchBar(
                         interactionSource = interactionSource,
                         placeholder = {
                             Text(
-                                text = stringResource(id = R.string.search),
+                                text = stringResource(id = hint),
                                 style = BodyRegular.copy(
-                                    color = colorResource(id = R.color.text_tertiary)
+                                    color = colorResource(id = R.color.glyph_active)
                                 )
                             )
                         },

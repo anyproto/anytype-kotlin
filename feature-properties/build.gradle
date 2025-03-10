@@ -15,7 +15,7 @@ android {
         compose true
     }
 
-    namespace 'com.anytypeio.anytype.feature_object_type'
+    namespace 'com.anytypeio.anytype.feature_properties'
 }
 
 dependencies {
@@ -27,8 +27,6 @@ dependencies {
     implementation project(':core-utils')
     implementation project(':localization')
     implementation project(':presentation')
-    implementation project(':library-emojifier')
-    implementation project(':feature-properties')
 
     compileOnly libs.javaxInject
 
@@ -41,9 +39,7 @@ dependencies {
     implementation libs.composeFoundation
     implementation libs.composeToolingPreview
     implementation libs.composeMaterial3
-    implementation libs.composeMaterial
     implementation libs.navigationCompose
-    implementation libs.composeReorderable
 
     debugImplementation libs.composeTooling
 
@@ -54,7 +50,6 @@ dependencies {
     testImplementation project(":test:core-models-stub")
     testImplementation libs.junit
     testImplementation libs.kotlinTest
-    testImplementation libs.robolectric
     testImplementation libs.androidXTestCore
     testImplementation libs.mockitoKotlin
     testImplementation libs.coroutineTesting

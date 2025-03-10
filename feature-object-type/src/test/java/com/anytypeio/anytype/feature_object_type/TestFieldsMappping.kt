@@ -194,29 +194,6 @@ class TestFieldsMappping {
     }
 
     @Test
-    fun `should not filter sidebar fields by hidden`() = runTest {
-
-        storeOfRelations.apply {
-            merge(allSpaceRelations)
-        }
-
-        storeOfObjectTypes.apply {
-            merge(listOf(testObjectType, fieldAssigneeObjType2, fieldAssigneeObjType1))
-        }
-
-        val parsedFields = fieldParser.getObjectTypeParsedFields(
-            objectType = testObjectType,
-            storeOfRelations = storeOfRelations,
-            objectTypeConflictingFieldsIds = listOf()
-        )
-
-        assertEquals(
-            expected = listOf(field3, field4, field5),
-            actual = parsedFields.sidebar
-        )
-    }
-
-    @Test
     fun `should map hidden fields`() = runTest {
 
         storeOfRelations.apply {
@@ -234,7 +211,53 @@ class TestFieldsMappping {
         )
 
         assertEquals(
+            expected = listOf(),
+            actual = parsedFields.hidden
+        )
+    }
+
+    @Test
+    fun `test filter duplicates`() = runTest {
+
+        storeOfRelations.apply {
+            merge(allSpaceRelations)
+        }
+
+        val testObjectType = StubObjectType(
+            recommendedFeaturedRelations = listOf(field1, field1, field2, field3).map { it.id },
+            recommendedRelations = listOf(field1, field4, field4).map { it.id },
+            recommendedFileRelations = listOf(field1, field2, field3, field4, field5, field5).map { it.id },
+            recommendedHiddenRelations = listOf(field1, field2, field3, field4, field5, fieldCreatedDate, fieldCreatedDate).map { it.id },
+            space = space
+        )
+
+        storeOfObjectTypes.apply {
+            merge(listOf(testObjectType, fieldAssigneeObjType2, fieldAssigneeObjType1))
+        }
+
+        val parsedFields = fieldParser.getObjectTypeParsedFields(
+            objectType = testObjectType,
+            storeOfRelations = storeOfRelations,
+            objectTypeConflictingFieldsIds = listOf()
+        )
+
+        assertEquals(
+            expected = listOf(field1, field2, field3),
+            actual = parsedFields.header
+        )
+
+        assertEquals(
+            expected = listOf(field4),
+            actual = parsedFields.sidebar
+        )
+
+        assertEquals(
             expected = listOf(field5),
+            actual = parsedFields.file
+        )
+
+        assertEquals(
+            expected = listOf(fieldCreatedDate),
             actual = parsedFields.hidden
         )
     }

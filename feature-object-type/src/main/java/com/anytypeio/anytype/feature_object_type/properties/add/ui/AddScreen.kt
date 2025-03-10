@@ -116,7 +116,7 @@ fun AddFieldScreen(
                     .padding(paddingValues)
             LazyColumn(
                 modifier = modifier
-                    .background(color = colorResource(id = R.color.background_primary),),
+                    .background(color = colorResource(id = R.color.background_primary)),
                 state = lazyListState
             ) {
                 items(
@@ -166,16 +166,11 @@ fun AddFieldScreen(
         }
     )
 
-
-
     if (uiStateEditProperty is UiEditPropertyState.Visible) {
         PropertyScreen(
             modifier = Modifier.fillMaxWidth(),
             uiState = uiStateEditProperty,
             onDismissRequest = { event(AddPropertyEvent.OnEditPropertyScreenDismissed) },
-            onFormatClick = {},
-            onLimitTypesClick = {},
-            onSaveButtonClicked = {},
             onCreateNewButtonClicked = {
                 event(AddPropertyEvent.OnCreateNewButtonClicked)
             },

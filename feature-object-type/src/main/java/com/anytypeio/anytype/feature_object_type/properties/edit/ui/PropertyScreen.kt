@@ -46,10 +46,10 @@ import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyS
 fun PropertyScreen(
     modifier: Modifier,
     uiState: UiEditPropertyState.Visible,
-    onSaveButtonClicked: () -> Unit,
-    onFormatClick: () -> Unit,
-    onLimitTypesClick: () -> Unit,
-    onCreateNewButtonClicked: () -> Unit,
+    onSaveButtonClicked: () -> Unit = {},
+    onFormatClick: () -> Unit = {},
+    onLimitTypesClick: () -> Unit = {},
+    onCreateNewButtonClicked: () -> Unit = {},
     onDismissRequest: () -> Unit,
     onPropertyNameUpdate: (String) -> Unit
 ) {

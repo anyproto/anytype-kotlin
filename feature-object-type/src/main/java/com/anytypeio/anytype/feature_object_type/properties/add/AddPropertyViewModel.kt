@@ -16,7 +16,6 @@ import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyViewModel.AddPropertyCommand.*
 import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
-import com.anytypeio.anytype.presentation.editor.cover.UnsplashViewModel.Companion.DEBOUNCE_DURATION
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,18 +72,14 @@ class AddPropertyViewModel(
         input.value = query
     }
 
-    /**
-     * Loads the available properties from type, applies filtering based on a search query,
-     * and then updates the UI state.
-     */
     private fun setupAddNewPropertiesState() {
         viewModelScope.launch {
             combine(
                 storeOfObjectTypes.trackChanges(),
-                query,
-                storeOfRelations.trackChanges()
-            ) { _, queryText, _ ->
-                val objType = storeOfObjectTypes.get(vmParams.objectTypeId)
+                storeOfRelations.trackChanges(),
+                query
+            ) { _, _, queryText ->
+                val objType = storeOfObjectTypes.get(id = vmParams.objectTypeId)
                 if (objType != null) {
                     val typeKeys =
                         objType.recommendedRelations + objType.recommendedFeaturedRelations + objType.recommendedFileRelations + objType.recommendedHiddenRelations
@@ -94,6 +89,7 @@ class AddPropertyViewModel(
                         queryText = queryText
                     )
                 } else {
+                    Timber.w("Object type:[${vmParams.objectTypeId}] not found in the store")
                     queryText to emptyList()
                 }
             }.catch {
@@ -332,6 +328,10 @@ class AddPropertyViewModel(
 
     sealed class AddPropertyCommand {
         data object Exit : AddPropertyCommand()
+    }
+
+    companion object {
+        private const val DEBOUNCE_DURATION = 300L
     }
 }
 

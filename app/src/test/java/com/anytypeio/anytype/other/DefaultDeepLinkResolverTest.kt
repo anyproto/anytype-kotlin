@@ -54,6 +54,37 @@ class DefaultDeepLinkResolverTest {
     }
 
     @Test
+    fun `resolve link to object deep link with invite`() {
+        // Given
+
+        val obj = MockDataFactory.randomUuid()
+
+        val space = MockDataFactory.randomUuid()
+
+        val cid = MockDataFactory.randomUuid()
+
+        val encryption = MockDataFactory.randomUuid()
+
+        val deeplink = "anytype://object?objectId=$obj&spaceId=$space&inviteID=$cid#$encryption"
+
+        // When
+        val result = deepLinkResolver.resolve(deeplink)
+
+        // Then
+        assertEquals(
+            DeepLinkResolver.Action.DeepLinkToObject(
+                space = SpaceId(space),
+                obj = obj,
+                invite = DeepLinkResolver.Action.DeepLinkToObject.Invite(
+                    cid = cid,
+                    key = encryption
+                )
+            ),
+            result
+        )
+    }
+
+    @Test
     fun `resolve https deep link to object`() {
         // Given
 

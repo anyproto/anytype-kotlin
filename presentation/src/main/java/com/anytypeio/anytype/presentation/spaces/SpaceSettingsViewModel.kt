@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.asSpaceType
 import com.anytypeio.anytype.core_models.ext.isPossibleToUpgrade
@@ -25,7 +26,6 @@ import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
@@ -41,6 +41,7 @@ import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -70,13 +71,15 @@ class SpaceSettingsViewModel(
 
     val commands = MutableSharedFlow<Command>()
     val isDismissed = MutableStateFlow(false)
-    val spaceViewState = MutableStateFlow<ViewState<SpaceData>>(ViewState.Init)
+//    val spaceViewState = MutableStateFlow<SpaceData?>(SpaceData.Init)
+    val uiState = MutableStateFlow<UiSpaceSettingsState>(UiSpaceSettingsState.Initial)
 
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
 
     private val spaceConfig = spaceManager.getConfig()
 
     init {
+        Timber.d("SpaceSettingsViewModel, Init, vmParams: $params")
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.screenSettingSpacesSpaceIndex
@@ -95,7 +98,7 @@ class SpaceSettingsViewModel(
                     .observe()
                     .map { wrapper ->
                         wrapper.getValue<Double?>(Relations.SHARED_SPACES_LIMIT)?.toInt() ?: 0
-                         },
+                    },
                 spaceViewContainer.sharedSpaceCount(userPermissionProvider.all()),
                 activeSpaceMemberSubscriptionContainer.observe(params.space),
             ) { spaceView, permission, sharedSpaceLimit: Int, sharedSpaceCount: Int, store ->
@@ -111,102 +114,147 @@ class SpaceSettingsViewModel(
                     null
                 }
                 val createdBy = spaceMember?.globalName?.takeIf { it.isNotEmpty() } ?: spaceMember?.identity
-                SpaceData(
-                    name = spaceView.name.orEmpty(),
-                    icon = spaceView.spaceIcon(
-                        builder = urlBuilder,
-                        spaceGradientProvider = gradientProvider
+
+                //todo add logic
+                val membersNumber = 3
+
+                UiSpaceSettingsState.SpaceSettings(
+                    items = listOf(
+                        UiSpaceSettingsItem.Icon(
+                            icon = spaceView.spaceIcon(
+                                builder = urlBuilder,
+                                spaceGradientProvider = gradientProvider
+                            )
+                        ),
+                        UiSpaceSettingsItem.Spacer(height = 16),
+                        UiSpaceSettingsItem.Name(
+                            //todo support localization for empty space name
+                            name = spaceView.name.orEmpty()
+                        ),
+                        UiSpaceSettingsItem.Spacer(height = 12),
+                        UiSpaceSettingsItem.Description(
+                            //todo support localization for empty space description
+                            description = spaceView.description.orEmpty()
+                        ),
+                        UiSpaceSettingsItem.Spacer(height = 12),
+                        UiSpaceSettingsItem.Multiplayer,
+                        UiSpaceSettingsItem.Spacer(height = 8),
+                        UiSpaceSettingsItem.Section.Collaboration,
+                        UiSpaceSettingsItem.Members(count = membersNumber),
                     ),
-                    createdDateInMillis = spaceView
-                        .getValue<Double?>(Relations.CREATED_DATE)
-                        ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
-                    createdBy = createdBy,
-                    spaceId = params.space.id,
-                    network = config?.network.orEmpty(),
-                    isDeletable = resolveIsSpaceDeletable(spaceView),
-                    spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
-                    permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS,
-                    shareLimitReached = ShareLimitsState(
-                        shareLimitReached = sharedSpaceCount >= sharedSpaceLimit,
-                        sharedSpacesLimit = sharedSpaceLimit
-                    ),
-                    requests = requests
+                    isEditEnabled = permission?.isOwnerOrEditor() == true
                 )
+
             }.collect { spaceData ->
                 Timber.d("Space data: ${spaceData}")
-                spaceViewState.value = ViewState.Success(spaceData)
+                uiState.value = spaceData
+                //spaceViewState.value = spaceData
             }
         }
     }
 
-    fun onNameSet(name: String) {
-        Timber.d("onNameSet")
-        if (name.isEmpty()) return
-        if (isDismissed.value) return
-        viewModelScope.launch {
-            if (spaceConfig != null) {
-                setSpaceDetails.async(
-                    SetSpaceDetails.Params(
-                        space = SpaceId(spaceConfig.space),
-                        details = mapOf(Relations.NAME to name)
-                    )
-                ).fold(
-                    onFailure = {
-                        Timber.e(it, "Error while updating object details")
-                        sendToast("Something went wrong. Please try again")
-                    },
-                    onSuccess = {
-                        Timber.d("Name successfully set for current space: ${spaceConfig.space}")
-                    }
-                )
-            } else {
-                Timber.w("Something went wrong: config is empty")
+    fun onUiEvent(uiEvent: UiEvent) {
+        Timber.d("onUiEvent: $uiEvent")
+        when(uiEvent) {
+            UiEvent.IconMenu.OnRemoveIconClicked -> {
+
+            }
+            UiEvent.OnBackPressed -> {
+
+            }
+            UiEvent.OnDeleteSpaceClicked -> {
+
+            }
+            UiEvent.OnFileStorageClick -> {
+
+            }
+            UiEvent.OnInviteClicked -> {
+
+            }
+            UiEvent.OnPersonalizationClicked -> {
+
+            }
+            UiEvent.OnQrCodeClicked -> {
+
+            }
+            is UiEvent.OnSavedClicked -> {
+
+            }
+            UiEvent.OnSpaceIdClicked -> {
+
+            }
+            is UiEvent.OnSpaceImagePicked -> {
+
             }
         }
     }
+
+//    fun onNameSet(name: String) {
+//        Timber.d("onNameSet")
+//        if (name.isEmpty()) return
+//        if (isDismissed.value) return
+//        viewModelScope.launch {
+//            if (spaceConfig != null) {
+//                setSpaceDetails.async(
+//                    SetSpaceDetails.Params(
+//                        space = SpaceId(spaceConfig.space),
+//                        details = mapOf(Relations.NAME to name)
+//                    )
+//                ).fold(
+//                    onFailure = {
+//                        Timber.e(it, "Error while updating object details")
+//                        sendToast("Something went wrong. Please try again")
+//                    },
+//                    onSuccess = {
+//                        Timber.d("Name successfully set for current space: ${spaceConfig.space}")
+//                    }
+//                )
+//            } else {
+//                Timber.w("Something went wrong: config is empty")
+//            }
+//        }
+//    }
 
     fun onStop() {
         // TODO unsubscribe
     }
 
-    fun onSpaceDebugClicked() {
-        proceedWithSpaceDebug()
-    }
+//    fun onSpaceDebugClicked() {
+//        proceedWithSpaceDebug()
+//    }
+//
+//    fun onRemoveSpaceIconClicked() {
+//        viewModelScope.launch {
+//            val config = spaceConfig
+//            if (config != null) {
+//                setSpaceDetails.async(
+//                    SetSpaceDetails.Params(
+//                        space = params.space,
+//                        details = mapOf(
+//                            Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
+//                            Relations.ICON_IMAGE to "",
+//                        )
+//                    )
+//                )
+//            }
+//        }
+//    }
 
-    fun onRemoveSpaceIconClicked() {
-        viewModelScope.launch {
-            val config = spaceConfig
-            if (config != null) {
-                setSpaceDetails.async(
-                    SetSpaceDetails.Params(
-                        space = params.space,
-                        details = mapOf(
-                            Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
-                            Relations.ICON_IMAGE to "",
-                        )
-                    )
-                )
-            }
-        }
-    }
-
-    fun onDeleteSpaceClicked() {
-        viewModelScope.launch {
-            val state = spaceViewState.value
-            if (state is ViewState.Success) {
-                if (state.data.permissions.isOwner()) {
-                    commands.emit(Command.ShowDeleteSpaceWarning)
-                    analytics.sendEvent(
-                        eventName = EventsDictionary.clickDeleteSpace,
-                        props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.settings))
-                    )
-                } else {
-                    commands.emit(Command.ShowLeaveSpaceWarning)
-                    analytics.sendEvent(eventName = screenLeaveSpace)
-                }
-            }
-        }
-    }
+//    fun onDeleteSpaceClicked() {
+//        viewModelScope.launch {
+//            val state = spaceViewState.value as? SpaceData.Success ?: return@launch
+//            if (state.isUserOwner) {
+//                commands.emit(Command.ShowDeleteSpaceWarning)
+//                analytics.sendEvent(
+//                    eventName = EventsDictionary.clickDeleteSpace,
+//                    props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.settings))
+//                )
+//            } else {
+//                commands.emit(Command.ShowLeaveSpaceWarning)
+//                analytics.sendEvent(eventName = screenLeaveSpace)
+//            }
+//        }
+//    }
 
     fun onDeleteSpaceWarningCancelled() {
         viewModelScope.launch {
@@ -243,29 +291,27 @@ class SpaceSettingsViewModel(
     }
 
     private fun proceedWithSpaceDeletion() {
-        val state = spaceViewState.value
-        if (state is ViewState.Success) {
-            val space = state.data.spaceId
-            if (space != null) {
-                viewModelScope.launch {
-                    deleteSpace.async(params = SpaceId(space)).fold(
-                        onSuccess = {
-                            analytics.sendEvent(
-                                eventName = EventsDictionary.deleteSpace,
-                                props = Props(mapOf(EventsPropertiesKey.type to "Private"))
-                            )
-                            spaceManager.clear()
-                            commands.emit(Command.ExitToVault)
-                        },
-                        onFailure = {
-                            Timber.e(it, "Error while deleting space")
-                        }
-                    )
-                }
-            } else {
-                sendToast("Space not found. Please, try again later")
-            }
-        }
+//        val state = spaceViewState.value as? SpaceData.Success ?: return
+//        val space = state.spaceId
+//        if (space != null) {
+//            viewModelScope.launch {
+//                deleteSpace.async(params = SpaceId(space)).fold(
+//                    onSuccess = {
+//                        analytics.sendEvent(
+//                            eventName = EventsDictionary.deleteSpace,
+//                            props = Props(mapOf(EventsPropertiesKey.type to "Private"))
+//                        )
+//                        spaceManager.clear()
+//                        commands.emit(Command.ExitToVault)
+//                    },
+//                    onFailure = {
+//                        Timber.e(it, "Error while deleting space")
+//                    }
+//                )
+//            }
+//        } else {
+//            sendToast("Space not found. Please, try again later")
+//        }
     }
 
     private fun proceedWithSpaceDebug() {
@@ -289,76 +335,67 @@ class SpaceSettingsViewModel(
         }
     }
 
-    fun onSharePrivateSpaceClicked() {
-        viewModelScope.launch {
-            val data = spaceViewState.value
-            when(data) {
-                is ViewState.Success -> {
-                    when(data.data.spaceType) {
-                        PRIVATE_SPACE_TYPE -> {
-                            analytics.sendEvent(
-                                eventName = EventsDictionary.screenSettingsSpaceShare,
-                                props = Props(
-                                    mapOf(
-                                        EventsPropertiesKey.route to EventsDictionary.Routes.settings
-                                    )
-                                )
-                            )
-                        }
-                        SHARED_SPACE_TYPE -> {
-                            analytics.sendEvent(
-                                eventName = EventsDictionary.screenSettingsSpaceMembers,
-                                props = Props(
-                                    mapOf(
-                                        EventsPropertiesKey.route to EventsDictionary.Routes.settings
-                                    )
-                                )
-                            )
-                        }
-                    }
-                }
-                else -> {
-                    // Do nothing.
-                }
-            }
-        }
-        viewModelScope.launch {
-            val data = spaceViewState.value
-            if (data is ViewState.Success) {
-                val shareLimits = data.data.shareLimitReached
-                if (!shareLimits.shareLimitReached) {
-                    commands.emit(Command.SharePrivateSpace(params.space))
-                } else {
-                    commands.emit(Command.ShowShareLimitReachedError)
-                }
-            }
-        }
-    }
+//    fun onSharePrivateSpaceClicked() {
+//        viewModelScope.launch {
+//            val data = spaceViewState.value as? SpaceData.Success ?: return@launch
+//            when(data.spaceType) {
+//                PRIVATE_SPACE_TYPE -> {
+//                    analytics.sendEvent(
+//                        eventName = EventsDictionary.screenSettingsSpaceShare,
+//                        props = Props(
+//                            mapOf(
+//                                EventsPropertiesKey.route to EventsDictionary.Routes.settings
+//                            )
+//                        )
+//                    )
+//                }
+//                SHARED_SPACE_TYPE -> {
+//                    analytics.sendEvent(
+//                        eventName = EventsDictionary.screenSettingsSpaceMembers,
+//                        props = Props(
+//                            mapOf(
+//                                EventsPropertiesKey.route to EventsDictionary.Routes.settings
+//                            )
+//                        )
+//                    )
+//                }
+//            }
+//        }
+//        viewModelScope.launch {
+//            val data = spaceViewState.value as? SpaceData.Success ?: return@launch
+//            val shareLimits = data.shareLimitReached
+//            if (!shareLimits.shareLimitReached) {
+//                commands.emit(Command.SharePrivateSpace(params.space))
+//            } else {
+//                commands.emit(Command.ShowShareLimitReachedError)
+//            }
+//        }
+//    }
 
     private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) : Boolean {
         return spaceView.spaceAccessType != null
     }
 
-    fun onAddMoreSpacesClicked() {
-        viewModelScope.launch {
-            getMembership.async(GetMembershipStatus.Params(noCache = false)).fold(
-                onSuccess = { membership ->
-                    if (membership != null) {
-                        val activeTier = TierId(membership.tier)
-                        if (activeTier.isPossibleToUpgrade(reason = MembershipUpgradeReason.NumberOfSharedSpaces)) {
-                            commands.emit(Command.NavigateToMembership)
-                        } else {
-                            commands.emit(Command.NavigateToMembershipUpdate)
-                        }
-                    }
-                },
-                onFailure = {
-                    Timber.e(it, "Error while getting membership status")
-                    commands.emit(Command.NavigateToMembershipUpdate)
-                }
-            )
-        }
-    }
+//    fun onAddMoreSpacesClicked() {
+//        viewModelScope.launch {
+//            getMembership.async(GetMembershipStatus.Params(noCache = false)).fold(
+//                onSuccess = { membership ->
+//                    if (membership != null) {
+//                        val activeTier = TierId(membership.tier)
+//                        if (activeTier.isPossibleToUpgrade(reason = MembershipUpgradeReason.NumberOfSharedSpaces)) {
+//                            commands.emit(Command.NavigateToMembership)
+//                        } else {
+//                            commands.emit(Command.NavigateToMembershipUpdate)
+//                        }
+//                    }
+//                },
+//                onFailure = {
+//                    Timber.e(it, "Error while getting membership status")
+//                    commands.emit(Command.NavigateToMembershipUpdate)
+//                }
+//            )
+//        }
+//    }
 
     fun onSpaceImagePicked(path: String) {
         Timber.d("onSpaceImageClicked: $path")
@@ -406,12 +443,15 @@ class SpaceSettingsViewModel(
         val createdBy: Id?,
         val network: Id?,
         val name: String,
+        val description: String,
         val icon: SpaceIconView,
         val isDeletable: Boolean = false,
         val spaceType: SpaceType,
-        val permissions: SpaceMemberPermissions,
         val shareLimitReached: ShareLimitsState,
-        val requests: Int = 0
+        val requests: Int = 0,
+        val isEditEnabled: Boolean,
+        val isUserOwner: Boolean,
+        val permissions: SpaceMemberPermissions,
     )
 
     data class ShareLimitsState(

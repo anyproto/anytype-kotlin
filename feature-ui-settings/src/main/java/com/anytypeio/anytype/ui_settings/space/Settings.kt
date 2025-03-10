@@ -316,7 +316,10 @@ fun SpaceSettingsScreenPreview() {
                 shareLimitReached = SpaceSettingsViewModel.ShareLimitsState(
                     shareLimitReached = false,
                     sharedSpacesLimit = 0
-                )
+                ),
+                isUserOwner = false,
+                isEditEnabled = false,
+                description = ""
             )
         ),
         onNameSet = {},

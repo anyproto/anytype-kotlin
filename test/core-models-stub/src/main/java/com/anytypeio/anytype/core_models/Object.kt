@@ -96,7 +96,7 @@ fun StubObjectType(
     uniqueKey: String? = MockDataFactory.randomUuid(),
     name: String = MockDataFactory.randomString(),
     objectType: String = MockDataFactory.randomString(),
-    layout: Double = ObjectType.Layout.BASIC.code.toDouble(),
+    layout: Double = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
     smartBlockTypes: List<Double> = emptyList(),
     isDeleted: Boolean? = null,
     isArchived: Boolean? = null,

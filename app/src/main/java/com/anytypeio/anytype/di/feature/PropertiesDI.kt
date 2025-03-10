@@ -11,8 +11,8 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.feature_object_type.properties.AddPropertyVmFactory
-import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmParams
+import com.anytypeio.anytype.feature_properties.AddPropertyVmFactory
+import com.anytypeio.anytype.feature_properties.add.AddPropertyVmParams
 import com.anytypeio.anytype.ui.primitives.AddPropertyFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -87,7 +87,7 @@ object AddPropertiesModule {
 interface AddPropertiesDependencies : ComponentDependencies {
     fun provideStringResourceProvider(): StringResourceProvider
     fun provideStoreOfRelations(): StoreOfRelations
-    fun providStoreOfObjectTypes(): StoreOfObjectTypes
+    fun provideStoreOfObjectTypes(): StoreOfObjectTypes
     fun provideBlockRepository(): BlockRepository
     fun provideAppCoroutineDispatchers(): AppCoroutineDispatchers
 }

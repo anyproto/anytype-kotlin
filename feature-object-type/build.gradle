@@ -28,6 +28,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':presentation')
     implementation project(':library-emojifier')
+    implementation project(':feature-properties')
 
     compileOnly libs.javaxInject
 

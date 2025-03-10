@@ -26,6 +26,7 @@ dependencies {
     implementation project(':core-models')
     implementation project(':core-utils')
     implementation project(':localization')
+    implementation project(':presentation')
 
     compileOnly libs.javaxInject
 

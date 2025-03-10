@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.properties.add
+package com.anytypeio.anytype.feature_properties.add
 
 sealed class AddPropertyEvent {
     data class OnSearchQueryChanged(val query: String) : AddPropertyEvent()

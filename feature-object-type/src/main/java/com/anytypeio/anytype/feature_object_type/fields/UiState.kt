@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_object_type.fields
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 //region Top bar
@@ -42,7 +43,7 @@ sealed class UiFieldsListItem {
         abstract val fieldKey: Key
         abstract val fieldTitle: String
         abstract val format: RelationFormat
-        abstract val limitObjectTypes: List<UiFieldObjectItem>
+        abstract val limitObjectTypes: List<UiPropertyLimitTypeItem>
         abstract val canDelete: Boolean
         abstract val isEditableField: Boolean
 
@@ -51,7 +52,7 @@ sealed class UiFieldsListItem {
             override val fieldKey: Key,
             override val fieldTitle: String,
             override val format: RelationFormat,
-            override val limitObjectTypes: List<UiFieldObjectItem> = emptyList(),
+            override val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList(),
             override val canDelete: Boolean,
             override val isEditableField: Boolean
         ) : Item()
@@ -61,7 +62,7 @@ sealed class UiFieldsListItem {
             override val fieldKey: Key,
             override val fieldTitle: String,
             override val format: RelationFormat,
-            override val limitObjectTypes: List<UiFieldObjectItem> = emptyList(),
+            override val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList(),
             override val canDelete: Boolean = false,
             override val isEditableField: Boolean
         ) : Item()

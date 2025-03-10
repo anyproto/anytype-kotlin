@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.properties.add.ui
+package com.anytypeio.anytype.feature_properties.add.ui
 
 import android.os.Build
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.common.bottomBorder
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -51,12 +53,11 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
-import com.anytypeio.anytype.feature_object_type.fields.ui.commonItemModifier
-import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
-import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyEvent
-import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyItem
-import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyScreenState
-import com.anytypeio.anytype.feature_object_type.properties.edit.ui.PropertyScreen
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.edit.ui.PropertyScreen
+import com.anytypeio.anytype.feature_properties.add.AddPropertyEvent
+import com.anytypeio.anytype.feature_properties.add.UiAddPropertyItem
+import com.anytypeio.anytype.feature_properties.add.UiAddPropertyScreenState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -316,6 +317,15 @@ private fun TopToolbar(
         )
     }
 }
+
+/** A common modifier for list items. **/
+@Composable
+fun LazyItemScope.commonItemModifier() = Modifier
+    .height(52.dp)
+    .fillMaxWidth()
+    .padding(horizontal = 20.dp)
+    .bottomBorder()
+    .animateItem()
 
 @DefaultPreviews
 @Composable

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.properties.add
+package com.anytypeio.anytype.feature_properties.add
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -7,9 +7,6 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyScreenState.Companion.DEFAULT_NEW_PROPERTY_FORMAT
-import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
-import com.anytypeio.anytype.feature_object_type.ui.getName
 
 data class UiAddPropertyScreenState(
     val items: List<UiAddPropertyItem>
@@ -58,7 +55,7 @@ sealed class UiAddPropertyItem {
 
     data class Create(
         override val id: Id = ID,
-        val format: RelationFormat = DEFAULT_NEW_PROPERTY_FORMAT,
+        val format: RelationFormat = UiAddPropertyScreenState.Companion.DEFAULT_NEW_PROPERTY_FORMAT,
         val title: String
     ) : UiAddPropertyItem() {
         companion object {
@@ -105,4 +102,15 @@ fun ObjectWrapper.Relation.mapToStateItem(
         format = field.format
     )
 }
+
+/**
+ * Extension function to safely get a name for the relation.
+ * If the name is blank, returns a default untitled title.
+ */
+fun ObjectWrapper.Relation.getName(stringResourceProvider: StringResourceProvider): String =
+    if (name.isNullOrBlank()) {
+        stringResourceProvider.getUntitledObjectTitle()
+    } else {
+        name!!
+    }
 //endregion

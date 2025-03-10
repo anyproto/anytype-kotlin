@@ -23,12 +23,12 @@ import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_object_type.properties.EditTypePropertiesViewModel
-import com.anytypeio.anytype.feature_object_type.properties.EditTypePropertiesViewModel.AddPropertyCommand
-import com.anytypeio.anytype.feature_object_type.properties.AddPropertyVmFactory
-import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmParams
-import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyErrorState
-import com.anytypeio.anytype.feature_object_type.properties.add.ui.AddFieldScreen
+import com.anytypeio.anytype.feature_properties.AddPropertyVmFactory
+import com.anytypeio.anytype.feature_properties.EditTypePropertiesViewModel
+import com.anytypeio.anytype.feature_properties.EditTypePropertiesViewModel.AddPropertyCommand
+import com.anytypeio.anytype.feature_properties.add.AddPropertyVmParams
+import com.anytypeio.anytype.feature_properties.add.UiAddPropertyErrorState
+import com.anytypeio.anytype.feature_properties.add.ui.AddFieldScreen
 import javax.inject.Inject
 
 class AddPropertyFragment : BaseBottomSheetComposeFragment() {

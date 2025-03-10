@@ -13,10 +13,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldObjectItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Item
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
@@ -172,11 +172,11 @@ private suspend fun mapLimitObjectTypes(
     storeOfObjectTypes: StoreOfObjectTypes,
     fieldParser: FieldParser,
     urlBuilder: UrlBuilder
-): List<UiFieldObjectItem> {
+): List<UiPropertyLimitTypeItem> {
     return if (relation.format == RelationFormat.OBJECT && relation.relationFormatObjectTypes.isNotEmpty()) {
         relation.relationFormatObjectTypes.mapNotNull { key ->
             storeOfObjectTypes.getByKey(key)?.let { objType ->
-                UiFieldObjectItem(
+                UiPropertyLimitTypeItem(
                     id = objType.id,
                     key = objType.uniqueKey,
                     title = fieldParser.getObjectName(objType),

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.properties.edit.ui
+package com.anytypeio.anytype.feature_properties.edit.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,14 +23,18 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 
 @Composable
-fun PropertyViewScreen(
+fun PropertyNewScreen(
     modifier: Modifier,
-    uiState: UiEditPropertyState.Visible.View,
+    uiState: UiEditPropertyState.Visible.New,
+    onCreateNewButtonClicked: () -> Unit,
     onFormatClick: () -> Unit,
-    onLimitTypesClick: () -> Unit
+    onLimitTypesClick: () -> Unit,
+    onPropertyNameUpdate: (String) -> Unit
 ) {
 
     var innerValue by remember(uiState.name) { mutableStateOf(uiState.name) }
@@ -53,13 +57,16 @@ fun PropertyViewScreen(
                     .padding(start = 13.dp, top = 7.dp)
                     .weight(1.0f),
                 value = innerValue,
-                isEditable = false,
+                isEditable = true,
                 focusRequester = focusRequester,
                 keyboardController = keyboardController,
-                emptyName = stringResource(R.string.untitled),
-                onValueChange = { innerValue = it }
+                emptyName = stringResource(R.string.new_property_hint),
+                onValueChange = {
+                    innerValue = it
+                    onPropertyNameUpdate(it)
+                }
             )
-            Spacer(modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.size(4.dp))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -71,35 +78,47 @@ fun PropertyViewScreen(
                 .padding(horizontal = 20.dp)
                 .noRippleThrottledClickable { onFormatClick() },
             formatName = uiState.formatName,
-            isEditable = false,
+            isEditable = true,
         )
-
         Divider()
 
         if (uiState.format == RelationFormat.OBJECT) {
-            PropertyLimitTypesViewSection(
+            PropertyLimitTypesEditSection(
                 limit = uiState.limitObjectTypes.size,
                 onLimitTypesClick = { onLimitTypesClick() }
             )
             Divider()
         }
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        ButtonPrimary(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 22.dp),
+            text = stringResource(R.string.object_type_fields_btn_save),
+            onClick = {
+                onCreateNewButtonClicked()
+            },
+            size = ButtonSize.Large
+        )
     }
 }
 
 @DefaultPreviews
 @Composable
-fun MyPreviewView() {
-    PropertyViewScreen(
+fun MyPreviewNew() {
+    PropertyNewScreen(
         modifier = Modifier.fillMaxWidth(),
-        uiState = UiEditPropertyState.Visible.View(
-            id = "dummyId1",
-            key = "dummyKey1",
-            name = "View property",
+        uiState = UiEditPropertyState.Visible.New(
+            name = "",
             formatName = "Text",
+            format = RelationFormat.OBJECT,
             formatIcon = R.drawable.ic_relation_format_date_small,
-            format = RelationFormat.FILE
         ),
+        onCreateNewButtonClicked = {},
         onFormatClick = {},
-        onLimitTypesClick = {}
+        onLimitTypesClick = {},
+        onPropertyNameUpdate = {}
     )
 }

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.properties.edit.ui
+package com.anytypeio.anytype.feature_properties.edit.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -39,7 +39,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
-import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

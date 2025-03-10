@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.properties
+package com.anytypeio.anytype.feature_properties
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,13 +14,13 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyEvent
-import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmParams
-import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyErrorState
-import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyItem
-import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyScreenState
-import com.anytypeio.anytype.feature_object_type.properties.add.mapToStateItem
-import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.add.AddPropertyEvent
+import com.anytypeio.anytype.feature_properties.add.AddPropertyVmParams
+import com.anytypeio.anytype.feature_properties.add.UiAddPropertyErrorState
+import com.anytypeio.anytype.feature_properties.add.UiAddPropertyItem
+import com.anytypeio.anytype.feature_properties.add.UiAddPropertyScreenState
+import com.anytypeio.anytype.feature_properties.add.mapToStateItem
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

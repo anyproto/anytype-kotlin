@@ -31,8 +31,6 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Vi
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
-import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyItem
-import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
@@ -51,12 +49,10 @@ import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.editor.cover.UnsplashViewModel.Companion.DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
@@ -65,21 +61,14 @@ import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -153,6 +142,8 @@ class ObjectTypeViewModel(
     private val _objectTypePermissionsState = MutableStateFlow<ObjectPermissions?>(null)
     private val _objectTypeConflictingFieldIds = MutableStateFlow<List<Id>>(emptyList())
     //endregion
+
+    val commands = MutableSharedFlow<ObjectTypeCommand>()
 
     //region INIT AND LIFE CYCLE
     init {
@@ -660,7 +651,14 @@ class ObjectTypeViewModel(
             }
 
             FieldEvent.Section.OnAddToSidebarIconClick -> {
-                proceedWithAddFieldToSidebarScreen()
+                viewModelScope.launch {
+                    commands.emit(
+                        ObjectTypeCommand.OpenAddPropertyScreen(
+                            typeId = vmParams.objectId,
+                            space = vmParams.spaceId.id,
+                        )
+                    )
+                }
             }
 
             FieldEvent.DragEvent.OnDragEnd -> {
@@ -704,18 +702,6 @@ class ObjectTypeViewModel(
             }
         }
     }
-
-//    private fun proceedWithAddNewPropertyEvent(event: FieldEvent.AddNewProperty) {
-//        when (event) {
-//            is FieldEvent.AddNewProperty.OnCreate -> TODO()
-//            is FieldEvent.AddNewProperty.OnExistingClicked -> {
-//                onAddToSidebarFieldClicked(item = event.item)
-//                hideAddNewFieldScreen()
-//            }
-//            is FieldEvent.AddNewProperty.OnSearchQueryChanged -> onQueryChanged(query = event.query)
-//            is FieldEvent.AddNewProperty.OnTypeClicked -> TODO()
-//        }
-//    }
 
     private fun proceedWithFieldItemMenuClick(event: FieldEvent.FieldItemMenu) {
         when (event) {
@@ -768,29 +754,6 @@ class ObjectTypeViewModel(
             }
 
             is FieldEvent.FieldItemMenu.OnRemoveLocalClick -> TODO()
-        }
-    }
-    //endregion
-
-    //region NAVIGATION
-    val commands = MutableSharedFlow<ObjectTypeCommand>()
-    val navigation = MutableSharedFlow<OpenObjectNavigation>()
-
-    private fun proceedWithNavigation(
-        objectId: Id,
-        objectLayout: ObjectType.Layout?
-    ) {
-        Timber.d("proceedWithNavigation, objectId: $objectId, objectLayout: $objectLayout")
-        val destination = objectLayout?.navigation(
-            target = objectId,
-            space = vmParams.spaceId.id
-        )
-        if (destination != null) {
-            viewModelScope.launch {
-                navigation.emit(destination)
-            }
-        } else {
-            Timber.w("No navigation destination found for object $objectId with layout $objectLayout")
         }
     }
     //endregion
@@ -949,45 +912,6 @@ class ObjectTypeViewModel(
                 }
             )
         }
-    }
-    //endregion
-
-    //region ADD NEW FIELD
-    private val input = MutableStateFlow("")
-
-    @OptIn(FlowPreview::class)
-    private val query = input.take(1).onCompletion {
-        emitAll(
-            input.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged()
-        )
-    }
-
-    fun proceedWithAddFieldToSidebarScreen() {
-        viewModelScope.launch {
-            commands.emit(
-                ObjectTypeCommand.OpenAddPropertyScreen(
-                    typeId = vmParams.objectId,
-                    space = vmParams.spaceId.id,
-                )
-            )
-        }
-    }
-
-    private fun updateFieldRecommendations(
-        currentFields: List<String>?,
-        item: UiAddPropertyItem.Default,
-        updateAction: (List<String>) -> Unit
-    ) {
-        val newFields = currentFields.orEmpty() + item.id
-        updateAction(newFields)
-    }
-
-    private fun onAddToSidebarFieldClicked(item: UiAddPropertyItem.Default) {
-        updateFieldRecommendations(
-            currentFields = _objTypeState.value?.recommendedRelations,
-            item = item,
-            updateAction = ::proceedWithSetRecommendedFields
-        )
     }
     //endregion
 

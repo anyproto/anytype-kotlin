@@ -6,15 +6,13 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.feature_object_type.properties.add.TypePropertiesProvider
-import com.anytypeio.anytype.feature_object_type.properties.add.TypePropertiesProviderImpl
 import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmFactory
 import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmParams
-import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeStore
 import com.anytypeio.anytype.ui.primitives.AddPropertyFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -57,13 +55,6 @@ object AddPropertiesModule {
     @JvmStatic
     @Provides
     @PerModal
-    fun provideTypeKeysProvider(
-        objectTypeStore: ObjectTypeStore
-    ): TypePropertiesProvider = TypePropertiesProviderImpl(objectTypeStore)
-
-    @JvmStatic
-    @Provides
-    @PerModal
     fun createRelation(
         repo: BlockRepository,
         storeOfRelations: StoreOfRelations,
@@ -94,9 +85,9 @@ object AddPropertiesModule {
 }
 
 interface AddPropertiesDependencies : ComponentDependencies {
-    fun objectTypeStore(): ObjectTypeStore
     fun provideStringResourceProvider(): StringResourceProvider
     fun provideStoreOfRelations(): StoreOfRelations
+    fun providStoreOfObjectTypes(): StoreOfObjectTypes
     fun provideBlockRepository(): BlockRepository
     fun provideAppCoroutineDispatchers(): AppCoroutineDispatchers
 }

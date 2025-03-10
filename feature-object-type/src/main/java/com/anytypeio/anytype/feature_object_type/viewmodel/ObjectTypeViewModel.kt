@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -22,7 +21,6 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
@@ -108,8 +106,7 @@ class ObjectTypeViewModel(
     private val createTemplate: CreateTemplate,
     private val duplicateObjects: DuplicateObjects,
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
-    private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
-    private val objectTypeStore: ObjectTypeStore
+    private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -141,10 +138,10 @@ class ObjectTypeViewModel(
     val uiFieldLocalInfoState =
         MutableStateFlow<UiLocalsFieldsInfoState>(UiLocalsFieldsInfoState.Hidden)
 
-    //fields
+    //properties list
     val uiFieldsListState = MutableStateFlow<UiFieldsListState>(UiFieldsListState.EMPTY)
 
-    //properties
+    //edit property
     val uiEditPropertyScreen = MutableStateFlow<UiEditPropertyState>(UiEditPropertyState.Hidden)
 
     //error
@@ -182,7 +179,6 @@ class ObjectTypeViewModel(
     //endregion
 
     //region DATA
-
     private fun proceedWithObservingObjectType() {
         viewModelScope.launch {
             combine(
@@ -313,7 +309,6 @@ class ObjectTypeViewModel(
         conflictingFields: List<Id>
     ) {
         _objTypeState.value = objType
-        objectTypeStore.setRecommendedProperties(objType.recommendedRelations)
         _objectTypePermissionsState.value = objectPermissions
 
         uiTitleState.value = UiTitleState(
@@ -343,7 +338,6 @@ class ObjectTypeViewModel(
             objTypeConflictingFields = conflictingFields,
             showHiddenFields = vmParams.showHiddenFields
         )
-        objectTypeStore.setProperties(items.mapNotNull { (it as? UiFieldsListItem.Item)?.fieldKey })
         uiFieldsListState.value = UiFieldsListState(items = items)
         uiFieldsButtonState.value = UiFieldsButtonState.Visible(
             count = items.count { it is UiFieldsListItem.Item }

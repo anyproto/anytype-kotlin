@@ -41,7 +41,6 @@ class ObjectTypeVMFactory @Inject constructor(
     private val duplicateObjects: DuplicateObjects,
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
     private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
-    private val objectTypeStore: ObjectTypeStore
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -65,6 +64,5 @@ class ObjectTypeVMFactory @Inject constructor(
             duplicateObjects = duplicateObjects,
             getObjectTypeConflictingFields = getObjectTypeConflictingFields,
             objectTypeSetRecommendedFields = objectTypeSetRecommendedFields,
-            objectTypeStore = objectTypeStore
         ) as T
 }

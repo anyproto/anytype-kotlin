@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -23,7 +26,9 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
+import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
+import com.google.firebase.messaging.FirebaseMessaging
 
 @Composable
 fun AboutAppScreen(
@@ -120,6 +125,28 @@ fun AboutAppScreen(
                     color = colorResource(id = R.color.text_secondary)
                 )
             )
+        }
+        val tokenState = remember { mutableStateOf<String?>(null) }
+        if (BuildConfig.DEBUG) {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    return@addOnCompleteListener
+                }
+                tokenState.value = task.result
+            }
+            if (tokenState.value != null) {
+                SelectionContainer {
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .padding(bottom = 10.dp),
+                        text = "FCM Token: ${tokenState.value}",
+                        style = Caption2Regular.copy(
+                            color = colorResource(id = R.color.text_secondary)
+                        )
+                    )
+                }
+            }
         }
     }
 }

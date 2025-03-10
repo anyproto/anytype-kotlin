@@ -9,13 +9,13 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyViewModel.AddPropertyCommand.*
 import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
-import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeStore
 import com.anytypeio.anytype.presentation.editor.cover.UnsplashViewModel.Companion.DEBOUNCE_DURATION
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -35,12 +35,11 @@ import timber.log.Timber
 
 class AddPropertyViewModel(
     private val vmParams: AddPropertyVmParams,
-    private val provider: TypePropertiesProvider,
     private val storeOfRelations: StoreOfRelations,
     private val stringResourceProvider: StringResourceProvider,
     private val createRelation: CreateRelation,
     private val setObjectDetails: SetObjectDetails,
-    private val objectTypesStore: ObjectTypeStore,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     private val setObjectTypeRecommendedFields: SetObjectTypeRecommendedFields
 ) : ViewModel() {
 
@@ -81,15 +80,22 @@ class AddPropertyViewModel(
     private fun setupAddNewPropertiesState() {
         viewModelScope.launch {
             combine(
-                provider.observeKeys(),
+                storeOfObjectTypes.trackChanges(),
                 query,
                 storeOfRelations.trackChanges()
-            ) { typeKeys, queryText, _ ->
-                queryText to filterProperties(
-                    allProperties = storeOfRelations.getAll(),
-                    typeKeys = typeKeys,
-                    queryText = queryText
-                )
+            ) { _, queryText, _ ->
+                val objType = storeOfObjectTypes.get(vmParams.objectTypeId)
+                if (objType != null) {
+                    val typeKeys =
+                        objType.recommendedRelations + objType.recommendedFeaturedRelations + objType.recommendedFileRelations + objType.recommendedHiddenRelations
+                    queryText to filterProperties(
+                        allProperties = storeOfRelations.getAll(),
+                        typeKeys = typeKeys,
+                        queryText = queryText
+                    )
+                } else {
+                    queryText to emptyList()
+                }
             }.catch {
                 Timber.e(it, "Error while filtering properties")
                 _errorState.value = UiAddPropertyErrorState.Show(
@@ -190,9 +196,14 @@ class AddPropertyViewModel(
             }
 
             is AddPropertyEvent.OnExistingClicked -> {
-                proceedWithSetRecommendedFields(
-                    fields = objectTypesStore.recommendedPropertiesFlow.value + event.item.id
-                )
+                viewModelScope.launch {
+                    val objType = storeOfObjectTypes.get(vmParams.objectTypeId)
+                    if (objType != null) {
+                        proceedWithSetRecommendedFields(
+                            fields = objType.recommendedRelations + event.item.id
+                        )
+                    }
+                }
             }
 
             is AddPropertyEvent.OnSearchQueryChanged -> {
@@ -278,9 +289,12 @@ class AddPropertyViewModel(
             createRelation(params).process(
                 success = { relation ->
                     Timber.d("Relation created: $relation")
-                    proceedWithSetRecommendedFields(
-                        fields = objectTypesStore.recommendedPropertiesFlow.value + relation.id
-                    )
+                    val objType = storeOfObjectTypes.get(vmParams.objectTypeId)
+                    if (objType != null) {
+                        proceedWithSetRecommendedFields(
+                            fields = objType.recommendedRelations + listOf(relation.id)
+                        )
+                    }
                     uiPropertyEditState.value = UiEditPropertyState.Hidden
                     _commands.emit(Exit)
                 },

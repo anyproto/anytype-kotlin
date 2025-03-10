@@ -626,7 +626,6 @@ class ObjectTypeViewModel(
     fun onFieldEvent(event: FieldEvent) {
         Timber.d("onFieldEvent: $event")
         when (event) {
-            FieldEvent.OnChangeTypeClick -> TODO()
             FieldEvent.OnEditPropertyScreenDismiss -> {
                 uiEditPropertyScreen.value = UiEditPropertyState.Hidden
             }
@@ -637,9 +636,6 @@ class ObjectTypeViewModel(
                     else -> {}
                 }
             }
-
-            FieldEvent.OnLimitTypesClick -> TODO()
-            is FieldEvent.OnSaveButtonClicked -> TODO()
 
             is FieldEvent.FieldItemMenu -> proceedWithFieldItemMenuClick(event)
             FieldEvent.FieldLocalInfo.OnDismiss -> {
@@ -753,7 +749,6 @@ class ObjectTypeViewModel(
                 proceedWithSetRecommendedFields(newRecommendedFields)
             }
 
-            is FieldEvent.FieldItemMenu.OnRemoveLocalClick -> TODO()
         }
     }
     //endregion

@@ -75,7 +75,9 @@ object MainEntryModule {
         awaitAccountStartManager: AwaitAccountStartManager,
         membershipProvider: MembershipProvider,
         globalSubscriptionManager: GlobalSubscriptionManager,
-        spaceInviteResolver: SpaceInviteResolver
+        spaceInviteResolver: SpaceInviteResolver,
+        spaceManager: SpaceManager,
+        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -93,7 +95,9 @@ object MainEntryModule {
         awaitAccountStartManager = awaitAccountStartManager,
         membershipProvider = membershipProvider,
         globalSubscriptionManager = globalSubscriptionManager,
-        spaceInviteResolver = spaceInviteResolver
+        spaceInviteResolver = spaceInviteResolver,
+        spaceManager = spaceManager,
+        spaceViews = spaceViewSubscriptionContainer
     )
 
     @JvmStatic

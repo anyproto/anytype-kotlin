@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import timber.log.Timber
 
 const val DEEP_LINK_PATTERN = "anytype://"
 
@@ -93,6 +94,8 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
             )
         }
         else -> DeepLinkResolver.Action.Unknown
+    }.also {
+        Timber.d("Resolving deep link: $deeplink")
     }
 
     override fun createObjectDeepLink(obj: Id, space: SpaceId): Url {

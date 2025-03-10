@@ -11,7 +11,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmFactory
+import com.anytypeio.anytype.feature_object_type.properties.AddPropertyVmFactory
 import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmParams
 import com.anytypeio.anytype.ui.primitives.AddPropertyFragment
 import dagger.Binds

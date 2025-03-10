@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.properties.add
+package com.anytypeio.anytype.feature_object_type.properties
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,12 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyViewModel.AddPropertyCommand.*
+import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyEvent
+import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmParams
+import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyErrorState
+import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyItem
+import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyScreenState
+import com.anytypeio.anytype.feature_object_type.properties.add.mapToStateItem
 import com.anytypeio.anytype.feature_object_type.properties.edit.UiEditPropertyState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,7 +37,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class AddPropertyViewModel(
+class AddOrEditTypePropertyViewModel(
     private val vmParams: AddPropertyVmParams,
     private val storeOfRelations: StoreOfRelations,
     private val stringResourceProvider: StringResourceProvider,
@@ -42,7 +47,7 @@ class AddPropertyViewModel(
     private val setObjectTypeRecommendedFields: SetObjectTypeRecommendedFields
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiAddPropertyScreenState.EMPTY)
+    private val _uiState = MutableStateFlow(UiAddPropertyScreenState.Companion.EMPTY)
     val uiState = _uiState.asStateFlow()
 
     private val _errorState =
@@ -152,14 +157,14 @@ class AddPropertyViewModel(
 
     private fun filterPropertiesFormats(query: String): List<UiAddPropertyItem.Format> {
         return if (query.isNotEmpty()) {
-            UiAddPropertyScreenState.PROPERTIES_FORMATS.map { format ->
+            UiAddPropertyScreenState.Companion.PROPERTIES_FORMATS.map { format ->
                 UiAddPropertyItem.Format(
                     format = format,
                     prettyName = stringResourceProvider.getPropertiesFormatPrettyString(format)
                 )
             }.filter { it.prettyName.contains(query, ignoreCase = true) }
         } else {
-            UiAddPropertyScreenState.PROPERTIES_FORMATS.map { format ->
+            UiAddPropertyScreenState.Companion.PROPERTIES_FORMATS.map { format ->
                 UiAddPropertyItem.Format(
                     format = format,
                     prettyName = stringResourceProvider.getPropertiesFormatPrettyString(format)
@@ -292,7 +297,7 @@ class AddPropertyViewModel(
                         )
                     }
                     uiPropertyEditState.value = UiEditPropertyState.Hidden
-                    _commands.emit(Exit)
+                    _commands.emit(AddPropertyCommand.Exit)
                 },
                 failure = { error ->
                     Timber.e(error, "Failed to create relation")
@@ -313,7 +318,7 @@ class AddPropertyViewModel(
             setObjectTypeRecommendedFields.async(params).fold(
                 onSuccess = {
                     Timber.d("Recommended fields set")
-                    _commands.emit(Exit)
+                    _commands.emit(AddPropertyCommand.Exit)
                 },
                 onFailure = { error ->
                     Timber.e(error, "Error while setting recommended fields")

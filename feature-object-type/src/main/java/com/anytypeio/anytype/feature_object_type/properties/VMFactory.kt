@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.properties.add
+package com.anytypeio.anytype.feature_object_type.properties
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmParams
 import javax.inject.Inject
 
 class AddPropertyVmFactory @Inject constructor(
@@ -22,7 +23,7 @@ class AddPropertyVmFactory @Inject constructor(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        AddPropertyViewModel(
+        AddOrEditTypePropertyViewModel(
             vmParams = addPropertyVmParams,
             storeOfRelations = storeOfRelations,
             stringResourceProvider = stringResourceProvider,

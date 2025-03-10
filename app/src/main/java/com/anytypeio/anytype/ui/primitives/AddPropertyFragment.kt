@@ -23,9 +23,9 @@ import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyViewModel
-import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyViewModel.AddPropertyCommand
-import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmFactory
+import com.anytypeio.anytype.feature_object_type.properties.AddOrEditTypePropertyViewModel
+import com.anytypeio.anytype.feature_object_type.properties.AddOrEditTypePropertyViewModel.AddPropertyCommand
+import com.anytypeio.anytype.feature_object_type.properties.AddPropertyVmFactory
 import com.anytypeio.anytype.feature_object_type.properties.add.AddPropertyVmParams
 import com.anytypeio.anytype.feature_object_type.properties.add.UiAddPropertyErrorState
 import com.anytypeio.anytype.feature_object_type.properties.add.ui.AddFieldScreen
@@ -35,7 +35,7 @@ class AddPropertyFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
     lateinit var viewModelFactory: AddPropertyVmFactory
-    private val vm by viewModels<AddPropertyViewModel> { viewModelFactory }
+    private val vm by viewModels<AddOrEditTypePropertyViewModel> { viewModelFactory }
     private val space get() = argString(ARG_SPACE)
     private val typeId get() = argString(ARG_OBJECT_ID)
 

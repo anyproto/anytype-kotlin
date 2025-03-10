@@ -420,5 +420,5 @@ abstract class ComponentDependenciesModule {
     @Binds
     @IntoMap
     @ComponentDependenciesKey(EditTypePropertiesDependencies::class)
-    abstract fun provideAddPropertiesDependencies(component: MainComponent): ComponentDependencies
+    abstract fun provideEditTypePropertiesDependencies(component: MainComponent): ComponentDependencies
 }

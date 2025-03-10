@@ -1143,7 +1143,7 @@ class ComponentManager(
             .create(params, findComponentDependencies())
     }
 
-    val addPropertyComponent = ComponentWithParams { params: EditTypePropertiesVmParams ->
+    val editTypePropertiesComponent = ComponentWithParams { params: EditTypePropertiesVmParams ->
         DaggerEditTypePropertiesComponent
             .factory()
             .create(params, findComponentDependencies())

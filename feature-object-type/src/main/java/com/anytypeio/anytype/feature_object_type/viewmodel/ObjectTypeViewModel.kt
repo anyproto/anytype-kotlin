@@ -649,7 +649,7 @@ class ObjectTypeViewModel(
             FieldEvent.Section.OnAddToSidebarIconClick -> {
                 viewModelScope.launch {
                     commands.emit(
-                        ObjectTypeCommand.OpenAddPropertyScreen(
+                        ObjectTypeCommand.OpenEditTypePropertiesScreen(
                             typeId = vmParams.objectId,
                             space = vmParams.spaceId.id,
                         )

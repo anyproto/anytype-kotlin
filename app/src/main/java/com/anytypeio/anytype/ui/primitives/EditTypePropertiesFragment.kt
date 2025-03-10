@@ -124,11 +124,11 @@ class EditTypePropertiesFragment : BaseBottomSheetComposeFragment() {
             spaceId = SpaceId(space)
 
         )
-        componentManager().addPropertyComponent.get(params).inject(this)
+        componentManager().editTypePropertiesComponent.get(params).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().addPropertyComponent.release()
+        componentManager().editTypePropertiesComponent.release()
     }
 
     companion object {

@@ -111,17 +111,17 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     navComposeController.navigate(OBJ_TYPE_FIELDS)
                 }
 
-                is ObjectTypeCommand.OpenAddPropertyScreen -> {
+                is ObjectTypeCommand.OpenEditTypePropertiesScreen -> {
                     runCatching {
                         findNavController().navigate(
-                            R.id.addPropertyScreen,
+                            R.id.editTypePropertiesScreen,
                             EditTypePropertiesFragment.args(
                                 objectId = command.typeId,
                                 space = command.space
                             )
                         )
                     }.onFailure {
-                        Timber.e(it, "Error while opening add property screen")
+                        Timber.e(it, "Error while opening edit object type properties screen")
                     }
                 }
             }

@@ -37,13 +37,13 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class AddOrEditTypePropertyViewModel(
+class EditTypePropertiesViewModel(
     private val vmParams: AddPropertyVmParams,
     private val storeOfRelations: StoreOfRelations,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     private val stringResourceProvider: StringResourceProvider,
     private val createRelation: CreateRelation,
     private val setObjectDetails: SetObjectDetails,
-    private val storeOfObjectTypes: StoreOfObjectTypes,
     private val setObjectTypeRecommendedFields: SetObjectTypeRecommendedFields
 ) : ViewModel() {
 
@@ -61,7 +61,6 @@ class AddOrEditTypePropertyViewModel(
     val commands = _commands.asSharedFlow()
 
     private val input = MutableStateFlow("")
-
     @OptIn(FlowPreview::class)
     private val query = input.take(1).onCompletion {
         emitAll(
@@ -69,12 +68,9 @@ class AddOrEditTypePropertyViewModel(
         )
     }
 
+    //region Init
     init {
         setupAddNewPropertiesState()
-    }
-
-    private fun onQueryChanged(query: String) {
-        input.value = query
     }
 
     private fun setupAddNewPropertiesState() {
@@ -118,7 +114,9 @@ class AddOrEditTypePropertyViewModel(
                 }
         }
     }
+    //endregion
 
+    //region Ui State
     private fun setUiState(
         queryText: String,
         sortedExistingProperties: List<UiAddPropertyItem>
@@ -151,10 +149,6 @@ class AddOrEditTypePropertyViewModel(
         _uiState.value = UiAddPropertyScreenState(items = items)
     }
 
-    fun hideError() {
-        _errorState.value = UiAddPropertyErrorState.Hidden
-    }
-
     private fun filterPropertiesFormats(query: String): List<UiAddPropertyItem.Format> {
         return if (query.isNotEmpty()) {
             UiAddPropertyScreenState.Companion.PROPERTIES_FORMATS.map { format ->
@@ -183,7 +177,12 @@ class AddOrEditTypePropertyViewModel(
                 (queryText.isBlank() || field.name?.contains(queryText, ignoreCase = true) == true)
     }
 
-    //region UI Events
+    fun hideError() {
+        _errorState.value = UiAddPropertyErrorState.Hidden
+    }
+    //endregion
+
+    //region Ui Events
     fun onEvent(event: AddPropertyEvent) {
         when (event) {
             is AddPropertyEvent.OnCreate -> {
@@ -208,7 +207,7 @@ class AddOrEditTypePropertyViewModel(
             }
 
             is AddPropertyEvent.OnSearchQueryChanged -> {
-                onQueryChanged(event.query)
+                input.value = event.query
             }
 
             is AddPropertyEvent.OnTypeClicked -> {
@@ -245,7 +244,7 @@ class AddOrEditTypePropertyViewModel(
     }
     //endregion
 
-    //region USE Case
+    //region Use Cases
     private fun proceedWithUpdatingRelation() {
         val state = uiPropertyEditState.value as? UiEditPropertyState.Visible.Edit ?: return
         viewModelScope.launch {
@@ -283,8 +282,6 @@ class AddOrEditTypePropertyViewModel(
                 format = format,
                 name = name,
                 limitObjectTypes = emptyList(),
-                //todo добавить limit object types!
-                //state.limitObjectTypes.map { it.id },
                 prefilled = emptyMap()
             )
             createRelation(params).process(
@@ -331,9 +328,11 @@ class AddOrEditTypePropertyViewModel(
     }
     //endregion
 
+    //region Commands
     sealed class AddPropertyCommand {
         data object Exit : AddPropertyCommand()
     }
+    //endregion
 
     companion object {
         private const val DEBOUNCE_DURATION = 300L

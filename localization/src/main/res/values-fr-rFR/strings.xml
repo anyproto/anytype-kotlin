@@ -286,11 +286,11 @@
     <string name="relation_format_status">Sélectionner</string>
     <string name="relation_format_file">Fichier &amp; Média</string>
     <string name="relation_format_checkbox">Case à cocher</string>
-    <string name="relation_format_url">Url</string>
+    <string name="relation_format_url">URL</string>
     <string name="relation_format_email">Email</string>
-    <string name="relation_format_phone">Téléphone</string>
+    <string name="relation_format_phone">N° de téléphone</string>
     <string name="relation_format_emoji">Emoji</string>
-    <string name="relation_format_object">Objet</string>
+    <string name="relation_format_object">Object relation</string>
     <string name="relation_format_relation">Relation</string>
     <string name="viewer_sorting_prefix">Ensuite</string>
     <string name="enter_value">Saisir une valeur</string>
@@ -298,7 +298,7 @@
     <string name="add_sort">Ajouter un tri</string>
     <string name="apply">Appliquer</string>
     <string name="add_filter">Ajouter un filtre</string>
-    <string name="relation_format_tag">Sélection multiple</string>
+    <string name="relation_format_tag">Multi-Select</string>
     <string name="unknown_number_of_objects">Nombre d\'objets inconnu</string>
     <string name="sort_ascending">Tri croissant</string>
     <string name="sort_descending">Tri décroissant</string>
@@ -318,7 +318,7 @@
     <string name="dv_cell_number_hint">Ajouter un nombre</string>
     <string name="unknown_object_type">Type inconnu</string>
     <string name="relation_format_short_text">Texte court</string>
-    <string name="relation_format_long_text">Texte long</string>
+    <string name="relation_format_long_text">Texte</string>
     <string name="set_new_relation">Définir une nouvelle relation</string>
     <string name="relation_deleted">Relation supprimée</string>
     <string name="content_description_document_cover">Document\'s cover</string>
@@ -823,6 +823,7 @@
     <string name="create_space">Créer un espace</string>
     <string name="generic_error">Une erreur s\'est produite. Veuillez réessayer.</string>
     <string name="type">Type</string>
+    <string name="format">Format</string>
     <string name="space_info">Informations sur l\'espace</string>
     <string name="creation_date">Date de création</string>
     <string name="created_by">Créé par</string>
@@ -1684,4 +1685,15 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="space_settings_delete_space_button">Supprimer l\'espace</string>
     <string name="space_settings_icon_title">Modifier l\'image</string>
     <string name="space_settings_save_button">Sauvegarder</string>
+    <string name="object_type_add_property_screen_title">Add property</string>
+    <string name="object_type_add_property_screen_section">Properties types</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
+    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="new_property_hint">New property</string>
+    <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="add_property_error_create_new">Error while creating new property</string>
+    <string name="add_property_error_update">Error while updating property</string>
+    <string name="add_property_error_add">Error while adding property to type</string>
 </resources>

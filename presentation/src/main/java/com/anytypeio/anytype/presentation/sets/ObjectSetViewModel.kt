@@ -1200,6 +1200,38 @@ class ObjectSetViewModel(
         }
     }
 
+    private suspend fun proceedWithCreatingObjectTypeSetObject(currentState: ObjectState.DataView.TypeSet) {
+        val objectType = storeOfObjectTypes.get(vmParams.ctx)
+
+        val objectTypeUniqueKey = objectType?.uniqueKey ?:return
+
+        if (objectTypeUniqueKey == ObjectTypeIds.BOOKMARK) {
+            dispatch(
+                ObjectSetCommand.Modal
+                    .CreateBookmark(
+                        ctx = vmParams.ctx,
+                        space = vmParams.space.id
+                    )
+            )
+        } else {
+            val dvRelationLinks = currentState.dataViewContent.relationLinks
+            val viewer = currentState.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+            val prefilled = viewer.prefillNewObjectDetails(
+                storeOfRelations = storeOfRelations,
+                dateProvider = dateProvider,
+                dataViewRelationLinks = dvRelationLinks
+            )
+            proceedWithCreatingDataViewObject(
+                CreateDataViewObject.Params.SetByType(
+                    type = TypeKey(objectTypeUniqueKey),
+                    filters = viewer.filters,
+                    template = objectType.defaultTemplateId,
+                    prefilled = prefilled
+                )
+            )
+        }
+    }
+
     fun onSelectQueryButtonClicked() {
         dispatch(ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen)
     }
@@ -2785,9 +2817,8 @@ class ObjectSetViewModel(
                 }
 
                 is ObjectState.DataView.TypeSet -> {
-                    proceedWithCreatingSetObject(
-                        currentState = state,
-                        templateChosenBy = templateId
+                    proceedWithCreatingObjectTypeSetObject(
+                        currentState = state
                     )
                 }
             }

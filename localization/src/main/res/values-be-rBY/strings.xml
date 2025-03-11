@@ -288,11 +288,11 @@
     <string name="relation_format_status">Выбраць</string>
     <string name="relation_format_file">Файлы &amp; Медыя</string>
     <string name="relation_format_checkbox">Птушка</string>
-    <string name="relation_format_url">Url</string>
+    <string name="relation_format_url">URL</string>
     <string name="relation_format_email">Эл. пошта</string>
-    <string name="relation_format_phone">Тэлефон</string>
+    <string name="relation_format_phone">Нумар тэлефона</string>
     <string name="relation_format_emoji">Эмодзі</string>
-    <string name="relation_format_object">Аб\'ект</string>
+    <string name="relation_format_object">Object relation</string>
     <string name="relation_format_relation">Уласцівасць</string>
     <string name="viewer_sorting_prefix">Потым</string>
     <string name="enter_value">Увядзіце значэнне</string>
@@ -300,7 +300,7 @@
     <string name="add_sort">Дадаць сартыроўку</string>
     <string name="apply">Apply</string>
     <string name="add_filter">Дадаць фільтр</string>
-    <string name="relation_format_tag">Множны выбар</string>
+    <string name="relation_format_tag">Multi-Select</string>
     <string name="unknown_number_of_objects">Невядомая колькасць аб\'ектаў</string>
     <string name="sort_ascending">Па ўзрастанні</string>
     <string name="sort_descending">Па змяншэнні</string>
@@ -320,7 +320,7 @@
     <string name="dv_cell_number_hint">Дадаць нумар…</string>
     <string name="unknown_object_type">Невядомы тып</string>
     <string name="relation_format_short_text">Кароткі тэкст</string>
-    <string name="relation_format_long_text">Доўгі тэкст</string>
+    <string name="relation_format_long_text">Тэкст</string>
     <string name="set_new_relation">Усталяваць новую ўласцівасць</string>
     <string name="relation_deleted">Выдаленая ўласцівасць</string>
     <string name="content_description_document_cover">Вокладка дакумента</string>
@@ -827,6 +827,7 @@
     <string name="create_space">Стварыць Прастору</string>
     <string name="generic_error">Нешта пайшло не так. Калі ласка паспрабуйце зноў пазней.</string>
     <string name="type">Тып</string>
+    <string name="format">Format</string>
     <string name="space_info">Інфармацыя аб прасторы</string>
     <string name="creation_date">Дата стварэння</string>
     <string name="created_by">Створана</string>
@@ -1713,4 +1714,15 @@
     <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Save</string>
+    <string name="object_type_add_property_screen_title">Add property</string>
+    <string name="object_type_add_property_screen_section">Properties types</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
+    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="new_property_hint">New property</string>
+    <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="add_property_error_create_new">Error while creating new property</string>
+    <string name="add_property_error_update">Error while updating property</string>
+    <string name="add_property_error_add">Error while adding property to type</string>
 </resources>

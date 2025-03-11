@@ -975,6 +975,7 @@ object ObjectSearchConstants {
         Relations.DESCRIPTION,
         Relations.ICON_IMAGE,
         Relations.ICON_EMOJI,
+        Relations.ICON_NAME,
         Relations.TYPE,
         Relations.LAYOUT,
         Relations.IS_ARCHIVED,

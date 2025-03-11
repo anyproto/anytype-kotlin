@@ -112,7 +112,7 @@ android {
             //signingConfig signingConfigs.debug
             firebaseAppDistribution {
                 artifactType = "APK"
-                groups = "anytype-q&a, product-review, nightly"
+                groups = "anytype-q&a, android-team, product-review, nightly-ops"
                 serviceCredentialsFile = "$rootDir/scripts/distribution/anytype-debug-service-account-key.json"
             }
         }

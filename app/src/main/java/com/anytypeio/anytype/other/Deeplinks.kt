@@ -30,7 +30,7 @@ const val MEMBERSHIP_PATH = "membership"
 const val TYPE_PARAM = "type"
 const val OBJECT_ID_PARAM = "objectId"
 const val SPACE_ID_PARAM = "spaceId"
-const val INVITE_ID_PARAM = "inviteID"
+const val INVITE_ID_HTTPS_PARAM = "inviteId"
 const val SOURCE_PARAM = "source"
 const val TYPE_VALUE_EXPERIENCE = "experience"
 const val TIER_ID_PARAM = "tier"
@@ -102,7 +102,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     }
 
     private fun parseInvite(uri: Uri): DeepLinkResolver.Action.DeepLinkToObject.Invite? {
-        val inviteId = uri.getQueryParameter(INVITE_ID_PARAM)?.takeIf { it.isNotEmpty() }
+        val inviteId = uri.getQueryParameter(INVITE_ID_HTTPS_PARAM)?.takeIf { it.isNotEmpty() }
         val encryption = uri.fragment?.takeIf { it.isNotEmpty() }
         return if (inviteId != null && encryption != null) {
             DeepLinkResolver.Action.DeepLinkToObject.Invite(
@@ -124,7 +124,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         invite: Id,
         encryptionKey: String
     ): Url {
-        return "${DEEP_LINK_TO_OBJECT_BASE_URL}/$obj?${SPACE_ID_PARAM}=${space.id}&${INVITE_ID_PARAM}=$invite#$encryptionKey"
+        return "${DEEP_LINK_TO_OBJECT_BASE_URL}/$obj?${SPACE_ID_PARAM}=${space.id}&${INVITE_ID_HTTPS_PARAM}=$invite#$encryptionKey"
     }
 
     override fun isDeepLink(link: String): Boolean {

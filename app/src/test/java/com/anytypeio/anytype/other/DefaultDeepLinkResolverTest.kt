@@ -65,7 +65,7 @@ class DefaultDeepLinkResolverTest {
 
         val encryption = MockDataFactory.randomUuid()
 
-        val deeplink = "anytype://object?objectId=$obj&spaceId=$space&inviteID=$cid#$encryption"
+        val deeplink = "anytype://object?objectId=$obj&spaceId=$space&inviteId=$cid#$encryption"
 
         // When
         val result = deepLinkResolver.resolve(deeplink)
@@ -121,7 +121,7 @@ class DefaultDeepLinkResolverTest {
 
         val invite = "$cid#$encryption"
 
-        val deeplink = "https://object.any.coop/$obj?spaceId=$space&inviteID=$invite"
+        val deeplink = "https://object.any.coop/$obj?spaceId=$space&inviteId=$invite"
 
         // When
         val result = deepLinkResolver.resolve(deeplink)

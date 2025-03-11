@@ -160,6 +160,18 @@
             </intent-filter>
             <meta-data android:name="photopicker_activity:0:required" android:value="" />
         </service>
+
+        <service
+            android:name="com.anytypeio.anytype.other.AnytypeFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
     </application>
 
 </manifest>

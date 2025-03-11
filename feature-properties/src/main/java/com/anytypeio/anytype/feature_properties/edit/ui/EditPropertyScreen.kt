@@ -134,7 +134,7 @@ fun PropertyEditScreen(
                 .padding(horizontal = 20.dp)
                 .noRippleThrottledClickable { onFormatClick() },
             formatName = uiState.formatName,
-            isEditable = true,
+            isEditable = false,
         )
         Divider()
 

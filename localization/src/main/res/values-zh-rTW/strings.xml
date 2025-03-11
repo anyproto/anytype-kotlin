@@ -285,11 +285,11 @@
     <string name="relation_format_status">選項</string>
     <string name="relation_format_file">File &amp; Media</string>
     <string name="relation_format_checkbox">核取方塊列表</string>
-    <string name="relation_format_url">Url</string>
+    <string name="relation_format_url">URL</string>
     <string name="relation_format_email">email</string>
-    <string name="relation_format_phone">手機</string>
+    <string name="relation_format_phone">電話號碼</string>
     <string name="relation_format_emoji">Emoji</string>
-    <string name="relation_format_object">物件</string>
+    <string name="relation_format_object">Object relation</string>
     <string name="relation_format_relation">關聯</string>
     <string name="viewer_sorting_prefix">則</string>
     <string name="enter_value">輸入值</string>
@@ -297,7 +297,7 @@
     <string name="add_sort">新增排序</string>
     <string name="apply">Apply</string>
     <string name="add_filter">新增篩選條件</string>
-    <string name="relation_format_tag">選取多個</string>
+    <string name="relation_format_tag">Multi-Select</string>
     <string name="unknown_number_of_objects">未知數量的物件</string>
     <string name="sort_ascending">升序</string>
     <string name="sort_descending">降序</string>
@@ -317,7 +317,7 @@
     <string name="dv_cell_number_hint">新增數字…</string>
     <string name="unknown_object_type">未知類型</string>
     <string name="relation_format_short_text">短文本</string>
-    <string name="relation_format_long_text">長文本</string>
+    <string name="relation_format_long_text">文字</string>
     <string name="set_new_relation">設置新的關聯</string>
     <string name="relation_deleted">已刪除的關聯</string>
     <string name="content_description_document_cover">文件封面</string>
@@ -821,6 +821,7 @@
     <string name="create_space">建立空間</string>
     <string name="generic_error">發生錯誤。請再試一次。</string>
     <string name="type">類型</string>
+    <string name="format">Format</string>
     <string name="space_info">空間資訊</string>
     <string name="creation_date">建立日期</string>
     <string name="created_by">建立者</string>
@@ -1674,4 +1675,15 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Save</string>
+    <string name="object_type_add_property_screen_title">Add property</string>
+    <string name="object_type_add_property_screen_section">Properties types</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
+    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="new_property_hint">New property</string>
+    <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="add_property_error_create_new">Error while creating new property</string>
+    <string name="add_property_error_update">Error while updating property</string>
+    <string name="add_property_error_add">Error while adding property to type</string>
 </resources>

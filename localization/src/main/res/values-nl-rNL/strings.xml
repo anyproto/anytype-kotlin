@@ -288,9 +288,9 @@
     <string name="relation_format_checkbox">Selectievakje</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">E-mailadres</string>
-    <string name="relation_format_phone">Telefoon</string>
+    <string name="relation_format_phone">Telefoonnummer</string>
     <string name="relation_format_emoji">Emoji</string>
-    <string name="relation_format_object">Object</string>
+    <string name="relation_format_object">Object relation</string>
     <string name="relation_format_relation">Relatie</string>
     <string name="viewer_sorting_prefix">Dan</string>
     <string name="enter_value">Voer waarde in</string>
@@ -298,7 +298,7 @@
     <string name="add_sort">Voeg een sortering toe</string>
     <string name="apply">Toepassen</string>
     <string name="add_filter">Voeg een filter toe</string>
-    <string name="relation_format_tag">Meervoudige selectie</string>
+    <string name="relation_format_tag">Multi-Select</string>
     <string name="unknown_number_of_objects">Onbekend aantal objecten</string>
     <string name="sort_ascending">Oplopend</string>
     <string name="sort_descending">Aflopend</string>
@@ -318,7 +318,7 @@
     <string name="dv_cell_number_hint">Voeg nummer ... toe</string>
     <string name="unknown_object_type">Onbekend type</string>
     <string name="relation_format_short_text">Korte tekst</string>
-    <string name="relation_format_long_text">Lange tekst</string>
+    <string name="relation_format_long_text">Tekst</string>
     <string name="set_new_relation">Stel nieuwe relatie in</string>
     <string name="relation_deleted">Verwijderde relatie</string>
     <string name="content_description_document_cover">Document\'s cover</string>
@@ -823,6 +823,7 @@
     <string name="create_space">Maak een ruimte</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
     <string name="type">Type</string>
+    <string name="format">Format</string>
     <string name="space_info">Ruimte informatie</string>
     <string name="creation_date">Aanmaakdatum</string>
     <string name="created_by">Aangemaakt door</string>
@@ -1687,4 +1688,15 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="space_settings_delete_space_button">Verwijder ruimte</string>
     <string name="space_settings_icon_title">Bewerk afbeelding</string>
     <string name="space_settings_save_button">Sla op</string>
+    <string name="object_type_add_property_screen_title">Add property</string>
+    <string name="object_type_add_property_screen_section">Properties types</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
+    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="new_property_hint">New property</string>
+    <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="add_property_error_create_new">Error while creating new property</string>
+    <string name="add_property_error_update">Error while updating property</string>
+    <string name="add_property_error_add">Error while adding property to type</string>
 </resources>

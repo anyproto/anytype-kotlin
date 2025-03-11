@@ -226,7 +226,9 @@ fun FieldsMainScreen(
             onLimitTypesClick = {},
             onSaveButtonClicked = {},
             onCreateNewButtonClicked = {},
-            onPropertyNameUpdate = {  }
+            onPropertyNameUpdate = {  },
+            onDeleteButtonClicked = { id -> fieldEvent(OnDeleteFromTypeClick(id)) },
+
         )
     }
 
@@ -617,7 +619,7 @@ fun ItemDropDownMenu(
                         )
                     },
                     onClick = {
-                        onFieldEvent(OnDeleteFromTypeClick(item))
+                        onFieldEvent(OnDeleteFromTypeClick(id = item.id))
                     },
                 )
             }

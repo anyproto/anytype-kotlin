@@ -96,7 +96,7 @@ fun StubObjectType(
     uniqueKey: String? = MockDataFactory.randomUuid(),
     name: String = MockDataFactory.randomString(),
     objectType: String = MockDataFactory.randomString(),
-    layout: Double = ObjectType.Layout.BASIC.code.toDouble(),
+    layout: Double = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
     smartBlockTypes: List<Double> = emptyList(),
     isDeleted: Boolean? = null,
     isArchived: Boolean? = null,
@@ -109,6 +109,7 @@ fun StubObjectType(
     recommendedRelations: List<String> = emptyList(),
     recommendedHiddenRelations: List<String> = emptyList(),
     recommendedFeaturedRelations: List<String> = emptyList(),
+    recommendedFileRelations: List<String> = emptyList(),
     space: Id? = null
 ): ObjectWrapper.Type = ObjectWrapper.Type(
     map = mapOf(
@@ -129,6 +130,7 @@ fun StubObjectType(
         Relations.RECOMMENDED_RELATIONS to recommendedRelations,
         Relations.RECOMMENDED_HIDDEN_RELATIONS to recommendedHiddenRelations,
         Relations.RECOMMENDED_FEATURED_RELATIONS to recommendedFeaturedRelations,
+        Relations.RECOMMENDED_FILE_RELATIONS to recommendedFileRelations,
         Relations.SPACE_ID to space
     )
 )

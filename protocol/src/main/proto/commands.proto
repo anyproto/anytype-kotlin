@@ -7950,6 +7950,7 @@ message Rpc {
             message Request {
                 string chatObjectId = 1;  // Identifier for the chat
                 int32 limit = 2;  // Number of max last messages to return and subscribe
+                string subId = 3;
             }
 
             message Response {
@@ -7974,9 +7975,31 @@ message Rpc {
         message Unsubscribe {
             message Request {
                 string chatObjectId = 1;  // Identifier for the chat
+                string subId = 2;
             }
             message Response {
                 Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message SubscribeToMessagePreviews {
+            message Request {}
+
+            message Response {
+                Error error = 1;
+                string subId = 2;
 
                 message Error {
                     Code code = 1;

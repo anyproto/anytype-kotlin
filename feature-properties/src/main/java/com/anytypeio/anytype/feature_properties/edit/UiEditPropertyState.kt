@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_properties.edit
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesItem
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 sealed class UiEditPropertyState {
@@ -16,7 +17,8 @@ sealed class UiEditPropertyState {
             val formatName: String,
             val formatIcon: Int?,
             val format: RelationFormat,
-            val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList()
+            val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList(),
+            val isPossibleToUnlinkFromType: Boolean
         ) : Visible()
 
         data class New(
@@ -34,7 +36,8 @@ sealed class UiEditPropertyState {
             val formatName: String,
             val formatIcon: Int?,
             val format: RelationFormat,
-            val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList()
+            val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList(),
+            val isPossibleToUnlinkFromType: Boolean
         ) : Visible()
     }
 }
@@ -42,3 +45,11 @@ sealed class UiEditPropertyState {
 data class UiPropertyLimitTypeItem(
     val id: Id, val key: Key, val title: String, val icon: ObjectIcon
 )
+
+sealed class UiPropertyFormatsListState {
+    data class Visible(
+        val items: List<UiEditTypePropertiesItem.Format>
+    ) : UiPropertyFormatsListState()
+
+    data object Hidden : UiPropertyFormatsListState()
+}

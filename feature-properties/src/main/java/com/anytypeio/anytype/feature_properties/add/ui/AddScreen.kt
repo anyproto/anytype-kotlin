@@ -177,6 +177,12 @@ fun AddFieldScreen(
             },
             onPropertyNameUpdate = { name ->
                 event(UiEditTypePropertiesEvent.OnPropertyNameUpdate(name))
+            },
+            onFormatClick = {
+                event(UiEditTypePropertiesEvent.OnPropertyFormatClick)
+            },
+            onSaveButtonClicked = {
+                event(UiEditTypePropertiesEvent.OnSaveButtonClicked)
             }
         )
     }
@@ -201,7 +207,7 @@ private fun Section(
 }
 
 @Composable
-private fun PropertyTypeItem(
+fun PropertyTypeItem(
     modifier: Modifier,
     item: UiEditTypePropertiesItem.Format
 ) {

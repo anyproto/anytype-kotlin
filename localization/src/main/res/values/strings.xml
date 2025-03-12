@@ -788,7 +788,7 @@
     <string name="set">Set</string>
     <string name="collection">Collection</string>
     <string name="layout">Layout</string>
-    <string name="button_fields">Fields</string>
+    <string name="button_fields">Properties</string>
     <string name="button_layout">Layout</string>
     <string name="button_templates">Templates</string>
     <string name="restore_from_archive">Restore from archive</string>
@@ -1876,7 +1876,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_new_field">New field</string>
     <string name="object_type_fields_preview_field">Preview field</string>
     <string name="object_type_fields_btn_save">Save</string>
-    <string name="object_type_fields_menu_delete">Delete</string>
+    <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
     <string name="object_type_fields_menu_remove">Remove</string>
     <string name="object_type_fields_local_info_title">Local fields</string>

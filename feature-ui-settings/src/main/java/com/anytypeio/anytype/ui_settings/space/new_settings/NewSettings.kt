@@ -3,11 +3,9 @@ package com.anytypeio.anytype.ui_settings.space.new_settings
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,8 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
@@ -44,6 +39,7 @@ import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.ui_settings.R
+import timber.log.Timber
 
 @Composable
 fun SpaceSettingsContainer(
@@ -74,9 +70,6 @@ fun NewSpaceSettingsScreen(
     // Keep state of the current (edited) values.
     var nameInput by remember { mutableStateOf(initialName) }
     var descriptionInput by remember { mutableStateOf(initialDescription) }
-
-    // Compare against the initial values to know if something has changed.
-    val isDirty = nameInput != initialName || descriptionInput != initialDescription
 
     var showEditDescription by remember { mutableStateOf(false) }
     var showEditTitle by remember { mutableStateOf(false) }
@@ -145,7 +138,8 @@ fun NewSpaceSettingsScreen(
                         }
                         is UiSpaceSettingsItem.Name -> {
                             item {
-                                NewSpaceNameBlock(
+                                Timber.d("New space name item: $item")
+                                NewSpaceNameInputField(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .border(
@@ -159,7 +153,7 @@ fun NewSpaceSettingsScreen(
                                             showEditTitle = true
                                         }
                                     ,
-                                    name = initialName,
+                                    name = item.name,
                                     onNameSet = {
                                         // Do nothing.
                                     },
@@ -319,7 +313,7 @@ fun NewSpaceSettingsScreen(
             }
         ) {
             EditSettingField(
-                initialInput = initialDescription,
+                initialInput = initialName,
                 onSaveFieldValueClicked = {
                     uiEvent(
                         UiEvent.OnSaveTitleClicked(it)
@@ -387,7 +381,7 @@ private fun EditSettingField(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                NewSpaceNameBlock(
+                NewSpaceNameInputField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .border(

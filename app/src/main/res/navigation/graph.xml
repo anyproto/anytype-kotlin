@@ -250,6 +250,10 @@
     </fragment>
 
     <dialog
+        android:id="@+id/editTypePropertiesScreen"
+        android:name="com.anytypeio.anytype.ui.primitives.EditTypePropertiesFragment"/>
+
+    <dialog
         android:id="@+id/selectWidgetSourceScreen"
         android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment" />
 

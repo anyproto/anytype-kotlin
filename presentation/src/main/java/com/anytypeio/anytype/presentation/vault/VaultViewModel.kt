@@ -175,7 +175,7 @@ class VaultViewModel(
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
-        Timber.d("onResume")
+        Timber.d("onResume, deep link: $deeplink")
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.screenVault,
@@ -215,7 +215,7 @@ class VaultViewModel(
                         when(result) {
                             is DeepLinkToObjectDelegate.Result.Error -> {
                                 val link = deeplink.invite
-                                if (link != null && result is DeepLinkToObjectDelegate.Result.Error.PermissionNeeded) {
+                                if (link != null) {
                                     commands.emit(
                                         Command.Deeplink.Invite(
                                             link = spaceInviteResolver.createInviteLink(

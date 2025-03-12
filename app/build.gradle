@@ -106,13 +106,13 @@ android {
         }
 
         debug {
-            applicationIdSuffix ".debug"
+            applicationIdSuffix ".dev"
             debuggable true
             buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.debug'])
             //signingConfig signingConfigs.debug
             firebaseAppDistribution {
                 artifactType = "APK"
-                groups = "anytype-q&a, product-review, nightly"
+                groups = "anytype-q&a, android-team, product-review, nightly-ops"
                 serviceCredentialsFile = "$rootDir/scripts/distribution/anytype-debug-service-account-key.json"
             }
         }
@@ -177,6 +177,7 @@ dependencies {
     implementation project(':feature-all-content')
     implementation project(':feature-date')
     implementation project(':feature-object-type')
+    implementation project(':feature-properties')
 
     //Compile time dependencies
     ksp libs.daggerCompiler

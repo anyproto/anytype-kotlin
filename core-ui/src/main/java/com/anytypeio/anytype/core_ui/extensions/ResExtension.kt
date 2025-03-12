@@ -278,8 +278,7 @@ fun ObjectLayoutView.getName(): Int? = when (this) {
 
 @StringRes
 fun RelationFormat.getPrettyName(): Int = when (this) {
-    RelationFormat.LONG_TEXT -> R.string.relation_format_long_text
-    RelationFormat.SHORT_TEXT -> R.string.relation_format_short_text
+    RelationFormat.LONG_TEXT, RelationFormat.SHORT_TEXT -> R.string.relation_format_long_text
     RelationFormat.NUMBER -> R.string.relation_format_number
     RelationFormat.STATUS -> R.string.relation_format_status
     RelationFormat.TAG -> R.string.relation_format_tag

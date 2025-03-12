@@ -35,24 +35,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
+import com.anytypeio.anytype.core_ui.common.bottomBorder
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -68,14 +63,14 @@ import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.*
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.FieldItemMenu.*
-import com.anytypeio.anytype.feature_object_type.fields.UiAddFieldsScreenState
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.edit.ui.PropertyScreen
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
@@ -88,9 +83,8 @@ fun FieldsMainScreen(
     uiFieldsListState: UiFieldsListState,
     uiTitleState: UiTitleState,
     uiIconState: UiIconState,
-    uiFieldEditOrNewState: UiFieldEditOrNewState,
     uiFieldLocalInfoState: UiLocalsFieldsInfoState,
-    uiAddFieldsScreenState: UiAddFieldsScreenState,
+    uiEditPropertyState: UiEditPropertyState,
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
@@ -198,10 +192,7 @@ fun FieldsMainScreen(
                                     item = item,
                                     reorderingState = reorderableLazyColumnState,
                                     fieldEvent = fieldEvent,
-                                    isReorderable = false,
-                                    onAddIconClick = {
-                                        fieldEvent(FieldEvent.Section.OnAddToHeaderIconClick)
-                                    }
+                                    isReorderable = false
                                 )
                             }
                             is Section.Local,
@@ -226,11 +217,18 @@ fun FieldsMainScreen(
         }
     )
 
-    if (uiFieldEditOrNewState is UiFieldEditOrNewState.Visible) {
-        EditFieldScreen(
+    if (uiEditPropertyState is UiEditPropertyState.Visible) {
+        PropertyScreen(
             modifier = Modifier.fillMaxWidth(),
-            uiFieldEditOrNewState = uiFieldEditOrNewState,
-            fieldEvent = fieldEvent
+            uiState = uiEditPropertyState,
+            onDismissRequest = { fieldEvent(OnEditPropertyScreenDismiss) },
+            onFormatClick = {},
+            onLimitTypesClick = {},
+            onSaveButtonClicked = {},
+            onCreateNewButtonClicked = {},
+            onPropertyNameUpdate = {  },
+            onDeleteButtonClicked = { id -> fieldEvent(OnDeleteFromTypeClick(id)) },
+
         )
     }
 
@@ -238,13 +236,6 @@ fun FieldsMainScreen(
         SectionLocalFieldsInfo(
             modifier = Modifier.fillMaxWidth(),
             state = uiFieldLocalInfoState,
-            fieldEvent = fieldEvent
-        )
-    }
-
-    if (uiAddFieldsScreenState is UiAddFieldsScreenState.Visible) {
-        AddFieldScreen(
-            state = uiAddFieldsScreenState,
             fieldEvent = fieldEvent
         )
     }
@@ -600,29 +591,6 @@ private fun LazyItemScope.FieldItemDraggable(
 }
 
 @Composable
-fun Modifier.bottomBorder(
-    strokeWidth: Dp = 0.5.dp,
-    color: Color = colorResource(R.color.shape_primary)
-) = composed(
-    factory = {
-        val density = LocalDensity.current
-        val strokeWidthPx = density.run { strokeWidth.toPx() }
-
-        Modifier.drawBehind {
-            val width = size.width
-            val height = size.height - strokeWidthPx / 2
-
-            drawLine(
-                color = color,
-                start = Offset(x = 0f, y = height),
-                end = Offset(x = width, y = height),
-                strokeWidth = strokeWidthPx
-            )
-        }
-    }
-)
-
-@Composable
 fun ItemDropDownMenu(
     item: UiFieldsListItem.Item,
     showMenu: Boolean,
@@ -651,7 +619,7 @@ fun ItemDropDownMenu(
                         )
                     },
                     onClick = {
-                        onFieldEvent(OnDeleteFromTypeClick(item))
+                        onFieldEvent(OnDeleteFromTypeClick(id = item.id))
                     },
                 )
             }
@@ -757,9 +725,8 @@ fun PreviewTypeFieldsMainScreen() {
             )
         ),
         fieldEvent = {},
-        uiFieldEditOrNewState = UiFieldEditOrNewState.Hidden,
-        uiFieldLocalInfoState = UiLocalsFieldsInfoState.Hidden,
-        uiAddFieldsScreenState = UiAddFieldsScreenState.Hidden
+        uiEditPropertyState = UiEditPropertyState.Hidden,
+        uiFieldLocalInfoState = UiLocalsFieldsInfoState.Hidden
     )
 }
 

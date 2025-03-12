@@ -297,11 +297,11 @@ class EditTypePropertiesViewModel(
                 )
             )
             setObjectDetails.async(params).fold(
-                onSuccess = {
-                    Timber.d("Relation updated: $it")
+                onSuccess = { payload ->
+                    Timber.d("Property updated :[$payload]")
                 },
                 onFailure = { error ->
-                    Timber.e(error, "Failed to update relation")
+                    Timber.e(error, "Failed to update property")
                     _errorState.value = UiEditTypePropertiesErrorState.Show(
                         UiEditTypePropertiesErrorState.Reason.ErrorUpdatingProperty(error.message ?: "")
                     )
@@ -326,18 +326,18 @@ class EditTypePropertiesViewModel(
                 prefilled = emptyMap()
             )
             createRelation(params).process(
-                success = { relation ->
-                    Timber.d("Relation created: $relation")
+                success = { property ->
+                    Timber.d("Property created: $property")
                     val objType = storeOfObjectTypes.get(vmParams.objectTypeId)
                     if (objType != null) {
                         proceedWithSetRecommendedProperties(
-                            properties = objType.recommendedRelations + listOf(relation.id)
+                            properties = objType.recommendedRelations + listOf(property.id)
                         )
                     }
                     uiPropertyEditState.value = UiEditPropertyState.Hidden
                 },
                 failure = { error ->
-                    Timber.e(error, "Failed to create relation")
+                    Timber.e(error, "Failed to create property")
                     _errorState.value = UiEditTypePropertiesErrorState.Show(
                         UiEditTypePropertiesErrorState.Reason.ErrorCreatingProperty(error.message ?: "")
                     )

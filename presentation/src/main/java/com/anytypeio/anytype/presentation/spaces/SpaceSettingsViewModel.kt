@@ -71,12 +71,9 @@ class SpaceSettingsViewModel(
 
     val commands = MutableSharedFlow<Command>()
     val isDismissed = MutableStateFlow(false)
-//    val spaceViewState = MutableStateFlow<SpaceData?>(SpaceData.Init)
     val uiState = MutableStateFlow<UiSpaceSettingsState>(UiSpaceSettingsState.Initial)
 
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
-
-    private val spaceConfig = spaceManager.getConfig()
 
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $params")

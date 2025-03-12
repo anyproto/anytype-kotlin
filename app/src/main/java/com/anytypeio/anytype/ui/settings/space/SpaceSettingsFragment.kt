@@ -59,7 +59,6 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     surface = colorResource(id = R.color.context_menu_background)
                 )
             ) {
-
                 SpaceSettingsContainer(
                     uiState = vm.uiState.collectAsStateWithLifecycle().value,
                     uiEvent = vm::onUiEvent

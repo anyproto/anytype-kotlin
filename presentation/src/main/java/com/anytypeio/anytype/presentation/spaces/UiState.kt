@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.spaces
 
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 sealed class UiSpaceSettingsState {
@@ -8,15 +9,14 @@ sealed class UiSpaceSettingsState {
     data class SpaceSettings(
         val items: List<UiSpaceSettingsItem>,
         val isEditEnabled: Boolean
-    ) : UiSpaceSettingsState()
-
+    ) : UiSpaceSettingsState() {
+        val name: String = items.filterIsInstance<UiSpaceSettingsItem.Name>()
+            .firstOrNull()?.name ?: EMPTY_STRING_VALUE
+        val description = items.filterIsInstance<UiSpaceSettingsItem.Description>()
+            .firstOrNull()?.description ?: EMPTY_STRING_VALUE
+    }
     data class SpaceSettingsError(val message: String) : UiSpaceSettingsState()
 }
-
-data class UiSpaceSettingsModalState(
-    val showEditTitle: Boolean = false,
-    val showEditDescription: Boolean = false
-)
 
 sealed class UiSpaceSettingsItem {
 

@@ -60,16 +60,8 @@ fun NewSpaceSettingsScreen(
     uiState: UiSpaceSettingsState.SpaceSettings,
     uiEvent: (UiEvent) -> Unit
 ) {
-
-    // Get the initial values from your uiState items.
-    val initialName = uiState.items.filterIsInstance<UiSpaceSettingsItem.Name>()
-        .firstOrNull()?.name ?: ""
-    val initialDescription = uiState.items.filterIsInstance<UiSpaceSettingsItem.Description>()
-        .firstOrNull()?.description ?: ""
-
-    // Keep state of the current (edited) values.
-    var nameInput by remember { mutableStateOf(initialName) }
-    var descriptionInput by remember { mutableStateOf(initialDescription) }
+    val initialName = uiState.name
+    val initialDescription = uiState.description
 
     var showEditDescription by remember { mutableStateOf(false) }
     var showEditTitle by remember { mutableStateOf(false) }
@@ -290,7 +282,7 @@ fun NewSpaceSettingsScreen(
                 showEditDescription = false
             }
         ) {
-            EditSettingField(
+            EditDescriptionField(
                 initialInput = initialDescription,
                 onSaveFieldValueClicked = {
                     uiEvent(
@@ -306,7 +298,7 @@ fun NewSpaceSettingsScreen(
                 showEditTitle = false
             }
         ) {
-            EditSettingField(
+            EditNameField(
                 initialInput = initialName,
                 onSaveFieldValueClicked = {
                     uiEvent(
@@ -319,7 +311,7 @@ fun NewSpaceSettingsScreen(
 }
 
 @Composable
-private fun EditSettingField(
+private fun EditNameField(
     initialInput: String,
     onSaveFieldValueClicked: (String) -> Unit
 ) {
@@ -394,5 +386,79 @@ private fun EditSettingField(
             }
         }
     )
+}
 
+@Composable
+private fun EditDescriptionField(
+    initialInput: String,
+    onSaveFieldValueClicked: (String) -> Unit
+) {
+
+    var fieldInput by remember { mutableStateOf(initialInput) }
+
+    Scaffold(
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = colorResource(id = R.color.background_secondary),
+        topBar = {
+            Box(
+                modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .fillMaxWidth()
+                        .height(48.dp)
+                else
+                    Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+            ) {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(horizontal = 16.dp)
+                        .noRippleClickable {
+                            onSaveFieldValueClicked(fieldInput)
+                        },
+                    text = "Done",
+                    style = PreviewTitle1Medium,
+                    color = if (fieldInput != initialInput) {
+                        colorResource(id = R.color.text_primary)
+                    } else {
+                        colorResource(id = R.color.text_tertiary)
+                    }
+                )
+            }
+        },
+        content = { paddingValues ->
+            val contentModifier =
+                if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .fillMaxSize()
+                        .padding(top = paddingValues.calculateTopPadding())
+                else
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+
+            Box(
+                modifier = contentModifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                NewSpaceDescriptionBlock(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            shape = RoundedCornerShape(16.dp),
+                            width = 0.5.dp,
+                            color = colorResource(id = R.color.palette_system_amber_50)
+                        )
+                        .padding(vertical = 12.dp, horizontal = 16.dp)
+                    ,
+                    description = fieldInput,
+                    isEditEnabled = true
+                )
+            }
+        }
+    )
 }

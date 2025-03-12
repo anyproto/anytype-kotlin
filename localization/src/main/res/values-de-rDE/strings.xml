@@ -1596,12 +1596,12 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_templates_menu_edit">Bearbeiten</string>
     <string name="object_type_templates_menu_duplicate">Duplizieren</string>
     <string name="object_type_templates_menu_delete">Löschen</string>
-    <string name="object_type_fields_section_header">Überschrift</string>
-    <string name="object_type_fields_section_fields_menu">Seitenleiste</string>
+    <string name="object_type_fields_section_header">Shown in object header</string>
+    <string name="object_type_fields_section_fields_menu">Shown in properties menu</string>
     <string name="object_type_fields_section_hidden">Ausgeblendet</string>
     <string name="object_type_fields_section_file">Datei</string>
-    <string name="object_type_fields_section_local_fields">Lokale Felder</string>
-    <string name="object_type_fields_title">Felder</string>
+    <string name="object_type_fields_section_local_fields">Local properties</string>
+    <string name="object_type_fields_title">Eigenschaften</string>
     <string name="object_type_fields_info_text">You\'re editing type</string>
     <string name="object_type_fields_edit_field">Feld bearbeiten</string>
     <string name="object_type_fields_new_field">Neues Feld</string>
@@ -1646,7 +1646,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="migration_error_try_again">Erneut versuchen</string>
     <string name="migration_migration_failed">Migration fehlgeschlagen</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Bitte gib Speicherplatz frei und führe den Vorgang erneut aus.</string>
-    <string name="fields_screen_title">Felder</string>
+    <string name="fields_screen_title">Eigenschaften</string>
     <string name="field_text_title">Text</string>
     <string name="field_text_empty">Eingeben</string>
     <string name="field_number_title">Nummer</string>
@@ -1689,9 +1689,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_icon_title">Bild bearbeiten</string>
     <string name="space_settings_save_button">Speichern</string>
     <string name="object_type_add_property_screen_title">Add property</string>
-    <string name="object_type_add_property_screen_section">Properties types</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
-    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties formats\"</string>
     <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
     <string name="new_property_hint">New property</string>
@@ -1699,4 +1698,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="add_property_error_create_new">Error while creating new property</string>
     <string name="add_property_error_update">Error while updating property</string>
     <string name="add_property_error_add">Error while adding property to type</string>
+    <string name="property_select_format_title">Select property format</string>
+    <string name="property_edit_menu_delete">Delete from space</string>
+    <string name="property_edit_menu_unlink">Unlink from type</string>
 </resources>

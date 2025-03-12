@@ -1596,12 +1596,12 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_type_templates_menu_edit">Düzenle</string>
     <string name="object_type_templates_menu_duplicate">Çoğalt</string>
     <string name="object_type_templates_menu_delete">Sil</string>
-    <string name="object_type_fields_section_header">Üst başlık</string>
-    <string name="object_type_fields_section_fields_menu">Kenar çubuğu</string>
+    <string name="object_type_fields_section_header">Shown in object header</string>
+    <string name="object_type_fields_section_fields_menu">Shown in properties menu</string>
     <string name="object_type_fields_section_hidden">Gizli</string>
     <string name="object_type_fields_section_file">Dosya</string>
-    <string name="object_type_fields_section_local_fields">Yerel alanlar</string>
-    <string name="object_type_fields_title">Alanlar</string>
+    <string name="object_type_fields_section_local_fields">Local properties</string>
+    <string name="object_type_fields_title">Özellikler</string>
     <string name="object_type_fields_info_text">Düzenleme türünüz</string>
     <string name="object_type_fields_edit_field">Alanı düzenle</string>
     <string name="object_type_fields_new_field">Yeni alan</string>
@@ -1646,7 +1646,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="migration_error_try_again">Tekrar deneyin</string>
     <string name="migration_migration_failed">Geçiş başarısız oldu</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Lütfen biraz yer açın ve işlemi tekrarlayın.</string>
-    <string name="fields_screen_title">Alanlar</string>
+    <string name="fields_screen_title">Özellikler</string>
     <string name="field_text_title">Metin</string>
     <string name="field_text_empty">Giriş</string>
     <string name="field_number_title">Sayı</string>
@@ -1689,9 +1689,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_settings_icon_title">Resmi düzenle</string>
     <string name="space_settings_save_button">Kaydet</string>
     <string name="object_type_add_property_screen_title">Add property</string>
-    <string name="object_type_add_property_screen_section">Properties types</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
-    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties formats\"</string>
     <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
     <string name="new_property_hint">New property</string>
@@ -1699,4 +1698,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="add_property_error_create_new">Error while creating new property</string>
     <string name="add_property_error_update">Error while updating property</string>
     <string name="add_property_error_add">Error while adding property to type</string>
+    <string name="property_select_format_title">Select property format</string>
+    <string name="property_edit_menu_delete">Delete from space</string>
+    <string name="property_edit_menu_unlink">Unlink from type</string>
 </resources>

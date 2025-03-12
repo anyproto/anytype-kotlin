@@ -255,15 +255,12 @@ fun BaseButton(
 fun NewSpaceNameInputField(
     modifier: Modifier = Modifier,
     name: String,
-    onNameSet: (String) -> Unit,
-    isEditEnabled: Boolean
+    isEditEnabled: Boolean,
+    onNameSet: (String) -> Unit = {}
 ) {
-
-    Timber.d("NewSpaceNameBlock: $name")
 
     val nameValue = remember { mutableStateOf(name) }
     val focusManager = LocalFocusManager.current
-
 
     LaunchedEffect(name) {
         nameValue.value = name
@@ -308,12 +305,16 @@ fun NewSpaceNameInputField(
 fun NewSpaceDescriptionBlock(
     modifier: Modifier = Modifier,
     description: String,
-    onDescriptionSet: (String) -> Unit,
-    isEditEnabled: Boolean
+    isEditEnabled: Boolean,
+    onDescriptionSet: (String) -> Unit = {},
 ) {
 
     val descriptionValue = remember { mutableStateOf(description) }
     val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(description) {
+        descriptionValue.value = description
+    }
 
     LaunchedEffect(descriptionValue.value) {
         snapshotFlow { descriptionValue.value }

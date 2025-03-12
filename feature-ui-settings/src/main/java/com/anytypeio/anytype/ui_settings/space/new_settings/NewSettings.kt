@@ -154,9 +154,6 @@ fun NewSpaceSettingsScreen(
                                         }
                                     ,
                                     name = item.name,
-                                    onNameSet = {
-                                        // Do nothing.
-                                    },
                                     isEditEnabled = false
                                 )
                             }
@@ -179,10 +176,7 @@ fun NewSpaceSettingsScreen(
                                         }
                                     ,
                                     isEditEnabled = false,
-                                    description = initialDescription,
-                                    onDescriptionSet = {
-                                        // Do nothing.
-                                    }
+                                    description = initialDescription
                                 )
                             }
                         }

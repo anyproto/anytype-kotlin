@@ -106,8 +106,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         inject()
         setupTheme()
 
-        startAppUpdater()
-
         if (savedInstanceState != null) vm.onRestore()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -351,16 +349,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     Timber.e(it, "Error while date object navigation")
                 }
             }
-        }
-    }
-
-    private fun startAppUpdater() {
-        if (featureToggles.isAutoUpdateEnabled) {
-            AppUpdater(this)
-                .setUpdateFrom(UpdateFrom.JSON)
-                .setUpdateJSON(AUTO_UPDATE_URL)
-                .setButtonDoNotShowAgain("")
-                .start()
         }
     }
 

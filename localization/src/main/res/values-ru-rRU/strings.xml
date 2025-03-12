@@ -1625,12 +1625,12 @@
     <string name="object_type_templates_menu_edit">Изменить</string>
     <string name="object_type_templates_menu_duplicate">Дублировать</string>
     <string name="object_type_templates_menu_delete">Удалить</string>
-    <string name="object_type_fields_section_header">Заголовок</string>
-    <string name="object_type_fields_section_fields_menu">Sidebar</string>
+    <string name="object_type_fields_section_header">Shown in object header</string>
+    <string name="object_type_fields_section_fields_menu">Shown in properties menu</string>
     <string name="object_type_fields_section_hidden">Hidden</string>
     <string name="object_type_fields_section_file">Файл</string>
-    <string name="object_type_fields_section_local_fields">Local fields</string>
-    <string name="object_type_fields_title">Поля</string>
+    <string name="object_type_fields_section_local_fields">Local properties</string>
+    <string name="object_type_fields_title">Свойства</string>
     <string name="object_type_fields_info_text">Вы редактировали тип</string>
     <string name="object_type_fields_edit_field">Редактировать поле</string>
     <string name="object_type_fields_new_field">New field</string>
@@ -1675,7 +1675,7 @@
     <string name="migration_error_try_again">Попробуйте еще раз</string>
     <string name="migration_migration_failed">Сбой миграции</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Пожалуйста, освободите пространство и запустите процесс снова.</string>
-    <string name="fields_screen_title">Поля</string>
+    <string name="fields_screen_title">Свойства</string>
     <string name="field_text_title">Текст</string>
     <string name="field_text_empty">Войти</string>
     <string name="field_number_title">Число</string>
@@ -1718,9 +1718,8 @@
     <string name="space_settings_icon_title">Редактировать фотографию</string>
     <string name="space_settings_save_button">Сохранить</string>
     <string name="object_type_add_property_screen_title">Add property</string>
-    <string name="object_type_add_property_screen_section">Properties types</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
-    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties formats\"</string>
     <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
     <string name="new_property_hint">New property</string>
@@ -1728,4 +1727,7 @@
     <string name="add_property_error_create_new">Error while creating new property</string>
     <string name="add_property_error_update">Error while updating property</string>
     <string name="add_property_error_add">Error while adding property to type</string>
+    <string name="property_select_format_title">Select property format</string>
+    <string name="property_edit_menu_delete">Delete from space</string>
+    <string name="property_edit_menu_unlink">Unlink from type</string>
 </resources>

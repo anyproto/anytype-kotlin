@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsDictionary.screenLeaveSpace
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
@@ -13,16 +12,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
-import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
-import com.anytypeio.anytype.core_models.asSpaceType
-import com.anytypeio.anytype.core_models.ext.isPossibleToUpgrade
-import com.anytypeio.anytype.core_models.membership.MembershipUpgradeReason
-import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -71,6 +62,7 @@ class SpaceSettingsViewModel(
 
     val commands = MutableSharedFlow<Command>()
     val isDismissed = MutableStateFlow(false)
+
     val uiState = MutableStateFlow<UiSpaceSettingsState>(UiSpaceSettingsState.Initial)
 
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
@@ -87,7 +79,6 @@ class SpaceSettingsViewModel(
 
     private fun proceedWithObservingSpaceView() {
         viewModelScope.launch {
-            val config = spaceManager.getConfig(params.space)
             combine(
                 spaceViewContainer.observe(params.space),
                 userPermissionProvider.observe(params.space),
@@ -174,13 +165,40 @@ class SpaceSettingsViewModel(
             UiEvent.OnQrCodeClicked -> {
 
             }
-            is UiEvent.OnSavedClicked -> {
-
+            is UiEvent.OnSaveDescriptionClicked -> {
+                viewModelScope.launch {
+                    setSpaceDetails.async(
+                        params = SetSpaceDetails.Params(
+                            space = params.space,
+                            details = mapOf(
+                                Relations.DESCRIPTION to uiEvent.description
+                            )
+                        )
+                    )
+                }
+            }
+            is UiEvent.OnSaveTitleClicked -> {
+                viewModelScope.launch {
+                    setSpaceDetails.async(
+                        params = SetSpaceDetails.Params(
+                            space = params.space,
+                            details = mapOf(
+                                Relations.NAME to uiEvent.title
+                            )
+                        )
+                    )
+                }
             }
             UiEvent.OnSpaceIdClicked -> {
 
             }
             is UiEvent.OnSpaceImagePicked -> {
+
+            }
+            is UiEvent.OnChangeDescriptionClicked -> {
+
+            }
+            is UiEvent.OnChangeTitleClicked -> {
 
             }
         }

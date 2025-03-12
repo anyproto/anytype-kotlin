@@ -13,6 +13,11 @@ sealed class UiSpaceSettingsState {
     data class SpaceSettingsError(val message: String) : UiSpaceSettingsState()
 }
 
+data class UiSpaceSettingsModalState(
+    val showEditTitle: Boolean = false,
+    val showEditDescription: Boolean = false
+)
+
 sealed class UiSpaceSettingsItem {
 
     sealed class Section : UiSpaceSettingsItem() {

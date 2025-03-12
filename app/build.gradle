@@ -245,6 +245,9 @@ dependencies {
 
     implementation libs.wireRuntime
 
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+    implementation "com.google.firebase:firebase-messaging"
+
     //Unit/Integration tests dependencies
     testImplementation libs.androidXTestCore
     testImplementation libs.junit

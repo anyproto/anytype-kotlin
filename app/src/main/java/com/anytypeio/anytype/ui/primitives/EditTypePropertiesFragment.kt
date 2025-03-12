@@ -28,7 +28,12 @@ import com.anytypeio.anytype.feature_properties.EditTypePropertiesViewModel
 import com.anytypeio.anytype.feature_properties.EditTypePropertiesViewModel.EditTypePropertiesCommand
 import com.anytypeio.anytype.feature_properties.add.EditTypePropertiesVmParams
 import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesErrorState
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesEvent
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesEvent.OnPropertyFormatSelected
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesEvent.OnPropertyFormatsListDismiss
 import com.anytypeio.anytype.feature_properties.add.ui.AddFieldScreen
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState
+import com.anytypeio.anytype.feature_properties.edit.ui.PropertyFormatsListScreen
 import javax.inject.Inject
 
 class EditTypePropertiesFragment : BaseBottomSheetComposeFragment() {
@@ -51,6 +56,7 @@ class EditTypePropertiesFragment : BaseBottomSheetComposeFragment() {
                 uiStateEditProperty = vm.uiPropertyEditState.collectAsStateWithLifecycle().value,
                 event = vm::onEvent
             )
+            PropertyFormatsScreen()
             ErrorScreen()
         }
     }
@@ -97,6 +103,18 @@ class EditTypePropertiesFragment : BaseBottomSheetComposeFragment() {
                     )
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun PropertyFormatsScreen() {
+        val uiState = vm.uiPropertyFormatsListState.collectAsStateWithLifecycle().value
+        if (uiState is UiPropertyFormatsListState.Visible) {
+            PropertyFormatsListScreen(
+                uiState = uiState,
+                onDismissRequest = { vm.onEvent(OnPropertyFormatsListDismiss) },
+                onFormatClick = { vm.onEvent(OnPropertyFormatSelected(it)) }
+            )
         }
     }
 

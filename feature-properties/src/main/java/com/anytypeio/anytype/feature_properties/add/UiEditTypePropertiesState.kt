@@ -14,7 +14,7 @@ data class UiEditTypePropertiesState(
     companion object {
         val EMPTY = UiEditTypePropertiesState(emptyList())
 
-        val DEFAULT_NEW_PROPERTY_FORMAT = RelationFormat.STATUS
+        val DEFAULT_NEW_PROPERTY_FORMAT = RelationFormat.LONG_TEXT
 
         //This is a list of formats that are available for creating new properties
         val PROPERTIES_FORMATS = listOf<RelationFormat>(

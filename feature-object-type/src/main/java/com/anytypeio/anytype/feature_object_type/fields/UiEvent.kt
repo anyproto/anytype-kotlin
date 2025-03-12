@@ -26,4 +26,9 @@ sealed class FieldEvent {
         data class OnMove(val fromKey: String, val toKey: String) : DragEvent()
         data object OnDragEnd : DragEvent()
     }
+
+    sealed class EditProperty : FieldEvent() {
+        data class OnPropertyNameUpdate(val name: String) : EditProperty()
+        data object OnSaveButtonClicked : EditProperty()
+    }
 }

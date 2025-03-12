@@ -28,12 +28,12 @@ import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
-import com.anytypeio.anytype.ui_settings.space.new_settings.NewSpaceSettingsScreen
 import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
 import java.io.File
 import javax.inject.Inject
 import timber.log.Timber
 
+// TODO convert to Fragment.
 class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
 
     private val space get() = arg<Id>(ARG_SPACE_ID_KEY)

@@ -19,7 +19,6 @@ sealed class UiSpaceSettingsState {
 }
 
 sealed class UiSpaceSettingsItem {
-
     sealed class Section : UiSpaceSettingsItem() {
         data object Collaboration : Section()
         data object ContentModel : Section()
@@ -41,5 +40,4 @@ sealed class UiSpaceSettingsItem {
     data class RemoteStorage(val size: Int) : UiSpaceSettingsItem()
     data object SpaceInfo : UiSpaceSettingsItem()
     data object DeleteSpace : UiSpaceSettingsItem()
-
 }

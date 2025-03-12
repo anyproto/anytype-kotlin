@@ -145,10 +145,10 @@ class SpaceSettingsViewModel(
         Timber.d("onUiEvent: $uiEvent")
         when(uiEvent) {
             UiEvent.IconMenu.OnRemoveIconClicked -> {
-
+                proceedWithRemovingSpaceIcon()
             }
             UiEvent.OnBackPressed -> {
-
+                isDismissed.value = true
             }
             UiEvent.OnDeleteSpaceClicked -> {
 
@@ -193,42 +193,10 @@ class SpaceSettingsViewModel(
 
             }
             is UiEvent.OnSpaceImagePicked -> {
-
-            }
-            is UiEvent.OnChangeDescriptionClicked -> {
-
-            }
-            is UiEvent.OnChangeTitleClicked -> {
-
+                proceedWithSettingSpaceImage(uiEvent.uri)
             }
         }
     }
-
-//    fun onNameSet(name: String) {
-//        Timber.d("onNameSet")
-//        if (name.isEmpty()) return
-//        if (isDismissed.value) return
-//        viewModelScope.launch {
-//            if (spaceConfig != null) {
-//                setSpaceDetails.async(
-//                    SetSpaceDetails.Params(
-//                        space = SpaceId(spaceConfig.space),
-//                        details = mapOf(Relations.NAME to name)
-//                    )
-//                ).fold(
-//                    onFailure = {
-//                        Timber.e(it, "Error while updating object details")
-//                        sendToast("Something went wrong. Please try again")
-//                    },
-//                    onSuccess = {
-//                        Timber.d("Name successfully set for current space: ${spaceConfig.space}")
-//                    }
-//                )
-//            } else {
-//                Timber.w("Something went wrong: config is empty")
-//            }
-//        }
-//    }
 
     fun onStop() {
         // TODO unsubscribe
@@ -238,22 +206,19 @@ class SpaceSettingsViewModel(
 //        proceedWithSpaceDebug()
 //    }
 //
-//    fun onRemoveSpaceIconClicked() {
-//        viewModelScope.launch {
-//            val config = spaceConfig
-//            if (config != null) {
-//                setSpaceDetails.async(
-//                    SetSpaceDetails.Params(
-//                        space = params.space,
-//                        details = mapOf(
-//                            Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
-//                            Relations.ICON_IMAGE to "",
-//                        )
-//                    )
-//                )
-//            }
-//        }
-//    }
+    private fun proceedWithRemovingSpaceIcon() {
+        viewModelScope.launch {
+            setSpaceDetails.async(
+                SetSpaceDetails.Params(
+                    space = params.space,
+                    details = mapOf(
+                        Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
+                        Relations.ICON_IMAGE to "",
+                    )
+                )
+            )
+        }
+    }
 
 //    fun onDeleteSpaceClicked() {
 //        viewModelScope.launch {
@@ -412,7 +377,7 @@ class SpaceSettingsViewModel(
 //        }
 //    }
 
-    fun onSpaceImagePicked(path: String) {
+    fun proceedWithSettingSpaceImage(path: String) {
         Timber.d("onSpaceImageClicked: $path")
         viewModelScope.launch {
             uploadFile.async(
@@ -437,8 +402,8 @@ class SpaceSettingsViewModel(
             SetSpaceDetails.Params(
                 space = params.space,
                 details = mapOf(
-                    Relations.ICON_OPTION to null,
                     Relations.ICON_IMAGE to file.id,
+                    Relations.ICON_OPTION to null,
                     Relations.ICON_EMOJI to null
                 )
             )

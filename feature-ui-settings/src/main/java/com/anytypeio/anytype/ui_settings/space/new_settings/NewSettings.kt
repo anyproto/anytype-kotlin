@@ -130,7 +130,6 @@ fun NewSpaceSettingsScreen(
                         }
                         is UiSpaceSettingsItem.Name -> {
                             item {
-                                Timber.d("New space name item: $item")
                                 NewSpaceNameInputField(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -285,9 +284,9 @@ fun NewSpaceSettingsScreen(
             EditDescriptionField(
                 initialInput = initialDescription,
                 onSaveFieldValueClicked = {
-                    uiEvent(
-                        UiEvent.OnSaveDescriptionClicked(it)
-                    )
+                    uiEvent(UiEvent.OnSaveDescriptionClicked(it)).also {
+                        showEditDescription = false
+                    }
                 }
             )
         }
@@ -301,9 +300,9 @@ fun NewSpaceSettingsScreen(
             EditNameField(
                 initialInput = initialName,
                 onSaveFieldValueClicked = {
-                    uiEvent(
-                        UiEvent.OnSaveTitleClicked(it)
-                    )
+                    uiEvent(UiEvent.OnSaveTitleClicked(it)).also {
+                        showEditTitle = false
+                    }
                 }
             )
         }
@@ -456,7 +455,10 @@ private fun EditDescriptionField(
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                     ,
                     description = fieldInput,
-                    isEditEnabled = true
+                    isEditEnabled = true,
+                    onDescriptionSet = {
+                        fieldInput = it
+                    }
                 )
             }
         }

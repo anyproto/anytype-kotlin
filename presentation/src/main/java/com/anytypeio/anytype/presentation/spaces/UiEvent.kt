@@ -2,8 +2,6 @@ package com.anytypeio.anytype.presentation.spaces
 
 sealed class UiEvent {
     data object OnBackPressed : UiEvent()
-    data object OnChangeDescriptionClicked : UiEvent()
-    data object OnChangeTitleClicked: UiEvent()
     data class OnSaveDescriptionClicked(val description: String) : UiEvent()
     data class OnSaveTitleClicked(val title: String) : UiEvent()
     data object OnDeleteSpaceClicked : UiEvent()

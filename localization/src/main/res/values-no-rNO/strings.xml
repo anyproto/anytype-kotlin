@@ -714,7 +714,7 @@
     <string name="set">Sett</string>
     <string name="collection">Samling</string>
     <string name="layout">Oppsett</string>
-    <string name="button_fields">Fields</string>
+    <string name="button_fields">Egenskaper</string>
     <string name="button_layout">Oppsett</string>
     <string name="button_templates">Maler</string>
     <string name="restore_from_archive">Gjenopprette fra arkivet</string>
@@ -1607,7 +1607,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_new_field">New field</string>
     <string name="object_type_fields_preview_field">Preview field</string>
     <string name="object_type_fields_btn_save">Save</string>
-    <string name="object_type_fields_menu_delete">Slett</string>
+    <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
     <string name="object_type_fields_menu_remove">Fjern</string>
     <string name="object_type_fields_local_info_title">Local fields</string>

@@ -168,6 +168,9 @@ open class ObjectSetFragment :
     private val topBackButton: View
         get() = binding.topToolbar.root.findViewById(R.id.topBackButton)
 
+    private val topToolbar: ViewGroup
+        get() = binding.topToolbar.root
+
     private val topToolbarTitle: TextView
         get() = binding.topToolbar.root.findViewById(R.id.tvTopToolbarTitle)
 
@@ -708,7 +711,9 @@ open class ObjectSetFragment :
             is DataViewViewState.TypeSet.Default -> {
                 topToolbarThreeDotsButton.gone()
                 topToolbarStatusContainer.gone()
+                topToolbarTitle.gone()
                 topBackButton.gone()
+                topToolbar.gone()
                 initView.gone()
                 header.gone()
                 dataViewHeader.visible()
@@ -727,6 +732,8 @@ open class ObjectSetFragment :
             is DataViewViewState.TypeSet.NoItems -> {
                 topToolbarThreeDotsButton.gone()
                 topToolbarStatusContainer.gone()
+                topToolbarTitle.gone()
+                topToolbar.gone()
                 topBackButton.gone()
                 initView.gone()
                 header.gone()
@@ -750,7 +757,9 @@ open class ObjectSetFragment :
             is DataViewViewState.TypeSet.Error -> {
                 topToolbarThreeDotsButton.gone()
                 topToolbarStatusContainer.gone()
+                topToolbarTitle.gone()
                 topBackButton.gone()
+                topToolbar.gone()
                 initView.gone()
                 header.gone()
                 dataViewHeader.visible()

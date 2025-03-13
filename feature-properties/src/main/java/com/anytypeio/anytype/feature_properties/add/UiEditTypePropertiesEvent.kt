@@ -9,4 +9,8 @@ sealed class UiEditTypePropertiesEvent {
     data object OnSaveButtonClicked : UiEditTypePropertiesEvent()
     data object OnEditPropertyScreenDismissed : UiEditTypePropertiesEvent()
     data class OnPropertyNameUpdate(val name: String) : UiEditTypePropertiesEvent()
+
+    data object OnPropertyFormatClick : UiEditTypePropertiesEvent()
+    data object OnPropertyFormatsListDismiss : UiEditTypePropertiesEvent()
+    data class OnPropertyFormatSelected(val format: UiEditTypePropertiesItem.Format) : UiEditTypePropertiesEvent()
 }

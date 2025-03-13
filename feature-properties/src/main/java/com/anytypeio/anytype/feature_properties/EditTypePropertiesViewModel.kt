@@ -3,7 +3,6 @@ package com.anytypeio.anytype.feature_properties
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
@@ -18,9 +17,13 @@ import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesEvent
 import com.anytypeio.anytype.feature_properties.add.EditTypePropertiesVmParams
 import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesErrorState
 import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesItem
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesItem.*
 import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesState
 import com.anytypeio.anytype.feature_properties.add.mapToStateItem
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible.*
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState.*
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,6 +60,9 @@ class EditTypePropertiesViewModel(
     val uiPropertyEditState =
         MutableStateFlow<UiEditPropertyState>(UiEditPropertyState.Hidden)
 
+    val uiPropertyFormatsListState =
+        MutableStateFlow<UiPropertyFormatsListState>(UiPropertyFormatsListState.Hidden)
+
     private val _commands = MutableSharedFlow<EditTypePropertiesCommand>()
     val commands = _commands.asSharedFlow()
 
@@ -82,13 +88,12 @@ class EditTypePropertiesViewModel(
             ) { _, _, queryText ->
                 val objType = storeOfObjectTypes.get(id = vmParams.objectTypeId)
                 if (objType != null) {
-                    val typeKeys =
-                        objType.recommendedRelations + objType.recommendedFeaturedRelations + objType.recommendedFileRelations + objType.recommendedHiddenRelations
-                    queryText to filterProperties(
-                        allProperties = storeOfRelations.getAll(),
-                        typeKeys = typeKeys,
+                    val filteredAllSpaceProperties = filterSpacePropertiesByTypeIds(
+                        allSpaceProperties = storeOfRelations.getAll(),
+                        objTypeIds = objType.allRecommendedRelations,
                         queryText = queryText
                     )
+                    queryText to filteredAllSpaceProperties
                 } else {
                     Timber.w("Object type:[${vmParams.objectTypeId}] not found in the store")
                     queryText to emptyList()
@@ -99,10 +104,10 @@ class EditTypePropertiesViewModel(
                     UiEditTypePropertiesErrorState.Reason.Other("Error while filtering properties")
                 )
             }
-                .collect { (queryText, filteredProperties) ->
+                .collect { (queryText, filteredAllSpaceProperties) ->
 
-                    val sortedExistingItems = filteredProperties.mapNotNull { field ->
-                        field.mapToStateItem(
+                    val sortedExistingItems = filteredAllSpaceProperties.mapNotNull { property ->
+                        property.mapToStateItem(
                             stringResourceProvider = stringResourceProvider
                         )
                     }.sortedBy { it.title }
@@ -167,14 +172,14 @@ class EditTypePropertiesViewModel(
         }
     }
 
-    private fun filterProperties(
-        allProperties: List<ObjectWrapper.Relation>,
-        typeKeys: List<Key>,
+    private fun filterSpacePropertiesByTypeIds(
+        allSpaceProperties: List<ObjectWrapper.Relation>,
+        objTypeIds: List<Id>,
         queryText: String
-    ): List<ObjectWrapper.Relation> = allProperties.filter { field ->
-        field.key !in typeKeys &&
-                field.isValidToUse &&
-                (queryText.isBlank() || field.name?.contains(queryText, ignoreCase = true) == true)
+    ): List<ObjectWrapper.Relation> = allSpaceProperties.filter { property ->
+        property.id !in objTypeIds &&
+                property.isValidToUse &&
+                (queryText.isBlank() || property.name?.contains(queryText, ignoreCase = true) == true)
     }
 
     fun hideError() {
@@ -184,10 +189,11 @@ class EditTypePropertiesViewModel(
 
     //region Ui Events
     fun onEvent(event: UiEditTypePropertiesEvent) {
+        Timber.d("UiEditTypePropertiesEvent: $event")
         when (event) {
             is UiEditTypePropertiesEvent.OnCreate -> {
                 val format = event.item.format
-                uiPropertyEditState.value = UiEditPropertyState.Visible.New(
+                uiPropertyEditState.value = New(
                     name = event.item.title,
                     formatName = stringResourceProvider.getPropertiesFormatPrettyString(format),
                     formatIcon = format.simpleIcon(),
@@ -212,7 +218,7 @@ class EditTypePropertiesViewModel(
 
             is UiEditTypePropertiesEvent.OnTypeClicked -> {
                 val format = event.item.format
-                uiPropertyEditState.value = UiEditPropertyState.Visible.New(
+                uiPropertyEditState.value = New(
                     name = "",
                     formatName = stringResourceProvider.getPropertiesFormatPrettyString(format),
                     formatIcon = format.simpleIcon(),
@@ -235,9 +241,43 @@ class EditTypePropertiesViewModel(
             is UiEditTypePropertiesEvent.OnPropertyNameUpdate -> {
                 val state = uiPropertyEditState.value as? UiEditPropertyState.Visible ?: return
                 uiPropertyEditState.value = when (state) {
-                    is UiEditPropertyState.Visible.Edit -> state.copy(name = event.name)
-                    is UiEditPropertyState.Visible.New -> state.copy(name = event.name)
-                    is UiEditPropertyState.Visible.View -> state
+                    is Edit -> state.copy(name = event.name)
+                    is New -> state.copy(name = event.name)
+                    is View -> state
+                }
+            }
+
+            UiEditTypePropertiesEvent.OnPropertyFormatClick -> {
+                uiPropertyFormatsListState.value = Visible(
+                    items = UiEditTypePropertiesState.Companion.PROPERTIES_FORMATS.map { format ->
+                        Format(
+                            format = format,
+                            prettyName = stringResourceProvider.getPropertiesFormatPrettyString(format)
+                        )
+                    }
+                )
+            }
+
+            UiEditTypePropertiesEvent.OnPropertyFormatsListDismiss -> {
+                uiPropertyFormatsListState.value = Hidden
+            }
+
+            is UiEditTypePropertiesEvent.OnPropertyFormatSelected -> {
+                uiPropertyFormatsListState.value = Hidden
+                val state = uiPropertyEditState.value as? UiEditPropertyState.Visible ?: return
+                uiPropertyEditState.value = when (state) {
+                    is New -> {
+                        val newFormat = event.format.format
+                        state.copy(
+                            formatName = stringResourceProvider.getPropertiesFormatPrettyString(
+                                newFormat
+                            ),
+                            formatIcon = newFormat.simpleIcon(),
+                            format = newFormat,
+                        )
+                    }
+
+                    else -> state
                 }
             }
         }
@@ -246,21 +286,20 @@ class EditTypePropertiesViewModel(
 
     //region Use Cases
     private fun proceedWithUpdatingRelation() {
-        val state = uiPropertyEditState.value as? UiEditPropertyState.Visible.Edit ?: return
+        val state = uiPropertyEditState.value as? Edit ?: return
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = state.id,
                 details = mapOf(
-                    Relations.NAME to state.name,
-                    Relations.RELATION_FORMAT to state.format
+                    Relations.NAME to state.name
                 )
             )
             setObjectDetails.async(params).fold(
-                onSuccess = {
-                    Timber.d("Relation updated: $it")
+                onSuccess = { payload ->
+                    Timber.d("Property updated :[$payload]")
                 },
                 onFailure = { error ->
-                    Timber.e(error, "Failed to update relation")
+                    Timber.e(error, "Failed to update property")
                     _errorState.value = UiEditTypePropertiesErrorState.Show(
                         UiEditTypePropertiesErrorState.Reason.ErrorUpdatingProperty(error.message ?: "")
                     )
@@ -285,19 +324,18 @@ class EditTypePropertiesViewModel(
                 prefilled = emptyMap()
             )
             createRelation(params).process(
-                success = { relation ->
-                    Timber.d("Relation created: $relation")
+                success = { property ->
+                    Timber.d("Property created: $property")
                     val objType = storeOfObjectTypes.get(vmParams.objectTypeId)
                     if (objType != null) {
                         proceedWithSetRecommendedProperties(
-                            properties = objType.recommendedRelations + listOf(relation.id)
+                            properties = objType.recommendedRelations + listOf(property.id)
                         )
                     }
                     uiPropertyEditState.value = UiEditPropertyState.Hidden
-                    _commands.emit(EditTypePropertiesCommand.Exit)
                 },
                 failure = { error ->
-                    Timber.e(error, "Failed to create relation")
+                    Timber.e(error, "Failed to create property")
                     _errorState.value = UiEditTypePropertiesErrorState.Show(
                         UiEditTypePropertiesErrorState.Reason.ErrorCreatingProperty(error.message ?: "")
                     )

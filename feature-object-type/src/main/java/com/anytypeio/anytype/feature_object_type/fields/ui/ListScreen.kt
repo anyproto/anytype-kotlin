@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,15 +48,14 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
-import com.anytypeio.anytype.core_ui.common.bottomBorder
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
-import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -85,6 +85,7 @@ fun FieldsMainScreen(
     uiIconState: UiIconState,
     uiFieldLocalInfoState: UiLocalsFieldsInfoState,
     uiEditPropertyState: UiEditPropertyState,
+    withDragger: Boolean = true,
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
@@ -125,7 +126,8 @@ fun FieldsMainScreen(
             TopBar(
                 modifier = Modifier.fillMaxWidth(),
                 uiTitleState = uiTitleState,
-                uiIconState = uiIconState
+                uiIconState = uiIconState,
+                withDragger = withDragger
             )
         },
         content = { paddingValues ->
@@ -141,7 +143,8 @@ fun FieldsMainScreen(
             }
             LazyColumn(
                 modifier = contentModifier,
-                state = lazyListState
+                state = lazyListState,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(
                     count = uiFieldsListState.items.size,
@@ -224,10 +227,10 @@ fun FieldsMainScreen(
             onDismissRequest = { fieldEvent(OnEditPropertyScreenDismiss) },
             onFormatClick = {},
             onLimitTypesClick = {},
-            onSaveButtonClicked = {},
+            onSaveButtonClicked = { fieldEvent(EditProperty.OnSaveButtonClicked) },
             onCreateNewButtonClicked = {},
-            onPropertyNameUpdate = {  },
-            onDeleteButtonClicked = { id -> fieldEvent(OnDeleteFromTypeClick(id)) },
+            onPropertyNameUpdate = { fieldEvent(EditProperty.OnPropertyNameUpdate(it)) },
+            onMenuUnlinkClick = { fieldEvent(OnDeleteFromTypeClick(it)) }
 
         )
     }
@@ -259,15 +262,20 @@ private fun getContentType(item: UiFieldsListItem): String {
 /** A common modifier for list items. **/
 @Composable
 fun LazyItemScope.commonItemModifier() = Modifier
-    .height(52.dp)
+    .height(48.dp)
     .fillMaxWidth()
-    .padding(horizontal = 20.dp)
-    .bottomBorder()
+    .padding(horizontal = 16.dp)
+    .border(
+        width = 1.dp,
+        color = colorResource(id = R.color.shape_primary),
+        shape = RoundedCornerShape(12.dp)
+    )
     .animateItem()
 
 @Composable
 private fun TopBar(
     modifier: Modifier,
+    withDragger: Boolean = true,
     uiTitleState: UiTitleState,
     uiIconState: UiIconState,
 ) {
@@ -283,11 +291,13 @@ private fun TopBar(
                 shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp)
             )
     ) {
-        Dragger(
-            modifier = Modifier
-                .padding(vertical = 6.dp)
-                .align(Alignment.CenterHorizontally)
-        )
+        if (withDragger) {
+            Dragger(
+                modifier = Modifier
+                    .padding(vertical = 6.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -388,7 +398,7 @@ private fun LazyItemScope.SectionItem(
         ) {
             Text(
                 modifier = Modifier
-                    .padding(bottom = 7.dp, start = 20.dp)
+                    .padding(bottom = 4.dp, start = 20.dp)
                     .align(Alignment.BottomStart),
                 text = title,
                 style = BodyCalloutMedium,
@@ -406,7 +416,7 @@ private fun LazyItemScope.SectionItem(
                 ) {
                     Image(
                         modifier = Modifier
-                            .padding(bottom = 6.dp, end = 20.dp)
+                            .padding(bottom = 2.dp, end = 20.dp)
                             .wrapContentSize()
                             .align(Alignment.BottomEnd),
                         painter = painterResource(R.drawable.ic_default_plus),
@@ -459,7 +469,7 @@ private fun FieldItemLocal(
         if (formatIcon != null) {
             Image(
                 modifier = Modifier
-                    .padding(end = 10.dp)
+                    .padding(start = 14.dp, end = 8.dp)
                     .size(24.dp),
                 painter = painterResource(id = formatIcon),
                 contentDescription = "Relation format icon",
@@ -472,7 +482,7 @@ private fun FieldItemLocal(
                 .weight(1.0f)
                 .padding(end = 16.dp),
             text = item.fieldTitle,
-            style = BodyRegular,
+            style = Relations1,
             color = colorResource(id = R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -480,6 +490,7 @@ private fun FieldItemLocal(
 
         Image(
             modifier = Modifier
+                .padding(end = 14.dp)
                 .size(24.dp)
                 .noRippleThrottledClickable {
                     isMenuExpanded.value = true
@@ -524,7 +535,7 @@ private fun LazyItemScope.FieldItemDraggable(
             if (formatIcon != null) {
                 Image(
                     modifier = Modifier
-                        .padding(end = 10.dp)
+                        .padding(start = 14.dp, end = 8.dp)
                         .size(24.dp),
                     painter = painterResource(id = formatIcon),
                     contentDescription = "Relation format icon",
@@ -541,7 +552,7 @@ private fun LazyItemScope.FieldItemDraggable(
                         },
                         onLongClick = {
                             // show your menu, only if NOT dragging
-                            if (item.canDelete) {
+                            if (item.isPossibleToUnlinkFromType) {
                                 isMenuExpanded.value = true
                             }
                         }
@@ -553,7 +564,7 @@ private fun LazyItemScope.FieldItemDraggable(
                         .fillMaxWidth()
                         .padding(end = 16.dp),
                     text = item.fieldTitle,
-                    style = BodyRegular,
+                    style = Relations1,
                     color = colorResource(id = R.color.text_primary),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -562,6 +573,7 @@ private fun LazyItemScope.FieldItemDraggable(
 
             Image(
                 modifier = Modifier
+                    .padding(end = 14.dp)
                     .size(24.dp)
                     .draggableHandle(
                         onDragStarted = {
@@ -668,7 +680,7 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldKey = "key1",
                     fieldTitle = "Status",
                     format = RelationFormat.STATUS,
-                    canDelete = true,
+                    isPossibleToUnlinkFromType = true,
                     isEditableField = true
                 ),
                 UiFieldsListItem.Item.Draggable(
@@ -676,7 +688,7 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldKey = "key2",
                     fieldTitle = "Very long field title, just to test how it looks",
                     format = RelationFormat.LONG_TEXT,
-                    canDelete = true,
+                    isPossibleToUnlinkFromType = true,
                     isEditableField = true
                 ),
                 UiFieldsListItem.Section.SideBar(
@@ -688,7 +700,7 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldTitle = "Links",
                     format = RelationFormat.URL,
                     isEditableField = true,
-                    canDelete = true
+                    isPossibleToUnlinkFromType = true
                 ),
                 UiFieldsListItem.Item.Draggable(
                     id = "id4",
@@ -696,7 +708,7 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldTitle = "Very long field title, just to test how it looks",
                     format = RelationFormat.DATE,
                     isEditableField = true,
-                    canDelete = true
+                    isPossibleToUnlinkFromType = true
                 ),
                 UiFieldsListItem.Section.Hidden(),
                 UiFieldsListItem.Item.Draggable(
@@ -705,7 +717,7 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldTitle = "Hidden field",
                     format = RelationFormat.LONG_TEXT,
                     isEditableField = true,
-                    canDelete = true
+                    isPossibleToUnlinkFromType = true
                 ),
                 UiFieldsListItem.Section.Local(),
                 UiFieldsListItem.Item.Local(

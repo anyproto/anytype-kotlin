@@ -8,7 +8,7 @@ plugins {
 
 android {
     compileSdkVersion 35
-    buildToolsVersion "34.0.0"
+    buildToolsVersion "35.0.0"
 
     defaultConfig {
         applicationId "com.anytypeio.anytype.sample"
@@ -67,8 +67,6 @@ dependencies {
     implementation libs.activityCompose
     implementation libs.composeReorderableLegacy
     debugImplementation libs.composeTooling
-
-    //implementation 'com.github.gregcockroft:AndroidMath:ALPHA'
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest

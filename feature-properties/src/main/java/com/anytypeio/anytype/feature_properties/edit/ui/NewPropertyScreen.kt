@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -41,7 +42,7 @@ fun PropertyNewScreen(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.imePadding()) {
         Spacer(modifier = Modifier.height(20.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -100,8 +101,11 @@ fun PropertyNewScreen(
             onClick = {
                 onCreateNewButtonClicked()
             },
-            size = ButtonSize.Large
+            size = ButtonSize.Large,
+            enabled = innerValue.isNotBlank()
         )
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 

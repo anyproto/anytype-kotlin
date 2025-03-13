@@ -50,6 +50,7 @@ import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible.View
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
@@ -113,7 +114,8 @@ class ObjectTypeViewModel(
     //layout, fields and templates buttons
     val uiFieldsButtonState = MutableStateFlow<UiFieldsButtonState>(UiFieldsButtonState.Hidden)
     val uiLayoutButtonState = MutableStateFlow<UiLayoutButtonState>(UiLayoutButtonState.Hidden)
-    val uiTemplatesButtonState = MutableStateFlow<UiTemplatesButtonState>(UiTemplatesButtonState.Hidden)
+    val uiTemplatesButtonState =
+        MutableStateFlow<UiTemplatesButtonState>(UiTemplatesButtonState.Hidden)
 
     //type layouts
     val uiTypeLayoutsState = MutableStateFlow<UiLayoutTypeState>(Hidden)
@@ -376,7 +378,8 @@ class ObjectTypeViewModel(
                 formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
                 formatIcon = item.format.simpleIcon(),
                 format = item.format,
-                limitObjectTypes = item.limitObjectTypes
+                limitObjectTypes = item.limitObjectTypes,
+                isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType
             )
         } else {
             uiEditPropertyScreen.value = UiEditPropertyState.Visible.View(
@@ -386,7 +389,8 @@ class ObjectTypeViewModel(
                 formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
                 formatIcon = item.format.simpleIcon(),
                 format = item.format,
-                limitObjectTypes = item.limitObjectTypes
+                limitObjectTypes = item.limitObjectTypes,
+                isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType
             )
         }
     }
@@ -696,6 +700,7 @@ class ObjectTypeViewModel(
                 currentList.add(toIndex, item)
                 uiFieldsListState.value = UiFieldsListState(items = currentList)
             }
+            is FieldEvent.EditProperty -> proceedWithEditPropertyEvent(event)
         }
     }
 
@@ -749,7 +754,44 @@ class ObjectTypeViewModel(
                 val newRecommendedFields = currentRecommendedFields + event.item.id
                 proceedWithSetRecommendedFields(newRecommendedFields)
             }
+        }
+    }
 
+    private fun proceedWithEditPropertyEvent(event: FieldEvent.EditProperty) {
+        when (event) {
+            is FieldEvent.EditProperty.OnPropertyNameUpdate -> {
+                val state = uiEditPropertyScreen.value as? UiEditPropertyState.Visible ?: return
+                uiEditPropertyScreen.value = when (state) {
+                    is UiEditPropertyState.Visible.Edit -> state.copy(name = event.name)
+                    is UiEditPropertyState.Visible.New -> state.copy(name = event.name)
+                    is View -> state
+                }
+            }
+
+            FieldEvent.EditProperty.OnSaveButtonClicked -> {
+                val state =
+                    uiEditPropertyScreen.value as? UiEditPropertyState.Visible.Edit ?: return
+                viewModelScope.launch {
+                    val params = SetObjectDetails.Params(
+                        ctx = state.id,
+                        details = mapOf(
+                            Relations.NAME to state.name
+                        )
+                    )
+                    setObjectDetails.async(params).fold(
+                        onSuccess = {
+                            Timber.d("Relation updated: $it")
+                            uiEditPropertyScreen.value = UiEditPropertyState.Hidden
+                        },
+                        onFailure = { error ->
+                            Timber.e(error, "Failed to update relation")
+                            errorState.value = UiErrorState.Show(
+                                reason = UiErrorState.Reason.Other(error.message ?: "")
+                            )
+                        }
+                    )
+                }
+            }
         }
     }
     //endregion

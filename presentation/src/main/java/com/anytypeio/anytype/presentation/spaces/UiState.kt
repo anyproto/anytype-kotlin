@@ -1,12 +1,15 @@
 package com.anytypeio.anytype.presentation.spaces
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 sealed class UiSpaceSettingsState {
     data object Initial : UiSpaceSettingsState()
     data class SpaceSettings(
+        val spaceTechInfo: SpaceTechInfo,
         val items: List<UiSpaceSettingsItem>,
         val isEditEnabled: Boolean
     ) : UiSpaceSettingsState() {
@@ -17,6 +20,13 @@ sealed class UiSpaceSettingsState {
     }
     data class SpaceSettingsError(val message: String) : UiSpaceSettingsState()
 }
+
+data class SpaceTechInfo(
+    val spaceId: SpaceId,
+    val createdBy: String,
+    val networkId: Id,
+    val creationDateInMillis: Long?
+)
 
 sealed class UiSpaceSettingsItem {
     sealed class Section : UiSpaceSettingsItem() {

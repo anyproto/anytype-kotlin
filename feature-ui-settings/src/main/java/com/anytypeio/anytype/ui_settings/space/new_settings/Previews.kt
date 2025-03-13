@@ -2,9 +2,11 @@ package com.anytypeio.anytype.ui_settings.space.new_settings
 
 import androidx.compose.runtime.Composable
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 
@@ -44,7 +46,13 @@ fun NewSpaceSettingsScreenPreview() {
                 UiSpaceSettingsItem.Spacer(height = 32),
 
                 ),
-            isEditEnabled = true
+            isEditEnabled = true,
+            spaceTechInfo = SpaceTechInfo(
+                spaceId = SpaceId("space-id"),
+                createdBy = "Thomas",
+                creationDateInMillis = null,
+                networkId = "random network id"
+            )
         ),
         uiEvent = {},
     )

@@ -90,6 +90,7 @@ class SpaceSettingsViewModel(
                 spaceViewContainer.sharedSpaceCount(userPermissionProvider.all()),
                 activeSpaceMemberSubscriptionContainer.observe(params.space),
             ) { spaceView, permission, sharedSpaceLimit: Int, sharedSpaceCount: Int, store ->
+
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
                 val requests: Int = if (store is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     store.members.count { it.status == ParticipantStatus.JOINING }
@@ -106,7 +107,18 @@ class SpaceSettingsViewModel(
                 //todo add logic
                 val membersNumber = 3
 
+                val spaceTechInfo = SpaceTechInfo(
+                    spaceId = params.space,
+                    createdBy = createdBy.orEmpty(),
+                    creationDateInMillis = spaceView
+                        .getValue<Double?>(Relations.CREATED_DATE)
+                        ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() }
+                    ,
+                    networkId = spaceManager.getConfig(params.space)?.network.orEmpty()
+                )
+
                 UiSpaceSettingsState.SpaceSettings(
+                    spaceTechInfo = spaceTechInfo,
                     items = listOf(
                         UiSpaceSettingsItem.Icon(
                             icon = spaceView.spaceIcon(
@@ -114,29 +126,27 @@ class SpaceSettingsViewModel(
                                 spaceGradientProvider = gradientProvider
                             )
                         ),
-                        UiSpaceSettingsItem.Spacer(height = 16),
+                        Spacer(height = 16),
                         UiSpaceSettingsItem.Name(
-                            //todo support localization for empty space name
                             name = spaceView.name.orEmpty()
                         ),
-                        UiSpaceSettingsItem.Spacer(height = 12),
+                        Spacer(height = 12),
                         UiSpaceSettingsItem.Description(
-                            //todo support localization for empty space description
                             description = spaceView.description.orEmpty()
                         ),
-                        UiSpaceSettingsItem.Spacer(height = 12),
+                        Spacer(height = 12),
                         UiSpaceSettingsItem.Multiplayer,
-                        UiSpaceSettingsItem.Spacer(height = 8),
+                        Spacer(height = 8),
                         UiSpaceSettingsItem.Section.Collaboration,
                         UiSpaceSettingsItem.Members(count = membersNumber),
+                        UiSpaceSettingsItem.Section.Misc,
+                        UiSpaceSettingsItem.SpaceInfo
                     ),
                     isEditEnabled = permission?.isOwnerOrEditor() == true
                 )
 
-            }.collect { spaceData ->
-                Timber.d("Space data: ${spaceData}")
-                uiState.value = spaceData
-                //spaceViewState.value = spaceData
+            }.collect { update ->
+                uiState.value = update
             }
         }
     }

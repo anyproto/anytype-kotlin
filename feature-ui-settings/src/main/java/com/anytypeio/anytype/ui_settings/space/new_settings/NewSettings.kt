@@ -3,7 +3,9 @@ package com.anytypeio.anytype.ui_settings.space.new_settings
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -40,7 +43,6 @@ import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.ui_settings.R
-import timber.log.Timber
 
 @Composable
 fun SpaceSettingsContainer(
@@ -66,6 +68,7 @@ fun NewSpaceSettingsScreen(
 
     var showEditDescription by remember { mutableStateOf(false) }
     var showEditTitle by remember { mutableStateOf(false) }
+    var showTechInfo by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.fillMaxWidth(),
@@ -249,6 +252,10 @@ fun NewSpaceSettingsScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable {
+                                            showTechInfo = true
+                                        }
                                 )
                             }
                         }
@@ -319,6 +326,25 @@ fun NewSpaceSettingsScreen(
                 }
             )
         }
+    }
+
+    if (showTechInfo) {
+        ModalBottomSheet(
+            containerColor = colorResource(R.color.background_secondary),
+            onDismissRequest = {
+                showTechInfo = false
+            },
+            dragHandle = {
+                Dragger(
+                    modifier = Modifier.padding(vertical = 6.dp)
+                )
+            },
+            content = {
+                SpaceInfoScreen(
+                    spaceTechInfo = uiState.spaceTechInfo
+                )
+            }
+        )
     }
 }
 

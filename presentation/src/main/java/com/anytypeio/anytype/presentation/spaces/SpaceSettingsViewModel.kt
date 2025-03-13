@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
+import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
@@ -58,7 +60,9 @@ class SpaceSettingsViewModel(
     private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
     private val getMembership: GetMembershipStatus,
     private val uploadFile: UploadFile,
-    private val profileContainer: ProfileSubscriptionManager
+    private val profileContainer: ProfileSubscriptionManager,
+    private val getDefaultObjectType: GetDefaultObjectType,
+    private val getSpaceWallpapers: GetSpaceWallpapers
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -488,7 +492,9 @@ class SpaceSettingsViewModel(
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val getMembership: GetMembershipStatus,
         private val uploadFile: UploadFile,
-        private val profileContainer: ProfileSubscriptionManager
+        private val profileContainer: ProfileSubscriptionManager,
+        private val getDefaultObjectType: GetDefaultObjectType,
+        private val getSpaceWallpapers: GetSpaceWallpapers
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -509,7 +515,9 @@ class SpaceSettingsViewModel(
             activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer,
             getMembership = getMembership,
             uploadFile = uploadFile,
-            profileContainer = profileContainer
+            profileContainer = profileContainer,
+            getSpaceWallpapers = getSpaceWallpapers,
+            getDefaultObjectType = getDefaultObjectType
         ) as T
     }
 

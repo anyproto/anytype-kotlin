@@ -714,7 +714,7 @@
     <string name="set">Set</string>
     <string name="collection">Verzameling</string>
     <string name="layout">Opmaak</string>
-    <string name="button_fields">Velden</string>
+    <string name="button_fields">Eigenschappen</string>
     <string name="button_layout">Opmaak</string>
     <string name="button_templates">Sjablonen</string>
     <string name="restore_from_archive">Herstel vanuit archief</string>
@@ -1607,7 +1607,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_type_fields_new_field">Nieuw veld</string>
     <string name="object_type_fields_preview_field">Veld voorbeeld bekijken</string>
     <string name="object_type_fields_btn_save">Sla op</string>
-    <string name="object_type_fields_menu_delete">Verwijder</string>
+    <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Voeg toe aan het huidige type</string>
     <string name="object_type_fields_menu_remove">Verwijder</string>
     <string name="object_type_fields_local_info_title">Lokale velden</string>

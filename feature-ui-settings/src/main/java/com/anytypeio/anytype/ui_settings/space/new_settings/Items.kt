@@ -167,7 +167,7 @@ fun WallpaperItem(
                             color = light(wallpaper.code),
                             shape = RoundedCornerShape(4.dp)
                         )
-                        .padding(horizontal = 6.dp),
+                        .padding(horizontal = 8.dp),
                 )
             }
             is Wallpaper.Gradient -> {
@@ -183,7 +183,7 @@ fun WallpaperItem(
                             ),
                             shape = RoundedCornerShape(20.dp)
                         )
-                        .padding(horizontal = 6.dp),
+                        .padding(horizontal = 8.dp),
                 )
             }
             is Wallpaper.Default -> {
@@ -199,7 +199,7 @@ fun WallpaperItem(
                             ),
                             shape = RoundedCornerShape(20.dp)
                         )
-                        .padding(horizontal = 6.dp),
+                        .padding(horizontal = 8.dp),
                 )
             }
             else -> {

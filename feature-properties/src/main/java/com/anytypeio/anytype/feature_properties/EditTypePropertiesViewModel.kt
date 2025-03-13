@@ -3,7 +3,6 @@ package com.anytypeio.anytype.feature_properties
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
@@ -89,13 +88,12 @@ class EditTypePropertiesViewModel(
             ) { _, _, queryText ->
                 val objType = storeOfObjectTypes.get(id = vmParams.objectTypeId)
                 if (objType != null) {
-                    val typeKeys =
-                        objType.recommendedRelations + objType.recommendedFeaturedRelations + objType.recommendedFileRelations + objType.recommendedHiddenRelations
-                    queryText to filterProperties(
-                        allProperties = storeOfRelations.getAll(),
-                        typeKeys = typeKeys,
+                    val filteredAllSpaceProperties = filterSpacePropertiesByTypeIds(
+                        allSpaceProperties = storeOfRelations.getAll(),
+                        objTypeIds = objType.allRecommendedRelations,
                         queryText = queryText
                     )
+                    queryText to filteredAllSpaceProperties
                 } else {
                     Timber.w("Object type:[${vmParams.objectTypeId}] not found in the store")
                     queryText to emptyList()
@@ -106,10 +104,10 @@ class EditTypePropertiesViewModel(
                     UiEditTypePropertiesErrorState.Reason.Other("Error while filtering properties")
                 )
             }
-                .collect { (queryText, filteredProperties) ->
+                .collect { (queryText, filteredAllSpaceProperties) ->
 
-                    val sortedExistingItems = filteredProperties.mapNotNull { field ->
-                        field.mapToStateItem(
+                    val sortedExistingItems = filteredAllSpaceProperties.mapNotNull { property ->
+                        property.mapToStateItem(
                             stringResourceProvider = stringResourceProvider
                         )
                     }.sortedBy { it.title }
@@ -174,14 +172,14 @@ class EditTypePropertiesViewModel(
         }
     }
 
-    private fun filterProperties(
-        allProperties: List<ObjectWrapper.Relation>,
-        typeKeys: List<Key>,
+    private fun filterSpacePropertiesByTypeIds(
+        allSpaceProperties: List<ObjectWrapper.Relation>,
+        objTypeIds: List<Id>,
         queryText: String
-    ): List<ObjectWrapper.Relation> = allProperties.filter { field ->
-        field.key !in typeKeys &&
-                field.isValidToUse &&
-                (queryText.isBlank() || field.name?.contains(queryText, ignoreCase = true) == true)
+    ): List<ObjectWrapper.Relation> = allSpaceProperties.filter { property ->
+        property.id !in objTypeIds &&
+                property.isValidToUse &&
+                (queryText.isBlank() || property.name?.contains(queryText, ignoreCase = true) == true)
     }
 
     fun hideError() {

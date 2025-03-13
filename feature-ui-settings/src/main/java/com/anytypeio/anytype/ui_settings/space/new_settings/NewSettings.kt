@@ -265,7 +265,12 @@ fun NewSpaceSettingsScreen(
                                 WallpaperItem(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .animateItem(),
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable {
+                                            uiEvent(UiEvent.OnWallpaperClicked)
+                                        }
+                                    ,
                                     item = item
                                 )
                             }

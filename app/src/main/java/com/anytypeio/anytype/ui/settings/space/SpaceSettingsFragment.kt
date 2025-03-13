@@ -151,6 +151,13 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                         Timber.e(it, "Error while exiting to vault screen from space settings")
                     }
                 }
+                is Command.OpenWallpaperPicker -> {
+                    runCatching {
+                        findNavController().navigate(R.id.wallpaperSetScreen)
+                    }.onFailure {
+                        Timber.e(it, "Error while opening space wallpaper picker")
+                    }
+                }
             }
         }
     }

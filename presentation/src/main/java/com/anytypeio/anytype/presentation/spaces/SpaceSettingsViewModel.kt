@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -139,6 +140,10 @@ class SpaceSettingsViewModel(
                         Spacer(height = 8),
                         UiSpaceSettingsItem.Section.Collaboration,
                         UiSpaceSettingsItem.Members(count = membersNumber),
+                        UiSpaceSettingsItem.Section.Preferences,
+                        UiSpaceSettingsItem.Wallpapers(
+                            color = ThemeColor.TEAL
+                        ),
                         UiSpaceSettingsItem.Section.Misc,
                         UiSpaceSettingsItem.SpaceInfo
                     ),
@@ -204,6 +209,11 @@ class SpaceSettingsViewModel(
             }
             is UiEvent.OnSpaceImagePicked -> {
                 proceedWithSettingSpaceImage(uiEvent.uri)
+            }
+            is UiEvent.OnWallpaperClicked -> {
+                viewModelScope.launch {
+                    commands.emit(Command.OpenWallpaperPicker)
+                }
             }
         }
     }
@@ -459,6 +469,7 @@ class SpaceSettingsViewModel(
         data object ShowShareLimitReachedError : Command()
         data object NavigateToMembership : Command()
         data object NavigateToMembershipUpdate : Command()
+        data object OpenWallpaperPicker : Command()
     }
 
     class Factory @Inject constructor(

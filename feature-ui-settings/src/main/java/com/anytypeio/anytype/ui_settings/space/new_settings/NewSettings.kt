@@ -286,7 +286,7 @@ fun NewSpaceSettingsScreen(
                 Dragger(
                     modifier = Modifier.padding(vertical = 6.dp)
                 )
-            }
+            },
         ) {
             EditDescriptionField(
                 initialInput = initialDescription,
@@ -334,17 +334,7 @@ private fun EditNameField(
         modifier = Modifier.fillMaxWidth(),
         containerColor = colorResource(id = R.color.background_secondary),
         topBar = {
-            Box(
-                modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                    Modifier
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .fillMaxWidth()
-                        .height(48.dp)
-                else
-                    Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-            ) {
+            Box(modifier = Modifier.fillMaxWidth().height(48.dp)) {
                 Text(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -366,9 +356,9 @@ private fun EditNameField(
             val contentModifier =
                 if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                     Modifier
+                        .padding(top = paddingValues.calculateTopPadding())
                         .windowInsetsPadding(WindowInsets.navigationBars)
                         .fillMaxSize()
-                        .padding(top = paddingValues.calculateTopPadding())
                 else
                     Modifier
                         .fillMaxSize()
@@ -412,17 +402,7 @@ private fun EditDescriptionField(
         modifier = Modifier.fillMaxWidth(),
         containerColor = colorResource(id = R.color.background_secondary),
         topBar = {
-            Box(
-                modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                    Modifier
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .fillMaxWidth()
-                        .height(48.dp)
-                else
-                    Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-            ) {
+            Box(modifier = Modifier.fillMaxWidth().height(48.dp)) {
                 Text(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)

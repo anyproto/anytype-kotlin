@@ -713,7 +713,7 @@
     <string name="set">集合</string>
     <string name="collection">集錦</string>
     <string name="layout">排版</string>
-    <string name="button_fields">Fields</string>
+    <string name="button_fields">屬性</string>
     <string name="button_layout">排版</string>
     <string name="button_templates">範本</string>
     <string name="restore_from_archive">從封存中還原</string>
@@ -1594,7 +1594,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_new_field">New field</string>
     <string name="object_type_fields_preview_field">Preview field</string>
     <string name="object_type_fields_btn_save">Save</string>
-    <string name="object_type_fields_menu_delete">刪除</string>
+    <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
     <string name="object_type_fields_menu_remove">移除</string>
     <string name="object_type_fields_local_info_title">Local fields</string>

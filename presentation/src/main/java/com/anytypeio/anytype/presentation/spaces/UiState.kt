@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.spaces
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -46,7 +47,7 @@ sealed class UiSpaceSettingsItem {
     data class Chat(val isOn: Boolean) : UiSpaceSettingsItem()
     data object ObjectTypes : UiSpaceSettingsItem()
     data class DefaultObjectType(val name: String, val icon: ObjectIcon) : UiSpaceSettingsItem()
-    data class Wallpapers(val color: ThemeColor) : UiSpaceSettingsItem()
+    data class Wallpapers(val current: Wallpaper?) : UiSpaceSettingsItem()
     data class RemoteStorage(val size: Int) : UiSpaceSettingsItem()
     data object SpaceInfo : UiSpaceSettingsItem()
     data object DeleteSpace : UiSpaceSettingsItem()

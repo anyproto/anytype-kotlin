@@ -84,6 +84,9 @@ class SpaceSettingsViewModel(
 
     private fun proceedWithObservingSpaceView() {
         viewModelScope.launch {
+            val wallpapers = getSpaceWallpapers.async(Unit).getOrNull() ?: emptyMap()
+            val wallpaper = wallpapers[params.space.id]
+
             combine(
                 spaceViewContainer.observe(params.space),
                 userPermissionProvider.observe(params.space),
@@ -145,9 +148,7 @@ class SpaceSettingsViewModel(
                         UiSpaceSettingsItem.Section.Collaboration,
                         UiSpaceSettingsItem.Members(count = membersNumber),
                         UiSpaceSettingsItem.Section.Preferences,
-                        UiSpaceSettingsItem.Wallpapers(
-                            color = ThemeColor.TEAL
-                        ),
+                        UiSpaceSettingsItem.Wallpapers(current = wallpaper),
                         UiSpaceSettingsItem.Section.Misc,
                         UiSpaceSettingsItem.SpaceInfo
                     ),

@@ -65,8 +65,6 @@ import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
-import com.github.javiersantos.appupdater.AppUpdater
-import com.github.javiersantos.appupdater.enums.UpdateFrom
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -105,8 +103,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         setupWindowInsets()
         inject()
         setupTheme()
-
-        startAppUpdater()
 
         if (savedInstanceState != null) vm.onRestore()
         lifecycleScope.launch {
@@ -351,16 +347,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     Timber.e(it, "Error while date object navigation")
                 }
             }
-        }
-    }
-
-    private fun startAppUpdater() {
-        if (featureToggles.isAutoUpdateEnabled) {
-            AppUpdater(this)
-                .setUpdateFrom(UpdateFrom.JSON)
-                .setUpdateJSON(AUTO_UPDATE_URL)
-                .setButtonDoNotShowAgain("")
-                .start()
         }
     }
 

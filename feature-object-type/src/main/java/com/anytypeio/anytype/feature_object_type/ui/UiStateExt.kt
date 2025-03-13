@@ -210,7 +210,7 @@ private suspend fun mapToUiFieldsDraggableListItem(
         format = field.format,
         limitObjectTypes = limitObjectTypes,
         isEditableField = fieldParser.isFieldEditable(field),
-        canDelete = fieldParser.isFieldCanBeDeletedFromType(field)
+        isPossibleToUnlinkFromType = fieldParser.isFieldCanBeDeletedFromType(field)
     )
 }
 

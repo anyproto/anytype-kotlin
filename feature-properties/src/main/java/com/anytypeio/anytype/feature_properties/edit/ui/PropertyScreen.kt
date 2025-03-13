@@ -53,7 +53,7 @@ fun PropertyScreen(
     onCreateNewButtonClicked: () -> Unit = {},
     onDismissRequest: () -> Unit,
     onPropertyNameUpdate: (String) -> Unit,
-    onDeleteButtonClicked: (Id) -> Unit ={},
+    onMenuUnlinkClick: (Id) -> Unit ={}
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
@@ -61,7 +61,7 @@ fun PropertyScreen(
         dragHandle = { DragHandle() },
         scrimColor = colorResource(id = R.color.modal_screen_outside_background),
         containerColor = colorResource(id = R.color.background_primary),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetState = bottomSheetState,
         onDismissRequest = onDismissRequest,
     ) {
@@ -73,16 +73,15 @@ fun PropertyScreen(
                 onFormatClick = onFormatClick,
                 onLimitTypesClick = onLimitTypesClick,
                 onPropertyNameUpdate = onPropertyNameUpdate,
-                onDeleteButtonClicked = {
-                    onDeleteButtonClicked(uiState.id)
-                }
+                onMenuUnlinkClick = onMenuUnlinkClick
             )
 
             is UiEditPropertyState.Visible.View -> PropertyViewScreen(
                 modifier = Modifier.fillMaxWidth(),
                 uiState = uiState,
                 onFormatClick = onFormatClick,
-                onLimitTypesClick = onLimitTypesClick
+                onLimitTypesClick = onLimitTypesClick,
+                onMenuUnlinkClick = onMenuUnlinkClick
             )
 
             is UiEditPropertyState.Visible.New -> PropertyNewScreen(

@@ -54,6 +54,32 @@ fun HorizontalButtons(
                 shape = RoundedCornerShape(size = 8.dp)
             )
 
+        if (uiFieldsButtonState is UiFieldsButtonState.Visible) {
+            Row(
+                modifier = modifierButton.noRippleThrottledClickable {
+                    onTypeEvent(TypeEvent.OnFieldsButtonClick)
+                },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(start = 12.dp),
+                    text = stringResource(R.string.button_fields),
+                    style = PreviewTitle2Medium,
+                    color = colorResource(R.color.text_primary)
+                )
+                Text(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(start = 6.dp, end = 12.dp),
+                    text = uiFieldsButtonState.count.toString(),
+                    style = PreviewTitle2Medium,
+                    color = colorResource(R.color.glyph_active)
+                )
+            }
+        }
+
         if (uiLayoutButtonState is UiLayoutButtonState.Visible) {
             Row(
                 modifier = modifierButton.noRippleThrottledClickable {
@@ -76,31 +102,6 @@ fun HorizontalButtons(
                     text = uiLayoutButtonState.layout.name.substring(0, 1).uppercase()
                             + uiLayoutButtonState.layout.name.substring(1)
                         .toLowerCase(Locale.current),
-                    style = PreviewTitle2Medium,
-                    color = colorResource(R.color.glyph_active)
-                )
-            }
-        }
-        if (uiFieldsButtonState is UiFieldsButtonState.Visible) {
-            Row(
-                modifier = modifierButton.noRippleThrottledClickable {
-                    onTypeEvent(TypeEvent.OnFieldsButtonClick)
-                },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(start = 12.dp),
-                    text = stringResource(R.string.button_fields),
-                    style = PreviewTitle2Medium,
-                    color = colorResource(R.color.text_primary)
-                )
-                Text(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(start = 6.dp, end = 12.dp),
-                    text = uiFieldsButtonState.count.toString(),
                     style = PreviewTitle2Medium,
                     color = colorResource(R.color.glyph_active)
                 )

@@ -20,7 +20,5 @@ class DefaultFeatureToggles @Inject constructor(
     override val isLogEditorControlPanelMachine =
         BuildConfig.LOG_EDITOR_CONTROL_PANEL && buildProvider.isDebug()
 
-    override val isAutoUpdateEnabled: Boolean = false
-
     override val isConciseLogging: Boolean = true
 }

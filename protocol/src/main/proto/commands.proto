@@ -1664,6 +1664,7 @@ message Rpc {
                 string spaceId = 4;
                 string objectTypeUniqueKey = 5;
                 bool withChat = 6;
+                bool createTypeWidgetIfMissing = 7; // experimental flag to auto-create type widget if missing
             }
 
             message Response {
@@ -2841,6 +2842,7 @@ message Rpc {
                 bool noProgress = 11;
                 StateFilters linksStateFilters = 12;
                 bool includeBacklinks = 13;
+                bool includeSpace = 14;
             }
             message StateFilters {
                 repeated RelationsWhiteList relationsWhiteList = 1;
@@ -3716,6 +3718,7 @@ message Rpc {
                 google.protobuf.Struct details = 7; // additional details for file object
                 anytype.model.ObjectOrigin origin = 8;
                 anytype.model.ImageKind imageKind = 9;
+                bool createTypeWidgetIfMissing = 10; // experimental flag to auto-create type widget if missing
             }
 
             message Response {

@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.40.0-rc6"
+middlewareVersion = "v0.40.0-rc7"
 kotlinVersion = '2.0.21'
 kspVersion = "2.0.21-1.0.25"
 
@@ -151,7 +151,6 @@ amplitude = { module = "com.amplitude:android-sdk", version.ref = "amplitudeVers
 sentry = { module = "io.sentry:sentry-android", version.ref = "sentryVersion" }
 sentryTimber = { module = "io.sentry:sentry-android-timber", version.ref = "sentryVersion" }
 navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
-appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "9913ce80da7871c84af24b9adc2bf2414ca294f0" }
 composeQrCode = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCodeVersion" }
 playBilling = { module = "com.android.billingclient:billing", version = "7.1.1" }
 fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", version.ref = "fragmentComposeVersion" }

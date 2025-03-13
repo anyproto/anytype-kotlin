@@ -16,10 +16,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
-import com.anytypeio.anytype.core_ui.extensions.throttledClick
-import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -29,14 +26,14 @@ import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
-import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
-import com.anytypeio.anytype.ui_settings.space.SpaceSettingsScreen
+import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
 import java.io.File
 import javax.inject.Inject
 import timber.log.Timber
 
+// TODO convert to Fragment.
 class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
 
     private val space get() = arg<Id>(ARG_SPACE_ID_KEY)
@@ -62,60 +59,9 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     surface = colorResource(id = R.color.context_menu_background)
                 )
             ) {
-                SpaceSettingsScreen(
-                    onNameSet = vm::onNameSet,
-                    state = vm.spaceViewState.collectAsStateWithLifecycle().value,
-                    onDeleteSpaceClicked = throttledClick(
-                        onClick = { vm.onDeleteSpaceClicked() }
-                    ),
-                    onFileStorageClick = throttledClick(
-                        onClick = {
-                            findNavController().navigate(
-                                resId = R.id.spacesStorageScreen,
-                                args = SpacesStorageFragment.args(space = space)
-                            )
-                        }
-                    ),
-                    onPersonalizationClicked = throttledClick(
-                        onClick = {
-                            findNavController().navigate(R.id.personalizationScreen)
-                        }
-                    ),
-                    onSpaceIdClicked = {
-                        context.copyPlainTextToClipboard(
-                            plainText = it,
-                            label = "Space ID",
-                            successToast = context.getString(R.string.space_id_copied_toast_msg)
-                        )
-                    },
-                    onNetworkIdClicked = {
-                        context.copyPlainTextToClipboard(
-                            plainText = it,
-                            label = "Network ID",
-                            successToast = context.getString(R.string.network_id_copied_toast_msg)
-                        )
-                    },
-                    onCreatedByClicked = {
-                        context.copyPlainTextToClipboard(
-                            plainText = it,
-                            label = "Created-by ID",
-                            successToast = context.getString(R.string.created_by_id_copied_toast_msg)
-                        )
-                    },
-                    onDebugClicked = vm::onSpaceDebugClicked,
-                    onRemoveIconClicked = vm::onRemoveSpaceIconClicked,
-                    onManageSharedSpaceClicked = vm::onManageSharedSpaceClicked,
-                    onSharePrivateSpaceClicked = vm::onSharePrivateSpaceClicked,
-                    onAddMoreSpacesClicked = vm::onAddMoreSpacesClicked,
-                    onSpaceImagePicked = { uri ->
-                        runCatching {
-                            vm.onSpaceImagePicked(
-                                path = uri.parseImagePath(requireContext())
-                            )
-                        }.onFailure {
-                            toast(getString(R.string.error_while_loading_picture))
-                        }
-                    }
+                SpaceSettingsContainer(
+                    uiState = vm.uiState.collectAsStateWithLifecycle().value,
+                    uiEvent = vm::onUiEvent
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
                 LaunchedEffect(Unit) {

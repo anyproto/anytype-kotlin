@@ -27,6 +27,8 @@ import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_utils.ext.parseImagePath
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.ui_settings.R
@@ -40,16 +42,23 @@ fun NewSpaceIcon(
     isEditEnabled: Boolean
 ) {
     val context = LocalContext.current
+
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             if (uri != null) {
-                uiEvent(UiEvent.OnSpaceImagePicked(uri.toString()))
+                runCatching {
+                    val path = uri.parseImagePath(context)
+                    uiEvent(UiEvent.OnSpaceImagePicked(path))
+                }.onFailure {
+                    context.toast(context.getString(R.string.error_while_loading_picture))
+                }
             } else {
                 Timber.w("Uri was null after picking image")
             }
         }
     )
+
     val isSpaceIconMenuExpanded = remember {
         mutableStateOf(false)
     }

@@ -61,6 +61,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
+import timber.log.Timber
 
 @Composable
 fun MembersItem(
@@ -249,17 +250,23 @@ fun BaseButton(
     }
 }
 
+
+
 @OptIn(FlowPreview::class)
 @Composable
-fun NewSpaceNameBlock(
+fun NewSpaceNameInputField(
     modifier: Modifier = Modifier,
     name: String,
-    onNameSet: (String) -> Unit,
-    isEditEnabled: Boolean
+    isEditEnabled: Boolean,
+    onNameSet: (String) -> Unit = {}
 ) {
 
     val nameValue = remember { mutableStateOf(name) }
     val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(name) {
+        nameValue.value = name
+    }
 
     LaunchedEffect(nameValue.value) {
         snapshotFlow { nameValue.value }
@@ -300,12 +307,16 @@ fun NewSpaceNameBlock(
 fun NewSpaceDescriptionBlock(
     modifier: Modifier = Modifier,
     description: String,
-    onDescriptionSet: (String) -> Unit,
-    isEditEnabled: Boolean
+    isEditEnabled: Boolean,
+    onDescriptionSet: (String) -> Unit = {},
 ) {
 
     val descriptionValue = remember { mutableStateOf(description) }
     val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(description) {
+        descriptionValue.value = description
+    }
 
     LaunchedEffect(descriptionValue.value) {
         snapshotFlow { descriptionValue.value }

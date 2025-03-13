@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,7 +41,6 @@ import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.ui_settings.R
-import timber.log.Timber
 
 @Composable
 fun SpaceSettingsContainer(
@@ -66,6 +66,7 @@ fun NewSpaceSettingsScreen(
 
     var showEditDescription by remember { mutableStateOf(false) }
     var showEditTitle by remember { mutableStateOf(false) }
+    var showTechInfo by remember { mutableStateOf(true) }
 
     Scaffold(
         modifier = Modifier.fillMaxWidth(),
@@ -319,6 +320,25 @@ fun NewSpaceSettingsScreen(
                 }
             )
         }
+    }
+
+    if (showTechInfo) {
+        ModalBottomSheet(
+            containerColor = colorResource(R.color.background_secondary),
+            onDismissRequest = {
+                showTechInfo = false
+            },
+            dragHandle = {
+                Dragger(
+                    modifier = Modifier.padding(vertical = 6.dp)
+                )
+            },
+            content = {
+                SpaceInfoScreen(
+                    spaceTechInfo = uiState.spaceTechInfo
+                )
+            }
+        )
     }
 }
 

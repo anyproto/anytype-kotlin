@@ -3,11 +3,9 @@ package com.anytypeio.anytype.ui_settings.space.new_settings
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,11 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,8 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -42,6 +40,7 @@ import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.ui_settings.R
+import timber.log.Timber
 
 @Composable
 fun SpaceSettingsContainer(
@@ -56,24 +55,17 @@ fun SpaceSettingsContainer(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewSpaceSettingsScreen(
     uiState: UiSpaceSettingsState.SpaceSettings,
     uiEvent: (UiEvent) -> Unit
 ) {
+    val initialName = uiState.name
+    val initialDescription = uiState.description
 
-    // Get the initial values from your uiState items.
-    val initialName = uiState.items.filterIsInstance<UiSpaceSettingsItem.Name>()
-        .firstOrNull()?.name ?: ""
-    val initialDescription = uiState.items.filterIsInstance<UiSpaceSettingsItem.Description>()
-        .firstOrNull()?.description ?: ""
-
-    // Keep state of the current (edited) values.
-    var nameInput by remember { mutableStateOf(initialName) }
-    var descriptionInput by remember { mutableStateOf(initialDescription) }
-
-    // Compare against the initial values to know if something has changed.
-    val isDirty = nameInput != initialName || descriptionInput != initialDescription
+    var showEditDescription by remember { mutableStateOf(false) }
+    var showEditTitle by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.fillMaxWidth(),
@@ -102,29 +94,6 @@ fun NewSpaceSettingsScreen(
                             uiEvent(UiEvent.OnBackPressed)
                         }
                 )
-                Box(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .fillMaxHeight()
-                        .align(Alignment.CenterEnd)
-                        .clickable(enabled = isDirty) {
-                            uiEvent(UiEvent.OnSavedClicked(nameInput, descriptionInput))
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .wrapContentSize()
-                            .padding(horizontal = 16.dp),
-                        text = stringResource(R.string.space_settings_save_button),
-                        style = PreviewTitle1Medium,
-                        color = if (isDirty) {
-                            colorResource(id = R.color.text_primary)
-                        } else {
-                            colorResource(id = R.color.text_tertiary)
-                        }
-                    )
-                }
             }
         },
         content = { paddingValues ->
@@ -160,10 +129,9 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
-
                         is UiSpaceSettingsItem.Name -> {
                             item {
-                                NewSpaceNameBlock(
+                                NewSpaceNameInputField(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .border(
@@ -172,12 +140,13 @@ fun NewSpaceSettingsScreen(
                                             color = colorResource(id = R.color.shape_primary)
                                         )
                                         .padding(vertical = 12.dp, horizontal = 16.dp)
-                                        .animateItem(),
-                                    name = nameInput,
-                                    onNameSet = { newName ->
-                                        nameInput = newName
-                                    },
-                                    isEditEnabled = uiState.isEditEnabled
+                                        .animateItem()
+                                        .noRippleClickable {
+                                            showEditTitle = true
+                                        }
+                                    ,
+                                    name = item.name,
+                                    isEditEnabled = false
                                 )
                             }
                         }
@@ -193,12 +162,13 @@ fun NewSpaceSettingsScreen(
                                             color = colorResource(id = R.color.shape_primary)
                                         )
                                         .padding(vertical = 12.dp, horizontal = 16.dp)
-                                        .animateItem(),
-                                    isEditEnabled = uiState.isEditEnabled,
-                                    description = descriptionInput,
-                                    onDescriptionSet = { newDescription ->
-                                        descriptionInput = newDescription
-                                    }
+                                        .animateItem()
+                                        .noRippleClickable {
+                                            showEditDescription = true
+                                        }
+                                    ,
+                                    isEditEnabled = false,
+                                    description = initialDescription
                                 )
                             }
                         }
@@ -213,7 +183,9 @@ fun NewSpaceSettingsScreen(
                             }
                         }
 
-                        is UiSpaceSettingsItem.Chat -> TODO()
+                        is UiSpaceSettingsItem.Chat -> {
+                            // TODO
+                        }
                         is UiSpaceSettingsItem.DefaultObjectType -> {
                             item {
                                 DefaultTypeItem(
@@ -257,7 +229,9 @@ fun NewSpaceSettingsScreen(
                             }
                         }
 
-                        is UiSpaceSettingsItem.RemoteStorage -> TODO()
+                        is UiSpaceSettingsItem.RemoteStorage -> {
+                            // TODO
+                        }
                         is UiSpaceSettingsItem.Section -> {
                             item {
                                 SpaceSettingsSection(
@@ -302,4 +276,184 @@ fun NewSpaceSettingsScreen(
         }
     )
 
+    if (showEditDescription) {
+        ModalBottomSheet(
+            containerColor = colorResource(R.color.background_secondary),
+            onDismissRequest = {
+                showEditDescription = false
+            },
+            dragHandle = {
+                Dragger(
+                    modifier = Modifier.padding(vertical = 6.dp)
+                )
+            },
+        ) {
+            EditDescriptionField(
+                initialInput = initialDescription,
+                onSaveFieldValueClicked = {
+                    uiEvent(UiEvent.OnSaveDescriptionClicked(it)).also {
+                        showEditDescription = false
+                    }
+                }
+            )
+        }
+    }
+    if (showEditTitle) {
+        ModalBottomSheet(
+            containerColor = colorResource(R.color.background_secondary),
+            onDismissRequest = {
+                showEditTitle = false
+            },
+            dragHandle = {
+                Dragger(
+                    modifier = Modifier.padding(vertical = 6.dp)
+                )
+            }
+        ) {
+            EditNameField(
+                initialInput = initialName,
+                onSaveFieldValueClicked = {
+                    uiEvent(UiEvent.OnSaveTitleClicked(it)).also {
+                        showEditTitle = false
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun EditNameField(
+    initialInput: String,
+    onSaveFieldValueClicked: (String) -> Unit
+) {
+
+    var fieldInput by remember { mutableStateOf(initialInput) }
+
+    Scaffold(
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = colorResource(id = R.color.background_secondary),
+        topBar = {
+            Box(modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(horizontal = 16.dp)
+                        .noRippleClickable {
+                            onSaveFieldValueClicked(fieldInput)
+                        },
+                    text = "Done",
+                    style = PreviewTitle1Medium,
+                    color = if (fieldInput != initialInput) {
+                        colorResource(id = R.color.text_primary)
+                    } else {
+                        colorResource(id = R.color.text_tertiary)
+                    }
+                )
+            }
+        },
+        content = { paddingValues ->
+            val contentModifier =
+                if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .padding(top = paddingValues.calculateTopPadding())
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .fillMaxSize()
+                else
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+
+            Box(
+                modifier = contentModifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                NewSpaceNameInputField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            shape = RoundedCornerShape(16.dp),
+                            width = 2.dp,
+                            color = colorResource(id = R.color.palette_system_amber_50)
+                        )
+                        .padding(vertical = 12.dp, horizontal = 16.dp)
+                    ,
+                    name = fieldInput,
+                    onNameSet = { newName ->
+                        fieldInput = newName
+                    },
+                    isEditEnabled = true
+                )
+            }
+        }
+    )
+}
+
+@Composable
+private fun EditDescriptionField(
+    initialInput: String,
+    onSaveFieldValueClicked: (String) -> Unit
+) {
+
+    var fieldInput by remember { mutableStateOf(initialInput) }
+
+    Scaffold(
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = colorResource(id = R.color.background_secondary),
+        topBar = {
+            Box(modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(horizontal = 16.dp)
+                        .noRippleClickable {
+                            onSaveFieldValueClicked(fieldInput)
+                        },
+                    text = "Done",
+                    style = PreviewTitle1Medium,
+                    color = if (fieldInput != initialInput) {
+                        colorResource(id = R.color.text_primary)
+                    } else {
+                        colorResource(id = R.color.text_tertiary)
+                    }
+                )
+            }
+        },
+        content = { paddingValues ->
+            val contentModifier =
+                if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .fillMaxSize()
+                        .padding(top = paddingValues.calculateTopPadding())
+                else
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+
+            Box(
+                modifier = contentModifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                NewSpaceDescriptionBlock(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            shape = RoundedCornerShape(16.dp),
+                            width = 2.dp,
+                            color = colorResource(id = R.color.palette_system_amber_50)
+                        )
+                        .padding(vertical = 12.dp, horizontal = 16.dp)
+                    ,
+                    description = fieldInput,
+                    isEditEnabled = true,
+                    onDescriptionSet = {
+                        fieldInput = it
+                    }
+                )
+            }
+        }
+    )
 }

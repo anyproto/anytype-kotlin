@@ -714,7 +714,7 @@
     <string name="set">Insieme</string>
     <string name="collection">Collezione</string>
     <string name="layout">Disposizione</string>
-    <string name="button_fields">Campi</string>
+    <string name="button_fields">Proprietà</string>
     <string name="button_layout">Disposizione</string>
     <string name="button_templates">Modelli</string>
     <string name="restore_from_archive">Restore from archive</string>
@@ -1608,7 +1608,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_new_field">Nuovo campo</string>
     <string name="object_type_fields_preview_field">Anteprima campo</string>
     <string name="object_type_fields_btn_save">Salva</string>
-    <string name="object_type_fields_menu_delete">Elimina</string>
+    <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Aggiungi al tipo corrente</string>
     <string name="object_type_fields_menu_remove">Rimuovi</string>
     <string name="object_type_fields_local_info_title">Campi locali</string>

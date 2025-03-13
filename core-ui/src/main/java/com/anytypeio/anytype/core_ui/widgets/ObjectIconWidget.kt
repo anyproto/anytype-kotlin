@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.compose.ui.res.colorResource
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
@@ -17,11 +19,15 @@ import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
 import com.anytypeio.anytype.core_ui.extensions.setCorneredShape
+import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor.Companion.fromIconOption
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconData
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import timber.log.Timber
@@ -149,7 +155,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             ObjectIcon.Deleted -> setDeletedIcon()
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
             is ObjectIcon.Empty -> icon.setEmptyIcon()
-            is ObjectIcon.ObjectType -> TODO()
+            is ObjectIcon.ObjectType -> setCustomIcon(icon)
         }
     }
 
@@ -358,6 +364,32 @@ class ObjectIconWidget @JvmOverloads constructor(
             initialContainer.invisible()
             ivBookmark.invisible()
             emojiContainer.invisible()
+        }
+    }
+
+    private fun setCustomIcon(icon: ObjectIcon.ObjectType) {
+        val resId = context.resources.getIdentifier("ci_${icon.customIconData.icon.stringRepresentation}", "drawable", context.packageName)
+        with(binding) {
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            ivImage.invisible()
+            ivBookmark.setImageDrawable(null)
+            ivBookmark.gone()
+            emojiContainer.visible()
+        }
+        try {
+            if (resId != 0) {
+                val tint = fromIconOption(iconOption = icon.customIconData.color.iconOption).color(context)
+                binding.tvEmojiFallback.gone()
+                binding.ivEmoji.setImageResource(resId)
+                binding.ivEmoji.imageTintList = ColorStateList.valueOf(tint)
+            } else {
+                binding.ivEmoji.setImageDrawable(null)
+                //binding.tvEmojiFallback.text = emoji
+                binding.tvEmojiFallback.visible()
+            }
+        } catch (e: Throwable) {
+            Timber.w(e, "Error while setting object type icon for")
         }
     }
 

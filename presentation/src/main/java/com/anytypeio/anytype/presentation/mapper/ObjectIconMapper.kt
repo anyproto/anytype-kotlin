@@ -21,7 +21,9 @@ fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
         image = iconImage,
         emoji = iconEmoji,
         builder = builder,
-        name = name.orEmpty()
+        name = name.orEmpty(),
+        iconName = iconName,
+        iconOption = iconOption?.toInt()
     )
 
     if (objectIcon != null) {
@@ -49,25 +51,14 @@ fun ObjectWrapper.Type.objectIcon(builder: UrlBuilder): ObjectIcon {
         return ObjectIcon.Deleted
     }
 
-    val objectIcon = if (iconEmoji.isNullOrEmpty()) {
-        ObjectIcon.ObjectType(
-            customIconData = CustomIconData(
-                icon = CustomIcon(
-                    rawValue = iconName.orEmpty()
-                ),
-                color = CustomIconDataColor.Selected(
-                    color = CustomIconColor.fromIconOption(iconOption?.toInt()) ?: CustomIconColor.DEFAULT
-                )
-            )
-        )
-    } else {
-        layout?.icon(
-            image = null,
-            emoji = iconEmoji,
-            builder = builder,
-            name = name.orEmpty()
-        )
-    }
+    val objectIcon = layout?.icon(
+        image = null,
+        emoji = iconEmoji,
+        builder = builder,
+        name = name.orEmpty(),
+        iconName = iconName,
+        iconOption = iconOption?.toInt()
+    )
 
     if (objectIcon != null) {
         return objectIcon
@@ -93,16 +84,38 @@ fun ObjectType.Layout?.emptyType(): ObjectIcon.Empty {
 fun ObjectType.Layout.icon(
     image: String?,
     emoji: String?,
+    iconName: String?,
+    iconOption: Int?,
     name: String,
     builder: UrlBuilder
 ): ObjectIcon? {
     return when (this) {
+        ObjectType.Layout.OBJECT_TYPE -> {
+            if (emoji.isNullOrEmpty()) {
+                ObjectIcon.ObjectType(
+                    customIconData = CustomIconData(
+                        icon = CustomIcon(
+                            rawValue = iconName.orEmpty()
+                        ),
+                        color = CustomIconDataColor.Selected(
+                            color = CustomIconColor.fromIconOption(iconOption?.toInt()) ?: CustomIconColor.DEFAULT
+                        )
+                    )
+                )
+            } else {
+                basicIcon(
+                    image = image,
+                    emoji = emoji,
+                    builder = builder,
+                    layout = this
+                )
+            }
+        }
 
         ObjectType.Layout.BASIC,
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION,
-        ObjectType.Layout.IMAGE,
-        ObjectType.Layout.OBJECT_TYPE -> basicIcon(
+        ObjectType.Layout.IMAGE -> basicIcon(
             image = image,
             emoji = emoji,
             builder = builder,

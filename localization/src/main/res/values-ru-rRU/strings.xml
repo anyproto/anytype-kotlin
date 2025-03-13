@@ -716,7 +716,7 @@
     <string name="set">Набор</string>
     <string name="collection">Коллекция</string>
     <string name="layout">Макет</string>
-    <string name="button_fields">Поля</string>
+    <string name="button_fields">Свойства</string>
     <string name="button_layout">Макет</string>
     <string name="button_templates">Шаблоны</string>
     <string name="restore_from_archive">Восстановить из архива</string>
@@ -1636,7 +1636,7 @@
     <string name="object_type_fields_new_field">Новое поле</string>
     <string name="object_type_fields_preview_field">Предпросмотр поля</string>
     <string name="object_type_fields_btn_save">Сохранить</string>
-    <string name="object_type_fields_menu_delete">Удалить</string>
+    <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
     <string name="object_type_fields_menu_remove">Удалить</string>
     <string name="object_type_fields_local_info_title">Локальные поля</string>

@@ -713,7 +713,7 @@
     <string name="set">Set</string>
     <string name="collection">Koleksi</string>
     <string name="layout">Tata letak</string>
-    <string name="button_fields">Fields</string>
+    <string name="button_fields">Properti</string>
     <string name="button_layout">Tata letak</string>
     <string name="button_templates">Templat</string>
     <string name="restore_from_archive">Restore from archive</string>
@@ -1594,7 +1594,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_new_field">New field</string>
     <string name="object_type_fields_preview_field">Kolom pratinjau</string>
     <string name="object_type_fields_btn_save">Simpan</string>
-    <string name="object_type_fields_menu_delete">Hapus</string>
+    <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Tambahkan ke tipe saat ini</string>
     <string name="object_type_fields_menu_remove">Hapus</string>
     <string name="object_type_fields_local_info_title">Local fields</string>

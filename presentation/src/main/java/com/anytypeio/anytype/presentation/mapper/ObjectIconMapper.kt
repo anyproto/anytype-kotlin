@@ -6,6 +6,10 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Basic
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconData
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconDataColor
 
 fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
 
@@ -45,12 +49,25 @@ fun ObjectWrapper.Type.objectIcon(builder: UrlBuilder): ObjectIcon {
         return ObjectIcon.Deleted
     }
 
-    val objectIcon = layout?.icon(
-        image = null,
-        emoji = iconEmoji,
-        builder = builder,
-        name = name.orEmpty()
-    )
+    val objectIcon = if (iconEmoji.isNullOrEmpty()) {
+        ObjectIcon.ObjectType(
+            customIconData = CustomIconData(
+                icon = CustomIcon(
+                    rawValue = iconName.orEmpty()
+                ),
+                color = CustomIconDataColor.Selected(
+                    color = CustomIconColor.fromIconOption(iconOption?.toInt()) ?: CustomIconColor.DEFAULT
+                )
+            )
+        )
+    } else {
+        layout?.icon(
+            image = null,
+            emoji = iconEmoji,
+            builder = builder,
+            name = name.orEmpty()
+        )
+    }
 
     if (objectIcon != null) {
         return objectIcon

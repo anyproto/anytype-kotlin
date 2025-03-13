@@ -149,6 +149,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             ObjectIcon.Deleted -> setDeletedIcon()
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
             is ObjectIcon.Empty -> icon.setEmptyIcon()
+            is ObjectIcon.ObjectType -> TODO()
         }
     }
 

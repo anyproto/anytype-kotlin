@@ -167,7 +167,6 @@ sealed class ObjectWrapper {
         val description: String? = getSingleValue(Relations.DESCRIPTION)
         val isArchived: Boolean? by default
         val iconEmoji: String? by default
-        val iconName: String? by default
         val isDeleted: Boolean? by default
         val recommendedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_RELATIONS)
         val recommendedFeaturedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_FEATURED_RELATIONS)
@@ -201,6 +200,9 @@ sealed class ObjectWrapper {
 
                 else -> emptyList()
             }
+
+        val iconName: String? by default
+        val iconOption: Double? by default
 
         val allRecommendedRelations: List<Id>
             get() = recommendedRelations + recommendedFeaturedRelations + recommendedHiddenRelations + recommendedFileRelations

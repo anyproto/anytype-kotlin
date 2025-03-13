@@ -66,7 +66,7 @@ fun NewSpaceSettingsScreen(
 
     var showEditDescription by remember { mutableStateOf(false) }
     var showEditTitle by remember { mutableStateOf(false) }
-    var showTechInfo by remember { mutableStateOf(true) }
+    var showTechInfo by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.fillMaxWidth(),

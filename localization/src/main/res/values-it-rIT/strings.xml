@@ -714,7 +714,7 @@
     <string name="set">Insieme</string>
     <string name="collection">Collezione</string>
     <string name="layout">Disposizione</string>
-    <string name="button_fields">Campi</string>
+    <string name="button_fields">Proprietà</string>
     <string name="button_layout">Disposizione</string>
     <string name="button_templates">Modelli</string>
     <string name="restore_from_archive">Restore from archive</string>
@@ -1597,18 +1597,18 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_templates_menu_edit">Modifica</string>
     <string name="object_type_templates_menu_duplicate">Duplica</string>
     <string name="object_type_templates_menu_delete">Elimina</string>
-    <string name="object_type_fields_section_header">Intestazione</string>
-    <string name="object_type_fields_section_fields_menu">Barra laterale</string>
+    <string name="object_type_fields_section_header">Shown in object header</string>
+    <string name="object_type_fields_section_fields_menu">Shown in properties menu</string>
     <string name="object_type_fields_section_hidden">Nascosto</string>
     <string name="object_type_fields_section_file">File</string>
-    <string name="object_type_fields_section_local_fields">Campi locali</string>
-    <string name="object_type_fields_title">Campi</string>
+    <string name="object_type_fields_section_local_fields">Local properties</string>
+    <string name="object_type_fields_title">Proprietà</string>
     <string name="object_type_fields_info_text">Stai modificando il tipo</string>
     <string name="object_type_fields_edit_field">Modifica del campo</string>
     <string name="object_type_fields_new_field">Nuovo campo</string>
     <string name="object_type_fields_preview_field">Anteprima campo</string>
     <string name="object_type_fields_btn_save">Salva</string>
-    <string name="object_type_fields_menu_delete">Elimina</string>
+    <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Aggiungi al tipo corrente</string>
     <string name="object_type_fields_menu_remove">Rimuovi</string>
     <string name="object_type_fields_local_info_title">Campi locali</string>
@@ -1647,7 +1647,7 @@ Please provide specific details of your needs here.</string>
     <string name="migration_error_try_again">Riprova</string>
     <string name="migration_migration_failed">Migrazione fallita</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Si prega di liberare un po\' di spazio ed eseguire nuovamente il processo.</string>
-    <string name="fields_screen_title">Campi</string>
+    <string name="fields_screen_title">Proprietà</string>
     <string name="field_text_title">Testo</string>
     <string name="field_text_empty">Enter</string>
     <string name="field_number_title">Numero</string>
@@ -1690,9 +1690,8 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_icon_title">Modifica foto</string>
     <string name="space_settings_save_button">Salva</string>
     <string name="object_type_add_property_screen_title">Add property</string>
-    <string name="object_type_add_property_screen_section">Properties types</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
-    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties formats\"</string>
     <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
     <string name="new_property_hint">New property</string>
@@ -1700,4 +1699,7 @@ Please provide specific details of your needs here.</string>
     <string name="add_property_error_create_new">Error while creating new property</string>
     <string name="add_property_error_update">Error while updating property</string>
     <string name="add_property_error_add">Error while adding property to type</string>
+    <string name="property_select_format_title">Select property format</string>
+    <string name="property_edit_menu_delete">Delete from space</string>
+    <string name="property_edit_menu_unlink">Unlink from type</string>
 </resources>

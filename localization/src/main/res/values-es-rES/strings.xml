@@ -714,7 +714,7 @@
     <string name="set">Conjunto</string>
     <string name="collection">Colección</string>
     <string name="layout">Diseño</string>
-    <string name="button_fields">Campos</string>
+    <string name="button_fields">Propiedades</string>
     <string name="button_layout">Diseño</string>
     <string name="button_templates">Plantillas</string>
     <string name="restore_from_archive">Restablecer desde archivo</string>
@@ -1596,18 +1596,18 @@ En concreto,
     <string name="object_type_templates_menu_edit">Editar</string>
     <string name="object_type_templates_menu_duplicate">Duplicar</string>
     <string name="object_type_templates_menu_delete">Eliminar</string>
-    <string name="object_type_fields_section_header">Título</string>
-    <string name="object_type_fields_section_fields_menu">Sidebar</string>
+    <string name="object_type_fields_section_header">Shown in object header</string>
+    <string name="object_type_fields_section_fields_menu">Shown in properties menu</string>
     <string name="object_type_fields_section_hidden">Hidden</string>
     <string name="object_type_fields_section_file">Archivo</string>
-    <string name="object_type_fields_section_local_fields">Local fields</string>
-    <string name="object_type_fields_title">Campos</string>
+    <string name="object_type_fields_section_local_fields">Local properties</string>
+    <string name="object_type_fields_title">Propiedades</string>
     <string name="object_type_fields_info_text">Estás editando el tipo</string>
     <string name="object_type_fields_edit_field">Editar campo</string>
     <string name="object_type_fields_new_field">New field</string>
     <string name="object_type_fields_preview_field">Preview field</string>
     <string name="object_type_fields_btn_save">Guardar</string>
-    <string name="object_type_fields_menu_delete">Eliminar</string>
+    <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
     <string name="object_type_fields_menu_remove">Borrar</string>
     <string name="object_type_fields_local_info_title">Local fields</string>
@@ -1646,7 +1646,7 @@ En concreto,
     <string name="migration_error_try_again">Inténtalo de nuevo</string>
     <string name="migration_migration_failed">La migración ha fallado</string>
     <string name="migration_error_please_free_up_space_and_run_the_process_again">Libera algo de espacio y vuelve a ejecutar el proceso.</string>
-    <string name="fields_screen_title">Campos</string>
+    <string name="fields_screen_title">Propiedades</string>
     <string name="field_text_title">Texto</string>
     <string name="field_text_empty">Entrar</string>
     <string name="field_number_title">Número</string>
@@ -1689,9 +1689,8 @@ En concreto,
     <string name="space_settings_icon_title">Editar imagen</string>
     <string name="space_settings_save_button">Guardar</string>
     <string name="object_type_add_property_screen_title">Add property</string>
-    <string name="object_type_add_property_screen_section">Properties types</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
-    <string name="object_type_add_property_screen_section_types">Properties types\"</string>
+    <string name="object_type_add_property_screen_section_types">Properties formats\"</string>
     <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
     <string name="new_property_hint">New property</string>
@@ -1699,4 +1698,7 @@ En concreto,
     <string name="add_property_error_create_new">Error while creating new property</string>
     <string name="add_property_error_update">Error while updating property</string>
     <string name="add_property_error_add">Error while adding property to type</string>
+    <string name="property_select_format_title">Select property format</string>
+    <string name="property_edit_menu_delete">Delete from space</string>
+    <string name="property_edit_menu_unlink">Unlink from type</string>
 </resources>

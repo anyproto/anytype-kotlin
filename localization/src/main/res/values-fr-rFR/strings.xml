@@ -714,7 +714,7 @@
     <string name="set">Ensemble</string>
     <string name="collection">Collection</string>
     <string name="layout">Mise en page</string>
-    <string name="button_fields">Champs</string>
+    <string name="button_fields">Propriétés</string>
     <string name="button_layout">Mise en page</string>
     <string name="button_templates">Modèles</string>
     <string name="restore_from_archive">Restore from archive</string>
@@ -1604,7 +1604,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_fields_new_field">Nouveau champ</string>
     <string name="object_type_fields_preview_field">Champ d\'aperçu</string>
     <string name="object_type_fields_btn_save">Sauvegarder</string>
-    <string name="object_type_fields_menu_delete">Supprimer</string>
+    <string name="object_type_fields_menu_delete">Dissocier du type</string>
     <string name="object_type_fields_menu_add_to_type">Ajouter au type actuel</string>
     <string name="object_type_fields_menu_remove">Supprimer</string>
     <string name="object_type_fields_local_info_title">Champs locaux</string>

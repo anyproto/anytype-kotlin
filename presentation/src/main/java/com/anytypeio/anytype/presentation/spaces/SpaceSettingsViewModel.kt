@@ -151,19 +151,19 @@ class SpaceSettingsViewModel(
                 isDismissed.value = true
             }
             UiEvent.OnDeleteSpaceClicked -> {
-
+                sendToast("Coming soon")
             }
             UiEvent.OnFileStorageClick -> {
-
+                sendToast("Coming soon")
             }
             UiEvent.OnInviteClicked -> {
-
+                sendToast("Coming soon")
             }
             UiEvent.OnPersonalizationClicked -> {
-
+                sendToast("Coming soon")
             }
             UiEvent.OnQrCodeClicked -> {
-
+                sendToast("Coming soon")
             }
             is UiEvent.OnSaveDescriptionClicked -> {
                 viewModelScope.launch {
@@ -190,7 +190,7 @@ class SpaceSettingsViewModel(
                 }
             }
             UiEvent.OnSpaceIdClicked -> {
-
+                sendToast("Coming soon")
             }
             is UiEvent.OnSpaceImagePicked -> {
                 proceedWithSettingSpaceImage(uiEvent.uri)

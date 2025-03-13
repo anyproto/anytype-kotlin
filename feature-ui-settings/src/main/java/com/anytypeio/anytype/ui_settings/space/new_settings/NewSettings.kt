@@ -32,6 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -277,8 +278,14 @@ fun NewSpaceSettingsScreen(
 
     if (showEditDescription) {
         ModalBottomSheet(
+            containerColor = colorResource(R.color.background_secondary),
             onDismissRequest = {
                 showEditDescription = false
+            },
+            dragHandle = {
+                Dragger(
+                    modifier = Modifier.padding(vertical = 6.dp)
+                )
             }
         ) {
             EditDescriptionField(
@@ -293,8 +300,14 @@ fun NewSpaceSettingsScreen(
     }
     if (showEditTitle) {
         ModalBottomSheet(
+            containerColor = colorResource(R.color.background_secondary),
             onDismissRequest = {
                 showEditTitle = false
+            },
+            dragHandle = {
+                Dragger(
+                    modifier = Modifier.padding(vertical = 6.dp)
+                )
             }
         ) {
             EditNameField(
@@ -371,7 +384,7 @@ private fun EditNameField(
                         .fillMaxWidth()
                         .border(
                             shape = RoundedCornerShape(16.dp),
-                            width = 0.5.dp,
+                            width = 2.dp,
                             color = colorResource(id = R.color.palette_system_amber_50)
                         )
                         .padding(vertical = 12.dp, horizontal = 16.dp)
@@ -449,7 +462,7 @@ private fun EditDescriptionField(
                         .fillMaxWidth()
                         .border(
                             shape = RoundedCornerShape(16.dp),
-                            width = 0.5.dp,
+                            width = 2.dp,
                             color = colorResource(id = R.color.palette_system_amber_50)
                         )
                         .padding(vertical = 12.dp, horizontal = 16.dp)

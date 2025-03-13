@@ -199,6 +199,9 @@ sealed class ObjectWrapper {
 
                 else -> emptyList()
             }
+
+        val allRecommendedRelations: List<Id>
+            get() = recommendedRelations + recommendedFeaturedRelations + recommendedHiddenRelations + recommendedFileRelations
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {

@@ -714,7 +714,7 @@
     <string name="set">Conjunto</string>
     <string name="collection">Colección</string>
     <string name="layout">Diseño</string>
-    <string name="button_fields">Campos</string>
+    <string name="button_fields">Propiedades</string>
     <string name="button_layout">Diseño</string>
     <string name="button_templates">Plantillas</string>
     <string name="restore_from_archive">Restablecer desde archivo</string>
@@ -1607,7 +1607,7 @@ En concreto,
     <string name="object_type_fields_new_field">New field</string>
     <string name="object_type_fields_preview_field">Preview field</string>
     <string name="object_type_fields_btn_save">Guardar</string>
-    <string name="object_type_fields_menu_delete">Eliminar</string>
+    <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
     <string name="object_type_fields_menu_remove">Borrar</string>
     <string name="object_type_fields_local_info_title">Local fields</string>

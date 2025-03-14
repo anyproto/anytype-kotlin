@@ -237,7 +237,11 @@ class SpaceSettingsViewModel(
                 isDismissed.value = true
             }
             UiEvent.OnDeleteSpaceClicked -> {
-                sendToast("Coming soon")
+                viewModelScope.launch {
+                    commands.emit(
+                        Command.ShowDeleteSpaceWarning
+                    )
+                }
             }
             UiEvent.OnFileStorageClick -> {
                 sendToast("Coming soon")
@@ -380,27 +384,21 @@ class SpaceSettingsViewModel(
     }
 
     private fun proceedWithSpaceDeletion() {
-//        val state = spaceViewState.value as? SpaceData.Success ?: return
-//        val space = state.spaceId
-//        if (space != null) {
-//            viewModelScope.launch {
-//                deleteSpace.async(params = SpaceId(space)).fold(
-//                    onSuccess = {
-//                        analytics.sendEvent(
-//                            eventName = EventsDictionary.deleteSpace,
-//                            props = Props(mapOf(EventsPropertiesKey.type to "Private"))
-//                        )
-//                        spaceManager.clear()
-//                        commands.emit(Command.ExitToVault)
-//                    },
-//                    onFailure = {
-//                        Timber.e(it, "Error while deleting space")
-//                    }
-//                )
-//            }
-//        } else {
-//            sendToast("Space not found. Please, try again later")
-//        }
+        viewModelScope.launch {
+                deleteSpace.async(params = vmParams.space).fold(
+                    onSuccess = {
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.deleteSpace,
+                            props = Props(mapOf(EventsPropertiesKey.type to "Private"))
+                        )
+                        spaceManager.clear()
+                        commands.emit(Command.ExitToVault)
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while deleting space")
+                    }
+                )
+            }
     }
 
     private fun proceedWithSpaceDebug() {

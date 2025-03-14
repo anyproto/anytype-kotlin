@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -17,11 +16,9 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
@@ -185,6 +182,10 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
 
     override fun releaseDependencies() {
         componentManager().spaceSettingsComponent.release()
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        // Do nothing. Compose code will handle insets.
     }
 
     companion object {

@@ -135,6 +135,7 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
+
                         is UiSpaceSettingsItem.Name -> {
                             item {
                                 NewSpaceNameInputField(
@@ -149,8 +150,7 @@ fun NewSpaceSettingsScreen(
                                         .animateItem()
                                         .noRippleClickable {
                                             showEditTitle = true
-                                        }
-                                    ,
+                                        },
                                     name = item.name,
                                     isEditEnabled = false
                                 )
@@ -171,8 +171,7 @@ fun NewSpaceSettingsScreen(
                                         .animateItem()
                                         .noRippleClickable {
                                             showEditDescription = true
-                                        }
-                                    ,
+                                        },
                                     isEditEnabled = false,
                                     description = initialDescription
                                 )
@@ -192,6 +191,7 @@ fun NewSpaceSettingsScreen(
                         is UiSpaceSettingsItem.Chat -> {
                             // TODO
                         }
+
                         is UiSpaceSettingsItem.DefaultObjectType -> {
                             item {
                                 DefaultTypeItem(
@@ -199,8 +199,7 @@ fun NewSpaceSettingsScreen(
                                         .fillMaxWidth()
                                         .animateItem()
                                         .clip(RoundedCornerShape(16.dp))
-                                        .clickable { uiEvent(UiEvent.OnDefaultObjectTypeClicked(item.id)) }
-                                    ,
+                                        .clickable { uiEvent(UiEvent.OnDefaultObjectTypeClicked(item.id)) },
                                     name = item.name,
                                     icon = item.icon
                                 )
@@ -213,6 +212,8 @@ fun NewSpaceSettingsScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable { uiEvent(UiEvent.OnDeleteSpaceClicked) },
                                 )
                             }
                         }
@@ -224,8 +225,7 @@ fun NewSpaceSettingsScreen(
                                         .fillMaxWidth()
                                         .animateItem()
                                         .clip(RoundedCornerShape(16.dp))
-                                        .clickable { uiEvent(UiEvent.OnSpaceMembersClicked) }
-                                    ,
+                                        .clickable { uiEvent(UiEvent.OnSpaceMembersClicked) },
                                     item = item
                                 )
                             }
@@ -244,6 +244,7 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
+
                         UiSpaceSettingsItem.Fields -> {
                             item {
                                 FieldsItem(
@@ -257,9 +258,11 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
+
                         is UiSpaceSettingsItem.RemoteStorage -> {
                             // TODO
                         }
+
                         is UiSpaceSettingsItem.Section -> {
                             item {
                                 SpaceSettingsSection(
@@ -284,7 +287,6 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
-
                         is UiSpaceSettingsItem.Wallpapers -> {
                             item {
                                 WallpaperItem(
@@ -294,8 +296,7 @@ fun NewSpaceSettingsScreen(
                                         .clip(RoundedCornerShape(16.dp))
                                         .clickable {
                                             uiEvent(UiEvent.OnWallpaperClicked)
-                                        }
-                                    ,
+                                        },
                                     item = item
                                 )
                             }
@@ -390,7 +391,11 @@ private fun EditNameField(
         modifier = Modifier.fillMaxWidth(),
         containerColor = colorResource(id = R.color.background_secondary),
         topBar = {
-            Box(modifier = Modifier.fillMaxWidth().height(48.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
                 Text(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -433,8 +438,7 @@ private fun EditNameField(
                             width = 2.dp,
                             color = colorResource(id = R.color.palette_system_amber_50)
                         )
-                        .padding(vertical = 12.dp, horizontal = 16.dp)
-                    ,
+                        .padding(vertical = 12.dp, horizontal = 16.dp),
                     name = fieldInput,
                     onNameSet = { newName ->
                         fieldInput = newName
@@ -458,7 +462,11 @@ private fun EditDescriptionField(
         modifier = Modifier.fillMaxWidth(),
         containerColor = colorResource(id = R.color.background_secondary),
         topBar = {
-            Box(modifier = Modifier.fillMaxWidth().height(48.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
                 Text(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -501,8 +509,7 @@ private fun EditDescriptionField(
                             width = 2.dp,
                             color = colorResource(id = R.color.palette_system_amber_50)
                         )
-                        .padding(vertical = 12.dp, horizontal = 16.dp)
-                    ,
+                        .padding(vertical = 12.dp, horizontal = 16.dp),
                     description = fieldInput,
                     isEditEnabled = true,
                     onDescriptionSet = {

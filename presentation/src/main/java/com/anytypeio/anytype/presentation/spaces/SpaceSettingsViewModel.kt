@@ -5,38 +5,54 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.defaultTypeChanged
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Block.Content.DataView.Filter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.media.UploadFile
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.settings.PersonalizationSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
 import javax.inject.Inject
+import kotlin.collections.map
+import kotlin.collections.sortedBy
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -52,7 +68,6 @@ class SpaceSettingsViewModel(
     private val gradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
     private val deleteSpace: DeleteSpace,
-    private val configStorage: ConfigStorage,
     private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val userPermissionProvider: UserPermissionProvider,
@@ -62,7 +77,10 @@ class SpaceSettingsViewModel(
     private val uploadFile: UploadFile,
     private val profileContainer: ProfileSubscriptionManager,
     private val getDefaultObjectType: GetDefaultObjectType,
-    private val observeWallpaper: ObserveWallpaper
+    private val setDefaultObjectType: SetDefaultObjectType,
+    private val observeWallpaper: ObserveWallpaper,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val appActionManager: AppActionManager
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -473,6 +491,60 @@ class SpaceSettingsViewModel(
         )
     }
 
+    fun onSelectObjectType(type: ObjectWrapper.Type) {
+        // Setting space default object type
+        viewModelScope.launch {
+            val params = SetDefaultObjectType.Params(
+                space = vmParams.space,
+                type = TypeId(type.id)
+            )
+            setDefaultObjectType.async(params).fold(
+                onFailure = {
+                    Timber.e(it, "Error while setting default object type")
+                },
+                onSuccess = {
+                    analytics.registerEvent(
+                        EventAnalytics.Anytype(
+                            name = defaultTypeChanged,
+                            props = Props(
+                                mapOf(
+                                    EventsPropertiesKey.objectType to type.uniqueKey,
+                                    EventsPropertiesKey.route to "Settings"
+                                )
+                            ),
+                            duration = null
+                        )
+                    )
+                }
+            )
+        }
+        // Updating app actions:
+        viewModelScope.launch {
+            val types = buildList<ObjectWrapper.Type> {
+                add(type)
+                val note = storeOfObjectTypes.getByKey(
+                    ObjectTypeUniqueKeys.NOTE
+                )
+                val page = storeOfObjectTypes.getByKey(
+                    ObjectTypeUniqueKeys.PAGE
+                )
+                val task = storeOfObjectTypes.getByKey(
+                    ObjectTypeUniqueKeys.TASK
+                )
+                if (note != null) add(note)
+                if (page != null) add(page)
+                if (task != null) add(task)
+            }
+            val actions = types.map { type ->
+                AppActionManager.Action.CreateNew(
+                    type = TypeKey(type.uniqueKey),
+                    name = type.name.orEmpty()
+                )
+            }
+            appActionManager.setup(actions = actions)
+        }
+    }
+
     data class SpaceData(
         val spaceId: Id?,
         val createdDateInMillis: Long?,
@@ -518,7 +590,6 @@ class SpaceSettingsViewModel(
         private val gradientProvider: SpaceGradientProvider,
         private val spaceManager: SpaceManager,
         private val deleteSpace: DeleteSpace,
-        private val configStorage: ConfigStorage,
         private val debugFileShareDownloader: DebugSpaceShareDownloader,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val userPermissionProvider: UserPermissionProvider,
@@ -527,7 +598,10 @@ class SpaceSettingsViewModel(
         private val uploadFile: UploadFile,
         private val profileContainer: ProfileSubscriptionManager,
         private val getDefaultObjectType: GetDefaultObjectType,
-        private val observeWallpaper: ObserveWallpaper
+        private val setDefaultObjectType: SetDefaultObjectType,
+        private val observeWallpaper: ObserveWallpaper,
+        private val appActionManager: AppActionManager,
+        private val storeOfObjectTypes: StoreOfObjectTypes
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -540,7 +614,6 @@ class SpaceSettingsViewModel(
             gradientProvider = gradientProvider,
             analytics = analytics,
             deleteSpace = deleteSpace,
-            configStorage = configStorage,
             debugSpaceShareDownloader = debugFileShareDownloader,
             spaceGradientProvider = spaceGradientProvider,
             vmParams = params,
@@ -550,7 +623,10 @@ class SpaceSettingsViewModel(
             uploadFile = uploadFile,
             profileContainer = profileContainer,
             getDefaultObjectType = getDefaultObjectType,
-            observeWallpaper = observeWallpaper
+            setDefaultObjectType = setDefaultObjectType,
+            observeWallpaper = observeWallpaper,
+            appActionManager = appActionManager,
+            storeOfObjectTypes = storeOfObjectTypes
         ) as T
     }
 

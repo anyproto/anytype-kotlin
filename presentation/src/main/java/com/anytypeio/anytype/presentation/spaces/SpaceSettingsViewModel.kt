@@ -214,7 +214,9 @@ class SpaceSettingsViewModel(
                         UiSpaceSettingsItem.Wallpapers(current = wallpaper),
                         UiSpaceSettingsItem.Section.Misc,
                         UiSpaceSettingsItem.SpaceInfo,
-                        UiSpaceSettingsItem.DeleteSpace
+                        Spacer(height = 8),
+                        UiSpaceSettingsItem.DeleteSpace,
+                        Spacer(height = 32)
                     ),
                     isEditEnabled = permission?.isOwnerOrEditor() == true
                 )

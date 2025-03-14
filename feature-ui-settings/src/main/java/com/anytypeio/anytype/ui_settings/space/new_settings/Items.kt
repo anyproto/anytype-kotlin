@@ -236,6 +236,16 @@ fun SpaceInfoItem(
 }
 
 @Composable
+fun RemoteStorageItem(
+    modifier: Modifier = Modifier
+) {
+    BaseButton(
+        modifier = modifier,
+        title = stringResource(id = R.string.remote_storage),
+    )
+}
+
+@Composable
 fun DeleteSpaceItem(
     modifier: Modifier = Modifier
 ) {

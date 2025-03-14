@@ -307,7 +307,7 @@
         android:name="com.anytypeio.anytype.ui.vault.IntroduceVaultFragment"
         android:label="IntroduceVaultScreen"/>
 
-    <dialog
+    <fragment
         android:id="@+id/spaceSettingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment"
         android:label="SpaceSettingsScreen"/>

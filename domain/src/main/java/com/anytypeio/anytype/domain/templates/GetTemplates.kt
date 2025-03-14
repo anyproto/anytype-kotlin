@@ -74,6 +74,7 @@ class GetTemplates(
                         Relations.NAME,
                         Relations.LAYOUT,
                         Relations.ICON_EMOJI,
+                        Relations.ICON_NAME,
                         Relations.ICON_IMAGE,
                         Relations.ICON_OPTION,
                         Relations.COVER_ID,

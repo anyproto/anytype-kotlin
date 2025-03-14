@@ -108,6 +108,8 @@ class ObjectTypesSubscriptionManager (
                     Relations.LAYOUT,
                     Relations.DESCRIPTION,
                     Relations.ICON_EMOJI,
+                    Relations.ICON_NAME,
+                    Relations.ICON_OPTION,
                     Relations.SOURCE_OBJECT,
                     Relations.IS_READ_ONLY,
                     Relations.RECOMMENDED_LAYOUT,

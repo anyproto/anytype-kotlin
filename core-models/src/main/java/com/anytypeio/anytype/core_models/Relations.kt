@@ -17,6 +17,7 @@ object Relations {
     const val NAME = "name"
     const val ICON_EMOJI = "iconEmoji"
     const val ICON_OPTION = "iconOption"
+    const val ICON_NAME = "iconName"
     const val ICON_IMAGE = "iconImage"
     const val RELATION_FORMAT = "relationFormat"
     const val IS_ARCHIVED = "isArchived"

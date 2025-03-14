@@ -316,10 +316,12 @@ class AllContentViewModel(
         val isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
         return when (activeTab) {
             AllContentTab.TYPES -> {
-                val items = objectWrappers.toUiContentTypes(
-                    urlBuilder = urlBuilder,
-                    isOwnerOrEditor = isOwnerOrEditor
-                )
+                val items = objectWrappers
+                    .map { ObjectWrapper.Type(it.map) }
+                    .toUiContentTypes(
+                        urlBuilder = urlBuilder,
+                        isOwnerOrEditor = isOwnerOrEditor
+                    )
                 buildList {
                     if (isOwnerOrEditor) add(UiContentItem.NewType)
                     addAll(items)
@@ -346,11 +348,19 @@ class AllContentViewModel(
                 }
                 val result = when (activeSort) {
                     is ObjectsListSort.ByDateCreated -> {
-                        groupItemsByDate(items = items, isSortByDateCreated = true, activeSort = activeSort)
+                        groupItemsByDate(
+                            items = items,
+                            isSortByDateCreated = true,
+                            activeSort = activeSort
+                        )
                     }
 
                     is ObjectsListSort.ByDateUpdated -> {
-                        groupItemsByDate(items = items, isSortByDateCreated = false, activeSort = activeSort)
+                        groupItemsByDate(
+                            items = items,
+                            isSortByDateCreated = false,
+                            activeSort = activeSort
+                        )
                     }
 
                     is ObjectsListSort.ByName -> {

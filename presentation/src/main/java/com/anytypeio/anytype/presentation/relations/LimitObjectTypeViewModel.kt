@@ -105,6 +105,8 @@ class LimitObjectTypeViewModel(
                         Relations.SNIPPET,
                         Relations.DESCRIPTION,
                         Relations.ICON_EMOJI,
+                        Relations.ICON_NAME,
+                        Relations.ICON_OPTION,
                         Relations.ICON_IMAGE,
                         Relations.LAYOUT
                     )

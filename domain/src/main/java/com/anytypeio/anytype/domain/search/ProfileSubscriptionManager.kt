@@ -58,6 +58,7 @@ interface ProfileSubscriptionManager : GlobalSubscription {
                                     Relations.ID,
                                     Relations.NAME,
                                     Relations.ICON_EMOJI,
+                                    Relations.ICON_NAME,
                                     Relations.ICON_IMAGE,
                                     Relations.ICON_OPTION,
                                     Relations.SHARED_SPACES_LIMIT

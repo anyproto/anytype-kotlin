@@ -214,14 +214,14 @@ fun ObjectWrapper.Basic.toAllContentItem(
     )
 }
 
-fun List<ObjectWrapper.Basic>.toUiContentTypes(
+fun List<ObjectWrapper.Type>.toUiContentTypes(
     urlBuilder: UrlBuilder,
     isOwnerOrEditor: Boolean
 ): List<UiContentItem.Type> {
     return map { it.toAllContentType(urlBuilder, isOwnerOrEditor) }
 }
 
-fun ObjectWrapper.Basic.toAllContentType(
+fun ObjectWrapper.Type.toAllContentType(
     urlBuilder: UrlBuilder,
     isOwnerOrEditor: Boolean
 ): UiContentItem.Type {

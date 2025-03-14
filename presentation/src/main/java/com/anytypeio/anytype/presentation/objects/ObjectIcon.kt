@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconData
 
 sealed class ObjectIcon {
 
@@ -41,6 +42,7 @@ sealed class ObjectIcon {
     data object Deleted : ObjectIcon()
 
     data class Checkbox(val isChecked: Boolean) : ObjectIcon()
+    data class ObjectType(val customIconData: CustomIconData) : ObjectIcon()
 }
 
 sealed class SpaceMemberIconView {

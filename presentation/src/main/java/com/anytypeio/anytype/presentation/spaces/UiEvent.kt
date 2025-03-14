@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.presentation.spaces
 
+import com.anytypeio.anytype.core_models.Id
+
 sealed class UiEvent {
     data object OnBackPressed : UiEvent()
 
@@ -8,7 +10,7 @@ sealed class UiEvent {
     data class OnSpaceImagePicked(val uri: String) : UiEvent()
 
     data object OnSpaceMembersClicked : UiEvent()
-    data object OnDefaultObjectTypeClicked : UiEvent()
+    data class OnDefaultObjectTypeClicked(val currentDefaultObjectTypeId: Id?) : UiEvent()
 
     data object OnDeleteSpaceClicked : UiEvent()
     data object OnFileStorageClick : UiEvent()

@@ -134,11 +134,13 @@ class SpaceSettingsViewModel(
             if (defaultObjectTypeResponse != null) {
                 val defaultType = storeOfObjectTypes.get(defaultObjectTypeResponse.id.id)
                 defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
+                    id = defaultType?.id,
                     name = defaultType?.name.orEmpty(),
                     icon = ObjectIcon.Empty.ObjectType
                 )
             } else {
                 defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
+                    id = null,
                     name = EMPTY_STRING_VALUE,
                     icon = ObjectIcon.None
                 )
@@ -284,7 +286,15 @@ class SpaceSettingsViewModel(
             }
             is UiEvent.OnDefaultObjectTypeClicked -> {
                 viewModelScope.launch {
-                    commands.emit(Command.SelectDefaultObjectType(vmParams.space))
+                    commands.emit(
+                        Command.SelectDefaultObjectType(
+                            space = vmParams.space,
+                            excludedTypeIds = buildList {
+                                val curr = uiEvent.currentDefaultObjectTypeId
+                                if (!curr.isNullOrEmpty()) add(curr)
+                            }
+                        )
+                    )
                 }
             }
         }
@@ -527,6 +537,7 @@ class SpaceSettingsViewModel(
                                 items = state.items.map { item ->
                                     if (item is UiSpaceSettingsItem.DefaultObjectType) {
                                         UiSpaceSettingsItem.DefaultObjectType(
+                                            id = type.id,
                                             name = type.name.orEmpty(),
                                             icon = ObjectIcon.Empty.ObjectType
                                         )
@@ -608,7 +619,7 @@ class SpaceSettingsViewModel(
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
-        data class SelectDefaultObjectType(val space: SpaceId) : Command()
+        data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) : Command()
         data object ExitToVault : Command()
         data object ShowDeleteSpaceWarning : Command()
         data object ShowLeaveSpaceWarning : Command()

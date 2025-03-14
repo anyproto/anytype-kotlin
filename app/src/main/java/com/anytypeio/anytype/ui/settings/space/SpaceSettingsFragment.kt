@@ -164,7 +164,7 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment(), ObjectTypeSelect
                 is Command.SelectDefaultObjectType -> {
                    runCatching {
                        AppDefaultObjectTypeFragment.newInstance(
-                           excludeTypes = emptyList()
+                           excludeTypes = command.excludedTypeIds
                        ).showChildFragment()
                    }.onFailure {
                        Timber.e(it, "Error while opening set-default-object-type screen")

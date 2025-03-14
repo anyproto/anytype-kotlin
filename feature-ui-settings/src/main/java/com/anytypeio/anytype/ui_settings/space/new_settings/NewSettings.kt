@@ -196,7 +196,7 @@ fun NewSpaceSettingsScreen(
                                         .fillMaxWidth()
                                         .animateItem()
                                         .clip(RoundedCornerShape(16.dp))
-                                        .clickable { uiEvent(UiEvent.OnDefaultObjectTypeClicked) }
+                                        .clickable { uiEvent(UiEvent.OnDefaultObjectTypeClicked(item.id)) }
                                     ,
                                     name = item.name,
                                     icon = item.icon

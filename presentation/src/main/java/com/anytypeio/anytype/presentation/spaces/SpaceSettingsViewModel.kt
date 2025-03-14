@@ -204,12 +204,17 @@ class SpaceSettingsViewModel(
                         Spacer(height = 8),
                         UiSpaceSettingsItem.Section.Collaboration,
                         UiSpaceSettingsItem.Members(count = spaceMemberCount),
+                        UiSpaceSettingsItem.Section.ContentModel,
+                        UiSpaceSettingsItem.ObjectTypes,
+                        Spacer(height = 8),
+                        UiSpaceSettingsItem.Fields,
                         UiSpaceSettingsItem.Section.Preferences,
                         defaultObjectTypeSettingItem,
                         Spacer(height = 8),
                         UiSpaceSettingsItem.Wallpapers(current = wallpaper),
                         UiSpaceSettingsItem.Section.Misc,
-                        UiSpaceSettingsItem.SpaceInfo
+                        UiSpaceSettingsItem.SpaceInfo,
+                        UiSpaceSettingsItem.DeleteSpace
                     ),
                     isEditEnabled = permission?.isOwnerOrEditor() == true
                 )

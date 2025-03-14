@@ -237,7 +237,15 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
-
+                        UiSpaceSettingsItem.Fields -> {
+                            item {
+                                FieldsItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                )
+                            }
+                        }
                         is UiSpaceSettingsItem.RemoteStorage -> {
                             // TODO
                         }

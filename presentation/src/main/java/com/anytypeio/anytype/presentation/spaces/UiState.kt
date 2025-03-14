@@ -46,6 +46,7 @@ sealed class UiSpaceSettingsItem {
     data class Members(val count: Int) : UiSpaceSettingsItem()
     data class Chat(val isOn: Boolean) : UiSpaceSettingsItem()
     data object ObjectTypes : UiSpaceSettingsItem()
+    data object Fields : UiSpaceSettingsItem()
     data class DefaultObjectType(val id: Id?, val name: String, val icon: ObjectIcon) : UiSpaceSettingsItem()
     data class Wallpapers(val current: Wallpaper?) : UiSpaceSettingsItem()
     data class RemoteStorage(val size: Int) : UiSpaceSettingsItem()

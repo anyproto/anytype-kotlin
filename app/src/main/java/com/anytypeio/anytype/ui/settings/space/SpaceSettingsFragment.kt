@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -26,6 +27,8 @@ import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
@@ -34,7 +37,7 @@ import javax.inject.Inject
 import timber.log.Timber
 
 // TODO convert to Fragment.
-class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
+class SpaceSettingsFragment : BaseBottomSheetComposeFragment(), ObjectTypeSelectionListener {
 
     private val space get() = arg<Id>(ARG_SPACE_ID_KEY)
 
@@ -158,8 +161,21 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                         Timber.e(it, "Error while opening space wallpaper picker")
                     }
                 }
+                is Command.SelectDefaultObjectType -> {
+                   runCatching {
+                       AppDefaultObjectTypeFragment.newInstance(
+                           excludeTypes = command.excludedTypeIds
+                       ).showChildFragment()
+                   }.onFailure {
+                       Timber.e(it, "Error while opening set-default-object-type screen")
+                   }
+                }
             }
         }
+    }
+
+    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
+        vm.onSelectObjectType(objType)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

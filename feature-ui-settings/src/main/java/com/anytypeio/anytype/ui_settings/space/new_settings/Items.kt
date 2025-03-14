@@ -91,6 +91,17 @@ fun ObjectTypesItem(
 }
 
 @Composable
+fun FieldsItem(
+    modifier: Modifier = Modifier
+) {
+    BaseButton(
+        modifier = modifier,
+        title = stringResource(id = R.string.fields),
+        icon = R.drawable.ic_fields_24,
+    )
+}
+
+@Composable
 fun DefaultTypeItem(
     modifier: Modifier = Modifier,
     name: String,

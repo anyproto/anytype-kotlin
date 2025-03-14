@@ -32,12 +32,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
@@ -63,6 +65,7 @@ fun NewSpaceSettingsScreen(
     uiState: UiSpaceSettingsState.SpaceSettings,
     uiEvent: (UiEvent) -> Unit
 ) {
+    val localContext = LocalContext.current
     val initialName = uiState.name
     val initialDescription = uiState.description
 
@@ -194,7 +197,10 @@ fun NewSpaceSettingsScreen(
                                 DefaultTypeItem(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .animateItem(),
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable { uiEvent(UiEvent.OnDefaultObjectTypeClicked(item.id)) }
+                                    ,
                                     name = item.name,
                                     icon = item.icon
                                 )
@@ -216,7 +222,10 @@ fun NewSpaceSettingsScreen(
                                 MembersItem(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .animateItem(),
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable { uiEvent(UiEvent.OnSpaceMembersClicked) }
+                                    ,
                                     item = item
                                 )
                             }
@@ -228,10 +237,26 @@ fun NewSpaceSettingsScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable {
+                                            localContext.toast("TODO")
+                                        }
                                 )
                             }
                         }
-
+                        UiSpaceSettingsItem.Fields -> {
+                            item {
+                                FieldsItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable {
+                                            localContext.toast("TODO")
+                                        }
+                                )
+                            }
+                        }
                         is UiSpaceSettingsItem.RemoteStorage -> {
                             // TODO
                         }

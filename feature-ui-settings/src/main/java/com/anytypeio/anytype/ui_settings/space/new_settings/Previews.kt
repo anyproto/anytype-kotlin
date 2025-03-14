@@ -31,6 +31,7 @@ fun NewSpaceSettingsScreenPreview() {
                 UiSpaceSettingsItem.ObjectTypes,
                 UiSpaceSettingsItem.Section.Preferences,
                 UiSpaceSettingsItem.DefaultObjectType(
+                    id = "some id",
                     name = "Taskwithveryverlylongname",
                     icon = ObjectIcon.Empty.ObjectType
                 ),

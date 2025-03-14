@@ -19,6 +19,7 @@ import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragme
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import javax.inject.Inject
 
+@Deprecated("To be deleted")
 class PersonalizationSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBinding>(),
     ObjectTypeSelectionListener {
 

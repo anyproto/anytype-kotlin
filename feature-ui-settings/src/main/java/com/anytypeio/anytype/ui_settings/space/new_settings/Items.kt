@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
@@ -43,7 +44,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
@@ -52,6 +55,7 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
@@ -61,7 +65,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
-import timber.log.Timber
 
 @Composable
 fun MembersItem(
@@ -155,15 +158,54 @@ fun WallpaperItem(
             style = PreviewTitle1Regular,
             color = colorResource(id = R.color.text_primary),
         )
-        Box(
-            modifier = Modifier
-                .size(20.dp)
-                .background(
-                    color = light(item.color),
-                    shape = RoundedCornerShape(4.dp)
+        when(val wallpaper = item.current) {
+            is Wallpaper.Color -> {
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .background(
+                            color = light(wallpaper.code),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 8.dp),
                 )
-                .padding(horizontal = 6.dp),
-        )
+            }
+            is Wallpaper.Gradient -> {
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = gradient(
+                                    gradient = wallpaper.code,
+                                    alpha = 0.3f
+                                )
+                            ),
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .padding(horizontal = 8.dp),
+                )
+            }
+            is Wallpaper.Default -> {
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = gradient(
+                                    gradient = CoverGradient.SKY,
+                                    alpha = 0.3f
+                                )
+                            ),
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .padding(horizontal = 8.dp),
+                )
+            }
+            else -> {
+                // Do nothing.
+            }
+        }
         Image(
             painter = painterResource(id = R.drawable.ic_disclosure_8_24),
             contentDescription = "Members icon",

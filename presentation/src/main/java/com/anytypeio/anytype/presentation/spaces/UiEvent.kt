@@ -11,6 +11,7 @@ sealed class UiEvent {
     data class OnSpaceImagePicked(val uri: String) : UiEvent()
     data object OnInviteClicked : UiEvent()
     data object OnQrCodeClicked : UiEvent()
+    data object OnWallpaperClicked : UiEvent()
 
     sealed class IconMenu : UiEvent() {
         data object OnRemoveIconClicked : IconMenu()

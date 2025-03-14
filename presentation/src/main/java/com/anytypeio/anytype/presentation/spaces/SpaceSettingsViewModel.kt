@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.spaces
 
+import android.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -14,12 +15,15 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -30,6 +34,8 @@ import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
+import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
@@ -37,6 +43,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -57,7 +64,9 @@ class SpaceSettingsViewModel(
     private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
     private val getMembership: GetMembershipStatus,
     private val uploadFile: UploadFile,
-    private val profileContainer: ProfileSubscriptionManager
+    private val profileContainer: ProfileSubscriptionManager,
+    private val getDefaultObjectType: GetDefaultObjectType,
+    private val observeWallpaper: ObserveWallpaper
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -78,27 +87,38 @@ class SpaceSettingsViewModel(
     }
 
     private fun proceedWithObservingSpaceView() {
+
+        val restrictions = combine(
+            userPermissionProvider.observe(params.space),
+            spaceViewContainer.sharedSpaceCount(userPermissionProvider.all()),
+            profileContainer
+                .observe()
+                .map { wrapper ->
+                    wrapper.getValue<Double?>(Relations.SHARED_SPACES_LIMIT)?.toInt() ?: 0
+                },
+        ) { permission, sharedSpaceCount, sharedSpaceLimit ->
+            Triple(permission, sharedSpaceCount, sharedSpaceLimit)
+        }
+
+
+        val otherFlows = combine(
+            spaceViewContainer.observe(params.space),
+            activeSpaceMemberSubscriptionContainer.observe(params.space),
+            observeWallpaper.build()
+        ) { spaceView, spaceMembers, wallpaper ->
+            Triple(spaceView, spaceMembers, wallpaper)
+        }
+
         viewModelScope.launch {
             combine(
-                spaceViewContainer.observe(params.space),
-                userPermissionProvider.observe(params.space),
-                profileContainer
-                    .observe()
-                    .map { wrapper ->
-                        wrapper.getValue<Double?>(Relations.SHARED_SPACES_LIMIT)?.toInt() ?: 0
-                    },
-                spaceViewContainer.sharedSpaceCount(userPermissionProvider.all()),
-                activeSpaceMemberSubscriptionContainer.observe(params.space),
-            ) { spaceView, permission, sharedSpaceLimit: Int, sharedSpaceCount: Int, store ->
+                restrictions,
+                otherFlows
+            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper) ->
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
-                val requests: Int = if (store is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    store.members.count { it.status == ParticipantStatus.JOINING }
-                } else {
-                    0
-                }
-                val spaceMember = if (store is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    store.members.find { it.id == spaceView.getValue<Id>(Relations.CREATOR) }
+
+                val spaceMember = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                    spaceMembers.members.find { it.id == spaceView.getValue<Id>(Relations.CREATOR) }
                 } else {
                     null
                 }
@@ -106,6 +126,12 @@ class SpaceSettingsViewModel(
 
                 //todo add logic
                 val membersNumber = 3
+
+                val requests: Int = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                    spaceMembers.members.count { it.status == ParticipantStatus.JOINING }
+                } else {
+                    0
+                }
 
                 val spaceTechInfo = SpaceTechInfo(
                     spaceId = params.space,
@@ -139,6 +165,8 @@ class SpaceSettingsViewModel(
                         Spacer(height = 8),
                         UiSpaceSettingsItem.Section.Collaboration,
                         UiSpaceSettingsItem.Members(count = membersNumber),
+                        UiSpaceSettingsItem.Section.Preferences,
+                        UiSpaceSettingsItem.Wallpapers(current = wallpaper),
                         UiSpaceSettingsItem.Section.Misc,
                         UiSpaceSettingsItem.SpaceInfo
                     ),
@@ -204,6 +232,11 @@ class SpaceSettingsViewModel(
             }
             is UiEvent.OnSpaceImagePicked -> {
                 proceedWithSettingSpaceImage(uiEvent.uri)
+            }
+            is UiEvent.OnWallpaperClicked -> {
+                viewModelScope.launch {
+                    commands.emit(Command.OpenWallpaperPicker)
+                }
             }
         }
     }
@@ -459,6 +492,7 @@ class SpaceSettingsViewModel(
         data object ShowShareLimitReachedError : Command()
         data object NavigateToMembership : Command()
         data object NavigateToMembershipUpdate : Command()
+        data object OpenWallpaperPicker : Command()
     }
 
     class Factory @Inject constructor(
@@ -477,7 +511,9 @@ class SpaceSettingsViewModel(
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val getMembership: GetMembershipStatus,
         private val uploadFile: UploadFile,
-        private val profileContainer: ProfileSubscriptionManager
+        private val profileContainer: ProfileSubscriptionManager,
+        private val getDefaultObjectType: GetDefaultObjectType,
+        private val observeWallpaper: ObserveWallpaper
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -498,7 +534,9 @@ class SpaceSettingsViewModel(
             activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer,
             getMembership = getMembership,
             uploadFile = uploadFile,
-            profileContainer = profileContainer
+            profileContainer = profileContainer,
+            getDefaultObjectType = getDefaultObjectType,
+            observeWallpaper = observeWallpaper
         ) as T
     }
 

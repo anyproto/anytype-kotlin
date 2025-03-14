@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugSpace
 import com.anytypeio.anytype.domain.debugging.DebugSpaceContentSaver
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
@@ -103,6 +104,7 @@ object SpaceSettingsModule {
 interface SpaceSettingsDependencies : ComponentDependencies {
     fun blockRepo(): BlockRepository
     fun auth(): AuthRepository
+    fun settings(): UserSettingsRepository
     fun urlBuilder(): UrlBuilder
     fun analytics(): Analytics
     fun dispatchers(): AppCoroutineDispatchers

@@ -28,6 +28,7 @@ import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
+import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
@@ -162,6 +163,16 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
                    }.onFailure {
                        Timber.e(it, "Error while opening set-default-object-type screen")
                    }
+                }
+                is Command.ManageRemoteStorage -> {
+                    runCatching {
+                        findNavController().navigate(
+                            resId = R.id.spacesStorageScreen,
+                            args = SpacesStorageFragment.args(space = space)
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Failed to execute nav command: $command")
+                    }
                 }
             }
         }

@@ -194,7 +194,10 @@ fun NewSpaceSettingsScreen(
                                 DefaultTypeItem(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .animateItem(),
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable { uiEvent(UiEvent.OnDefaultObjectTypeClicked) }
+                                    ,
                                     name = item.name,
                                     icon = item.icon
                                 )
@@ -216,7 +219,10 @@ fun NewSpaceSettingsScreen(
                                 MembersItem(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .animateItem(),
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable { uiEvent(UiEvent.OnSpaceMembersClicked) }
+                                    ,
                                     item = item
                                 )
                             }

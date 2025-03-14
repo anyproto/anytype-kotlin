@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.objects.types.pickers
 
+import android.os.Bundle
 import androidx.core.os.bundleOf
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -47,5 +48,6 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
         fun newInstance(excludeTypes: List<Id>) = AppDefaultObjectTypeFragment().apply {
             arguments = bundleOf(ARG_EXCLUDE_TYPES to excludeTypes)
         }
+        fun args(excludeTypes: List<Id>) : Bundle = bundleOf(ARG_EXCLUDE_TYPES to excludeTypes)
     }
 }

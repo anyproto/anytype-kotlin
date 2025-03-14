@@ -606,6 +606,9 @@
         android:label="fragment_wallpaper_set"
         tools:layout="@layout/fragment_wallpaper_select" />
     <dialog
+        android:id="@+id/setDefaultObjectTypeScreen"
+        android:name="com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment" />
+    <dialog
         android:id="@+id/appearanceScreen"
         android:name="com.anytypeio.anytype.ui.settings.AppearanceFragment"
         android:label="fragment_wallpaper_set"

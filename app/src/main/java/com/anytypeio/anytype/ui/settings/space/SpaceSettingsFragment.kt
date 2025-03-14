@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
@@ -157,6 +158,18 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     }.onFailure {
                         Timber.e(it, "Error while opening space wallpaper picker")
                     }
+                }
+                is Command.SelectDefaultObjectType -> {
+                   runCatching {
+                       findNavController().navigate(
+                           R.id.setDefaultObjectTypeScreen,
+                           args = AppDefaultObjectTypeFragment.args(
+                               excludeTypes = emptyList()
+                           )
+                       )
+                   }.onFailure {
+                       Timber.e(it, "Error while opening set-default-object-type screen")
+                   }
                 }
             }
         }

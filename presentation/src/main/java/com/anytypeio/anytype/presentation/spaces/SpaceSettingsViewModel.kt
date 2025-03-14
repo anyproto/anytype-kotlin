@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.spaces
 
-import android.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -15,11 +14,9 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
@@ -34,22 +31,21 @@ import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
-import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SpaceSettingsViewModel(
-    private val params: VmParams,
+    private val vmParams: VmParams,
     private val analytics: Analytics,
     private val setSpaceDetails: SetSpaceDetails,
     private val spaceManager: SpaceManager,
@@ -77,7 +73,7 @@ class SpaceSettingsViewModel(
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
 
     init {
-        Timber.d("SpaceSettingsViewModel, Init, vmParams: $params")
+        Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.screenSettingSpacesSpaceIndex
@@ -89,7 +85,7 @@ class SpaceSettingsViewModel(
     private fun proceedWithObservingSpaceView() {
 
         val restrictions = combine(
-            userPermissionProvider.observe(params.space),
+            userPermissionProvider.observe(vmParams.space),
             spaceViewContainer.sharedSpaceCount(userPermissionProvider.all()),
             profileContainer
                 .observe()
@@ -102,8 +98,8 @@ class SpaceSettingsViewModel(
 
 
         val otherFlows = combine(
-            spaceViewContainer.observe(params.space),
-            activeSpaceMemberSubscriptionContainer.observe(params.space),
+            spaceViewContainer.observe(vmParams.space),
+            activeSpaceMemberSubscriptionContainer.observe(vmParams.space),
             observeWallpaper.build()
         ) { spaceView, spaceMembers, wallpaper ->
             Triple(spaceView, spaceMembers, wallpaper)
@@ -117,15 +113,18 @@ class SpaceSettingsViewModel(
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
 
-                val spaceMember = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                val spaceCreator = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     spaceMembers.members.find { it.id == spaceView.getValue<Id>(Relations.CREATOR) }
                 } else {
                     null
                 }
-                val createdBy = spaceMember?.globalName?.takeIf { it.isNotEmpty() } ?: spaceMember?.identity
+                val createdByNameOrId = spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
-                //todo add logic
-                val membersNumber = 3
+                val spaceMemberCount = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                    spaceMembers.members.size
+                } else {
+                    0
+                }
 
                 val requests: Int = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     spaceMembers.members.count { it.status == ParticipantStatus.JOINING }
@@ -134,13 +133,13 @@ class SpaceSettingsViewModel(
                 }
 
                 val spaceTechInfo = SpaceTechInfo(
-                    spaceId = params.space,
-                    createdBy = createdBy.orEmpty(),
+                    spaceId = vmParams.space,
+                    createdBy = createdByNameOrId.orEmpty(),
                     creationDateInMillis = spaceView
                         .getValue<Double?>(Relations.CREATED_DATE)
                         ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() }
                     ,
-                    networkId = spaceManager.getConfig(params.space)?.network.orEmpty()
+                    networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty()
                 )
 
                 UiSpaceSettingsState.SpaceSettings(
@@ -164,8 +163,12 @@ class SpaceSettingsViewModel(
                         UiSpaceSettingsItem.Multiplayer,
                         Spacer(height = 8),
                         UiSpaceSettingsItem.Section.Collaboration,
-                        UiSpaceSettingsItem.Members(count = membersNumber),
+                        UiSpaceSettingsItem.Members(count = spaceMemberCount),
                         UiSpaceSettingsItem.Section.Preferences,
+//                        UiSpaceSettingsItem.DefaultObjectType(
+//                            name = "Test",
+//                            icon = ObjectIcon.None
+//                        ),
                         UiSpaceSettingsItem.Wallpapers(current = wallpaper),
                         UiSpaceSettingsItem.Section.Misc,
                         UiSpaceSettingsItem.SpaceInfo
@@ -207,7 +210,7 @@ class SpaceSettingsViewModel(
                 viewModelScope.launch {
                     setSpaceDetails.async(
                         params = SetSpaceDetails.Params(
-                            space = params.space,
+                            space = vmParams.space,
                             details = mapOf(
                                 Relations.DESCRIPTION to uiEvent.description
                             )
@@ -219,7 +222,7 @@ class SpaceSettingsViewModel(
                 viewModelScope.launch {
                     setSpaceDetails.async(
                         params = SetSpaceDetails.Params(
-                            space = params.space,
+                            space = vmParams.space,
                             details = mapOf(
                                 Relations.NAME to uiEvent.title
                             )
@@ -238,6 +241,16 @@ class SpaceSettingsViewModel(
                     commands.emit(Command.OpenWallpaperPicker)
                 }
             }
+            is UiEvent.OnSpaceMembersClicked -> {
+                viewModelScope.launch {
+                    commands.emit(Command.ManageSharedSpace(vmParams.space))
+                }
+            }
+            is UiEvent.OnDefaultObjectTypeClicked -> {
+                viewModelScope.launch {
+                    commands.emit(Command.SelectDefaultObjectType(vmParams.space))
+                }
+            }
         }
     }
 
@@ -253,7 +266,7 @@ class SpaceSettingsViewModel(
         viewModelScope.launch {
             setSpaceDetails.async(
                 SetSpaceDetails.Params(
-                    space = params.space,
+                    space = vmParams.space,
                     details = mapOf(
                         Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
                         Relations.ICON_IMAGE to "",
@@ -353,7 +366,7 @@ class SpaceSettingsViewModel(
     fun onManageSharedSpaceClicked() {
         viewModelScope.launch {
             commands.emit(
-                Command.ManageSharedSpace(params.space)
+                Command.ManageSharedSpace(vmParams.space)
             )
         }
     }
@@ -426,7 +439,7 @@ class SpaceSettingsViewModel(
             uploadFile.async(
                 params = UploadFile.Params(
                     path = path,
-                    space = params.space,
+                    space = vmParams.space,
                     type = Block.Content.File.Type.IMAGE
                 )
             ).fold(
@@ -443,7 +456,7 @@ class SpaceSettingsViewModel(
     private suspend fun proceedWithSettingSpaceIconImage(file: ObjectWrapper.File) {
         setSpaceDetails.async(
             SetSpaceDetails.Params(
-                space = params.space,
+                space = vmParams.space,
                 details = mapOf(
                     Relations.ICON_IMAGE to file.id,
                     Relations.ICON_OPTION to null,
@@ -486,6 +499,7 @@ class SpaceSettingsViewModel(
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
+        data class SelectDefaultObjectType(val space: SpaceId) : Command()
         data object ExitToVault : Command()
         data object ShowDeleteSpaceWarning : Command()
         data object ShowLeaveSpaceWarning : Command()
@@ -529,7 +543,7 @@ class SpaceSettingsViewModel(
             configStorage = configStorage,
             debugSpaceShareDownloader = debugFileShareDownloader,
             spaceGradientProvider = spaceGradientProvider,
-            params = params,
+            vmParams = params,
             userPermissionProvider = userPermissionProvider,
             activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer,
             getMembership = getMembership,

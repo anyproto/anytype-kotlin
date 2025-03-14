@@ -163,12 +163,9 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment(), ObjectTypeSelect
                 }
                 is Command.SelectDefaultObjectType -> {
                    runCatching {
-                       findNavController().navigate(
-                           R.id.setDefaultObjectTypeScreen,
-                           args = AppDefaultObjectTypeFragment.args(
-                               excludeTypes = emptyList()
-                           )
-                       )
+                       AppDefaultObjectTypeFragment.newInstance(
+                           excludeTypes = emptyList()
+                       ).showChildFragment()
                    }.onFailure {
                        Timber.e(it, "Error while opening set-default-object-type screen")
                    }

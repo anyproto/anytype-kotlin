@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -124,6 +125,25 @@ class SpaceSettingsViewModel(
         }
 
         viewModelScope.launch {
+            val defaultObjectTypeResponse = getDefaultObjectType
+                .async(params = vmParams.space)
+                .getOrNull()
+
+            val defaultObjectTypeSettingItem: UiSpaceSettingsItem.DefaultObjectType
+
+            if (defaultObjectTypeResponse != null) {
+                val defaultType = storeOfObjectTypes.get(defaultObjectTypeResponse.id.id)
+                defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
+                    name = defaultType?.name.orEmpty(),
+                    icon = ObjectIcon.Empty.ObjectType
+                )
+            } else {
+                defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
+                    name = EMPTY_STRING_VALUE,
+                    icon = ObjectIcon.None
+                )
+            }
+
             combine(
                 restrictions,
                 otherFlows
@@ -183,10 +203,8 @@ class SpaceSettingsViewModel(
                         UiSpaceSettingsItem.Section.Collaboration,
                         UiSpaceSettingsItem.Members(count = spaceMemberCount),
                         UiSpaceSettingsItem.Section.Preferences,
-//                        UiSpaceSettingsItem.DefaultObjectType(
-//                            name = "Test",
-//                            icon = ObjectIcon.None
-//                        ),
+                        defaultObjectTypeSettingItem,
+                        Spacer(height = 8),
                         UiSpaceSettingsItem.Wallpapers(current = wallpaper),
                         UiSpaceSettingsItem.Section.Misc,
                         UiSpaceSettingsItem.SpaceInfo
@@ -503,6 +521,25 @@ class SpaceSettingsViewModel(
                     Timber.e(it, "Error while setting default object type")
                 },
                 onSuccess = {
+                    when(val state = uiState.value) {
+                        is UiSpaceSettingsState.SpaceSettings -> {
+                            uiState.value = state.copy(
+                                items = state.items.map { item ->
+                                    if (item is UiSpaceSettingsItem.DefaultObjectType) {
+                                        UiSpaceSettingsItem.DefaultObjectType(
+                                            name = type.name.orEmpty(),
+                                            icon = ObjectIcon.Empty.ObjectType
+                                        )
+                                    } else {
+                                        item
+                                    }
+                                }
+                            )
+                        }
+                        else -> {
+                            Timber.w("Unexpected ui state when updating object type: $state")
+                        }
+                    }
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
                             name = defaultTypeChanged,
@@ -518,7 +555,7 @@ class SpaceSettingsViewModel(
                 }
             )
         }
-        // Updating app actions:
+        // Updating app actions (app shortcuts):
         viewModelScope.launch {
             val types = buildList<ObjectWrapper.Type> {
                 add(type)

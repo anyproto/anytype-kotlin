@@ -204,6 +204,8 @@ class SpaceSettingsViewModel(
                         defaultObjectTypeSettingItem,
                         Spacer(height = 8),
                         UiSpaceSettingsItem.Wallpapers(current = wallpaper),
+                        UiSpaceSettingsItem.Section.DataManagement,
+                        UiSpaceSettingsItem.RemoteStorage,
                         UiSpaceSettingsItem.Section.Misc,
                         UiSpaceSettingsItem.SpaceInfo,
                         Spacer(height = 8),

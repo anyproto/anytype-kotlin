@@ -427,7 +427,8 @@ fun ButtonWarning(
     text: String = "",
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    size: ButtonSize
+    size: ButtonSize,
+    isEnabled: Boolean = true
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
@@ -453,7 +454,8 @@ fun ButtonWarning(
                 defaultElevation = 0.dp,
                 pressedElevation = 0.dp
             ),
-            contentPadding = size.contentPadding
+            contentPadding = size.contentPadding,
+            enabled = isEnabled
         ) {
             Text(
                 text = text,

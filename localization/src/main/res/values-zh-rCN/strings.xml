@@ -1583,7 +1583,7 @@
     <string name="object_type_fields_section_fields_menu">Shown in properties menu</string>
     <string name="object_type_fields_section_hidden">Hidden</string>
     <string name="object_type_fields_section_file">文件</string>
-    <string name="object_type_fields_section_local_fields">Local properties</string>
+    <string name="object_type_fields_section_local_fields">本地属性</string>
     <string name="object_type_fields_title">属性</string>
     <string name="object_type_fields_info_text">您正在编辑类型</string>
     <string name="object_type_fields_edit_field">Edit field</string>

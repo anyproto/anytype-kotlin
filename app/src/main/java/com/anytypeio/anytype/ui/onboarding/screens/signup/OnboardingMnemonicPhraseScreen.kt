@@ -84,6 +84,20 @@ fun PreviewMnemonicPhraseScreen() {
     )
 }
 
+@Preview
+@Composable
+fun PreviewMnemonicPhraseScreen2() {
+    val fakeMnemonic = "One Two Three Four Five Six Seven Eight Nine Ten Eleven Twelve"
+    MnemonicPhraseScreen(
+        state = OnboardingMnemonicViewModel.State.Mnemonic(fakeMnemonic),
+        reviewMnemonic = { /*TODO*/ },
+        onCheckLaterClicked = { /*TODO*/ },
+        copyMnemonicToClipboard = {},
+        mnemonicColorPalette = emptyList(),
+        onGoToAppClicked = {}
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MnemonicPhraseScreen(
@@ -190,7 +204,7 @@ fun MnemonicButtons(
                     textAlign = TextAlign.Center
                 )
                 OnBoardingButtonPrimary(
-                    text = stringResource(id = R.string.onboarding_show_my_key),
+                    text = stringResource(id = R.string.onboarding_tap_to_reveal),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
@@ -199,7 +213,7 @@ fun MnemonicButtons(
                     }, size = ButtonSize.Large
                 )
                 OnBoardingButtonSecondary(
-                    text = stringResource(id = R.string.onboarding_key_skip),
+                    text = stringResource(id = R.string.onboarding_key_not_now),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(

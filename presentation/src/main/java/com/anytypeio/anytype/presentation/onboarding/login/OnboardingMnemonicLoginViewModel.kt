@@ -15,7 +15,6 @@ import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationExcep
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
 import com.anytypeio.anytype.domain.auth.interactor.Logout
-import com.anytypeio.anytype.domain.auth.interactor.MigrateAccount
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
@@ -32,7 +31,6 @@ import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingLoginEvent
-import com.anytypeio.anytype.presentation.splash.SplashViewModel.State
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -272,7 +270,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     state.value = SetupState.Failed
                     when (e) {
                         is AccountMigrationNeededException -> {
-                            proceedWithAccountMigration(id)
+                            state.value = SetupState.Migration.AwaitingStart(account = id)
                         }
                         is AccountIsDeletedException -> {
                             sideEffects.emit(value = SideEffect.Error.AccountDeletedError)
@@ -405,7 +403,11 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     }
 
     fun onStartMigrationClicked(account: Id) {
-
+        viewModelScope.launch {
+            if (state.value is SetupState.Migration.AwaitingStart) {
+                proceedWithAccountMigration(account)
+            }
+        }
     }
 
     override fun onCleared() {
@@ -432,7 +434,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         data object Abort: SetupState()
         sealed class Migration : SetupState() {
             abstract val account: Id
-            data class ReadyToStart(override val account: Id) : Migration()
+            data class AwaitingStart(override val account: Id) : Migration()
             data class InProgress(override val account: Id): Migration()
             data class Failed(
                 val state: MigrationHelperDelegate.State.Failed,

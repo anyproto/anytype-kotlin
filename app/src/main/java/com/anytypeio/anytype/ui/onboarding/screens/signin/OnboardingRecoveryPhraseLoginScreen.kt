@@ -230,13 +230,13 @@ fun RecoveryScreen(
                 is SetupState.Migration.InProgress -> {
                     MigrationInProgressScreen()
                 }
-                is SetupState.Migration.ReadyToStart -> {
+                is SetupState.Migration.AwaitingStart -> {
                     MigrationStartScreen(
                         onStartUpdate = {
-
+                            onStartMigrationClicked(state.account)
                         },
                         onReadMore = {
-
+                            // TODO show bottom sheet.
                         }
                     )
                 }

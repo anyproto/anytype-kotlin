@@ -160,3 +160,8 @@ private fun fileIcon(
 private fun taskIcon(isChecked: Boolean): ObjectIcon {
     return ObjectIcon.Task(isChecked = isChecked)
 }
+
+fun ObjectWrapper.Basic.getFileUrl(urlBuilder: UrlBuilder): String? {
+    val fileId = getValue<String>("fileId") ?: return null
+    return urlBuilder.file(fileId)
+}

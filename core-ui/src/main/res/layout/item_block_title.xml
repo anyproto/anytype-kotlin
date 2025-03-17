@@ -52,7 +52,6 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageIcon"
-        tools:src="@drawable/a123"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxHeight="443dp"

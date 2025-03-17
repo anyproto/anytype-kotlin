@@ -271,6 +271,9 @@ class BlockAdapter(
             is Video -> {
                 holder.recycle()
             }
+            is Title.File -> {
+                holder.release()
+            }
         }
     }
 
@@ -1390,7 +1393,7 @@ class BlockAdapter(
             }
             is Title.File -> {
                 holder.apply {
-                    bind(item = blocks[position] as BlockView.Title.File,)
+                    bind(item = blocks[position] as BlockView.Title.File)
                 }
             }
             is Code -> {

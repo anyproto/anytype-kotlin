@@ -1,17 +1,13 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.text.Spannable
 import android.util.TypedValue
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.compose.ui.platform.ComposeView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.postDelayed
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
@@ -30,7 +26,6 @@ import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
-import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -39,13 +34,13 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
-import java.security.MessageDigest
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
 import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
@@ -605,29 +600,86 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val root: View = itemView
         override val content: TextInputWidget = binding.title
 
-        init {
-            icon.binding.ivImage.updateLayoutParams<LayoutParams> {
-                height = itemView.resources.getDimension(R.dimen.dp_80).toInt()
-                width = itemView.resources.getDimension(R.dimen.dp_64).toInt()
-            }
-        }
+        private var player: ExoPlayer? = null
 
-        fun bind(
-            item: BlockView.Title.File,
-        ) {
+//        init {
+//            icon.binding.ivImage.updateLayoutParams<LayoutParams> {
+//                height = itemView.resources.getDimension(R.dimen.dp_80).toInt()
+//                width = itemView.resources.getDimension(R.dimen.dp_64).toInt()
+//            }
+//        }
+
+        fun bind(item: BlockView.Title.File) {
             super.bind(
                 item = item,
                 onCoverClicked = {},
                 click = {}
             )
-            icon.setIcon(item.icon)
+
+            content.setText(item.text)
+
+            // Проверяем, является ли файл видео
+            val fileIcon = item.icon
+            if (fileIcon is ObjectIcon.File && fileIcon.isVideo()) {
+                item.url?.let { setupVideoPreview(it) }
+            } else {
+                setupDefaultFileIcon(fileIcon)
+            }
         }
 
-        override fun applyTextColor(item: BlockView.Title) {
-            //do nothing
+        private fun setupVideoPreview(videoUrl: String) {
+            // Скрываем обычную иконку файла
+            binding.objectIconWidget.gone()
+            binding.cover.gone()
+
+            // Показываем миниатюру видео и кнопку Play
+            binding.videoThumbnail.visible()
+//            binding.playButton.visible()
+
+            // Загружаем превью (можно заменить на кадр из видео)
+            Glide.with(binding.root)
+                .load(videoUrl) // ❗Замените на URL превью, если он есть
+                .into(binding.videoThumbnail)
+
+            // Обрабатываем нажатие для воспроизведения видео
+//            binding.playButton.setOnClickListener { playVideo(videoUrl) }
+            binding.videoThumbnail.setOnClickListener { playVideo(videoUrl) }
         }
-        override fun applyBackground(item: BlockView.Title) {
-            //do nothing
+
+        private fun setupDefaultFileIcon(fileIcon: ObjectIcon) {
+            // Показываем иконку файла
+            binding.videoThumbnail.gone()
+//            binding.playButton.gone()
+            binding.objectIconWidget.visible()
+            binding.cover.visible()
+
+            icon.setIcon(fileIcon)
         }
+
+        private fun playVideo(videoUrl: String) {
+            player = ExoPlayer.Builder(itemView.context).build().apply {
+                val mediaItem = MediaItem.fromUri(videoUrl)
+                setMediaItem(mediaItem)
+                prepare()
+                playWhenReady = true
+            }
+
+            binding.playerView.player = player
+            binding.playerView.visible()
+            binding.videoThumbnail.gone()
+//            binding.playButton.gone()
+        }
+
+        fun pause() {
+            player?.pause()
+        }
+
+        fun release() {
+            player?.release()
+            player = null
+        }
+
+        override fun applyTextColor(item: BlockView.Title) {}
+        override fun applyBackground(item: BlockView.Title) {}
     }
 }

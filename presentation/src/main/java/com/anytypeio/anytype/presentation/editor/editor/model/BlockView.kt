@@ -688,6 +688,7 @@ sealed class BlockView : ViewType {
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val hint: String? = null,
+            val url: String?,
             val icon: ObjectIcon
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_FILE_TITLE
@@ -1432,6 +1433,7 @@ sealed class BlockView : ViewType {
 
         @JvmInline
         value class RowId(val value: String)
+
         @JvmInline
         value class RowIndex(val value: Int)
 
@@ -1439,6 +1441,7 @@ sealed class BlockView : ViewType {
 
         @JvmInline
         value class ColumnId(val value: String)
+
         @JvmInline
         value class ColumnIndex(val value: Int)
 

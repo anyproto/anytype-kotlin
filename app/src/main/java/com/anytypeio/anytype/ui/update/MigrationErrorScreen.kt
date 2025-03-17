@@ -38,9 +38,12 @@ import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 
 @Composable
-fun MigrationStartScreen() {
+fun MigrationStartScreen(
+    onStartUpdate: () -> Unit,
+    onReadMore: () -> Unit
+) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         Column(
             modifier = Modifier
@@ -83,18 +86,14 @@ fun MigrationStartScreen() {
         ) {
             ButtonPrimary(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {
-
-                },
+                onClick = onStartUpdate,
                 text = stringResource(R.string.migration_screen_start_update),
                 size = ButtonSize.Large
             )
             Spacer(modifier = Modifier.height(12.dp))
             ButtonSecondary(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {
-
-                },
+                onClick = onReadMore,
                 text = stringResource(R.string.migration_screen_read_more),
                 size = ButtonSize.Large
             )
@@ -176,7 +175,10 @@ fun MigrationReadMoreScreenPreview() {
 @DefaultPreviews
 @Composable
 fun MigrationStartScreenPreview() {
-    MigrationStartScreen()
+    MigrationStartScreen(
+        onStartUpdate = {},
+        onReadMore = {}
+    )
 }
 
 @Composable

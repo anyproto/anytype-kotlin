@@ -209,7 +209,7 @@
     <string name="action_bar_turn_into">转换为</string>
     <string name="action_bar_turn_into_page">转换为页面</string>
     <string name="action_bar_delete">删除</string>
-    <string name="action_bar_to_bin">移到废纸篓</string>
+    <string name="action_bar_to_bin">移入回收站</string>
     <string name="action_bar_duplicate">生成副本</string>
     <string name="action_bar_move_to">移至</string>
     <string name="action_bar_style">样式</string>
@@ -414,7 +414,7 @@
     <string name="layout_profile_description">公司、联系人、朋友和家人</string>
     <string name="layout_todo_name">任务</string>
     <string name="layout_todo_description">带复选框的操作重点布局</string>
-    <string name="move_to_bin">移到废纸篓</string>
+    <string name="move_to_bin">移入回收站</string>
     <string name="undoredo">撤消/重做</string>
     <string name="object_removal_process">对象移除进程</string>
     <string name="please_wait_your_object_deletion">请稍候。您的对象将很快被删除。</string>
@@ -851,7 +851,7 @@
     <string name="favorites">收藏夹</string>
     <string name="recent">最近编辑的文档</string>
     <string name="recently_opened">最近打开的文档</string>
-    <string name="bin">废纸篓</string>
+    <string name="bin">回收站</string>
     <string name="synced_files">已同步的文件</string>
     <string name="log_in">登录</string>
     <string name="create_object_section_library">Anytype 文库</string>
@@ -957,7 +957,7 @@
     <string name="widget_change_source">更改来源</string>
     <string name="widget_change_type">更改类型</string>
     <string name="widget_remove_widget">删除小部件</string>
-    <string name="widget_empty_bin">清空废纸篓</string>
+    <string name="widget_empty_bin">清空回收站</string>
     <string name="widget_edit_widgets">编辑小部件</string>
     <!--endregion-->
     <!--region LIBRARY -->
@@ -1245,7 +1245,7 @@
     <string name="multiplayer_you_as_member">You</string>
     <string name="multiplayer_spaces">空间</string>
     <string name="multiplayer_space_status_joining">正在加入</string>
-    <string name="multiplayer_space_status_active">正在进行</string>
+    <string name="multiplayer_space_status_active">生效</string>
     <string name="multiplayer_space_status_removing">已移除</string>
     <string name="multiplayer_cancel_join_request">取消加入请求</string>
     <string name="multiplayer_cancel_join_request_msg">您将需要再次发送加入请求</string>

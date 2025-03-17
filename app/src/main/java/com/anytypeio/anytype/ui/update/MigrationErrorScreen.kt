@@ -37,6 +37,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 
+
 @Composable
 fun MigrationStartScreen(
     onStartUpdate: () -> Unit,

@@ -428,6 +428,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         data object Abort: SetupState()
         sealed class Migration : SetupState() {
             abstract val account: Id
+            data class ReadyToStart(override val account: Id) : Migration()
             data class InProgress(override val account: Id): Migration()
             data class Failed(
                 val state: MigrationHelperDelegate.State.Failed,

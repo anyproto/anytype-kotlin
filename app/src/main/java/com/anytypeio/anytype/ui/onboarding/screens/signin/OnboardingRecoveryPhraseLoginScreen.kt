@@ -57,6 +57,7 @@ import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLog
 import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicInput
 import com.anytypeio.anytype.ui.update.MigrationFailedScreen
 import com.anytypeio.anytype.ui.update.MigrationInProgressScreen
+import com.anytypeio.anytype.ui.update.MigrationStartScreen
 import kotlin.Unit
 
 @Composable
@@ -223,15 +224,31 @@ fun RecoveryScreen(
                 }
             }
         )
-        if (state is SetupState.Migration.InProgress) {
-            MigrationInProgressScreen()
-        } else if(state is SetupState.Migration.Failed) {
-            MigrationFailedScreen(
-                state = state.state,
-                onRetryClicked = {
-                    onRetryMigrationClicked(state.account)
+
+        if (state is SetupState.Migration) {
+            when(state) {
+                is SetupState.Migration.Failed -> {
+                    MigrationFailedScreen(
+                        state = state.state,
+                        onRetryClicked = {
+                            onRetryMigrationClicked(state.account)
+                        }
+                    )
                 }
-            )
+                is SetupState.Migration.InProgress -> {
+                    MigrationInProgressScreen()
+                }
+                is SetupState.Migration.ReadyToStart -> {
+                    MigrationStartScreen(
+                        onStartUpdate = {
+
+                        },
+                        onReadMore = {
+
+                        }
+                    )
+                }
+            }
         }
     }
 }

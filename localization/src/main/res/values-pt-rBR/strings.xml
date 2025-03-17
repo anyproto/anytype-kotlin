@@ -829,7 +829,7 @@
     <string name="created_by">Criado por</string>
     <string name="space_id">ID do Espaço</string>
     <string name="network_id">ID da rede</string>
-    <string name="delete_space_subtitle">Este espaço será excluído permanentemente. Você não pode desfazer esta ação.</string>
+    <string name="delete_space_subtitle">Space deletion is permanent and cannot be undone. Please note that all the data connected to this space will be permanently removed and you will lose an access to it forever.</string>
     <string name="delete_space_title_with_param">Apagar o espaço \'%1$s\' </string>
     <string name="delete_space_title">Tem certeza que deseja excluir essa espaço?</string>
     <string name="space_id_copied_toast_msg">ID do Espaço copiado</string>
@@ -1698,4 +1698,5 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="property_select_format_title">Select property format</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
+    <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
 </resources>

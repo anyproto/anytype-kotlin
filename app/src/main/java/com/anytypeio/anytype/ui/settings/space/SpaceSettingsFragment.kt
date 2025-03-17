@@ -6,21 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
+import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
@@ -29,6 +28,7 @@ import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
+import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
@@ -36,8 +36,7 @@ import java.io.File
 import javax.inject.Inject
 import timber.log.Timber
 
-// TODO convert to Fragment.
-class SpaceSettingsFragment : BaseBottomSheetComposeFragment(), ObjectTypeSelectionListener {
+class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
 
     private val space get() = arg<Id>(ARG_SPACE_ID_KEY)
 
@@ -51,30 +50,25 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment(), ObjectTypeSelect
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ) = ComposeDialogView(
-        context = requireContext(), dialog = requireDialog()
-    ).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent {
-            MaterialTheme(
-                typography = typography,
-                colors = MaterialTheme.colors.copy(
-                    surface = colorResource(id = R.color.context_menu_background)
-                )
-            ) {
-                SpaceSettingsContainer(
-                    uiState = vm.uiState.collectAsStateWithLifecycle().value,
-                    uiEvent = vm::onUiEvent
-                )
-                LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
-                LaunchedEffect(Unit) {
-                    vm.isDismissed.collect { isDismissed ->
-                        if (isDismissed) dismiss()
-                    }
+    ) = content {
+        MaterialTheme(
+            typography = typography,
+            colors = MaterialTheme.colors.copy(
+                surface = colorResource(id = R.color.context_menu_background)
+            )
+        ) {
+            SpaceSettingsContainer(
+                uiState = vm.uiState.collectAsStateWithLifecycle().value,
+                uiEvent = vm::onUiEvent
+            )
+            LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
+            LaunchedEffect(Unit) {
+                vm.isDismissed.collect { isDismissed ->
+                    if (isDismissed) findNavController().popBackStack()
                 }
-                LaunchedEffect(Unit) {
-                    observeCommands()
-                }
+            }
+            LaunchedEffect(Unit) {
+                observeCommands()
             }
         }
     }
@@ -170,6 +164,16 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment(), ObjectTypeSelect
                        Timber.e(it, "Error while opening set-default-object-type screen")
                    }
                 }
+                is Command.ManageRemoteStorage -> {
+                    runCatching {
+                        findNavController().navigate(
+                            resId = R.id.spacesStorageScreen,
+                            args = SpacesStorageFragment.args(space = space)
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Failed to execute nav command: $command")
+                    }
+                }
             }
         }
     }
@@ -180,8 +184,6 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment(), ObjectTypeSelect
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        expand()
-        skipCollapsed()
     }
 
     override fun injectDependencies() {
@@ -191,6 +193,10 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment(), ObjectTypeSelect
 
     override fun releaseDependencies() {
         componentManager().spaceSettingsComponent.release()
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        // Do nothing. Compose code will handle insets.
     }
 
     companion object {

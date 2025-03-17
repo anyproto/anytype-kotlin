@@ -49,7 +49,7 @@ sealed class UiSpaceSettingsItem {
     data object Fields : UiSpaceSettingsItem()
     data class DefaultObjectType(val id: Id?, val name: String, val icon: ObjectIcon) : UiSpaceSettingsItem()
     data class Wallpapers(val current: Wallpaper?) : UiSpaceSettingsItem()
-    data class RemoteStorage(val size: Int) : UiSpaceSettingsItem()
+    data object RemoteStorage : UiSpaceSettingsItem()
     data object SpaceInfo : UiSpaceSettingsItem()
     data object DeleteSpace : UiSpaceSettingsItem()
 }

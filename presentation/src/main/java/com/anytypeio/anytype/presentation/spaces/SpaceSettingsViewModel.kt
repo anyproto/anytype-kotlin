@@ -11,12 +11,8 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Block.Content.DataView.Filter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -28,7 +24,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
@@ -42,18 +37,15 @@ import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.settings.PersonalizationSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
 import javax.inject.Inject
 import kotlin.collections.map
-import kotlin.collections.sortedBy
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -212,6 +204,8 @@ class SpaceSettingsViewModel(
                         defaultObjectTypeSettingItem,
                         Spacer(height = 8),
                         UiSpaceSettingsItem.Wallpapers(current = wallpaper),
+                        UiSpaceSettingsItem.Section.DataManagement,
+                        UiSpaceSettingsItem.RemoteStorage,
                         UiSpaceSettingsItem.Section.Misc,
                         UiSpaceSettingsItem.SpaceInfo,
                         Spacer(height = 8),
@@ -237,10 +231,16 @@ class SpaceSettingsViewModel(
                 isDismissed.value = true
             }
             UiEvent.OnDeleteSpaceClicked -> {
-                sendToast("Coming soon")
+                viewModelScope.launch {
+                    commands.emit(
+                        Command.ShowDeleteSpaceWarning
+                    )
+                }
             }
-            UiEvent.OnFileStorageClick -> {
-                sendToast("Coming soon")
+            UiEvent.OnRemoteStorageClick -> {
+                viewModelScope.launch {
+                    commands.emit(Command.ManageRemoteStorage)
+                }
             }
             UiEvent.OnInviteClicked -> {
                 sendToast("Coming soon")
@@ -275,13 +275,10 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
-            UiEvent.OnSpaceIdClicked -> {
-                sendToast("Coming soon")
-            }
             is UiEvent.OnSpaceImagePicked -> {
                 proceedWithSettingSpaceImage(uiEvent.uri)
             }
-            is UiEvent.OnWallpaperClicked -> {
+            is UiEvent.OnSelectWallpaperClicked -> {
                 viewModelScope.launch {
                     commands.emit(Command.OpenWallpaperPicker)
                 }
@@ -380,27 +377,21 @@ class SpaceSettingsViewModel(
     }
 
     private fun proceedWithSpaceDeletion() {
-//        val state = spaceViewState.value as? SpaceData.Success ?: return
-//        val space = state.spaceId
-//        if (space != null) {
-//            viewModelScope.launch {
-//                deleteSpace.async(params = SpaceId(space)).fold(
-//                    onSuccess = {
-//                        analytics.sendEvent(
-//                            eventName = EventsDictionary.deleteSpace,
-//                            props = Props(mapOf(EventsPropertiesKey.type to "Private"))
-//                        )
-//                        spaceManager.clear()
-//                        commands.emit(Command.ExitToVault)
-//                    },
-//                    onFailure = {
-//                        Timber.e(it, "Error while deleting space")
-//                    }
-//                )
-//            }
-//        } else {
-//            sendToast("Space not found. Please, try again later")
-//        }
+        viewModelScope.launch {
+                deleteSpace.async(params = vmParams.space).fold(
+                    onSuccess = {
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.deleteSpace,
+                            props = Props(mapOf(EventsPropertiesKey.type to "Private"))
+                        )
+                        spaceManager.clear()
+                        commands.emit(Command.ExitToVault)
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while deleting space")
+                    }
+                )
+            }
     }
 
     private fun proceedWithSpaceDebug() {
@@ -634,6 +625,7 @@ class SpaceSettingsViewModel(
         data object NavigateToMembership : Command()
         data object NavigateToMembershipUpdate : Command()
         data object OpenWallpaperPicker : Command()
+        data object ManageRemoteStorage : Command()
     }
 
     class Factory @Inject constructor(

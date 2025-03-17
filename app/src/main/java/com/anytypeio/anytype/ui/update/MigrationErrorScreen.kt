@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +26,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -45,12 +48,12 @@ fun MigrationStartScreen() {
                 .padding(horizontal = 20.dp)
                 .align(Alignment.Center)
         ) {
-
+            // TODO add icon
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.migration_screen_new_version_update),
                 style = HeadlineTitle,
-                color = colorResource(R.color.text_secondary),
+                color = colorResource(R.color.text_primary),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -100,8 +103,26 @@ fun MigrationStartScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MigrationReadMoreScreen() {
+fun MigrationReadMoreBottomSheet(
+    onDismissRequest: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        dragHandle = {
+            Dragger(
+                modifier = Modifier.padding(vertical = 6.dp)
+            )
+        },
+        content = {
+            MigrationReadMoreScreenContent()
+        }
+    )
+}
+
+@Composable
+fun MigrationReadMoreScreenContent() {
     LazyColumn(
         modifier = Modifier.padding(
             horizontal = 16.dp
@@ -119,7 +140,7 @@ fun MigrationReadMoreScreen() {
             Text(
                 text = stringResource(R.string.migration_screen_what_to_expect_description),
                 style = BodyCalloutRegular,
-                color = colorResource(R.color.text_primary)
+                color = colorResource(R.color.text_secondary)
             )
         }
         item {
@@ -134,11 +155,13 @@ fun MigrationReadMoreScreen() {
             Text(
                 text = stringResource(R.string.migration_screen_your_data_description),
                 style = BodyCalloutRegular,
+                color = colorResource(R.color.text_secondary)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.migration_screen_your_data_description_2),
                 style = BodyCalloutRegular,
+                color = colorResource(R.color.text_secondary)
             )
         }
     }
@@ -147,7 +170,7 @@ fun MigrationReadMoreScreen() {
 @DefaultPreviews
 @Composable
 fun MigrationReadMoreScreenPreview() {
-    MigrationReadMoreScreen()
+    MigrationReadMoreScreenContent()
 }
 
 @DefaultPreviews

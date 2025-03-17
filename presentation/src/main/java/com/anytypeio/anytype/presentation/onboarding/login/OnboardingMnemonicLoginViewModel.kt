@@ -404,6 +404,10 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         }
     }
 
+    fun onStartMigrationClicked(account: Id) {
+
+    }
+
     override fun onCleared() {
         super.onCleared()
         goroutinesJob?.cancel()

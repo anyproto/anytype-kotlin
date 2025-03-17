@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,17 +62,10 @@ class LeaveSpaceWarning : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    Warning(
-                        actionButtonText = stringResource(R.string.multiplayer_leave_space),
-                        cancelButtonText = stringResource(R.string.cancel),
-                        title = stringResource(R.string.multiplayer_leave_space),
-                        subtitle = stringResource(R.string.multiplayer_leave_space_warning_subtitle),
-                        onNegativeClick = {
-                            onLeaveSpaceCancelled()
-                            dismiss()
-                        },
-                        onPositiveClick = { onLeaveSpaceAccepted() },
-                        isInProgress = false
+                    LeaveSpaceWarningScreen(
+                        onLeaveClicked = {
+                            onLeaveSpaceAccepted()
+                        }
                     )
                 }
             }
@@ -94,7 +89,9 @@ class LeaveSpaceWarning : BaseBottomSheetComposeFragment() {
 }
 
 @Composable
-fun LeaveSpaceWarningScreen() {
+fun LeaveSpaceWarningScreen(
+    onLeaveClicked: () -> Unit
+) {
     Column {
         Dragger(
             modifier = Modifier
@@ -116,12 +113,12 @@ fun LeaveSpaceWarningScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
-            color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_primary),
-            textAlign = TextAlign.Center
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center,
         )
         ButtonWarning(
             text = stringResource(R.string.multiplayer_leave_space),
-            onClick = {},
+            onClick = onLeaveClicked,
             size = ButtonSize.Large,
             modifier = Modifier
                 .fillMaxWidth()
@@ -130,70 +127,10 @@ fun LeaveSpaceWarningScreen() {
     }
 }
 
-@Composable
-fun DeleteSpaceWarningScreen() {
-
-    var isCheckboxChecked by remember { mutableStateOf(false) }
-
-    Column {
-        Dragger(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 6.dp)
-        )
-        Header(text = stringResource(R.string.delete_space))
-        Spacer(modifier = Modifier.height(8.dp))
-        AlertIcon(
-            icon = AlertConfig.Icon(
-                gradient = GRADIENT_TYPE_RED,
-                icon = R.drawable.ic_alert_question_warning
-            )
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            text = stringResource(R.string.delete_space_subtitle),
-            style = BodyCalloutRegular,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_primary),
-            textAlign = TextAlign.Center
-        )
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .noRippleClickable {
-                    isCheckboxChecked = !isCheckboxChecked
-                }
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_checkbox_default),
-                contentDescription = "Checkbox icon"
-            )
-            Text(
-                text = "I have read and want to delete this space"
-            )
-        }
-        ButtonWarning(
-            text = stringResource(R.string.delete_space),
-            onClick = {},
-            size = ButtonSize.Large,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 16.dp),
-            isEnabled = isCheckboxChecked
-        )
-    }
-}
-
 @DefaultPreviews
 @Composable
 fun LeaveSpaceWarningScreenPreview() {
-    LeaveSpaceWarningScreen()
-}
-
-@DefaultPreviews
-@Composable
-fun DeleteSpaceWarningScreenPreview() {
-    DeleteSpaceWarningScreen()
+    LeaveSpaceWarningScreen(
+        onLeaveClicked = {}
+    )
 }

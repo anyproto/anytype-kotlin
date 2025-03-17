@@ -829,7 +829,7 @@
     <string name="created_by">Created by</string>
     <string name="space_id">Space ID</string>
     <string name="network_id">Nettverks-ID</string>
-    <string name="delete_space_subtitle">This space will be deleted irrevocably. You can\'t undo this action.</string>
+    <string name="delete_space_subtitle">Space deletion is permanent and cannot be undone. Please note that all the data connected to this space will be permanently removed and you will lose an access to it forever.</string>
     <string name="delete_space_title_with_param">Delete \'%1$s\' space</string>
     <string name="delete_space_title">Are you sure to delete this space?</string>
     <string name="space_id_copied_toast_msg">Space ID copied</string>
@@ -1701,4 +1701,5 @@ Please provide specific details of your needs here.</string>
     <string name="property_select_format_title">Select property format</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
+    <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
 </resources>

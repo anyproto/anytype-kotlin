@@ -827,7 +827,7 @@
     <string name="created_by">创建者</string>
     <string name="space_id">空间 ID</string>
     <string name="network_id">网络 ID</string>
-    <string name="delete_space_subtitle">此空间将被不可撤销地删除。您不能撤消此操作。</string>
+    <string name="delete_space_subtitle">Space deletion is permanent and cannot be undone. Please note that all the data connected to this space will be permanently removed and you will lose an access to it forever.</string>
     <string name="delete_space_title_with_param">删除 \'%1$s\' 空间</string>
     <string name="delete_space_title">您确定要删除此空间吗？</string>
     <string name="space_id_copied_toast_msg">已复制空间 ID</string>
@@ -1684,4 +1684,5 @@
     <string name="property_select_format_title">Select property format</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
+    <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
 </resources>

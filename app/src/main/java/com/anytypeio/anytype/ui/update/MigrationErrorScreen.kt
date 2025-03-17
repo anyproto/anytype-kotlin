@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -26,9 +27,134 @@ import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
+
+@Composable
+fun MigrationStartScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .align(Alignment.Center)
+        ) {
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.migration_screen_new_version_update),
+                style = HeadlineTitle,
+                color = colorResource(R.color.text_secondary),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.migration_screen_description_1),
+                style = BodyCalloutRegular,
+                color = colorResource(R.color.text_secondary),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.migration_screen_description_2),
+                style = BodyCalloutRegular,
+                color = colorResource(R.color.text_secondary),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .align(Alignment.BottomCenter)
+        ) {
+            ButtonPrimary(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+
+                },
+                text = stringResource(R.string.migration_screen_start_update),
+                size = ButtonSize.Large
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            ButtonSecondary(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+
+                },
+                text = stringResource(R.string.migration_screen_read_more),
+                size = ButtonSize.Large
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+    }
+}
+
+@Composable
+fun MigrationReadMoreScreen() {
+    LazyColumn(
+        modifier = Modifier.padding(
+            horizontal = 16.dp
+        )
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(44.dp))
+            // TODO add icon
+            Text(
+                text = stringResource(R.string.migration_screen_what_to_expect),
+                style = HeadlineSubheading,
+                color = colorResource(R.color.text_primary)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = stringResource(R.string.migration_screen_what_to_expect_description),
+                style = BodyCalloutRegular,
+                color = colorResource(R.color.text_primary)
+            )
+        }
+        item {
+            Spacer(modifier = Modifier.height(32.dp))
+            // TODO add icon
+            Text(
+                text = stringResource(R.string.migration_screen_your_data_remains_safe),
+                style = HeadlineSubheading,
+                color = colorResource(R.color.text_primary)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = stringResource(R.string.migration_screen_your_data_description),
+                style = BodyCalloutRegular,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.migration_screen_your_data_description_2),
+                style = BodyCalloutRegular,
+            )
+        }
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun MigrationReadMoreScreenPreview() {
+    MigrationReadMoreScreen()
+}
+
+@DefaultPreviews
+@Composable
+fun MigrationStartScreenPreview() {
+    MigrationStartScreen()
+}
 
 @Composable
 fun MigrationInProgressScreen() {
@@ -115,7 +241,9 @@ fun MigrationFailedScreen(
                     text = description,
                     color = colorResource(R.color.text_secondary),
                     style = BodyCalloutRegular,
-                    modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
             }

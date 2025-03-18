@@ -15,6 +15,10 @@ import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,9 +44,9 @@ import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 
 @Composable
 fun MigrationStartScreen(
-    onStartUpdate: () -> Unit,
-    onReadMore: () -> Unit
+    onStartUpdate: () -> Unit
 ) {
+    var showReadMoreView by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -94,12 +98,20 @@ fun MigrationStartScreen(
             Spacer(modifier = Modifier.height(12.dp))
             ButtonSecondary(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onReadMore,
+                onClick = { showReadMoreView = true },
                 text = stringResource(R.string.migration_screen_read_more),
                 size = ButtonSize.Large
             )
             Spacer(modifier = Modifier.height(32.dp))
         }
+    }
+
+    if (showReadMoreView) {
+        MigrationReadMoreBottomSheet(
+            onDismissRequest = {
+                showReadMoreView = false
+            }
+        )
     }
 }
 
@@ -177,8 +189,7 @@ fun MigrationReadMoreScreenPreview() {
 @Composable
 fun MigrationStartScreenPreview() {
     MigrationStartScreen(
-        onStartUpdate = {},
-        onReadMore = {}
+        onStartUpdate = {}
     )
 }
 

@@ -234,9 +234,6 @@ fun RecoveryScreen(
                     MigrationStartScreen(
                         onStartUpdate = {
                             onStartMigrationClicked(state.account)
-                        },
-                        onReadMore = {
-                            // TODO show bottom sheet.
                         }
                     )
                 }

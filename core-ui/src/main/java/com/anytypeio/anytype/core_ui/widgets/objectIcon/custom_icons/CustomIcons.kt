@@ -2,13 +2,11 @@ package com.anytypeio.anytype.core_ui.widgets.objectIcon.custom_icons
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.toCamelCase
 
 object CustomIcons {
 
     fun getImageVector(icon: CustomIcon): ImageVector? {
-        val toCamelCaseName = icon.rawValue.toCamelCase()
-        return iconsMap[toCamelCaseName]
+        return iconsMap[icon.rawValue]
     }
 
     fun getImageVector(name: String): ImageVector? {
@@ -205,6 +203,21 @@ object CustomIcons {
             "headset" to CiHeadset,
             "heart" to CiHeart,
             "heart-circle" to CiHeartCircle,
+            "heart-dislike" to CiHeartDislike,
+            "heart-dislike-circle" to CiHeartDislikeCircle,
+            "heart-half" to CiHeartHalf,
+            "help-buoy" to CiHelpBuoy,
+            "help-circle" to CiHelpCircle,
+            "home" to CiHome,
+            "hourglass" to CiHourglass,
+            "ice-cream" to CiIceCream,
+            "id-card" to CiIdCard,
+            "image" to CiImage,
+            "images" to CiImages,
+            "infinite" to CiInfinite,
+            "information-circle" to CiInformationCircle,
+            "invert-mode" to CiInvertMode,
+            "journal" to CiJournal,
             "key" to CiKey,
             "keypad" to CiKeypad,
             "language" to CiLanguage,

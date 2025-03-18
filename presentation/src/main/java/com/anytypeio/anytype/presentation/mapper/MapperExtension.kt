@@ -736,11 +736,12 @@ fun ObjectWrapper.Type.toObjectTypeView(selectedSources: List<Id> = emptyList())
         sourceObject = sourceObject
     )
 
-fun List<ObjectWrapper.Type>.toTemplateObjectTypeViewItems(selectedType: Id): List<TemplateObjectTypeView.Item> {
+fun List<ObjectWrapper.Type>.toTemplateObjectTypeViewItems(selectedType: Id, urlBuilder: UrlBuilder): List<TemplateObjectTypeView.Item> {
     return map {
         TemplateObjectTypeView.Item(
             type = it,
-            isSelected = it.id == selectedType
+            isSelected = it.id == selectedType,
+            icon = it.objectIcon(urlBuilder)
         )
     }
 }

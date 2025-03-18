@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 sealed class TemplateView {
 
@@ -69,6 +70,7 @@ sealed class TemplateObjectTypeView {
 
     data class Item(
         val type: ObjectWrapper.Type,
+        val icon: ObjectIcon,
         val isSelected: Boolean = false
     ) : TemplateObjectTypeView()
 

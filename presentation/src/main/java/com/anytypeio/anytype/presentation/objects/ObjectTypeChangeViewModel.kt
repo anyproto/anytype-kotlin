@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -42,6 +43,7 @@ class ObjectTypeChangeViewModel(
     private val dispatchers: AppCoroutineDispatchers,
     private val spaceManager: SpaceManager,
     private val getDefaultObjectType: GetDefaultObjectType,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
     private val userInput = MutableStateFlow(DEFAULT_INPUT)
@@ -219,7 +221,8 @@ class ObjectTypeChangeViewModel(
                 isWithBookmark = setup.isWithBookmark,
                 excludeTypes = setup.excludeTypes,
                 selectedTypes = setup.selectedTypes,
-                useCustomComparator = false
+                useCustomComparator = false,
+                urlBuilder = urlBuilder
             ).map {
                 ObjectTypeItemView.Type(it)
             }
@@ -234,7 +237,8 @@ class ObjectTypeChangeViewModel(
                 isWithBookmark = setup.isWithBookmark,
                 excludeTypes = setup.excludeTypes,
                 selectedTypes = setup.selectedTypes,
-                useCustomComparator = false
+                useCustomComparator = false,
+                urlBuilder = urlBuilder
             ).map {
                 ObjectTypeItemView.Type(it)
             }

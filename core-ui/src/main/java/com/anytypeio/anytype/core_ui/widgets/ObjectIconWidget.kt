@@ -155,20 +155,6 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    fun setIcon(
-        emoji: String?,
-        image: Url?,
-        name: String
-    ) {
-        if (emoji.isNullOrBlank() && image.isNullOrBlank()) {
-            setProfileInitials(name)
-        } else {
-            setEmoji(emoji)
-            setCircularImage(image)
-        }
-        //todo Add checkbox logic
-    }
-
     fun setNonExistentIcon() {
         binding.ivImage.setImageResource(R.drawable.ic_non_existent_object)
     }

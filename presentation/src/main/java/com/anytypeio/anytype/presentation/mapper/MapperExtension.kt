@@ -724,16 +724,19 @@ fun ColumnView.Format.toRelationFormat(): RelationFormat = when (this) {
     ColumnView.Format.UNDEFINED -> RelationFormat.UNDEFINED
 }
 
-fun ObjectWrapper.Type.toObjectTypeView(selectedSources: List<Id> = emptyList()): ObjectTypeView =
+fun ObjectWrapper.Type.toObjectTypeView(
+    selectedSources: List<Id> = emptyList(),
+    urlBuilder: UrlBuilder
+): ObjectTypeView =
     ObjectTypeView(
         id = id,
         key = uniqueKey,
         name = name.orEmpty(),
-        emoji = iconEmoji,
         description = description,
         isSelected = selectedSources.contains(id),
         defaultTemplate = defaultTemplateId,
-        sourceObject = sourceObject
+        sourceObject = sourceObject,
+        icon = objectIcon(urlBuilder)
     )
 
 fun List<ObjectWrapper.Type>.toTemplateObjectTypeViewItems(selectedType: Id, urlBuilder: UrlBuilder): List<TemplateObjectTypeView.Item> {

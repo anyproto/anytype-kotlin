@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.util.TypedValue
 import android.view.View
@@ -36,7 +37,10 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.google.android.exoplayer2.ExoPlayer
@@ -602,13 +606,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         private var player: ExoPlayer? = null
 
-//        init {
-//            icon.binding.ivImage.updateLayoutParams<LayoutParams> {
-//                height = itemView.resources.getDimension(R.dimen.dp_80).toInt()
-//                width = itemView.resources.getDimension(R.dimen.dp_64).toInt()
-//            }
-//        }
-
         fun bind(item: BlockView.Title.File) {
             super.bind(
                 item = item,
@@ -634,22 +631,23 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
             // Показываем миниатюру видео и кнопку Play
             binding.videoThumbnail.visible()
-//            binding.playButton.visible()
+            binding.playButton.visible()
 
             // Загружаем превью (можно заменить на кадр из видео)
             Glide.with(binding.root)
-                .load(videoUrl) // ❗Замените на URL превью, если он есть
+                .load(videoUrl)
                 .into(binding.videoThumbnail)
 
+
             // Обрабатываем нажатие для воспроизведения видео
-//            binding.playButton.setOnClickListener { playVideo(videoUrl) }
+            binding.playButton.setOnClickListener { playVideo(videoUrl) }
             binding.videoThumbnail.setOnClickListener { playVideo(videoUrl) }
         }
 
         private fun setupDefaultFileIcon(fileIcon: ObjectIcon) {
             // Показываем иконку файла
             binding.videoThumbnail.gone()
-//            binding.playButton.gone()
+            binding.playButton.gone()
             binding.objectIconWidget.visible()
             binding.cover.visible()
 
@@ -667,7 +665,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             binding.playerView.player = player
             binding.playerView.visible()
             binding.videoThumbnail.gone()
-//            binding.playButton.gone()
+            binding.playButton.gone()
         }
 
         fun pause() {

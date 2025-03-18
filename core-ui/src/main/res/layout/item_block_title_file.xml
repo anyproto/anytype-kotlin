@@ -16,26 +16,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Кнопка Play поверх превью -->
-        <!--        <ImageView-->
-        <!--            android:id="@+id/playButton"-->
-        <!--            android:layout_width="64dp"-->
-        <!--            android:layout_height="64dp"-->
-        <!--            android:layout_gravity="center"-->
-        <!--            android:src="@drawable/ci_play"-->
-        <!--            android:visibility="gone" />-->
-
-        <!-- Контейнер с обводкой и закругленными углами для плеера -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/playerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="50dp"
             android:layout_marginEnd="20dp"
             app:cardCornerRadius="4dp"
             app:cardElevation="0dp"
-            app:strokeColor="@android:color/holo_red_dark"
+            app:strokeColor="@color/shape_tertiary"
             app:strokeWidth="1dp">
 
             <FrameLayout
@@ -58,30 +48,19 @@
                     android:visibility="gone"
                     app:resize_mode="fit"
                     app:use_controller="true" />
+
+                <!-- Кнопка воспроизведения -->
+                <ImageView
+                    android:id="@+id/playButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/play"
+                    android:visibility="gone"/>
+
             </FrameLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
-
-        <!--            &lt;!&ndash; Превью видео (показывается по умолчанию) &ndash;&gt;-->
-<!--            <ImageView-->
-<!--                android:id="@+id/videoThumbnail"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:adjustViewBounds="true"-->
-<!--                android:scaleType="centerCrop"-->
-<!--                android:visibility="gone" />-->
-
-<!--            &lt;!&ndash; Видео плеер (изначально скрыт) &ndash;&gt;-->
-<!--            <com.google.android.exoplayer2.ui.StyledPlayerView-->
-<!--                android:id="@+id/playerView"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="200dp"-->
-<!--                android:visibility="gone"-->
-<!--                app:resize_mode="fit"-->
-<!--                app:use_controller="true" />-->
-<!--        </androidx.cardview.widget.CardView>-->
-
-        <!-- Изображение обложки (если файл не видео) -->
         <ImageView
             android:id="@+id/cover"
             android:layout_width="wrap_content"
@@ -96,15 +75,14 @@
             android:layout_gravity="bottom"
             android:layout_marginStart="28dp"
             android:layout_marginTop="80dp"
-            app:imageSize="80dp"
+            android:background="@drawable/bg_title_file_icon"
             android:clickable="true"
             android:focusable="true"
-            tools:src="@drawable/ic_mime_pdf"
-            android:background="@drawable/bg_title_file_icon"
             android:transitionName="@string/logo_transition"
+            app:imageSize="80dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_mime_pdf" />
 
     </LinearLayout>
 

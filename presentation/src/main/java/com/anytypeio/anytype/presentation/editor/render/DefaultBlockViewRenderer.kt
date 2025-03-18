@@ -1511,8 +1511,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                     color = block.textColor(),
                     icon = currentObject.objectIcon(builder = urlBuilder),
                     url = currentObject.getFileUrl(urlBuilder)
-                    ,
-
                 )
             }
             ObjectType.Layout.IMAGE -> {

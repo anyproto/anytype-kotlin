@@ -88,24 +88,11 @@ fun ObjectType.Layout.icon(
     builder: UrlBuilder
 ): ObjectIcon? {
     return when (this) {
-        ObjectType.Layout.OBJECT_TYPE -> {
-            if (emoji.isNullOrEmpty()) {
-                if (iconName.isNullOrEmpty()) {
-                    return ObjectIcon.Empty.ObjectType
-                }
-                ObjectIcon.ObjectType(
-                    icon = CustomIcon(rawValue = iconName),
-                    color = CustomIconColor.fromIconOption(iconOption?.toInt())
-                )
-            } else {
-                basicIcon(
-                    image = image,
-                    emoji = emoji,
-                    builder = builder,
-                    layout = this
-                )
-            }
-        }
+        ObjectType.Layout.OBJECT_TYPE -> handleObjectTypeIcon(
+            emoji = emoji,
+            iconName = iconName,
+            iconOption = iconOption
+        )
 
         ObjectType.Layout.BASIC,
         ObjectType.Layout.SET,
@@ -132,6 +119,29 @@ fun ObjectType.Layout.icon(
         ObjectType.Layout.DATE -> emptyType()
 
         else -> null
+    }
+}
+
+/**
+ * Handles icons for OBJECT_TYPE layout.
+ */
+private fun handleObjectTypeIcon(
+    emoji: String?,
+    iconName: String?,
+    iconOption: Int?,
+): ObjectIcon? {
+    return when {
+        !emoji.isNullOrEmpty() -> {
+            Basic.Emoji(
+                unicode = emoji,
+                emptyState = ObjectType.Layout.OBJECT_TYPE.emptyType()
+            )
+        }
+        iconName.isNullOrEmpty() -> ObjectIcon.Empty.ObjectType
+        else -> ObjectIcon.ObjectType(
+            icon = CustomIcon(rawValue = iconName),
+            color = CustomIconColor.fromIconOption(iconOption)
+        )
     }
 }
 

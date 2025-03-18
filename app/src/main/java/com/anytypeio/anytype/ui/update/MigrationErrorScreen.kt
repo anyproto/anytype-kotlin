@@ -48,7 +48,10 @@ fun MigrationStartScreen(
 ) {
     var showReadMoreView by remember { mutableStateOf(false) }
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = colorResource(R.color.background_primary))
+        ,
     ) {
         Column(
             modifier = Modifier
@@ -127,6 +130,7 @@ fun MigrationReadMoreBottomSheet(
                 modifier = Modifier.padding(vertical = 6.dp)
             )
         },
+        containerColor = colorResource(R.color.background_secondary),
         content = {
             MigrationReadMoreScreenContent()
         }
@@ -136,7 +140,7 @@ fun MigrationReadMoreBottomSheet(
 @Composable
 fun MigrationReadMoreScreenContent() {
     LazyColumn(
-        modifier = Modifier.padding(
+        modifier = Modifier.fillMaxWidth().padding(
             horizontal = 16.dp
         )
     ) {
@@ -175,6 +179,7 @@ fun MigrationReadMoreScreenContent() {
                 style = BodyCalloutRegular,
                 color = colorResource(R.color.text_secondary)
             )
+            Spacer(modifier = Modifier.height(44.dp))
         }
     }
 }

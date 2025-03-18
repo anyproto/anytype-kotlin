@@ -367,7 +367,7 @@ class ObjectIconWidget @JvmOverloads constructor(
                 binding.ivEmoji.imageTintList = ColorStateList.valueOf(tint)
             } else {
                 binding.ivEmoji.setImageDrawable(null)
-                //binding.tvEmojiFallback.text = emoji
+                binding.tvEmojiFallback.gone()
                 binding.tvEmojiFallback.visible()
             }
         } catch (e: Throwable) {

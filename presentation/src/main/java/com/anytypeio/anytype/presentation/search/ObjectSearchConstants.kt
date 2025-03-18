@@ -934,15 +934,15 @@ object ObjectSearchConstants {
     }
 
     fun defaultDataViewFilters() = buildList {
-//        add(
-//            DVFilter(
-//                relation = Relations.LAYOUT,
-//                condition = DVFilterCondition.NOT_IN,
-//                value = SupportedLayouts.systemLayouts.map { layout ->
-//                    layout.code.toDouble()
-//                }
-//            )
-//        )
+        add(
+            DVFilter(
+                relation = Relations.LAYOUT,
+                condition = DVFilterCondition.NOT_IN,
+                value = SupportedLayouts.systemLayouts.map { layout ->
+                    layout.code.toDouble()
+                }
+            )
+        )
         add(
             DVFilter(
                 relation = Relations.IS_HIDDEN,

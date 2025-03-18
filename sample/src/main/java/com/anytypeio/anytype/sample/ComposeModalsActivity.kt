@@ -18,11 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.anytypeio.anytype.feature_object_type.ui.icons.ChangeIconScreen
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
@@ -53,16 +51,10 @@ class ComposeModalsActivity: ComponentActivity() {
                     }
                 }
                 bottomSheet(route = "second") {
-                    ChangeIconScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        onDismissRequest = { navController.popBackStack() },
-                        onIconClicked = { _, _ -> },
-                        onRemoveIconClicked = {  }
+                    SecondModal(
+                        secondClicked = { navController.navigate("third") },
+                        onDismiss = { navController.popBackStack() }
                     )
-//                    SecondModal(
-//                        secondClicked = { navController.navigate("third") },
-//                        onDismiss = { navController.popBackStack() }
-//                    )
                 }
                 bottomSheet(route = "third") {
                     ThirdModal(

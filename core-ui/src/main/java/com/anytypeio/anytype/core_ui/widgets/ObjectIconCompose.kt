@@ -86,7 +86,7 @@ fun ListWidgetObjectIcon(
         ObjectIcon.None -> {}
         is ObjectIcon.ObjectType -> {
             CustomIconView(
-                customIconData = icon.customIconData,
+                icon = icon,
                 modifier = modifier,
                 iconSize = iconSize
             )

@@ -202,8 +202,13 @@ class ObjectTypeFragment : BaseComposeFragment() {
                 onDismissRequest = {
                     vm.onTypeEvent(TypeEvent.OnIconPickerDismiss)
                 },
-                onIconClicked = {
-                    vm.onTypeEvent(TypeEvent.OnIconPickerItemClick(it))
+                onIconClicked = { name, color ->
+                    vm.onTypeEvent(
+                        TypeEvent.OnIconPickerItemClick(
+                            iconName = name,
+                            color = color
+                        )
+                    )
                 },
                 onRemoveIconClicked = {
                     vm.onTypeEvent(TypeEvent.OnIconPickerRemovedClick)

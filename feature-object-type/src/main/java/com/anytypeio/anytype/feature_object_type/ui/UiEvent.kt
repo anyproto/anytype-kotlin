@@ -2,7 +2,8 @@ package com.anytypeio.anytype.feature_object_type.ui
 
 import com.anytypeio.anytype.core_models.ObjectType.Layout
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconData
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.templates.TemplateView
 
 sealed class TypeEvent {
@@ -45,7 +46,7 @@ sealed class TypeEvent {
     data object OnTemplatesButtonClick : TypeEvent()
 
     //region Icon picker
-    data class OnIconPickerItemClick(val icon: CustomIconData) : TypeEvent()
+    data class OnIconPickerItemClick(val iconName: String, val color: CustomIconColor?) : TypeEvent()
     data object OnIconPickerRemovedClick : TypeEvent()
     data object OnIconPickerDismiss : TypeEvent()
     //endregion

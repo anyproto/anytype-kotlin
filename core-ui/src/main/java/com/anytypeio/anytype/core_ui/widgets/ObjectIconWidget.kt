@@ -9,25 +9,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.compose.ui.res.colorResource
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetObjectIconBinding
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.colorRes
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
 import com.anytypeio.anytype.core_ui.extensions.setCorneredShape
-import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor.Companion.fromIconOption
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconData
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import timber.log.Timber
@@ -368,7 +364,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     }
 
     private fun setCustomIcon(icon: ObjectIcon.ObjectType) {
-        val resId = context.resources.getIdentifier(icon.customIconData.icon.drawableName, "drawable", context.packageName)
+        val resId = context.resources.getIdentifier(icon.icon.drawableName, "drawable", context.packageName)
         with(binding) {
             ivCheckbox.invisible()
             initialContainer.invisible()
@@ -379,7 +375,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
         try {
             if (resId != 0) {
-                val tint = fromIconOption(iconOption = icon.customIconData.color?.iconOption).color(context)
+                val tint = context.getColor(icon.color.colorRes())
                 binding.tvEmojiFallback.gone()
                 binding.ivEmoji.setImageResource(resId)
                 binding.ivEmoji.imageTintList = ColorStateList.valueOf(tint)

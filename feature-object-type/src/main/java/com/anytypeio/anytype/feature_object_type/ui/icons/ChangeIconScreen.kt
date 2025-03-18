@@ -43,6 +43,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
+import com.anytypeio.anytype.core_ui.extensions.colorRes
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -50,26 +51,24 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.custom_icons.CustomIcons
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.getCustomIconColorValue
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.icons.ChangeIconScreenConst.secondRowColors
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconData
-import com.anytypeio.anytype.presentation.objects.custom_icon.allIconNames
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangeIconScreen(
     modifier: Modifier,
     onDismissRequest: () -> Unit,
-    onIconClicked: (CustomIconData) -> Unit,
+    onIconClicked: (String, CustomIconColor?) -> Unit,
     onRemoveIconClicked: () -> Unit
 ) {
 
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
+
+    val allIconNames = remember { CustomIcons.iconsMap.keys.toList() }
 
     ModalBottomSheet(
         modifier = modifier.windowInsetsPadding(WindowInsets.statusBars),
@@ -135,7 +134,7 @@ fun ChangeIconScreen(
 
         IconSelectionGrid(
             icons = filteredIcons,
-            onIconSelected = onIconClicked,
+            onIconClicked = onIconClicked,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
@@ -149,7 +148,7 @@ fun ChangeIconScreen(
 fun IconSelectionGrid(
     modifier: Modifier = Modifier,
     icons: List<String>,
-    onIconSelected: (CustomIconData) -> Unit
+    onIconClicked: (String, CustomIconColor?) -> Unit
 ) {
 
     val hapticFeedback = rememberReorderHapticFeedback()
@@ -168,7 +167,7 @@ fun IconSelectionGrid(
                 modifier = Modifier.wrapContentSize(),
                 hapticFeedback = hapticFeedback,
                 iconName = iconName,
-                onIconClicked = onIconSelected
+                onIconClicked = onIconClicked
             )
         }
     }
@@ -180,14 +179,14 @@ private fun IconItem(
     modifier: Modifier,
     iconName: String,
     hapticFeedback: ReorderHapticFeedback,
-    onIconClicked: (CustomIconData) -> Unit
+    onIconClicked: (String, CustomIconColor?) -> Unit
 ) {
     val showIconPreviews = remember { mutableStateOf(false) }
     Box(modifier = modifier
         .combinedClickable(
             enabled = true,
             onClick = {
-                onIconClicked(CustomIconData(icon = CustomIcon(rawValue = iconName)))
+                onIconClicked(iconName, null)
             },
             onLongClick = {
                 hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
@@ -196,7 +195,7 @@ private fun IconItem(
         )) {
         val imageVector = CustomIcons.getIconByName(iconName)
         val tintColor = if (!showIconPreviews.value) {
-            getCustomIconColorValue(CustomIconColor.Gray)
+            colorResource(id = CustomIconColor.Gray.colorRes())
         } else {
             colorResource(id = R.color.glyph_inactive)
         }
@@ -213,14 +212,9 @@ private fun IconItem(
                 imageVector = imageVector,
                 show = showIconPreviews.value,
                 onDismissRequest = { showIconPreviews.value = false },
-                onIconClicked = { customIconData ->
+                onIconClicked = { color ->
                     showIconPreviews.value = false
-                    onIconClicked(
-                        CustomIconData(
-                            icon = CustomIcon(rawValue = iconName),
-                            color = customIconData
-                        ),
-                    )
+                    onIconClicked(iconName, color)
                 }
             )
         }
@@ -249,7 +243,7 @@ private fun IconPreviews(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ChangeIconScreenConst.firstRowColors.forEach { customColor ->
-                val color = getCustomIconColorValue(customColor)
+                val color = colorResource(id = customColor.colorRes())
                 Image(
                     modifier = Modifier
                         .size(40.dp)
@@ -268,7 +262,7 @@ private fun IconPreviews(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             secondRowColors.forEach { customColor ->
-                val color = getCustomIconColorValue(customColor)
+                val color = colorResource(id = customColor.colorRes())
                 Image(
                     modifier = Modifier
                         .size(40.dp)
@@ -307,7 +301,7 @@ object ChangeIconScreenConst {
 fun DefaultChangeIconScreenPreview() {
     IconSelectionGrid(
         modifier = Modifier.fillMaxSize(),
-        icons = allIconNames,
-        onIconSelected = {}
+        icons = CustomIcons.iconsMap.keys.toList(),
+        onIconClicked = { _, _ -> },
     )
 }

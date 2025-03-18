@@ -56,7 +56,7 @@ class ComposeModalsActivity: ComponentActivity() {
                     ChangeIconScreen(
                         modifier = Modifier.fillMaxSize(),
                         onDismissRequest = { navController.popBackStack() },
-                        onIconClicked = {  },
+                        onIconClicked = { _, _ -> },
                         onRemoveIconClicked = {  }
                     )
 //                    SecondModal(

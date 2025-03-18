@@ -55,7 +55,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconData
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
@@ -498,16 +498,12 @@ class ObjectTypeViewModel(
 
             is TypeEvent.OnIconPickerItemClick -> {
                 uiIconsPickerScreen.value = UiIconsPickerState.Hidden
-                viewModelScope.launch {
-                    updateIcon(event.icon)
-                }
+                updateIcon(iconName = event.iconName, newColor = event.color)
             }
 
             TypeEvent.OnIconPickerRemovedClick -> {
                 uiIconsPickerScreen.value = UiIconsPickerState.Hidden
-                viewModelScope.launch {
-                    removeIcon()
-                }
+                removeIcon()
             }
         }
     }
@@ -604,16 +600,17 @@ class ObjectTypeViewModel(
         }
     }
 
-    fun updateIcon(
-        customIconData: CustomIconData
+    private fun updateIcon(
+        iconName: String,
+        newColor: CustomIconColor?
     ) {
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
                 details = mapOf(
                     Relations.ICON_EMOJI to null,
-                    Relations.ICON_NAME to customIconData.icon.rawValue,
-                    Relations.ICON_OPTION to customIconData.color?.iconOption?.toDouble()
+                    Relations.ICON_NAME to iconName,
+                    Relations.ICON_OPTION to newColor?.iconOption?.toDouble()
                 )
             )
             setObjectDetails.async(params).fold(
@@ -621,13 +618,13 @@ class ObjectTypeViewModel(
                     Timber.e(error, "Error while updating data view record")
                 },
                 onSuccess = {
-
+                    Timber.d("Object type icon updated to icon: $iconName")
                 }
             )
         }
     }
 
-    fun removeIcon() {
+    private fun removeIcon() {
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,

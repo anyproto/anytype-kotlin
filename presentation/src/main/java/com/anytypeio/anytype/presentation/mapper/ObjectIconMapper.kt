@@ -8,7 +8,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon.Basic
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconData
 
 fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
 
@@ -95,12 +94,8 @@ fun ObjectType.Layout.icon(
                     return ObjectIcon.Empty.ObjectType
                 }
                 ObjectIcon.ObjectType(
-                    customIconData = CustomIconData(
-                        icon = CustomIcon(
-                            rawValue = iconName.orEmpty()
-                        ),
-                        color = CustomIconColor.fromIconOption(iconOption?.toInt()) ?: CustomIconColor.DEFAULT
-                    )
+                    icon = CustomIcon(rawValue = iconName),
+                    color = CustomIconColor.fromIconOption(iconOption?.toInt())
                 )
             } else {
                 basicIcon(

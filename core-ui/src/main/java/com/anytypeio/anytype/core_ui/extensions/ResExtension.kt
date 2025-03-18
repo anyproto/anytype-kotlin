@@ -312,16 +312,16 @@ fun RelativeDate.getPrettyName(
     RelativeDate.Empty -> ""
 }
 
-fun CustomIconColor?.color(context: Context) = when (this) {
-    CustomIconColor.Gray -> context.color(R.color.glyph_active)
-    CustomIconColor.Yellow -> context.color(R.color.palette_system_yellow)
-    CustomIconColor.Amber -> context.color(R.color.palette_system_amber_100)
-    CustomIconColor.Red -> context.color(R.color.palette_system_red)
-    CustomIconColor.Pink -> context.color(R.color.palette_system_pink)
-    CustomIconColor.Purple -> context.color(R.color.palette_system_purple)
-    CustomIconColor.Blue -> context.color(R.color.palette_system_blue)
-    CustomIconColor.Sky -> context.color(R.color.palette_system_sky)
-    CustomIconColor.Teal -> context.color(R.color.palette_system_teal)
-    CustomIconColor.Green -> context.color(R.color.palette_system_green)
-    null -> context.color(R.color.glyph_active)
+@ColorRes
+fun CustomIconColor.colorRes() = when (this) {
+    CustomIconColor.Gray -> R.color.glyph_active
+    CustomIconColor.Yellow -> R.color.palette_system_yellow
+    CustomIconColor.Amber -> R.color.palette_system_amber_100
+    CustomIconColor.Red -> R.color.palette_system_red
+    CustomIconColor.Pink -> R.color.palette_system_pink
+    CustomIconColor.Purple -> R.color.palette_system_purple
+    CustomIconColor.Blue -> R.color.palette_system_blue
+    CustomIconColor.Sky -> R.color.palette_system_sky
+    CustomIconColor.Teal -> R.color.palette_system_teal
+    CustomIconColor.Green -> R.color.palette_system_green
 }

@@ -173,7 +173,7 @@
     <string name="hint_toggle">切换块</string>
     <string name="hint_paste_link">粘贴链接</string>
     <string name="empty_tap_to_create_new_block">空的。点击创建一个新块</string>
-    <string name="untitled">Untitled</string>
+    <string name="untitled">无标题</string>
     <string name="untitled_set">无标题集</string>
     <string name="untitled_collection">无标题集锦</string>
     <string name="archived">已归档</string>
@@ -1237,7 +1237,7 @@
     <string name="multiplayer_collaborate_step_1">1. 点击空间小部件来访问设置</string>
     <string name="multiplayer_collaborate_step_2">2. 打开分享栏</string>
     <string name="multiplayer_collaborate_step_3">3. 生成一个邀请链接并分享它</string>
-    <string name="profile_view_edit_button">Edit Profile</string>
+    <string name="profile_view_edit_button">编辑个人资料</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="other">%1$d 成员</item>
     </plurals>
@@ -1593,7 +1593,7 @@
     <string name="object_type_fields_preview_field">Preview field</string>
     <string name="object_type_fields_btn_save">保存</string>
     <string name="object_type_fields_menu_delete">Unlink from type</string>
-    <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
+    <string name="object_type_fields_menu_add_to_type">添加到当前类型</string>
     <string name="object_type_fields_menu_remove">移除</string>
     <string name="object_type_fields_local_info_title">Local fields</string>
     <string name="object_type_fields_local_info_description">Some fields are not included in the object type. Please add them if you want to see them in all objects of this type, or remove them.</string>
@@ -1653,8 +1653,8 @@
     <string name="field_file_and_media_title">文件与媒体</string>
     <string name="field_file_and_media_empty">添加</string>
     <string name="field_checkbox_title">选择</string>
-    <string name="field_menu_add_to_type">Add to the current type</string>
-    <string name="field_menu_remove_from_object">Remove from the object</string>
+    <string name="field_menu_add_to_type">添加到当前类型</string>
+    <string name="field_menu_remove_from_object">从对象中移除</string>
     <string name="space_settings_space_name_hint">名称</string>
     <string name="space_settings_space_description_hint">描述</string>
     <string name="space_settings_section_collaboration">Collaboration</string>

@@ -829,7 +829,7 @@
     <string name="created_by">Aangemaakt door</string>
     <string name="space_id">Ruimte ID</string>
     <string name="network_id">Netwerk ID</string>
-    <string name="delete_space_subtitle">Deze ruimte zal onherroepelijk worden verwijderd. Je kunt deze actie niet ongedaan maken.</string>
+    <string name="delete_space_subtitle">Space deletion is permanent and cannot be undone. Please note that all the data connected to this space will be permanently removed and you will lose an access to it forever.</string>
     <string name="delete_space_title_with_param">Verwijder \'%1$s\' ruimte</string>
     <string name="delete_space_title">Weet je zeker dat deze ruimte wilt verwijderen?</string>
     <string name="space_id_copied_toast_msg">Ruimte ID gekopieerd</string>
@@ -1701,4 +1701,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="property_select_format_title">Select property format</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
+    <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
 </resources>

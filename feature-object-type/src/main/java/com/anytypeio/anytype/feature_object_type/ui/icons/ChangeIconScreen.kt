@@ -193,7 +193,7 @@ private fun IconItem(
                 showIconPreviews.value = true
             }
         )) {
-        val imageVector = CustomIcons.getIconByName(iconName)
+        val imageVector = CustomIcons.getImageVector(iconName)
         val tintColor = if (!showIconPreviews.value) {
             colorResource(id = CustomIconColor.Gray.colorRes())
         } else {

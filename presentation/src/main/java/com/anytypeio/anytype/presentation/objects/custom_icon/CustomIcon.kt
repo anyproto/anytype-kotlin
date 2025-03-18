@@ -12,7 +12,11 @@ data class CustomIcon(val rawValue: String) {
      * prefixing it with "ci_". For example, "batteryDead" becomes "ci_battery_dead".
      */
     val drawableName: String
-        get() = "ci_" + rawValue.toSnakeCase()
+        get() = DEFAULT_ICON_PREFIX + rawValue.toSnakeCase()
+
+    companion object {
+        const val DEFAULT_ICON_PREFIX = "ci_"
+    }
 }
 
 /**
@@ -34,4 +38,20 @@ private fun String.toSnakeCase(): String {
         }
         acc
     }.toString()
+}
+
+/**
+ * Extension function that converts a hyphen-separated string to camelCase.
+ *
+ * For example, "icon-one" becomes "iconOne". If the string does not contain any
+ * hyphen, the original string is returned unchanged.
+ *
+ * @receiver String in hyphen-separated format.
+ * @return The camelCase version of the string.
+ */
+fun String.toCamelCase(): String {
+    if (!this.contains('-')) return this
+    return this.split('-').mapIndexed { index, s ->
+        if (index == 0) s.lowercase() else s.replaceFirstChar { it.uppercase() }
+    }.joinToString("")
 }

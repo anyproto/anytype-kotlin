@@ -1,13 +1,20 @@
 package com.anytypeio.anytype.core_ui.widgets.objectIcon.custom_icons
 
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.toCamelCase
 
 object CustomIcons {
 
-    fun getIconByName(name: String): ImageVector? = iconsMap[name]
+    fun getImageVector(icon: CustomIcon): ImageVector? {
+        val toCamelCaseName = icon.rawValue.toCamelCase()
+        return iconsMap[toCamelCaseName]
+    }
 
-    // Маппинг, который связывает строковое название с соответствующей иконкой.
-    // Например, если у нас raw-имя иконки "walk" соответствует CustomIcons.CiWalk.
+    fun getImageVector(name: String): ImageVector? {
+        return iconsMap[name]
+    }
+
     val iconsMap: Map<String, ImageVector> by lazy {
         mapOf(
             "accessibility" to CiAccessibility,

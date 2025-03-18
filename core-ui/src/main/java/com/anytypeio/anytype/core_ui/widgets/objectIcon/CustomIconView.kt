@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
@@ -23,13 +22,9 @@ fun CustomIconView(
     icon: ObjectIcon.ObjectType,
     iconSize: Dp
 ) {
-    val iconName = icon.icon.rawValue
-
     val tint = colorResource(id = icon.color.colorRes())
 
-    val imageVector = remember(iconName) {
-        CustomIcons.getIconByName(iconName)
-    }
+    val imageVector = CustomIcons.getImageVector(icon.icon)
 
     Box(modifier = modifier) {
         if (imageVector != null) {

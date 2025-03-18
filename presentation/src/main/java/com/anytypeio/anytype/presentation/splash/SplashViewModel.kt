@@ -92,7 +92,9 @@ class SplashViewModel(
 
     fun onStartMigrationClicked() {
         viewModelScope.launch {
-            proceedWithAccountMigration()
+            if (state.value is State.Migration.AwaitingStart) {
+                proceedWithAccountMigration()
+            }
         }
     }
 

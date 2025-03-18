@@ -1982,4 +1982,8 @@ Please provide specific details of your needs here.</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
 
+    <string name="object_type_icon_change_title">Change icon</string>
+    <string name="object_type_icon_remove">Remove</string>
+    <string name="object_type_icon_change_title_search_hint">Search..."</string>
+
 </resources>

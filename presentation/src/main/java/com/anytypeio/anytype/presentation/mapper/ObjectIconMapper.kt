@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconData
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconDataColor
 
 fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
 
@@ -92,14 +91,15 @@ fun ObjectType.Layout.icon(
     return when (this) {
         ObjectType.Layout.OBJECT_TYPE -> {
             if (emoji.isNullOrEmpty()) {
+                if (iconName.isNullOrEmpty()) {
+                    return ObjectIcon.Empty.ObjectType
+                }
                 ObjectIcon.ObjectType(
                     customIconData = CustomIconData(
                         icon = CustomIcon(
                             rawValue = iconName.orEmpty()
                         ),
-                        color = CustomIconDataColor.Selected(
-                            color = CustomIconColor.fromIconOption(iconOption?.toInt()) ?: CustomIconColor.DEFAULT
-                        )
+                        color = CustomIconColor.fromIconOption(iconOption?.toInt()) ?: CustomIconColor.DEFAULT
                     )
                 )
             } else {

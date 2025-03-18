@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
@@ -29,7 +31,10 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainScreen
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
+import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
+import com.anytypeio.anytype.feature_object_type.ui.icons.ChangeIconScreen
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
@@ -52,17 +57,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
     private val space get() = argString(ARG_SPACE)
     private val objectId get() = argString(ARG_OBJECT_ID)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setFragmentResultListener(REQUEST_KEY_PICK_EMOJI) { _, bundle ->
-            val res = requireNotNull(bundle.getString(RESULT_EMOJI_UNICODE))
-            vm.updateIcon(res)
-        }
-        setFragmentResultListener(REQUEST_KEY_REMOVE_EMOJI) { _, _ ->
-            vm.removeIcon()
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,6 +64,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
     ) = content {
         MaterialTheme {
             ObjectTypeScreen()
+            IconsPickerScreen()
             ErrorScreen()
         }
     }
@@ -84,13 +79,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         findNavController().popBackStack()
                     }.onFailure { e ->
                         Timber.e(e, "Error while exiting back from object type screen")
-                    }
-                }
-                ObjectTypeCommand.OpenEmojiPicker -> {
-                    runCatching {
-                        findNavController().navigate(R.id.openEmojiPicker)
-                    }.onFailure {
-                        Timber.w("Error while opening emoji picker")
                     }
                 }
 
@@ -202,6 +190,25 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     )
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun IconsPickerScreen() {
+        val uiState = vm.uiIconsPickerScreen.collectAsStateWithLifecycle().value
+        if (uiState is UiIconsPickerState.Visible) {
+            ChangeIconScreen(
+                modifier = Modifier.fillMaxWidth(),
+                onDismissRequest = {
+                    vm.onTypeEvent(TypeEvent.OnIconPickerDismiss)
+                },
+                onIconClicked = {
+                    vm.onTypeEvent(TypeEvent.OnIconPickerItemClick(it))
+                },
+                onRemoveIconClicked = {
+                    vm.onTypeEvent(TypeEvent.OnIconPickerRemovedClick)
+                }
+            )
         }
     }
 

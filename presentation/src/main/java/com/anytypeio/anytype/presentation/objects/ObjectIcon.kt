@@ -17,6 +17,11 @@ sealed class ObjectIcon {
         data object Chat : Empty()
         data object ObjectType : Empty()
         data object Date : Empty()
+
+        data object Audio : Empty()
+        data object Video : Empty()
+        data object Image : Empty()
+        data object File : Empty()
     }
 
     sealed class Basic : ObjectIcon() {

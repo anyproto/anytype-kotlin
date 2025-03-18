@@ -846,6 +846,9 @@ open class ObjectSetFragment :
                     listView.gone()
                     listView.setViews(emptyList())
                     when(viewer.type) {
+                        Viewer.Unsupported.TYPE_GRAPH -> {
+                            unsupportedViewError.setText(R.string.error_graph_view_not_supported)
+                        }
                         Viewer.Unsupported.TYPE_CALENDAR -> {
                             unsupportedViewError.setText(R.string.error_calendar_view_not_supported)
                         }

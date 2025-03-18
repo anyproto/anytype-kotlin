@@ -1,10 +1,5 @@
 package com.anytypeio.anytype.presentation.objects.custom_icon
 
-data class CustomIconData(
-    val icon: CustomIcon,
-    val color: CustomIconColor = CustomIconColor.DEFAULT
-)
-
 /**
  * Data class representing a custom icon.
  * @property rawValue The raw string representing the icon.

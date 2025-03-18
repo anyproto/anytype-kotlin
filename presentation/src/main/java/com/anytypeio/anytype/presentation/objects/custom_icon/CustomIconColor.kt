@@ -8,34 +8,15 @@ package com.anytypeio.anytype.presentation.objects.custom_icon
  * The default color is specified by [DEFAULT].
  */
 enum class CustomIconColor(val rawValue: Int) {
-    /** Gray color with a raw value of 0. */
     Gray(0),
-
-    /** Yellow color with a raw value of 1. */
     Yellow(1),
-
-    /** Amber color with a raw value of 2. */
     Amber(2),
-
-    /** Red color with a raw value of 3. */
     Red(3),
-
-    /** Pink color with a raw value of 4. */
     Pink(4),
-
-    /** Purple color with a raw value of 5. */
     Purple(5),
-
-    /** Blue color with a raw value of 6. */
     Blue(6),
-
-    /** Sky color with a raw value of 7. */
     Sky(7),
-
-    /** Teal color with a raw value of 8. */
     Teal(8),
-
-    /** Green color with a raw value of 9. */
     Green(9);
 
     /**

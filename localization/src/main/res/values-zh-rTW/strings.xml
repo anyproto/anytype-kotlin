@@ -1107,6 +1107,7 @@
     <!--endregion-->
     <string name="error_kanban_view_not_supported">行動裝置目前尚未支持看板檢視。\n更換檢視類型（設定 -&gt; 檢視）或建立一個新的來存取您的資料。</string>
     <string name="error_calendar_view_not_supported">行動裝置目前尚未支持日曆檢視。\n更換檢視類型（設定 -&gt; 檢視）或建立一個新的來存取您的資料。</string>
+    <string name="error_graph_view_not_supported">Graph view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">行動裝置目前尚未支持此檢視類型。\n更換檢視類型（設定 -&gt; 檢視）或建立一個新的來存取您的資料。</string>
     <string name="create_object_section_pinned">已釘選</string>
     <string name="any_object_creation_menu_pin_on_top">置頂</string>

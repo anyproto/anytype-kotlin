@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -15,6 +16,7 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.custom_icons.CustomIcons
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
+import com.anytypeio.anytype.core_ui.R
 
 @Composable
 fun CustomIconView(
@@ -31,6 +33,13 @@ fun CustomIconView(
             Image(
                 modifier = Modifier.size(iconSize),
                 imageVector = imageVector,
+                contentDescription = "Object Type icon",
+                colorFilter = ColorFilter.tint(tint),
+            )
+        } else {
+            Image(
+                modifier = Modifier.size(iconSize),
+                painter = painterResource(id = R.drawable.ic_empty_state_page),
                 contentDescription = "Object Type icon",
                 colorFilter = ColorFilter.tint(tint),
             )

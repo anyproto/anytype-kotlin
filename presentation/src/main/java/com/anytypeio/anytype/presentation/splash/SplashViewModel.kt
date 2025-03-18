@@ -91,7 +91,9 @@ class SplashViewModel(
     }
 
     fun onStartMigrationClicked() {
-
+        viewModelScope.launch {
+            proceedWithAccountMigration()
+        }
     }
 
     fun onRetryMigrationClicked() {
@@ -171,7 +173,6 @@ class SplashViewModel(
             state.value = State.Loading
             launchAccount(BaseUseCase.None).proceed(
                 success = { analyticsId ->
-                    state.value = State.Loading
                     crashReporter.setUser(analyticsId)
                     updateUserProps(analyticsId)
                     val props = Props.empty()
@@ -183,7 +184,7 @@ class SplashViewModel(
                     Timber.e(e, "Error while launching account")
                     when (e) {
                         is AccountMigrationNeededException -> {
-                            state.value == State.Migration.AwaitingStart
+                            state.value = State.Migration.AwaitingStart
                         }
                         is NeedToUpdateApplicationException -> {
                             state.value = State.Error(ERROR_NEED_UPDATE)

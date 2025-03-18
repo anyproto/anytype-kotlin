@@ -757,7 +757,7 @@ message SpaceObjectHeader {
 
 message ObjectType {
     string url = 1; // leave empty in case you want to create the new one
-    string name = 2; // name of objectType (can be localized for bundled types)
+    string name = 2; // name of objectType in singular form (can be localized for bundled types)
     repeated RelationLink relationLinks = 3; // cannot contain more than one Relation with the same RelationType
     Layout layout = 4;
     string iconEmoji = 5; // emoji symbol
@@ -772,6 +772,7 @@ message ObjectType {
     bool restrictObjectCreation = 14; // restricts creating objects of this type for users
     int64 iconColor = 15; // color of object type icon
     string iconName = 16; // name of object type icon
+    string pluralName = 17; // name of objectType in plural form (can be localized for bundled types)
 
     enum Layout {
         basic = 0;

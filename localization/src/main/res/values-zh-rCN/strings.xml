@@ -514,7 +514,7 @@
     <string name="set_no_items_description">创建第一个对象以继续</string>
     <string name="set_no_items_button">创建对象</string>
     <string name="set_collection_view_not_present">视图不存在于集合中，请重新创建对象</string>
-    <string name="menu_turn_to_collection">将集合转换为集锦</string>
+    <string name="menu_turn_to_collection">集合转换为集锦</string>
     <string name="menu_change_query">更改查询</string>
     <string name="collections">集锦</string>
     <string name="collection_widget_description">您的对象的集锦</string>

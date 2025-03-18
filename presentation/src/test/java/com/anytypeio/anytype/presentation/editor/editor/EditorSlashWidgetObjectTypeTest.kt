@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -96,7 +97,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
                     id = type2.id,
                     name = type2.name.orEmpty(),
                     description = type2.description,
-                    emoji = type2.iconEmoji,
+                    icon = ObjectIcon.None,
                     key = type2.getValue<Key>(Relations.UNIQUE_KEY)!!
                 )
             )
@@ -164,8 +165,8 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
                     id = type2.id,
                     name = type2.name.orEmpty(),
                     description = type2.description,
-                    emoji = type2.iconEmoji,
-                    key = type2.getValue(Relations.UNIQUE_KEY)!!
+                    key = type2.getValue(Relations.UNIQUE_KEY)!!,
+                    icon = ObjectIcon.None
                 )
             )
         )

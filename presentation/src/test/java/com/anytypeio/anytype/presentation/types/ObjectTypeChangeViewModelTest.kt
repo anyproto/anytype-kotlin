@@ -23,6 +23,8 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -530,7 +532,7 @@ class ObjectTypeChangeViewModelTest {
                 key = marketplaceType3.uniqueKey.orEmpty(),
                 name = marketplaceType3.name.orEmpty(),
                 description = marketplaceType3.description.orEmpty(),
-                emoji = marketplaceType3.iconEmoji.orEmpty(),
+                icon = ObjectIcon.None
             )
             vm.onItemClicked(item)
             assertEquals(
@@ -594,12 +596,16 @@ class ObjectTypeChangeViewModelTest {
         }
     }
 
+    @Mock
+    lateinit var urlBuilder: UrlBuilder
+
     private fun givenViewModel() = ObjectTypeChangeViewModel(
         getObjectTypes = getObjectTypes,
         addObjectTypeToSpace = addObjectToSpace,
         dispatchers = dispatchers,
         spaceManager = spaceManager,
-        getDefaultObjectType = getDefaultObjectType
+        getDefaultObjectType = getDefaultObjectType,
+        urlBuilder = urlBuilder
     )
 
     fun stubSpaceManager(spaceId: Id) {

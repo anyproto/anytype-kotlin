@@ -66,7 +66,7 @@ class ObjectTypeChangeViewModel(
         val myTypes = proceedWithGettingMyTypes(
             query = query,
             setup = setup,
-            recommendedLayouts = emptyList()
+            recommendedLayouts = recommendedLayouts
         )
         val marketplaceTypes = proceedWithGettingMarketplaceTypes(
             myTypes = myTypes,

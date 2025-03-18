@@ -1111,6 +1111,7 @@
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban görünümü henüz mobil cihazlarda mevcut değil.\nVerilerinize erişmek için görünümü değiştirin (Ayarlar -&gt; Görünüm) veya yeni bir görünüm oluşturun.</string>
     <string name="error_calendar_view_not_supported">Takvim görünümü henüz mobil cihazlarda mevcut değil.\nVerilerinize erişmek için görünümü değiştirin (Ayarlar -&gt; Görünüm) veya yeni bir görünüm oluşturun.</string>
+    <string name="error_graph_view_not_supported">Graph view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">Bu görünüm henüz mobil cihazlarda mevcut değil.\nVerilerinize erişmek için görünümü değiştirin (Ayarlar -&gt; Görünüm) veya yeni bir görünüm oluşturun.</string>
     <string name="create_object_section_pinned">Sabitlendi</string>
     <string name="any_object_creation_menu_pin_on_top">Başa sabitle</string>

@@ -1111,6 +1111,7 @@
     <!--endregion-->
     <string name="error_kanban_view_not_supported">O modo de exibição Kanban ainda não está disponível em aparelhos móveis. Mude o modo de exibição (Ajustes -&gt; Visualizar) ou crie um modo novo para acessar os seus dados.</string>
     <string name="error_calendar_view_not_supported">O modo de exibição Calendário ainda não está disponível em aparelhos móveis. Mude o modo de exibição (Ajustes -&gt; Visualizar) ou crie um modo novo para acessar os seus dados.</string>
+    <string name="error_graph_view_not_supported">Graph view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">Esse modo de exibição ainda não está disponível em aparelhos móveis. Mude o modo de exibição (Ajustes -&gt; Visualizar) ou crie um modo novo para acessar os seus dados.</string>
     <string name="create_object_section_pinned">Fixado</string>
     <string name="any_object_creation_menu_pin_on_top">Fixar no topo</string>

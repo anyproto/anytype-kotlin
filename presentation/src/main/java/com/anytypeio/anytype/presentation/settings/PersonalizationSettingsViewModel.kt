@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@Deprecated("To be deleted")
 class PersonalizationSettingsViewModel(
     private val getDefaultObjectType: GetDefaultObjectType,
     private val setDefaultObjectType: SetDefaultObjectType,

@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.vault
 
 import android.content.res.Configuration
-import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -46,7 +45,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
-import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -57,6 +55,7 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
 import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
@@ -72,11 +71,8 @@ import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.VaultSpaceView
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
-import com.anytypeio.anytype.ui.sharing.SharingData
-import com.anytypeio.anytype.ui.widgets.types.gradient
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.request.RequestListener
 
 
 @Composable
@@ -298,7 +294,6 @@ fun VaultSpaceCard(
                             Modifier
                         }
                     }
-
                     is Wallpaper.Gradient -> {
                         Modifier.background(
                             brush = Brush.verticalGradient(
@@ -310,7 +305,6 @@ fun VaultSpaceCard(
                             shape = RoundedCornerShape(20.dp)
                         )
                     }
-
                     is Wallpaper.Default -> {
                         Modifier.background(
                             brush = Brush.verticalGradient(

@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class GetSpaceWallpapers @Inject constructor(
     private val repo: UserSettingsRepository,
-    private val dispatchers: AppCoroutineDispatchers
+    dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<Unit, Map<Id, Wallpaper>>(dispatchers.io) {
 
     override suspend fun doWork(params: Unit): Map<Id, Wallpaper> {

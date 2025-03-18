@@ -31,11 +31,12 @@ fun NewSpaceSettingsScreenPreview() {
                 UiSpaceSettingsItem.ObjectTypes,
                 UiSpaceSettingsItem.Section.Preferences,
                 UiSpaceSettingsItem.DefaultObjectType(
+                    id = "some id",
                     name = "Taskwithveryverlylongname",
                     icon = ObjectIcon.Empty.ObjectType
                 ),
                 UiSpaceSettingsItem.Spacer(height = 8),
-                UiSpaceSettingsItem.Wallpapers(color = ThemeColor.TEAL),
+                UiSpaceSettingsItem.Wallpapers(null),
                 UiSpaceSettingsItem.Spacer(height = 8),
                 UiSpaceSettingsItem.Section.DataManagement,
                 UiSpaceSettingsItem.Spacer(height = 8),

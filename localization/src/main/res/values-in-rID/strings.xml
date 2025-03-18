@@ -289,7 +289,7 @@
     <string name="relation_format_email">Surel</string>
     <string name="relation_format_phone">Nomor telepon</string>
     <string name="relation_format_emoji">Emoji</string>
-    <string name="relation_format_object">Object relation</string>
+    <string name="relation_format_object">Relasi objek</string>
     <string name="relation_format_relation">Relasi</string>
     <string name="viewer_sorting_prefix">Kemudian</string>
     <string name="enter_value">Masukkan nilai</string>
@@ -297,7 +297,7 @@
     <string name="add_sort">Add a sort</string>
     <string name="apply">Terapkan</string>
     <string name="add_filter">Add a filter</string>
-    <string name="relation_format_tag">Multi-Select</string>
+    <string name="relation_format_tag">Pilih banyak</string>
     <string name="unknown_number_of_objects">Unknown number of objects</string>
     <string name="sort_ascending">Urutan naik</string>
     <string name="sort_descending">Urutan turun</string>
@@ -827,7 +827,7 @@
     <string name="created_by">Created by</string>
     <string name="space_id">Space ID</string>
     <string name="network_id">ID Jaringan</string>
-    <string name="delete_space_subtitle">Ruang ini akan dihapus secara permanen. Kamu tidak bisa membatalkan tindakan ini.</string>
+    <string name="delete_space_subtitle">Space deletion is permanent and cannot be undone. Please note that all the data connected to this space will be permanently removed and you will lose an access to it forever.</string>
     <string name="delete_space_title_with_param">Delete \'%1$s\' space</string>
     <string name="delete_space_title">Are you sure to delete this space?</string>
     <string name="space_id_copied_toast_msg">Space ID copied</string>
@@ -1587,7 +1587,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_section_fields_menu">Shown in properties menu</string>
     <string name="object_type_fields_section_hidden">Disembunyikan</string>
     <string name="object_type_fields_section_file">Berkas</string>
-    <string name="object_type_fields_section_local_fields">Local properties</string>
+    <string name="object_type_fields_section_local_fields">Properti lokal</string>
     <string name="object_type_fields_title">Properti</string>
     <string name="object_type_fields_info_text">You\'re editing type</string>
     <string name="object_type_fields_edit_field">Edit field</string>
@@ -1600,7 +1600,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_local_info_title">Local fields</string>
     <string name="object_type_fields_local_info_description">Some fields are not included in the object type. Please add them if you want to see them in all objects of this type, or remove them.</string>
     <string name="object_type_fields_local_info_button">Oke</string>
-    <string name="object_type_templates_empty">This type doesn’t have\nany templates</string>
+    <string name="object_type_templates_empty">Tipe ini tidak punya templat</string>
     <string name="object_type_open_type_error">Galat membuka tipe objek ini</string>
     <string name="day_of_week_monday">Senin</string>
     <string name="day_of_week_tuesday">Selasa</string>
@@ -1624,7 +1624,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_message_reactions_no_reactions_yet">Belum ada reaksi</string>
     <string name="chat_message_reactions_no_reactions_message">Mungkin seseorang menghapus reaksinya atau ada masalah teknis</string>
     <string name="object_types_human">Manusia</string>
-    <string name="object_type_settings_item_remove">Delete type</string>
+    <string name="object_type_settings_item_remove">Hapus tipe</string>
     <string name="chats_alert_delete_this_message_description">Pesan tak dapat dikembalikan lagi</string>
     <string name="chats_alert_delete_this_message">Hapus pesan ini?</string>
     <string name="object_set_of_title">Set dari</string>
@@ -1675,17 +1675,18 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_delete_space_button">Hapus Ruang</string>
     <string name="space_settings_icon_title">Sunting gambar</string>
     <string name="space_settings_save_button">Simpan</string>
-    <string name="object_type_add_property_screen_title">Add property</string>
-    <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
+    <string name="object_type_add_property_screen_title">Tambahkan properti</string>
+    <string name="object_type_add_property_screen_create">Buat properti \'%1$s\'\"</string>
     <string name="object_type_add_property_screen_section_types">Properties formats\"</string>
     <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
-    <string name="new_property_hint">New property</string>
+    <string name="new_property_hint">Properti baru</string>
     <string name="edit_property_limit_objects">Limit objects to</string>
-    <string name="add_property_error_create_new">Error while creating new property</string>
-    <string name="add_property_error_update">Error while updating property</string>
-    <string name="add_property_error_add">Error while adding property to type</string>
+    <string name="add_property_error_create_new">Galat membuat properti baru</string>
+    <string name="add_property_error_update">Galat memperbarui properti</string>
+    <string name="add_property_error_add">Galat menambahkan properti ke tipe</string>
     <string name="property_select_format_title">Select property format</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
+    <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
 </resources>

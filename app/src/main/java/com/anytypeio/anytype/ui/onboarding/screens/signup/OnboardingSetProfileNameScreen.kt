@@ -191,7 +191,7 @@ fun SetProfileNameNextButton(
     val focus = LocalFocusManager.current
     Box(modifier = modifier) {
         OnBoardingButtonPrimary(
-            text = stringResource(id = R.string.onboarding_get_my_key_button_text),
+            text = stringResource(id = R.string.done),
             onClick = {
                 onNextClicked(text.value).also {
                     focus.clearFocus(force = true)

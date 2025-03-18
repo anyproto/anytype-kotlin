@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import java.text.DecimalFormat
 import kotlin.math.log10
 import kotlin.math.pow
+import timber.log.Timber
 
 fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
     val tmp = this[index1]
@@ -93,8 +94,12 @@ fun Fragment.dismissInnerDialog(tag: String) {
 fun String.isEndLineClick(range: IntRange): Boolean = range.first == length && range.last == length
 
 inline fun <reified T> Fragment.withParent(action: T.() -> Unit) {
-    check(parentFragment is T) { "Parent is not ${T::class.java}. Please specify correct type" }
-    (parentFragment as T).action()
+    try {
+        check(parentFragment is T) { "Parent is not ${T::class.java}. Please specify correct type" }
+        (parentFragment as T).action()
+    } catch (e: Exception) {
+        Timber.e(e, "Error while executing an action with parent fragment")
+    }
 }
 
 fun MatchResult?.parseMatchedInt(index: Int): Int? = this?.groups?.get(index)?.value?.toIntOrNull()

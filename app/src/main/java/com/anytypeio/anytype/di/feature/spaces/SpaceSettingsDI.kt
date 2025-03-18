@@ -10,14 +10,17 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugSpace
 import com.anytypeio.anytype.domain.debugging.DebugSpaceContentSaver
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -103,12 +106,14 @@ object SpaceSettingsModule {
 interface SpaceSettingsDependencies : ComponentDependencies {
     fun blockRepo(): BlockRepository
     fun auth(): AuthRepository
+    fun appActions(): AppActionManager
+    fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun settings(): UserSettingsRepository
     fun urlBuilder(): UrlBuilder
     fun analytics(): Analytics
     fun dispatchers(): AppCoroutineDispatchers
     fun spaceManager(): SpaceManager
     fun container(): StorelessSubscriptionContainer
-    fun config(): ConfigStorage
     fun context(): Context
     fun userPermission(): UserPermissionProvider
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer

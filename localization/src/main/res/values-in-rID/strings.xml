@@ -827,7 +827,7 @@
     <string name="created_by">Created by</string>
     <string name="space_id">Space ID</string>
     <string name="network_id">ID Jaringan</string>
-    <string name="delete_space_subtitle">Space deletion is permanent and cannot be undone. Please note that all the data connected to this space will be permanently removed and you will lose an access to it forever.</string>
+    <string name="delete_space_subtitle">Penghapusan Ruang bersifat permanen dan tidak dapat dibatalkan. Perhatikan bahwa semua yang terhubung ke ruang ini akan dihapus secara permanen dan kamu tidak akan bisa mengaksesnya lagi selamanya.</string>
     <string name="delete_space_title_with_param">Delete \'%1$s\' space</string>
     <string name="delete_space_title">Are you sure to delete this space?</string>
     <string name="space_id_copied_toast_msg">Space ID copied</string>
@@ -994,14 +994,14 @@
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">Aku pengguna baru</string>
     <string name="onboarding_enter_my_vault">Get my Key</string>
-    <string name="onboarding_have_key_button_text">Already have a Key</string>
+    <string name="onboarding_have_key_button_text">Sudah punya Kunci</string>
     <string name="onboarding_get_my_key_button_text">Ambil Kunciku</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Ini Kuncimu</string>
-    <string name="onboarding_key_description">It gives you full ownership over your vault.</string>
+    <string name="onboarding_key_description">Kunci ini memberimu kepemilikan penuh atas brankasmu.</string>
     <string name="onboarding_show_my_key">Tampilkan Kunciku</string>
     <string name="onboarding_tap_to_reveal">Ketuk untuk melihat</string>
     <string name="onboarding_key_skip">Lewati</string>
@@ -1016,7 +1016,7 @@
     <string name="onboarding_entering_void_title">Memasuki Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Kunci tidak boleh kosong</string>
     <string name="onboarding_mnemonic_read_more">Lebih lanjut tentang Kunci</string>
-    <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
+    <string name="onboarding_key_additional_info">Kamu bisa menemukan kunci ini di setelan aplikasi</string>
     <string name="onboarding_what_is_the_key">Apa itu Kunci?</string>
     <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
     <string name="onboarding_recovery_phrase_description_2">Siapapun yang mengetahui kombinasi kata-kata ini memiliki kontrol penuh terhadap brankasmu.</string>
@@ -1690,5 +1690,5 @@ Please provide specific details of your needs here.</string>
     <string name="property_select_format_title">Select property format</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
-    <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
+    <string name="delete_space_checkbox_text">Aku sudah membaca dan ingin menghapus Ruang ini</string>
 </resources>

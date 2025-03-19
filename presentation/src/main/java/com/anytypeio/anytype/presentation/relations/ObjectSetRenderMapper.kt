@@ -112,6 +112,7 @@ suspend fun DVViewer.render(
                 largeCards = cardSize == DVViewerCardSize.LARGE
             )
         }
+
         DVViewerType.LIST -> {
             val vmap = viewerRelations.associateBy { it.key }
             val visibleRelations = dataViewRelations.filter { relation ->
@@ -131,6 +132,7 @@ suspend fun DVViewer.render(
                 title = name
             )
         }
+
         else -> {
             if (useFallbackView) {
                 buildGridView(
@@ -145,10 +147,19 @@ suspend fun DVViewer.render(
                 Viewer.Unsupported(
                     id = id,
                     title = name,
-                    type = if (type == DVViewerType.BOARD)
-                        Viewer.Unsupported.TYPE_KANBAN
-                    else
-                        Viewer.Unsupported.TYPE_CALENDAR
+                    type = when (type) {
+                        DVViewerType.BOARD -> Viewer.Unsupported.TYPE_KANBAN
+                        DVViewerType.CALENDAR -> {
+                            Viewer.Unsupported.TYPE_CALENDAR
+                        }
+                        DVViewerType.GRAPH -> {
+                            Viewer.Unsupported.TYPE_GRAPH
+                        }
+                        else -> {
+                            Viewer.Unsupported.TYPE_UNKNOWN
+                        }
+                    }
+
                 )
             }
         }
@@ -453,7 +464,7 @@ suspend fun ObjectWrapper.Relation.toStatus(
     value: Any?,
     store: ObjectStore
 ): StatusView? {
-    val filter : Id? = value.values<Id>().firstOrNull()
+    val filter: Id? = value.values<Id>().firstOrNull()
     return if (filter != null) {
         val option = store.get(filter)?.let { ObjectWrapper.Option(it.map) }
         if (option != null && option.isDeleted != true) {
@@ -490,6 +501,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.LONG_TEXT -> {
         FilterView.Expression.Text(
             id = id,
@@ -503,6 +515,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.URL -> {
         FilterView.Expression.Url(
             id = id,
@@ -516,6 +529,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.EMAIL -> {
         FilterView.Expression.Email(
             id = id,
@@ -529,6 +543,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.PHONE -> {
         FilterView.Expression.Phone(
             id = id,
@@ -542,6 +557,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.NUMBER -> {
         FilterView.Expression.Number(
             id = id,
@@ -555,6 +571,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.DATE -> {
         val fieldDate = fieldParser.toDate(any = value)
         FilterView.Expression.Date(
@@ -571,6 +588,7 @@ suspend fun DVFilter.toView(
             relativeDate = fieldDate?.relativeDate
         )
     }
+
     Relation.Format.STATUS -> {
         val updatedFilterValue = relation.toStatus(
             value = value,
@@ -588,6 +606,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.TAG -> {
         FilterView.Expression.Tag(
             id = id,
@@ -606,6 +625,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.OBJECT, Relation.Format.FILE -> {
         FilterView.Expression.Object(
             id = id,
@@ -626,6 +646,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.CHECKBOX -> {
         FilterView.Expression.Checkbox(
             id = id,
@@ -639,6 +660,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     else -> throw UnsupportedOperationException("Unsupported relation format:${relation.format}")
 }
 
@@ -657,12 +679,14 @@ suspend fun ObjectWrapper.Relation.toFilterValue(
             store = store
         )
     )
+
     Relation.Format.TAG -> FilterValue.Tag(
         toTags(
             value = value,
             store = store
         )
     )
+
     Relation.Format.DATE -> FilterValue.Date(DateParser.parse(value))
     Relation.Format.URL -> FilterValue.Url(toText(value))
     Relation.Format.EMAIL -> FilterValue.Email(toText(value))
@@ -676,6 +700,7 @@ suspend fun ObjectWrapper.Relation.toFilterValue(
         )
         FilterValue.Object(obj)
     }
+
     Relation.Format.CHECKBOX -> FilterValue.Check(toCheckbox(value))
     else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
 }

@@ -994,18 +994,20 @@
     <string name="onboarding_terms_and_policy_terms">Voorwaarden\u00A0van\u00A0gebruik</string>
     <string name="onboarding_terms_and_policy_infix">" en "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Beleid</string>
-    <string name="onboarding_new_vault_button_text">Nieuwe kluis</string>
+    <string name="onboarding_new_vault_button_text">Ik ben nieuw hier</string>
     <string name="onboarding_enter_my_vault">Open mijn kluis</string>
-    <string name="onboarding_have_key_button_text">Ik heb een herstelsleutel</string>
+    <string name="onboarding_have_key_button_text">Already have a Key</string>
     <string name="onboarding_get_my_key_button_text">Haal mijn herstelsleutel</string>
     <string name="onboarding_invite_code_title">Voer jouw uitnodigingscode in</string>
     <string name="onboarding_invite_code_description">Als je er geen hebt, ga dan naar anytype.io\nen schrijf je in op de wachtlijst.</string>
     <string name="onboarding_void_title">Dit is jouw ruimte</string>
     <string name="onboarding_void_description">Het is een versleutelde locatie voor alles wat je aanmaakt. Alles wordt opgeslagen op jouw apparaat en opgeslagen op het gedistribueerde netwerk.</string>
     <string name="onboarding_this_is_your_key_title">Dit is je herstelsleutel</string>
-    <string name="onboarding_key_description">Het geeft je volledige eigendom over je kluis. Het kan niet worden hersteld.</string>
+    <string name="onboarding_key_description">It gives you full ownership over your vault.</string>
     <string name="onboarding_show_my_key">Toon mijn herstelsleutel</string>
+    <string name="onboarding_tap_to_reveal">Tik om te onthullen</string>
     <string name="onboarding_key_skip">Overslaan</string>
+    <string name="onboarding_key_not_now">Niet nu</string>
     <string name="onboarding_key_copy">Kopieer naar klembord</string>
     <string name="onboarding_set_your_name_title">Stel je naam in</string>
     <string name="onboarding_soul_creation_description">Alleen zichtbaar voor mensen met wie je iets deelt. Er is geen centraal register van deze namen.</string>
@@ -1015,8 +1017,8 @@
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De leegte betreden</string>
     <string name="onboarding_your_key_can_t_be_empty">Je herstelsleutel mag niet leeg zijn</string>
-    <string name="onboarding_mnemonic_read_more">Lees meer</string>
-    <string name="onboarding_key_additional_info">Je kunt deze herstelsleutel later terugvinden in de Anytype instellingen</string>
+    <string name="onboarding_mnemonic_read_more">Lees meer over Sleutel</string>
+    <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
     <string name="onboarding_what_is_the_key">Wat is de herstelsleutel?</string>
     <string name="onboarding_recovery_phrase_description">Het wordt weergegeven door een herstelzin – 12 willekeurige woorden waarmee je kluis magisch wordt gegenereerd op dit apparaat.</string>
     <string name="onboarding_recovery_phrase_description_2">Wie de combinatie van deze woorden kent, bezit je kluis.</string>
@@ -1109,6 +1111,7 @@
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban weergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
     <string name="error_calendar_view_not_supported">Agendaweergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
+    <string name="error_graph_view_not_supported">Graph view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">Deze weergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
     <string name="create_object_section_pinned">Vastgezet</string>
     <string name="any_object_creation_menu_pin_on_top">Zet vast bovenaan</string>

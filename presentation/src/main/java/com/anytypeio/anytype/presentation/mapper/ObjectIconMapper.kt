@@ -6,6 +6,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Basic
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 
 fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
 
@@ -17,7 +19,9 @@ fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
         image = iconImage,
         emoji = iconEmoji,
         builder = builder,
-        name = name.orEmpty()
+        name = name.orEmpty(),
+        iconName = iconName,
+        iconOption = iconOption?.toInt()
     )
 
     if (objectIcon != null) {
@@ -49,7 +53,9 @@ fun ObjectWrapper.Type.objectIcon(builder: UrlBuilder): ObjectIcon {
         image = null,
         emoji = iconEmoji,
         builder = builder,
-        name = name.orEmpty()
+        name = name.orEmpty(),
+        iconName = iconName,
+        iconOption = iconOption?.toInt()
     )
 
     if (objectIcon != null) {
@@ -76,16 +82,22 @@ fun ObjectType.Layout?.emptyType(): ObjectIcon.Empty {
 fun ObjectType.Layout.icon(
     image: String?,
     emoji: String?,
+    iconName: String?,
+    iconOption: Int?,
     name: String,
     builder: UrlBuilder
 ): ObjectIcon? {
     return when (this) {
+        ObjectType.Layout.OBJECT_TYPE -> handleObjectTypeIcon(
+            emoji = emoji,
+            iconName = iconName,
+            iconOption = iconOption
+        )
 
         ObjectType.Layout.BASIC,
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION,
-        ObjectType.Layout.IMAGE,
-        ObjectType.Layout.OBJECT_TYPE -> basicIcon(
+        ObjectType.Layout.IMAGE -> basicIcon(
             image = image,
             emoji = emoji,
             builder = builder,
@@ -107,6 +119,31 @@ fun ObjectType.Layout.icon(
         ObjectType.Layout.DATE -> emptyType()
 
         else -> null
+    }
+}
+
+/**
+ * Handles icons for OBJECT_TYPE layout.
+ */
+private fun handleObjectTypeIcon(
+    emoji: String?,
+    iconName: String?,
+    iconOption: Int?,
+): ObjectIcon? {
+    return when {
+        !emoji.isNullOrEmpty() -> {
+            Basic.Emoji(
+                unicode = emoji,
+                emptyState = ObjectType.Layout.OBJECT_TYPE.emptyType()
+            )
+        }
+        iconName.isNullOrEmpty() -> ObjectIcon.Empty.ObjectType
+        else -> ObjectIcon.ObjectType(
+            icon = CustomIcon(
+                rawValue = iconName,
+                color = CustomIconColor.fromIconOption(iconOption)
+            ),
+        )
     }
 }
 

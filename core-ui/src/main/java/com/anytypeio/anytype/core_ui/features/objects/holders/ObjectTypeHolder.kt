@@ -21,9 +21,7 @@ class ObjectTypeHolder(
             icSelected.gone()
         }
         ivIcon.setIcon(
-            emoji = item.emoji,
-            image = null,
-            name = item.name
+            icon = item.icon
         )
         tvTitle.text = item.name
         if (item.description.isNullOrBlank()) {
@@ -40,11 +38,7 @@ class ObjectTypeHorizontalHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: ObjectTypeView) = with(binding) {
-        icon.setIcon(
-            emoji = item.emoji,
-            image = null,
-            name = item.name
-        )
+        icon.setIcon(item.icon)
         name.text = item.name
     }
 }

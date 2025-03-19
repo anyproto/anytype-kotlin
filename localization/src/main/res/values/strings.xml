@@ -1290,6 +1290,7 @@
 
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
+    <string name="error_graph_view_not_supported">Graph view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
 
     <string name="create_object_section_pinned">Pinned</string>
@@ -1984,5 +1985,9 @@ Please provide specific details of your needs here.</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
     <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
+
+    <string name="object_type_icon_change_title">Change icon</string>
+    <string name="object_type_icon_remove">Remove</string>
+    <string name="object_type_icon_change_title_search_hint">Search..."</string>
 
 </resources>

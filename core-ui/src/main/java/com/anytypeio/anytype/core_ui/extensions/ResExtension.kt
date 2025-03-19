@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 
 fun Context.drawable(
@@ -309,4 +310,18 @@ fun RelativeDate.getPrettyName(
     is RelativeDate.Tomorrow -> resources.getString(R.string.tomorrow)
     is RelativeDate.Yesterday -> resources.getString(R.string.yesterday)
     RelativeDate.Empty -> ""
+}
+
+@ColorRes
+fun CustomIconColor.colorRes() = when (this) {
+    CustomIconColor.Gray -> R.color.glyph_active
+    CustomIconColor.Yellow -> R.color.palette_system_yellow
+    CustomIconColor.Amber -> R.color.palette_system_amber_100
+    CustomIconColor.Red -> R.color.palette_system_red
+    CustomIconColor.Pink -> R.color.palette_system_pink
+    CustomIconColor.Purple -> R.color.palette_system_purple
+    CustomIconColor.Blue -> R.color.palette_system_blue
+    CustomIconColor.Sky -> R.color.palette_system_sky
+    CustomIconColor.Teal -> R.color.palette_system_teal
+    CustomIconColor.Green -> R.color.palette_system_green
 }

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetObjectIconBinding
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.colorRes
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
@@ -32,6 +34,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     companion object {
         const val DEFAULT_SIZE = 28
+        const val DRAWABLE_DIR = "drawable"
     }
 
     val binding = WidgetObjectIconBinding.inflate(
@@ -149,21 +152,8 @@ class ObjectIconWidget @JvmOverloads constructor(
             ObjectIcon.Deleted -> setDeletedIcon()
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
             is ObjectIcon.Empty -> icon.setEmptyIcon()
+            is ObjectIcon.ObjectType -> setCustomIcon(icon)
         }
-    }
-
-    fun setIcon(
-        emoji: String?,
-        image: Url?,
-        name: String
-    ) {
-        if (emoji.isNullOrBlank() && image.isNullOrBlank()) {
-            setProfileInitials(name)
-        } else {
-            setEmoji(emoji)
-            setCircularImage(image)
-        }
-        //todo Add checkbox logic
     }
 
     fun setNonExistentIcon() {
@@ -357,6 +347,32 @@ class ObjectIconWidget @JvmOverloads constructor(
             initialContainer.invisible()
             ivBookmark.invisible()
             emojiContainer.invisible()
+        }
+    }
+
+    private fun setCustomIcon(icon: ObjectIcon.ObjectType) {
+        val resId = context.resources.getIdentifier(icon.icon.drawableResId, DRAWABLE_DIR, context.packageName)
+        with(binding) {
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            ivImage.invisible()
+            ivBookmark.setImageDrawable(null)
+            ivBookmark.gone()
+            emojiContainer.visible()
+        }
+        try {
+            if (resId != 0) {
+                val tint = context.getColor(icon.icon.color.colorRes())
+                binding.tvEmojiFallback.gone()
+                binding.ivEmoji.setImageResource(resId)
+                binding.ivEmoji.imageTintList = ColorStateList.valueOf(tint)
+            } else {
+                binding.ivEmoji.setImageDrawable(null)
+                binding.tvEmojiFallback.gone()
+                binding.tvEmojiFallback.visible()
+            }
+        } catch (e: Throwable) {
+            Timber.w(e, "Error while setting object type icon for")
         }
     }
 

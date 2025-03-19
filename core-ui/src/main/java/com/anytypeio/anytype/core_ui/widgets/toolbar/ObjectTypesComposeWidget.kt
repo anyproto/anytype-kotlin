@@ -30,14 +30,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
-import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.TypesWidgetItem
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 
 
@@ -50,11 +50,11 @@ fun MyChooseTypeHorizontalWidget() {
             TypesWidgetItem.Search,
             TypesWidgetItem.Type(
                 item = ObjectTypeView(
-                    emoji = "👍",
                     name = "Like",
                     id = "12312",
                     description = null,
-                    key = "dd"
+                    key = "dd",
+                    icon = ObjectIcon.None
                 )
             )
         ),
@@ -72,11 +72,11 @@ fun MyChooseTypeHorizontalWidgetCollapsed() {
             TypesWidgetItem.Search,
             TypesWidgetItem.Type(
                 item = ObjectTypeView(
-                    emoji = "👍",
                     name = "Like",
                     id = "12312",
                     description = null,
-                    key = "dd"
+                    key = "dd",
+                    icon = ObjectIcon.None
                 )
             )
         ),
@@ -158,15 +158,11 @@ fun ChooseTypeHorizontalWidgetExpanded(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Spacer(modifier = Modifier.width(12.dp))
-                                val uri = Emojifier.safeUri(item.item.emoji.orEmpty())
-                                if (uri.isNotEmpty()) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(uri),
-                                        contentDescription = "Icon from URI",
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                }
+                                ListWidgetObjectIcon(
+                                    modifier = Modifier.size(16.dp),
+                                    icon = item.item.icon
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = item.item.name,
                                     style = Caption1Medium,

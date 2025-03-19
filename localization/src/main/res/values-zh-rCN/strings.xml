@@ -1688,6 +1688,16 @@
     <string name="property_edit_menu_delete">从空格中删除</string>
     <string name="property_edit_menu_unlink">从类型取消链接</string>
     <string name="delete_space_checkbox_text">我已阅读并且想要删除这个空间</string>
+    <string name="migration_screen_new_version_update">有新版本可用</string>
+    <string name="migration_screen_description_1">我们正在为我们的新聊天奠定基础。包括计数器、通知和其他顺利聊天体验所需的功能。</string>
+    <string name="migration_screen_description_2">这可能需要一些时间，但不用担心，您的数据是安全的。</string>
+    <string name="migration_screen_start_update">开始更新</string>
+    <string name="migration_screen_read_more">进一步了解</string>
+    <string name="migration_screen_what_to_expect">敬请期待</string>
+    <string name="migration_screen_your_data_remains_safe">您的数据依旧安全</string>
+    <string name="migration_screen_your_data_description">您的数据不会因本次更新受到影响。更新在您的设备上完成，我们将数据复制到新格式，并会在本地创建一个备份，里面有上一版格式的所有数据。</string>
+    <string name="migration_screen_your_data_description_2">这个备份用来以防万一，供您在不得已时检查和调试。</string>
+    <string name="migration_screen_what_to_expect_description">在更新过程中您会看到一个加载画面。完成之后您即可继续使用本软件。</string>
     <string name="object_type_icon_change_title">更改图标</string>
     <string name="object_type_icon_remove">移除</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>

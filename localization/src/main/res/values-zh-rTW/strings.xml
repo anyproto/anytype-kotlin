@@ -992,18 +992,20 @@
     <string name="onboarding_terms_and_policy_terms">\u00A0 的 \u00A0 使用條款</string>
     <string name="onboarding_terms_and_policy_infix">" 和 "</string>
     <string name="onboarding_terms_and_policy_privacy">隱私 \u00A0 政策</string>
-    <string name="onboarding_new_vault_button_text">新建筆記庫</string>
+    <string name="onboarding_new_vault_button_text">I am new here</string>
     <string name="onboarding_enter_my_vault">進入我的帳戶</string>
-    <string name="onboarding_have_key_button_text">我有密鑰</string>
+    <string name="onboarding_have_key_button_text">Already have a Key</string>
     <string name="onboarding_get_my_key_button_text">獲取我的密鑰</string>
     <string name="onboarding_invite_code_title">輸入您的邀請碼</string>
     <string name="onboarding_invite_code_description">如果您沒有，請前往 anytype.io\n並加入到等候名單。</string>
     <string name="onboarding_void_title">這是您的 Void 身份集錦圖表</string>
     <string name="onboarding_void_description">這是您建立所有內容的加密位置。所有內容都儲存在您的裝置上，並備份到分散式網路上。</string>
     <string name="onboarding_this_is_your_key_title">這是您的密鑰</string>
-    <string name="onboarding_key_description">它賦予您筆記庫的完整所有權。它無法被復原。</string>
+    <string name="onboarding_key_description">It gives you full ownership over your vault.</string>
     <string name="onboarding_show_my_key">顯示我的密鑰</string>
+    <string name="onboarding_tap_to_reveal">Tap to Reveal</string>
     <string name="onboarding_key_skip">略過</string>
+    <string name="onboarding_key_not_now">稍後</string>
     <string name="onboarding_key_copy">複製到剪貼簿</string>
     <string name="onboarding_set_your_name_title">設置您的名字</string>
     <string name="onboarding_soul_creation_description">只有被您分享內容的人才能查看。這裡沒有中心化的管理名稱。</string>
@@ -1013,8 +1015,8 @@
     <string name="onboarding_login_or">或</string>
     <string name="onboarding_entering_void_title">正在進入 Void 身份集錦圖表</string>
     <string name="onboarding_your_key_can_t_be_empty">您的密鑰不能為空</string>
-    <string name="onboarding_mnemonic_read_more">更多資訊</string>
-    <string name="onboarding_key_additional_info">您稍後可以在 Anytype 的設定中找到此密鑰</string>
+    <string name="onboarding_mnemonic_read_more">Read more about Key</string>
+    <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
     <string name="onboarding_what_is_the_key">什麼是密鑰？</string>
     <string name="onboarding_recovery_phrase_description">密鑰是由 12 個隨機單詞產生的助記詞，您的帳戶將在此裝置上神奇地產生。</string>
     <string name="onboarding_recovery_phrase_description_2">不論是誰知道了這些單詞的組合，誰就能擁有您的筆記庫。 </string>
@@ -1105,6 +1107,7 @@
     <!--endregion-->
     <string name="error_kanban_view_not_supported">行動裝置目前尚未支持看板檢視。\n更換檢視類型（設定 -&gt; 檢視）或建立一個新的來存取您的資料。</string>
     <string name="error_calendar_view_not_supported">行動裝置目前尚未支持日曆檢視。\n更換檢視類型（設定 -&gt; 檢視）或建立一個新的來存取您的資料。</string>
+    <string name="error_graph_view_not_supported">Graph view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">行動裝置目前尚未支持此檢視類型。\n更換檢視類型（設定 -&gt; 檢視）或建立一個新的來存取您的資料。</string>
     <string name="create_object_section_pinned">已釘選</string>
     <string name="any_object_creation_menu_pin_on_top">置頂</string>

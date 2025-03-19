@@ -23,6 +23,8 @@ sealed class Viewer {
         companion object {
             const val TYPE_KANBAN = 0
             const val TYPE_CALENDAR = 1
+            const val TYPE_GRAPH = 2
+            const val TYPE_UNKNOWN = -1
         }
     }
 

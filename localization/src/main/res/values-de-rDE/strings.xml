@@ -994,18 +994,20 @@
     <string name="onboarding_terms_and_policy_terms">Nutzungsbedingungen</string>
     <string name="onboarding_terms_and_policy_infix">" und "</string>
     <string name="onboarding_terms_and_policy_privacy">Datenschutzrichtlinie</string>
-    <string name="onboarding_new_vault_button_text">Neuer Tresor</string>
+    <string name="onboarding_new_vault_button_text">Ich bin neu hier</string>
     <string name="onboarding_enter_my_vault">Meinen Schlüssel holen</string>
-    <string name="onboarding_have_key_button_text">Ich habe einen Schlüssel</string>
+    <string name="onboarding_have_key_button_text">Already have a Key</string>
     <string name="onboarding_get_my_key_button_text">Meinen Schlüssel holen</string>
     <string name="onboarding_invite_code_title">Gib deinen Einladungscode ein</string>
     <string name="onboarding_invite_code_description">Wenn du noch keinen hast, gehe einfach zu anytype.io\nund lass dich auf die Warteliste setzen.</string>
     <string name="onboarding_void_title">Das ist dein Void</string>
     <string name="onboarding_void_description">Es ist ein verschlüsselter Ort für alles, was du erstellst. Alles wird auf deinem Gerät gespeichert und im dezentralen Netzwerk gesichert.</string>
     <string name="onboarding_this_is_your_key_title">Dies ist dein Schlüssel</string>
-    <string name="onboarding_key_description">Damit bist du vollständiger Eigentümer deines Tresors. Er kann nicht wiederhergestellt werden.</string>
+    <string name="onboarding_key_description">It gives you full ownership over your vault.</string>
     <string name="onboarding_show_my_key">Meinen Schlüssel anzeigen</string>
+    <string name="onboarding_tap_to_reveal">Zum Aufdecken antippen</string>
     <string name="onboarding_key_skip">Überspringen</string>
+    <string name="onboarding_key_not_now">Nicht jetzt</string>
     <string name="onboarding_key_copy">In die Zwischenablage kopieren</string>
     <string name="onboarding_set_your_name_title">Deinen Namen festlegen</string>
     <string name="onboarding_soul_creation_description">Nur von Leuten gesehen, mit denen du etwas teilst. Es gibt kein zentrales Register dieser Namen.</string>
@@ -1015,8 +1017,8 @@
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
     <string name="onboarding_your_key_can_t_be_empty">Dein Schlüssel darf nicht leer sein</string>
-    <string name="onboarding_mnemonic_read_more">Mehr lesen</string>
-    <string name="onboarding_key_additional_info">Du findest diesen Schlüssel später in den Anytype-Einstellungen</string>
+    <string name="onboarding_mnemonic_read_more">Mehr über Schlüssel lesen</string>
+    <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
     <string name="onboarding_what_is_the_key">Was ist der Schlüssel?</string>
     <string name="onboarding_recovery_phrase_description">Sie wird durch eine Wiederherstellungsphrase dargestellt - 12 zufällige Wörter, aus denen dein Tresor auf magische Weise auf diesem Gerät generiert wird.</string>
     <string name="onboarding_recovery_phrase_description_2">Wer die Kombination dieser Wörter kennt, dem gehört dein Tresor. </string>
@@ -1109,6 +1111,7 @@
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban-Ansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>
     <string name="error_calendar_view_not_supported">Kalenderansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>
+    <string name="error_graph_view_not_supported">Graph view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">Diese Ansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>
     <string name="create_object_section_pinned">Angeheftet</string>
     <string name="any_object_creation_menu_pin_on_top">Oben anheften</string>

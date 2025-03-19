@@ -51,7 +51,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
@@ -62,8 +61,10 @@ import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
 import com.anytypeio.anytype.presentation.objects.SelectTypeViewState
 
@@ -204,7 +205,7 @@ private fun FlowRowContent(
                     Box {
                         ObjectTypeItem(
                             name = view.name,
-                            emoji = view.icon,
+                            icon = view.icon,
                             onItemClicked = throttledClick(
                                 onClick = { onTypeClicked(view) }
                             ),
@@ -434,7 +435,7 @@ private fun LazyColumnContent(
                     ) {
                         ObjectTypeItem(
                             name = view.name,
-                            emoji = view.icon,
+                            icon = view.icon,
                             onItemClicked = throttledClick(
                                 onClick = {
                                     onTypeClicked(view)
@@ -459,7 +460,7 @@ private fun LazyColumnContent(
 fun ObjectTypeItem(
     modifier: Modifier,
     name: String,
-    emoji: String,
+    icon: ObjectIcon,
     isSelected: Boolean,
     onItemClicked: () -> Unit,
     onItemLongClicked: () -> Unit
@@ -491,17 +492,11 @@ fun ObjectTypeItem(
         Spacer(
             modifier = Modifier.width(14.dp)
         )
-        val uri = Emojifier.safeUri(emoji)
-        if (uri.isNotEmpty()) {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    Emojifier.safeUri(emoji)
-                ),
-                contentDescription = "Icon from URI",
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-        }
+        ListWidgetObjectIcon(
+            icon = icon,
+            modifier = Modifier.size(18.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = name,
             style = Title2,

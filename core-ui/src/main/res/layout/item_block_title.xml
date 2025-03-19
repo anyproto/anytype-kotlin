@@ -52,7 +52,6 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageIcon"
-        tools:src="@drawable/a123"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxHeight="443dp"
@@ -67,19 +66,19 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:shapeAppearance="@style/TitleImageAppearanceOverlay"
-        app:strokeColor="@color/background_primary"
-        app:strokeWidth="4dp"
+        app:strokeColor="@color/shape_tertiary"
+        app:strokeWidth="1dp"
         tools:visibility="visible" />
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
         style="@style/BlockTitleContentStyle"
         android:layout_width="0dp"
+        android:layout_marginTop="@dimen/dp_16"
         android:hint="@string/untitled"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         app:ignoreDragAndDrop="true"
-        android:layout_marginTop="@dimen/dp_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barrier"

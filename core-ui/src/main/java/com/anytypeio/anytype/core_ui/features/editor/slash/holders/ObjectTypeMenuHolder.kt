@@ -12,11 +12,7 @@ class ObjectTypeMenuHolder(
 
     fun bind(item: SlashItem.ObjectType) = with(binding) {
         val objectType = item.objectTypeView
-        ivIcon.setIcon(
-            emoji = objectType.emoji,
-            image = null,
-            name = objectType.name
-        )
+        ivIcon.setIcon(objectType.icon)
         tvTitle.text = objectType.name
         if (objectType.description.isNullOrBlank()) {
             tvSubtitle.gone()

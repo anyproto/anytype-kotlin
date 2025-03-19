@@ -998,18 +998,20 @@
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" и "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_new_vault_button_text">Новое хранилище</string>
+    <string name="onboarding_new_vault_button_text">Я новичок здесь</string>
     <string name="onboarding_enter_my_vault">Войти в мое хранилище</string>
-    <string name="onboarding_have_key_button_text">У меня есть Ключ</string>
+    <string name="onboarding_have_key_button_text">Already have a Key</string>
     <string name="onboarding_get_my_key_button_text">Получить мой Ключ</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Это Ваш Ключ</string>
-    <string name="onboarding_key_description">Это дает вам полное владение вашим хранилищем. При утрате его нельзя восстановить.</string>
+    <string name="onboarding_key_description">It gives you full ownership over your vault.</string>
     <string name="onboarding_show_my_key">Показать мой Ключ</string>
+    <string name="onboarding_tap_to_reveal">Нажмите, чтобы показать</string>
     <string name="onboarding_key_skip">Пропустить</string>
+    <string name="onboarding_key_not_now">Не сейчас</string>
     <string name="onboarding_key_copy">Копировать в буфер обмена</string>
     <string name="onboarding_set_your_name_title">Установите ваше имя</string>
     <string name="onboarding_soul_creation_description">Видим только людям, с которыми вы чем-то поделились. Централизованного реестра имен не существует.</string>
@@ -1019,8 +1021,8 @@
     <string name="onboarding_login_or">ИЛИ</string>
     <string name="onboarding_entering_void_title">Входим в пустоту</string>
     <string name="onboarding_your_key_can_t_be_empty">Ваш ключ не может быть пустым</string>
-    <string name="onboarding_mnemonic_read_more">Подробнее</string>
-    <string name="onboarding_key_additional_info">Вы можете найти этот ключ позже в настройках Anytype</string>
+    <string name="onboarding_mnemonic_read_more">Подробнее о Ключе</string>
+    <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
     <string name="onboarding_what_is_the_key">Что такое Ключ?</string>
     <string name="onboarding_recovery_phrase_description">Фраза восстановления - это случайная комбинация из 12 слов. Волшебным образом из этих слов генерируется ваш аккаунт на устройстве.</string>
     <string name="onboarding_recovery_phrase_description_2">Тот, кто знает комбинацию этих слов, владеет вашим хранилищем.</string>
@@ -1117,6 +1119,7 @@
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_graph_view_not_supported">Graph view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="create_object_section_pinned">Закреплённые</string>
     <string name="any_object_creation_menu_pin_on_top">Закрепить сверху</string>

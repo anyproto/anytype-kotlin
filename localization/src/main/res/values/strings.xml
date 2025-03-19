@@ -1113,18 +1113,20 @@
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_new_vault_button_text">New vault</string>
+    <string name="onboarding_new_vault_button_text">I am new here</string>
     <string name="onboarding_enter_my_vault">Enter my Vault</string>
-    <string name="onboarding_have_key_button_text">I have a Key</string>
+    <string name="onboarding_have_key_button_text">Already have a Key</string>
     <string name="onboarding_get_my_key_button_text">Get my Key</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">This is your Key</string>
-    <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
+    <string name="onboarding_key_description">It gives you full ownership over your vault.</string>
     <string name="onboarding_show_my_key">Show my Key</string>
+    <string name="onboarding_tap_to_reveal">Tap to Reveal</string>
     <string name="onboarding_key_skip">Skip</string>
+    <string name="onboarding_key_not_now">Not now</string>
     <string name="onboarding_key_copy">Copy to clipboard</string>
     <string name="onboarding_set_your_name_title">Set your name</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
@@ -1135,8 +1137,8 @@
     <string name="onboarding_entering_void_title">Entering the Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
 
-    <string name="onboarding_mnemonic_read_more">Read more</string>
-    <string name="onboarding_key_additional_info">You can find this key later in Anytype settings</string>
+    <string name="onboarding_mnemonic_read_more">Read more about Key</string>
+    <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
     <string name="onboarding_what_is_the_key">What is the Key?</string>
     <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
     <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
@@ -1288,6 +1290,7 @@
 
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
+    <string name="error_graph_view_not_supported">Graph view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
 
     <string name="create_object_section_pinned">Pinned</string>
@@ -1992,5 +1995,9 @@ Please provide specific details of your needs here.</string>
     <string name="migration_screen_your_data_description">During this update, your data remains fully secure. The update is performed directly on your device, and your synced data remains unaffected. We’ll just copy it to a new format, and a local backup will be created on your device, containing all your data in the previous format.</string>
     <string name="migration_screen_your_data_description_2">The reason we’re retaining this backup is to debug and assist you, in case of unforeseen.</string>
     <string name="migration_screen_what_to_expect_description">You\'ll see a loading screen during the update. Once finished, you can continue using the app normally.</string>
+
+    <string name="object_type_icon_change_title">Change icon</string>
+    <string name="object_type_icon_remove">Remove</string>
+    <string name="object_type_icon_change_title_search_hint">Search..."</string>
 
 </resources>

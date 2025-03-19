@@ -2230,7 +2230,7 @@ class ObjectSetViewModel(
             onSuccess = { types ->
                 val list = buildList {
                     add(TemplateObjectTypeView.Search)
-                    addAll(types.toTemplateObjectTypeViewItems(selectedType))
+                    addAll(types.toTemplateObjectTypeViewItems(selectedType, urlBuilder))
                 }
                 typeTemplatesWidgetState.value = widgetState.copy(objectTypes = list)
             },

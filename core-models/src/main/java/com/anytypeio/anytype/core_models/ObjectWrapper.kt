@@ -30,6 +30,7 @@ sealed class ObjectWrapper {
         val iconEmoji: String? by default
         val iconImage: String? = getSingleValue(Relations.ICON_IMAGE)
         val iconOption: Double? by default
+        val iconName: String? by default
 
         val coverId: String? = getSingleValue(Relations.COVER_ID)
 
@@ -199,6 +200,9 @@ sealed class ObjectWrapper {
 
                 else -> emptyList()
             }
+
+        val iconName: String? by default
+        val iconOption: Double? by default
 
         val allRecommendedRelations: List<Id>
             get() = recommendedRelations + recommendedFeaturedRelations + recommendedHiddenRelations + recommendedFileRelations

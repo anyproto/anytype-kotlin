@@ -194,15 +194,6 @@ fun MnemonicButtons(
                 )
             }
             else -> {
-                Text(
-                    style = Caption1Regular,
-                    color = Color(0xff797976),
-                    text = stringResource(id = R.string.onboarding_key_additional_info),
-                    modifier = Modifier
-                        .padding(bottom = 19.dp)
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
                 OnBoardingButtonPrimary(
                     text = stringResource(id = R.string.onboarding_tap_to_reveal),
                     modifier = Modifier

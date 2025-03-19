@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -123,11 +124,7 @@ fun MnemonicPhraseWidget(
             modifier = modifier, maxItemsInEachRow = 4, horizontalArrangement = Arrangement.Center
         ) {
             words.forEachIndexed { idx, word ->
-                val color = if (idx <= mnemonicColorPalette.lastIndex) {
-                    mnemonicColorPalette[idx]
-                } else {
-                    MnemonicPhrasePaletteColors.random()
-                }
+                val color = colorResource(R.color.palette_system_pink)
                 Text(
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
                     text = word.lowercase(),

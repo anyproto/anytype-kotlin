@@ -34,6 +34,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     companion object {
         const val DEFAULT_SIZE = 28
+        const val DRAWABLE_DIR = "drawable"
     }
 
     val binding = WidgetObjectIconBinding.inflate(
@@ -350,7 +351,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     }
 
     private fun setCustomIcon(icon: ObjectIcon.ObjectType) {
-        val resId = context.resources.getIdentifier(icon.icon.drawableName, "drawable", context.packageName)
+        val resId = context.resources.getIdentifier(icon.icon.drawableName, DRAWABLE_DIR, context.packageName)
         with(binding) {
             ivCheckbox.invisible()
             initialContainer.invisible()

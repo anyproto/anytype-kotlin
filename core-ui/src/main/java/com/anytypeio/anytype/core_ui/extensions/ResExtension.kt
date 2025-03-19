@@ -324,4 +324,5 @@ fun CustomIconColor.colorRes() = when (this) {
     CustomIconColor.Sky -> R.color.palette_system_sky
     CustomIconColor.Teal -> R.color.palette_system_teal
     CustomIconColor.Green -> R.color.palette_system_green
+    CustomIconColor.Transparent -> R.color.shape_transparent_primary
 }

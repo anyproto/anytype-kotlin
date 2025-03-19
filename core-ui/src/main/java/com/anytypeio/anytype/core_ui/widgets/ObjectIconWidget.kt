@@ -351,7 +351,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     }
 
     private fun setCustomIcon(icon: ObjectIcon.ObjectType) {
-        val resId = context.resources.getIdentifier(icon.icon.drawableName, DRAWABLE_DIR, context.packageName)
+        val resId = context.resources.getIdentifier(icon.icon.drawableResId, DRAWABLE_DIR, context.packageName)
         with(binding) {
             ivCheckbox.invisible()
             initialContainer.invisible()
@@ -362,7 +362,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
         try {
             if (resId != 0) {
-                val tint = context.getColor(icon.color.colorRes())
+                val tint = context.getColor(icon.icon.color.colorRes())
                 binding.tvEmojiFallback.gone()
                 binding.ivEmoji.setImageResource(resId)
                 binding.ivEmoji.imageTintList = ColorStateList.valueOf(tint)

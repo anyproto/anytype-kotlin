@@ -139,8 +139,10 @@ private fun handleObjectTypeIcon(
         }
         iconName.isNullOrEmpty() -> ObjectIcon.Empty.ObjectType
         else -> ObjectIcon.ObjectType(
-            icon = CustomIcon(rawValue = iconName),
-            color = CustomIconColor.fromIconOption(iconOption)
+            icon = CustomIcon(
+                rawValue = iconName,
+                color = CustomIconColor.fromIconOption(iconOption)
+            ),
         )
     }
 }

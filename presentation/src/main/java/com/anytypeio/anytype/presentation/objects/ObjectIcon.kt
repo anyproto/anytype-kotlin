@@ -43,10 +43,7 @@ sealed class ObjectIcon {
     data object Deleted : ObjectIcon()
 
     data class Checkbox(val isChecked: Boolean) : ObjectIcon()
-    data class ObjectType(
-        val icon: CustomIcon,
-        val color: CustomIconColor = CustomIconColor.DEFAULT
-    ) : ObjectIcon()
+    data class ObjectType(val icon: CustomIcon) : ObjectIcon()
 }
 
 sealed class SpaceMemberIconView {

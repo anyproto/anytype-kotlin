@@ -24,7 +24,7 @@ fun CustomIconView(
     icon: ObjectIcon.ObjectType,
     iconSize: Dp
 ) {
-    val tint = colorResource(id = icon.color.colorRes())
+    val tint = colorResource(id = icon.icon.color.colorRes())
 
     val imageVector = CustomIcons.getImageVector(icon.icon)
 
@@ -53,9 +53,9 @@ fun CustomIconViewPreview() {
     CustomIconView(
         icon = ObjectIcon.ObjectType(
             icon = CustomIcon(
-                rawValue = "batteryCharging"
+                rawValue = "batteryCharging",
+                color = CustomIconColor.Yellow
             ),
-            color = CustomIconColor.Yellow
         ),
         modifier = Modifier,
         iconSize = 18.dp

@@ -5281,7 +5281,8 @@ class EditorViewModel(
                         isWithCollection = false,
                         isWithBookmark = false,
                         selectedTypes = emptyList(),
-                        excludeTypes = emptyList()
+                        excludeTypes = emptyList(),
+                        urlBuilder = urlBuilder
                     )
                     action.invoke(views)
                 }
@@ -6417,7 +6418,8 @@ class EditorViewModel(
                             objects.getObjectTypeViewsForSBPage(
                                 isWithCollection = true,
                                 isWithBookmark = false,
-                                excludeTypes = excludeTypes
+                                excludeTypes = excludeTypes,
+                                urlBuilder = urlBuilder
                             ).filter {
                                 !excludeTypes.contains(it.key)
                             }.map {

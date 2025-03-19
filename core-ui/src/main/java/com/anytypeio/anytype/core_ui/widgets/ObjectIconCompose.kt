@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.AvatarIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.CustomIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.DeletedIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmptyIconView
@@ -83,6 +84,13 @@ fun ListWidgetObjectIcon(
             )
         }
         ObjectIcon.None -> {}
+        is ObjectIcon.ObjectType -> {
+            CustomIconView(
+                icon = icon,
+                modifier = modifier,
+                iconSize = iconSize
+            )
+        }
     }
 }
 

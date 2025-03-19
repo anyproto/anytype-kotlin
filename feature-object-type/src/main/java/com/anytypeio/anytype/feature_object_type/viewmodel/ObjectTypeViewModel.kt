@@ -32,13 +32,13 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
-import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.OpenEmojiPicker
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.ui.UiFieldsButtonState
+import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
@@ -55,6 +55,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
@@ -134,6 +135,9 @@ class ObjectTypeViewModel(
 
     //edit property
     val uiEditPropertyScreen = MutableStateFlow<UiEditPropertyState>(UiEditPropertyState.Hidden)
+
+    //icons picker screen
+    val uiIconsPickerScreen = MutableStateFlow<UiIconsPickerState>(UiIconsPickerState.Hidden)
 
     //error
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
@@ -449,9 +453,7 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnObjectTypeIconClick -> {
-                viewModelScope.launch {
-                    commands.emit(OpenEmojiPicker)
-                }
+                uiIconsPickerScreen.value = UiIconsPickerState.Visible
             }
 
             is TypeEvent.OnTemplateItemClick -> {
@@ -488,6 +490,20 @@ class ObjectTypeViewModel(
                         showAddIcon = _objectTypePermissionsState.value?.canCreateTemplatesForThisType == true
                     )
                 }
+            }
+
+            TypeEvent.OnIconPickerDismiss -> {
+                uiIconsPickerScreen.value = UiIconsPickerState.Hidden
+            }
+
+            is TypeEvent.OnIconPickerItemClick -> {
+                uiIconsPickerScreen.value = UiIconsPickerState.Hidden
+                updateIcon(iconName = event.iconName, newColor = event.color)
+            }
+
+            TypeEvent.OnIconPickerRemovedClick -> {
+                uiIconsPickerScreen.value = UiIconsPickerState.Hidden
+                removeIcon()
             }
         }
     }
@@ -584,30 +600,39 @@ class ObjectTypeViewModel(
         }
     }
 
-    fun updateIcon(
-        emoji: String
+    private fun updateIcon(
+        iconName: String,
+        newColor: CustomIconColor?
     ) {
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
-                details = mapOf(Relations.ICON_EMOJI to emoji)
+                details = mapOf(
+                    Relations.ICON_EMOJI to null,
+                    Relations.ICON_NAME to iconName,
+                    Relations.ICON_OPTION to newColor?.iconOption?.toDouble()
+                )
             )
             setObjectDetails.async(params).fold(
                 onFailure = { error ->
                     Timber.e(error, "Error while updating data view record")
                 },
                 onSuccess = {
-
+                    Timber.d("Object type icon updated to icon: $iconName")
                 }
             )
         }
     }
 
-    fun removeIcon() {
+    private fun removeIcon() {
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
-                details = mapOf(Relations.ICON_EMOJI to null)
+                details = mapOf(
+                    Relations.ICON_EMOJI to null,
+                    Relations.ICON_NAME to null,
+                    Relations.ICON_OPTION to null
+                )
             )
             setObjectDetails.async(params).fold(
                 onFailure = { error ->
@@ -700,6 +725,7 @@ class ObjectTypeViewModel(
                 currentList.add(toIndex, item)
                 uiFieldsListState.value = UiFieldsListState(items = currentList)
             }
+
             is FieldEvent.EditProperty -> proceedWithEditPropertyEvent(event)
         }
     }

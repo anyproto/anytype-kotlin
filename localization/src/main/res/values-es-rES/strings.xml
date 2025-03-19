@@ -1603,7 +1603,7 @@ En concreto,
     <string name="object_type_fields_section_fields_menu">Shown in properties menu</string>
     <string name="object_type_fields_section_hidden">Hidden</string>
     <string name="object_type_fields_section_file">Archivo</string>
-    <string name="object_type_fields_section_local_fields">Local properties</string>
+    <string name="object_type_fields_section_local_fields">Propiedades locales</string>
     <string name="object_type_fields_title">Propiedades</string>
     <string name="object_type_fields_info_text">Estás editando el tipo</string>
     <string name="object_type_fields_edit_field">Editar campo</string>
@@ -1611,7 +1611,7 @@ En concreto,
     <string name="object_type_fields_preview_field">Preview field</string>
     <string name="object_type_fields_btn_save">Guardar</string>
     <string name="object_type_fields_menu_delete">Unlink from type</string>
-    <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
+    <string name="object_type_fields_menu_add_to_type">Añadir al tipo actual</string>
     <string name="object_type_fields_menu_remove">Borrar</string>
     <string name="object_type_fields_local_info_title">Local fields</string>
     <string name="object_type_fields_local_info_description">Some fields are not included in the object type. Please add them if you want to see them in all objects of this type, or remove them.</string>
@@ -1671,8 +1671,8 @@ En concreto,
     <string name="field_file_and_media_title">Archivos y medios</string>
     <string name="field_file_and_media_empty">Añadir</string>
     <string name="field_checkbox_title">Seleccionar</string>
-    <string name="field_menu_add_to_type">Add to the current type</string>
-    <string name="field_menu_remove_from_object">Remove from the object</string>
+    <string name="field_menu_add_to_type">Añadir al tipo actual</string>
+    <string name="field_menu_remove_from_object">Quitar del objeto</string>
     <string name="space_settings_space_name_hint">Nombre</string>
     <string name="space_settings_space_description_hint">Descripción</string>
     <string name="space_settings_section_collaboration">Colaboración</string>

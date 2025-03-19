@@ -48,10 +48,20 @@ fun ListWidgetObjectIcon(
             DefaultProfileIconImage(icon, modifier, iconSize)
         }
         is ObjectIcon.Basic.Emoji -> {
-            EmojiIconView(icon = icon, backgroundSize = iconSize, modifier = modifier, backgroundColor = backgroundColor)
+            EmojiIconView(
+                icon = icon,
+                backgroundSize = iconSize,
+                modifier = modifier,
+                backgroundColor = backgroundColor
+            )
         }
         is ObjectIcon.Basic.Image -> {
-            DefaultObjectImageIcon(icon.hash, modifier, iconSize, fallback = icon.emptyState)
+            DefaultObjectImageIcon(
+                url = icon.hash,
+                modifier = modifier,
+                iconSize = iconSize,
+                fallback = icon.emptyState
+            )
         }
         is ObjectIcon.Bookmark -> {
             DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
@@ -88,7 +98,7 @@ fun ListWidgetObjectIcon(
             CustomIconView(
                 icon = icon,
                 modifier = modifier,
-                iconSize = iconSize
+                backgroundSize = iconSize
             )
         }
     }

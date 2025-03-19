@@ -97,6 +97,7 @@ import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -677,7 +678,11 @@ fun RowScope.Item(
             }
         },
         leadingContent = {
-            ListWidgetObjectIcon(icon = item.icon, modifier = Modifier, iconSize = 48.dp)
+            ListWidgetObjectIcon(
+                icon = item.icon,
+                modifier = Modifier,
+                iconSize = 48.dp
+            )
         }
     )
 }
@@ -691,14 +696,14 @@ private fun Type(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .padding(start = 0.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
-                .wrapContentSize()
-        ) {
-            //todo delete !!
-            ListWidgetObjectIcon(icon = item.icon!!, modifier = Modifier, iconSize = 24.dp)
+        if (item.icon != null) {
+            ListWidgetObjectIcon(
+                modifier = Modifier.padding(start = 0.dp, top = 14.dp, end = 14.dp, bottom = 14.dp),
+                icon = item.icon,
+                iconSize = 48.dp
+            )
         }
+
         val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
 
         Text(
@@ -914,7 +919,11 @@ fun MtSwipeToDismissListItems() {
             name = "Name",
             description = "Description11",
             typeName = "Type11",
-            icon = ObjectIcon.Basic.Emoji("📄"),
+            icon = ObjectIcon.ObjectType(
+                icon = CustomIcon(
+                    rawValue = "airplane",
+                )
+            ),
             space = SpaceId("1"),
         ),
         modifier = Modifier.fillMaxWidth(),

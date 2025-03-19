@@ -191,7 +191,7 @@ fun ObjectWrapper.Basic.toAllContentItem(
 ): UiContentItem.Item {
     val obj = this
     val typeUrl = obj.getProperType()
-    val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
+    val objType = objectTypes.firstOrNull { it.id == typeUrl }
     val layout = obj.layout ?: ObjectType.Layout.BASIC
     return UiContentItem.Item(
         id = obj.id,
@@ -199,15 +199,12 @@ fun ObjectWrapper.Basic.toAllContentItem(
         name = fieldParser.getObjectName(obj),
         description = getDescriptionOrSnippet(),
         type = typeUrl,
-        typeName = objectTypes.firstOrNull { type ->
-            if (isProfile) {
-                type.uniqueKey == ObjectTypeUniqueKeys.PROFILE
-            } else {
-                type.id == typeUrl
-            }
-        }?.name,
+        typeName = objType?.name,
         layout = layout,
-        icon = obj.objectIcon(builder = urlBuilder),
+        icon = obj.objectIcon(
+            builder = urlBuilder,
+            objType = objType
+        ),
         lastModifiedDate = DateParser.parse(obj.getValue(Relations.LAST_MODIFIED_DATE)) ?: 0L,
         createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L,
         isPossibleToDelete = isOwnerOrEditor

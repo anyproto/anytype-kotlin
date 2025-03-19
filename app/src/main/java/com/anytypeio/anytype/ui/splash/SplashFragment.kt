@@ -32,6 +32,7 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.update.MigrationFailedScreen
 import com.anytypeio.anytype.ui.update.MigrationInProgressScreen
+import com.anytypeio.anytype.ui.update.MigrationStartScreen
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -81,13 +82,21 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                             }
                             is SplashViewModel.State.Migration -> {
                                 binding.compose.setContent {
-                                    if (state is SplashViewModel.State.Migration.InProgress) {
-                                        MigrationInProgressScreen()
-                                    } else if (state is SplashViewModel.State.Migration.Failed) {
-                                        MigrationFailedScreen(
-                                            state = state.state,
-                                            onRetryClicked = vm::onRetryMigrationClicked
-                                        )
+                                    when(state) {
+                                        is SplashViewModel.State.Migration.AwaitingStart -> {
+                                            MigrationStartScreen(
+                                                onStartUpdate = vm::onStartMigrationClicked
+                                            )
+                                        }
+                                        is SplashViewModel.State.Migration.InProgress -> {
+                                            MigrationInProgressScreen()
+                                        }
+                                        is SplashViewModel.State.Migration.Failed -> {
+                                            MigrationFailedScreen(
+                                                state = state.state,
+                                                onRetryClicked = vm::onRetryMigrationClicked
+                                            )
+                                        }
                                     }
                                 }
                                 binding.compose.visible()

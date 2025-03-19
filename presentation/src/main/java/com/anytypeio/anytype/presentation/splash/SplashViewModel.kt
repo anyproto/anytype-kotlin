@@ -90,6 +90,14 @@ class SplashViewModel(
         }
     }
 
+    fun onStartMigrationClicked() {
+        viewModelScope.launch {
+            if (state.value is State.Migration.AwaitingStart) {
+                proceedWithAccountMigration()
+            }
+        }
+    }
+
     fun onRetryMigrationClicked() {
         viewModelScope.launch {
             migrationRetryCount = migrationRetryCount + 1
@@ -167,7 +175,6 @@ class SplashViewModel(
             state.value = State.Loading
             launchAccount(BaseUseCase.None).proceed(
                 success = { analyticsId ->
-                    state.value = State.Loading
                     crashReporter.setUser(analyticsId)
                     updateUserProps(analyticsId)
                     val props = Props.empty()
@@ -179,7 +186,7 @@ class SplashViewModel(
                     Timber.e(e, "Error while launching account")
                     when (e) {
                         is AccountMigrationNeededException -> {
-                            proceedWithAccountMigration()
+                            state.value = State.Migration.AwaitingStart
                         }
                         is NeedToUpdateApplicationException -> {
                             state.value = State.Error(ERROR_NEED_UPDATE)
@@ -437,6 +444,7 @@ class SplashViewModel(
         data object Success: State()
         data class Error(val msg: String): State()
         sealed class Migration : State() {
+            data object AwaitingStart: Migration()
             data object InProgress: Migration()
             data class Failed(val state: MigrationHelperDelegate.State.Failed) : Migration()
         }

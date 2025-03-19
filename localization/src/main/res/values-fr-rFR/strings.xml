@@ -1702,4 +1702,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="property_edit_menu_delete">Supprimer de l\'espace</string>
     <string name="property_edit_menu_unlink">Dissocier du type</string>
     <string name="delete_space_checkbox_text">J\'ai lu et je veux supprimer cet espace</string>
+    <string name="object_type_icon_change_title">Changer d\'icône</string>
+    <string name="object_type_icon_remove">Supprimer</string>
+    <string name="object_type_icon_change_title_search_hint">Search...\"</string>
 </resources>

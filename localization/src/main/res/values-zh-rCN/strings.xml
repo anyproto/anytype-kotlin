@@ -1688,4 +1688,7 @@
     <string name="property_edit_menu_delete">从空格中删除</string>
     <string name="property_edit_menu_unlink">从类型取消链接</string>
     <string name="delete_space_checkbox_text">我已阅读并且想要删除这个空间</string>
+    <string name="object_type_icon_change_title">更改图标</string>
+    <string name="object_type_icon_remove">移除</string>
+    <string name="object_type_icon_change_title_search_hint">Search...\"</string>
 </resources>

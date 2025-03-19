@@ -1705,4 +1705,7 @@ En concreto,
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
     <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
+    <string name="object_type_icon_change_title">Cambiar icono</string>
+    <string name="object_type_icon_remove">Borrar</string>
+    <string name="object_type_icon_change_title_search_hint">Search...\"</string>
 </resources>

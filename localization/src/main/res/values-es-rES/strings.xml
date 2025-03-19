@@ -1603,7 +1603,7 @@ En concreto,
     <string name="object_type_fields_section_fields_menu">Shown in properties menu</string>
     <string name="object_type_fields_section_hidden">Hidden</string>
     <string name="object_type_fields_section_file">Archivo</string>
-    <string name="object_type_fields_section_local_fields">Local properties</string>
+    <string name="object_type_fields_section_local_fields">Propiedades locales</string>
     <string name="object_type_fields_title">Propiedades</string>
     <string name="object_type_fields_info_text">Estás editando el tipo</string>
     <string name="object_type_fields_edit_field">Editar campo</string>
@@ -1611,7 +1611,7 @@ En concreto,
     <string name="object_type_fields_preview_field">Preview field</string>
     <string name="object_type_fields_btn_save">Guardar</string>
     <string name="object_type_fields_menu_delete">Unlink from type</string>
-    <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
+    <string name="object_type_fields_menu_add_to_type">Añadir al tipo actual</string>
     <string name="object_type_fields_menu_remove">Borrar</string>
     <string name="object_type_fields_local_info_title">Local fields</string>
     <string name="object_type_fields_local_info_description">Some fields are not included in the object type. Please add them if you want to see them in all objects of this type, or remove them.</string>
@@ -1671,8 +1671,8 @@ En concreto,
     <string name="field_file_and_media_title">Archivos y medios</string>
     <string name="field_file_and_media_empty">Añadir</string>
     <string name="field_checkbox_title">Seleccionar</string>
-    <string name="field_menu_add_to_type">Add to the current type</string>
-    <string name="field_menu_remove_from_object">Remove from the object</string>
+    <string name="field_menu_add_to_type">Añadir al tipo actual</string>
+    <string name="field_menu_remove_from_object">Quitar del objeto</string>
     <string name="space_settings_space_name_hint">Nombre</string>
     <string name="space_settings_space_description_hint">Descripción</string>
     <string name="space_settings_section_collaboration">Colaboración</string>
@@ -1705,6 +1705,16 @@ En concreto,
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
     <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
+    <string name="migration_screen_new_version_update">New Version Update</string>
+    <string name="migration_screen_description_1">We\'re laying the groundwork for our new chats. Including counters, notifications and other features needed for smooth chat experience.</string>
+    <string name="migration_screen_description_2">It might take a little while, but don\'t worry, your data is safe.</string>
+    <string name="migration_screen_start_update">Start Update</string>
+    <string name="migration_screen_read_more">Read More</string>
+    <string name="migration_screen_what_to_expect">What to Expect</string>
+    <string name="migration_screen_your_data_remains_safe">Your Data Remains Safe</string>
+    <string name="migration_screen_your_data_description">During this update, your data remains fully secure. The update is performed directly on your device, and your synced data remains unaffected. We’ll just copy it to a new format, and a local backup will be created on your device, containing all your data in the previous format.</string>
+    <string name="migration_screen_your_data_description_2">The reason we’re retaining this backup is to debug and assist you, in case of unforeseen.</string>
+    <string name="migration_screen_what_to_expect_description">You\'ll see a loading screen during the update. Once finished, you can continue using the app normally.</string>
     <string name="object_type_icon_change_title">Cambiar icono</string>
     <string name="object_type_icon_remove">Borrar</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>

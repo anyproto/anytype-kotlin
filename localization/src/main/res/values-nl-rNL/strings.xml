@@ -1705,6 +1705,16 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
     <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
+    <string name="migration_screen_new_version_update">New Version Update</string>
+    <string name="migration_screen_description_1">We\'re laying the groundwork for our new chats. Including counters, notifications and other features needed for smooth chat experience.</string>
+    <string name="migration_screen_description_2">It might take a little while, but don\'t worry, your data is safe.</string>
+    <string name="migration_screen_start_update">Start Update</string>
+    <string name="migration_screen_read_more">Read More</string>
+    <string name="migration_screen_what_to_expect">What to Expect</string>
+    <string name="migration_screen_your_data_remains_safe">Your Data Remains Safe</string>
+    <string name="migration_screen_your_data_description">During this update, your data remains fully secure. The update is performed directly on your device, and your synced data remains unaffected. We’ll just copy it to a new format, and a local backup will be created on your device, containing all your data in the previous format.</string>
+    <string name="migration_screen_your_data_description_2">The reason we’re retaining this backup is to debug and assist you, in case of unforeseen.</string>
+    <string name="migration_screen_what_to_expect_description">You\'ll see a loading screen during the update. Once finished, you can continue using the app normally.</string>
     <string name="object_type_icon_change_title">Wijzig icoon</string>
     <string name="object_type_icon_remove">Verwijder</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>

@@ -175,13 +175,12 @@ class SplashViewModel(
             state.value = State.Loading
             launchAccount(BaseUseCase.None).proceed(
                 success = { analyticsId ->
-                    state.value = State.Migration.AwaitingStart
-//                    crashReporter.setUser(analyticsId)
-//                    updateUserProps(analyticsId)
-//                    val props = Props.empty()
-//                    sendEvent(startTime, openAccount, props)
-//                    proceedWithGlobalSubscriptions()
-//                    commands.emit(Command.CheckAppStartIntent)
+                    crashReporter.setUser(analyticsId)
+                    updateUserProps(analyticsId)
+                    val props = Props.empty()
+                    sendEvent(startTime, openAccount, props)
+                    proceedWithGlobalSubscriptions()
+                    commands.emit(Command.CheckAppStartIntent)
                 },
                 failure = { e ->
                     Timber.e(e, "Error while launching account")

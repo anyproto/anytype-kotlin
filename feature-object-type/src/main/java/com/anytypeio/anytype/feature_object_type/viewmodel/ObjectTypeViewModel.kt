@@ -54,7 +54,7 @@ import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
-import com.anytypeio.anytype.presentation.mapper.icon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
@@ -313,7 +313,7 @@ class ObjectTypeViewModel(
             isEditable = objectPermissions.canEditDetails
         )
         uiIconState.value = UiIconState(
-            icon = objType.icon(),
+            icon = objType.objectIcon(),
             isEditable = objectPermissions.canEditDetails
         )
         if (objectPermissions.canDelete) {

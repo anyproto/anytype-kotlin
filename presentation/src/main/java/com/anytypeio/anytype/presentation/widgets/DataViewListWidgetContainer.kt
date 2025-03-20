@@ -21,7 +21,7 @@ import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.mapper.icon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -250,7 +250,7 @@ class DataViewListWidgetContainer(
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
                         objectIcon = if (withIcon) {
-                            obj.icon(
+                            obj.objectIcon(
                                 builder = urlBuilder,
                                 objType = storeOfObjectTypes.getTypeObjectById(obj)
                             )
@@ -307,7 +307,7 @@ class DataViewListWidgetContainer(
                 elements = objects.map { obj ->
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
-                        objectIcon = obj.icon(
+                        objectIcon = obj.objectIcon(
                             builder = urlBuilder,
                             objType = storeOfObjectTypes.getTypeObjectById(obj)
                         ),

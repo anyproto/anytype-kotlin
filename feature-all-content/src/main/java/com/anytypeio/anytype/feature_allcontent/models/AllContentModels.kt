@@ -4,9 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -18,7 +16,7 @@ import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
-import com.anytypeio.anytype.presentation.mapper.icon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -201,7 +199,7 @@ fun ObjectWrapper.Basic.toAllContentItem(
         type = typeUrl,
         typeName = fieldParser.getObjectTypeIdAndName(obj, objectTypes).second,
         layout = layout,
-        icon = obj.icon(
+        icon = obj.objectIcon(
             builder = urlBuilder,
             objType = objType
         ),
@@ -226,7 +224,7 @@ fun ObjectWrapper.Type.toAllContentType(
     return UiContentItem.Type(
         id = obj.id,
         name = obj.name.orEmpty(),
-        icon = obj.icon(),
+        icon = obj.objectIcon(),
         sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
         uniqueKey = obj.uniqueKey,
         readOnly = obj.restrictions.contains(ObjectRestriction.DELETE) || !isOwnerOrEditor,

@@ -738,7 +738,7 @@ fun ObjectWrapper.Type.toObjectTypeView(
         isSelected = selectedSources.contains(id),
         defaultTemplate = defaultTemplateId,
         sourceObject = sourceObject,
-        icon = icon()
+        icon = objectIcon()
     )
 
 fun List<ObjectWrapper.Type>.toTemplateObjectTypeViewItems(selectedType: Id): List<TemplateObjectTypeView.Item> {
@@ -746,7 +746,7 @@ fun List<ObjectWrapper.Type>.toTemplateObjectTypeViewItems(selectedType: Id): Li
         TemplateObjectTypeView.Item(
             type = objType,
             isSelected = objType.id == selectedType,
-            icon = objType.icon()
+            icon = objType.objectIcon()
         )
     }
 }

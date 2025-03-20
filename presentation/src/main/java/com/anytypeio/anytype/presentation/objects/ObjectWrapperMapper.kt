@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
-import com.anytypeio.anytype.presentation.mapper.icon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
@@ -48,7 +48,10 @@ suspend fun ObjectWrapper.Basic.toView(
         type = objTypeId,
         typeName = objTypeName,
         layout = layout,
-        icon = obj.icon(urlBuilder, storeOfObjectTypes.getTypeObjectById(obj)),
+        icon = obj.objectIcon(
+            builder = urlBuilder,
+            objType = storeOfObjectTypes.getTypeObjectById(obj)
+        ),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
         lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
         isFavorite = obj.isFavorite == true,
@@ -71,7 +74,7 @@ suspend fun List<ObjectWrapper.Basic>.toLinkToView(
             subtitle = getProperTypeName(id = typeUrl, types = objectTypes),
             type = typeUrl,
             layout = layout,
-            icon = obj.icon(
+            icon = obj.objectIcon(
                 builder = urlBuilder,
                 objType = storeOfObjectTypes.getTypeObjectById(obj)
             ),
@@ -93,7 +96,7 @@ suspend fun ObjectWrapper.Basic.toLinkToObjectView(
         subtitle = getProperTypeName(id = typeUrl, types = objectTypes),
         type = typeUrl,
         layout = layout,
-        icon = icon(
+        icon = objectIcon(
             builder = urlBuilder,
             objType = storeOfObjectTypes.getTypeObjectById(this)
         )
@@ -115,7 +118,7 @@ suspend fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
                 types = objectTypes
             ),
             name = fieldParser.getObjectName(obj),
-            icon = obj.icon(
+            icon = obj.objectIcon(
                 builder = urlBuilder,
                 objType = storeOfObjectTypes.getTypeObjectById(obj)
             ),

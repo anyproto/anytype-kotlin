@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.presentation.mapper.icon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.relationsFilteredByHiddenAndDescription
 import com.anytypeio.anytype.presentation.objects.setTypeRelationIconsAsNone
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -45,7 +45,7 @@ suspend fun DVViewer.buildListViews(
                             storeOfObjectTypes = storeOfObjectTypes
                         ).setTypeRelationIconsAsNone(),
                         name = fieldParser.getObjectName(obj),
-                        icon = obj.icon(
+                        icon = obj.objectIcon(
                             builder = urlBuilder,
                             objType = storeOfObjectTypes.getTypeObjectById(obj)
                         ),
@@ -91,7 +91,7 @@ suspend fun DVViewer.buildListViews(
                             storeOfObjectTypes = storeOfObjectTypes
                         ).setTypeRelationIconsAsNone(),
                         name = fieldParser.getObjectName(obj),
-                        icon = obj.icon(
+                        icon = obj.objectIcon(
                             builder = urlBuilder,
                             objType = storeOfObjectTypes.getTypeObjectById(obj)
                         ),

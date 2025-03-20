@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
-import com.anytypeio.anytype.presentation.mapper.icon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
@@ -286,7 +286,7 @@ class TreeWidgetContainer(
                             expanded = expanded,
                             currentLinkPath = currentLinkPath
                         ),
-                        objectIcon = obj.icon(
+                        objectIcon = obj.objectIcon(
                             builder = urlBuilder,
                             objType = storeOfObjectTypes.getTypeObjectById(obj)
                         ),

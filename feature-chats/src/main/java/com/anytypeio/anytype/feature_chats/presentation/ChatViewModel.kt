@@ -34,7 +34,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
-import com.anytypeio.anytype.presentation.mapper.icon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -242,7 +242,7 @@ class ChatViewModel @Inject constructor(
                                         ChatView.Message.Attachment.Link(
                                             target = attachment.target,
                                             wrapper = wrapper,
-                                            icon = wrapper?.icon(
+                                            icon = wrapper?.objectIcon(
                                                 builder = urlBuilder,
                                                 objType = storeOfObjectTypes.getTypeObjectById(wrapper)
                                             ) ?: ObjectIcon.None,
@@ -607,7 +607,7 @@ class ChatViewModel @Inject constructor(
                                     ChatView.Message.ChatBoxAttachment.Existing.Link(
                                         target = wrapper.id,
                                         name = wrapper.name.orEmpty(),
-                                        icon = wrapper.icon(
+                                        icon = wrapper.objectIcon(
                                             builder = urlBuilder,
                                             objType = storeOfObjectTypes.getTypeObjectById(wrapper)
                                         ),

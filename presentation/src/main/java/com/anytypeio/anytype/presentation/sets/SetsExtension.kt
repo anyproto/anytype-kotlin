@@ -16,7 +16,7 @@ import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.presentation.extension.getFileObject
-import com.anytypeio.anytype.presentation.mapper.icon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.buildObjectViews
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.sets.model.CellView
@@ -43,7 +43,7 @@ suspend fun List<ColumnView>.buildGridRow(
     val image = obj.iconImage
     val done = obj.done
     val layout = obj.layout
-    val objectIcon = obj.icon(
+    val objectIcon = obj.objectIcon(
         builder = builder,
         objType = storeOfObjectTypes.getTypeObjectById(obj)
     )

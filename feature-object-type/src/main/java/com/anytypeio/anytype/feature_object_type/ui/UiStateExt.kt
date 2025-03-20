@@ -18,7 +18,7 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Item
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.mapper.icon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.templates.TemplateView
@@ -180,7 +180,7 @@ private suspend fun mapLimitObjectTypes(
                     id = objType.id,
                     key = objType.uniqueKey,
                     title = fieldParser.getObjectName(objType),
-                    icon = objType.icon()
+                    icon = objType.objectIcon()
                 )
             }
         }

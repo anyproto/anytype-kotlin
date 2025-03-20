@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.extension.getObject
-import com.anytypeio.anytype.presentation.mapper.icon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import timber.log.Timber
 
@@ -56,8 +56,10 @@ suspend fun Struct.buildObjectViews(
                 ObjectView.Deleted(id = id, name = fieldParser.getObjectName(wrapper))
             } else {
                 val icon = if (withIcon) {
-                    val objType = storeOfObjectTypes.getTypeObjectById(wrapper)
-                    wrapper.icon(builder, objType)
+                    wrapper.objectIcon(
+                        builder = builder,
+                        objType = storeOfObjectTypes.getTypeObjectById(wrapper)
+                    )
                 } else {
                     ObjectIcon.None
                 }
@@ -137,7 +139,7 @@ suspend fun ObjectWrapper.Basic.toObjectViewDefault(
 ): ObjectView.Default = ObjectView.Default(
     id = id,
     name = fieldParser.getObjectName(this),
-    icon = icon(urlBuilder, storeOfObjectTypes.getTypeObjectById(this)),
+    icon = objectIcon(urlBuilder, storeOfObjectTypes.getTypeObjectById(this)),
     types = type,
     isRelation = layout == ObjectType.Layout.RELATION
 )

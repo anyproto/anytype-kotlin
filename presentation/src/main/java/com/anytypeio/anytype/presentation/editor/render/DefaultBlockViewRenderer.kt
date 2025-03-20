@@ -30,7 +30,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Mode
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.mapper.icon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.mapper.toFileView
 import com.anytypeio.anytype.presentation.mapper.toPictureView
@@ -1516,7 +1516,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor(),
-                    icon = currentObject.icon(builder = urlBuilder, objType = objType)
+                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType)
                 )
             }
             ObjectType.Layout.IMAGE -> {
@@ -1636,7 +1636,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         val inEditorAppearance = factory.createInEditorLinkAppearance()
         val isCard = inEditorAppearance.isCard
         val objectIcon = if (inEditorAppearance.showIcon) {
-            obj.icon(
+            obj.objectIcon(
                 builder = urlBuilder,
                 objType = storeOfObjectTypes.getTypeObjectById(obj)
             )
@@ -2239,7 +2239,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     isCollection = isCollection
                 )
             }
-            val icon = targetSet.icon(
+            val icon = targetSet.objectIcon(
                 builder = urlBuilder,
                 objType = storeOfObjectTypes.getTypeObjectById(targetSet)
             )

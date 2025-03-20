@@ -16,6 +16,8 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -182,12 +184,13 @@ fun RestoreAllContentState.Response.Success.mapToSort(): ObjectsListSort {
     }
 }
 
-fun ObjectWrapper.Basic.toAllContentItem(
+suspend fun ObjectWrapper.Basic.toAllContentItem(
     space: SpaceId,
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>,
     isOwnerOrEditor: Boolean,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): UiContentItem.Item {
     val obj = this
     val typeUrl = obj.getProperType()
@@ -209,7 +212,7 @@ fun ObjectWrapper.Basic.toAllContentItem(
         layout = layout,
         icon = obj.objectIcon(
             builder = urlBuilder,
-            objType = objType
+            objType = storeOfObjectTypes.getTypeOfObject(obj)
         ),
         lastModifiedDate = DateParser.parse(obj.getValue(Relations.LAST_MODIFIED_DATE)) ?: 0L,
         createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L,

@@ -205,7 +205,8 @@ class TreeWidgetContainerTest {
             isSessionActive = flowOf(true),
             objectWatcher = objectWatcher,
             getSpaceView = getSpaceView,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         stubObjectSearch(
@@ -297,7 +298,8 @@ class TreeWidgetContainerTest {
                 isSessionActive = flowOf(true),
                 objectWatcher = objectWatcher,
                 getSpaceView = getSpaceView,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
 
             stubObjectSearch(
@@ -485,7 +487,8 @@ class TreeWidgetContainerTest {
             isSessionActive = flowOf(true),
             objectWatcher = objectWatcher,
             getSpaceView = getSpaceView,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         stubObjectSearch(
@@ -555,7 +558,8 @@ class TreeWidgetContainerTest {
             isSessionActive = flowOf(true),
             objectWatcher = objectWatcher,
             getSpaceView = getSpaceView,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         stubObjectSearch(

@@ -23,7 +23,6 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.CustomIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.DeletedIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmptyIconView
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.TypeEmojiIconView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -49,20 +48,10 @@ fun ListWidgetObjectIcon(
             DefaultProfileIconImage(icon, modifier, iconSize)
         }
         is ObjectIcon.Basic.Emoji -> {
-            EmojiIconView(
-                icon = icon,
-                backgroundSize = iconSize,
-                modifier = modifier,
-                backgroundColor = backgroundColor
-            )
+            EmojiIconView(icon = icon, backgroundSize = iconSize, modifier = modifier, backgroundColor = backgroundColor)
         }
         is ObjectIcon.Basic.Image -> {
-            DefaultObjectImageIcon(
-                url = icon.hash,
-                modifier = modifier,
-                iconSize = iconSize,
-                fallback = ObjectIcon.Empty.Page
-            )
+            DefaultObjectImageIcon(icon.hash, modifier, iconSize, fallback = icon.emptyState)
         }
         is ObjectIcon.Bookmark -> {
             DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
@@ -96,31 +85,10 @@ fun ListWidgetObjectIcon(
         }
         ObjectIcon.None -> {}
         is ObjectIcon.ObjectType -> {
-//            CustomIconView(
-//                icon = icon,
-//                modifier = modifier,
-//                backgroundSize = iconSize
-//            )
-        }
-
-        is ObjectIcon.TypeIcon.Default -> {
             CustomIconView(
                 icon = icon,
                 modifier = modifier,
-                backgroundSize = iconSize
-            )
-        }
-        ObjectIcon.TypeIcon.Deleted -> {
-            DeletedIconView(
-                modifier = modifier,
-                backgroundSize = iconSize
-            )
-        }
-        is ObjectIcon.TypeIcon.Emoji -> {
-            TypeEmojiIconView(
-                icon = icon,
-                backgroundSize = iconSize,
-                modifier = modifier,
+                iconSize = iconSize
             )
         }
     }

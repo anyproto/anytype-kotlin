@@ -1702,4 +1702,17 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="property_edit_menu_delete">Supprimer de l\'espace</string>
     <string name="property_edit_menu_unlink">Dissocier du type</string>
     <string name="delete_space_checkbox_text">J\'ai lu et je veux supprimer cet espace</string>
+    <string name="migration_screen_new_version_update">Mise à jour de la nouvelle version</string>
+    <string name="migration_screen_description_1">Nous posons les bases de nos nouveaux chats. Comprenant des compteurs, des notifications et d\'autres fonctionnalités nécessaires pour une expérience de chat fluide.</string>
+    <string name="migration_screen_description_2">Cela peut prendre un peu de temps, mais ne vous inquiétez pas, vos données sont sécurisées.</string>
+    <string name="migration_screen_start_update">Démarrer la mise à jour</string>
+    <string name="migration_screen_read_more">Lire la suite</string>
+    <string name="migration_screen_what_to_expect">À quoi vous attendre</string>
+    <string name="migration_screen_your_data_remains_safe">Vos données restent en sécurité</string>
+    <string name="migration_screen_your_data_description">Pendant cette mise à jour, vos données restent entièrement sécurisées. La mise à jour est effectuée directement sur votre appareil et vos données synchronisées ne sont pas affectées. Nous allons juste le copier dans un nouveau format, et une sauvegarde locale sera créée sur votre appareil, contenant toutes vos données dans le format précédent.</string>
+    <string name="migration_screen_your_data_description_2">La raison pour laquelle nous conservons cette sauvegarde est de vous déboguer et de vous aider, en cas d\'imprévu.</string>
+    <string name="migration_screen_what_to_expect_description">Vous verrez un écran de chargement pendant la mise à jour. Une fois terminé, vous pouvez continuer à utiliser l\'application normalement.</string>
+    <string name="object_type_icon_change_title">Changer d\'icône</string>
+    <string name="object_type_icon_remove">Supprimer</string>
+    <string name="object_type_icon_change_title_search_hint">Search...\"</string>
 </resources>

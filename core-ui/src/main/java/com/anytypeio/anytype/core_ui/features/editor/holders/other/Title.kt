@@ -2,16 +2,15 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.util.TypedValue
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.compose.ui.platform.ComposeView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.postDelayed
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
@@ -30,7 +29,6 @@ import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
-import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -41,11 +39,9 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
-import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
-import java.security.MessageDigest
+import com.bumptech.glide.request.transition.Transition
 import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
@@ -183,14 +179,33 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         val context = imageView.context
         val displayMetrics = context.resources.displayMetrics
         val screenWidth = displayMetrics.widthPixels
-        val maxWidth = screenWidth - dpToPx(context, 40)
-        val maxHeight = dpToPx(context, 443)
 
         Glide.with(context)
+            .asBitmap()
             .load(url)
             .override(Target.SIZE_ORIGINAL)
-            .apply(RequestOptions().transform(CustomImageResizeTransformation(maxWidth, maxHeight)))
-            .into(imageView)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    val aspectRatio = resource.width.toFloat() / resource.height.toFloat()
+                    val calculatedHeight = (screenWidth / aspectRatio).toInt()
+
+                    val imageHeight = when {
+                        calculatedHeight < dpToPx(context, 188) -> dpToPx(context, 188)
+                        calculatedHeight > dpToPx(context, 443) -> dpToPx(context, 443)
+                        else -> calculatedHeight
+                    }
+
+                    imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        width = screenWidth
+                        height = imageHeight
+                    }
+                    imageView.setImageBitmap(resource)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    imageView.setImageDrawable(null)
+                }
+            })
     }
 
     private fun dpToPx(context: Context, dp: Int): Int {

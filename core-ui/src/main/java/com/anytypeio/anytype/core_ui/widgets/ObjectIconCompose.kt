@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.CustomIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.DeletedIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmptyIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.TypeEmojiIconView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -60,7 +61,7 @@ fun ListWidgetObjectIcon(
                 url = icon.hash,
                 modifier = modifier,
                 iconSize = iconSize,
-                fallback = icon.emptyState
+                fallback = ObjectIcon.Empty.Page
             )
         }
         is ObjectIcon.Bookmark -> {
@@ -95,10 +96,31 @@ fun ListWidgetObjectIcon(
         }
         ObjectIcon.None -> {}
         is ObjectIcon.ObjectType -> {
+//            CustomIconView(
+//                icon = icon,
+//                modifier = modifier,
+//                backgroundSize = iconSize
+//            )
+        }
+
+        is ObjectIcon.TypeIcon.Default -> {
             CustomIconView(
                 icon = icon,
                 modifier = modifier,
                 backgroundSize = iconSize
+            )
+        }
+        ObjectIcon.TypeIcon.Deleted -> {
+            DeletedIconView(
+                modifier = modifier,
+                backgroundSize = iconSize
+            )
+        }
+        is ObjectIcon.TypeIcon.Emoji -> {
+            TypeEmojiIconView(
+                icon = icon,
+                backgroundSize = iconSize,
+                modifier = modifier,
             )
         }
     }

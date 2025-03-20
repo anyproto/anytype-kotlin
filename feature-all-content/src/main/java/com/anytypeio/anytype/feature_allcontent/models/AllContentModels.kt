@@ -4,7 +4,9 @@ import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -189,7 +191,7 @@ fun ObjectWrapper.Basic.toAllContentItem(
 ): UiContentItem.Item {
     val obj = this
     val typeUrl = obj.getProperType()
-    val objType = objectTypes.firstOrNull { it.id == typeUrl }
+    val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
     val layout = obj.layout ?: ObjectType.Layout.BASIC
     return UiContentItem.Item(
         id = obj.id,
@@ -197,7 +199,13 @@ fun ObjectWrapper.Basic.toAllContentItem(
         name = fieldParser.getObjectName(obj),
         description = getDescriptionOrSnippet(),
         type = typeUrl,
-        typeName = fieldParser.getObjectTypeIdAndName(obj, objectTypes).second,
+        typeName = objectTypes.firstOrNull { type ->
+            if (isProfile) {
+                type.uniqueKey == ObjectTypeUniqueKeys.PROFILE
+            } else {
+                type.id == typeUrl
+            }
+        }?.name,
         layout = layout,
         icon = obj.objectIcon(
             builder = urlBuilder,

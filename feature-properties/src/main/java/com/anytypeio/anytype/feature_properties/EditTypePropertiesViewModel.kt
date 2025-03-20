@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -24,6 +26,8 @@ import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible.*
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState.*
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +51,8 @@ class EditTypePropertiesViewModel(
     private val stringResourceProvider: StringResourceProvider,
     private val createRelation: CreateRelation,
     private val setObjectDetails: SetObjectDetails,
-    private val setObjectTypeRecommendedFields: SetObjectTypeRecommendedFields
+    private val setObjectTypeRecommendedFields: SetObjectTypeRecommendedFields,
+    private val urlBuilder: UrlBuilder
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiEditTypePropertiesState.Companion.EMPTY)
@@ -193,12 +198,16 @@ class EditTypePropertiesViewModel(
         when (event) {
             is UiEditTypePropertiesEvent.OnCreate -> {
                 val format = event.item.format
-                uiPropertyEditState.value = New(
-                    name = event.item.title,
-                    formatName = stringResourceProvider.getPropertiesFormatPrettyString(format),
-                    formatIcon = format.simpleIcon(),
-                    format = format,
-                )
+                viewModelScope.launch {
+                    uiPropertyEditState.value = New(
+                        name = event.item.title,
+                        formatName = stringResourceProvider.getPropertiesFormatPrettyString(format),
+                        formatIcon = format.simpleIcon(),
+                        format = format,
+                        showLimitTypes = false,
+                        limitObjectTypes = getAllObjectTypesByFormat(format)
+                    )
+                }
             }
 
             is UiEditTypePropertiesEvent.OnExistingClicked -> {
@@ -217,13 +226,17 @@ class EditTypePropertiesViewModel(
             }
 
             is UiEditTypePropertiesEvent.OnTypeClicked -> {
-                val format = event.item.format
-                uiPropertyEditState.value = New(
-                    name = "",
-                    formatName = stringResourceProvider.getPropertiesFormatPrettyString(format),
-                    formatIcon = format.simpleIcon(),
-                    format = format,
-                )
+                viewModelScope.launch {
+                    val format = event.item.format
+                    uiPropertyEditState.value = New(
+                        name = "",
+                        formatName = stringResourceProvider.getPropertiesFormatPrettyString(format),
+                        formatIcon = format.simpleIcon(),
+                        format = format,
+                        showLimitTypes = false,
+                        limitObjectTypes = getAllObjectTypesByFormat(format)
+                    )
+                }
             }
 
             UiEditTypePropertiesEvent.OnEditPropertyScreenDismissed -> {
@@ -279,6 +292,28 @@ class EditTypePropertiesViewModel(
 
                     else -> state
                 }
+            }
+
+            UiEditTypePropertiesEvent.OnLimitTypesClick -> {
+                uiPropertyEditState.value = when (val state = uiPropertyEditState.value) {
+                    is New -> state.copy(showLimitTypes = true)
+                    else -> state
+                }
+            }
+
+            UiEditTypePropertiesEvent.OnLimitTypesDismiss -> {
+                uiPropertyEditState.value = when (val state = uiPropertyEditState.value) {
+                    is New -> state.copy(showLimitTypes = false)
+                    else -> state
+                }
+            }
+
+            is UiEditTypePropertiesEvent.OnLimitTypesDoneClick -> {
+                val state = uiPropertyEditState.value as? UiEditPropertyState.Visible.New ?: return
+                uiPropertyEditState.value = state.copy(
+                    selectedLimitTypeIds = event.items,
+                    showLimitTypes = false
+                )
             }
         }
     }
@@ -364,6 +399,22 @@ class EditTypePropertiesViewModel(
             )
         }
     }
+    //endregion
+
+    //region Limit Object Types
+
+    private suspend fun getAllObjectTypesByFormat(format: RelationFormat): List<UiPropertyLimitTypeItem> {
+        if (format != RelationFormat.OBJECT) return emptyList()
+        return storeOfObjectTypes.getAll().map {
+            UiPropertyLimitTypeItem(
+                id = it.id,
+                name = it.name.orEmpty(),
+                icon = it.objectIcon(urlBuilder),
+                uniqueKey = it.uniqueKey
+            )
+        }
+    }
+
     //endregion
 
     //region Commands

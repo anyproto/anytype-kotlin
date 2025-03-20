@@ -226,12 +226,10 @@ fun FieldsMainScreen(
             uiState = uiEditPropertyState,
             onDismissRequest = { fieldEvent(OnEditPropertyScreenDismiss) },
             onFormatClick = {},
-            onLimitTypesClick = {},
             onSaveButtonClicked = { fieldEvent(EditProperty.OnSaveButtonClicked) },
             onCreateNewButtonClicked = {},
             onPropertyNameUpdate = { fieldEvent(EditProperty.OnPropertyNameUpdate(it)) },
-            onMenuUnlinkClick = { fieldEvent(OnDeleteFromTypeClick(it)) }
-
+            onMenuUnlinkClick = { fieldEvent(OnDeleteFromTypeClick(it)) },
         )
     }
 

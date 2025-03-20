@@ -178,8 +178,8 @@ private suspend fun mapLimitObjectTypes(
             storeOfObjectTypes.getByKey(key)?.let { objType ->
                 UiPropertyLimitTypeItem(
                     id = objType.id,
-                    key = objType.uniqueKey,
-                    title = fieldParser.getObjectName(objType),
+                    uniqueKey = objType.uniqueKey,
+                    name = fieldParser.getObjectName(objType),
                     icon = objType.objectIcon(urlBuilder)
                 )
             }

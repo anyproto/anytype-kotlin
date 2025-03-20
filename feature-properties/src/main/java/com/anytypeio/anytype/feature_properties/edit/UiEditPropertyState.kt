@@ -26,7 +26,9 @@ sealed class UiEditPropertyState {
             val formatName: String,
             val formatIcon: Int?,
             val format: RelationFormat,
-            val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList()
+            val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList(),
+            val selectedLimitTypeIds: List<Id> = emptyList(),
+            val showLimitTypes: Boolean
         ) : Visible()
 
         data class View(
@@ -42,8 +44,20 @@ sealed class UiEditPropertyState {
     }
 }
 
+sealed class UiPropertyLimitTypesScreen {
+    data class Visible(
+        val items: List<UiPropertyLimitTypeItem>
+    ) : UiPropertyLimitTypesScreen()
+
+    data object Hidden : UiPropertyLimitTypesScreen()
+}
+
 data class UiPropertyLimitTypeItem(
-    val id: Id, val key: Key, val title: String, val icon: ObjectIcon
+    val id: Id,
+    val name: String,
+    val icon: ObjectIcon? = null,
+    val uniqueKey: Key? = null,
+    val number: Int? = null
 )
 
 sealed class UiPropertyFormatsListState {

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +20,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -28,14 +30,17 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PropertyNewScreen(
     modifier: Modifier,
     uiState: UiEditPropertyState.Visible.New,
+    onDismissLimitTypes: () -> Unit,
     onCreateNewButtonClicked: () -> Unit,
     onFormatClick: () -> Unit,
+    onPropertyNameUpdate: (String) -> Unit,
     onLimitTypesClick: () -> Unit,
-    onPropertyNameUpdate: (String) -> Unit
+    onLimitObjectTypesDoneClick: (List<Id>) -> Unit
 ) {
 
     var innerValue by remember(uiState.name) { mutableStateOf(uiState.name) }
@@ -85,8 +90,12 @@ fun PropertyNewScreen(
 
         if (uiState.format == RelationFormat.OBJECT) {
             PropertyLimitTypesEditSection(
-                limit = uiState.limitObjectTypes.size,
-                onLimitTypesClick = { onLimitTypesClick() }
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .padding(horizontal = 20.dp)
+                    .noRippleThrottledClickable { onLimitTypesClick() },
+                limit = uiState.selectedLimitTypeIds.size,
             )
             Divider()
         }
@@ -107,6 +116,15 @@ fun PropertyNewScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
     }
+
+    if (uiState.showLimitTypes) {
+        PropertyLimitTypesScreen(
+            items = uiState.limitObjectTypes,
+            savedSelectedItemIds = uiState.selectedLimitTypeIds,
+            onDismissRequest = onDismissLimitTypes,
+            onDoneClick = onLimitObjectTypesDoneClick
+        )
+    }
 }
 
 @DefaultPreviews
@@ -119,10 +137,14 @@ fun MyPreviewNew() {
             formatName = "Text",
             format = RelationFormat.OBJECT,
             formatIcon = R.drawable.ic_relation_format_date_small,
+            showLimitTypes = false,
+            limitObjectTypes = listOf()
         ),
         onCreateNewButtonClicked = {},
         onFormatClick = {},
+        onPropertyNameUpdate = {},
         onLimitTypesClick = {},
-        onPropertyNameUpdate = {}
+        onDismissLimitTypes = {},
+        onLimitObjectTypesDoneClick = {}
     )
 }

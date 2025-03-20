@@ -145,8 +145,12 @@ fun PropertyEditScreen(
 
         if (uiState.format == RelationFormat.OBJECT) {
             PropertyLimitTypesEditSection(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .padding(horizontal = 20.dp)
+                    .noRippleThrottledClickable { onLimitTypesClick() },
                 limit = uiState.limitObjectTypes.size,
-                onLimitTypesClick = { onLimitTypesClick() }
             )
             Divider()
         }

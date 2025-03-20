@@ -52,8 +52,10 @@ fun PropertyScreen(
     onLimitTypesClick: () -> Unit = {},
     onCreateNewButtonClicked: () -> Unit = {},
     onDismissRequest: () -> Unit,
+    onDismissLimitTypes: () -> Unit = {},
     onPropertyNameUpdate: (String) -> Unit,
-    onMenuUnlinkClick: (Id) -> Unit ={}
+    onMenuUnlinkClick: (Id) -> Unit ={},
+    onLimitObjectTypesDoneClick: (List<Id>) -> Unit = {}
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
@@ -89,8 +91,10 @@ fun PropertyScreen(
                 uiState = uiState,
                 onCreateNewButtonClicked = onCreateNewButtonClicked,
                 onFormatClick = onFormatClick,
+                onPropertyNameUpdate = onPropertyNameUpdate,
                 onLimitTypesClick = onLimitTypesClick,
-                onPropertyNameUpdate = onPropertyNameUpdate
+                onDismissLimitTypes = onDismissLimitTypes,
+                onLimitObjectTypesDoneClick = onLimitObjectTypesDoneClick
             )
         }
     }
@@ -213,16 +217,10 @@ fun PropertyFormatSection(
 
 @Composable
 fun PropertyLimitTypesEditSection(
+    modifier: Modifier,
     limit: Int,
-    onLimitTypesClick: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .padding(horizontal = 20.dp)
-            .noRippleThrottledClickable { onLimitTypesClick() }
-    ) {
+    Box(modifier = modifier) {
         Row(
             modifier = Modifier.align(Alignment.CenterEnd),
             verticalAlignment = Alignment.CenterVertically

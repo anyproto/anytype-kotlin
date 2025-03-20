@@ -1984,6 +1984,7 @@ Please provide specific details of your needs here.</string>
     <string name="property_select_format_title">Select property format</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
+    <string name="property_limit_objects_title">Limit objects</string>
     <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
     <string name="migration_screen_new_version_update">New Version Update</string>
     <string name="migration_screen_description_1">We\'re laying the groundwork for our new chats. Including counters, notifications and other features needed for smooth chat experience.</string>

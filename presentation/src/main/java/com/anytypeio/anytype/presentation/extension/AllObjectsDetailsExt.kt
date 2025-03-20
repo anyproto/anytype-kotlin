@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.ext.toFileObject
 import com.anytypeio.anytype.core_models.ext.toInternalFlagsObject
 import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -57,7 +58,8 @@ suspend fun ObjectViewDetails.getObjRelationsViews(
     ctx: Id,
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<ObjectRelationView> {
     val currentObject = getObject(ctx)
     if (currentObject == null || !currentObject.isValid) return emptyList()
@@ -68,7 +70,8 @@ suspend fun ObjectViewDetails.getObjRelationsViews(
             values = currentObject.map,
             urlBuilder = urlBuilder,
             fieldParser = fieldParser,
-            isFeatured = currentObject.featuredRelations.contains(it.key)
+            isFeatured = currentObject.featuredRelations.contains(it.key),
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 }
@@ -77,7 +80,8 @@ suspend fun ObjectViewDetails.getRecommendedRelations(
     ctx: Id,
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<ObjectRelationView> {
     val currentObject = getObject(ctx)
     if (currentObject == null || !currentObject.isValid) return emptyList()
@@ -97,7 +101,8 @@ suspend fun ObjectViewDetails.getRecommendedRelations(
             values = currentObject.map,
             urlBuilder = urlBuilder,
             fieldParser = fieldParser,
-            isFeatured = currentObject.featuredRelations.contains(it.key)
+            isFeatured = currentObject.featuredRelations.contains(it.key),
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 }

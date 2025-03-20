@@ -505,7 +505,8 @@ class HomeScreenViewModel(
                                             && view.source == widget.source
                                 } as? WidgetView.Tree
                             },
-                            fieldParser = fieldParser
+                            fieldParser = fieldParser,
+                            storeOfObjectTypes = storeOfObjectTypes
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
                             ListWidgetContainer(
@@ -524,7 +525,8 @@ class HomeScreenViewModel(
                                                 && view.source == widget.source
                                     } as? WidgetView.ListOfObjects
                                 },
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
                             )
                         } else {
                             DataViewListWidgetContainer(
@@ -544,7 +546,8 @@ class HomeScreenViewModel(
                                     } as? WidgetView.SetOfObjects
                                 },
                                 storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
                             )
                         }
                         is Widget.View -> {
@@ -566,7 +569,8 @@ class HomeScreenViewModel(
                                     } as? WidgetView.SetOfObjects
                                 },
                                 storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
                             )
                         }
                     }

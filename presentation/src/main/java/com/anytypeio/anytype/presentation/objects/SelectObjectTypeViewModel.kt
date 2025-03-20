@@ -36,7 +36,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.mapper.icon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -136,7 +136,7 @@ class SelectObjectTypeViewModel(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
-                                        icon = type.objectIcon(urlBuilder),
+                                        icon = type.icon(),
                                         isPinned = true,
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
@@ -155,7 +155,7 @@ class SelectObjectTypeViewModel(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
-                                        icon = type.objectIcon(urlBuilder),
+                                        icon = type.icon(),
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
                                         isPinnable = true,
@@ -175,7 +175,7 @@ class SelectObjectTypeViewModel(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
-                                        icon = type.objectIcon(urlBuilder),
+                                        icon = type.icon(),
                                         isPinnable = true,
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
@@ -193,7 +193,7 @@ class SelectObjectTypeViewModel(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
-                                        icon = type.objectIcon(urlBuilder),
+                                        icon = type.icon(),
                                         isFromLibrary = true,
                                         isPinned = false,
                                         isPinnable = false,

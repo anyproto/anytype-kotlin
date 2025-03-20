@@ -28,12 +28,13 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.mapper.icon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -241,7 +242,10 @@ class ChatViewModel @Inject constructor(
                                         ChatView.Message.Attachment.Link(
                                             target = attachment.target,
                                             wrapper = wrapper,
-                                            icon = wrapper?.objectIcon(urlBuilder) ?: ObjectIcon.None,
+                                            icon = wrapper?.icon(
+                                                builder = urlBuilder,
+                                                objType = storeOfObjectTypes.getTypeObjectById(wrapper)
+                                            ) ?: ObjectIcon.None,
                                             typeName = if (type != null)
                                                 storeOfObjectTypes.get(type)?.name.orEmpty()
                                             else
@@ -603,7 +607,10 @@ class ChatViewModel @Inject constructor(
                                     ChatView.Message.ChatBoxAttachment.Existing.Link(
                                         target = wrapper.id,
                                         name = wrapper.name.orEmpty(),
-                                        icon = wrapper.objectIcon(urlBuilder),
+                                        icon = wrapper.icon(
+                                            builder = urlBuilder,
+                                            objType = storeOfObjectTypes.getTypeObjectById(wrapper)
+                                        ),
                                         typeName = if (type != null)
                                             storeOfObjectTypes.get(type)?.name.orEmpty()
                                         else

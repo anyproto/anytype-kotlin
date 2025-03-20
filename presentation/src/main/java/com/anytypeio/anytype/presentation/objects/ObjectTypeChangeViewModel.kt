@@ -221,8 +221,7 @@ class ObjectTypeChangeViewModel(
                 isWithBookmark = setup.isWithBookmark,
                 excludeTypes = setup.excludeTypes,
                 selectedTypes = setup.selectedTypes,
-                useCustomComparator = false,
-                urlBuilder = urlBuilder
+                useCustomComparator = false
             ).map {
                 ObjectTypeItemView.Type(it)
             }
@@ -237,8 +236,7 @@ class ObjectTypeChangeViewModel(
                 isWithBookmark = setup.isWithBookmark,
                 excludeTypes = setup.excludeTypes,
                 selectedTypes = setup.selectedTypes,
-                useCustomComparator = false,
-                urlBuilder = urlBuilder
+                useCustomComparator = false
             ).map {
                 ObjectTypeItemView.Type(it)
             }

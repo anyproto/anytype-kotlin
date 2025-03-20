@@ -9,9 +9,11 @@ import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.isValidObject
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.extension.getObject
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.mapper.icon
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import timber.log.Timber
 
@@ -19,18 +21,19 @@ import timber.log.Timber
  * Mapper class for data class @see [com.anytypeio.anytype.presentation.sets.model.ObjectView]
  * that represents a view of an object in case of fields value.
  */
-fun Struct.buildRelationValueObjectViews(
+suspend fun Struct.buildRelationValueObjectViews(
     relationKey: Key,
     details: ObjectViewDetails,
     builder: UrlBuilder,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<ObjectView> {
     return this[relationKey]
         .asIdList()
         .mapNotNull { id ->
             details.getObject(id)
                 ?.takeIf { it.isValid }
-                ?.toObjectView(urlBuilder = builder, fieldParser = fieldParser)
+                ?.toObjectView(urlBuilder = builder, fieldParser = fieldParser, storeOfObjectTypes = storeOfObjectTypes)
         }
 }
 
@@ -39,7 +42,8 @@ suspend fun Struct.buildObjectViews(
     store: ObjectStore,
     builder: UrlBuilder,
     withIcon: Boolean = true,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<ObjectView> {
     return this.getOrDefault(columnKey, null)
         .asIdList()
@@ -51,7 +55,12 @@ suspend fun Struct.buildObjectViews(
             } else if (wrapper.isDeleted == true) {
                 ObjectView.Deleted(id = id, name = fieldParser.getObjectName(wrapper))
             } else {
-                val icon = if (withIcon) wrapper.objectIcon(builder) else ObjectIcon.None
+                val icon = if (withIcon) {
+                    val objType = storeOfObjectTypes.getTypeObjectById(wrapper)
+                    wrapper.icon(builder, objType)
+                } else {
+                    ObjectIcon.None
+                }
                 ObjectView.Default(
                     id = id,
                     name = fieldParser.getObjectName(wrapper),
@@ -66,14 +75,15 @@ suspend fun ObjectWrapper.Basic.objects(
     relation: Id,
     urlBuilder: UrlBuilder,
     storeOfObjects: ObjectStore,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<ObjectView> {
     return map.getOrDefault(relation, null)
         .asIdList()
         .mapNotNull { id ->
             storeOfObjects.get(id)
                 ?.takeIf { it.isValid }
-                ?.toObjectView(urlBuilder, fieldParser)
+                ?.toObjectView(urlBuilder, fieldParser, storeOfObjectTypes)
         }
 }
 
@@ -81,13 +91,14 @@ suspend fun ObjectWrapper.Relation.toObjects(
     value: Any?,
     store: ObjectStore,
     urlBuilder: UrlBuilder,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<ObjectView> {
     return value.asIdList().mapNotNull { id ->
         val raw = store.get(id)?.map
         if (raw.isNullOrEmpty() || !raw.isValidObject()) null
         else {
-            ObjectWrapper.Basic(raw).toObjectView(urlBuilder, fieldParser)
+            ObjectWrapper.Basic(raw).toObjectView(urlBuilder, fieldParser, storeOfObjectTypes)
         }
     }
 }
@@ -107,24 +118,26 @@ private fun Any?.asIdList(): List<Id> = when (this) {
  * Converts a Basic wrapper into an ObjectView.
  * isValid check performed already in the caller function.
  */
-fun ObjectWrapper.Basic.toObjectView(
+suspend fun ObjectWrapper.Basic.toObjectView(
     urlBuilder: UrlBuilder,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): ObjectView = if (isDeleted == true)
     ObjectView.Deleted(id = id, name = fieldParser.getObjectName(this))
-else toObjectViewDefault(urlBuilder, fieldParser)
+else toObjectViewDefault(urlBuilder, fieldParser, storeOfObjectTypes)
 
 /**
  * Converts a non-deleted Basic wrapper into a Default ObjectView.
  * isValid check performed already in the caller function.
  */
-fun ObjectWrapper.Basic.toObjectViewDefault(
+suspend fun ObjectWrapper.Basic.toObjectViewDefault(
     urlBuilder: UrlBuilder,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): ObjectView.Default = ObjectView.Default(
     id = id,
     name = fieldParser.getObjectName(this),
-    icon = objectIcon(urlBuilder),
+    icon = icon(urlBuilder, storeOfObjectTypes.getTypeObjectById(this)),
     types = type,
     isRelation = layout == ObjectType.Layout.RELATION
 )

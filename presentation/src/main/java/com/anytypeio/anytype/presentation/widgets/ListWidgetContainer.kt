@@ -14,9 +14,11 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.mapper.icon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.collectionsSorts
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -39,6 +41,7 @@ class ListWidgetContainer(
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
     private val fieldParser: FieldParser,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     isSessionActive: Flow<Boolean>,
     onRequestCache: () -> WidgetView.ListOfObjects? = { null }
 ) : WidgetContainer {
@@ -105,7 +108,8 @@ class ListWidgetContainer(
                                         .sortedBy { obj -> order[obj.id] }
                                         .take(resolveLimit())
                                     ,
-                                    fieldParser = fieldParser
+                                    fieldParser = fieldParser,
+                                    storeOfObjectTypes = storeOfObjectTypes
                                 )
                             }
                         }
@@ -128,7 +132,8 @@ class ListWidgetContainer(
                     ).map { objects ->
                         buildWidgetViewWithElements(
                             objects = objects,
-                            fieldParser = fieldParser
+                            fieldParser = fieldParser,
+                            storeOfObjectTypes = storeOfObjectTypes
                         )
                     }
                 }
@@ -137,7 +142,8 @@ class ListWidgetContainer(
                     storage.subscribe(buildParams()).map { objects ->
                         buildWidgetViewWithElements(
                             objects = objects,
-                            fieldParser = fieldParser
+                            fieldParser = fieldParser,
+                            storeOfObjectTypes = storeOfObjectTypes
                         )
                     }
                 }
@@ -145,9 +151,10 @@ class ListWidgetContainer(
         }
     }
 
-    private fun buildWidgetViewWithElements(
+    private suspend fun buildWidgetViewWithElements(
         objects: List<ObjectWrapper.Basic>,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        storeOfObjectTypes: StoreOfObjectTypes
     ) = WidgetView.ListOfObjects(
         id = widget.id,
         source = widget.source,
@@ -155,8 +162,9 @@ class ListWidgetContainer(
         elements = objects.map { obj ->
             WidgetView.ListOfObjects.Element(
                 obj = obj,
-                objectIcon = obj.objectIcon(
-                    builder = urlBuilder
+                objectIcon = obj.icon(
+                    builder = urlBuilder,
+                    objType = storeOfObjectTypes.getTypeObjectById(obj)
                 ),
                 name = buildWidgetName(
                     obj = obj,

@@ -9,12 +9,14 @@ import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.presentation.extension.getFileObject
+import com.anytypeio.anytype.presentation.mapper.icon
 import com.anytypeio.anytype.presentation.objects.buildObjectViews
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.sets.model.CellView
@@ -31,7 +33,8 @@ suspend fun List<ColumnView>.buildGridRow(
     obj: ObjectWrapper.Basic,
     builder: UrlBuilder,
     store: ObjectStore,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): Viewer.GridView.Row {
 
     val type = obj.type.firstOrNull()
@@ -40,7 +43,10 @@ suspend fun List<ColumnView>.buildGridRow(
     val image = obj.iconImage
     val done = obj.done
     val layout = obj.layout
-    val objectIcon = obj.objectIcon(builder)
+    val objectIcon = obj.icon(
+        builder = builder,
+        objType = storeOfObjectTypes.getTypeObjectById(obj)
+    )
 
     val cells = mutableListOf<CellView>()
     this.map { column ->
@@ -61,7 +67,8 @@ suspend fun List<ColumnView>.buildGridRow(
                     builder = builder,
                     store = store,
                     withIcon = false,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
                 cells.add(
                     CellView.Object(
@@ -171,7 +178,8 @@ suspend fun List<ColumnView>.buildGridRow(
                                 columnKey = column.key,
                                 builder = builder,
                                 store = store,
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
                             )
                             CellView.Object(
                                 id = obj.id,

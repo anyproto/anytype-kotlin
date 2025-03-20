@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.DataViewState
@@ -36,7 +37,8 @@ class ViewerFilterViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val db: ObjectSetDatabase,
     private val analytics: Analytics,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : BaseListViewModel<FilterView>() {
 
     val screenState = MutableStateFlow(ScreenState.LIST)
@@ -69,7 +71,8 @@ class ViewerFilterViewModel(
                         storeOfObjects = db.store,
                         screenState = screenState.value,
                         urlBuilder = urlBuilder,
-                        fieldParser = fieldParser
+                        fieldParser = fieldParser,
+                        storeOfObjectTypes = storeOfObjectTypes
                     )
                 }
         }
@@ -221,7 +224,8 @@ class ViewerFilterViewModel(
         private val analytics: Analytics,
         private val storeOfRelations: StoreOfRelations,
         private val objectSetDatabase: ObjectSetDatabase,
-        private val fieldParser: FieldParser
+        private val fieldParser: FieldParser,
+        private val storeOfObjectTypes: StoreOfObjectTypes
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -233,7 +237,8 @@ class ViewerFilterViewModel(
                 analytics = analytics,
                 storeOfRelations = storeOfRelations,
                 db = objectSetDatabase,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             ) as T
         }
     }

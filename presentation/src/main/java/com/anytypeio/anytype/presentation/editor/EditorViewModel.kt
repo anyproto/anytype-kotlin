@@ -5281,8 +5281,7 @@ class EditorViewModel(
                         isWithCollection = false,
                         isWithBookmark = false,
                         selectedTypes = emptyList(),
-                        excludeTypes = emptyList(),
-                        urlBuilder = urlBuilder
+                        excludeTypes = emptyList()
                     )
                     action.invoke(views)
                 }
@@ -5298,14 +5297,16 @@ class EditorViewModel(
                 ctx = vmParams.ctx,
                 urlBuilder = urlBuilder,
                 storeOfRelations = storeOfRelations,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
 
             val recommendedRelationViews = objectViewDetails.getRecommendedRelations(
                 ctx = vmParams.ctx,
                 storeOfRelations = storeOfRelations,
                 fieldParser = fieldParser,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                storeOfObjectTypes = storeOfObjectTypes
             )
             val update =
                 (objectRelationViews + recommendedRelationViews).map { SlashRelationView.Item(it) }
@@ -6278,7 +6279,8 @@ class EditorViewModel(
                             .toViews(
                                 urlBuilder = urlBuilder,
                                 objectTypes = storeOfObjectTypes.getAll(),
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
                             )
 
                         controlPanelInteractor.onEvent(
@@ -6419,7 +6421,6 @@ class EditorViewModel(
                                 isWithCollection = true,
                                 isWithBookmark = false,
                                 excludeTypes = excludeTypes,
-                                urlBuilder = urlBuilder
                             ).filter {
                                 !excludeTypes.contains(it.key)
                             }.map {

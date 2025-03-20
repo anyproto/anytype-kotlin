@@ -11,11 +11,13 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.mapper.icon
 import com.anytypeio.anytype.presentation.objects.setTypeRelationIconsAsNone
 import com.anytypeio.anytype.presentation.objects.values
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
@@ -32,7 +34,8 @@ suspend fun DVViewer.buildGalleryViews(
     objectStore: ObjectStore,
     objectOrderIds: List<Id>,
     storeOfRelations: StoreOfRelations,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<Viewer.GalleryView.Item> {
 
     val filteredRelations = viewerRelations.mapNotNull { setting ->
@@ -60,7 +63,8 @@ suspend fun DVViewer.buildGalleryViews(
                     filteredRelations = filteredRelations,
                     isLargeSize = true,
                     storeOfRelations = storeOfRelations,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
             } else {
                 obj.mapToDefaultItem(
@@ -69,7 +73,8 @@ suspend fun DVViewer.buildGalleryViews(
                     viewerRelations = viewerRelations,
                     store = objectStore,
                     filteredRelations = filteredRelations,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
             }
         }
@@ -82,7 +87,8 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
     viewerRelations: List<DVViewerRelation>,
     store: ObjectStore,
     filteredRelations: List<ObjectWrapper.Relation>,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): Viewer.GalleryView.Item {
     val obj = this
     return Viewer.GalleryView.Item.Default(
@@ -92,11 +98,15 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
             urlBuilder = urlBuilder,
             settings = viewerRelations,
             storeOfObjects = store,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
         ).setTypeRelationIconsAsNone(),
         hideIcon = hideIcon,
         name = fieldParser.getObjectName(obj),
-        icon = obj.objectIcon(urlBuilder)
+        icon = obj.icon(
+            builder = urlBuilder,
+            objType = storeOfObjectTypes.getTypeObjectById(obj)
+        )
     )
 }
 
@@ -108,7 +118,8 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
     filteredRelations: List<ObjectWrapper.Relation>,
     isLargeSize: Boolean,
     storeOfRelations: StoreOfRelations,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): Viewer.GalleryView.Item {
     val obj = this
 
@@ -130,11 +141,15 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
             urlBuilder = urlBuilder,
             settings = dvViewer.viewerRelations,
             storeOfObjects = store,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
         ).setTypeRelationIconsAsNone(),
         hideIcon = dvViewer.hideIcon,
         name = fieldParser.getObjectName(obj),
-        icon = obj.objectIcon(urlBuilder),
+        icon = obj.icon(
+            builder = urlBuilder,
+            objType = storeOfObjectTypes.getTypeObjectById(obj)
+        ),
         cover = cover,
         fitImage = dvViewer.coverFit,
         isLargeSize = isLargeSize

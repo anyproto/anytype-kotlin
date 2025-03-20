@@ -27,6 +27,8 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.editor.Editor.Mode
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.INITIAL_INDENT
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -35,7 +37,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenVersionPr
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowVersionHistoryScreen
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsVersionHistoryRestore
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup.GroupTitle
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.mapper.icon
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -69,7 +71,8 @@ class VersionHistoryViewModel(
     private val setVersion: SetVersion,
     private val renderer: DefaultBlockViewRenderer,
     private val setStateReducer: ObjectStateReducer,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModel(), BlockViewRenderer by renderer {
 
     private val _viewState = MutableStateFlow<VersionHistoryState>(VersionHistoryState.Loading)
@@ -311,12 +314,12 @@ class VersionHistoryViewModel(
         }
     }
 
-    private fun handleVersionsSuccess(versions: List<Version>, members: List<ObjectWrapper.Basic>) {
+    private suspend fun handleVersionsSuccess(versions: List<Version>, members: List<ObjectWrapper.Basic>) {
         val groupedItems = groupItems(versions, members)
         _viewState.value = VersionHistoryState.Success(groups = groupedItems)
     }
 
-    private fun groupItems(
+    private suspend fun groupItems(
         versions: List<Version>,
         spaceMembers: List<ObjectWrapper.Basic>,
     ): List<VersionHistoryGroup> {
@@ -451,7 +454,7 @@ class VersionHistoryViewModel(
         }
     }
 
-    private fun List<List<Version>>.toGroupItems(
+    private suspend fun List<List<Version>>.toGroupItems(
         spaceMembers: List<ObjectWrapper.Basic>
     ): List<VersionHistoryGroup.Item> {
         return mapNotNull { versions ->
@@ -460,7 +463,8 @@ class VersionHistoryViewModel(
             val spaceMember = spaceMembers.find { it.id == spaceMemberId }
                 ?: return@mapNotNull null
 
-            val icon = spaceMember.objectIcon(urlBuilder)
+            val objType = storeOfObjectTypes.getTypeObjectById(spaceMember)
+            val icon = spaceMember.icon(urlBuilder, objType)
 
             val (latestVersionDate, latestVersionTime) = dateProvider.formatTimestampToDateAndTime(
                 timestamp = latestVersion.timestamp.inMillis

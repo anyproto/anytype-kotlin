@@ -6,25 +6,34 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeObjectById
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.mapper.icon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
 
-fun List<ObjectWrapper.Basic>.toViews(
+suspend fun List<ObjectWrapper.Basic>.toViews(
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<DefaultObjectView> = map { obj ->
-    obj.toView(urlBuilder, objectTypes, fieldParser = fieldParser)
+    obj.toView(
+        urlBuilder,
+        objectTypes,
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes
+    )
 }
 
-fun ObjectWrapper.Basic.toView(
+suspend fun ObjectWrapper.Basic.toView(
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): DefaultObjectView {
     val obj = this
     val (objTypeId, objTypeName) = fieldParser.getObjectTypeIdAndName(
@@ -39,7 +48,7 @@ fun ObjectWrapper.Basic.toView(
         type = objTypeId,
         typeName = objTypeName,
         layout = layout,
-        icon = obj.objectIcon(urlBuilder),
+        icon = obj.icon(urlBuilder, storeOfObjectTypes.getTypeObjectById(obj)),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
         lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
         isFavorite = obj.isFavorite == true,
@@ -47,10 +56,11 @@ fun ObjectWrapper.Basic.toView(
     )
 }
 
-fun List<ObjectWrapper.Basic>.toLinkToView(
+suspend fun List<ObjectWrapper.Basic>.toLinkToView(
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>,
     fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<LinkToItemView.Object> =
     this.mapIndexed { index, obj ->
         val typeUrl = obj.getProperType()
@@ -61,15 +71,19 @@ fun List<ObjectWrapper.Basic>.toLinkToView(
             subtitle = getProperTypeName(id = typeUrl, types = objectTypes),
             type = typeUrl,
             layout = layout,
-            icon = obj.objectIcon(urlBuilder),
+            icon = obj.icon(
+                builder = urlBuilder,
+                objType = storeOfObjectTypes.getTypeObjectById(obj)
+            ),
             position = index
         )
     }
 
-fun ObjectWrapper.Basic.toLinkToObjectView(
+suspend fun ObjectWrapper.Basic.toLinkToObjectView(
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>,
     fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): LinkToItemView.LinkedTo.Object {
     val typeUrl = this.getProperType()
     val layout = this.getProperLayout()
@@ -79,15 +93,19 @@ fun ObjectWrapper.Basic.toLinkToObjectView(
         subtitle = getProperTypeName(id = typeUrl, types = objectTypes),
         type = typeUrl,
         layout = layout,
-        icon = objectIcon(urlBuilder),
+        icon = icon(
+            builder = urlBuilder,
+            objType = storeOfObjectTypes.getTypeObjectById(this)
+        )
     )
 }
 
-fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
+suspend fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
     ids: List<*>? = null,
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<CreateFilterView.Object> =
     this.map { obj ->
         CreateFilterView.Object(
@@ -97,7 +115,10 @@ fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
                 types = objectTypes
             ),
             name = fieldParser.getObjectName(obj),
-            icon = obj.objectIcon(urlBuilder),
+            icon = obj.icon(
+                builder = urlBuilder,
+                objType = storeOfObjectTypes.getTypeObjectById(obj)
+            ),
             isSelected = ids?.contains(obj.id) ?: false
         )
     }.sortedByDescending { it.isSelected }

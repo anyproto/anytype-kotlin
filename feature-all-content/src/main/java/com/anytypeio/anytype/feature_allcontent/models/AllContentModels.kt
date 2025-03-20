@@ -18,7 +18,7 @@ import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.mapper.icon
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -199,9 +199,9 @@ fun ObjectWrapper.Basic.toAllContentItem(
         name = fieldParser.getObjectName(obj),
         description = getDescriptionOrSnippet(),
         type = typeUrl,
-        typeName = objType?.name,
+        typeName = fieldParser.getObjectTypeIdAndName(obj, objectTypes).second,
         layout = layout,
-        icon = obj.objectIcon(
+        icon = obj.icon(
             builder = urlBuilder,
             objType = objType
         ),
@@ -226,7 +226,7 @@ fun ObjectWrapper.Type.toAllContentType(
     return UiContentItem.Type(
         id = obj.id,
         name = obj.name.orEmpty(),
-        icon = obj.objectIcon(urlBuilder),
+        icon = obj.icon(),
         sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
         uniqueKey = obj.uniqueKey,
         readOnly = obj.restrictions.contains(ObjectRestriction.DELETE) || !isOwnerOrEditor,

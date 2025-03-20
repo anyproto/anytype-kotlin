@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getOptionObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
@@ -18,13 +19,14 @@ import com.anytypeio.anytype.presentation.objects.buildRelationValueObjectViews
 import com.anytypeio.anytype.presentation.sets.model.StatusView
 import com.anytypeio.anytype.presentation.sets.model.TagView
 
-fun List<ObjectWrapper.Relation>.views(
+suspend fun List<ObjectWrapper.Relation>.views(
     context: Id,
     details: ObjectViewDetails,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     featured: List<Id> = emptyList(),
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<ObjectRelationView> = mapNotNull { relation ->
     relation.view(
         context = context,
@@ -32,17 +34,19 @@ fun List<ObjectWrapper.Relation>.views(
         values = values,
         urlBuilder = urlBuilder,
         isFeatured = featured.contains(relation.key),
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes
     )
 }
 
-fun ObjectWrapper.Relation.view(
+suspend fun ObjectWrapper.Relation.view(
     context: Id,
     details: ObjectViewDetails,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): ObjectRelationView? {
     val relation = this
     val relationFormat = relation.relationFormat
@@ -55,7 +59,8 @@ fun ObjectWrapper.Relation.view(
                 relationKey = relation.key,
                 details = details,
                 builder = urlBuilder,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
             ObjectRelationView.Object(
                 id = relation.id,

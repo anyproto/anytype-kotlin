@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
@@ -76,6 +77,9 @@ class TreeWidgetContainerTest {
     lateinit var dateProvider: DateProvider
 
     @Mock
+    lateinit var storeOfObjectTypes: StoreOfObjectTypes
+
+    @Mock
     lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
 
     @Mock
@@ -123,7 +127,8 @@ class TreeWidgetContainerTest {
                 isSessionActive = flowOf(true),
                 objectWatcher = objectWatcher,
                 getSpaceView = getSpaceView,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
 
             stubObjectSearch(

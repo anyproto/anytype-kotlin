@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
@@ -23,8 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
-import androidx.compose.ui.graphics.vector.VectorProperty.Stroke
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -269,6 +267,11 @@ fun MigrationInProgressScreen() {
                     color = colorResource(R.color.palette_dark_blue),
                     trackColor = colorResource(R.color.shape_primary)
                 )
+                Image(
+                    modifier = Modifier.align(Alignment.Center),
+                    painter = painterResource(R.drawable.ic_migration_error_exclamation),
+                    contentDescription = null
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -328,7 +331,13 @@ fun MigrationFailedScreen(
                     trackColor = colorResource(R.color.shape_primary),
                     progress = { 1.0f }
                 )
-                // TODO add exclamation icon
+                Image(
+                    modifier = Modifier.align(Alignment.Center),
+                    painter = painterResource(
+                        R.drawable.ic_migration_error_exclamation
+                    ),
+                    contentDescription = null
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(

@@ -112,7 +112,7 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
     }
 }
 
-suspend fun StoreOfObjectTypes.getTypeObjectById(obj: ObjectWrapper.Basic): ObjectWrapper.Type? {
+suspend fun StoreOfObjectTypes.getTypeOfObject(obj: ObjectWrapper.Basic): ObjectWrapper.Type? {
     val typeId = obj.type.firstOrNull()
     return if (typeId != null) {
         return get(typeId)

@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.objects.getTypeObjectById
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -252,7 +252,7 @@ class DataViewListWidgetContainer(
                         objectIcon = if (withIcon) {
                             obj.objectIcon(
                                 builder = urlBuilder,
-                                objType = storeOfObjectTypes.getTypeObjectById(obj)
+                                objType = storeOfObjectTypes.getTypeOfObject(obj)
                             )
                         } else {
                             ObjectIcon.None
@@ -309,7 +309,7 @@ class DataViewListWidgetContainer(
                         obj = obj,
                         objectIcon = obj.objectIcon(
                             builder = urlBuilder,
-                            objType = storeOfObjectTypes.getTypeObjectById(obj)
+                            objType = storeOfObjectTypes.getTypeOfObject(obj)
                         ),
                         name = WidgetView.Name.Default(
                             prettyPrintName = fieldParser.getObjectName(obj)

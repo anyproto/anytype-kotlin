@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.objects.getTypeObjectById
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
@@ -105,7 +105,7 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
         name = fieldParser.getObjectName(obj),
         icon = obj.objectIcon(
             builder = urlBuilder,
-            objType = storeOfObjectTypes.getTypeObjectById(obj)
+            objType = storeOfObjectTypes.getTypeOfObject(obj)
         )
     )
 }
@@ -148,7 +148,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
         name = fieldParser.getObjectName(obj),
         icon = obj.objectIcon(
             builder = urlBuilder,
-            objType = storeOfObjectTypes.getTypeObjectById(obj)
+            objType = storeOfObjectTypes.getTypeOfObject(obj)
         ),
         cover = cover,
         fitImage = dvViewer.coverFit,

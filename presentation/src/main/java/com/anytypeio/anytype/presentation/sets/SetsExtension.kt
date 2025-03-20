@@ -14,7 +14,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.getTypeObjectById
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.extension.getFileObject
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.buildObjectViews
@@ -45,7 +45,7 @@ suspend fun List<ColumnView>.buildGridRow(
     val layout = obj.layout
     val objectIcon = obj.objectIcon(
         builder = builder,
-        objType = storeOfObjectTypes.getTypeObjectById(obj)
+        objType = storeOfObjectTypes.getTypeOfObject(obj)
     )
 
     val cells = mutableListOf<CellView>()

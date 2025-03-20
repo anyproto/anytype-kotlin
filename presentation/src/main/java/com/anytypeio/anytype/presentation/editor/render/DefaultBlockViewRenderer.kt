@@ -21,7 +21,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
-import com.anytypeio.anytype.domain.objects.getTypeObjectById
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.extension.getBookmarkObject
 import com.anytypeio.anytype.presentation.extension.getObject
@@ -1504,7 +1504,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectType.Layout.VIDEO,
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF -> {
-                val objType = storeOfObjectTypes.getTypeObjectById(currentObject)
+                val objType = storeOfObjectTypes.getTypeOfObject(currentObject)
                 BlockView.Title.File(
                     mode = Mode.READ,
                     id = block.id,
@@ -1638,7 +1638,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         val objectIcon = if (inEditorAppearance.showIcon) {
             obj.objectIcon(
                 builder = urlBuilder,
-                objType = storeOfObjectTypes.getTypeObjectById(obj)
+                objType = storeOfObjectTypes.getTypeOfObject(obj)
             )
         } else {
             ObjectIcon.None
@@ -2241,7 +2241,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             }
             val icon = targetSet.objectIcon(
                 builder = urlBuilder,
-                objType = storeOfObjectTypes.getTypeObjectById(targetSet)
+                objType = storeOfObjectTypes.getTypeOfObject(targetSet)
             )
             val isSetNoQuery = targetSet.setOf.all { it.isBlank() }
             if (isSetNoQuery && !content.isCollection) {

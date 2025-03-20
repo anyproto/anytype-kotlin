@@ -28,7 +28,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.getTypeObjectById
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
@@ -244,7 +244,7 @@ class ChatViewModel @Inject constructor(
                                             wrapper = wrapper,
                                             icon = wrapper?.objectIcon(
                                                 builder = urlBuilder,
-                                                objType = storeOfObjectTypes.getTypeObjectById(wrapper)
+                                                objType = storeOfObjectTypes.getTypeOfObject(wrapper)
                                             ) ?: ObjectIcon.None,
                                             typeName = if (type != null)
                                                 storeOfObjectTypes.get(type)?.name.orEmpty()
@@ -609,7 +609,7 @@ class ChatViewModel @Inject constructor(
                                         name = wrapper.name.orEmpty(),
                                         icon = wrapper.objectIcon(
                                             builder = urlBuilder,
-                                            objType = storeOfObjectTypes.getTypeObjectById(wrapper)
+                                            objType = storeOfObjectTypes.getTypeOfObject(wrapper)
                                         ),
                                         typeName = if (type != null)
                                             storeOfObjectTypes.get(type)?.name.orEmpty()

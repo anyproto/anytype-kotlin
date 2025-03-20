@@ -10,7 +10,7 @@ import com.anytypeio.anytype.core_models.ext.isValidObject
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.getTypeObjectById
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -58,7 +58,7 @@ suspend fun Struct.buildObjectViews(
                 val icon = if (withIcon) {
                     wrapper.objectIcon(
                         builder = builder,
-                        objType = storeOfObjectTypes.getTypeObjectById(wrapper)
+                        objType = storeOfObjectTypes.getTypeOfObject(wrapper)
                     )
                 } else {
                     ObjectIcon.None
@@ -139,7 +139,10 @@ suspend fun ObjectWrapper.Basic.toObjectViewDefault(
 ): ObjectView.Default = ObjectView.Default(
     id = id,
     name = fieldParser.getObjectName(this),
-    icon = objectIcon(urlBuilder, storeOfObjectTypes.getTypeObjectById(this)),
+    icon = objectIcon(
+        builder = urlBuilder,
+        objType = storeOfObjectTypes.getTypeOfObject(this)
+    ),
     types = type,
     isRelation = layout == ObjectType.Layout.RELATION
 )

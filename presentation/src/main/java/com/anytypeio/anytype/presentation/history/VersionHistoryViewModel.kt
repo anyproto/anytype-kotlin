@@ -28,7 +28,7 @@ import com.anytypeio.anytype.presentation.editor.Editor.Mode
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.INITIAL_INDENT
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.getTypeObjectById
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -463,7 +463,7 @@ class VersionHistoryViewModel(
             val spaceMember = spaceMembers.find { it.id == spaceMemberId }
                 ?: return@mapNotNull null
 
-            val objType = storeOfObjectTypes.getTypeObjectById(spaceMember)
+            val objType = storeOfObjectTypes.getTypeOfObject(spaceMember)
             val icon = spaceMember.objectIcon(urlBuilder, objType)
 
             val (latestVersionDate, latestVersionTime) = dateProvider.formatTimestampToDateAndTime(

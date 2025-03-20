@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.getTypeObjectById
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -50,7 +50,7 @@ suspend fun ObjectWrapper.Basic.toView(
         layout = layout,
         icon = obj.objectIcon(
             builder = urlBuilder,
-            objType = storeOfObjectTypes.getTypeObjectById(obj)
+            objType = storeOfObjectTypes.getTypeOfObject(obj)
         ),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
         lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
@@ -76,7 +76,7 @@ suspend fun List<ObjectWrapper.Basic>.toLinkToView(
             layout = layout,
             icon = obj.objectIcon(
                 builder = urlBuilder,
-                objType = storeOfObjectTypes.getTypeObjectById(obj)
+                objType = storeOfObjectTypes.getTypeOfObject(obj)
             ),
             position = index
         )
@@ -98,7 +98,7 @@ suspend fun ObjectWrapper.Basic.toLinkToObjectView(
         layout = layout,
         icon = objectIcon(
             builder = urlBuilder,
-            objType = storeOfObjectTypes.getTypeObjectById(this)
+            objType = storeOfObjectTypes.getTypeOfObject(this)
         )
     )
 }
@@ -120,7 +120,7 @@ suspend fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
             name = fieldParser.getObjectName(obj),
             icon = obj.objectIcon(
                 builder = urlBuilder,
-                objType = storeOfObjectTypes.getTypeObjectById(obj)
+                objType = storeOfObjectTypes.getTypeOfObject(obj)
             ),
             isSelected = ids?.contains(obj.id) ?: false
         )

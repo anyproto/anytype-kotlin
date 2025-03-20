@@ -9,7 +9,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 
-fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
+fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder, objType: ObjectWrapper.Type?): ObjectIcon {
 
     if (isDeleted == true) {
         return ObjectIcon.Deleted

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_properties.edit.ui
+package com.anytypeio.anytype.feature_properties.edit.ui.limit_types
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.relations.CircleIcon
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -41,13 +40,10 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_properties.R
 import com.anytypeio.anytype.feature_properties.add.ui.commonItemModifier
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PropertyLimitTypesScreen(
+fun PropertyLimitTypesEditScreen(
     items: List<UiPropertyLimitTypeItem>,
     savedSelectedItemIds: List<Id>,
     onDismissRequest: () -> Unit,
@@ -133,7 +129,8 @@ fun PropertyLimitTypesScreen(
                                         if (!selectedIds.contains(item.id)) {
                                             // Select the item: add its id and set its number.
                                             selectedIds.add(item.id)
-                                            currentItems[index] = item.copy(number = selectedIds.size)
+                                            currentItems[index] =
+                                                item.copy(number = selectedIds.size)
                                         } else {
                                             // Deselect the item.
                                             val removedNumber = item.number ?: 0
@@ -142,7 +139,8 @@ fun PropertyLimitTypesScreen(
                                             // Update the numbers for items that were selected after this item.
                                             currentItems.forEachIndexed { idx, current ->
                                                 if (current.number != null && current.number > removedNumber) {
-                                                    currentItems[idx] = current.copy(number = current.number - 1)
+                                                    currentItems[idx] =
+                                                        current.copy(number = current.number - 1)
                                                 }
                                             }
                                         }
@@ -227,47 +225,4 @@ private fun TypeItem(
             )
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@DefaultPreviews
-@Composable
-fun PreviewPropertyLimitTypesScreen() {
-    PropertyLimitTypesScreen(
-        items = listOf(
-            UiPropertyLimitTypeItem(
-                id = "11",
-                name = "Pages Fixed image width with correct padding adjustments",
-                icon = ObjectIcon.ObjectType(
-                    icon = CustomIcon(
-                        rawValue = "man",
-                        color = CustomIconColor.Blue
-                    )
-                )
-            ),
-            UiPropertyLimitTypeItem(
-                id = "12",
-                name = "Characters",
-                icon = ObjectIcon.ObjectType(
-                    icon = CustomIcon(
-                        rawValue = "aperture",
-                        color = CustomIconColor.Red
-                    )
-                )
-            ),
-            UiPropertyLimitTypeItem(
-                id = "13",
-                name = "Words",
-                icon = ObjectIcon.ObjectType(
-                    icon = CustomIcon(
-                        rawValue = "arrow-back-circl",
-                        color = CustomIconColor.Yellow
-                    )
-                )
-            )
-        ),
-        onDismissRequest = {},
-        onDoneClick = {},
-        savedSelectedItemIds = emptyList()
-    )
 }

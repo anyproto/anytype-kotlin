@@ -63,11 +63,12 @@ import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import timber.log.Timber
 
-fun ObjectState.DataView.featuredRelations(
+suspend fun ObjectState.DataView.featuredRelations(
     ctx: Id,
     urlBuilder: UrlBuilder,
     relations: List<ObjectWrapper.Relation>,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes,
 ): BlockView.FeaturedRelation? {
     val block = blocks.find { it.content is Block.Content.FeaturedRelations }
     if (block != null) {
@@ -81,7 +82,8 @@ fun ObjectState.DataView.featuredRelations(
                 details = details,
                 relations = relations,
                 urlBuilder = urlBuilder,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
         )
         return BlockView.FeaturedRelation(
@@ -125,13 +127,14 @@ fun ObjectState.DataView.header(
     }
 }
 
-private fun ObjectState.DataView.mapFeaturedRelations(
+private suspend fun ObjectState.DataView.mapFeaturedRelations(
     ctx: Id,
     keys: List<String>?,
     details: ObjectViewDetails,
     relations: List<ObjectWrapper.Relation>,
     urlBuilder: UrlBuilder,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes,
 ): List<ObjectRelationView> {
     val currentObject = details.getObject(ctx) ?: return emptyList()
     val featuredRelationsIds = currentObject.featuredRelations
@@ -185,7 +188,13 @@ private fun ObjectState.DataView.mapFeaturedRelations(
                 val isReadOnly = wrapper?.relationReadonlyValue == true
 
                 val sources = if (isValid && !isDeleted) {
-                    listOf(wrapper.toObjectViewDefault(urlBuilder = urlBuilder, fieldParser = fieldParser))
+                    listOf(
+                        wrapper.toObjectViewDefault(
+                            urlBuilder = urlBuilder,
+                            fieldParser = fieldParser,
+                            storeOfObjectTypes = storeOfObjectTypes
+                        )
+                    )
                 } else {
                     emptyList()
                 }
@@ -215,7 +224,8 @@ private fun ObjectState.DataView.mapFeaturedRelations(
                     values = currentObject.map,
                     urlBuilder = urlBuilder,
                     isFeatured = true,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
             }
         }

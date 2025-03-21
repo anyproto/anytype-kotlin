@@ -9,6 +9,8 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -35,6 +37,7 @@ class TreeWidgetContainer(
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
     private val fieldParser: FieldParser,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     isSessionActive: Flow<Boolean>,
     onRequestCache: () -> WidgetView.Tree? = { null }
 ) : WidgetContainer {
@@ -120,7 +123,8 @@ class TreeWidgetContainer(
                             expanded = paths,
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
                             data = data,
-                            rootLimit = rootLevelLimit
+                            rootLimit = rootLevelLimit,
+                            storeOfObjectTypes = storeOfObjectTypes
                         ),
                         name = WidgetView.Name.Bundled(source = source)
                     )
@@ -160,7 +164,8 @@ class TreeWidgetContainer(
                             expanded = paths,
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
                             data = data,
-                            rootLimit = WidgetConfig.NO_LIMIT
+                            rootLimit = WidgetConfig.NO_LIMIT,
+                            storeOfObjectTypes = storeOfObjectTypes
                         ),
                         name = WidgetView.Name.Default(
                             prettyPrintName = fieldParser.getObjectName(source.obj)
@@ -253,13 +258,14 @@ class TreeWidgetContainer(
         }
     }.distinct()
 
-    private fun buildTree(
+    private suspend fun buildTree(
         links: List<Id>,
         expanded: List<TreePath>,
         level: Int,
         path: TreePath,
         data: Map<Id, ObjectWrapper.Basic>,
-        rootLimit: Int
+        rootLimit: Int,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): List<WidgetView.Tree.Element> = buildList {
         links.forEachIndexed { index, link ->
             // Applying limit only for root level:
@@ -281,7 +287,8 @@ class TreeWidgetContainer(
                             currentLinkPath = currentLinkPath
                         ),
                         objectIcon = obj.objectIcon(
-                            builder = urlBuilder
+                            builder = urlBuilder,
+                            objType = storeOfObjectTypes.getTypeOfObject(obj)
                         ),
                         indent = level,
                         path = path + link,
@@ -299,7 +306,8 @@ class TreeWidgetContainer(
                             expanded = expanded,
                             path = currentLinkPath + SEPARATOR,
                             data = data,
-                            rootLimit = rootLimit
+                            rootLimit = rootLimit,
+                            storeOfObjectTypes = storeOfObjectTypes
                         )
                     )
                 }

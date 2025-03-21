@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
+@Deprecated("Before Primitives, to delete")
 class RelationEditViewModel(
     @TypeId private val id: Id,
     @TypeName private val name: String,

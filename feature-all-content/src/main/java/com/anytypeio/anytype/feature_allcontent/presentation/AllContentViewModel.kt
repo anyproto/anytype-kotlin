@@ -343,7 +343,8 @@ class AllContentViewModel(
                         urlBuilder = urlBuilder,
                         isOwnerOrEditor = isOwnerOrEditor,
                         fieldParser = fieldParser,
-                        objectTypes = storeOfObjectTypes.getAll()
+                        objectTypes = storeOfObjectTypes.getAll(),
+                        storeOfObjectTypes = storeOfObjectTypes
                     )
                 }
                 val result = when (activeSort) {

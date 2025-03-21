@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
@@ -52,6 +53,9 @@ class TagAndStatusTests {
 
     @Mock
     lateinit var stringResourceProvider: StringResourceProvider
+
+    @Mock
+    lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     @Before
     fun setup() {
@@ -156,7 +160,8 @@ class TagAndStatusTests {
             builder = UrlBuilder(gateway),
             showIcon = false,
             store = store,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         val expected = Viewer.GridView.Row(
@@ -293,7 +298,8 @@ class TagAndStatusTests {
             builder = UrlBuilder(gateway),
             showIcon = false,
             store = store,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         val expected = Viewer.GridView.Row(

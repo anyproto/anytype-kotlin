@@ -316,7 +316,7 @@ class ObjectTypeViewModel(
             isEditable = objectPermissions.canEditDetails
         )
         uiIconState.value = UiIconState(
-            icon = objType.objectIcon(urlBuilder),
+            icon = objType.objectIcon(),
             isEditable = objectPermissions.canEditDetails
         )
         if (objectPermissions.canDelete) {

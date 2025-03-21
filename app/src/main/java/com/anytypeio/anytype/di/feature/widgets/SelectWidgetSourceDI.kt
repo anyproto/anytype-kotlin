@@ -66,7 +66,8 @@ object SelectWidgetSourceModule {
         getObjectTypes: GetObjectTypes,
         dispatcher: Dispatcher<WidgetDispatchEvent>,
         analyticsHelper: AnalyticSpaceHelperDelegate,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): SelectWidgetSourceViewModel.Factory = SelectWidgetSourceViewModel.Factory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
@@ -75,6 +76,7 @@ object SelectWidgetSourceModule {
         getObjectTypes = getObjectTypes,
         dispatcher = dispatcher,
         analyticSpaceHelperDelegate = analyticsHelper,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes
     )
 }

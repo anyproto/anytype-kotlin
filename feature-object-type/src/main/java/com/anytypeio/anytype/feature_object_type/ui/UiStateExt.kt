@@ -27,7 +27,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 fun ObjectWrapper.Basic.toTemplateView(
     objType: ObjectWrapper.Type,
     urlBuilder: UrlBuilder,
-    coverImageHashProvider: CoverImageHashProvider,
+    coverImageHashProvider: CoverImageHashProvider
 ): TemplateView.Template {
     val coverContainer = if (coverType != CoverType.NONE) {
         BasicObjectCoverWrapper(this)

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -43,7 +44,8 @@ object ViewerFilterModule {
         analytics: Analytics,
         storeOfRelations: StoreOfRelations,
         db: ObjectSetDatabase,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): ViewerFilterViewModel.Factory = ViewerFilterViewModel.Factory(
         state = state,
         dispatcher = dispatcher,
@@ -52,7 +54,8 @@ object ViewerFilterModule {
         analytics = analytics,
         storeOfRelations = storeOfRelations,
         objectSetDatabase = db,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes
     )
 }
 

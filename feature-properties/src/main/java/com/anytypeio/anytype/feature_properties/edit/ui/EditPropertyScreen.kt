@@ -40,6 +40,7 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.edit.ui.limit_types.PropertyLimitTypesPreviewScreen
 
 @Composable
 fun PropertyEditScreen(
@@ -49,7 +50,8 @@ fun PropertyEditScreen(
     onFormatClick: () -> Unit,
     onLimitTypesClick: () -> Unit,
     onPropertyNameUpdate: (String) -> Unit,
-    onMenuUnlinkClick: (Id) -> Unit
+    onMenuUnlinkClick: (Id) -> Unit,
+    onDismissLimitTypes: () -> Unit
 ) {
 
     var innerValue by remember(uiState.name) { mutableStateOf(uiState.name) }
@@ -144,13 +146,9 @@ fun PropertyEditScreen(
         Divider()
 
         if (uiState.format == RelationFormat.OBJECT) {
-            PropertyLimitTypesEditSection(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-                    .padding(horizontal = 20.dp)
-                    .noRippleThrottledClickable { onLimitTypesClick() },
+            PropertyLimitTypesViewSection(
                 limit = uiState.limitObjectTypes.size,
+                onLimitTypesClick = onLimitTypesClick
             )
             Divider()
         }
@@ -171,6 +169,13 @@ fun PropertyEditScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
     }
+
+    if (uiState.showLimitTypes) {
+        PropertyLimitTypesPreviewScreen(
+            items = uiState.limitObjectTypes,
+            onDismissRequest = onDismissLimitTypes,
+        )
+    }
 }
 
 @DefaultPreviews
@@ -186,12 +191,14 @@ fun EditPropertyPreview() {
             formatIcon = R.drawable.ic_relation_format_date_small,
             limitObjectTypes = emptyList(),
             format = RelationFormat.OBJECT,
-            isPossibleToUnlinkFromType = true
+            isPossibleToUnlinkFromType = true,
+            showLimitTypes = false
         ),
         onSaveButtonClicked = {},
         onFormatClick = {},
         onLimitTypesClick = {},
         onPropertyNameUpdate = {},
-        onMenuUnlinkClick = {}
+        onMenuUnlinkClick = {},
+        onDismissLimitTypes = {}
     )
 }

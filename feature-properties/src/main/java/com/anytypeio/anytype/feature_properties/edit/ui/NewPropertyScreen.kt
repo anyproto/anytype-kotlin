@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.edit.ui.limit_types.PropertyLimitTypesEditScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -118,7 +119,7 @@ fun PropertyNewScreen(
     }
 
     if (uiState.showLimitTypes) {
-        PropertyLimitTypesScreen(
+        PropertyLimitTypesEditScreen(
             items = uiState.limitObjectTypes,
             savedSelectedItemIds = uiState.selectedLimitTypeIds,
             onDismissRequest = onDismissLimitTypes,

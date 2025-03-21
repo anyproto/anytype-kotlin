@@ -276,27 +276,34 @@ class EditTypePropertiesViewModel(
             }
 
             is UiEditTypePropertiesEvent.OnPropertyFormatSelected -> {
-                uiPropertyFormatsListState.value = Hidden
-                val state = uiPropertyEditState.value as? UiEditPropertyState.Visible ?: return
-                uiPropertyEditState.value = when (state) {
-                    is New -> {
-                        val newFormat = event.format.format
-                        state.copy(
-                            formatName = stringResourceProvider.getPropertiesFormatPrettyString(
-                                newFormat
-                            ),
-                            formatIcon = newFormat.simpleIcon(),
-                            format = newFormat,
-                        )
-                    }
+                viewModelScope.launch {
+                    uiPropertyFormatsListState.value = Hidden
+                    val state = uiPropertyEditState.value as? UiEditPropertyState.Visible ?: return@launch
+                    uiPropertyEditState.value = when (state) {
+                        is New -> {
+                            val newFormat = event.format.format
+                            state.copy(
+                                formatName = stringResourceProvider.getPropertiesFormatPrettyString(
+                                    newFormat
+                                ),
+                                formatIcon = newFormat.simpleIcon(),
+                                format = newFormat,
+                                limitObjectTypes = getAllObjectTypesByFormat(newFormat),
+                                selectedLimitTypeIds = emptyList(),
+                                showLimitTypes = false
+                            )
+                        }
 
-                    else -> state
+                        else -> state
+                    }
                 }
             }
 
             UiEditTypePropertiesEvent.OnLimitTypesClick -> {
                 uiPropertyEditState.value = when (val state = uiPropertyEditState.value) {
                     is New -> state.copy(showLimitTypes = true)
+                    is View -> state.copy(showLimitTypes = true)
+                    is Edit -> state.copy(showLimitTypes = true)
                     else -> state
                 }
             }
@@ -304,12 +311,16 @@ class EditTypePropertiesViewModel(
             UiEditTypePropertiesEvent.OnLimitTypesDismiss -> {
                 uiPropertyEditState.value = when (val state = uiPropertyEditState.value) {
                     is New -> state.copy(showLimitTypes = false)
+                    is View -> state.copy(showLimitTypes = false)
+                    is Edit -> state.copy(showLimitTypes = false)
                     else -> state
                 }
             }
 
             is UiEditTypePropertiesEvent.OnLimitTypesDoneClick -> {
-                val state = uiPropertyEditState.value as? UiEditPropertyState.Visible.New ?: return
+                val state = uiPropertyEditState.value as? New ?: return.also {
+                    Timber.e("Possible only for New state")
+                }
                 uiPropertyEditState.value = state.copy(
                     selectedLimitTypeIds = event.items,
                     showLimitTypes = false
@@ -345,17 +356,12 @@ class EditTypePropertiesViewModel(
 
     private fun proceedWithCreatingRelation() {
         viewModelScope.launch {
-            val state = uiPropertyEditState.value as? UiEditPropertyState.Visible ?: return@launch
-            val (name, format) = when (state) {
-                is UiEditPropertyState.Visible.Edit -> state.name to state.format
-                is UiEditPropertyState.Visible.View -> state.name to state.format
-                is UiEditPropertyState.Visible.New -> state.name to state.format
-            }
+            val state = uiPropertyEditState.value as? New ?: return@launch
             val params = CreateRelation.Params(
                 space = vmParams.spaceId.id,
-                format = format,
-                name = name,
-                limitObjectTypes = emptyList(),
+                format = state.format,
+                name = state.name,
+                limitObjectTypes = state.selectedLimitTypeIds,
                 prefilled = emptyMap()
             )
             createRelation(params).process(

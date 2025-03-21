@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.feature_properties.add
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 
 sealed class UiEditTypePropertiesEvent {
     data class OnSearchQueryChanged(val query: String) : UiEditTypePropertiesEvent()

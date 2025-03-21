@@ -18,7 +18,8 @@ sealed class UiEditPropertyState {
             val formatIcon: Int?,
             val format: RelationFormat,
             val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList(),
-            val isPossibleToUnlinkFromType: Boolean
+            val isPossibleToUnlinkFromType: Boolean,
+            val showLimitTypes: Boolean
         ) : Visible()
 
         data class New(
@@ -39,7 +40,8 @@ sealed class UiEditPropertyState {
             val formatIcon: Int?,
             val format: RelationFormat,
             val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList(),
-            val isPossibleToUnlinkFromType: Boolean
+            val isPossibleToUnlinkFromType: Boolean,
+            val showLimitTypes: Boolean
         ) : Visible()
     }
 }

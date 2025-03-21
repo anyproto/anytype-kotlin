@@ -27,7 +27,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 fun ObjectWrapper.Basic.toTemplateView(
     objType: ObjectWrapper.Type,
     urlBuilder: UrlBuilder,
-    coverImageHashProvider: CoverImageHashProvider,
+    coverImageHashProvider: CoverImageHashProvider
 ): TemplateView.Template {
     val coverContainer = if (coverType != CoverType.NONE) {
         BasicObjectCoverWrapper(this)
@@ -180,7 +180,7 @@ private suspend fun mapLimitObjectTypes(
                     id = objType.id,
                     key = objType.uniqueKey,
                     title = fieldParser.getObjectName(objType),
-                    icon = objType.objectIcon(urlBuilder)
+                    icon = objType.objectIcon()
                 )
             }
         }

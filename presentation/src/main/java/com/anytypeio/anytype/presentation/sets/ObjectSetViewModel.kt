@@ -248,7 +248,8 @@ class ObjectSetViewModel(
                         ctx = vmParams.ctx,
                         urlBuilder = urlBuilder,
                         relations = storeOfRelations.getAll(),
-                        fieldParser = fieldParser
+                        fieldParser = fieldParser,
+                        storeOfObjectTypes = storeOfObjectTypes
                     )
                     _header.value = state.header(
                         ctx = vmParams.ctx,
@@ -712,7 +713,8 @@ class ObjectSetViewModel(
                     dataViewRelations = relations,
                     store = objectStore,
                     storeOfRelations = storeOfRelations,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
 
                 when {
@@ -786,7 +788,8 @@ class ObjectSetViewModel(
                     dataViewRelations = relations,
                     store = objectStore,
                     storeOfRelations = storeOfRelations,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
 
                 when {
@@ -834,7 +837,8 @@ class ObjectSetViewModel(
                 store = objectStore,
                 objectOrderIds = objectOrderIds,
                 storeOfRelations = storeOfRelations,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
         }
     }
@@ -2230,7 +2234,7 @@ class ObjectSetViewModel(
             onSuccess = { types ->
                 val list = buildList {
                     add(TemplateObjectTypeView.Search)
-                    addAll(types.toTemplateObjectTypeViewItems(selectedType, urlBuilder))
+                    addAll(types.toTemplateObjectTypeViewItems(selectedType))
                 }
                 typeTemplatesWidgetState.value = widgetState.copy(objectTypes = list)
             },

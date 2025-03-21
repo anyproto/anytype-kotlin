@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.main
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.common.ComponentDependenciesKey
-import com.anytypeio.anytype.di.feature.EditTypePropertiesDependencies
 import com.anytypeio.anytype.di.feature.AllContentDependencies
 import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
 import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
@@ -11,6 +10,7 @@ import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
 import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
 import com.anytypeio.anytype.di.feature.DateObjectDependencies
 import com.anytypeio.anytype.di.feature.DebugSettingsSubComponent
+import com.anytypeio.anytype.di.feature.EditTypePropertiesDependencies
 import com.anytypeio.anytype.di.feature.EditorSubComponent
 import com.anytypeio.anytype.di.feature.KeychainPhraseSubComponent
 import com.anytypeio.anytype.di.feature.LinkToObjectDependencies
@@ -41,7 +41,6 @@ import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDepe
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
 import com.anytypeio.anytype.di.feature.participant.ParticipantComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
-import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
@@ -57,9 +56,6 @@ import com.anytypeio.anytype.di.feature.spaces.SpaceListDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
-import com.anytypeio.anytype.di.feature.types.CreateObjectTypeDependencies
-import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
-import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
 import com.anytypeio.anytype.di.feature.vault.VaultComponentDependencies
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceDependencies
@@ -99,11 +95,7 @@ interface MainComponent :
     AppearanceDependencies,
     HomeScreenDependencies,
     CollectionDependencies,
-    CreateObjectTypeDependencies,
-    TypeIconPickDependencies,
-    TypeEditDependencies,
     RelationCreateFromLibraryDependencies,
-    RelationEditDependencies,
     SplashDependencies,
     DeletedAccountDependencies,
     BacklinkOrAddToObjectDependencies,
@@ -189,28 +181,8 @@ abstract class ComponentDependenciesModule {
 
     @Binds
     @IntoMap
-    @ComponentDependenciesKey(CreateObjectTypeDependencies::class)
-    abstract fun provideTypeCreationDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(TypeEditDependencies::class)
-    abstract fun provideTypeEditDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(TypeIconPickDependencies::class)
-    abstract fun provideTypeIconPickDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
     @ComponentDependenciesKey(RelationCreateFromLibraryDependencies::class)
     abstract fun provideRelationCreateFromLibraryDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(RelationEditDependencies::class)
-    abstract fun provideRelationEditDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

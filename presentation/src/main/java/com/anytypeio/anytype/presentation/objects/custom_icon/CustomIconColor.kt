@@ -17,7 +17,8 @@ enum class CustomIconColor(val rawValue: Int) {
     Blue(6),
     Sky(7),
     Teal(8),
-    Green(9);
+    Green(9),
+    Transparent(10);
 
     /**
      * Returns the icon option corresponding to this color.

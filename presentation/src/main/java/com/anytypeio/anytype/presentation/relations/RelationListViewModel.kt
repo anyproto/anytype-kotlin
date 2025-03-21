@@ -127,7 +127,8 @@ class RelationListViewModel(
                 values = details.getObject(ctx)?.map.orEmpty(),
                 urlBuilder = urlBuilder,
                 fieldParser = fieldParser,
-                isFeatured = true
+                isFeatured = true,
+                storeOfObjectTypes = storeOfObjectTypes
             )
         }.map {
             Model.Item(it, isLocal = false)
@@ -140,7 +141,8 @@ class RelationListViewModel(
                 values = details.getObject(ctx)?.map.orEmpty(),
                 urlBuilder = urlBuilder,
                 fieldParser = fieldParser,
-                isFeatured = false
+                isFeatured = false,
+                storeOfObjectTypes = storeOfObjectTypes
             )
         }.map {
             Model.Item(it, isLocal = false)
@@ -153,6 +155,7 @@ class RelationListViewModel(
                 values = details.getObject(ctx)?.map.orEmpty(),
                 urlBuilder = urlBuilder,
                 fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
         }.map {
             Model.Item(it, isLocal = false)
@@ -165,6 +168,7 @@ class RelationListViewModel(
                 values = details.getObject(ctx)?.map.orEmpty(),
                 urlBuilder = urlBuilder,
                 fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
         }.map {
             Model.Item(it, isLocal = true)
@@ -205,7 +209,8 @@ class RelationListViewModel(
             ctx = ctx,
             storeOfRelations = storeOfRelations,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
         ).map { view ->
             Model.Item(
                 view = view,
@@ -217,7 +222,8 @@ class RelationListViewModel(
             ctx = ctx,
             storeOfRelations = storeOfRelations,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
         ).map { view ->
             Model.Item(
                 view = view,

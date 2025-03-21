@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
 import com.anytypeio.anytype.presentation.extension.getBookmarkObject
 import com.anytypeio.anytype.presentation.extension.getObject
@@ -29,8 +30,8 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Mode
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.mapper.toFileView
 import com.anytypeio.anytype.presentation.mapper.toPictureView
 import com.anytypeio.anytype.presentation.mapper.toVideoView
@@ -101,7 +102,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         focus = focus,
                                         root = root,
                                         restrictions = restrictions,
-                                        currentObject = obj
+                                        currentObject = obj,
+                                        storeOfObjectTypes = storeOfObjectTypes,
                                     )
                                 )
                             }
@@ -622,7 +624,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                         mode = mode,
                         selection = selection,
                         isPreviousBlockMedia = isPreviousBlockMedia,
-                        parentSchema = parentScheme
+                        parentSchema = parentScheme,
+                        storeOfObjectTypes = storeOfObjectTypes,
                     )
                     result.add(link)
                     isPreviousBlockMedia = link is BlockView.LinkToObject.Default.Card
@@ -698,6 +701,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             urlBuilder = urlBuilder,
                             schema = blockDecorationScheme,
                             fieldParser = fieldParser,
+                            storeOfObjectTypes = storeOfObjectTypes
                         )
                     )
                 }
@@ -709,6 +713,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         block = block,
                         details = details,
                         fieldParser = fieldParser,
+                        storeOfObjectTypes = storeOfObjectTypes
                     )
 
                     if (featured.relations.isNotEmpty()) {
@@ -786,7 +791,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                             content = content,
                             details = details,
                             selection = selection,
-                            schema = parentScheme
+                            schema = parentScheme,
+                            storeOfObjectTypes = storeOfObjectTypes
                         )
                     )
                 }
@@ -1406,14 +1412,15 @@ class DefaultBlockViewRenderer @Inject constructor(
         }
     }
 
-    private fun title(
+    private suspend fun title(
         mode: EditorMode,
         block: Block,
         content: Content.Text,
         root: Block,
         focus: Focus,
         restrictions: List<ObjectRestriction>,
-        currentObject: ObjectWrapper.Basic?
+        currentObject: ObjectWrapper.Basic?,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): BlockView.Title {
 
         val focusTarget = focus.target
@@ -1497,6 +1504,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectType.Layout.VIDEO,
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF -> {
+                val objType = storeOfObjectTypes.getTypeOfObject(currentObject)
                 BlockView.Title.File(
                     mode = Mode.READ,
                     id = block.id,
@@ -1508,7 +1516,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor(),
-                    icon = currentObject.objectIcon(builder = urlBuilder)
+                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType)
                 )
             }
             ObjectType.Layout.IMAGE -> {
@@ -1576,7 +1584,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         mode: EditorMode,
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
-        parentSchema: NestedDecorationData
+        parentSchema: NestedDecorationData,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): BlockView.LinkToObject {
         return if (obj == null || obj.isDeleted == true) {
             linkDeleted(
@@ -1605,7 +1614,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = mode,
                     selection = selection,
                     isPreviousBlockMedia = isPreviousBlockMedia,
-                    parentSchema = parentSchema
+                    parentSchema = parentSchema,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
             }
         }
@@ -1619,13 +1629,17 @@ class DefaultBlockViewRenderer @Inject constructor(
         obj: ObjectWrapper.Basic,
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
-        parentSchema: NestedDecorationData
+        parentSchema: NestedDecorationData,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): BlockView.LinkToObject.Default {
         val factory = LinkAppearanceFactory(content, obj.layout)
         val inEditorAppearance = factory.createInEditorLinkAppearance()
         val isCard = inEditorAppearance.isCard
         val objectIcon = if (inEditorAppearance.showIcon) {
-            obj.objectIcon(urlBuilder)
+            obj.objectIcon(
+                builder = urlBuilder,
+                objType = storeOfObjectTypes.getTypeOfObject(obj)
+            )
         } else {
             ObjectIcon.None
         }
@@ -2023,7 +2037,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         details: ObjectViewDetails,
         urlBuilder: UrlBuilder,
         schema: NestedDecorationData,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): BlockView.Relation {
         val relationKey = content.key
         if (relationKey.isNullOrEmpty()) {
@@ -2041,7 +2056,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     details = details,
                     values = values,
                     urlBuilder = urlBuilder,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
                 return BlockView.Relation.Related(
                     id = block.id,
@@ -2066,6 +2082,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         block: Block,
         details: ObjectViewDetails,
         fieldParser: FieldParser,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): BlockView.FeaturedRelation {
         val obj = details.getObject(ctx)
         val featuredKeys = workaroundGlobalNameOrIdentityRelation(obj?.featuredRelations.orEmpty(), obj?.map.orEmpty())
@@ -2073,7 +2090,8 @@ class DefaultBlockViewRenderer @Inject constructor(
             ctx = ctx,
             keys = featuredKeys,
             details = details,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
 
         ).sortedByDescending { it.key == Relations.TYPE || it.key == Relations.GLOBAL_NAME || it.key == Relations.IDENTITY }
         return BlockView.FeaturedRelation(
@@ -2111,7 +2129,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         ctx: Id,
         keys: List<Key>,
         details: ObjectViewDetails,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): List<ObjectRelationView> = keys.mapNotNull { key ->
         when (key) {
             Relations.DESCRIPTION -> null
@@ -2143,7 +2162,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     values = values,
                     urlBuilder = urlBuilder,
                     isFeatured = true,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
             }
         }
@@ -2171,13 +2191,14 @@ class DefaultBlockViewRenderer @Inject constructor(
         }
     }
 
-    private fun dataView(
+    private suspend fun dataView(
         mode: EditorMode,
         block: Block,
         content: Content.DataView,
         details: ObjectViewDetails,
         selection: Set<Id>,
-        schema: NestedDecorationData
+        schema: NestedDecorationData,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): BlockView.DataView {
         val targetObjectId = content.targetObjectId
         val isCollection = content.isCollection
@@ -2218,7 +2239,10 @@ class DefaultBlockViewRenderer @Inject constructor(
                     isCollection = isCollection
                 )
             }
-            val icon = targetSet.objectIcon(urlBuilder)
+            val icon = targetSet.objectIcon(
+                builder = urlBuilder,
+                objType = storeOfObjectTypes.getTypeOfObject(targetSet)
+            )
             val isSetNoQuery = targetSet.setOf.all { it.isBlank() }
             if (isSetNoQuery && !content.isCollection) {
                 return BlockView.DataView.EmptyData(

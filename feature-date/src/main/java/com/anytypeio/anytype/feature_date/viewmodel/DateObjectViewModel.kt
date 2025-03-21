@@ -476,7 +476,8 @@ class DateObjectViewModel(
                 urlBuilder = urlBuilder,
                 objectTypes = storeOfObjectTypes.getAll(),
                 fieldParser = fieldParser,
-                isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
+                isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true,
+                storeOfObjectTypes = storeOfObjectTypes
             )
         }
         uiContentState.value = if (items.isEmpty()) {

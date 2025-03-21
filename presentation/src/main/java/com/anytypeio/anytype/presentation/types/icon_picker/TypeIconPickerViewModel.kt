@@ -9,6 +9,7 @@ import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 
+@Deprecated("Before Primitives, to delete")
 class TypeIconPickerViewModel(
     provider: EmojiProvider,
     suggester: EmojiSuggester,

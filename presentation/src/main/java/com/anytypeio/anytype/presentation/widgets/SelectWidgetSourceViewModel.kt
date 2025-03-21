@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -37,6 +37,7 @@ class SelectWidgetSourceViewModel(
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<WidgetDispatchEvent>,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     fieldParser: FieldParser
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
@@ -45,7 +46,8 @@ class SelectWidgetSourceViewModel(
     getObjectTypes = getObjectTypes,
     analytics = analytics,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-    fieldParser = fieldParser
+    fieldParser = fieldParser,
+    storeOfObjectTypes = storeOfObjectTypes
 ) {
 
     val isDismissed = MutableStateFlow(false)
@@ -267,7 +269,8 @@ class SelectWidgetSourceViewModel(
         private val analytics: Analytics,
         private val dispatcher: Dispatcher<WidgetDispatchEvent>,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val fieldParser: FieldParser
+        private val fieldParser: FieldParser,
+        private val storeOfObjectTypes: StoreOfObjectTypes,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -280,7 +283,8 @@ class SelectWidgetSourceViewModel(
                 getObjectTypes = getObjectTypes,
                 dispatcher = dispatcher,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             ) as T
         }
     }

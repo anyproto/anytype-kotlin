@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.history.ShowVersion
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -94,6 +95,9 @@ class VersionHistoryViewModelTest {
 
     @Mock
     lateinit var storeOfRelations: StoreOfRelations
+
+    @Mock
+    lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
@@ -545,6 +549,7 @@ class VersionHistoryViewModelTest {
             showVersion = showVersion,
             setStateReducer = DefaultObjectStateReducer(),
             storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes,
         )
     }
 }

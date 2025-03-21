@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.feature_properties.add
 
+import com.anytypeio.anytype.core_models.Id
+
 sealed class UiEditTypePropertiesEvent {
     data class OnSearchQueryChanged(val query: String) : UiEditTypePropertiesEvent()
     data class OnCreate(val item: UiEditTypePropertiesItem.Create) : UiEditTypePropertiesEvent()
@@ -9,6 +11,10 @@ sealed class UiEditTypePropertiesEvent {
     data object OnSaveButtonClicked : UiEditTypePropertiesEvent()
     data object OnEditPropertyScreenDismissed : UiEditTypePropertiesEvent()
     data class OnPropertyNameUpdate(val name: String) : UiEditTypePropertiesEvent()
+
+    data object OnLimitTypesClick : UiEditTypePropertiesEvent()
+    data object OnLimitTypesDismiss : UiEditTypePropertiesEvent()
+    data class OnLimitTypesDoneClick(val items: List<Id>) : UiEditTypePropertiesEvent()
 
     data object OnPropertyFormatClick : UiEditTypePropertiesEvent()
     data object OnPropertyFormatsListDismiss : UiEditTypePropertiesEvent()

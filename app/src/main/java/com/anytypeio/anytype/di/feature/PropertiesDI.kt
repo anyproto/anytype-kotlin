@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -84,5 +85,6 @@ interface EditTypePropertiesDependencies : ComponentDependencies {
     fun provideStoreOfObjectTypes(): StoreOfObjectTypes
     fun provideBlockRepository(): BlockRepository
     fun provideAppCoroutineDispatchers(): AppCoroutineDispatchers
+    fun urlBuilder(): UrlBuilder
 }
 //endregion

@@ -37,6 +37,8 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
+import com.anytypeio.anytype.feature_properties.edit.ui.limit_types.PropertyLimitTypesPreviewScreen
 
 @Composable
 fun PropertyViewScreen(
@@ -44,7 +46,8 @@ fun PropertyViewScreen(
     uiState: UiEditPropertyState.Visible.View,
     onFormatClick: () -> Unit,
     onLimitTypesClick: () -> Unit,
-    onMenuUnlinkClick: (Id) -> Unit
+    onMenuUnlinkClick: (Id) -> Unit,
+    onDismissLimitTypes: () -> Unit,
 ) {
 
     var innerValue by remember(uiState.name) { mutableStateOf(uiState.name) }
@@ -139,12 +142,19 @@ fun PropertyViewScreen(
         if (uiState.format == RelationFormat.OBJECT) {
             PropertyLimitTypesViewSection(
                 limit = uiState.limitObjectTypes.size,
-                onLimitTypesClick = { onLimitTypesClick() }
+                onLimitTypesClick = onLimitTypesClick
             )
             Divider()
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+    }
+
+    if (uiState.showLimitTypes) {
+        PropertyLimitTypesPreviewScreen(
+            items = uiState.limitObjectTypes,
+            onDismissRequest = onDismissLimitTypes,
+        )
     }
 }
 
@@ -156,14 +166,25 @@ fun MyPreviewView() {
         uiState = UiEditPropertyState.Visible.View(
             id = "dummyId1",
             key = "dummyKey1",
-            name = "View property",
-            formatName = "Text",
+            name = "View property very long name, so so long, very long",
+            formatName = "Object Relation",
             formatIcon = R.drawable.ic_relation_format_date_small,
-            format = RelationFormat.FILE,
-            isPossibleToUnlinkFromType = true
+            format = RelationFormat.OBJECT,
+            isPossibleToUnlinkFromType = true,
+            showLimitTypes = false,
+            limitObjectTypes = listOf(
+                UiPropertyLimitTypeItem(
+                    id = "dummyId1",
+                    name = "Limit type 1",
+                    icon = null,
+                    uniqueKey = null,
+                    number = 1
+                )
+            )
         ),
         onFormatClick = {},
         onLimitTypesClick = {},
-        onMenuUnlinkClick = {}
+        onMenuUnlinkClick = {},
+        onDismissLimitTypes = {}
     )
 }

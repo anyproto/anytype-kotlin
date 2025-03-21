@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_object_type.fields
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesEvent
 
 sealed class FieldEvent {
 
@@ -30,5 +31,7 @@ sealed class FieldEvent {
     sealed class EditProperty : FieldEvent() {
         data class OnPropertyNameUpdate(val name: String) : EditProperty()
         data object OnSaveButtonClicked : EditProperty()
+        data object OnLimitTypesClick : EditProperty()
+        data object OnLimitTypesDismiss : EditProperty()
     }
 }

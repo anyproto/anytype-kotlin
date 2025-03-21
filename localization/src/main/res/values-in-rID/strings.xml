@@ -1684,7 +1684,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
     <string name="new_property_hint">Properti baru</string>
-    <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="edit_property_limit_objects_to">Limit objects to</string>
     <string name="add_property_error_create_new">Galat membuat properti baru</string>
     <string name="add_property_error_update">Galat memperbarui properti</string>
     <string name="add_property_error_add">Galat menambahkan properti ke tipe</string>

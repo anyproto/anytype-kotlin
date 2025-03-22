@@ -19,6 +19,8 @@ import com.anytypeio.anytype.di.main.DaggerMainComponent
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
 import com.anytypeio.anytype.middleware.discovery.adresshandler.LocalNetworkAddressProvider
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -63,6 +65,18 @@ class AndroidApplication : Application(), HasComponentDependencies {
         setupCrashReporter()
         setupLocalNetworkAddressHandler()
         setupNotificationChannel()
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Timber.e(task.exception, "Fetching FCM registration token failed")
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            Timber.d("FCM registration token: $token")
+        })
     }
 
     private fun enableStrictMode() {

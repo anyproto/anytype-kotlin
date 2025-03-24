@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
+import com.anytypeio.anytype.core_ui.views.animations.LoadingIndicator
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 
@@ -31,7 +31,35 @@ val avatarBackgroundColor = R.color.shape_tertiary
 val avatarTextColor = R.color.glyph_active
 
 @Composable
-fun AvatarIconView(
+fun ObjectIconProfile(
+    modifier: Modifier,
+    iconSize: Dp,
+    icon: ObjectIcon.Profile,
+    isCircleShape: Boolean = true
+) {
+    when (icon) {
+        is ObjectIcon.Profile.Avatar -> {
+            ProfileAvatarView(
+                modifier = modifier,
+                iconSize = iconSize,
+                icon = icon,
+                isCircleShape = isCircleShape
+            )
+        }
+
+        is ObjectIcon.Profile.Image -> {
+            ProfileImageView(
+                modifier = modifier,
+                iconSize = iconSize,
+                icon = icon
+            )
+        }
+    }
+
+}
+
+@Composable
+private fun ProfileAvatarView(
     modifier: Modifier,
     iconSize: Dp,
     icon: ObjectIcon.Profile.Avatar,
@@ -66,26 +94,7 @@ fun AvatarIconView(
 }
 
 @Composable
-fun AvatarIconLoadingView(
-    modifier: Modifier,
-    iconSize: Dp
-) {
-    val (radius, fontSize) = getAvatarIconParams(iconSize)
-
-    Box(
-        modifier = modifier
-            .size(iconSize)
-            .background(
-                shape = CircleShape,
-                color = colorResource(id = avatarBackgroundColor)
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-    }
-}
-
-@Composable
-fun DefaultProfileIconImage(
+fun ProfileImageView(
     icon: ObjectIcon.Profile.Image,
     modifier: Modifier,
     iconSize: Dp
@@ -96,18 +105,19 @@ fun DefaultProfileIconImage(
     when (state) {
         AsyncImagePainter.State.Empty,
         is AsyncImagePainter.State.Loading -> {
-            AvatarIconLoadingView(
-                modifier = Modifier.size(iconSize),
-                iconSize = iconSize
+            LoadingIndicator(
+                containerSize = iconSize
             )
         }
+
         is AsyncImagePainter.State.Error -> {
-            AvatarIconView(
+            ProfileAvatarView(
                 modifier = modifier,
                 iconSize = iconSize,
                 icon = ObjectIcon.Profile.Avatar(name = icon.name)
             )
         }
+
         is AsyncImagePainter.State.Success -> {
             Image(
                 painter = painter,

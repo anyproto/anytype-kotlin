@@ -199,6 +199,7 @@ dependencies {
     implementation libs.glide
     implementation libs.glideCompose
     implementation libs.coilCompose
+    implementation libs.coilNetwork
     implementation libs.dagger
     implementation libs.timber
     implementation libs.gson

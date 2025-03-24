@@ -46,7 +46,9 @@ sealed class ObjectIcon {
 
     sealed class TypeIcon : ObjectIcon() {
 
-        data object Deleted : TypeIcon()
+        data object Deleted : TypeIcon() {
+            const val DEFAULT_DELETED_ICON = "extension-puzzle"
+        }
 
         data class Emoji(
             val unicode: String,

@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!-- Заголовок файла -->
     <LinearLayout
         android:id="@+id/mediaContainer"
         android:layout_width="match_parent"
@@ -32,7 +31,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp">
 
-                <!-- Превью видео -->
                 <ImageView
                     android:id="@+id/videoThumbnail"
                     android:layout_width="match_parent"
@@ -40,7 +38,6 @@
                     android:scaleType="centerCrop"
                     android:visibility="gone" />
 
-                <!-- Видео плеер -->
                 <com.google.android.exoplayer2.ui.StyledPlayerView
                     android:id="@+id/playerView"
                     android:layout_width="match_parent"
@@ -49,7 +46,6 @@
                     app:resize_mode="fit"
                     app:use_controller="true" />
 
-                <!-- Кнопка воспроизведения -->
                 <ImageView
                     android:id="@+id/playButton"
                     android:layout_width="48dp"
@@ -67,7 +63,6 @@
             android:layout_height="wrap_content"
             android:visibility="gone" />
 
-        <!-- Иконка файла -->
         <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
             android:id="@+id/objectIconWidget"
             android:layout_width="64dp"

@@ -482,7 +482,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                         title = null,
                         background = ThemeColor.DEFAULT,
                         isSelected = false,
-                        icon = ObjectIcon.Empty.Page,
+                        icon = ObjectIcon.TypeIcon.Default.DEFAULT,
                         decorations = listOf(BlockView.Decoration(style = BlockView.Decoration.Style.Card)),
                         isCollection = false
                     )

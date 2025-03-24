@@ -24,7 +24,7 @@ val StubVerticalItems = listOf(
         typeName = "Page",
         createdBy = "by Mike Long",
         layout = ObjectType.Layout.BASIC,
-        icon = ObjectIcon.Empty.Page
+        icon = ObjectIcon.TypeIcon.Default.DEFAULT
     ),
     UiObjectsListItem.Item(
         id = "3",

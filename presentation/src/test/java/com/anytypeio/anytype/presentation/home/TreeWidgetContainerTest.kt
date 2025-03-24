@@ -337,7 +337,7 @@ class TreeWidgetContainerTest {
                                 obj = sourceLinks[0],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = false),
-                                objectIcon = ObjectIcon.Empty.Page,
+                                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                                 name = WidgetView.Name.Default(
                                     prettyPrintName = fieldParser.getObjectName(sourceLinks[0])
                                 )
@@ -348,7 +348,7 @@ class TreeWidgetContainerTest {
                                 obj = sourceLinks[1],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[1].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Empty.Page,
+                                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                                 name = WidgetView.Name.Default(
                                     prettyPrintName = fieldParser.getObjectName(sourceLinks[1])
                                 )
@@ -359,7 +359,7 @@ class TreeWidgetContainerTest {
                                 obj = sourceLinks[2],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[2].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Empty.Page,
+                                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                                 name = WidgetView.Name.Default(
                                     prettyPrintName = fieldParser.getObjectName(sourceLinks[2])
                                 )
@@ -386,7 +386,7 @@ class TreeWidgetContainerTest {
                                 obj = sourceLinks[0],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Branch(isExpanded = true),
-                                objectIcon = ObjectIcon.Empty.Page,
+                                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                                 name = WidgetView.Name.Default(
                                     prettyPrintName = fieldParser.getObjectName(sourceLinks[0])
                                 )
@@ -397,7 +397,7 @@ class TreeWidgetContainerTest {
                                 obj = linkA1,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA1.id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Empty.Page,
+                                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                                 name = WidgetView.Name.Default(
                                     prettyPrintName = fieldParser.getObjectName(linkA1)
                                 )
@@ -408,7 +408,7 @@ class TreeWidgetContainerTest {
                                 obj = linkA2,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA2.id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Empty.Page,
+                                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                                 name = WidgetView.Name.Default(
                                     prettyPrintName = fieldParser.getObjectName(linkA2)
                                 )
@@ -419,7 +419,7 @@ class TreeWidgetContainerTest {
                                 obj = linkA3,
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[0].id + "/" + linkA3.id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Empty.Page,
+                                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                                 name = WidgetView.Name.Default(
                                     prettyPrintName = fieldParser.getObjectName(linkA3)
                                 )
@@ -430,7 +430,7 @@ class TreeWidgetContainerTest {
                                 obj = sourceLinks[1],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[1].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Empty.Page,
+                                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                                 name = WidgetView.Name.Default(
                                     prettyPrintName = fieldParser.getObjectName(sourceLinks[1])
                                 )
@@ -441,7 +441,7 @@ class TreeWidgetContainerTest {
                                 obj = sourceLinks[2],
                                 path = widget.id + "/" + widget.source.id + "/" + sourceLinks[2].id,
                                 elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                objectIcon = ObjectIcon.Empty.Page,
+                                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                                 name = WidgetView.Name.Default(
                                     prettyPrintName = fieldParser.getObjectName(sourceLinks[2])
                                 )

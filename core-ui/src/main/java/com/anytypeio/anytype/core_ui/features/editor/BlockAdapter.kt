@@ -1393,7 +1393,7 @@ class BlockAdapter(
             }
             is Title.File -> {
                 holder.apply {
-                    bind(item = blocks[position] as BlockView.Title.File)
+                    bind(item = blocks[position] as BlockView.Title.File, lifecycle)
                 }
             }
             is Code -> {

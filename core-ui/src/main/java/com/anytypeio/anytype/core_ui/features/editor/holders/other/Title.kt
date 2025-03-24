@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.util.TypedValue
 import android.view.View
@@ -10,6 +9,9 @@ import android.widget.TextView
 import androidx.compose.ui.platform.ComposeView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
@@ -37,12 +39,10 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
+import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import timber.log.Timber
@@ -596,7 +596,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
     }
 
-    class File(val binding: ItemBlockTitleFileBinding) : Title(binding.root) {
+    class File(val binding: ItemBlockTitleFileBinding) : Title(binding.root),
+        LifecycleEventObserver {
 
         override val icon: ObjectIconWidget = binding.objectIconWidget
         override val image: ImageView = binding.cover
@@ -605,66 +606,56 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val content: TextInputWidget = binding.title
 
         private var player: ExoPlayer? = null
+        private var videoUrl: String? = null
 
-        fun bind(item: BlockView.Title.File) {
-            super.bind(
-                item = item,
-                onCoverClicked = {},
-                click = {}
-            )
-
+        fun bind(item: BlockView.Title.File, lifecycle: Lifecycle) {
+            super.bind(item, onCoverClicked = {}, click = {})
+            lifecycle.addObserver(this)
             content.setText(item.text)
 
-            // Проверяем, является ли файл видео
-            val fileIcon = item.icon
-            if (fileIcon is ObjectIcon.File && fileIcon.isVideo()) {
-                item.url?.let { setupVideoPreview(it) }
+            if (item.icon is ObjectIcon.File && (item.icon as ObjectIcon.File).isVideo()) {
+                videoUrl = item.url
+                setupVideoPreview()
             } else {
-                setupDefaultFileIcon(fileIcon)
+                setupDefaultFileIcon(item.icon)
             }
         }
 
-        private fun setupVideoPreview(videoUrl: String) {
-            // Скрываем обычную иконку файла
+        private fun setupVideoPreview() {
             binding.objectIconWidget.gone()
             binding.cover.gone()
-
-            // Показываем миниатюру видео и кнопку Play
-            binding.videoThumbnail.visible()
+            binding.playerView.visible()
             binding.playButton.visible()
-
-            // Загружаем превью (можно заменить на кадр из видео)
-            Glide.with(binding.root)
-                .load(videoUrl)
-                .into(binding.videoThumbnail)
-
-
-            // Обрабатываем нажатие для воспроизведения видео
-            binding.playButton.setOnClickListener { playVideo(videoUrl) }
-            binding.videoThumbnail.setOnClickListener { playVideo(videoUrl) }
+            binding.playButton.setOnClickListener {
+                videoUrl?.let {
+                    playVideo(videoUrl!!)
+                }
+            }
         }
 
         private fun setupDefaultFileIcon(fileIcon: ObjectIcon) {
-            // Показываем иконку файла
-            binding.videoThumbnail.gone()
-            binding.playButton.gone()
             binding.objectIconWidget.visible()
             binding.cover.visible()
-
             icon.setIcon(fileIcon)
         }
 
-        private fun playVideo(videoUrl: String) {
-            player = ExoPlayer.Builder(itemView.context).build().apply {
-                val mediaItem = MediaItem.fromUri(videoUrl)
-                setMediaItem(mediaItem)
-                prepare()
-                playWhenReady = true
-            }
+        private fun playVideo(url: String) {
+            release()
 
-            binding.playerView.player = player
-            binding.playerView.visible()
-            binding.videoThumbnail.gone()
+            val loadControl = DefaultLoadControl.Builder()
+                .setBufferDurationsMs(600, 1000, 250, 500)
+                .build()
+
+            player = ExoPlayer.Builder(itemView.context)
+                .setLoadControl(loadControl)
+                .build().also { player ->
+                    binding.playerView.player = player
+
+                    player.setMediaItem(MediaItem.fromUri(url))
+                    player.prepare()
+                    player.playWhenReady = true
+                }
+
             binding.playButton.gone()
         }
 
@@ -675,6 +666,14 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         fun release() {
             player?.release()
             player = null
+        }
+
+        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> pause()
+                Lifecycle.Event.ON_DESTROY -> release()
+                else -> {}
+            }
         }
 
         override fun applyTextColor(item: BlockView.Title) {}

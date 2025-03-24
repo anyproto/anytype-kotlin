@@ -8,6 +8,8 @@ class DateSelectHolder(
     val binding: ItemSlashWidgetSelectDateBinding
 ) : RecyclerView.ViewHolder(binding.root) {
     init {
-        binding.ivIcon.setIcon(ObjectIcon.Empty.Date)
+        binding.ivIcon.setIcon(
+            ObjectIcon.TypeIcon.Default.DATE
+        )
     }
 }

@@ -376,32 +376,6 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    private fun ObjectIcon.Empty.setEmptyIcon() {
-        val (drawable, containerBackground) = when (this) {
-            ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link to true
-            ObjectIcon.Empty.Chat -> R.drawable.ic_empty_state_chat to true
-            ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list to true
-            ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type to true
-            ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page to true
-            ObjectIcon.Empty.Date -> R.drawable.ic_obj_date_24 to false
-        }
-        val icon = context.drawable(drawable)
-        with(binding) {
-            ivEmoji.setImageDrawable(icon)
-            ivCheckbox.invisible()
-            initialContainer.invisible()
-            ivImage.invisible()
-            ivBookmark.setImageDrawable(null)
-            ivBookmark.gone()
-            if (containerBackground) {
-                emojiContainer.visible()
-            } else {
-                emojiContainer.visible()
-                emojiContainer.setBackgroundResource(0)
-            }
-        }
-    }
-
     fun setIvEmojiSize(emojiSize: Int) {
         binding.ivEmoji.updateLayoutParams<LayoutParams> {
             this.height = emojiSize

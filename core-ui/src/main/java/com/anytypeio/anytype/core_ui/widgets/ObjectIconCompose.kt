@@ -119,61 +119,6 @@ fun DefaultTaskObjectIcon(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun DefaultObjectImageIcon(
-    url: Url,
-    modifier: Modifier,
-    iconSize: Dp,
-    fallback: ObjectIcon.Empty
-) {
-    GlideImage(
-        model = url,
-        contentDescription = "Icon from URI",
-        contentScale = ContentScale.Crop,
-        modifier = modifier
-            .size(iconSize)
-            .clip(RoundedCornerShape(2.dp)),
-        failure = placeholder(resourceId = imageAsset(fallback)),
-        loading = placeholder(resourceId = R.drawable.ic_icon_loading)
-    )
-}
-
-@Composable
-fun DefaultObjectBookmarkIcon(
-    url: Url,
-    modifier: Modifier,
-    iconSize: Dp
-) {
-    Box(modifier = modifier.size(iconSize)) {
-        Image(
-            painter = rememberAsyncImagePainter(url),
-            contentDescription = "Icon from URI",
-            modifier = Modifier
-                .align(Alignment.Center)
-                .size(24.dp)
-        )
-    }
-}
-
-
-
-@Composable
-fun DefaultProfileIconImage(
-    icon: ObjectIcon.Profile.Image,
-    modifier: Modifier,
-    iconSize: Dp
-) {
-    Image(
-        painter = rememberAsyncImagePainter(icon.hash),
-        contentDescription = "Icon from URI",
-        modifier = modifier
-            .size(iconSize)
-            .clip(CircleShape),
-        contentScale = ContentScale.Crop,
-    )
-}
-
 @Composable
 fun DefaultFileObjectImageIcon(
     fileName: String,
@@ -201,16 +146,5 @@ fun cornerRadius(size: Dp): Dp {
         in 48.dp..63.dp -> 6.dp
         in 64.dp..79.dp -> 8.dp
         else -> 12.dp
-    }
-}
-
-fun imageAsset(emptyType: ObjectIcon.Empty): Int {
-    return when (emptyType) {
-        ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link
-        ObjectIcon.Empty.Chat -> R.drawable.ic_empty_state_chat
-        ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list
-        ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type
-        ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page
-        ObjectIcon.Empty.Date -> R.drawable.ic_obj_date_24
     }
 }

@@ -1141,16 +1141,13 @@ class DefaultBlockViewRenderer @Inject constructor(
         val icon = when {
             !iconImage.isNullOrBlank() ->
                 ObjectIcon.Basic.Image(
-                    hash = urlBuilder.thumbnail(iconImage),
-                    emptyState = ObjectIcon.Empty.Page
+                    hash = urlBuilder.thumbnail(iconImage)
                 )
             !iconEmoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(
                 unicode = iconEmoji,
-                emptyState = ObjectIcon.Empty.Page
             )
             else -> ObjectIcon.Basic.Emoji(
                 unicode = "💡",
-                emptyState = ObjectIcon.Empty.Page
             )
         }
         return BlockView.Text.Callout(

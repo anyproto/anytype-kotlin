@@ -22,8 +22,6 @@ fun ObjectWrapper.Basic.objectIcon(
     val objEmoji = obj.iconEmoji
     val objName = obj.name.orEmpty()
 
-    val objTypeIcon = objType?.objectIcon() ?: ObjectIcon.TypeIcon.Default.DEFAULT
-
     return when (obj.layout) {
         ObjectType.Layout.OBJECT_TYPE -> {
             val asType = ObjectWrapper.Type(map = obj.map)
@@ -34,20 +32,19 @@ fun ObjectWrapper.Basic.objectIcon(
         ObjectType.Layout.IMAGE,
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION -> {
+            val fallback = objType?.objectFallbackIcon() ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
             when {
                 !objImage.isNullOrBlank() -> Basic.Image(
                     hash = builder.thumbnail(objImage),
-                    fallback = objType?.objectFallbackIcon()
-                        ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
+                    fallback = fallback
                 )
 
                 !objEmoji.isNullOrBlank() -> Basic.Emoji(
                     unicode = objEmoji,
-                    fallback = objType?.objectFallbackIcon()
-                        ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
+                    fallback = fallback
                 )
 
-                else -> objTypeIcon.setTransparentColor()
+                else -> fallback
             }
         }
 
@@ -79,27 +76,21 @@ fun ObjectWrapper.Basic.objectIcon(
         }
 
         ObjectType.Layout.BOOKMARK -> {
+            val fallback = objType?.objectFallbackIcon()
+                ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
             when {
                 !objImage.isNullOrBlank() -> ObjectIcon.Bookmark(
                     image = builder.thumbnail(objImage),
-                    fallback = objTypeIcon.setTransparentColor()
+                    fallback = fallback
                 )
 
-                else -> objTypeIcon.setTransparentColor()
+                else -> fallback
             }
         }
 
         else -> {
-            objTypeIcon.setTransparentColor()
+            objType?.objectFallbackIcon() ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
         }
-    }
-}
-
-private fun ObjectIcon.TypeIcon.setTransparentColor(): ObjectIcon.TypeIcon {
-    return if (this is ObjectIcon.TypeIcon.Default) {
-        this.copy(color = CustomIconColor.Transparent)
-    } else {
-        this
     }
 }
 
@@ -143,9 +134,9 @@ private fun ObjectWrapper.Type.objectFallbackIcon(): ObjectIcon.TypeIcon.Fallbac
             rawValue = objIconName
         )
 
-        else -> ObjectIcon.TypeIcon.Fallback(
-            rawValue = ObjectIcon.TypeIcon.Default.DEFAULT_CUSTOM_ICON
-        )
+        else -> {
+            ObjectIcon.TypeIcon.Fallback.DEFAULT
+        }
     }
 }
 

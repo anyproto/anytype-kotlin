@@ -653,7 +653,7 @@ class HomeScreenViewModelTest {
                                     id = firstLink.id,
                                     elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                     obj = firstLink,
-                                    objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
+                                    objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + firstLink.id,
                                     name = WidgetView.Name.Default(
@@ -664,7 +664,7 @@ class HomeScreenViewModelTest {
                                     id = secondLink.id,
                                     elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                     obj = secondLink,
-                                    objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
+                                    objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + secondLink.id,
                                     name = WidgetView.Name.Default(
@@ -1127,7 +1127,7 @@ class HomeScreenViewModelTest {
                                         id = firstLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
+                                        objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + firstLink.id,
                                         name = WidgetView.Name.Default(
@@ -1138,7 +1138,7 @@ class HomeScreenViewModelTest {
                                         id = secondLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
+                                        objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + secondLink.id,
                                         name = WidgetView.Name.Default(
@@ -1161,7 +1161,7 @@ class HomeScreenViewModelTest {
                                         id = firstLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
+                                        objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + firstLink.id,
                                         name = WidgetView.Name.Default(
@@ -1172,7 +1172,7 @@ class HomeScreenViewModelTest {
                                         id = secondLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
+                                        objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + secondLink.id,
                                         name = WidgetView.Name.Default(
@@ -1195,7 +1195,7 @@ class HomeScreenViewModelTest {
                                         id = firstLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
+                                        objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + firstLink.id,
                                         name = WidgetView.Name.Default(
@@ -1206,7 +1206,7 @@ class HomeScreenViewModelTest {
                                         id = secondLink.id,
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
+                                        objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + secondLink.id,
                                         name = WidgetView.Name.Default(

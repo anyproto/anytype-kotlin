@@ -152,7 +152,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                     title = null,
                     background = ThemeColor.DEFAULT,
                     isSelected = false,
-                    icon = ObjectIcon.Empty.List,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                     decorations = listOf(BlockView.Decoration(style = BlockView.Decoration.Style.Card)),
                     isCollection = false
                 )
@@ -215,7 +215,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                     title = null,
                     background = ThemeColor.DEFAULT,
                     isSelected = false,
-                    icon = ObjectIcon.Empty.List,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                     decorations = listOf(BlockView.Decoration(style = BlockView.Decoration.Style.Card)),
                     isCollection = false
                 )
@@ -278,7 +278,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                     title = null,
                     background = ThemeColor.DEFAULT,
                     isSelected = false,
-                    icon = ObjectIcon.Empty.List,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                     decorations = listOf(BlockView.Decoration(style = BlockView.Decoration.Style.Card)),
                     isCollection = false
                 )
@@ -340,7 +340,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                     title = null,
                     background = ThemeColor.DEFAULT,
                     isSelected = false,
-                    icon = ObjectIcon.Empty.List,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                     decorations = listOf(BlockView.Decoration(style = BlockView.Decoration.Style.Card)),
                     isCollection = true
                 )
@@ -482,7 +482,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                         title = null,
                         background = ThemeColor.DEFAULT,
                         isSelected = false,
-                        icon = ObjectIcon.Empty.Page,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                         decorations = listOf(BlockView.Decoration(style = BlockView.Decoration.Style.Card)),
                         isCollection = false
                     )

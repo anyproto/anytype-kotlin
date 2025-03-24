@@ -151,8 +151,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             )
             ObjectIcon.Deleted -> setDeletedIcon()
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
-            is ObjectIcon.Empty -> icon.setEmptyIcon()
-            is ObjectIcon.ObjectType -> setCustomIcon(icon)
+            is ObjectIcon.TypeIcon -> setTypeIcon(icon)
         }
     }
 
@@ -350,8 +349,23 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    private fun setCustomIcon(icon: ObjectIcon.ObjectType) {
-        val resId = context.resources.getIdentifier(icon.icon.drawableResId, DRAWABLE_DIR, context.packageName)
+    private fun setTypeIcon(icon: ObjectIcon.TypeIcon) {
+
+        //todo next PR
+        val (resId, tint) = when (icon) {
+            is ObjectIcon.TypeIcon.Default -> {
+                val resId = context.resources.getIdentifier(icon.drawableResId, DRAWABLE_DIR, context.packageName)
+                if (resId != 0) {
+                    resId to context.getColor(icon.color.colorRes())
+                } else {
+                    0 to 0
+                }
+            }
+            ObjectIcon.TypeIcon.Deleted -> 0 to 0
+            is ObjectIcon.TypeIcon.Emoji -> 0 to 0
+            is ObjectIcon.TypeIcon.Fallback -> 0 to 0
+        }
+
         with(binding) {
             ivCheckbox.invisible()
             initialContainer.invisible()
@@ -362,7 +376,6 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
         try {
             if (resId != 0) {
-                val tint = context.getColor(icon.icon.color.colorRes())
                 binding.tvEmojiFallback.gone()
                 binding.ivEmoji.setImageResource(resId)
                 binding.ivEmoji.imageTintList = ColorStateList.valueOf(tint)
@@ -373,39 +386,6 @@ class ObjectIconWidget @JvmOverloads constructor(
             }
         } catch (e: Throwable) {
             Timber.w(e, "Error while setting object type icon for")
-        }
-    }
-
-    private fun ObjectIcon.Empty.setEmptyIcon() {
-        val (drawable, containerBackground) = when (this) {
-            ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link to true
-            ObjectIcon.Empty.Chat -> R.drawable.ic_empty_state_chat to true
-            ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list to true
-            ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type to true
-            ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page to true
-            ObjectIcon.Empty.Date -> R.drawable.ic_obj_date_24 to false
-        }
-        val icon = context.drawable(drawable)
-        with(binding) {
-            ivEmoji.setImageDrawable(icon)
-            ivCheckbox.invisible()
-            initialContainer.invisible()
-            ivImage.invisible()
-            ivBookmark.setImageDrawable(null)
-            ivBookmark.gone()
-            if (containerBackground) {
-                emojiContainer.visible()
-            } else {
-                emojiContainer.visible()
-                emojiContainer.setBackgroundResource(0)
-            }
-        }
-    }
-
-    fun setIvEmojiSize(emojiSize: Int) {
-        binding.ivEmoji.updateLayoutParams<LayoutParams> {
-            this.height = emojiSize
-            this.width = emojiSize
         }
     }
 }

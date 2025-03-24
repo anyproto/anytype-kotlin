@@ -9,14 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.widgets.cornerRadius
-import com.anytypeio.anytype.core_ui.widgets.imageAsset
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
@@ -40,38 +37,30 @@ fun EmojiIconView(
             height = backgroundSize * imageMultiplier
         )
     } else {
-        modifier.size(backgroundSize) to Modifier
+        modifier.size(backgroundSize) to Modifier.size(
+            width = backgroundSize * imageMultiplier,
+            height = backgroundSize * imageMultiplier
+        )
     }
 
-    Box(
-        modifier = containerModifier,
-        contentAlignment = Alignment.Center
-    ) {
+    val emoji = Emojifier.safeUri(icon.unicode)
 
-        val emoji = Emojifier.safeUri(icon.unicode)
-        if (emoji != Emojifier.Config.EMPTY_URI) {
+    if (emoji != Emojifier.Config.EMPTY_URI) {
+        Box(
+            modifier = containerModifier,
+            contentAlignment = Alignment.Center
+        ) {
             Image(
                 painter = rememberAsyncImagePainter(emoji),
-                contentDescription = "Icon from URI",
+                contentDescription = "Emoji object icon",
                 modifier = iconModifier
             )
-        } else {
-            val imageAsset = imageAsset(icon.emptyState)
-            Image(
-                painter = painterResource(id = imageAsset),
-                contentDescription = "Empty Object Icon",
-                modifier = iconModifier
-            )
-
         }
+    } else {
+        TypeIconView(
+            modifier = modifier,
+            icon = icon.fallback,
+            backgroundSize = backgroundSize
+        )
     }
-}
-
-@DefaultPreviews
-@Composable
-fun Emoji20ObjectIconViewPreview() {
-    EmojiIconView(
-        icon = ObjectIcon.Basic.Emoji("😀", ObjectIcon.Empty.Page),
-        backgroundSize = 20.dp
-    )
 }

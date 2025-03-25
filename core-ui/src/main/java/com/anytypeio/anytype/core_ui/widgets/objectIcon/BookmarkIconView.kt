@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.widgets.objectIcon
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -24,31 +23,32 @@ fun BookmarkIconView(
 ) {
 
     val painter = rememberAsyncImagePainter(model = icon.image)
-    val painterState by painter.state.collectAsState()
+    val state by painter.state.collectAsState()
 
-    Crossfade(targetState = painterState) { state ->
-        when (state) {
-            AsyncImagePainter.State.Empty,
-            is AsyncImagePainter.State.Loading -> {
-                LoadingIndicator(containerSize = backgroundSize)
-            }
-            is AsyncImagePainter.State.Error -> {
-                TypeIconView(
-                    modifier = modifier,
-                    icon = icon.fallback,
-                    backgroundSize = backgroundSize
-                )
-            }
-            is AsyncImagePainter.State.Success -> {
-                Image(
-                    painter = painter,
-                    contentDescription = "Icon from URI",
-                    modifier = modifier
-                        .size(backgroundSize)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop,
-                )
-            }
+    when (state) {
+        AsyncImagePainter.State.Empty,
+        is AsyncImagePainter.State.Loading -> {
+            LoadingIndicator(
+                containerModifier = modifier,
+                containerSize = backgroundSize
+            )
+        }
+        is AsyncImagePainter.State.Error -> {
+            TypeIconView(
+                modifier = modifier,
+                icon = icon.fallback,
+                backgroundSize = backgroundSize
+            )
+        }
+        is AsyncImagePainter.State.Success -> {
+            Image(
+                painter = painter,
+                contentDescription = "Icon from URI",
+                modifier = modifier
+                    .size(backgroundSize)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop,
+            )
         }
     }
 }

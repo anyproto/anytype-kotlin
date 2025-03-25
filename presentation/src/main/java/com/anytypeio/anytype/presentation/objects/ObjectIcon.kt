@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Default.Companion.DEFAULT_ICON_PREFIX
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 
 sealed class ObjectIcon {
@@ -46,6 +47,16 @@ sealed class ObjectIcon {
 
     sealed class TypeIcon : ObjectIcon() {
 
+        /**
+         * Extension function that converts a kebab-case string to snake_case.
+         *
+         * Simply replaces all occurrences of '-' with '_'.
+         *
+         * @receiver String to be converted.
+         * @return The snake_case version of the string.
+         */
+        internal fun String.toSnakeCase(): String = replace("-", "_")
+
         data object Deleted : TypeIcon() {
             const val DEFAULT_DELETED_ICON = "extension-puzzle"
         }
@@ -70,16 +81,6 @@ sealed class ObjectIcon {
             val drawableResId: String
                 get() = DEFAULT_ICON_PREFIX + rawValue.toSnakeCase()
 
-            /**
-             * Extension function that converts a kebab-case string to snake_case.
-             *
-             * Simply replaces all occurrences of '-' with '_'.
-             *
-             * @receiver String to be converted.
-             * @return The snake_case version of the string.
-             */
-            private fun String.toSnakeCase(): String = replace("-", "_")
-
             companion object {
                 const val DEFAULT_ICON_PREFIX = "ci_"
                 const val DEFAULT_CUSTOM_ICON = "extension-puzzle"
@@ -91,6 +92,10 @@ sealed class ObjectIcon {
 
         //we use this icon when we can't find the emoji for object or image icon can't be loaded
         data class Fallback(val rawValue: String) : TypeIcon() {
+
+            val drawableResId: String
+                get() = DEFAULT_ICON_PREFIX + rawValue.toSnakeCase()
+
             companion object {
                 const val DEFAULT_FALLBACK_ICON = "extension-puzzle"
 

@@ -71,7 +71,7 @@ private val CircularIndicatorDiameter = 40.dp
 
 @Composable
 fun LoadingIndicator(
-    containerModifier: Modifier = Modifier,
+    containerModifier: Modifier,
     containerSize: Dp,
     colorStart: Color = colorResource(id = R.color.glyph_active),
     colorEnd: Color = Color.Transparent,

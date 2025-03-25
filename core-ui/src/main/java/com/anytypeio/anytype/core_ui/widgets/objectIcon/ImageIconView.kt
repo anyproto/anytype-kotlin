@@ -31,6 +31,7 @@ fun ImageIconView(
         AsyncImagePainter.State.Empty,
         is AsyncImagePainter.State.Loading -> {
             LoadingIndicator(
+                containerModifier = modifier,
                 containerSize = backgroundSize
             )
         }

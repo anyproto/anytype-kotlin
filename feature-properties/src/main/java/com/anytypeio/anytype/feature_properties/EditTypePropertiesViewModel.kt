@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_properties
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -411,13 +412,30 @@ class EditTypePropertiesViewModel(
 
     private suspend fun getAllObjectTypesByFormat(format: RelationFormat): List<UiPropertyLimitTypeItem> {
         if (format != RelationFormat.OBJECT) return emptyList()
-        return storeOfObjectTypes.getAll().map {
-            UiPropertyLimitTypeItem(
-                id = it.id,
-                name = it.name.orEmpty(),
-                icon = it.objectIcon(),
-                uniqueKey = it.uniqueKey
-            )
+        return storeOfObjectTypes.getAll().mapNotNull { type ->
+            when (type.recommendedLayout) {
+                ObjectType.Layout.RELATION,
+                ObjectType.Layout.DASHBOARD,
+                ObjectType.Layout.SPACE,
+                ObjectType.Layout.RELATION_OPTION_LIST,
+                ObjectType.Layout.RELATION_OPTION,
+                ObjectType.Layout.SPACE_VIEW,
+                ObjectType.Layout.CHAT,
+                ObjectType.Layout.DATE,
+                ObjectType.Layout.OBJECT_TYPE,
+                ObjectType.Layout.CHAT_DERIVED,
+                ObjectType.Layout.TAG -> {
+                    null
+                }
+                else -> {
+                    UiPropertyLimitTypeItem(
+                        id = type.id,
+                        name = type.name.orEmpty(),
+                        icon = type.objectIcon(),
+                        uniqueKey = type.uniqueKey
+                    )
+                }
+            }
         }
     }
 

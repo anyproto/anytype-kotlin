@@ -375,53 +375,43 @@ class ObjectTypeViewModel(
     }
 
     fun setupUiEditPropertyScreen(item: UiFieldsListItem.Item) {
-        viewModelScope.launch{
+        viewModelScope.launch {
             val permissions = _objectTypePermissionsState.value
-            if (permissions?.participantCanEdit == true && item.isEditableField) {
-                uiEditPropertyScreen.value = UiEditPropertyState.Visible.Edit(
+
+            val computedLimitTypes = item.limitObjectTypes.mapNotNull { id ->
+                storeOfObjectTypes.get(id = id)?.let { objType ->
+                    UiPropertyLimitTypeItem(
+                        id = objType.id,
+                        name = fieldParser.getObjectName(objectWrapper = objType),
+                        icon = objType.objectIcon(),
+                        uniqueKey = objType.uniqueKey
+                    )
+                }
+            }
+            val formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format)
+            val formatIcon = item.format.simpleIcon()
+
+            uiEditPropertyScreen.value = if (permissions?.participantCanEdit == true && item.isEditableField) {
+                UiEditPropertyState.Visible.Edit(
                     id = item.id,
                     key = item.fieldKey,
                     name = item.fieldTitle,
-                    formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
-                    formatIcon = item.format.simpleIcon(),
+                    formatName = formatName,
+                    formatIcon = formatIcon,
                     format = item.format,
-                    limitObjectTypes = item.limitObjectTypes.mapNotNull { id ->
-                        val objType = storeOfObjectTypes.get(id)
-                        if (objType != null) {
-                            UiPropertyLimitTypeItem(
-                                id = objType.id,
-                                name = fieldParser.getObjectName(objType),
-                                icon = objType.objectIcon(),
-                                uniqueKey = objType.uniqueKey,
-                            )
-                        } else {
-                            null
-                        }
-                    },
+                    limitObjectTypes = computedLimitTypes,
                     isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType,
                     showLimitTypes = false
                 )
             } else {
-                uiEditPropertyScreen.value = View(
+                UiEditPropertyState.Visible.View(
                     id = item.id,
                     key = item.fieldKey,
                     name = item.fieldTitle,
-                    formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
-                    formatIcon = item.format.simpleIcon(),
+                    formatName = formatName,
+                    formatIcon = formatIcon,
                     format = item.format,
-                    limitObjectTypes = item.limitObjectTypes.mapNotNull { id ->
-                        val objType = storeOfObjectTypes.get(id)
-                        if (objType != null) {
-                            UiPropertyLimitTypeItem(
-                                id = objType.id,
-                                name = fieldParser.getObjectName(objType),
-                                icon = objType.objectIcon(),
-                                uniqueKey = objType.uniqueKey,
-                            )
-                        } else {
-                            null
-                        }
-                    },
+                    limitObjectTypes = computedLimitTypes,
                     isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType,
                     showLimitTypes = false
                 )

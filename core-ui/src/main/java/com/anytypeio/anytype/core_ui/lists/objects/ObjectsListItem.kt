@@ -130,7 +130,7 @@ fun PreviewObjectListItem() {
             typeName = "Some type",
             createdBy = "Some user",
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Empty.Page,
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             isPossibleToDelete = true
         )
     )

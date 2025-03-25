@@ -169,7 +169,7 @@ class TagAndStatusTests {
             name = "Untitled",
             type = "Type111",
             showIcon = false,
-            objectIcon = ObjectIcon.Empty.Page,
+            objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
             cells = listOf(
                 CellView.Description(
                     id = recordId,
@@ -307,7 +307,7 @@ class TagAndStatusTests {
             name = "Untitled",
             type = "Type111",
             showIcon = false,
-            objectIcon = ObjectIcon.Empty.Page,
+            objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
             cells = listOf(
                 CellView.Description(
                     id = recordId,

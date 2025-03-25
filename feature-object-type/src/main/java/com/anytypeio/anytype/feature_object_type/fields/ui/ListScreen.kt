@@ -674,7 +674,7 @@ fun ItemDropDownMenu(
 fun PreviewTypeFieldsMainScreen() {
     FieldsMainScreen(
         uiTitleState = UiTitleState(title = "Page", isEditable = false),
-        uiIconState = UiIconState(icon = ObjectIcon.Empty.ObjectType, isEditable = false),
+        uiIconState = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = false),
         uiFieldsListState = UiFieldsListState(
             items = listOf(
                 UiFieldsListItem.Section.Header(),

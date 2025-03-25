@@ -818,7 +818,7 @@
     <string name="exiting_please_wait">正在離開... 請稍候</string>
     <string name="loading_please_wait">正在載入... 請稍候</string>
     <string name="personal">預設</string>
-    <string name="create_space">建立空間</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">發生錯誤。請再試一次。</string>
     <string name="type">類型</string>
     <string name="format">Format</string>

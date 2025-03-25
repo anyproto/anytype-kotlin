@@ -820,7 +820,7 @@
     <string name="exiting_please_wait">Beenden... bitte warten</string>
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
     <string name="personal">Standard</string>
-    <string name="create_space">Space erstellen</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
     <string name="type">Typ</string>
     <string name="format">Format</string>
@@ -1579,7 +1579,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chats_edit_message">Nachricht bearbeiten</string>
     <string name="chats_message_edited">bearbeitet</string>
     <string name="chat_empty_state_message">Es gibt noch keine Nachrichten.\nSei der Erste, der eine Diskussion beginnt.</string>
-    <string name="write_a_message">Eine Nachricht schreiben...</string>
+    <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Erwähnungen</string>
     <string name="date_layout_empty_items">Für dieses Datum ist hier noch nichts eingetragen</string>
     <string name="date_layout_alert_date_out_of_range">Das ausgewählte Datum liegt außerhalb des gültigen Bereichs (Jahre %1$d bis %2$d). Bitte wähle ein Datum innerhalb dieses Bereichs aus.</string>

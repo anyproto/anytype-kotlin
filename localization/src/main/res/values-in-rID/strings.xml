@@ -818,7 +818,7 @@
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
     <string name="personal">Bawaan</string>
-    <string name="create_space">Buat ruang</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipe</string>
     <string name="format">Format</string>
@@ -1566,7 +1566,7 @@ Please provide specific details of your needs here.</string>
     <string name="chats_edit_message">Edit message</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
-    <string name="write_a_message">Tulis pesan …</string>
+    <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Sebutan</string>
     <string name="date_layout_empty_items">Belum ada apa-apa untuk tanggal ini</string>
     <string name="date_layout_alert_date_out_of_range">Tanggal terpilih di luar rentang valid (tahun %1$d hingga %2$d). Silakan pilih tanggal dalam rentang ini.</string>

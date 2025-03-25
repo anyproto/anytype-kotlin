@@ -824,7 +824,7 @@
     <string name="exiting_please_wait">Выход... пожалуйста, подождите</string>
     <string name="loading_please_wait">Загружается... Пожалуйста, подождите</string>
     <string name="personal">По умолчанию</string>
-    <string name="create_space">Создать пространство</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">Произошла ошибка. Попробуйте ещё раз.</string>
     <string name="type">Тип</string>
     <string name="format">Формат</string>
@@ -1608,7 +1608,7 @@
     <string name="chats_edit_message">Редактировать сообщение</string>
     <string name="chats_message_edited">отредактировано</string>
     <string name="chat_empty_state_message">Пока нет сообщений. \nБудьте первыми, кто начнет обсуждение.</string>
-    <string name="write_a_message">Написать сообщение...</string>
+    <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Упоминания</string>
     <string name="date_layout_empty_items">Здесь пока ничего нет для этой даты</string>
     <string name="date_layout_alert_date_out_of_range">Выбранная дата вне допустимого диапазона (лет %1$d %2$d). Пожалуйста, выберите дату в этом диапазоне.</string>

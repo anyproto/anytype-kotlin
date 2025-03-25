@@ -820,7 +820,7 @@
     <string name="exiting_please_wait">Çıkılıyor... Lütfen bekleyin.</string>
     <string name="loading_please_wait">Yükleniyor... Lütfen bekleyin.</string>
     <string name="personal">Varsayılan</string>
-    <string name="create_space">Alan oluştur</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">Bir şeyler yanlış gitti. Lütfen tekrar deneyin.</string>
     <string name="type">Tür</string>
     <string name="format">Format</string>
@@ -1579,7 +1579,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chats_edit_message">Mesajı düzenle</string>
     <string name="chats_message_edited">düzenlendi</string>
     <string name="chat_empty_state_message">Burada henüz bir mesaj yok.\nTartışma başlatan ilk kişi siz olun.</string>
-    <string name="write_a_message">Bir mesaj yazın...</string>
+    <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Bahsetmeler</string>
     <string name="date_layout_empty_items">Bu tarih için henüz bir şey yok</string>
     <string name="date_layout_alert_date_out_of_range">Seçilen tarih geçerli tarih aralığının dışında (%1$d ile %2$d yılları arasında). Lütfen bu aralıkta bir tarih seçin.</string>

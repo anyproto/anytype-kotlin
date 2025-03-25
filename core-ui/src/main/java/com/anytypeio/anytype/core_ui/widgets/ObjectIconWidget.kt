@@ -24,6 +24,8 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import timber.log.Timber
@@ -76,6 +78,11 @@ class ObjectIconWidget @JvmOverloads constructor(
             attrs.getBoolean(R.styleable.ObjectIconWidget_hasInitialRoundedCornerBackground, false)
 
         ivEmoji.updateLayoutParams<LayoutParams> {
+            this.height = emojiSize
+            this.width = emojiSize
+        }
+
+        tvEmojiFallback.updateLayoutParams<LayoutParams> {
             this.height = emojiSize
             this.width = emojiSize
         }
@@ -138,7 +145,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     fun setIcon(icon: ObjectIcon) {
         when (icon) {
-            is ObjectIcon.Basic.Emoji -> setEmoji(icon.unicode)
+            is ObjectIcon.Basic.Emoji -> setEmoji(emoji = icon.unicode, fallback = icon.fallback)
             is ObjectIcon.Basic.Image -> setRectangularImage(icon.hash)
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
@@ -149,9 +156,16 @@ class ObjectIconWidget @JvmOverloads constructor(
                 mime = icon.mime,
                 extension = icon.extensions
             )
+
             ObjectIcon.Deleted -> setDeletedIcon()
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
-            is ObjectIcon.TypeIcon -> setTypeIcon(icon)
+            is ObjectIcon.TypeIcon.Fallback -> setTypeIcon(icon)
+            is ObjectIcon.TypeIcon.Default -> setTypeIcon(icon)
+            ObjectIcon.TypeIcon.Deleted -> TODO()
+            is ObjectIcon.TypeIcon.Emoji -> setEmoji(
+                emoji = icon.unicode,
+                fallback = TypeIcon.Fallback(rawValue = icon.rawValue)
+            )
         }
     }
 
@@ -176,7 +190,10 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    private fun setEmoji(emoji: String?) {
+    private fun setEmoji(
+        emoji: String?,
+        fallback: ObjectIcon.TypeIcon.Fallback
+    ) {
         if (!emoji.isNullOrBlank()) {
             with(binding) {
                 ivCheckbox.invisible()
@@ -188,17 +205,17 @@ class ObjectIconWidget @JvmOverloads constructor(
             }
             try {
                 val adapted = Emojifier.safeUri(emoji)
+
                 if (adapted != Emojifier.Config.EMPTY_URI) {
                     binding.tvEmojiFallback.gone()
+                    binding.ivEmoji.visible()
                     Glide
                         .with(this)
-                        .load(Emojifier.uri(emoji))
+                        .load(adapted)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(binding.ivEmoji)
                 } else {
-                    binding.ivEmoji.setImageDrawable(null)
-                    binding.tvEmojiFallback.text = emoji
-                    binding.tvEmojiFallback.visible()
+                    setTypeIcon(fallback)
                 }
             } catch (e: Throwable) {
                 Timber.w(e, "Error while setting emoji icon for: $emoji")
@@ -354,16 +371,37 @@ class ObjectIconWidget @JvmOverloads constructor(
         //todo next PR
         val (resId, tint) = when (icon) {
             is ObjectIcon.TypeIcon.Default -> {
-                val resId = context.resources.getIdentifier(icon.drawableResId, DRAWABLE_DIR, context.packageName)
+                val resId = context.resources.getIdentifier(
+                    icon.drawableResId,
+                    DRAWABLE_DIR,
+                    context.packageName
+                )
                 if (resId != 0) {
                     resId to context.getColor(icon.color.colorRes())
                 } else {
                     0 to 0
                 }
             }
+
             ObjectIcon.TypeIcon.Deleted -> 0 to 0
             is ObjectIcon.TypeIcon.Emoji -> 0 to 0
-            is ObjectIcon.TypeIcon.Fallback -> 0 to 0
+            is ObjectIcon.TypeIcon.Fallback -> {
+                val resId = context.resources.getIdentifier(
+                    icon.drawableResId,
+                    DRAWABLE_DIR,
+                    context.packageName
+                )
+                if (resId != 0) {
+                    resId to context.getColor(CustomIconColor.Transparent.colorRes())
+                } else {
+                    val defaultFallback = ObjectIcon.TypeIcon.Fallback.DEFAULT
+                    context.resources.getIdentifier(
+                        defaultFallback.drawableResId,
+                        DRAWABLE_DIR,
+                        context.packageName
+                    ) to context.getColor(CustomIconColor.Transparent.colorRes())
+                }
+            }
         }
 
         with(binding) {
@@ -373,17 +411,12 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.setImageDrawable(null)
             ivBookmark.gone()
             emojiContainer.visible()
+            ivEmoji.gone()
+            tvEmojiFallback.visible()
         }
         try {
-            if (resId != 0) {
-                binding.tvEmojiFallback.gone()
-                binding.ivEmoji.setImageResource(resId)
-                binding.ivEmoji.imageTintList = ColorStateList.valueOf(tint)
-            } else {
-                binding.ivEmoji.setImageDrawable(null)
-                binding.tvEmojiFallback.gone()
-                binding.tvEmojiFallback.visible()
-            }
+            binding.tvEmojiFallback.setImageResource(resId)
+            binding.tvEmojiFallback.imageTintList = ColorStateList.valueOf(tint)
         } catch (e: Throwable) {
             Timber.w(e, "Error while setting object type icon for")
         }

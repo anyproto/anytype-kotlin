@@ -1699,12 +1699,16 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_add_property_screen_search_hint">Cerca o crea una nuova</string>
     <string name="new_property_hint">New property</string>
     <string name="edit_property_limit_objects">Limita gli oggetti a</string>
+    <string name="edit_property_limit_objects_all">Limit objects</string>
+    <string name="edit_property_limit_all">Tutto</string>
     <string name="add_property_error_create_new">Errore durante la creazione di una nuova proprietà</string>
     <string name="add_property_error_update">Errore durante l\'aggiornamento della proprietà</string>
     <string name="add_property_error_add">Errore durante l\'aggiunta di una proprietà al tipo</string>
     <string name="property_select_format_title">Seleziona formato proprietà</string>
     <string name="property_edit_menu_delete">Elimina dallo spazio</string>
     <string name="property_edit_menu_unlink">Scollega dal tipo</string>
+    <string name="property_limit_objects_title">Limit objects</string>
+    <string name="property_include_time_section">Include time</string>
     <string name="delete_space_checkbox_text">Ho letto e voglio eliminare questo spazio</string>
     <string name="migration_screen_new_version_update">Aggiornamento della nuova versione</string>
     <string name="migration_screen_description_1">Stiamo gettando le basi per le nostre nuove chat. Compresi contatori, notifiche e altre funzionalità necessarie per una chat fluida.</string>

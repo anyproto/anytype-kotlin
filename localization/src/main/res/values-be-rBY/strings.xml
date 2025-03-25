@@ -824,7 +824,7 @@
     <string name="exiting_please_wait">Выхад... пачакайце</string>
     <string name="loading_please_wait">Загрузка... калі ласка пачакайце</string>
     <string name="personal">Прадвызначана</string>
-    <string name="create_space">Стварыць Прастору</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">Нешта пайшло не так. Калі ласка паспрабуйце зноў пазней.</string>
     <string name="type">Тып</string>
     <string name="format">Фармат</string>
@@ -1605,7 +1605,7 @@
     <string name="chats_edit_message">Рэдагаваць паведамленне</string>
     <string name="chats_message_edited">адрэдагавана</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
-    <string name="write_a_message">Напісаць паведамленне...</string>
+    <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Згадванні</string>
     <string name="date_layout_empty_items">There is nothing here for this date yet</string>
     <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>

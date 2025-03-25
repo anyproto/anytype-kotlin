@@ -820,7 +820,7 @@
     <string name="exiting_please_wait">Fermeture en cours... Veuillez patienter</string>
     <string name="loading_please_wait">Chargement en cours... veuillez patienter</string>
     <string name="personal">Default</string>
-    <string name="create_space">Créer un espace</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">Une erreur s\'est produite. Veuillez réessayer.</string>
     <string name="type">Type</string>
     <string name="format">Format</string>
@@ -1576,7 +1576,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chats_edit_message">Modifier le message</string>
     <string name="chats_message_edited">modifié</string>
     <string name="chat_empty_state_message">Il n\'y a pas encore de messages.\nSoyez le premier à lancer une discussion.</string>
-    <string name="write_a_message">Ecrire un message...</string>
+    <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">Il n\'y a encore rien ici pour cette date</string>
     <string name="date_layout_alert_date_out_of_range">La date sélectionnée est en dehors de la plage valide (années %1$d à %2$d). Veuillez sélectionner une date dans cette plage.</string>

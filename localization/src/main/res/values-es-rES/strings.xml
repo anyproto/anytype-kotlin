@@ -820,7 +820,7 @@
     <string name="exiting_please_wait">Saliendo. Espera, por favor…</string>
     <string name="loading_please_wait">Cargando. Espera, por favor…</string>
     <string name="personal">Por defecto</string>
-    <string name="create_space">Crear un espacio</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">Algo ha salido mal. Inténtalo de nuevo.</string>
     <string name="type">Tipo:</string>
     <string name="format">Format</string>
@@ -1579,7 +1579,7 @@ En concreto,
     <string name="chats_edit_message">Editar mensaje</string>
     <string name="chats_message_edited">editado</string>
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>
-    <string name="write_a_message">Escribe un mensaje...</string>
+    <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Menciones</string>
     <string name="date_layout_empty_items">Aún no hay nada aquí para esta fecha</string>
     <string name="date_layout_alert_date_out_of_range">La fecha seleccionada no está en un intervalo válido (entre los años %1$d y %2$d). Selecciona una fecha comprendida en ese intervalo.</string>

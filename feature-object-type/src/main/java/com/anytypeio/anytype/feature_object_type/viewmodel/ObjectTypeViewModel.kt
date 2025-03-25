@@ -37,6 +37,8 @@ import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.*
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.*
 import com.anytypeio.anytype.feature_object_type.ui.UiFieldsButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
@@ -51,6 +53,7 @@ import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible.View
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
@@ -119,7 +122,7 @@ class ObjectTypeViewModel(
         MutableStateFlow<UiTemplatesButtonState>(UiTemplatesButtonState.Hidden)
 
     //type layouts
-    val uiTypeLayoutsState = MutableStateFlow<UiLayoutTypeState>(Hidden)
+    val uiTypeLayoutsState = MutableStateFlow<UiLayoutTypeState>(UiLayoutTypeState.Hidden)
 
     //templates modal list state
     val uiTemplatesModalListState =
@@ -328,7 +331,6 @@ class ObjectTypeViewModel(
         val items = buildUiFieldsList(
             objType = objType,
             stringResourceProvider = stringResourceProvider,
-            urlBuilder = urlBuilder,
             fieldParser = fieldParser,
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
@@ -373,29 +375,47 @@ class ObjectTypeViewModel(
     }
 
     fun setupUiEditPropertyScreen(item: UiFieldsListItem.Item) {
-        val permissions = _objectTypePermissionsState.value
-        if (permissions?.participantCanEdit == true && item.isEditableField) {
-            uiEditPropertyScreen.value = UiEditPropertyState.Visible.Edit(
-                id = item.id,
-                key = item.fieldKey,
-                name = item.fieldTitle,
-                formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
-                formatIcon = item.format.simpleIcon(),
-                format = item.format,
-                limitObjectTypes = item.limitObjectTypes,
-                isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType
-            )
-        } else {
-            uiEditPropertyScreen.value = UiEditPropertyState.Visible.View(
-                id = item.id,
-                key = item.fieldKey,
-                name = item.fieldTitle,
-                formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format),
-                formatIcon = item.format.simpleIcon(),
-                format = item.format,
-                limitObjectTypes = item.limitObjectTypes,
-                isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType
-            )
+        viewModelScope.launch {
+            val permissions = _objectTypePermissionsState.value
+
+            val computedLimitTypes = item.limitObjectTypes.mapNotNull { id ->
+                storeOfObjectTypes.get(id = id)?.let { objType ->
+                    UiPropertyLimitTypeItem(
+                        id = objType.id,
+                        name = fieldParser.getObjectName(objectWrapper = objType),
+                        icon = objType.objectIcon(),
+                        uniqueKey = objType.uniqueKey
+                    )
+                }
+            }
+            val formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format)
+            val formatIcon = item.format.simpleIcon()
+
+            uiEditPropertyScreen.value = if (permissions?.participantCanEdit == true && item.isEditableField) {
+                UiEditPropertyState.Visible.Edit(
+                    id = item.id,
+                    key = item.fieldKey,
+                    name = item.fieldTitle,
+                    formatName = formatName,
+                    formatIcon = formatIcon,
+                    format = item.format,
+                    limitObjectTypes = computedLimitTypes,
+                    isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType,
+                    showLimitTypes = false
+                )
+            } else {
+                UiEditPropertyState.Visible.View(
+                    id = item.id,
+                    key = item.fieldKey,
+                    name = item.fieldTitle,
+                    formatName = formatName,
+                    formatIcon = formatIcon,
+                    format = item.format,
+                    limitObjectTypes = computedLimitTypes,
+                    isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType,
+                    showLimitTypes = false
+                )
+            }
         }
     }
     //endregion
@@ -461,7 +481,7 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnLayoutTypeDismiss -> {
-                uiTypeLayoutsState.value = Hidden
+                uiTypeLayoutsState.value = UiLayoutTypeState.Hidden
             }
 
             is TypeEvent.OnLayoutTypeItemClick -> {
@@ -811,11 +831,28 @@ class ObjectTypeViewModel(
                         },
                         onFailure = { error ->
                             Timber.e(error, "Failed to update relation")
-                            errorState.value = UiErrorState.Show(
-                                reason = UiErrorState.Reason.Other(error.message ?: "")
+                            errorState.value = Show(
+                                reason = Other(error.message ?: "")
                             )
                         }
                     )
+                }
+            }
+
+            FieldEvent.EditProperty.OnLimitTypesClick -> {
+                uiEditPropertyScreen.value = when (val state = uiEditPropertyScreen.value) {
+                    is UiEditPropertyState.Visible.Edit -> state.copy(showLimitTypes = true)
+                    is UiEditPropertyState.Visible.New -> state.copy(showLimitTypes = true)
+                    is View -> state.copy(showLimitTypes = true)
+                    else -> state
+                }
+            }
+            FieldEvent.EditProperty.OnLimitTypesDismiss -> {
+                uiEditPropertyScreen.value = when (val state = uiEditPropertyScreen.value) {
+                    is UiEditPropertyState.Visible.Edit -> state.copy(showLimitTypes = false)
+                    is UiEditPropertyState.Visible.New -> state.copy(showLimitTypes = false)
+                    is View -> state.copy(showLimitTypes = false)
+                    else -> state
                 }
             }
         }

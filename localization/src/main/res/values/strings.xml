@@ -1976,6 +1976,8 @@ Please provide specific details of your needs here.</string>
 
     <string name="new_property_hint">New property</string>
     <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="edit_property_limit_objects_all">Limit objects</string>
+    <string name="edit_property_limit_all">All</string>
 
     <string name="add_property_error_create_new">Error while creating new property</string>
     <string name="add_property_error_update">Error while updating property</string>
@@ -1984,6 +1986,8 @@ Please provide specific details of your needs here.</string>
     <string name="property_select_format_title">Select property format</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
+    <string name="property_limit_objects_title">Limit objects</string>
+    <string name="property_include_time_section">Include time</string>
     <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
     <string name="migration_screen_new_version_update">New Version Update</string>
     <string name="migration_screen_description_1">We\'re laying the groundwork for our new chats. Including counters, notifications and other features needed for smooth chat experience.</string>

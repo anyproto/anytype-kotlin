@@ -1975,8 +1975,8 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new"</string>
 
     <string name="new_property_hint">New property</string>
-    <string name="edit_property_limit_objects_to">Limit objects to</string>
-    <string name="edit_property_limit_objects">Limit objects</string>
+    <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="edit_property_limit_objects_all">Limit objects</string>
     <string name="edit_property_limit_all">All</string>
 
     <string name="add_property_error_create_new">Error while creating new property</string>

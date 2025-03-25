@@ -233,7 +233,7 @@ fun PropertyLimitTypesEditSection(
                 modifier = Modifier
                     .weight(1.0f)
                     .padding(end = 16.dp),
-                text = stringResource(id = R.string.edit_property_limit_objects_to),
+                text = stringResource(id = R.string.edit_property_limit_objects),
                 style = BodyRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -280,7 +280,7 @@ fun PropertyLimitTypesViewSection(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .fillMaxWidth(),
-                text = stringResource(id = R.string.edit_property_limit_objects_to),
+                text = stringResource(id = R.string.edit_property_limit_objects),
                 style = BodyRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -309,7 +309,7 @@ fun PropertyLimitTypesViewSection(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .fillMaxWidth(),
-                text = stringResource(id = R.string.edit_property_limit_objects),
+                text = stringResource(id = R.string.edit_property_limit_objects_all),
                 style = BodyRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

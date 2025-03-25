@@ -1680,7 +1680,7 @@
     <string name="object_type_add_property_screen_section_existing">现有属性”</string>
     <string name="object_type_add_property_screen_search_hint">搜索或新建\"</string>
     <string name="new_property_hint">新建属性</string>
-    <string name="edit_property_limit_objects_to">将对象限制为</string>
+    <string name="edit_property_limit_objects">将对象限制为</string>
     <string name="add_property_error_create_new">创建新属性时出错</string>
     <string name="add_property_error_update">更新属性时出错</string>
     <string name="add_property_error_add">添加属性到类型时出错</string>

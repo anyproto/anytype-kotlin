@@ -1697,7 +1697,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
     <string name="new_property_hint">Neue Eigenschaft</string>
-    <string name="edit_property_limit_objects_to">Limit objects to</string>
+    <string name="edit_property_limit_objects">Limit objects to</string>
     <string name="add_property_error_create_new">Fehler beim Erstellen einer neuen Eigenschaft</string>
     <string name="add_property_error_update">Fehler beim Aktualisieren einer Eigenschaft</string>
     <string name="add_property_error_add">Fehler beim Hinzufügen einer Eigenschaft zum Typ</string>

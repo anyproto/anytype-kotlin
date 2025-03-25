@@ -161,7 +161,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
             is ObjectIcon.TypeIcon.Fallback -> setTypeIcon(icon)
             is ObjectIcon.TypeIcon.Default -> setTypeIcon(icon)
-            ObjectIcon.TypeIcon.Deleted -> TODO()
+            ObjectIcon.TypeIcon.Deleted -> setTypeIcon(TypeIcon.Fallback.DEFAULT)
             is ObjectIcon.TypeIcon.Emoji -> setEmoji(
                 emoji = icon.unicode,
                 fallback = TypeIcon.Fallback(rawValue = icon.rawValue)

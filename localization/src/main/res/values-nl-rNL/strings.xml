@@ -820,7 +820,7 @@
     <string name="exiting_please_wait">Aan het afsluiten... een ogenblik geduld</string>
     <string name="loading_please_wait">Aan het laden... even geduld a.j.b.</string>
     <string name="personal">Standaard</string>
-    <string name="create_space">Maak een ruimte</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
     <string name="type">Type</string>
     <string name="format">Format</string>
@@ -1579,7 +1579,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chats_edit_message">Bericht bewerken</string>
     <string name="chats_message_edited">bewerkt</string>
     <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>
-    <string name="write_a_message">Schrijf een bericht...</string>
+    <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Vermeldingen</string>
     <string name="date_layout_empty_items">Er is hier nog niets voor deze datum</string>
     <string name="date_layout_alert_date_out_of_range">De geselecteerde datum valt buiten het geldige bereik (jaren %1$d tot %2$d). Selecteer alsjeblieft een datum binnen dit bereik.</string>

@@ -818,7 +818,7 @@
     <string name="exiting_please_wait">正在退出... 请稍等</string>
     <string name="loading_please_wait">正在加载……请稍等</string>
     <string name="personal">默认</string>
-    <string name="create_space">创建空间</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">出错了，请再试一次。</string>
     <string name="type">类型</string>
     <string name="format">格式</string>
@@ -1562,7 +1562,7 @@
     <string name="chats_edit_message">编辑消息</string>
     <string name="chats_message_edited">已编辑</string>
     <string name="chat_empty_state_message">还没有任何消息。\n成为第一个开始讨论的人。</string>
-    <string name="write_a_message">写一段话…</string>
+    <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">提及</string>
     <string name="date_layout_empty_items">此日期暂无任何内容</string>
     <string name="date_layout_alert_date_out_of_range">被选中的日期超过了有效范围（年 %1$d 到 %2$d）。请选择一个在此范围内的日期。</string>

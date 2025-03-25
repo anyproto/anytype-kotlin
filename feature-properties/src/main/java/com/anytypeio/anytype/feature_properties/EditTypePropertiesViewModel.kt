@@ -415,7 +415,7 @@ class EditTypePropertiesViewModel(
             UiPropertyLimitTypeItem(
                 id = it.id,
                 name = it.name.orEmpty(),
-                icon = it.objectIcon(urlBuilder),
+                icon = it.objectIcon(),
                 uniqueKey = it.uniqueKey
             )
         }

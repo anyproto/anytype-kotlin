@@ -391,7 +391,7 @@ class ObjectTypeViewModel(
                             UiPropertyLimitTypeItem(
                                 id = objType.id,
                                 name = fieldParser.getObjectName(objType),
-                                icon = objType.objectIcon(urlBuilder),
+                                icon = objType.objectIcon(),
                                 uniqueKey = objType.uniqueKey,
                             )
                         } else {
@@ -415,7 +415,7 @@ class ObjectTypeViewModel(
                             UiPropertyLimitTypeItem(
                                 id = objType.id,
                                 name = fieldParser.getObjectName(objType),
-                                icon = objType.objectIcon(urlBuilder),
+                                icon = objType.objectIcon(),
                                 uniqueKey = objType.uniqueKey,
                             )
                         } else {

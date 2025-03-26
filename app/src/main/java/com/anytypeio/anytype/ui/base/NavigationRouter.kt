@@ -61,6 +61,12 @@ class NavigationRouter(
                     objectId = command.objectId,
                     space = command.space
                 )
+                is AppNavigation.Command.OpenTypeObject -> {
+                    navigation.openObjectType(
+                        objectId = command.target,
+                        space = command.space
+                    )
+                }
                 is AppNavigation.Command.OpenParticipant -> navigation.openParticipantObject(
                     objectId = command.objectId,
                     space = command.space

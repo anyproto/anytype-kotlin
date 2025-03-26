@@ -27,6 +27,7 @@ import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
 import com.anytypeio.anytype.ui.settings.remote.RemoteFilesManageScreen
 import javax.inject.Inject
+import timber.log.Timber
 
 class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
 
@@ -111,6 +112,9 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
                 // Do nothing
             }
             is CollectionViewModel.Command.OpenParticipant -> {
+                // Do nothing
+            }
+            is CollectionViewModel.Command.OpenTypeObject -> {
                 // Do nothing
             }
         }

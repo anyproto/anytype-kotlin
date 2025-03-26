@@ -1488,6 +1488,14 @@ class HomeScreenViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenType -> {
+                navigate(
+                    Navigation.OpenType(
+                        target = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
         }
     }
 
@@ -2215,6 +2223,7 @@ class HomeScreenViewModel(
         data class OpenAllContent(val space: Id) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()
+        data class OpenType(val target: Id, val space: Id) : Navigation()
     }
 
     class Factory @Inject constructor(
@@ -2449,6 +2458,7 @@ sealed class OpenObjectNavigation {
     data class OpenChat(val target: Id, val space: Id): OpenObjectNavigation()
     data class OpenDateObject(val target: Id, val space: Id): OpenObjectNavigation()
     data class OpenParticipant(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenType(val target: Id, val space: Id) : OpenObjectNavigation()
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
@@ -2504,6 +2514,12 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         }
         ObjectType.Layout.PARTICIPANT -> {
             OpenObjectNavigation.OpenParticipant(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
+        }
+        ObjectType.Layout.OBJECT_TYPE -> {
+            OpenObjectNavigation.OpenType(
                 target = id,
                 space = requireNotNull(spaceId)
             )

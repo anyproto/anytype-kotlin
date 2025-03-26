@@ -128,6 +128,16 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     Timber.e(e, "Error while opening date object from Collection screen")
                 }
             }
+            is Command.OpenTypeObject -> {
+                runCatching {
+                    navigation().openObjectType(
+                        objectId = command.target,
+                        space = command.space
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening object type from expanded widget screen")
+                }
+            }
             is Command.OpenShareScreen -> {
                 runCatching {
                     findNavController().navigate(

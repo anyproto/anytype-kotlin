@@ -198,6 +198,9 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(e, "Error while opening participant object from widgets")
                 }
             }
+            is Navigation.OpenType -> {
+                Timber.e("Illegal command: type cannot be opened from vault")
+            }
         }
     }
 

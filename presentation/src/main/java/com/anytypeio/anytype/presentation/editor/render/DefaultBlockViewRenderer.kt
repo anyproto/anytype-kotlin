@@ -73,7 +73,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         count: Int,
         parentScheme: NestedDecorationData,
         storeOfRelations: StoreOfRelations,
-        featurePropertiesIds: List<Key>,
+        featurePropertiesIds: List<Id>,
         onRenderFlag: (BlockViewRenderer.RenderFlag) -> Unit,
     ): List<BlockView> {
 

@@ -36,7 +36,7 @@ interface BlockViewRenderer {
         count: Int = 0,
         parentScheme: NestedDecorationData = emptyList(),
         storeOfRelations: StoreOfRelations,
-        featurePropertiesIds: List<Key>,
+        featurePropertiesIds: List<Id>,
         onRenderFlag: (RenderFlag) -> Unit = {},
     ): List<BlockView>
 

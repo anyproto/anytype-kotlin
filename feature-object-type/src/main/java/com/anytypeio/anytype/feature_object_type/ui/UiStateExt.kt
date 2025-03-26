@@ -66,7 +66,6 @@ suspend fun buildUiPropertiesList(
     objType: ObjectWrapper.Type,
     stringResourceProvider: StringResourceProvider,
     fieldParser: FieldParser,
-    urlBuilder: UrlBuilder,
     storeOfObjectTypes: StoreOfObjectTypes,
     storeOfRelations: StoreOfRelations,
     objectTypeConflictingPropertiesIds: List<Id>,
@@ -85,7 +84,6 @@ suspend fun buildUiPropertiesList(
             property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -94,7 +92,6 @@ suspend fun buildUiPropertiesList(
             property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -103,7 +100,6 @@ suspend fun buildUiPropertiesList(
             property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -112,7 +108,6 @@ suspend fun buildUiPropertiesList(
             property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -123,7 +118,6 @@ suspend fun buildUiPropertiesList(
             property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -133,7 +127,6 @@ suspend fun buildUiPropertiesList(
             property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -169,19 +162,16 @@ suspend fun buildUiPropertiesList(
  */
 private suspend fun mapLimitObjectTypes(
     property: ObjectWrapper.Relation,
-    storeOfObjectTypes: StoreOfObjectTypes,
-    fieldParser: FieldParser,
-    urlBuilder: UrlBuilder
-): List<UiPropertyLimitTypeItem> {
+    storeOfObjectTypes: StoreOfObjectTypes
+): List<Id> {
     return if (property.format == RelationFormat.OBJECT && property.relationFormatObjectTypes.isNotEmpty()) {
-        property.relationFormatObjectTypes.mapNotNull { key ->
-            storeOfObjectTypes.getByKey(key)?.let { objType ->
-                UiPropertyLimitTypeItem(
-                    id = objType.id,
-                    key = objType.uniqueKey,
-                    title = fieldParser.getObjectName(objType),
-                    icon = objType.objectIcon()
-                )
+        property.relationFormatObjectTypes.mapNotNull { id ->
+            storeOfObjectTypes.get(id)?.let { objType ->
+                if (objType.isValid) {
+                    objType.id
+                } else {
+                    null
+                }
             }
         }
     } else {
@@ -197,8 +187,7 @@ private suspend fun mapToUiPropertiesDraggableListItem(
     property: ObjectWrapper.Relation,
     stringResourceProvider: StringResourceProvider,
     storeOfObjectTypes: StoreOfObjectTypes,
-    fieldParser: FieldParser,
-    urlBuilder: UrlBuilder
+    fieldParser: FieldParser
 ): UiFieldsListItem? {
     if (property.key == Relations.DESCRIPTION) return null
 
@@ -208,7 +197,7 @@ private suspend fun mapToUiPropertiesDraggableListItem(
         fieldKey = property.key,
         fieldTitle = property.getName(stringResourceProvider),
         format = property.format,
-        limitObjectTypes = limitObjectTypes,
+        limitObjectTypes = mapLimitObjectTypes(field, storeOfObjectTypes),
         isEditableField = fieldParser.isPropertyEditable(property),
         isPossibleToUnlinkFromType = fieldParser.isPropertyCanBeDeletedFromType(property)
     )
@@ -223,7 +212,6 @@ private suspend fun mapToUiPropertiesLocalListItem(
     stringResourceProvider: StringResourceProvider,
     storeOfObjectTypes: StoreOfObjectTypes,
     fieldParser: FieldParser,
-    urlBuilder: UrlBuilder
 ): UiFieldsListItem? {
     if (property.key == Relations.DESCRIPTION) return null
 
@@ -233,7 +221,7 @@ private suspend fun mapToUiPropertiesLocalListItem(
         fieldKey = property.key,
         fieldTitle = property.getName(stringResourceProvider),
         format = property.format,
-        limitObjectTypes = limitObjectTypes,
+        limitObjectTypes = mapLimitObjectTypes(field, storeOfObjectTypes),
         isEditableField = fieldParser.isPropertyEditable(property)
     )
 }

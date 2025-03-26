@@ -124,6 +124,7 @@
     <color name="palette_system_amber_125">#F09C0E</color>
     <color name="palette_system_amber_100">#FFB522</color>
     <color name="palette_system_amber_50">#FFD15B</color>
+    <color name="palette_system_amber_50_opacity_12">#1FFFD15B</color>
     <color name="palette_system_red">#F55522</color>
     <color name="palette_system_pink">#E51CA0</color>
     <color name="palette_system_purple">#AB50CC</color>

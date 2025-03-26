@@ -15,6 +15,7 @@ sealed class UiEvent {
 
     data object OnDeleteSpaceClicked : UiEvent()
     data object OnRemoteStorageClick : UiEvent()
+    data object OnBinClick : UiEvent()
     data object OnPersonalizationClicked : UiEvent()
     data object OnInviteClicked : UiEvent()
     data object OnQrCodeClicked : UiEvent()

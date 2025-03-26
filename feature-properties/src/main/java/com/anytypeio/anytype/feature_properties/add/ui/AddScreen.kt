@@ -183,6 +183,15 @@ fun AddFieldScreen(
             },
             onSaveButtonClicked = {
                 event(UiEditTypePropertiesEvent.OnSaveButtonClicked)
+            },
+            onLimitTypesClick = {
+                event(UiEditTypePropertiesEvent.OnLimitTypesClick)
+            },
+            onDismissLimitTypes = {
+                event(UiEditTypePropertiesEvent.OnLimitTypesDismiss)
+            },
+            onLimitObjectTypesDoneClick = {
+                event(UiEditTypePropertiesEvent.OnLimitTypesDoneClick(it))
             }
         )
     }

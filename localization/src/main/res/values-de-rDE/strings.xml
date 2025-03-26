@@ -820,7 +820,7 @@
     <string name="exiting_please_wait">Beenden... bitte warten</string>
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
     <string name="personal">Standard</string>
-    <string name="create_space">Space erstellen</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
     <string name="type">Typ</string>
     <string name="format">Format</string>
@@ -1579,7 +1579,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chats_edit_message">Nachricht bearbeiten</string>
     <string name="chats_message_edited">bearbeitet</string>
     <string name="chat_empty_state_message">Es gibt noch keine Nachrichten.\nSei der Erste, der eine Diskussion beginnt.</string>
-    <string name="write_a_message">Eine Nachricht schreiben...</string>
+    <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Erwähnungen</string>
     <string name="date_layout_empty_items">Für dieses Datum ist hier noch nichts eingetragen</string>
     <string name="date_layout_alert_date_out_of_range">Das ausgewählte Datum liegt außerhalb des gültigen Bereichs (Jahre %1$d bis %2$d). Bitte wähle ein Datum innerhalb dieses Bereichs aus.</string>
@@ -1698,12 +1698,16 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
     <string name="new_property_hint">Neue Eigenschaft</string>
     <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="edit_property_limit_objects_all">Limit objects</string>
+    <string name="edit_property_limit_all">Alle</string>
     <string name="add_property_error_create_new">Fehler beim Erstellen einer neuen Eigenschaft</string>
     <string name="add_property_error_update">Fehler beim Aktualisieren einer Eigenschaft</string>
     <string name="add_property_error_add">Fehler beim Hinzufügen einer Eigenschaft zum Typ</string>
     <string name="property_select_format_title">Eigenschaftsformat auswählen</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
+    <string name="property_limit_objects_title">Limit objects</string>
+    <string name="property_include_time_section">Include time</string>
     <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
     <string name="migration_screen_new_version_update">New Version Update</string>
     <string name="migration_screen_description_1">We\'re laying the groundwork for our new chats. Including counters, notifications and other features needed for smooth chat experience.</string>

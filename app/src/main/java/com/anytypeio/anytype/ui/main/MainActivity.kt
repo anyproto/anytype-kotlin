@@ -61,6 +61,7 @@ import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
 import com.anytypeio.anytype.ui.notifications.NotificationsFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
+import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
@@ -345,6 +346,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     )
                 }.onFailure {
                     Timber.e(it, "Error while date object navigation")
+                }
+            }
+            is OpenObjectNavigation.OpenType -> {
+                runCatching {
+                    findNavController(R.id.fragment).navigate(
+                        resId = R.id.objectTypeScreen,
+                        args = ObjectTypeFragment.args(
+                            objectId = dest.target,
+                            space = dest.space
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening object type in main activity")
                 }
             }
         }

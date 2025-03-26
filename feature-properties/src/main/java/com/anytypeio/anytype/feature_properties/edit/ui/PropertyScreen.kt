@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -52,8 +54,10 @@ fun PropertyScreen(
     onLimitTypesClick: () -> Unit = {},
     onCreateNewButtonClicked: () -> Unit = {},
     onDismissRequest: () -> Unit,
+    onDismissLimitTypes: () -> Unit = {},
     onPropertyNameUpdate: (String) -> Unit,
-    onMenuUnlinkClick: (Id) -> Unit ={}
+    onMenuUnlinkClick: (Id) -> Unit ={},
+    onLimitObjectTypesDoneClick: (List<Id>) -> Unit = {}
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
@@ -73,7 +77,8 @@ fun PropertyScreen(
                 onFormatClick = onFormatClick,
                 onLimitTypesClick = onLimitTypesClick,
                 onPropertyNameUpdate = onPropertyNameUpdate,
-                onMenuUnlinkClick = onMenuUnlinkClick
+                onMenuUnlinkClick = onMenuUnlinkClick,
+                onDismissLimitTypes = onDismissLimitTypes
             )
 
             is UiEditPropertyState.Visible.View -> PropertyViewScreen(
@@ -81,7 +86,8 @@ fun PropertyScreen(
                 uiState = uiState,
                 onFormatClick = onFormatClick,
                 onLimitTypesClick = onLimitTypesClick,
-                onMenuUnlinkClick = onMenuUnlinkClick
+                onMenuUnlinkClick = onMenuUnlinkClick,
+                onDismissLimitTypes = onDismissLimitTypes
             )
 
             is UiEditPropertyState.Visible.New -> PropertyNewScreen(
@@ -89,8 +95,10 @@ fun PropertyScreen(
                 uiState = uiState,
                 onCreateNewButtonClicked = onCreateNewButtonClicked,
                 onFormatClick = onFormatClick,
+                onPropertyNameUpdate = onPropertyNameUpdate,
                 onLimitTypesClick = onLimitTypesClick,
-                onPropertyNameUpdate = onPropertyNameUpdate
+                onDismissLimitTypes = onDismissLimitTypes,
+                onLimitObjectTypesDoneClick = onLimitObjectTypesDoneClick
             )
         }
     }
@@ -213,16 +221,10 @@ fun PropertyFormatSection(
 
 @Composable
 fun PropertyLimitTypesEditSection(
+    modifier: Modifier,
     limit: Int,
-    onLimitTypesClick: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .padding(horizontal = 20.dp)
-            .noRippleThrottledClickable { onLimitTypesClick() }
-    ) {
+    Box(modifier = modifier) {
         Row(
             modifier = Modifier.align(Alignment.CenterEnd),
             verticalAlignment = Alignment.CenterVertically
@@ -267,29 +269,55 @@ fun PropertyLimitTypesViewSection(
             .fillMaxWidth()
             .height(52.dp)
             .padding(horizontal = 20.dp)
-            .noRippleThrottledClickable { onLimitTypesClick() }
+            .noRippleThrottledClickable {
+                if (limit > 0) {
+                    onLimitTypesClick()
+                }
+            }
     ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .fillMaxWidth(),
-            text = stringResource(id = R.string.edit_property_limit_objects),
-            style = BodyRegular,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = colorResource(id = R.color.text_primary)
-        )
         if (limit > 0) {
             Text(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                text = "$limit",
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .fillMaxWidth(),
+                text = stringResource(id = R.string.edit_property_limit_objects),
                 style = BodyRegular,
-                color = colorResource(id = R.color.text_secondary)
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = colorResource(id = R.color.text_primary)
             )
+            Row(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .align(Alignment.CenterEnd),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = "$limit",
+                    style = BodyRegular,
+                    color = colorResource(id = R.color.text_secondary)
+                )
+                Image(
+                    modifier = Modifier.wrapContentSize().padding(start = 10.dp),
+                    painter = painterResource(id = R.drawable.ic_arrow_forward),
+                    contentDescription = "Change field format icon"
+                )
+            }
         } else {
             Text(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .fillMaxWidth(),
+                text = stringResource(id = R.string.edit_property_limit_objects_all),
+                style = BodyRegular,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = colorResource(id = R.color.text_primary)
+            )
+            Text(
                 modifier = Modifier.align(Alignment.CenterEnd),
-                text = stringResource(id = R.string.none),
+                text = stringResource(id = R.string.edit_property_limit_all),
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_secondary)
             )

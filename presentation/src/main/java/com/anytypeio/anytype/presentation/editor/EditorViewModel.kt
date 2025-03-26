@@ -4551,6 +4551,16 @@ class EditorViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenType -> {
+                navigate(
+                    EventWrapper(
+                        OpenTypeObject(
+                            target = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                )
+            }
         }
     }
 

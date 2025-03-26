@@ -43,7 +43,7 @@ sealed class UiFieldsListItem {
         abstract val fieldKey: Key
         abstract val fieldTitle: String
         abstract val format: RelationFormat
-        abstract val limitObjectTypes: List<UiPropertyLimitTypeItem>
+        abstract val limitObjectTypes: List<Id>
         abstract val isPossibleToUnlinkFromType: Boolean
         abstract val isEditableField: Boolean
 
@@ -52,7 +52,7 @@ sealed class UiFieldsListItem {
             override val fieldKey: Key,
             override val fieldTitle: String,
             override val format: RelationFormat,
-            override val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList(),
+            override val limitObjectTypes: List<Id>,
             override val isPossibleToUnlinkFromType: Boolean,
             override val isEditableField: Boolean
         ) : Item()
@@ -62,7 +62,7 @@ sealed class UiFieldsListItem {
             override val fieldKey: Key,
             override val fieldTitle: String,
             override val format: RelationFormat,
-            override val limitObjectTypes: List<UiPropertyLimitTypeItem> = emptyList(),
+            override val limitObjectTypes: List<Id>,
             override val isPossibleToUnlinkFromType: Boolean = false,
             override val isEditableField: Boolean
         ) : Item()

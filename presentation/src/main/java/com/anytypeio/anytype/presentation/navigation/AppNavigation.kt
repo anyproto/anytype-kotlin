@@ -109,6 +109,12 @@ interface AppNavigation {
             val space: Id
         ) : Command()
 
+
+        data class OpenTypeObject(
+            val target: Id,
+            val space: Id
+        ) : Command()
+
         data class OpenParticipant(
             val objectId: Id,
             val space: Id

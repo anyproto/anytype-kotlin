@@ -453,6 +453,16 @@ class HomeScreenFragment : BaseComposeFragment(),
                     Timber.e(e, "Error while opening participant from widgets")
                 }
             }
+            is Navigation.OpenType -> {
+                runCatching {
+                    navigation().openObjectType(
+                        objectId = destination.target,
+                        space = destination.space
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening participant from widgets")
+                }
+            }
         }
     }
 

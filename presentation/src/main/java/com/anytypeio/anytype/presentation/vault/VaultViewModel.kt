@@ -329,6 +329,14 @@ class VaultViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenType -> {
+                navigate(
+                    OpenType(
+                        target = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
         }
     }
 
@@ -398,6 +406,7 @@ class VaultViewModel(
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenParticipant(val ctx: Id, val space: Id) : Navigation()
+        data class OpenType(val target: Id, val space: Id) : Navigation()
     }
 
     companion object {

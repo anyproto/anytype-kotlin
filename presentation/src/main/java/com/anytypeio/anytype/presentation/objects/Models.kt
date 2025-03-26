@@ -11,6 +11,8 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 
@@ -139,12 +141,13 @@ sealed class UiObjectsListItem {
     ) : UiObjectsListItem()
 }
 
-fun ObjectWrapper.Basic.toUiObjectsListItem(
+suspend fun ObjectWrapper.Basic.toUiObjectsListItem(
     space: SpaceId,
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>,
     fieldParser: FieldParser,
-    isOwnerOrEditor: Boolean
+    isOwnerOrEditor: Boolean,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): UiObjectsListItem {
     val obj = this
     val typeUrl = obj.getProperType()
@@ -163,17 +166,21 @@ fun ObjectWrapper.Basic.toUiObjectsListItem(
             }
         }?.name,
         layout = layout,
-        icon = obj.objectIcon(builder = urlBuilder),
+        icon = obj.objectIcon(
+            builder = urlBuilder,
+            objType = storeOfObjectTypes.getTypeOfObject(obj)
+        ),
         isPossibleToDelete = isOwnerOrEditor
     )
 }
 
-fun ObjectWrapper.Basic.toUiObjectsListItem(
+suspend fun ObjectWrapper.Basic.toUiObjectsListItem(
     space: SpaceId,
     urlBuilder: UrlBuilder,
     typeName: String?,
     fieldParser: FieldParser,
-    isOwnerOrEditor: Boolean
+    isOwnerOrEditor: Boolean,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): UiObjectsListItem {
     val obj = this
     val typeUrl = obj.getProperType()
@@ -184,7 +191,10 @@ fun ObjectWrapper.Basic.toUiObjectsListItem(
         type = typeUrl,
         typeName = typeName,
         layout = obj.layout,
-        icon = obj.objectIcon(builder = urlBuilder),
+        icon = obj.objectIcon(
+            builder = urlBuilder,
+            objType = storeOfObjectTypes.getTypeOfObject(obj)
+        ),
         isPossibleToDelete = isOwnerOrEditor
     )
 }

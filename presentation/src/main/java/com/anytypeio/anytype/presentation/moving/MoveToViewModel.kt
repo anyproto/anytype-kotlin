@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +42,8 @@ class MoveToViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModel(), TextInputDialogBottomBehaviorApplier.OnDialogCancelListener,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
@@ -67,7 +69,8 @@ class MoveToViewModel(
                         listOfObjects.getOrThrow().toViews(
                             urlBuilder = urlBuilder,
                             objectTypes = listOfTypes.getOrThrow(),
-                            fieldParser = fieldParser
+                            fieldParser = fieldParser,
+                            storeOfObjectTypes = storeOfObjectTypes
                         )
                     )
                 }

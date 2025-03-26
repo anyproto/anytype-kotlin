@@ -347,7 +347,12 @@ class CollectionViewModel(
             }
 
             val views = filteredResults
-                .toViews(urlBuilder = urlBuilder, objectTypes = types, fieldParser = fieldParser)
+                .toViews(
+                    urlBuilder = urlBuilder,
+                    objectTypes = types,
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
+                )
                 .map { ObjectView(it) }
                 .tryAddSections()
 
@@ -416,7 +421,7 @@ class CollectionViewModel(
             Timber.e(it, "Error in favorites subscription flow")
         }
 
-    private fun prepareFavorites(
+    private suspend fun prepareFavorites(
         favoritesObj: CoreObjectView,
         objs: List<ObjectWrapper.Basic>,
         query: String,
@@ -430,7 +435,7 @@ class CollectionViewModel(
             val name = fieldParser.getObjectName(obj)
             name.lowercase().contains(query.lowercase(), true)
         }
-            .toViews(urlBuilder, types, fieldParser)
+            .toViews(urlBuilder, types, fieldParser, storeOfObjectTypes)
             .map { FavoritesView(it, favs[it.id]?.blockId ?: "") }
     }
 

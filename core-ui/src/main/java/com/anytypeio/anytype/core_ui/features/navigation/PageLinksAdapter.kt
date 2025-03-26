@@ -144,7 +144,7 @@ class ObjectItemViewHolder(view: View) : ObjectViewHolder(view) {
         fun bindSelectDateItem() {
             title.setText(R.string.select_date)
             subtitle.gone()
-            icon.setIcon(ObjectIcon.Empty.Date)
+            icon.setIcon(ObjectIcon.TypeIcon.Default.DATE)
         }
     }
 

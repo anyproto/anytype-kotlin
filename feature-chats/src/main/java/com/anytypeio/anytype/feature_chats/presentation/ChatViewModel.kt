@@ -28,6 +28,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
@@ -241,7 +242,10 @@ class ChatViewModel @Inject constructor(
                                         ChatView.Message.Attachment.Link(
                                             target = attachment.target,
                                             wrapper = wrapper,
-                                            icon = wrapper?.objectIcon(urlBuilder) ?: ObjectIcon.None,
+                                            icon = wrapper?.objectIcon(
+                                                builder = urlBuilder,
+                                                objType = storeOfObjectTypes.getTypeOfObject(wrapper)
+                                            ) ?: ObjectIcon.None,
                                             typeName = if (type != null)
                                                 storeOfObjectTypes.get(type)?.name.orEmpty()
                                             else
@@ -603,7 +607,10 @@ class ChatViewModel @Inject constructor(
                                     ChatView.Message.ChatBoxAttachment.Existing.Link(
                                         target = wrapper.id,
                                         name = wrapper.name.orEmpty(),
-                                        icon = wrapper.objectIcon(urlBuilder),
+                                        icon = wrapper.objectIcon(
+                                            builder = urlBuilder,
+                                            objType = storeOfObjectTypes.getTypeOfObject(wrapper)
+                                        ),
                                         typeName = if (type != null)
                                             storeOfObjectTypes.get(type)?.name.orEmpty()
                                         else

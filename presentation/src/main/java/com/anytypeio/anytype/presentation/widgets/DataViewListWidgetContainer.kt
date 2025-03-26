@@ -15,7 +15,9 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -45,6 +47,7 @@ class DataViewListWidgetContainer(
     private val coverImageHashProvider: CoverImageHashProvider,
     private val storeOfRelations: StoreOfRelations,
     private val fieldParser: FieldParser,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
     isSessionActive: Flow<Boolean>,
     onRequestCache: () -> WidgetView.SetOfObjects? = { null },
 ) : WidgetContainer {
@@ -190,14 +193,16 @@ class DataViewListWidgetContainer(
                                     obj = obj,
                                     activeView = view,
                                     params = params,
-                                    target = target
+                                    target = target,
+                                    storeOfObjectTypes = storeOfObjectTypes
                                 )
                             } else {
                                 defaultWidgetSubscribe(
                                     obj = obj,
                                     activeView = view,
                                     params = params,
-                                    isCompact = isCompact
+                                    isCompact = isCompact,
+                                    storeOfObjectTypes = storeOfObjectTypes
                                 )
                             }
                         } else {
@@ -225,7 +230,8 @@ class DataViewListWidgetContainer(
         obj: ObjectView,
         activeView: Id?,
         target: Block.Content.DataView.Viewer,
-        params: StoreSearchParams
+        params: StoreSearchParams,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): Flow<WidgetView.Gallery> {
         return storage.subscribeWithDependencies(params).map { response ->
             val objects = resolveObjectOrder(
@@ -245,7 +251,8 @@ class DataViewListWidgetContainer(
                         obj = obj,
                         objectIcon = if (withIcon) {
                             obj.objectIcon(
-                                builder = urlBuilder
+                                builder = urlBuilder,
+                                objType = storeOfObjectTypes.getTypeOfObject(obj)
                             )
                         } else {
                             ObjectIcon.None
@@ -284,7 +291,8 @@ class DataViewListWidgetContainer(
         obj: ObjectView,
         activeView: Id?,
         params: StoreSearchParams,
-        isCompact: Boolean
+        isCompact: Boolean,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): Flow<WidgetView> {
         return storage.subscribe(params).map { results ->
             val objects = resolveObjectOrder(
@@ -299,7 +307,10 @@ class DataViewListWidgetContainer(
                 elements = objects.map { obj ->
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
-                        objectIcon = obj.objectIcon(builder = urlBuilder),
+                        objectIcon = obj.objectIcon(
+                            builder = urlBuilder,
+                            objType = storeOfObjectTypes.getTypeOfObject(obj)
+                        ),
                         name = WidgetView.Name.Default(
                             prettyPrintName = fieldParser.getObjectName(obj)
                         )

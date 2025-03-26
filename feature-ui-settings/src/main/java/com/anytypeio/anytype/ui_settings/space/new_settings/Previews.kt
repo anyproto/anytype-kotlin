@@ -33,7 +33,7 @@ fun NewSpaceSettingsScreenPreview() {
                 UiSpaceSettingsItem.DefaultObjectType(
                     id = "some id",
                     name = "Taskwithveryverlylongname",
-                    icon = ObjectIcon.Empty.ObjectType
+                    icon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 ),
                 UiSpaceSettingsItem.Spacer(height = 8),
                 UiSpaceSettingsItem.Wallpapers(null),

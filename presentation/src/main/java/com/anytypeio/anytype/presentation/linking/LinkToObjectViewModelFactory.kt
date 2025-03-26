@@ -21,7 +21,8 @@ class LinkToObjectViewModelFactory(
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -33,7 +34,8 @@ class LinkToObjectViewModelFactory(
             searchObjects = searchObjects,
             analytics = analytics,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
         ) as T
     }
 }
@@ -73,7 +75,8 @@ class BackLinkOrAddToObjectViewModelFactory @Inject constructor(
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -85,7 +88,8 @@ class BackLinkOrAddToObjectViewModelFactory @Inject constructor(
             searchObjects = searchObjects,
             analytics = analytics,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
         ) as T
     }
 }

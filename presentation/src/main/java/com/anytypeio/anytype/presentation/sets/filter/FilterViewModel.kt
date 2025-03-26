@@ -99,7 +99,8 @@ open class FilterViewModel(
                     condition = condition?.condition,
                     index = filterIndex,
                     viewerId = viewerId,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
             }
         }
@@ -137,7 +138,8 @@ open class FilterViewModel(
                                 condition = conditionState.value?.condition,
                                 index = filterIndex,
                                 viewerId = viewerId,
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
                             )
                         } else {
                             Timber.e("Couldn't find relation in StoreOfRelations by relationKey:[$relationKey]")
@@ -231,7 +233,8 @@ open class FilterViewModel(
         viewerId: Id,
         condition: Viewer.Filter.Condition?,
         index: Int?,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        storeOfObjectTypes: StoreOfObjectTypes
     ) {
         if (condition == null || !condition.hasValue()) {
             filterValueState.value = null
@@ -249,7 +252,8 @@ open class FilterViewModel(
                     value = null,
                     urlBuilder = urlBuilder,
                     store = objectSetDatabase.store,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
                 proceedWithFilterValueList(
                     relation = relation,
@@ -264,7 +268,8 @@ open class FilterViewModel(
                     value = filter.value,
                     urlBuilder = urlBuilder,
                     store = objectSetDatabase.store,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
                 proceedWithFilterValueList(
                     relation = relation,
@@ -408,7 +413,8 @@ open class FilterViewModel(
                         ids = ids,
                         urlBuilder = urlBuilder,
                         objectTypes = objectTypes,
-                        fieldParser = fieldParser
+                        fieldParser = fieldParser,
+                        storeOfObjectTypes = storeOfObjectTypes
                     ).also {
                         optionCountState.value = it.count { view -> view.isSelected }
                     }
@@ -443,7 +449,8 @@ open class FilterViewModel(
                         ids = ids,
                         urlBuilder = urlBuilder,
                         objectTypes = objectTypes,
-                        fieldParser = fieldParser
+                        fieldParser = fieldParser,
+                        storeOfObjectTypes = storeOfObjectTypes
                     ).also {
                         optionCountState.value = it.count { view -> view.isSelected }
                     }

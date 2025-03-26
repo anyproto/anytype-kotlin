@@ -112,7 +112,8 @@ class LinkToObjectOrWebViewModel(
                         obj.toLinkToObjectView(
                             urlBuilder = urlBuilder,
                             objectTypes = storeOfObjectTypes.getAll(),
-                            fieldParser = fieldParser
+                            fieldParser = fieldParser,
+                            storeOfObjectTypes = storeOfObjectTypes
                         ),
                         LinkToItemView.Subheading.Actions,
                         LinkToItemView.RemoveLink
@@ -133,7 +134,8 @@ class LinkToObjectOrWebViewModel(
                 val objectViews = filteredSearchResponse.toLinkToView(
                     urlBuilder = urlBuilder,
                     objectTypes = storeOfObjectTypes.getAll(),
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
                 val views = mutableListOf<LinkToItemView>()
                 if (clipboardUrl != null && userInput.value.isBlank()) {

@@ -238,7 +238,7 @@ fun ObjectTypeMainScreenPreview() {
             )
         ),
         uiSyncStatusState = SyncStatusWidgetState.Hidden,
-        uiIconState = UiIconState(icon = ObjectIcon.Empty.Page, isEditable = true),
+        uiIconState = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = true),
         uiTitleState = UiTitleState(title = "title", isEditable = true),
         uiFieldsButtonState = UiFieldsButtonState.Visible(4),
         uiLayoutButtonState = UiLayoutButtonState.Visible(layout = ObjectType.Layout.VIDEO),

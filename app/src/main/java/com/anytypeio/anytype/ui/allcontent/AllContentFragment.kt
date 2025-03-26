@@ -100,6 +100,16 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         Timber.e(it, "Failed to open document from all content")
                     }
                 }
+                is AllContentViewModel.Command.NavigateToObjectType -> {
+                    runCatching {
+                        navigation().openObjectType(
+                            objectId = command.id,
+                            space = command.space
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Failed to open object type object from all content")
+                    }
+                }
                 is AllContentViewModel.Command.OpenChat -> {
                     runCatching {
                         navigation().openChat(

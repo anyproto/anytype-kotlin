@@ -752,6 +752,14 @@ class AllContentViewModel(
                         )
                     )
                 }
+                is OpenObjectNavigation.OpenType -> {
+                    commands.emit(
+                        NavigateToObjectType(
+                            id = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
             }
         }
     }
@@ -1028,6 +1036,7 @@ class AllContentViewModel(
     sealed class Command {
         data class OpenChat(val target: Id, val space: Id) : Command()
         data class NavigateToEditor(val id: Id, val space: Id) : Command()
+        data class NavigateToObjectType(val id: Id, val space: Id) : Command()
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
         data class NavigateToBin(val space: Id) : Command()
         data class NavigateToParticipant(val objectId: Id, val space: Id) : Command()

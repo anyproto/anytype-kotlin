@@ -24,6 +24,8 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import timber.log.Timber
@@ -76,6 +78,11 @@ class ObjectIconWidget @JvmOverloads constructor(
             attrs.getBoolean(R.styleable.ObjectIconWidget_hasInitialRoundedCornerBackground, false)
 
         ivEmoji.updateLayoutParams<LayoutParams> {
+            this.height = emojiSize
+            this.width = emojiSize
+        }
+
+        tvEmojiFallback.updateLayoutParams<LayoutParams> {
             this.height = emojiSize
             this.width = emojiSize
         }
@@ -138,7 +145,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     fun setIcon(icon: ObjectIcon) {
         when (icon) {
-            is ObjectIcon.Basic.Emoji -> setEmoji(icon.unicode)
+            is ObjectIcon.Basic.Emoji -> setEmoji(emoji = icon.unicode, fallback = icon.fallback)
             is ObjectIcon.Basic.Image -> setRectangularImage(icon.hash)
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
@@ -149,10 +156,16 @@ class ObjectIconWidget @JvmOverloads constructor(
                 mime = icon.mime,
                 extension = icon.extensions
             )
+
             ObjectIcon.Deleted -> setDeletedIcon()
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
-            is ObjectIcon.Empty -> icon.setEmptyIcon()
-            is ObjectIcon.ObjectType -> setCustomIcon(icon)
+            is ObjectIcon.TypeIcon.Fallback -> setTypeIcon(icon)
+            is ObjectIcon.TypeIcon.Default -> setTypeIcon(icon)
+            ObjectIcon.TypeIcon.Deleted -> setTypeIcon(TypeIcon.Fallback.DEFAULT)
+            is ObjectIcon.TypeIcon.Emoji -> setEmoji(
+                emoji = icon.unicode,
+                fallback = TypeIcon.Fallback(rawValue = icon.rawValue)
+            )
         }
     }
 
@@ -177,7 +190,10 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    private fun setEmoji(emoji: String?) {
+    private fun setEmoji(
+        emoji: String?,
+        fallback: ObjectIcon.TypeIcon.Fallback
+    ) {
         if (!emoji.isNullOrBlank()) {
             with(binding) {
                 ivCheckbox.invisible()
@@ -189,17 +205,17 @@ class ObjectIconWidget @JvmOverloads constructor(
             }
             try {
                 val adapted = Emojifier.safeUri(emoji)
+
                 if (adapted != Emojifier.Config.EMPTY_URI) {
                     binding.tvEmojiFallback.gone()
+                    binding.ivEmoji.visible()
                     Glide
                         .with(this)
-                        .load(Emojifier.uri(emoji))
+                        .load(adapted)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(binding.ivEmoji)
                 } else {
-                    binding.ivEmoji.setImageDrawable(null)
-                    binding.tvEmojiFallback.text = emoji
-                    binding.tvEmojiFallback.visible()
+                    setTypeIcon(fallback)
                 }
             } catch (e: Throwable) {
                 Timber.w(e, "Error while setting emoji icon for: $emoji")
@@ -350,8 +366,44 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    private fun setCustomIcon(icon: ObjectIcon.ObjectType) {
-        val resId = context.resources.getIdentifier(icon.icon.drawableResId, DRAWABLE_DIR, context.packageName)
+    private fun setTypeIcon(icon: ObjectIcon.TypeIcon) {
+
+        //todo next PR
+        val (resId, tint) = when (icon) {
+            is ObjectIcon.TypeIcon.Default -> {
+                val resId = context.resources.getIdentifier(
+                    icon.drawableResId,
+                    DRAWABLE_DIR,
+                    context.packageName
+                )
+                if (resId != 0) {
+                    resId to context.getColor(icon.color.colorRes())
+                } else {
+                    0 to 0
+                }
+            }
+
+            ObjectIcon.TypeIcon.Deleted -> 0 to 0
+            is ObjectIcon.TypeIcon.Emoji -> 0 to 0
+            is ObjectIcon.TypeIcon.Fallback -> {
+                val resId = context.resources.getIdentifier(
+                    icon.drawableResId,
+                    DRAWABLE_DIR,
+                    context.packageName
+                )
+                if (resId != 0) {
+                    resId to context.getColor(CustomIconColor.Transparent.colorRes())
+                } else {
+                    val defaultFallback = ObjectIcon.TypeIcon.Fallback.DEFAULT
+                    context.resources.getIdentifier(
+                        defaultFallback.drawableResId,
+                        DRAWABLE_DIR,
+                        context.packageName
+                    ) to context.getColor(CustomIconColor.Transparent.colorRes())
+                }
+            }
+        }
+
         with(binding) {
             ivCheckbox.invisible()
             initialContainer.invisible()
@@ -359,53 +411,14 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.setImageDrawable(null)
             ivBookmark.gone()
             emojiContainer.visible()
+            ivEmoji.gone()
+            tvEmojiFallback.visible()
         }
         try {
-            if (resId != 0) {
-                val tint = context.getColor(icon.icon.color.colorRes())
-                binding.tvEmojiFallback.gone()
-                binding.ivEmoji.setImageResource(resId)
-                binding.ivEmoji.imageTintList = ColorStateList.valueOf(tint)
-            } else {
-                binding.ivEmoji.setImageDrawable(null)
-                binding.tvEmojiFallback.gone()
-                binding.tvEmojiFallback.visible()
-            }
+            binding.tvEmojiFallback.setImageResource(resId)
+            binding.tvEmojiFallback.imageTintList = ColorStateList.valueOf(tint)
         } catch (e: Throwable) {
             Timber.w(e, "Error while setting object type icon for")
-        }
-    }
-
-    private fun ObjectIcon.Empty.setEmptyIcon() {
-        val (drawable, containerBackground) = when (this) {
-            ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link to true
-            ObjectIcon.Empty.Chat -> R.drawable.ic_empty_state_chat to true
-            ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list to true
-            ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type to true
-            ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page to true
-            ObjectIcon.Empty.Date -> R.drawable.ic_obj_date_24 to false
-        }
-        val icon = context.drawable(drawable)
-        with(binding) {
-            ivEmoji.setImageDrawable(icon)
-            ivCheckbox.invisible()
-            initialContainer.invisible()
-            ivImage.invisible()
-            ivBookmark.setImageDrawable(null)
-            ivBookmark.gone()
-            if (containerBackground) {
-                emojiContainer.visible()
-            } else {
-                emojiContainer.visible()
-                emojiContainer.setBackgroundResource(0)
-            }
-        }
-    }
-
-    fun setIvEmojiSize(emojiSize: Int) {
-        binding.ivEmoji.updateLayoutParams<LayoutParams> {
-            this.height = emojiSize
-            this.width = emojiSize
         }
     }
 }

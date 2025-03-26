@@ -62,6 +62,8 @@ import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.*
+import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.EditProperty.OnLimitTypesClick
+import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.EditProperty.OnLimitTypesDismiss
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.FieldItemMenu.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
@@ -69,6 +71,7 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesEvent
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.ui.PropertyScreen
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -226,12 +229,12 @@ fun FieldsMainScreen(
             uiState = uiEditPropertyState,
             onDismissRequest = { fieldEvent(OnEditPropertyScreenDismiss) },
             onFormatClick = {},
-            onLimitTypesClick = {},
             onSaveButtonClicked = { fieldEvent(EditProperty.OnSaveButtonClicked) },
             onCreateNewButtonClicked = {},
             onPropertyNameUpdate = { fieldEvent(EditProperty.OnPropertyNameUpdate(it)) },
-            onMenuUnlinkClick = { fieldEvent(OnDeleteFromTypeClick(it)) }
-
+            onMenuUnlinkClick = { fieldEvent(OnDeleteFromTypeClick(it)) },
+            onLimitTypesClick = { fieldEvent(OnLimitTypesClick) },
+            onDismissLimitTypes = { fieldEvent(OnLimitTypesDismiss) },
         )
     }
 
@@ -671,7 +674,7 @@ fun ItemDropDownMenu(
 fun PreviewTypeFieldsMainScreen() {
     FieldsMainScreen(
         uiTitleState = UiTitleState(title = "Page", isEditable = false),
-        uiIconState = UiIconState(icon = ObjectIcon.Empty.ObjectType, isEditable = false),
+        uiIconState = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = false),
         uiFieldsListState = UiFieldsListState(
             items = listOf(
                 UiFieldsListItem.Section.Header(),
@@ -681,7 +684,8 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldTitle = "Status",
                     format = RelationFormat.STATUS,
                     isPossibleToUnlinkFromType = true,
-                    isEditableField = true
+                    isEditableField = true,
+                    limitObjectTypes = listOf()
                 ),
                 UiFieldsListItem.Item.Draggable(
                     id = "id2",
@@ -689,7 +693,8 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldTitle = "Very long field title, just to test how it looks",
                     format = RelationFormat.LONG_TEXT,
                     isPossibleToUnlinkFromType = true,
-                    isEditableField = true
+                    isEditableField = true,
+                    limitObjectTypes = listOf()
                 ),
                 UiFieldsListItem.Section.SideBar(
                     canAdd = true
@@ -700,7 +705,8 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldTitle = "Links",
                     format = RelationFormat.URL,
                     isEditableField = true,
-                    isPossibleToUnlinkFromType = true
+                    isPossibleToUnlinkFromType = true,
+                    limitObjectTypes = listOf()
                 ),
                 UiFieldsListItem.Item.Draggable(
                     id = "id4",
@@ -708,7 +714,8 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldTitle = "Very long field title, just to test how it looks",
                     format = RelationFormat.DATE,
                     isEditableField = true,
-                    isPossibleToUnlinkFromType = true
+                    isPossibleToUnlinkFromType = true,
+                    limitObjectTypes = listOf()
                 ),
                 UiFieldsListItem.Section.Hidden(),
                 UiFieldsListItem.Item.Draggable(
@@ -717,7 +724,8 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldTitle = "Hidden field",
                     format = RelationFormat.LONG_TEXT,
                     isEditableField = true,
-                    isPossibleToUnlinkFromType = true
+                    isPossibleToUnlinkFromType = true,
+                    limitObjectTypes = listOf()
                 ),
                 UiFieldsListItem.Section.Local(),
                 UiFieldsListItem.Item.Local(
@@ -725,14 +733,16 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldKey = "key5",
                     fieldTitle = "Local field",
                     format = RelationFormat.LONG_TEXT,
-                    isEditableField = true
+                    isEditableField = true,
+                    limitObjectTypes = listOf()
                 ),
                 UiFieldsListItem.Item.Local(
                     id = "id6",
                     fieldKey = "key6",
                     fieldTitle = "Local Very long field title, just to test how it looks",
                     format = RelationFormat.LONG_TEXT,
-                    isEditableField = true
+                    isEditableField = true,
+                    limitObjectTypes = listOf()
                 )
             )
         ),

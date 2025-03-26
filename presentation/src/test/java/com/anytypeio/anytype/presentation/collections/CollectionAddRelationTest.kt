@@ -134,7 +134,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                                 name = objectCollection.obj1.name.orEmpty(),
                                 description = objectCollection.obj1.description,
                                 hideIcon = false,
-                                icon = ObjectIcon.Empty.Page,
+                                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                                 relations = listOf(
                                     DefaultObjectRelationValueView.Empty(
                                         objectId = objectCollection.obj1.id,
@@ -155,7 +155,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                                 name = objectCollection.obj2.name.orEmpty(),
                                 description = objectCollection.obj2.description,
                                 hideIcon = false,
-                                icon = ObjectIcon.Empty.Page,
+                                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                                 relations = listOf(
                                     DefaultObjectRelationValueView.Empty(
                                         objectId = objectCollection.obj2.id,

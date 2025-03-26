@@ -5,195 +5,142 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Basic
-import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 
-fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
+fun ObjectWrapper.Basic.objectIcon(
+    builder: UrlBuilder,
+    objType: ObjectWrapper.Type?
+): ObjectIcon {
 
-    if (isDeleted == true) {
+    val obj = this
+
+    if (obj.isDeleted == true) {
         return ObjectIcon.Deleted
     }
 
-    val objectIcon = layout?.icon(
-        image = iconImage,
-        emoji = iconEmoji,
-        builder = builder,
-        name = name.orEmpty(),
-        iconName = iconName,
-        iconOption = iconOption?.toInt()
-    )
+    val objImage = obj.iconImage
+    val objEmoji = obj.iconEmoji
+    val objName = obj.name.orEmpty()
 
-    if (objectIcon != null) {
-        return objectIcon
-    }
-
-    if (SupportedLayouts.fileLayouts.contains(layout)) {
-        return fileIcon(
-            mime = fileMimeType,
-            name = name,
-            extensions = fileExt
-        )
-    }
-
-    if (layout == ObjectType.Layout.TODO) {
-        return taskIcon(isChecked = done == true)
-    }
-
-    return layout.emptyType()
-}
-
-fun ObjectWrapper.Type.objectIcon(builder: UrlBuilder): ObjectIcon {
-
-    if (isDeleted == true) {
-        return ObjectIcon.Deleted
-    }
-
-    val objectIcon = layout?.icon(
-        image = null,
-        emoji = iconEmoji,
-        builder = builder,
-        name = name.orEmpty(),
-        iconName = iconName,
-        iconOption = iconOption?.toInt()
-    )
-
-    if (objectIcon != null) {
-        return objectIcon
-    }
-
-    return layout.emptyType()
-}
-
-fun ObjectType.Layout?.emptyType(): ObjectIcon.Empty {
-    if (this == null) {
-        return ObjectIcon.Empty.Page
-    }
-    return when (this) {
-        ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> ObjectIcon.Empty.List
-        ObjectType.Layout.OBJECT_TYPE -> ObjectIcon.Empty.ObjectType
-        ObjectType.Layout.BOOKMARK -> ObjectIcon.Empty.Bookmark
-        ObjectType.Layout.CHAT, ObjectType.Layout.CHAT_DERIVED -> ObjectIcon.Empty.Chat
-        ObjectType.Layout.DATE -> ObjectIcon.Empty.Date
-        else -> ObjectIcon.Empty.Page
-    }
-}
-
-fun ObjectType.Layout.icon(
-    image: String?,
-    emoji: String?,
-    iconName: String?,
-    iconOption: Int?,
-    name: String,
-    builder: UrlBuilder
-): ObjectIcon? {
-    return when (this) {
-        ObjectType.Layout.OBJECT_TYPE -> handleObjectTypeIcon(
-            emoji = emoji,
-            iconName = iconName,
-            iconOption = iconOption
-        )
+    return when (obj.layout) {
+        ObjectType.Layout.OBJECT_TYPE -> {
+            val asType = ObjectWrapper.Type(map = obj.map)
+            asType.objectIcon()
+        }
 
         ObjectType.Layout.BASIC,
+        ObjectType.Layout.IMAGE,
         ObjectType.Layout.SET,
-        ObjectType.Layout.COLLECTION,
-        ObjectType.Layout.IMAGE -> basicIcon(
-            image = image,
-            emoji = emoji,
-            builder = builder,
-            layout = this
-        )
+        ObjectType.Layout.COLLECTION -> {
+            val fallback = objType?.objectFallbackIcon() ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
+            when {
+                !objImage.isNullOrBlank() -> Basic.Image(
+                    hash = builder.thumbnail(objImage),
+                    fallback = fallback
+                )
 
-        ObjectType.Layout.PROFILE,
-        ObjectType.Layout.PARTICIPANT -> profileIcon(
-            image = image,
-            name = name,
-            builder = builder
-        )
+                !objEmoji.isNullOrBlank() -> Basic.Emoji(
+                    unicode = objEmoji,
+                    fallback = fallback
+                )
 
-        ObjectType.Layout.BOOKMARK -> bookmarkIcon(
-            iconImage = image,
-            builder = builder
-        )
+                else -> fallback
+            }
+        }
 
-        ObjectType.Layout.DATE -> emptyType()
+        ObjectType.Layout.PARTICIPANT,
+        ObjectType.Layout.PROFILE -> {
+            when {
+                !objImage.isNullOrBlank() -> ObjectIcon.Profile.Image(
+                    hash = builder.thumbnail(objImage),
+                    name = objName
+                )
 
-        else -> null
-    }
-}
+                else -> ObjectIcon.Profile.Avatar(name = objName)
+            }
+        }
 
-/**
- * Handles icons for OBJECT_TYPE layout.
- */
-private fun handleObjectTypeIcon(
-    emoji: String?,
-    iconName: String?,
-    iconOption: Int?,
-): ObjectIcon? {
-    return when {
-        !emoji.isNullOrEmpty() -> {
-            Basic.Emoji(
-                unicode = emoji,
-                emptyState = ObjectType.Layout.OBJECT_TYPE.emptyType()
+        ObjectType.Layout.TODO -> {
+            ObjectIcon.Task(isChecked = obj.done == true)
+        }
+
+        ObjectType.Layout.FILE,
+        ObjectType.Layout.VIDEO,
+        ObjectType.Layout.AUDIO,
+        ObjectType.Layout.PDF -> {
+            ObjectIcon.File(
+                mime = obj.fileMimeType,
+                fileName = objName,
+                extensions = obj.fileExt
             )
         }
-        iconName.isNullOrEmpty() -> ObjectIcon.Empty.ObjectType
-        else -> ObjectIcon.ObjectType(
-            icon = CustomIcon(
-                rawValue = iconName,
-                color = CustomIconColor.fromIconOption(iconOption)
-            ),
+
+        ObjectType.Layout.BOOKMARK -> {
+            val fallback = objType?.objectFallbackIcon()
+                ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
+            when {
+                !objImage.isNullOrBlank() -> ObjectIcon.Bookmark(
+                    image = builder.thumbnail(objImage),
+                    fallback = fallback
+                )
+
+                else -> fallback
+            }
+        }
+
+        else -> {
+            objType?.objectFallbackIcon() ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
+        }
+    }
+}
+
+fun ObjectWrapper.Type.objectIcon(): ObjectIcon.TypeIcon {
+
+    if (isDeleted == true) {
+        return ObjectIcon.TypeIcon.Deleted
+    }
+
+    val objEmoji = iconEmoji
+    val objIconName = iconName
+    val objIconOption = iconOption
+    return when {
+
+        !objEmoji.isNullOrEmpty() -> {
+            ObjectIcon.TypeIcon.Emoji(
+                unicode = objEmoji,
+                rawValue = objIconName.orEmpty(),
+                color = CustomIconColor.fromIconOption(objIconOption?.toInt())
+            )
+        }
+
+        !objIconName.isNullOrEmpty() -> ObjectIcon.TypeIcon.Default(
+            rawValue = objIconName,
+            color = CustomIconColor.fromIconOption(objIconOption?.toInt())
+        )
+
+        else -> ObjectIcon.TypeIcon.Default(
+            rawValue = ObjectIcon.TypeIcon.Default.DEFAULT_CUSTOM_ICON,
+            color = CustomIconColor.DEFAULT
         )
     }
 }
 
-private fun basicIcon(
-    image: String?,
-    emoji: String?,
-    builder: UrlBuilder,
-    layout: ObjectType.Layout
-): ObjectIcon? {
+private fun ObjectWrapper.Type.objectFallbackIcon(): ObjectIcon.TypeIcon.Fallback {
+
+    val objIconName = iconName
     return when {
-        !image.isNullOrBlank() -> Basic.Image(
-            hash = builder.thumbnail(image),
-            emptyState = layout.emptyType()
+
+        !objIconName.isNullOrEmpty() -> ObjectIcon.TypeIcon.Fallback(
+            rawValue = objIconName
         )
 
-        !emoji.isNullOrBlank() -> Basic.Emoji(
-            unicode = emoji,
-            emptyState = layout.emptyType()
-        )
-
-        else -> null
+        else -> {
+            ObjectIcon.TypeIcon.Fallback.DEFAULT
+        }
     }
 }
 
-private fun profileIcon(image: String?, name: String, builder: UrlBuilder): ObjectIcon? {
-    return when {
-        !image.isNullOrBlank() -> ObjectIcon.Profile.Image(hash = builder.thumbnail(image))
-        else -> ObjectIcon.Profile.Avatar(name = name)
-    }
-}
-
-private fun bookmarkIcon(iconImage: String?, builder: UrlBuilder): ObjectIcon? {
-    return when {
-        !iconImage.isNullOrBlank() -> ObjectIcon.Bookmark(image = builder.thumbnail(iconImage))
-        else -> null
-    }
-}
-
-private fun fileIcon(
-    mime: String?,
-    name: String?,
-    extensions: String?
-): ObjectIcon {
-    return ObjectIcon.File(
-        mime = mime,
-        fileName = name,
-        extensions = extensions
-    )
-}
-
-private fun taskIcon(isChecked: Boolean): ObjectIcon {
-    return ObjectIcon.Task(isChecked = isChecked)
+@Deprecated("Use ObjectWrapper.Basic.icon(builder, objType) instead")
+fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
+    return ObjectIcon.None
 }

@@ -27,7 +27,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 fun ObjectWrapper.Basic.toTemplateView(
     objType: ObjectWrapper.Type,
     urlBuilder: UrlBuilder,
-    coverImageHashProvider: CoverImageHashProvider,
+    coverImageHashProvider: CoverImageHashProvider
 ): TemplateView.Template {
     val coverContainer = if (coverType != CoverType.NONE) {
         BasicObjectCoverWrapper(this)
@@ -66,7 +66,6 @@ suspend fun buildUiFieldsList(
     objType: ObjectWrapper.Type,
     stringResourceProvider: StringResourceProvider,
     fieldParser: FieldParser,
-    urlBuilder: UrlBuilder,
     storeOfObjectTypes: StoreOfObjectTypes,
     storeOfRelations: StoreOfRelations,
     objTypeConflictingFields: List<Id>,
@@ -85,7 +84,6 @@ suspend fun buildUiFieldsList(
             field = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -94,7 +92,6 @@ suspend fun buildUiFieldsList(
             field = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -103,7 +100,6 @@ suspend fun buildUiFieldsList(
             field = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -112,7 +108,6 @@ suspend fun buildUiFieldsList(
             field = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -123,7 +118,6 @@ suspend fun buildUiFieldsList(
             field = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -133,7 +127,6 @@ suspend fun buildUiFieldsList(
             field = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -169,19 +162,16 @@ suspend fun buildUiFieldsList(
  */
 private suspend fun mapLimitObjectTypes(
     relation: ObjectWrapper.Relation,
-    storeOfObjectTypes: StoreOfObjectTypes,
-    fieldParser: FieldParser,
-    urlBuilder: UrlBuilder
-): List<UiPropertyLimitTypeItem> {
+    storeOfObjectTypes: StoreOfObjectTypes
+): List<Id> {
     return if (relation.format == RelationFormat.OBJECT && relation.relationFormatObjectTypes.isNotEmpty()) {
-        relation.relationFormatObjectTypes.mapNotNull { key ->
-            storeOfObjectTypes.getByKey(key)?.let { objType ->
-                UiPropertyLimitTypeItem(
-                    id = objType.id,
-                    key = objType.uniqueKey,
-                    title = fieldParser.getObjectName(objType),
-                    icon = objType.objectIcon(urlBuilder)
-                )
+        relation.relationFormatObjectTypes.mapNotNull { id ->
+            storeOfObjectTypes.get(id)?.let { objType ->
+                if (objType.isValid) {
+                    objType.id
+                } else {
+                    null
+                }
             }
         }
     } else {
@@ -197,18 +187,16 @@ private suspend fun mapToUiFieldsDraggableListItem(
     field: ObjectWrapper.Relation,
     stringResourceProvider: StringResourceProvider,
     storeOfObjectTypes: StoreOfObjectTypes,
-    fieldParser: FieldParser,
-    urlBuilder: UrlBuilder
+    fieldParser: FieldParser
 ): UiFieldsListItem? {
     if (field.key == Relations.DESCRIPTION) return null
 
-    val limitObjectTypes = mapLimitObjectTypes(field, storeOfObjectTypes, fieldParser, urlBuilder)
     return Item.Draggable(
         id = field.id,
         fieldKey = field.key,
         fieldTitle = field.getName(stringResourceProvider),
         format = field.format,
-        limitObjectTypes = limitObjectTypes,
+        limitObjectTypes = mapLimitObjectTypes(field, storeOfObjectTypes),
         isEditableField = fieldParser.isFieldEditable(field),
         isPossibleToUnlinkFromType = fieldParser.isFieldCanBeDeletedFromType(field)
     )
@@ -223,17 +211,15 @@ private suspend fun mapToUiFieldsLocalListItem(
     stringResourceProvider: StringResourceProvider,
     storeOfObjectTypes: StoreOfObjectTypes,
     fieldParser: FieldParser,
-    urlBuilder: UrlBuilder
 ): UiFieldsListItem? {
     if (field.key == Relations.DESCRIPTION) return null
 
-    val limitObjectTypes = mapLimitObjectTypes(field, storeOfObjectTypes, fieldParser, urlBuilder)
     return Item.Local(
         id = field.id,
         fieldKey = field.key,
         fieldTitle = field.getName(stringResourceProvider),
         format = field.format,
-        limitObjectTypes = limitObjectTypes,
+        limitObjectTypes = mapLimitObjectTypes(field, storeOfObjectTypes),
         isEditableField = fieldParser.isFieldEditable(field)
     )
 }

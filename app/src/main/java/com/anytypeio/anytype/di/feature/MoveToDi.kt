@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -42,6 +43,7 @@ interface MoveToDependencies : ComponentDependencies {
     fun analytics(): Analytics
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
     fun  fieldParser(): FieldParser
+    fun storeOfObjectTypes(): StoreOfObjectTypes
 }
 
 @Module
@@ -57,7 +59,8 @@ object MoveToModule {
         searchObjects: SearchObjects,
         analytics: Analytics,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        storeOfObjectTypes: StoreOfObjectTypes
     ): MoveToViewModelFactory = MoveToViewModelFactory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
@@ -65,6 +68,7 @@ object MoveToModule {
         searchObjects = searchObjects,
         analytics = analytics,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes
     )
 }

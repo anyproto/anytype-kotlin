@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_ui.widgets
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,20 +12,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
-import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.AvatarIconView
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.CustomIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.BookmarkIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.DeletedIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmptyIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.ImageIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.ObjectIconProfile
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.TypeIconView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.placeholder
 
 @Composable
 fun ListWidgetObjectIcon(
@@ -37,28 +32,48 @@ fun ListWidgetObjectIcon(
     backgroundColor: Int = R.color.shape_tertiary
 ) {
     when (icon) {
-        is ObjectIcon.Profile.Avatar -> {
-            AvatarIconView(
+        is ObjectIcon.Profile -> {
+            ObjectIconProfile(
                 modifier = modifier,
                 iconSize = iconSize,
                 icon = icon
             )
         }
-        is ObjectIcon.Profile.Image -> {
-            DefaultProfileIconImage(icon, modifier, iconSize)
-        }
+
         is ObjectIcon.Basic.Emoji -> {
-            EmojiIconView(icon = icon, backgroundSize = iconSize, modifier = modifier, backgroundColor = backgroundColor)
+            EmojiIconView(
+                icon = icon,
+                backgroundSize = iconSize,
+                modifier = modifier,
+                backgroundColor = backgroundColor
+            )
         }
+
         is ObjectIcon.Basic.Image -> {
-            DefaultObjectImageIcon(icon.hash, modifier, iconSize, fallback = icon.emptyState)
+            ImageIconView(
+                icon = icon,
+                backgroundSize = iconSize,
+                modifier = modifier,
+            )
         }
+
         is ObjectIcon.Bookmark -> {
-            DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
+            BookmarkIconView(
+                modifier = modifier,
+                icon = icon,
+                backgroundSize = iconSize
+            )
         }
+
         is ObjectIcon.Task -> {
-            DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
+            DefaultTaskObjectIcon(
+                modifier = modifier,
+                iconSize = iconSize,
+                icon = icon,
+                onIconClicked = onTaskIconClicked
+            )
         }
+
         is ObjectIcon.File -> {
             DefaultFileObjectImageIcon(
                 fileName = icon.fileName.orEmpty(),
@@ -68,28 +83,27 @@ fun ListWidgetObjectIcon(
                 extension = icon.extensions
             )
         }
-        is ObjectIcon.Checkbox -> {}
         ObjectIcon.Deleted -> {
             DeletedIconView(
                 modifier = modifier,
                 backgroundSize = iconSize
             )
         }
-        is ObjectIcon.Empty -> {
-            EmptyIconView(
-                modifier = modifier,
-                emptyType = icon,
+
+        is ObjectIcon.TypeIcon ->
+            TypeIconView(
+                icon = icon,
                 backgroundSize = iconSize,
+                modifier = modifier,
                 backgroundColor = backgroundColor
             )
+
+        is ObjectIcon.Checkbox -> {
+            //do nothing
         }
-        ObjectIcon.None -> {}
-        is ObjectIcon.ObjectType -> {
-            CustomIconView(
-                icon = icon,
-                modifier = modifier,
-                iconSize = iconSize
-            )
+
+        ObjectIcon.None -> {
+            //do nothing
         }
     }
 }
@@ -119,61 +133,6 @@ fun DefaultTaskObjectIcon(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun DefaultObjectImageIcon(
-    url: Url,
-    modifier: Modifier,
-    iconSize: Dp,
-    fallback: ObjectIcon.Empty
-) {
-    GlideImage(
-        model = url,
-        contentDescription = "Icon from URI",
-        contentScale = ContentScale.Crop,
-        modifier = modifier
-            .size(iconSize)
-            .clip(RoundedCornerShape(2.dp)),
-        failure = placeholder(resourceId = imageAsset(fallback)),
-        loading = placeholder(resourceId = R.drawable.ic_icon_loading)
-    )
-}
-
-@Composable
-fun DefaultObjectBookmarkIcon(
-    url: Url,
-    modifier: Modifier,
-    iconSize: Dp
-) {
-    Box(modifier = modifier.size(iconSize)) {
-        Image(
-            painter = rememberAsyncImagePainter(url),
-            contentDescription = "Icon from URI",
-            modifier = Modifier
-                .align(Alignment.Center)
-                .size(24.dp)
-        )
-    }
-}
-
-
-
-@Composable
-fun DefaultProfileIconImage(
-    icon: ObjectIcon.Profile.Image,
-    modifier: Modifier,
-    iconSize: Dp
-) {
-    Image(
-        painter = rememberAsyncImagePainter(icon.hash),
-        contentDescription = "Icon from URI",
-        modifier = modifier
-            .size(iconSize)
-            .clip(CircleShape),
-        contentScale = ContentScale.Crop,
-    )
-}
-
 @Composable
 fun DefaultFileObjectImageIcon(
     fileName: String,
@@ -201,16 +160,5 @@ fun cornerRadius(size: Dp): Dp {
         in 48.dp..63.dp -> 6.dp
         in 64.dp..79.dp -> 8.dp
         else -> 12.dp
-    }
-}
-
-fun imageAsset(emptyType: ObjectIcon.Empty): Int {
-    return when (emptyType) {
-        ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link
-        ObjectIcon.Empty.Chat -> R.drawable.ic_empty_state_chat
-        ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list
-        ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type
-        ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page
-        ObjectIcon.Empty.Date -> R.drawable.ic_obj_date_24
     }
 }

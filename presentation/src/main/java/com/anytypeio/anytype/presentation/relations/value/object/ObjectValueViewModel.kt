@@ -185,7 +185,7 @@ class ObjectValueViewModel(
         objects: List<ObjectWrapper.Basic>,
         query: String = ""
     ) {
-        val views = mapObjects(ids, objects, query, fieldParser = fieldParser)
+        val views = mapObjects(ids, objects, query, fieldParser, storeOfObjectTypes)
         viewState.value = if (views.isNotEmpty()) {
             ObjectValueViewState.Content(
                 isEditableRelation = isEditableRelation,
@@ -222,7 +222,8 @@ class ObjectValueViewModel(
         ids: List<Id>,
         objects: List<ObjectWrapper.Basic>,
         query: String,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        storeOfObjectTypes : StoreOfObjectTypes
     ): List<ObjectValueItem.Object> = objects.mapNotNull { obj ->
         if (!obj.isValid) return@mapNotNull null
         if (query.isNotBlank() && obj.name?.contains(query, true) == false) return@mapNotNull null
@@ -233,7 +234,8 @@ class ObjectValueViewModel(
             view = obj.toView(
                 urlBuilder = urlBuilder,
                 objectTypes = storeOfObjectTypes.getAll(),
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             ),
             isSelected = isSelected,
             number = number,

@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
+@Deprecated("Before Primitives, to delete")
 class TypeEditViewModel(
     private val urlBuilder: UrlBuilder,
     private val id: Id,

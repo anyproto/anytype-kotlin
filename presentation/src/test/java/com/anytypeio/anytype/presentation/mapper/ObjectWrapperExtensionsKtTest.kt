@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
@@ -14,6 +15,7 @@ import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -37,6 +39,9 @@ class ObjectWrapperExtensionsKtTest {
 
     @Mock
     lateinit var stringResourceProvider: StringResourceProvider
+
+    @Mock
+    lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     lateinit var fieldParser: FieldParser
 
@@ -98,7 +103,7 @@ class ObjectWrapperExtensionsKtTest {
     }
 
     @Test
-    fun `should map to view with snippet as name when layout is note`() {
+    fun `should map to view with snippet as name when layout is note`() = runTest {
 
         val imageHash = "ycd79"
 
@@ -116,7 +121,8 @@ class ObjectWrapperExtensionsKtTest {
         val result = listOf(obj).toViews(
             urlBuilder = urlBuilder,
             objectTypes = listOf(),
-            fieldParser
+            fieldParser,
+            storeOfObjectTypes
         )
 
         assertEquals(
@@ -126,7 +132,7 @@ class ObjectWrapperExtensionsKtTest {
     }
 
     @Test
-    fun `should map to view with name as name when layout is not note`() {
+    fun `should map to view with name as name when layout is not note`() = runTest {
 
         val imageHash = "ycd79"
 
@@ -144,7 +150,8 @@ class ObjectWrapperExtensionsKtTest {
         val result = listOf(obj).toViews(
             urlBuilder = urlBuilder,
             objectTypes = listOf(),
-            fieldParser
+            fieldParser,
+            storeOfObjectTypes
         )
 
         assertEquals(
@@ -154,7 +161,7 @@ class ObjectWrapperExtensionsKtTest {
     }
 
     @Test
-    fun `should map to view proper snippet max 30 characters`() {
+    fun `should map to view proper snippet max 30 characters`() = runTest {
 
         val obj = ObjectWrapper.Basic(
             mapOf(
@@ -173,7 +180,8 @@ class ObjectWrapperExtensionsKtTest {
         val result = listOf(obj).toViews(
             urlBuilder = urlBuilder,
             objectTypes = listOf(),
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         assertEquals(

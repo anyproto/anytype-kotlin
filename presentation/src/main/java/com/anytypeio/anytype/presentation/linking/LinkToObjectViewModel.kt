@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +26,8 @@ class LinkToObjectViewModel(
     getObjectTypes: GetObjectTypes,
     analytics: Analytics,
     analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes,
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
@@ -33,7 +35,8 @@ class LinkToObjectViewModel(
     searchObjects = searchObjects,
     analytics = analytics,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-    fieldParser = fieldParser
+    fieldParser = fieldParser,
+    storeOfObjectTypes = storeOfObjectTypes
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)

@@ -16,9 +16,7 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Item
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
-import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.templates.TemplateView
@@ -191,13 +189,15 @@ private suspend fun mapToUiPropertiesDraggableListItem(
 ): UiFieldsListItem? {
     if (property.key == Relations.DESCRIPTION) return null
 
-    val limitObjectTypes = mapLimitObjectTypes(property, storeOfObjectTypes, fieldParser, urlBuilder)
     return Item.Draggable(
         id = property.id,
         fieldKey = property.key,
         fieldTitle = property.getName(stringResourceProvider),
         format = property.format,
-        limitObjectTypes = mapLimitObjectTypes(field, storeOfObjectTypes),
+        limitObjectTypes = mapLimitObjectTypes(
+            property = property,
+            storeOfObjectTypes = storeOfObjectTypes
+        ),
         isEditableField = fieldParser.isPropertyEditable(property),
         isPossibleToUnlinkFromType = fieldParser.isPropertyCanBeDeletedFromType(property)
     )
@@ -215,13 +215,15 @@ private suspend fun mapToUiPropertiesLocalListItem(
 ): UiFieldsListItem? {
     if (property.key == Relations.DESCRIPTION) return null
 
-    val limitObjectTypes = mapLimitObjectTypes(property, storeOfObjectTypes, fieldParser, urlBuilder)
     return Item.Local(
         id = property.id,
         fieldKey = property.key,
         fieldTitle = property.getName(stringResourceProvider),
         format = property.format,
-        limitObjectTypes = mapLimitObjectTypes(field, storeOfObjectTypes),
+        limitObjectTypes = mapLimitObjectTypes(
+            property = property,
+            storeOfObjectTypes = storeOfObjectTypes
+        ),
         isEditableField = fieldParser.isPropertyEditable(property)
     )
 }

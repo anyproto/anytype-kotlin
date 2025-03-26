@@ -249,7 +249,6 @@ import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.core_models.ObjectViewDetails
-import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
@@ -268,6 +267,7 @@ import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
+import com.anytypeio.anytype.presentation.objects.getFeaturedPropertiesIds
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
@@ -776,17 +776,6 @@ class EditorViewModel(
                 if (currentObj == null) {
                     return@withLatestFrom emptyList()
                 }
-                val currentObjType = storeOfObjectTypes.getTypeOfObject(currentObj)
-                val featurePropertiesIds = if (currentObjType != null) {
-                    val parsedProperties = fieldParser.getObjectParsedProperties(
-                        objectType = currentObjType,
-                        objPropertiesKeys = currentObj.map.keys.toList(),
-                        storeOfRelations = storeOfRelations
-                    )
-                    parsedProperties.header.map { it.id }
-                } else {
-                    emptyList()
-                }
 
                 val permission = permission.value
                 val root = models.first { it.id == context }
@@ -825,7 +814,11 @@ class EditorViewModel(
                     restrictions = orchestrator.stores.objectRestrictions.current(),
                     selection = currentSelection(),
                     storeOfRelations = storeOfRelations,
-                    featurePropertiesIds = featurePropertiesIds
+                    featurePropertiesIds = currentObj.getFeaturedPropertiesIds(
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        storeOfRelations = storeOfRelations,
+                        fieldParser = fieldParser
+                    )
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
                 if (flags.isNotEmpty()) {
                     doc.fillTableOfContents()

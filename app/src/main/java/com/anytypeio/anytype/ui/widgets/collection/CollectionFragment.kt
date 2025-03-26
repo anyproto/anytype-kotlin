@@ -134,6 +134,8 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         objectId = command.target,
                         space = command.space
                     )
+                }.onFailure {
+                    Timber.e(it, "Error while opening object type from expanded widget screen")
                 }
             }
             is Command.OpenShareScreen -> {

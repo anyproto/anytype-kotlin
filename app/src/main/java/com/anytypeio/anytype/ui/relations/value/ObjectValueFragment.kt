@@ -30,6 +30,7 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModelFactory
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -122,8 +123,15 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
                         )
                     )
                 }
-                OpenObjectNavigation.NonValidObject -> {
-                    toast(getString(R.string.error_non_valid_object))
+                is OpenObjectNavigation.OpenType -> {
+                    runCatching {
+                        navigation().openObjectType(
+                            objectId = nav.target,
+                            space = nav.space
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening object type from ")
+                    }
                 }
                 is OpenObjectNavigation.OpenDateObject -> {
                     runCatching {
@@ -138,11 +146,11 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
                         Timber.e(it, "Failed to navigate to date object screen")
                     }
                 }
+                OpenObjectNavigation.NonValidObject -> {
+                    toast(getString(R.string.error_non_valid_object))
+                }
                 is OpenObjectNavigation.UnexpectedLayoutError -> {
                     toast(getString(R.string.error_unexpected_layout))
-                }
-                else -> {
-                    // Do nothing.
                 }
             }
         }

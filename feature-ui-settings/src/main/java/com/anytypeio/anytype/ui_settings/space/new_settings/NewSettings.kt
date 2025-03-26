@@ -270,6 +270,18 @@ fun NewSpaceSettingsScreen(
                             }
                         }
 
+                        is UiSpaceSettingsItem.Bin -> {
+                            item {
+                                BinItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable { uiEvent(UiEvent.OnBinClick) }
+                                )
+                            }
+                        }
+
                         is UiSpaceSettingsItem.Section -> {
                             item {
                                 SpaceSettingsSection(

@@ -206,6 +206,8 @@ class SpaceSettingsViewModel(
                         UiSpaceSettingsItem.Wallpapers(current = wallpaper),
                         UiSpaceSettingsItem.Section.DataManagement,
                         UiSpaceSettingsItem.RemoteStorage,
+                        Spacer(height = 8),
+                        UiSpaceSettingsItem.Bin,
                         UiSpaceSettingsItem.Section.Misc,
                         UiSpaceSettingsItem.SpaceInfo,
                         Spacer(height = 8),
@@ -240,6 +242,11 @@ class SpaceSettingsViewModel(
             UiEvent.OnRemoteStorageClick -> {
                 viewModelScope.launch {
                     commands.emit(Command.ManageRemoteStorage)
+                }
+            }
+            UiEvent.OnBinClick -> {
+                viewModelScope.launch {
+                    commands.emit(Command.ManageBin(vmParams.space))
                 }
             }
             UiEvent.OnInviteClicked -> {
@@ -617,6 +624,7 @@ class SpaceSettingsViewModel(
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
+        data class ManageBin(val space: SpaceId) : Command()
         data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) : Command()
         data object ExitToVault : Command()
         data object ShowDeleteSpaceWarning : Command()

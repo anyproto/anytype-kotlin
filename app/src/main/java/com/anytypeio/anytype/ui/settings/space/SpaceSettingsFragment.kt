@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListene
 import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
+import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
 import java.io.File
 import javax.inject.Inject
@@ -172,6 +174,19 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
                         )
                     }.onFailure {
                         Timber.e(it, "Failed to execute nav command: $command")
+                    }
+                }
+                is Command.ManageBin -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.homeScreenWidgets,
+                            CollectionFragment.args(
+                                subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                                space = space
+                            )
+                        )
+                    }.onFailure {
+                        Timber.w(it, "Error while opening bin from widgets")
                     }
                 }
             }

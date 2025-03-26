@@ -118,6 +118,16 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         Timber.e(it, "Failed to open a chat from all content")
                     }
                 }
+                is DateObjectCommand.OpenType -> {
+                    runCatching {
+                        navigation().openObjectType(
+                            objectId = effect.target,
+                            space = effect.space.id
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Failed to open type object from data object")
+                    }
+                }
                 DateObjectCommand.OpenGlobalSearch -> {
                     runCatching {
                         findNavController().navigate(

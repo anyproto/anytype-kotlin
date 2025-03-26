@@ -666,7 +666,14 @@ class DateObjectViewModel(
                         )
                     )
                 }
-
+                is OpenObjectNavigation.OpenType -> {
+                    effects.emit(
+                        DateObjectCommand.OpenType(
+                            target = navigation.target,
+                            space = SpaceId(navigation.space)
+                        )
+                    )
+                }
                 OpenObjectNavigation.NonValidObject -> {
                     Timber.e("Object id is missing")
                 }

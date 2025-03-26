@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 sealed class DateObjectCommand {
     data class OpenChat(val target: Id, val space: SpaceId) : DateObjectCommand()
+    data class OpenType(val target: Id, val space: SpaceId) : DateObjectCommand()
     data class NavigateToEditor(val id: Id, val space: SpaceId) : DateObjectCommand()
     data class NavigateToSetOrCollection(val id: Id, val space: SpaceId) : DateObjectCommand()
     data class NavigateToDateObject(val objectId: Id, val space: SpaceId) : DateObjectCommand()

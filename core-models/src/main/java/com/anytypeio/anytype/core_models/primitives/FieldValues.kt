@@ -23,7 +23,7 @@ data class FieldDateValue(
     val relativeDate: RelativeDate
 )
 
-data class ParsedFields(
+data class ParsedProperties(
     val header: List<ObjectWrapper.Relation> = emptyList(),
     val sidebar: List<ObjectWrapper.Relation> = emptyList(),
     val hidden: List<ObjectWrapper.Relation> = emptyList(),

@@ -30,6 +30,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Mode
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.mapper.toFileView
@@ -38,6 +39,7 @@ import com.anytypeio.anytype.presentation.mapper.toVideoView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
+import com.anytypeio.anytype.presentation.objects.getFeaturedPropertiesIds
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
@@ -72,8 +74,6 @@ class DefaultBlockViewRenderer @Inject constructor(
         selection: Set<Id>,
         count: Int,
         parentScheme: NestedDecorationData,
-        storeOfRelations: StoreOfRelations,
-        featurePropertiesIds: List<Id>,
         onRenderFlag: (BlockViewRenderer.RenderFlag) -> Unit,
     ): List<BlockView> {
 
@@ -141,9 +141,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
-                                        storeOfRelations = storeOfRelations,
-                                        featurePropertiesIds = featurePropertiesIds
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -188,9 +186,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
-                                        storeOfRelations = storeOfRelations,
-                                        featurePropertiesIds = featurePropertiesIds
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -227,9 +223,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
-                                        storeOfRelations = storeOfRelations,
-                                        featurePropertiesIds = featurePropertiesIds
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -269,9 +263,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
-                                        storeOfRelations = storeOfRelations,
-                                        featurePropertiesIds = featurePropertiesIds
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -311,9 +303,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
-                                        storeOfRelations = storeOfRelations,
-                                        featurePropertiesIds = featurePropertiesIds
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -353,9 +343,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
-                                        storeOfRelations = storeOfRelations,
-                                        featurePropertiesIds = featurePropertiesIds
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -398,9 +386,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = (normalized + current),
-                                        storeOfRelations = storeOfRelations,
-                                        featurePropertiesIds = featurePropertiesIds
+                                        parentScheme = (normalized + current)
                                     )
                                 )
                             }
@@ -436,9 +422,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
-                                        storeOfRelations = storeOfRelations,
-                                        featurePropertiesIds = featurePropertiesIds
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -495,9 +479,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
-                                        storeOfRelations = storeOfRelations,
-                                        featurePropertiesIds = featurePropertiesIds
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -536,9 +518,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
-                                        storeOfRelations = storeOfRelations,
-                                        featurePropertiesIds = featurePropertiesIds
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -582,9 +562,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         restrictions = restrictions,
                                         selection = selection,
                                         onRenderFlag = onRenderFlag,
-                                        parentScheme = blockDecorationScheme,
-                                        storeOfRelations = storeOfRelations,
-                                        featurePropertiesIds = featurePropertiesIds
+                                        parentScheme = blockDecorationScheme
                                     )
                                 )
                             }
@@ -704,9 +682,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             restrictions = restrictions,
                             selection = selection,
                             count = mCounter,
-                            onRenderFlag = onRenderFlag,
-                            storeOfRelations = storeOfRelations,
-                            featurePropertiesIds = featurePropertiesIds
+                            onRenderFlag = onRenderFlag
                         )
                     )
                 }
@@ -737,13 +713,10 @@ class DefaultBlockViewRenderer @Inject constructor(
                     val featured = featured(
                         ctx = root.id,
                         block = block,
-                        details = details,
-                        fieldParser = fieldParser,
-                        storeOfObjectTypes = storeOfObjectTypes,
-                        featurePropertiesIds = featurePropertiesIds
+                        details = details
                     )
 
-                    if (featured.relations.isNotEmpty()) {
+                    if (!featured?.relations.isNullOrEmpty()) {
                         result.add(featured)
                     }
                 }
@@ -2104,24 +2077,19 @@ class DefaultBlockViewRenderer @Inject constructor(
     private suspend fun featured(
         ctx: Id,
         block: Block,
-        details: ObjectViewDetails,
-        fieldParser: FieldParser,
-        storeOfObjectTypes: StoreOfObjectTypes,
-        featurePropertiesIds: List<Key>
-    ): BlockView.FeaturedRelation {
-        val obj = details.getObject(ctx)
+        details: ObjectViewDetails
+    ): BlockView.FeaturedRelation? {
+        val obj = details.getObject(ctx) ?: return null
         val views = mapFeaturedRelations(
             ctx = ctx,
-            featurePropertiesIds = featurePropertiesIds,
             details = details,
-            fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes
+            currentObject = obj
         )
         return BlockView.FeaturedRelation(
             id = block.id,
             relations = views,
-            allowChangingObjectType = obj?.type?.contains(BOOKMARK) != true,
-            isTodoLayout = obj?.layout == ObjectType.Layout.TODO
+            allowChangingObjectType = obj.type.contains(BOOKMARK) != true,
+            isTodoLayout = obj.layout == ObjectType.Layout.TODO
         )
     }
 
@@ -2150,46 +2118,61 @@ class DefaultBlockViewRenderer @Inject constructor(
 
     private suspend fun mapFeaturedRelations(
         ctx: Id,
-        featurePropertiesIds: List<Id>,
+        currentObject: ObjectWrapper.Basic,
         details: ObjectViewDetails,
-        fieldParser: FieldParser,
-        storeOfObjectTypes: StoreOfObjectTypes
-    ): List<ObjectRelationView> = featurePropertiesIds.mapNotNull { id ->
+    ): List<ObjectRelationView> {
 
-        val property = storeOfRelations.getById(id = id) ?: return@mapNotNull null
+        val objectFeaturedPropertiesKeys = currentObject.featuredRelations
 
-        when (property.key) {
-            Relations.DESCRIPTION -> null
-            Relations.TYPE -> {
-                val objectTypeId = details.getObject(ctx)?.getProperType()
-                if (objectTypeId != null) {
-                    details.objectTypeRelation(
-                        relationKey = property.key,
-                        isFeatured = true,
-                        objectTypeId = objectTypeId
-                    )
-                } else {
-                    null
+        val featuredProperties = if (objectFeaturedPropertiesKeys.isNotEmpty()) {
+            objectFeaturedPropertiesKeys.mapNotNull { key ->
+                storeOfRelations.getByKey(key)
+            }
+        } else {
+            currentObject.getFeaturedPropertiesIds(
+                storeOfRelations = storeOfRelations,
+                storeOfObjectTypes = storeOfObjectTypes,
+                fieldParser = fieldParser
+            ).mapNotNull { id ->
+                storeOfRelations.getById(id = id)
+            }
+        }
+
+        return featuredProperties.mapNotNull { property ->
+
+            when (property.key) {
+                Relations.DESCRIPTION -> null
+                Relations.TYPE -> {
+                    val objectTypeId = details.getObject(ctx)?.getProperType()
+                    if (objectTypeId != null) {
+                        details.objectTypeRelation(
+                            relationKey = property.key,
+                            isFeatured = true,
+                            objectTypeId = objectTypeId
+                        )
+                    } else {
+                        null
+                    }
                 }
-            }
-            Relations.BACKLINKS, Relations.LINKS -> {
-                details.linksFeaturedRelation(
-                    relations = storeOfRelations.getAll(),
-                    ctx = ctx,
-                    relationKey = property.key,
-                    isFeatured = true
-                )
-            }
-            else -> {
-                val values = details.getObject(ctx)?.map.orEmpty()
-                property.view(
-                    details = details,
-                    values = values,
-                    urlBuilder = urlBuilder,
-                    isFeatured = true,
-                    fieldParser = fieldParser,
-                    storeOfObjectTypes = storeOfObjectTypes
-                )
+                Relations.BACKLINKS, Relations.LINKS -> {
+                    details.linksFeaturedRelation(
+                        relations = storeOfRelations.getAll(),
+                        ctx = ctx,
+                        relationKey = property.key,
+                        isFeatured = true
+                    )
+                }
+                else -> {
+                    val values = details.getObject(ctx)?.map.orEmpty()
+                    property.view(
+                        details = details,
+                        values = values,
+                        urlBuilder = urlBuilder,
+                        isFeatured = true,
+                        fieldParser = fieldParser,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                }
             }
         }
     }

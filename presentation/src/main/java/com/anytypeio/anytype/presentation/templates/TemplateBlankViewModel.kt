@@ -118,9 +118,7 @@ class TemplateBlankViewModel(
                 indent = EditorViewModel.INITIAL_INDENT,
                 details = customDetails,
                 restrictions = emptyList(),
-                selection = emptySet(),
-                storeOfRelations = storeOfRelations,
-                featurePropertiesIds = featuredPropertiesIds
+                selection = emptySet()
             )
         }
     }

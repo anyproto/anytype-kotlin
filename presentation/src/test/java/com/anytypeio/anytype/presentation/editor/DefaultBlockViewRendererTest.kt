@@ -37,7 +37,6 @@ import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
-import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
@@ -51,7 +50,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import kotlin.random.Random
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
@@ -130,7 +128,6 @@ class DefaultBlockViewRendererTest {
             restrictions = restrictions,
             selection = emptySet(),
             parentScheme = schema,
-            storeOfRelations = storeOfRelations,
             featurePropertiesKeys = emptyList()
         )
     }

@@ -66,7 +66,6 @@ class TableBlockRendererTest {
             details = details,
             restrictions = restrictions,
             selection = selections,
-            storeOfRelations = storeOfRelations,
             featurePropertiesKeys = listOf()
         )
     }

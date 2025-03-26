@@ -267,7 +267,6 @@ import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
-import com.anytypeio.anytype.presentation.objects.getFeaturedPropertiesIds
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
@@ -769,14 +768,9 @@ class EditorViewModel(
             .onEach { document -> refreshStyleToolbar(document) }
             .withLatestFrom(
                 orchestrator.stores.focus.stream(),
-                orchestrator.stores.details.stream(),
-                storeOfObjectTypes.trackChanges()
-            ) { models, focus, objectViewDetails, _ ->
+                orchestrator.stores.details.stream()
+            ) { models, focus, objectViewDetails ->
                 val currentObj = objectViewDetails.getObject(vmParams.ctx)
-                if (currentObj == null) {
-                    return@withLatestFrom emptyList()
-                }
-
                 val permission = permission.value
                 val root = models.first { it.id == context }
                 if (mode == EditorMode.Locked) {
@@ -812,13 +806,7 @@ class EditorViewModel(
                     indent = INITIAL_INDENT,
                     details = objectViewDetails,
                     restrictions = orchestrator.stores.objectRestrictions.current(),
-                    selection = currentSelection(),
-                    storeOfRelations = storeOfRelations,
-                    featurePropertiesIds = currentObj.getFeaturedPropertiesIds(
-                        storeOfObjectTypes = storeOfObjectTypes,
-                        storeOfRelations = storeOfRelations,
-                        fieldParser = fieldParser
-                    )
+                    selection = currentSelection()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
                 if (flags.isNotEmpty()) {
                     doc.fillTableOfContents()

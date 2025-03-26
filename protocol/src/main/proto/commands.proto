@@ -4112,6 +4112,188 @@ message Rpc {
         }
     }
 
+    message AI {
+        message WritingTools {
+            message Request {
+                ProviderConfig config = 1;
+                WritingMode mode = 2;
+                Language language = 3;
+                string text = 4;
+
+                enum WritingMode {
+                    DEFAULT = 0;
+                    SUMMARIZE = 1;
+                    GRAMMAR = 2;
+                    SHORTEN = 3;
+                    EXPAND = 4;
+                    BULLET = 5;
+                    TABLE = 6;
+                    CASUAL = 7;
+                    FUNNY = 8;
+                    CONFIDENT = 9;
+                    STRAIGHTFORWARD = 10;
+                    PROFESSIONAL = 11;
+                    TRANSLATE = 12;
+                    // ...
+                }
+
+                enum Language {
+                    EN = 0;
+                    ES = 1;
+                    FR = 2;
+                    DE = 3;
+                    IT = 4;
+                    PT = 5;
+                    HI = 6;
+                    TH = 7;
+                    // ...
+                }
+            }
+
+            message Response {
+                Error error = 1;
+                string text = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        RATE_LIMIT_EXCEEDED = 100;
+                        ENDPOINT_NOT_REACHABLE = 101;
+                        MODEL_NOT_FOUND = 102;
+                        AUTH_REQUIRED = 103;
+                        LANGUAGE_NOT_SUPPORTED = 104;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message Autofill {
+            message Request {
+                ProviderConfig config = 1;
+                AutofillMode mode = 2;
+                repeated string options = 3;
+                repeated string context = 4;
+
+                enum AutofillMode {
+                    TAG = 0;
+                    RELATION = 1;
+                    TYPE = 2;
+                    TITLE = 3;
+                    DESCRIPTION = 4;
+                    // ...
+                }
+            }
+
+            message Response {
+                Error error = 1;
+                string text = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        RATE_LIMIT_EXCEEDED = 100;
+                        ENDPOINT_NOT_REACHABLE = 101;
+                        MODEL_NOT_FOUND = 102;
+                        AUTH_REQUIRED = 103;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message ListSummary {
+            message Request {
+                ProviderConfig config = 1;
+                string spaceId = 2;
+                repeated string objectIds = 3;
+                string prompt = 4;
+            }
+
+            message Response {
+                Error error = 1;
+                string objectId = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        RATE_LIMIT_EXCEEDED = 100;
+                        ENDPOINT_NOT_REACHABLE = 101;
+                        MODEL_NOT_FOUND = 102;
+                        AUTH_REQUIRED = 103;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message ObjectCreateFromUrl {
+            message Request {
+                ProviderConfig config = 1;
+                string spaceId = 2;
+                string url = 3;
+                google.protobuf.Struct details = 4;
+            }
+
+            message Response {
+                Error error = 1;
+                string objectId = 2;
+                google.protobuf.Struct details = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        RATE_LIMIT_EXCEEDED = 100;
+                        ENDPOINT_NOT_REACHABLE = 101;
+                        MODEL_NOT_FOUND = 102;
+                        AUTH_REQUIRED = 103;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message ProviderConfig {
+            Provider provider = 1;
+            string endpoint = 2;
+            string model = 3;
+            string token = 4;
+            float temperature = 5;
+        }
+
+        enum Provider {
+            OLLAMA = 0;
+            OPENAI = 1;
+            LMSTUDIO = 2;
+            LLAMACPP = 3;
+            // ...
+        }
+    }
+
     message Gallery {
         message DownloadManifest {
             message Request {
@@ -6080,6 +6262,30 @@ message Rpc {
             }
         }
         message Relation {
+            message Set {
+                message Request {
+                    string contextId = 1;
+                    string blockId = 2; // id of dataview block to set relation
+                    repeated string relationKeys = 3;
+                }
+
+                message Response {
+                    Error error = 1;
+                    ResponseEvent event = 2;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                        }
+                    }
+                }
+            }
+
             message Add {
                 message Request {
                     string contextId = 1;
@@ -8040,6 +8246,26 @@ message Rpc {
             message Response {
                 Error error = 1;
                 string subId = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message UnsubscribeFromMessagePreviews {
+            message Request {}
+
+            message Response {
+                Error error = 1;
 
                 message Error {
                     Code code = 1;

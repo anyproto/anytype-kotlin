@@ -11,6 +11,9 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
@@ -21,6 +24,9 @@ import timber.log.Timber
 
 class TemplateBlankViewModel(
     private val renderer: DefaultBlockViewRenderer,
+    private val storeOfRelations: StoreOfRelations,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val fieldParser: FieldParser
 ) : BaseViewModel(), BlockViewRenderer by renderer {
 
     val state = MutableStateFlow<List<BlockView>>(emptyList())
@@ -69,14 +75,12 @@ class TemplateBlankViewModel(
             children = listOf(headerBlock.id),
             fields = Block.Fields.empty(),
         )
-        val featuredRelations = listOf(Relations.TYPE)
         val page = listOf(rootBlock, headerBlock, blockTitle, featuredRelationsBlock)
         val objectDetails = mapOf(
             DEFAULT_TEMPLATE_ID_BLANK to mapOf(
                 Relations.ID to DEFAULT_TEMPLATE_ID_BLANK,
                 Relations.LAYOUT to layout,
                 Relations.TYPE to typeId,
-                Relations.FEATURED_RELATIONS to featuredRelations,
                 Relations.IS_DELETED to false
             )
         )
@@ -95,6 +99,16 @@ class TemplateBlankViewModel(
                 details = mapOf(DEFAULT_TEMPLATE_ID_BLANK to objectDetails, typeId to typeDetails))
 
         viewModelScope.launch {
+            val objType = storeOfObjectTypes.get(typeId)
+            val featuredPropertiesIds = if (objType != null) {
+                fieldParser.getObjectParsedProperties(
+                    objectType = objType,
+                    objPropertiesKeys = listOf(),
+                    storeOfRelations = storeOfRelations
+                ).header.map { it.id }
+            } else {
+                emptyList()
+            }
             state.value = page.asMap().render(
                 context = DEFAULT_TEMPLATE_ID_BLANK,
                 mode = Editor.Mode.Read,
@@ -104,7 +118,9 @@ class TemplateBlankViewModel(
                 indent = EditorViewModel.INITIAL_INDENT,
                 details = customDetails,
                 restrictions = emptyList(),
-                selection = emptySet()
+                selection = emptySet(),
+                storeOfRelations = storeOfRelations,
+                featurePropertiesIds = featuredPropertiesIds
             )
         }
     }

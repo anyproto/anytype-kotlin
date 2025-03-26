@@ -97,9 +97,9 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
         val objectType = StubObjectType(
             id = objectTypeId,
-            name = "Object Type"
+            name = "Object Type",
+            recommendedFeaturedRelations = listOf(r1.id, r2.id, r3.id),
         )
-
 
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
@@ -111,7 +111,6 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 r2.key to value2,
                 r3.key to value3,
                 Relations.TYPE to objectType.id,
-                Relations.FEATURED_RELATIONS to listOf(Relations.TYPE),
                 Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble()
             )
 
@@ -120,7 +119,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 Relations.ID to objectTypeId,
                 Relations.UNIQUE_KEY to objectType.uniqueKey,
                 Relations.NAME to objectTypeName,
-                Relations.DESCRIPTION to objectTypeDescription
+                Relations.DESCRIPTION to objectTypeDescription,
+                Relations.RECOMMENDED_FEATURED_RELATIONS to listOf<>()
             )
         val customDetails = ObjectViewDetails(
             mapOf(
@@ -202,7 +202,6 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
         val doc = listOf(page, header, featuredBlock)
 
-        val objectTypeId = "objectTypeId"
         val objectTypeName = "objectTypeName"
         val objectTypeDescription = "objectTypeDesc"
 
@@ -210,12 +209,6 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         val r2 = StubRelationObject(name = "De")
         val r3 = StubRelationObject(name = "HJ")
         val objectRelations = listOf(r1, r2, r3)
-
-        val relationObjectType = StubObjectType(
-            id = objectTypeId,
-            name = "Object Type"
-        )
-
 
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
@@ -226,22 +219,15 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 r1.key to value1,
                 r2.key to value2,
                 r3.key to value3,
-                Relations.TYPE to objectTypeId,
+                Relations.TYPE to objType.id,
                 Relations.FEATURED_RELATIONS to listOf(Relations.TYPE),
                 Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
             )
 
-        val objectTypeFields =
-            mapOf(
-                Relations.ID to objectTypeId,
-                Relations.UNIQUE_KEY to MockDataFactory.randomString(),
-                Relations.NAME to objectTypeName,
-                Relations.DESCRIPTION to objectTypeDescription
-            )
         val customDetails = ObjectViewDetails(
             mapOf(
                 root to objectFields,
-                objectTypeId to objectTypeFields
+                objType.id to objType.map
             )
         )
 
@@ -266,12 +252,12 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 id = featuredBlock.id,
                 relations = listOf(
                     ObjectRelationView.ObjectType.Base(
-                        id = objectTypeId,
+                        id = objType.id,
                         key = Relations.TYPE,
                         name = objectTypeName,
                         value = null,
                         featured = true,
-                        type = objectTypeId,
+                        type = objType.id,
                         system = true
                     )
                 )

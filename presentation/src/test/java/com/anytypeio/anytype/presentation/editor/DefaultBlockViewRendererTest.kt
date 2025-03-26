@@ -65,31 +65,6 @@ import org.mockito.kotlin.stub
 
 class DefaultBlockViewRendererTest {
 
-    class BlockViewRenderWrapper(
-        private val blocks: Map<Id, List<Block>>,
-        private val renderer: BlockViewRenderer,
-        private val restrictions: List<ObjectRestriction> = emptyList()
-    ) : BlockViewRenderer by renderer {
-        suspend fun render(
-            root: Block,
-            anchor: Id,
-            focus: Editor.Focus,
-            indent: Int,
-            details: ObjectViewDetails,
-            schema: NestedDecorationData = emptyList()
-        ): List<BlockView> = blocks.render(
-            context = root.id,
-            root = root,
-            focus = focus,
-            anchor = anchor,
-            indent = indent,
-            details = details,
-            restrictions = restrictions,
-            selection = emptySet(),
-            parentScheme = schema
-        )
-    }
-
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
         .minPriority(Log.DEBUG)
@@ -119,7 +94,7 @@ class DefaultBlockViewRendererTest {
 
     private lateinit var wrapper: BlockViewRenderWrapper
 
-    private var storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+    val storeOfRelations = DefaultStoreOfRelations()
 
     private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
@@ -131,6 +106,34 @@ class DefaultBlockViewRendererTest {
 
     @Mock
     lateinit var stringResourceProvider: StringResourceProvider
+
+    class BlockViewRenderWrapper(
+        private val blocks: Map<Id, List<Block>>,
+        private val renderer: BlockViewRenderer,
+        private val restrictions: List<ObjectRestriction> = emptyList(),
+        private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+    ) : BlockViewRenderer by renderer {
+        suspend fun render(
+            root: Block,
+            anchor: Id,
+            focus: Editor.Focus,
+            indent: Int,
+            details: ObjectViewDetails,
+            schema: NestedDecorationData = emptyList()
+        ): List<BlockView> = blocks.render(
+            context = root.id,
+            root = root,
+            focus = focus,
+            anchor = anchor,
+            indent = indent,
+            details = details,
+            restrictions = restrictions,
+            selection = emptySet(),
+            parentScheme = schema,
+            storeOfRelations = storeOfRelations,
+            featurePropertiesKeys = emptyList()
+        )
+    }
 
     @Before
     fun setup() {

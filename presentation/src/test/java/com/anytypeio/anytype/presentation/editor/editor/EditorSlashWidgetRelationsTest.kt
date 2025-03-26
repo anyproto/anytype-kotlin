@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
@@ -188,7 +189,13 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
+        val fields = mapOf(
+            r1.key to value1,
+            r2.key to value2,
+            r3.key to value3,
+            Relations.ID to root,
+            Relations.TYPE to listOf(objType.id),
+        )
         val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()
@@ -311,7 +318,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
+        val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3, Relations.ID to root,
+            Relations.TYPE to listOf(objType.id),)
         val customDetails = ObjectViewDetails(details = mapOf(root to fields))
 
         stubInterceptEvents()
@@ -503,7 +511,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
         val value3 = MockDataFactory.randomString()
-        val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3)
+        val fields = mapOf(r1.key to value1, r2.key to value2, r3.key to value3, Relations.ID to root,
+            Relations.TYPE to listOf(objType.id),)
         val customDetails = ObjectViewDetails(mapOf(root to fields))
 
         stubInterceptEvents()

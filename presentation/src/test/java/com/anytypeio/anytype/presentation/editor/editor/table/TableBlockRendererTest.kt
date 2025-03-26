@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
@@ -47,7 +48,8 @@ class TableBlockRendererTest {
         private val blocks: Map<Id, List<Block>>,
         private val renderer: BlockViewRenderer,
         private val restrictions: List<ObjectRestriction> = emptyList(),
-        private val selections: Set<Id> = emptySet()
+        private val selections: Set<Id> = emptySet(),
+        private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations(),
     ) : BlockViewRenderer by renderer {
         suspend fun render(
             root: Block,
@@ -63,7 +65,9 @@ class TableBlockRendererTest {
             indent = indent,
             details = details,
             restrictions = restrictions,
-            selection = selections
+            selection = selections,
+            storeOfRelations = storeOfRelations,
+            featurePropertiesKeys = listOf()
         )
     }
 

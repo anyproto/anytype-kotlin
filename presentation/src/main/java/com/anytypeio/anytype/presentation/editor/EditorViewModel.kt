@@ -249,6 +249,7 @@ import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
@@ -768,9 +769,25 @@ class EditorViewModel(
             .onEach { document -> refreshStyleToolbar(document) }
             .withLatestFrom(
                 orchestrator.stores.focus.stream(),
-                orchestrator.stores.details.stream()
-            ) { models, focus, objectViewDetails ->
+                orchestrator.stores.details.stream(),
+                storeOfObjectTypes.trackChanges()
+            ) { models, focus, objectViewDetails, _ ->
                 val currentObj = objectViewDetails.getObject(vmParams.ctx)
+                if (currentObj == null) {
+                    return@withLatestFrom emptyList()
+                }
+                val currentObjType = storeOfObjectTypes.getTypeOfObject(currentObj)
+                val featurePropertiesIds = if (currentObjType != null) {
+                    val parsedProperties = fieldParser.getObjectParsedProperties(
+                        objectType = currentObjType,
+                        objPropertiesKeys = currentObj.map.keys.toList(),
+                        storeOfRelations = storeOfRelations
+                    )
+                    parsedProperties.header.map { it.id }
+                } else {
+                    emptyList()
+                }
+
                 val permission = permission.value
                 val root = models.first { it.id == context }
                 if (mode == EditorMode.Locked) {
@@ -806,7 +823,9 @@ class EditorViewModel(
                     indent = INITIAL_INDENT,
                     details = objectViewDetails,
                     restrictions = orchestrator.stores.objectRestrictions.current(),
-                    selection = currentSelection()
+                    selection = currentSelection(),
+                    storeOfRelations = storeOfRelations,
+                    featurePropertiesIds = featurePropertiesIds
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
                 if (flags.isNotEmpty()) {
                     doc.fillTableOfContents()

@@ -820,7 +820,7 @@
     <string name="exiting_please_wait">Fermeture en cours... Veuillez patienter</string>
     <string name="loading_please_wait">Chargement en cours... veuillez patienter</string>
     <string name="personal">Default</string>
-    <string name="create_space">Créer un espace</string>
+    <string name="create_space">Create a space</string>
     <string name="generic_error">Une erreur s\'est produite. Veuillez réessayer.</string>
     <string name="type">Type</string>
     <string name="format">Format</string>
@@ -1576,7 +1576,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chats_edit_message">Modifier le message</string>
     <string name="chats_message_edited">modifié</string>
     <string name="chat_empty_state_message">Il n\'y a pas encore de messages.\nSoyez le premier à lancer une discussion.</string>
-    <string name="write_a_message">Ecrire un message...</string>
+    <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">Il n\'y a encore rien ici pour cette date</string>
     <string name="date_layout_alert_date_out_of_range">La date sélectionnée est en dehors de la plage valide (années %1$d à %2$d). Veuillez sélectionner une date dans cette plage.</string>
@@ -1695,12 +1695,16 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
     <string name="new_property_hint">New property</string>
     <string name="edit_property_limit_objects">Limit objects to</string>
+    <string name="edit_property_limit_objects_all">Limit objects</string>
+    <string name="edit_property_limit_all">Tout</string>
     <string name="add_property_error_create_new">Error while creating new property</string>
     <string name="add_property_error_update">Error while updating property</string>
     <string name="add_property_error_add">Error while adding property to type</string>
     <string name="property_select_format_title">Sélectionnez le format de la propriété</string>
     <string name="property_edit_menu_delete">Supprimer de l\'espace</string>
     <string name="property_edit_menu_unlink">Dissocier du type</string>
+    <string name="property_limit_objects_title">Limit objects</string>
+    <string name="property_include_time_section">Include time</string>
     <string name="delete_space_checkbox_text">J\'ai lu et je veux supprimer cet espace</string>
     <string name="migration_screen_new_version_update">Mise à jour de la nouvelle version</string>
     <string name="migration_screen_description_1">Nous posons les bases de nos nouveaux chats. Comprenant des compteurs, des notifications et d\'autres fonctionnalités nécessaires pour une expérience de chat fluide.</string>

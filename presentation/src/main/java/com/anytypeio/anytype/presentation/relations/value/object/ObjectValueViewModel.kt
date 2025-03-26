@@ -116,7 +116,7 @@ class ObjectValueViewModel(
         }
     }
 
-    private suspend fun getSearchParams(
+    private fun getSearchParams(
         relation: ObjectWrapper.Relation,
         query: String,
         ids: List<Id>

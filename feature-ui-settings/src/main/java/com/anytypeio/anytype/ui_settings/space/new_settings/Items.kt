@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
 import com.anytypeio.anytype.core_ui.foundation.Section
@@ -243,6 +244,23 @@ fun RemoteStorageItem(
         modifier = modifier,
         title = stringResource(id = R.string.remote_storage),
     )
+}
+
+@Composable
+fun BinItem(
+    modifier: Modifier = Modifier
+) {
+    BaseButton(
+        modifier = modifier,
+        title = stringResource(id = R.string.bin),
+        icon = R.drawable.ic_widget_bin
+    )
+}
+
+@Composable
+@DefaultPreviews
+private fun BinItemPreview() {
+    BinItem()
 }
 
 @Composable

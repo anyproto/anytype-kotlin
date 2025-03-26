@@ -98,7 +98,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         val objectType = StubObjectType(
             id = objectTypeId,
             name = "Object Type",
-            recommendedFeaturedRelations = listOf(r1.id, r2.id, r3.id),
+            recommendedFeaturedRelations = listOf(objectTypeId),
         )
 
         val value1 = MockDataFactory.randomString()
@@ -110,7 +110,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 r1.key to value1,
                 r2.key to value2,
                 r3.key to value3,
-                Relations.TYPE to objectType.id,
+                Relations.TYPE to listOf(objectType.id),
                 Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble()
             )
 
@@ -120,7 +120,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
                 Relations.UNIQUE_KEY to objectType.uniqueKey,
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription,
-                Relations.RECOMMENDED_FEATURED_RELATIONS to listOf<>()
+                Relations.RECOMMENDED_FEATURED_RELATIONS to listOf(objectType.id)
             )
         val customDetails = ObjectViewDetails(
             mapOf(

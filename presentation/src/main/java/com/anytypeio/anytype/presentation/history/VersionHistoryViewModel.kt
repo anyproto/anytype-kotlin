@@ -540,7 +540,9 @@ class VersionHistoryViewModel(
                 indent = INITIAL_INDENT,
                 details = ObjectViewDetails(event.details),
                 restrictions = event.objectRestrictions,
-                selection = emptySet()
+                selection = emptySet(),
+                storeOfRelations = storeOfRelations,
+                featurePropertiesIds = listOf()
             ).filterNot { it is BlockView.DataView }
             when (val currentState = _previewViewState.value) {
                 VersionHistoryPreviewScreen.Loading -> {
@@ -577,7 +579,9 @@ class VersionHistoryViewModel(
                 indent = INITIAL_INDENT,
                 details = ObjectViewDetails(event.details),
                 restrictions = event.objectRestrictions,
-                selection = emptySet()
+                selection = emptySet(),
+                storeOfRelations = storeOfRelations,
+                featurePropertiesIds = listOf()
             )
             _previewViewState.value = VersionHistoryPreviewScreen.Success.Editor(
                 versionId = item.id,

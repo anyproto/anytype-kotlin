@@ -1676,10 +1676,10 @@
     <string name="space_settings_icon_title">编辑图片</string>
     <string name="space_settings_save_button">保存</string>
     <string name="object_type_add_property_screen_title">添加属性</string>
-    <string name="object_type_add_property_screen_create">创建属性“%1$s”</string>
-    <string name="object_type_add_property_screen_section_types">属性格式”</string>
-    <string name="object_type_add_property_screen_section_existing">现有属性”</string>
-    <string name="object_type_add_property_screen_search_hint">搜索或新建\"</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
+    <string name="object_type_add_property_screen_section_types">Properties formats</string>
+    <string name="object_type_add_property_screen_section_existing">Existing properties</string>
+    <string name="object_type_add_property_screen_search_hint">搜索或新建</string>
     <string name="new_property_hint">新建属性</string>
     <string name="edit_property_limit_objects">将对象限制为</string>
     <string name="edit_property_limit_objects_all">Limit objects</string>

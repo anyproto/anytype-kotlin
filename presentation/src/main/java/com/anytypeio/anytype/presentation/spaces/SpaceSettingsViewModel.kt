@@ -181,6 +181,8 @@ class SpaceSettingsViewModel(
                     networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty()
                 )
 
+                // TODO In the next PR : show different settings for viewer
+
                 val items = buildList<UiSpaceSettingsItem> {
                     add(
                         UiSpaceSettingsItem.Icon(

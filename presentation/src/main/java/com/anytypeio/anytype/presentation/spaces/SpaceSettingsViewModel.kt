@@ -264,11 +264,10 @@ class SpaceSettingsViewModel(
                 isDismissed.value = true
             }
             UiEvent.OnDeleteSpaceClicked -> {
-                viewModelScope.launch {
-                    commands.emit(
-                        Command.ShowDeleteSpaceWarning
-                    )
-                }
+                viewModelScope.launch { commands.emit(Command.ShowDeleteSpaceWarning) }
+            }
+            UiEvent.OnLeaveSpaceClicked -> {
+                viewModelScope.launch { commands.emit(Command.ShowLeaveSpaceWarning) }
             }
             UiEvent.OnRemoteStorageClick -> {
                 viewModelScope.launch {
@@ -449,26 +448,20 @@ class SpaceSettingsViewModel(
             }
     }
 
-    private fun proceedWithSpaceDebug() {
-        viewModelScope.launch {
-            debugSpaceShareDownloader
-                .stream(Unit)
-                .collect { result ->
-                    result.fold(
-                        onLoading = { sendToast(SPACE_DEBUG_MSG) },
-                        onSuccess = { path -> commands.emit(Command.ShareSpaceDebug(path)) }
-                    )
-                }
-        }
-    }
+    // What is below is candidate to legacy. Might be deleted soon.
 
-    fun onManageSharedSpaceClicked() {
-        viewModelScope.launch {
-            commands.emit(
-                Command.ManageSharedSpace(vmParams.space)
-            )
-        }
-    }
+//    private fun proceedWithSpaceDebug() {
+//        viewModelScope.launch {
+//            debugSpaceShareDownloader
+//                .stream(Unit)
+//                .collect { result ->
+//                    result.fold(
+//                        onLoading = { sendToast(SPACE_DEBUG_MSG) },
+//                        onSuccess = { path -> commands.emit(Command.ShareSpaceDebug(path)) }
+//                    )
+//                }
+//        }
+//    }
 
 //    fun onSharePrivateSpaceClicked() {
 //        viewModelScope.launch {
@@ -507,9 +500,9 @@ class SpaceSettingsViewModel(
 //        }
 //    }
 
-    private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) : Boolean {
-        return spaceView.spaceAccessType != null
-    }
+//    private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) : Boolean {
+//        return spaceView.spaceAccessType != null
+//    }
 
 //    fun onAddMoreSpacesClicked() {
 //        viewModelScope.launch {

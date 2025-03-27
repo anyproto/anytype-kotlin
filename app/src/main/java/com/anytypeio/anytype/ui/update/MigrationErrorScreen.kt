@@ -303,8 +303,8 @@ fun MigrationFailedScreen(
     onRetryClicked: () -> Unit
 ) {
     val description = when(state) {
-        MigrationHelperDelegate.State.Failed.NotEnoughSpace -> {
-            stringResource(R.string.migration_error_please_free_up_space_and_run_the_process_again)
+        is MigrationHelperDelegate.State.Failed.NotEnoughSpace -> {
+            stringResource(R.string.migration_error_please_free_up_space_and_run_the_process_again, state.requiredSpace)
         }
         is MigrationHelperDelegate.State.Failed.UnknownError -> {
             state.error.message ?: stringResource(R.string.unknown_error)
@@ -382,7 +382,7 @@ fun MigrationInProgressScreenPreview() {
 @Composable
 fun MigrationFailedScreenPreview() {
     MigrationFailedScreen(
-        state = MigrationHelperDelegate.State.Failed.NotEnoughSpace,
+        state = MigrationHelperDelegate.State.Failed.NotEnoughSpace(450),
         onRetryClicked = {}
     )
 }

@@ -1680,10 +1680,10 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_icon_title">Sunting gambar</string>
     <string name="space_settings_save_button">Simpan</string>
     <string name="object_type_add_property_screen_title">Tambahkan properti</string>
-    <string name="object_type_add_property_screen_create">Buat properti \'%1$s\'\"</string>
-    <string name="object_type_add_property_screen_section_types">Properties formats\"</string>
-    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
-    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
+    <string name="object_type_add_property_screen_section_types">Properties formats</string>
+    <string name="object_type_add_property_screen_section_existing">Properti yang ada</string>
+    <string name="object_type_add_property_screen_search_hint">Telusuri atau buat baru</string>
     <string name="new_property_hint">Properti baru</string>
     <string name="edit_property_limit_objects">Limit objects to</string>
     <string name="edit_property_limit_objects_all">Limit objects</string>

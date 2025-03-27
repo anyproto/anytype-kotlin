@@ -22,6 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -350,6 +351,7 @@ fun NewSpaceSettingsScreen(
 
     if (showEditDescription) {
         ModalBottomSheet(
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             modifier = Modifier.padding(top = 48.dp),
             containerColor = colorResource(R.color.background_secondary),
             onDismissRequest = {
@@ -373,6 +375,7 @@ fun NewSpaceSettingsScreen(
     }
     if (showEditTitle) {
         ModalBottomSheet(
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             modifier = Modifier.padding(top = 48.dp),
             containerColor = colorResource(R.color.background_secondary),
             onDismissRequest = {

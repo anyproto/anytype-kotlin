@@ -14,6 +14,7 @@ sealed class UiEvent {
     data class OnDefaultObjectTypeClicked(val currentDefaultObjectTypeId: Id?) : UiEvent()
 
     data object OnDeleteSpaceClicked : UiEvent()
+    data object OnLeaveSpaceClicked : UiEvent()
     data object OnRemoteStorageClick : UiEvent()
     data object OnBinClick : UiEvent()
     data object OnPersonalizationClicked : UiEvent()

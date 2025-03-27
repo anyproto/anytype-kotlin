@@ -30,6 +30,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -37,9 +39,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,6 +66,7 @@ import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
@@ -243,6 +248,7 @@ fun RemoteStorageItem(
     BaseButton(
         modifier = modifier,
         title = stringResource(id = R.string.remote_storage),
+        icon = R.drawable.ic_remote_storage_24
     )
 }
 
@@ -444,12 +450,23 @@ fun NewSettingsTextField(
     placeholderText: String,
     isEditEnabled: Boolean
 ) {
+
+    val focusRequester = remember { FocusRequester() }
+
+    val textFieldValue = TextFieldValue(
+        text = value,
+        selection = TextRange(value.length)
+    )
     BasicTextField(
-        value = value,
+        value = textFieldValue,
         modifier = Modifier
             .padding(top = 4.dp)
-            .fillMaxWidth(),
-        onValueChange = onValueChange,
+            .fillMaxWidth()
+            .focusRequester(focusRequester)
+        ,
+        onValueChange = { update ->
+            onValueChange(update.text)
+        },
         enabled = isEditEnabled,
         readOnly = !isEditEnabled,
         textStyle = textStyle,
@@ -495,6 +512,12 @@ fun NewSettingsTextField(
             )
         }
     )
+
+    LaunchedEffect(Unit) {
+        // Focusing with delay, awaiting the expansion of the bottom sheet
+        delay(300)
+        focusRequester.requestFocus()
+    }
 }
 
 @Composable

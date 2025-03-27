@@ -15,9 +15,13 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -27,25 +31,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.SystemColor
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
-import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.ui_settings.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewerSpaceSettings(
     title: String,
     description: String,
     icon: SpaceIconView,
+    info: SpaceTechInfo,
     uiEvent: (UiEvent) -> Unit,
 ) {
-    val isTheeDotsMenuExpanded = remember {
-        mutableStateOf(true)
-    }
+
+    val isTheeDotsMenuExpanded = remember { mutableStateOf(true) }
+    var showTechInfo by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -143,6 +150,21 @@ fun ViewerSpaceSettings(
             }
         }
     }
+
+    if (showTechInfo) {
+        ModalBottomSheet(
+            containerColor = colorResource(R.color.background_secondary),
+            onDismissRequest = {
+                showTechInfo = false
+            },
+            dragHandle = {
+                // Nothing.
+            },
+            content = {
+                SpaceInfoScreen(spaceTechInfo = info)
+            }
+        )
+    }
 }
 
 @DefaultPreviews
@@ -155,6 +177,12 @@ fun ViewerSpaceSettingsWithDescriptionPreview() {
         icon = SpaceIconView.Placeholder(
             name = "Susan",
             color = SystemColor.SKY
+        ),
+        info = SpaceTechInfo(
+            spaceId = SpaceId("space-id"),
+            createdBy = "Thomas",
+            creationDateInMillis = null,
+            networkId = "random network id"
         )
     )
 }
@@ -169,6 +197,12 @@ fun ViewerSpaceSettingsWithoutDescriptionPreview() {
         icon = SpaceIconView.Placeholder(
             name = "Susan",
             color = SystemColor.SKY
+        ),
+        info = SpaceTechInfo(
+            spaceId = SpaceId("space-id"),
+            createdBy = "Thomas",
+            creationDateInMillis = null,
+            networkId = "random network id"
         )
     )
 }

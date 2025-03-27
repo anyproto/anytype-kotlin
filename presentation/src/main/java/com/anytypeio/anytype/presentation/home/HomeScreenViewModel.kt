@@ -2581,6 +2581,12 @@ fun ObjectType.Layout.navigation(
                 space = space
             )
         }
+        ObjectType.Layout.OBJECT_TYPE -> {
+            OpenObjectNavigation.OpenType(
+                target = target,
+                space = space
+            )
+        }
         else -> {
             OpenObjectNavigation.UnexpectedLayoutError(this)
         }

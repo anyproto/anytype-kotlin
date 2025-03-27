@@ -49,7 +49,7 @@ import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
-import com.anytypeio.anytype.feature_object_type.ui.buildUiFieldsList
+import com.anytypeio.anytype.feature_object_type.ui.buildUiPropertiesList
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible.View
@@ -328,14 +328,14 @@ class ObjectTypeViewModel(
             }
         }
         updateDefaultTemplates(defaultTemplate = objType.defaultTemplateId)
-        val items = buildUiFieldsList(
+        val items = buildUiPropertiesList(
             objType = objType,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
-            objTypeConflictingFields = conflictingFields,
-            showHiddenFields = vmParams.showHiddenFields
+            objectTypeConflictingPropertiesIds = conflictingFields,
+            showHiddenProperty = vmParams.showHiddenFields
         )
         uiFieldsListState.value = UiFieldsListState(items = items)
         uiFieldsButtonState.value = UiFieldsButtonState.Visible(

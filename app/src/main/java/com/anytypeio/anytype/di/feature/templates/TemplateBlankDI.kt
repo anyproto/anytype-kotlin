@@ -52,9 +52,15 @@ object TemplateBlankModule {
     @TemplateBlankScope
     @Provides
     fun provideViewModelFactory(
-        renderer: DefaultBlockViewRenderer
+        renderer: DefaultBlockViewRenderer,
+        storeOfRelations: StoreOfRelations,
+        storeOfObjectTypes: StoreOfObjectTypes,
+        fieldParser: FieldParser
     ): ViewModelProvider.Factory = TemplateBlankViewModelFactory(
-        renderer = renderer
+        renderer = renderer,
+        storeOfRelations = storeOfRelations,
+        storeOfObjectTypes = storeOfObjectTypes,
+        fieldParser = fieldParser
     )
 
     @Module

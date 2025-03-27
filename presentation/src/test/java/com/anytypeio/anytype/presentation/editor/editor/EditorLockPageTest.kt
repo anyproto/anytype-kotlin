@@ -282,6 +282,10 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             document = page,
             details = ObjectViewDetails(
                 mapOf(
+                    root to mapOf(
+                        Relations.ID to root,
+                        Relations.TYPE to listOf(objType.id)
+                    ),
                     target to
                         mapOf(
                             Relations.ID to target,
@@ -394,6 +398,10 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             document = page,
             details = ObjectViewDetails(
                 mapOf(
+                    root to mapOf(
+                        Relations.ID to root,
+                        Relations.TYPE to listOf(objType.id)
+                    ),
                     target to
                         mapOf(
                             Relations.ID to target,
@@ -507,6 +515,10 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             document = page,
             details = ObjectViewDetails(
                 mapOf(
+                    root to mapOf(
+                        Relations.ID to root,
+                        Relations.TYPE to listOf(objType.id)
+                    ),
                     bookmarkObjectId to
                         mapOf(
                             Relations.ID to root,
@@ -615,6 +627,10 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             document = page,
             details = ObjectViewDetails(
                 mapOf(
+                    root to mapOf(
+                        Relations.ID to root,
+                        Relations.TYPE to listOf(objType.id)
+                    ),
                     targetObjectId to
                         mapOf(
                             Relations.ID to targetObjectId,
@@ -716,6 +732,10 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             document = page,
             details = ObjectViewDetails(
                 mapOf(
+                    root to mapOf(
+                        Relations.ID to root,
+                        Relations.TYPE to listOf(objType.id)
+                    ),
                     targetObjectId to
                         mapOf(
                             Relations.ID to targetObjectId,

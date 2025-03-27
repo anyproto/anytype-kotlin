@@ -8,8 +8,11 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Response
+import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.ParsedProperties
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -127,6 +130,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.kotlin.any
@@ -395,7 +399,20 @@ open class EditorPresentationTestSetup {
 
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
+    val objTypeUniqueKey = "objTypeUniqueKey-${MockDataFactory.randomString()}"
+
+    val objType = StubObjectType(
+        id = MockDataFactory.randomUuid(),
+        uniqueKey = objTypeUniqueKey,
+    )
+
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
+
+        runBlocking {
+            storeOfObjectTypes.merge(
+                types = listOf(objType)
+            )
+        }
 
         val storage = Editor.Storage()
         val proxies = Editor.Proxer()
@@ -527,6 +544,18 @@ open class EditorPresentationTestSetup {
         )
     }
 
+    fun stubParsedProperties() {
+        fieldParser.stub {
+            onBlocking {
+                getObjectParsedProperties(
+                    objectType = any(),
+                    objPropertiesKeys = any(),
+                    storeOfRelations = any()
+                )
+            } doReturn ParsedProperties()
+        }
+    }
+
     fun stubGetNetworkMode() {
         getNetworkMode.stub {
             onBlocking { run(Unit) } doReturn NetworkModeConfig()
@@ -535,7 +564,14 @@ open class EditorPresentationTestSetup {
 
     fun stubOpenDocument(
         document: List<Block> = emptyList(),
-        details: ObjectViewDetails = ObjectViewDetails.EMPTY,
+        details: ObjectViewDetails = ObjectViewDetails(
+            details = mapOf(
+                root to mapOf(
+                    Relations.ID to root,
+                    Relations.TYPE to listOf(objType.id)
+                )
+            )
+        ),
         objectRestrictions: List<ObjectRestriction> = emptyList(),
         spaceId: SpaceId = SpaceId(defaultSpace)
     ) {

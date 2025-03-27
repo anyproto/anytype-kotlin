@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.primitives.Field
 import com.anytypeio.anytype.core_models.primitives.FieldDateValue
-import com.anytypeio.anytype.core_models.primitives.ParsedFields
+import com.anytypeio.anytype.core_models.primitives.ParsedProperties
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_models.primitives.Value
@@ -43,21 +43,21 @@ interface FieldParser {
         types: List<ObjectWrapper.Type>
     ): Pair<Id?, String?>
 
-    suspend fun getObjectParsedFields(
+    suspend fun getObjectParsedProperties(
         objectType: ObjectWrapper.Type,
-        objFieldKeys: List<Key>,
+        objPropertiesKeys: List<Key>,
         storeOfRelations: StoreOfRelations
-    ): ParsedFields
+    ): ParsedProperties
 
-    suspend fun getObjectTypeParsedFields(
+    suspend fun getObjectTypeParsedProperties(
         objectType: ObjectWrapper.Type,
-        objectTypeConflictingFieldsIds: List<Id>,
+        objectTypeConflictingPropertiesIds: List<Id>,
         storeOfRelations: StoreOfRelations
-    ): ParsedFields
+    ): ParsedProperties
 
-    fun isFieldEditable(relation: ObjectWrapper.Relation): Boolean
+    fun isPropertyEditable(property: ObjectWrapper.Relation): Boolean
 
-    fun isFieldCanBeDeletedFromType(field: ObjectWrapper.Relation): Boolean
+    fun isPropertyCanBeDeletedFromType(property: ObjectWrapper.Relation): Boolean
 }
 
 class FieldParserImpl @Inject constructor(
@@ -200,14 +200,14 @@ class FieldParserImpl @Inject constructor(
     }
     //endregion
 
-    //region Parsed fields
+    //region Parsed properties
 
-    // Consolidated function to build ParsedFields.
-    private suspend fun getParsedFields(
+    // Consolidated function to build Parsed Properties.
+    private suspend fun getParsedProperties(
         objType: ObjectWrapper.Type,
-        localFieldIds: Collection<Id>,
+        localPropertiesIds: Collection<Id>,
         storeOfRelations: StoreOfRelations
-    ): ParsedFields {
+    ): ParsedProperties {
 
         // Clean recommended IDs based on priority.
         // recommendedFeaturedRelations always remain.
@@ -228,46 +228,46 @@ class FieldParserImpl @Inject constructor(
             .filter { it !in featuredIds && it !in relationsIds && it !in fileIds }
             .distinct()
 
-        // Fetch valid relations for each recommended group.
-        val headerFields = storeOfRelations.getValidRelations(ids = featuredIds)
-        val sidebarFields = storeOfRelations.getValidRelations(ids = relationsIds)
-        val fileFields = storeOfRelations.getValidRelations(ids = fileIds)
-        val hiddenFields = storeOfRelations.getValidRelations(ids = hiddenIds)
+        // Fetch valid properties for each recommended group.
+        val headerProperties = storeOfRelations.getValidRelations(ids = featuredIds)
+        val sidebarProperties = storeOfRelations.getValidRelations(ids = relationsIds)
+        val fileProperties = storeOfRelations.getValidRelations(ids = fileIds)
+        val hiddenProperties = storeOfRelations.getValidRelations(ids = hiddenIds)
 
-        // Combine IDs from all recommended relations.
-        val existingIds = (headerFields + sidebarFields + hiddenFields + fileFields)
+        // Combine IDs from all recommended properties.
+        val existingIds = (headerProperties + sidebarProperties + hiddenProperties + fileProperties)
             .map { it.id }
             .toSet()
 
-        // Filter out fields already present in the recommended groups.
-        val allLocalFields = storeOfRelations.getValidRelations(
-            ids = localFieldIds
+        // Filter out properties already present in the recommended groups.
+        val allLocalProperties = storeOfRelations.getValidRelations(
+            ids = localPropertiesIds
                 .filter { it !in existingIds }
                 .toList()
         )
 
-        // Partition local fields into system and non-system fields.
-        val (localSystemFields, localFieldsWithoutSystem) = allLocalFields.partition {
+        // Partition local properties into system and non-system properties.
+        val (localSystemProperties, localPropertiesWithoutSystem) = allLocalProperties.partition {
             Relations.systemRelationKeys.contains(it.key)
         }
 
-        return ParsedFields(
-            header = headerFields,
-            sidebar = sidebarFields,
-            hidden = hiddenFields,
-            localWithoutSystem = localFieldsWithoutSystem,
-            localSystem = localSystemFields,
-            file = fileFields
+        return ParsedProperties(
+            header = headerProperties,
+            sidebar = sidebarProperties,
+            hidden = hiddenProperties,
+            localWithoutSystem = localPropertiesWithoutSystem,
+            localSystem = localSystemProperties,
+            file = fileProperties
         )
     }
 
-    override suspend fun getObjectParsedFields(
+    override suspend fun getObjectParsedProperties(
         objectType: ObjectWrapper.Type,
-        objFieldKeys: List<Key>,
+        objPropertiesKeys: List<Key>,
         storeOfRelations: StoreOfRelations
-    ): ParsedFields {
+    ): ParsedProperties {
         val localFieldIds = storeOfRelations.getByKeys(
-            keys = objFieldKeys
+            keys = objPropertiesKeys
         ).mapNotNull {
             if (it.isValidToUse) {
                 it.id
@@ -275,26 +275,26 @@ class FieldParserImpl @Inject constructor(
                 null
             }
         }
-        return getParsedFields(
+        return getParsedProperties(
             objType = objectType,
-            localFieldIds = localFieldIds,
+            localPropertiesIds = localFieldIds,
             storeOfRelations = storeOfRelations
         )
     }
 
-    override suspend fun getObjectTypeParsedFields(
+    override suspend fun getObjectTypeParsedProperties(
         objectType: ObjectWrapper.Type,
-        objectTypeConflictingFieldsIds: List<Id>,
+        objectTypeConflictingPropertiesIds: List<Id>,
         storeOfRelations: StoreOfRelations
-    ): ParsedFields {
-        return getParsedFields(
+    ): ParsedProperties {
+        return getParsedProperties(
             objType = objectType,
-            localFieldIds = objectTypeConflictingFieldsIds,
+            localPropertiesIds = objectTypeConflictingPropertiesIds,
             storeOfRelations = storeOfRelations
         )
     }
 
-    override fun isFieldEditable(relation: ObjectWrapper.Relation): Boolean {
+    override fun isPropertyEditable(relation: ObjectWrapper.Relation): Boolean {
         return !(relation.isReadOnly == true ||
                 relation.isHidden == true ||
                 relation.isArchived == true ||
@@ -302,8 +302,8 @@ class FieldParserImpl @Inject constructor(
                 Relations.systemRelationKeys.contains(relation.key))
     }
 
-    override fun isFieldCanBeDeletedFromType(field: ObjectWrapper.Relation): Boolean {
-        return !(field.isHidden == true || Relations.systemRelationKeys.contains(field.key))
+    override fun isPropertyCanBeDeletedFromType(property: ObjectWrapper.Relation): Boolean {
+        return !(property.isHidden == true || Relations.systemRelationKeys.contains(property.key))
     }
     //endregion
 }

@@ -30,6 +30,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Mode
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.mapper.toFileView
@@ -38,6 +39,7 @@ import com.anytypeio.anytype.presentation.mapper.toVideoView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
+import com.anytypeio.anytype.presentation.objects.getFeaturedPropertiesIds
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
@@ -680,7 +682,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                             restrictions = restrictions,
                             selection = selection,
                             count = mCounter,
-                            onRenderFlag = onRenderFlag,
+                            onRenderFlag = onRenderFlag
                         )
                     )
                 }
@@ -711,12 +713,10 @@ class DefaultBlockViewRenderer @Inject constructor(
                     val featured = featured(
                         ctx = root.id,
                         block = block,
-                        details = details,
-                        fieldParser = fieldParser,
-                        storeOfObjectTypes = storeOfObjectTypes
+                        details = details
                     )
 
-                    if (featured.relations.isNotEmpty()) {
+                    if (!featured?.relations.isNullOrEmpty()) {
                         result.add(featured)
                     }
                 }
@@ -2077,25 +2077,19 @@ class DefaultBlockViewRenderer @Inject constructor(
     private suspend fun featured(
         ctx: Id,
         block: Block,
-        details: ObjectViewDetails,
-        fieldParser: FieldParser,
-        storeOfObjectTypes: StoreOfObjectTypes
-    ): BlockView.FeaturedRelation {
-        val obj = details.getObject(ctx)
-        val featuredKeys = workaroundGlobalNameOrIdentityRelation(obj?.featuredRelations.orEmpty(), obj?.map.orEmpty())
+        details: ObjectViewDetails
+    ): BlockView.FeaturedRelation? {
+        val obj = details.getObject(ctx) ?: return null
         val views = mapFeaturedRelations(
             ctx = ctx,
-            keys = featuredKeys,
             details = details,
-            fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes
-
-        ).sortedByDescending { it.key == Relations.TYPE || it.key == Relations.GLOBAL_NAME || it.key == Relations.IDENTITY }
+            currentObject = obj
+        )
         return BlockView.FeaturedRelation(
             id = block.id,
             relations = views,
-            allowChangingObjectType = obj?.type?.contains(BOOKMARK) != true,
-            isTodoLayout = obj?.layout == ObjectType.Layout.TODO
+            allowChangingObjectType = obj.type.contains(BOOKMARK) != true,
+            isTodoLayout = obj.layout == ObjectType.Layout.TODO
         )
     }
 
@@ -2124,44 +2118,62 @@ class DefaultBlockViewRenderer @Inject constructor(
 
     private suspend fun mapFeaturedRelations(
         ctx: Id,
-        keys: List<Key>,
+        currentObject: ObjectWrapper.Basic,
         details: ObjectViewDetails,
-        fieldParser: FieldParser,
-        storeOfObjectTypes: StoreOfObjectTypes
-    ): List<ObjectRelationView> = keys.mapNotNull { key ->
-        when (key) {
-            Relations.DESCRIPTION -> null
-            Relations.TYPE -> {
-                val objectTypeId = details.getObject(ctx)?.getProperType()
-                if (objectTypeId != null) {
-                    details.objectTypeRelation(
-                        relationKey = key,
-                        isFeatured = true,
-                        objectTypeId = objectTypeId
-                    )
-                } else {
-                    null
+    ): List<ObjectRelationView> {
+
+        val objectFeaturedPropertiesKeys = currentObject.featuredRelations
+
+        val featuredProperties = if (objectFeaturedPropertiesKeys.isNotEmpty()) {
+            objectFeaturedPropertiesKeys.mapNotNull { key ->
+                storeOfRelations.getByKey(key)
+            }
+                .sortedByDescending { it.key == Relations.TYPE }
+        } else {
+            currentObject.getFeaturedPropertiesIds(
+                storeOfRelations = storeOfRelations,
+                storeOfObjectTypes = storeOfObjectTypes,
+                fieldParser = fieldParser
+            ).mapNotNull { id ->
+                storeOfRelations.getById(id = id)
+            }
+        }
+
+        return featuredProperties.mapNotNull { property ->
+
+            when (property.key) {
+                Relations.DESCRIPTION -> null
+                Relations.TYPE -> {
+                    val objectTypeId = details.getObject(ctx)?.getProperType()
+                    if (objectTypeId != null) {
+                        details.objectTypeRelation(
+                            relationKey = property.key,
+                            isFeatured = true,
+                            objectTypeId = objectTypeId
+                        )
+                    } else {
+                        null
+                    }
                 }
-            }
-            Relations.BACKLINKS, Relations.LINKS -> {
-                details.linksFeaturedRelation(
-                    relations = storeOfRelations.getAll(),
-                    ctx = ctx,
-                    relationKey = key,
-                    isFeatured = true
-                )
-            }
-            else -> {
-                val relation = storeOfRelations.getByKey(key)
-                val values = details.getObject(ctx)?.map.orEmpty()
-                relation?.view(
-                    details = details,
-                    values = values,
-                    urlBuilder = urlBuilder,
-                    isFeatured = true,
-                    fieldParser = fieldParser,
-                    storeOfObjectTypes = storeOfObjectTypes
-                )
+                Relations.BACKLINKS, Relations.LINKS -> {
+                    details.linksFeaturedRelation(
+                        relations = storeOfRelations.getAll(),
+                        ctx = ctx,
+                        relationKey = property.key,
+                        isFeatured = true
+                    )
+                }
+                else -> {
+                    val values = details.getObject(ctx)?.map.orEmpty()
+                    property.view(
+                        details = details,
+                        values = values,
+                        urlBuilder = urlBuilder,
+                        isFeatured = true,
+                        fieldParser = fieldParser,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                }
             }
         }
     }
